@@ -203,6 +203,9 @@ createWorldDeny=You do not have access to that world
 createConflict=Gate conflicts with existing gate
 ```
 # Changes
+#### [Version 0.8.0.3] PseudoKnight fork
+ - Fix economy
+ - Add custom buttons
 #### [Version 0.8.0.2] PseudoKnight fork
  - Fix player relative yaw when exiting portal
  - Add color code support in lang files
