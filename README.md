@@ -120,11 +120,13 @@ toowner=true
 ```
 
 # Custom Gate Layout
-You can create as many gate formats as you want, the gate layouts are stored in plugins/Stargate/gates/.  
-The .gate file must be laid out a specific way, the first lines will be config information, and after a blank line you will lay out the gate format. Here is the default nether.gate file:
+You can create as many gate formats as you want, the gate layouts are stored in `plugins/Stargate/gates/`.  
+The .gate file must be laid out a specific way, the first lines will be config information, 
+and after a blank line you will lay out the gate format. Here is the default nether.gate file:
 ```
 portal-open=NETHER_PORTAL
 portal-closed=AIR
+button=STONE_BUTTON
 X=OBSIDIAN
 -=OBSIDIAN
 
@@ -134,10 +136,11 @@ X..X
 X*.X
  XX 
 ```
-portal-open/closed are used to define the material in the gate when it is open or closed.   
-"X" and "-" are used to define block "types" for the layout (Any single-character can be used, such as "#").  
-In the gate format, you can see we use "X" to show where obsidian must be, "-" where the controls (Button/sign) are.  
-You will also notice a "*" in the gate layout, this is the "exit point" of the gate, the block at which the player will teleport in front of.
+The keys `portal-open` and `portal-closed` are used to define the material in the gate when it is open or closed.
+The key `button` is used to define the type of button that is generated for this gate. It must be a button material.
+`X` and `-` are used to define block types for the layout (Any single-character can be used, such as `#`).  
+In the gate format, you can see we use `X` to show where obsidian must be, `-` where the controls (Button/sign) are.  
+You will also notice a `*` in the gate layout, this is the "exit point" of the gate, the block at which the player will teleport in front of.
 
 # Configuration
 ```
