@@ -13,6 +13,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 
 /**
@@ -53,6 +54,7 @@ public class Gate {
 	private final HashMap<RelativeBlockVector, Integer> exits = new HashMap<>();
 	private Material portalBlockOpen = Material.NETHER_PORTAL;
 	private Material portalBlockClosed = Material.AIR;
+	private Material button = Material.STONE_BUTTON;
 	
 	// Economy information
 	private int useCost = -1;
@@ -120,6 +122,7 @@ public class Gate {
 			
 			writeConfig(bw, "portal-open", portalBlockOpen.name());
 			writeConfig(bw, "portal-closed", portalBlockClosed.name());
+			writeConfig(bw, "button", button.name());
 			if (useCost != -1)
 				writeConfig(bw, "usecost", useCost);
 			if (createCost != -1)
@@ -224,7 +227,11 @@ public class Gate {
 	public void setPortalBlockClosed(Material type) {
 		portalBlockClosed = type;
 	}
-	
+
+	public Material getButton() {
+		return button;
+	}
+
 	public int getUseCost() {
 		if (useCost < 0) return EconomyHandler.useCost;
 		return useCost;
@@ -379,6 +386,7 @@ public class Gate {
 
 		gate.portalBlockOpen = readConfig(config, gate, file, "portal-open", gate.portalBlockOpen);
 		gate.portalBlockClosed = readConfig(config, gate, file, "portal-closed", gate.portalBlockClosed);
+		gate.button = readConfig(config, gate, file, "button", gate.button);
 		gate.useCost = readConfig(config, gate, file, "usecost", -1);
 		gate.destroyCost = readConfig(config, gate, file, "destroycost", -1);
 		gate.createCost = readConfig(config, gate, file, "createcost", -1);
@@ -386,6 +394,11 @@ public class Gate {
 
 		if (gate.getControls().length != 2) {
 			Stargate.log.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - Gates must have exactly 2 control points.");
+			return null;
+		}
+
+		if (!Tag.BUTTONS.isTagged(gate.button)) {
+			Stargate.log.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - Gate button must be a type of button.");
 			return null;
 		}
 		

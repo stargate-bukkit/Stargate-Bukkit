@@ -1154,8 +1154,7 @@ public class Portal {
 		// No button on an always-open gate.
 		if (!alwaysOn) {
 			button = topleft.modRelative(buttonVector.getRight(), buttonVector.getDepth(), buttonVector.getDistance() + 1, modX, 1, modZ);
-			button.setType(Material.STONE_BUTTON);
-			Directional buttondata = (Directional) button.getBlock().getBlockData();
+			Directional buttondata = (Directional) Bukkit.createBlockData(gate.getButton());
 			buttondata.setFacing(buttonfacing);
 			button.getBlock().setBlockData(buttondata);
 			portal.setButton(button);

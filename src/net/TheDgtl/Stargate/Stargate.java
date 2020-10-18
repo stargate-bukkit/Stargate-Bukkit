@@ -24,6 +24,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.EndGateway;
@@ -926,7 +927,7 @@ public class Stargate extends JavaPlugin {
 				}
 
 				// Implement right-click to toggle a stargate, gets around spawn protection problem.
-				if ((block.getType() == Material.STONE_BUTTON)) {
+				if (Tag.BUTTONS.isTagged(block.getType())) {
 					Portal portal = Portal.getByBlock(block);
 					if (portal == null) return;
 					
@@ -1072,7 +1073,7 @@ public class Stargate extends JavaPlugin {
 			// Handle keeping portal material and buttons around
 			if (block.getType() == Material.NETHER_PORTAL) {
 				portal = Portal.getByEntrance(block);
-			} else if (block.getType() == Material.STONE_BUTTON) {
+			} else if (Tag.BUTTONS.isTagged(block.getType())) {
 				portal = Portal.getByControl(block);
 			}
 			if (portal != null) event.setCancelled(true);
