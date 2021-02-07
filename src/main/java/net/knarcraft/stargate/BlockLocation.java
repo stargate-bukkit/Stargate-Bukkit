@@ -35,9 +35,8 @@ import org.bukkit.block.data.type.WallSign;
  *
  * <p>The BlockLocation class is basically a Location with some extra functionality.</p>
  */
-public class BlockLocation {
+public class BlockLocation extends Location {
 
-    private final Location location;
     private BlockLocation parent = null;
 
     /**
@@ -48,7 +47,7 @@ public class BlockLocation {
      * @param z <p>The z coordinate of the block</p>
      */
     public BlockLocation(World world, int x, int y, int z) {
-        this.location = new Location(world, x, y, z);
+        super(world, x, y, z);
     }
 
     /**
@@ -56,15 +55,7 @@ public class BlockLocation {
      * @param block <p>The block to </p>
      */
     public BlockLocation(Block block) {
-        this.location = new Location(block.getWorld(), block.getX(), block.getY(), block.getZ());
-    }
-
-    /**
-     * Creates a new block from a location
-     * @param location <p>The location the block exists in</p>
-     */
-    public BlockLocation(Location location) {
-        this.location = location.clone();
+        super(block.getWorld(), block.getX(), block.getY(), block.getZ());
     }
 
     /**
@@ -73,9 +64,8 @@ public class BlockLocation {
      * @param string <p>A comma separated list of z, y and z coordinates as integers</p>
      */
     public BlockLocation(World world, String string) {
-        String[] split = string.split(",");
-        this.location = new Location(world, Integer.parseInt(split[0]), Integer.parseInt(split[1]),
-                Integer.parseInt(split[2]));
+        super(world, Integer.parseInt(string.split(",")[0]), Integer.parseInt(string.split(",")[1]),
+                Integer.parseInt(string.split(",")[2]));
     }
 
     /**
@@ -86,7 +76,7 @@ public class BlockLocation {
      * @return <p>A new block location</p>
      */
     public BlockLocation makeRelative(int x, int y, int z) {
-        return new BlockLocation(this.location.clone().add(x, y, z));
+        return (BlockLocation) this.clone().add(x, y, z);
     }
 
     /**
@@ -99,7 +89,7 @@ public class BlockLocation {
      * @return <p>A new location</p>
      */
     public Location makeRelativeLoc(double x, double y, double z, float rotX, float rotY) {
-        Location newLocation = this.location.clone();
+        Location newLocation = this.clone();
         newLocation.setYaw(rotX);
         newLocation.setPitch(rotY);
         return newLocation.add(x, y, z);
@@ -140,7 +130,7 @@ public class BlockLocation {
      * @param type <p>The new block material type</p>
      */
     public void setType(Material type) {
-        this.location.getBlock().setType(type);
+        this.getBlock().setType(type);
     }
 
     /**
@@ -148,7 +138,7 @@ public class BlockLocation {
      * @return <p>The block material type</p>
      */
     public Material getType() {
-        return this.location.getBlock().getType();
+        return this.getBlock().getType();
     }
 
     /**
@@ -156,7 +146,7 @@ public class BlockLocation {
      * @return <p>The block at this location</p>
      */
     public Block getBlock() {
-        return this.location.getBlock();
+        return this.getBlock();
     }
 
     /**
@@ -164,39 +154,7 @@ public class BlockLocation {
      * @return <p>The location representing this block location</p>
      */
     public Location getLocation() {
-        return this.location.clone();
-    }
-
-    /**
-     * Gets the integer x coordinate for this block location
-     * @return <p>The x coordinate for this block location</p>
-     */
-    public int getX() {
-        return this.location.getBlockX();
-    }
-
-    /**
-     * Gets the integer y coordinate for this block location
-     * @return <p>The y coordinate for this block location</p>
-     */
-    public int getY() {
-        return this.location.getBlockY();
-    }
-
-    /**
-     * Gets the integer z coordinate for this block location
-     * @return <p>The z coordinate for this block location</p>
-     */
-    public int getZ() {
-        return this.location.getBlockZ();
-    }
-
-    /**
-     * Gets the world this block location is within
-     * @return <p>The world for this block location</p>
-     */
-    public World getWorld() {
-        return this.location.getWorld();
+        return this.clone();
     }
 
     /**
@@ -238,18 +196,18 @@ public class BlockLocation {
 
     @Override
     public String toString() {
-        return String.valueOf(this.location.getBlockX()) + ',' + this.location.getBlockY() + ',' + this.location.getBlockZ();
+        return String.valueOf(this.getBlockX()) + ',' + this.getBlockY() + ',' + this.getBlockZ();
     }
 
     @Override
     public int hashCode() {
         int result = 18;
 
-        result = result * 27 + this.location.getBlockX();
-        result = result * 27 + this.location.getBlockY();
-        result = result * 27 + this.location.getBlockZ();
-        if (this.location.getWorld() != null) {
-            result = result * 27 + this.location.getWorld().getName().hashCode();
+        result = result * 27 + this.getBlockX();
+        result = result * 27 + this.getBlockY();
+        result = result * 27 + this.getBlockZ();
+        if (this.getWorld() != null) {
+            result = result * 27 + this.getWorld().getName().hashCode();
         }
 
         return result;
@@ -263,9 +221,13 @@ public class BlockLocation {
 
         BlockLocation blockLocation = (BlockLocation) obj;
 
-        return blockLocation.getX() == this.getX() && blockLocation.getY() == this.getY() &&
-                blockLocation.getZ() == this.getZ() &&
-                blockLocation.getWorld().getName().equals(this.getWorld().getName());
+        World thisWorld = this.getWorld();
+        World otherWorld = blockLocation.getWorld();
+        boolean worldsEqual = (thisWorld == null && otherWorld == null) || ((thisWorld != null && otherWorld != null)
+                && thisWorld == otherWorld);
+
+        return blockLocation.getBlockX() == this.getBlockX() && blockLocation.getBlockY() == this.getBlockY() &&
+                blockLocation.getBlockZ() == this.getBlockZ() && worldsEqual;
     }
 
 }
