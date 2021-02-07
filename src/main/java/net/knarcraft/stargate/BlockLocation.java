@@ -142,14 +142,6 @@ public class BlockLocation extends Location {
     }
 
     /**
-     * Gets the block at this location
-     * @return <p>The block at this location</p>
-     */
-    public Block getBlock() {
-        return this.getBlock();
-    }
-
-    /**
      * Gets the location representing this block location
      * @return <p>The location representing this block location</p>
      */
