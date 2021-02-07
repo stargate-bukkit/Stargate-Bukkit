@@ -167,7 +167,7 @@ public class Stargate extends JavaPlugin {
         // Enable the required channels for Bungee support
         if (enableBungee) {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-            Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCoordListener());
+            Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordListener());
         }
 
         // It is important to load languages here, as they are used during reloadGates()
@@ -1262,7 +1262,7 @@ public class Stargate extends JavaPlugin {
                 if (oldEnableBungee != enableBungee) {
                     if (enableBungee) {
                         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-                        Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCoordListener());
+                        Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordListener());
                     } else {
                         Bukkit.getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
                         Bukkit.getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
