@@ -156,7 +156,7 @@ chargefreedestination - Enable to allow free travel from any gate to a free gate
 freegatesgreen - Enable to make gates that won't cost the player money show up as green
 toowner - Whether the money from gate-use goes to the owner or nobody
 maxgates - If non-zero, will define the maximum amount of gates allowed on any network.
-lang - The language to use (Included languages: en, de)
+chosenLanguage - The language to use (Included languages: en, de)
 destMemory - Whether to set the first destination as the last used destination for all gates
 ignoreEntrance - Set this option to true to not check the entrance of a gate on startup. This is a workaround for snowmen breaking gates.
 handleVehicles - Whether or not to handle vehicles going through gates. Set to false to disallow vehicles (Manned or not) going through gates.
@@ -170,7 +170,7 @@ permdebug: Whether to show massive permission debug output
 ```
 
 # Message Customization
-It is possible to customize all of the messages Stargate displays, including the [Stargate] prefix. You can find the strings in plugins/Stargate/lang/en.txt. 
+It is possible to customize all of the messages Stargate displays, including the [Stargate] prefix. You can find the strings in plugins/Stargate/chosenLanguage/en.txt. 
 
 If a string is removed, or left blank, it will not be shown when the user does the action associated with it.
 There are three special cases when it comes to messages, these are:
@@ -211,7 +211,7 @@ createConflict=Gate conflicts with existing gate
  - Add custom buttons
 #### [Version 0.8.0.2] PseudoKnight fork
  - Fix player relative yaw when exiting portal
- - Add color code support in lang files
+ - Add color code support in chosenLanguage files
 #### [Version 0.8.0.1] PseudoKnight fork
  - Fix slab check for portal exits
  - Improve material checks for gate configuration
@@ -377,14 +377,14 @@ createConflict=Gate conflicts with existing gate
 #### [Version 0.6.10]
  - Added Register support as opposed to iConomy
 #### [Version 0.6.9]
- - Added UTF8 support for lang files (With or without BOM)
+ - Added UTF8 support for chosenLanguage files (With or without BOM)
 #### [Version 0.6.8]
  - Fixed unmanned carts losing velocity through gates
  - /sg reload now properly switches languages
 #### [Version 0.6.7]
- - Added lang option
+ - Added chosenLanguage option
  - Removed language debug output
- - Added German language (lang=de) -- Thanks EduardBaer
+ - Added German language (chosenLanguage=de) -- Thanks EduardBaer
 #### [Version 0.6.6]
  - Added %cost% and %portal% to all eco* messages
  - Fixed an issue when creating a gate on a network you don't have access to
@@ -560,6 +560,6 @@ createConflict=Gate conflicts with existing gate
 #### [Version 0.04]
  - Updated to multi-world Bukkit
 #### [Version 0.03]
- - Changed package to net.TheDgtl.*
+ - Changed package to net.knarcraft.*
  - Everything now uses Blox instead of Block objects
  - Started on vehicle code, but it's still buggy

@@ -1,0 +1,32 @@
+prefix=[Stargate] 
+teleportMsg=Teleported
+destroyMsg=Gate Destroyed
+invalidMsg=Invalid Destination
+blockMsg=Destination Blocked
+destEmpty=Destination List Empty
+denyMsg=Access Denied
+
+ecoDeduct=Deducted %cost%
+ecoRefund=Refunded %cost%
+ecoObtain=Obtained %cost% from Stargate %portal%
+ecoInFunds=Insufficient Funds
+
+createMsg=Gate Created
+createNetDeny=You do not have access to that network
+createGateDeny=You do not have access to that gate layout
+createPersonal=Creating gate on personal network
+createNameLength=Name too short or too long.
+createExists=A gate by that name already exists
+createFull=This network is full
+createWorldDeny=You do not have access to that world
+createConflict=Gate conflicts with existing gate
+
+signRightClick=Right click
+signToUse=to use gate
+signRandom=Random
+signDisconnected=Disconnected
+
+bungeeDisabled=BungeeCord support is disabled.
+bungeeDeny=You do not have permission to create BungeeCord gates.
+bungeeEmpty=BungeeCord gates require both a destination and network.
+bungeeSign=Teleport to

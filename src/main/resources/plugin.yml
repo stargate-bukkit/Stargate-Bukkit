@@ -1,0 +1,30 @@
+name: Stargate
+main: net.knarcraft.stargate.Stargate
+version: 0.8.0.0
+description: Stargate mod for Bukkit
+author: EpicKnarvik97
+website: https://knarcraft.net
+api-version: 1.16
+commands:
+  sg:
+    description: Used to reload the plugin. Console use only.
+    usage: /<command> reload - Used to reload the plugin. Console use only.
+permissions:
+  stargate.use:
+    description: Allow use of all gates linking to any world in any network
+    default: true
+  stargate.create:
+    description: Allow creating gates on any network
+    default: op
+  stargate.destroy:
+    description: Allow destruction gates on any network
+    default: op
+  stargate.free:
+    description: Allow free use/creation/destruction of gates
+    default: op
+  stargate.option:
+    description: Allow use of all options
+    default: op
+  stargate.admin:
+    description: Allow all admin features (Hidden/Private only so far)
+    default: op
