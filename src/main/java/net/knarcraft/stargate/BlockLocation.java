@@ -32,27 +32,23 @@ import org.bukkit.block.data.type.WallSign;
 
 /**
  * This class represents a block location
+ *
+ * <p>The BlockLocation class is basically a Location with some extra functionality.</p>
  */
 public class BlockLocation {
 
-    private final int x;
-    private final int y;
-    private final int z;
-    private final World world;
+    private final Location location;
     private BlockLocation parent = null;
 
     /**
-     * Creates a new block
+     * Creates a new block location
      * @param world <p>The world the block exists in</p>
      * @param x <p>The x coordinate of the block</p>
      * @param y <p>The y coordinate of the block</p>
      * @param z <p>The z coordinate of the block</p>
      */
     public BlockLocation(World world, int x, int y, int z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.world = world;
+        this.location = new Location(world, x, y, z);
     }
 
     /**
@@ -60,10 +56,7 @@ public class BlockLocation {
      * @param block <p>The block to </p>
      */
     public BlockLocation(Block block) {
-        this.x = block.getX();
-        this.y = block.getY();
-        this.z = block.getZ();
-        this.world = block.getWorld();
+        this.location = new Location(block.getWorld(), block.getX(), block.getY(), block.getZ());
     }
 
     /**
@@ -71,10 +64,7 @@ public class BlockLocation {
      * @param location <p>The location the block exists in</p>
      */
     public BlockLocation(Location location) {
-        this.x = location.getBlockX();
-        this.y = location.getBlockY();
-        this.z = location.getBlockZ();
-        this.world = location.getWorld();
+        this.location = location.clone();
     }
 
     /**
@@ -84,10 +74,8 @@ public class BlockLocation {
      */
     public BlockLocation(World world, String string) {
         String[] split = string.split(",");
-        this.x = Integer.parseInt(split[0]);
-        this.y = Integer.parseInt(split[1]);
-        this.z = Integer.parseInt(split[2]);
-        this.world = world;
+        this.location = new Location(world, Integer.parseInt(split[0]), Integer.parseInt(split[1]),
+                Integer.parseInt(split[2]));
     }
 
     /**
@@ -95,93 +83,174 @@ public class BlockLocation {
      * @param x <p>The x position relative to this block's position</p>
      * @param y <p>The y position relative to this block's position</p>
      * @param z <p>The z position relative to this block's position</p>
-     * @return <p>A new block </p>
+     * @return <p>A new block location</p>
      */
     public BlockLocation makeRelative(int x, int y, int z) {
-        return new BlockLocation(this.world, this.x + x, this.y + y, this.z + z);
+        return new BlockLocation(this.location.clone().add(x, y, z));
     }
 
+    /**
+     * Makes a location relative to the block location
+     * @param x <p>The x position relative to this block's position</p>
+     * @param y <p>The y position relative to this block's position</p>
+     * @param z <p>The z position relative to this block's position</p>
+     * @param rotX <p>The x rotation of the location</p>
+     * @param rotY <p>The y rotation of the location</p>
+     * @return <p>A new location</p>
+     */
     public Location makeRelativeLoc(double x, double y, double z, float rotX, float rotY) {
-        return new Location(this.world, (double) this.x + x, (double) this.y + y, (double) this.z + z, rotX, rotY);
+        Location newLocation = this.location.clone();
+        newLocation.setYaw(rotX);
+        newLocation.setPitch(rotY);
+        return newLocation.add(x, y, z);
     }
 
+    /**
+     * Makes a block location relative to the current location according to given parameters
+     * @param right <p></p>
+     * @param depth <p>The y position relative to the current position</p>
+     * @param distance <p>The distance away from the previous location to the new location</p>
+     * @param modX <p>x modifier. Defines movement along the x-axis. 0 for no movement</p>
+     * @param modY <p></p>
+     * @param modZ <p>z modifier. Defines movement along the z-axis. 0 for no movement</p>
+     * @return A new location relative to this block location
+     */
     public BlockLocation modRelative(int right, int depth, int distance, int modX, int modY, int modZ) {
         return makeRelative(-right * modX + distance * modZ, -depth * modY, -right * modZ + -distance * modX);
     }
 
+    /**
+     * Makes a location relative to the current location according to given parameters
+     * @param right <p></p>
+     * @param depth <p>The y position relative to the current position</p>
+     * @param distance <p>The distance away from the previous location to the new location</p>
+     * @param rotX <p>The yaw of the location</p>
+     * @param rotY <p>Unused</p>
+     * @param modX <p>x modifier. Defines movement along the x-axis. 0 for no movement</p>
+     * @param modY <p>Unused</p>
+     * @param modZ <p>z modifier. Defines movement along the z-axis. 0 for no movement</p>
+     * @return A new location relative to this block location
+     */
     public Location modRelativeLoc(double right, double depth, double distance, float rotX, float rotY, int modX, int modY, int modZ) {
         return makeRelativeLoc(0.5 + -right * modX + distance * modZ, depth, 0.5 + -right * modZ + -distance * modX, rotX, 0);
     }
 
+    /**
+     * Sets the type for the block at this location
+     * @param type <p>The new block material type</p>
+     */
     public void setType(Material type) {
-        world.getBlockAt(x, y, z).setType(type);
+        this.location.getBlock().setType(type);
     }
 
+    /**
+     * Gets the type for the block at this location
+     * @return <p>The block material type</p>
+     */
     public Material getType() {
-        return world.getBlockAt(x, y, z).getType();
+        return this.location.getBlock().getType();
     }
 
+    /**
+     * Gets the block at this location
+     * @return <p>The block at this location</p>
+     */
     public Block getBlock() {
-        return world.getBlockAt(x, y, z);
+        return this.location.getBlock();
     }
 
+    /**
+     * Gets the location representing this block location
+     * @return <p>The location representing this block location</p>
+     */
     public Location getLocation() {
-        return new Location(world, x, y, z);
+        return this.location.clone();
     }
 
+    /**
+     * Gets the integer x coordinate for this block location
+     * @return <p>The x coordinate for this block location</p>
+     */
     public int getX() {
-        return x;
+        return this.location.getBlockX();
     }
 
+    /**
+     * Gets the integer y coordinate for this block location
+     * @return <p>The y coordinate for this block location</p>
+     */
     public int getY() {
-        return y;
+        return this.location.getBlockY();
     }
 
+    /**
+     * Gets the integer z coordinate for this block location
+     * @return <p>The z coordinate for this block location</p>
+     */
     public int getZ() {
-        return z;
+        return this.location.getBlockZ();
     }
 
+    /**
+     * Gets the world this block location is within
+     * @return <p>The world for this block location</p>
+     */
     public World getWorld() {
-        return world;
+        return this.location.getWorld();
     }
 
+    /**
+     * Gets this block location's parent block
+     * @return <p>This block location's parent block</p>
+     */
     public Block getParent() {
-        if (parent == null) findParent();
-        if (parent == null) return null;
+        if (parent == null) {
+            findParent();
+        }
+        if (parent == null) {
+            return null;
+        }
         return parent.getBlock();
     }
 
+    /**
+     * Tries to find the parent block location
+     *
+     * <p>If this block location is a sign, the parent is the block location of the block the sign is connected to.</p>
+     */
     private void findParent() {
         int offsetX = 0;
         int offsetY = 0;
         int offsetZ = 0;
 
-        BlockData blk = getBlock().getBlockData();
-        if (blk instanceof WallSign) {
-            BlockFace facing = ((WallSign) blk).getFacing().getOppositeFace();
+        BlockData blockData = getBlock().getBlockData();
+        if (blockData instanceof WallSign) {
+            BlockFace facing = ((WallSign) blockData).getFacing().getOppositeFace();
             offsetX = facing.getModX();
             offsetZ = facing.getModZ();
-        } else if (blk instanceof Sign) {
+        } else if (blockData instanceof Sign) {
             offsetY = -1;
         } else {
             return;
         }
-        parent = new BlockLocation(world, getX() + offsetX, getY() + offsetY, getZ() + offsetZ);
+        parent = this.makeRelative(offsetX, offsetY, offsetZ);
     }
 
     @Override
     public String toString() {
-        return String.valueOf(x) + ',' + y + ',' + z;
+        return String.valueOf(this.location.getBlockX()) + ',' + this.location.getBlockY() + ',' + this.location.getBlockZ();
     }
 
     @Override
     public int hashCode() {
         int result = 18;
 
-        result = result * 27 + x;
-        result = result * 27 + y;
-        result = result * 27 + z;
-        result = result * 27 + world.getName().hashCode();
+        result = result * 27 + this.location.getBlockX();
+        result = result * 27 + this.location.getBlockY();
+        result = result * 27 + this.location.getBlockZ();
+        if (this.location.getWorld() != null) {
+            result = result * 27 + this.location.getWorld().getName().hashCode();
+        }
 
         return result;
     }
@@ -193,7 +262,10 @@ public class BlockLocation {
         if (getClass() != obj.getClass()) return false;
 
         BlockLocation blockLocation = (BlockLocation) obj;
-        return (x == blockLocation.x) && (y == blockLocation.y) && (z == blockLocation.z) && (world.getName().equals(blockLocation.world.getName()));
+
+        return blockLocation.getX() == this.getX() && blockLocation.getY() == this.getY() &&
+                blockLocation.getZ() == this.getZ() &&
+                blockLocation.getWorld().getName().equals(this.getWorld().getName());
     }
 
 }
