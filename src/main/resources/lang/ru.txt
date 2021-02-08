@@ -1,4 +1,4 @@
-﻿author=ckr@jk
+author=ckr@jk
 prefix=[Портал] 
 teleportMsg=Вы перемещены
 destroyMsg=Портал уничтожен

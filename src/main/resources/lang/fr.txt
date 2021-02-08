@@ -1,4 +1,4 @@
-﻿author=Dauphin14
+author=Dauphin14
 prefix=[Stargate] 
 teleportMsg=Téléportation Réussie.
 destroyMsg=Portail detruit.

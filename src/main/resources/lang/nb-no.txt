@@ -1,5 +1,5 @@
 author=EpicKnarvik97
-prefix=[Stjerneport]
+prefix=[Stjerneport] 
 teleportMsg=Teleporterte
 destroyMsg=Port Ødelagt
 invalidMsg=Ugyldig Destinasjon
@@ -29,5 +29,5 @@ signDisconnected=Koblet fra
 
 bungeeDisabled=BungeeCord støtte er slått av.
 bungeeDeny=Du har ikke tillatelse til å opprette BungeeCord porter.
-bungeeEmpty=BungeeCord porter behøver både en destinasjon og et nettverk.
+bungeeEmpty=BungeeCord porter behøver bade en destinasjon og et nettverk.
 bungeeSign=Teleporter til
