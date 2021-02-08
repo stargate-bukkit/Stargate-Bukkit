@@ -65,7 +65,7 @@ public class LanguageLoader {
 
         loadedStringTranslations = load(chosenLanguage);
         // We have a default hashMap used for when new text is added.
-        InputStream inputStream = getClass().getResourceAsStream("/lang/" + chosenLanguage + ".txt");
+        InputStream inputStream = getClass().getResourceAsStream("/lang/en.txt");
         if (inputStream != null) {
             loadedBackupStrings = load("en", inputStream);
         } else {
@@ -89,10 +89,17 @@ public class LanguageLoader {
      * @return <p>The string in the user's preferred language</p>
      */
     public String getString(String name) {
-        String val = loadedStringTranslations.get(name);
-        if (val == null && loadedBackupStrings != null) val = loadedBackupStrings.get(name);
-        if (val == null) return "";
-        return val;
+        String value = null;
+        if (loadedStringTranslations != null) {
+            value = loadedStringTranslations.get(name);
+        }
+        if (value == null && loadedBackupStrings != null) {
+            value = loadedBackupStrings.get(name);
+        }
+        if (value == null) {
+            return "";
+        }
+        return value;
     }
 
     /**
@@ -115,7 +122,14 @@ public class LanguageLoader {
         Map<String, String> currentLanguageValues = load(language);
 
         InputStream inputStream = getClass().getResourceAsStream("/lang/" + language + ".txt");
-        if (inputStream == null) return;
+        if (inputStream == null) {
+            Stargate.log.info("The language " + language + " is not available. You can add a custom language " +
+                    "by creating a new text file in the lang directory.");
+            if (Stargate.debug) {
+                Stargate.log.info("Ubabke to load /lang/" + language + ".txt");
+            }
+            return;
+        }
 
         boolean updated = false;
         FileOutputStream fileOutputStream = null;
@@ -238,6 +252,9 @@ public class LanguageLoader {
             }
             readLanguageFile(inputStreamReader, strings);
         } catch (Exception e) {
+            if (Stargate.debug) {
+                Stargate.log.info("Unable to load chosen language");
+            }
             return null;
         } finally {
             if (fileInputStream != null) {
