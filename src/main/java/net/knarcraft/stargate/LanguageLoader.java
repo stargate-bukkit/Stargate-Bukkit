@@ -59,7 +59,9 @@ public class LanguageLoader {
 
         File tmp = new File(languageFolder, chosenLanguage + ".txt");
         if (!tmp.exists()) {
-            tmp.getParentFile().mkdirs();
+            if (tmp.getParentFile().mkdirs() && Stargate.debug) {
+                Stargate.log.info("[stargate] Created language folder");
+            }
         }
         updateLanguage(chosenLanguage);
 
@@ -123,10 +125,10 @@ public class LanguageLoader {
 
         InputStream inputStream = getClass().getResourceAsStream("/lang/" + language + ".txt");
         if (inputStream == null) {
-            Stargate.log.info("The language " + language + " is not available. You can add a custom language " +
-                    "by creating a new text file in the lang directory.");
+            Stargate.log.info("[stargate] The language " + language + " is not available. Falling back to " +
+                    "english, You can add a custom language by creating a new text file in the lang directory.");
             if (Stargate.debug) {
-                Stargate.log.info("Ubabke to load /lang/" + language + ".txt");
+                Stargate.log.info("[stargate] Unable to load /lang/" + language + ".txt");
             }
             return;
         }
