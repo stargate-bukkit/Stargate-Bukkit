@@ -545,18 +545,6 @@ public class Stargate extends JavaPlugin {
     /*
      * Charge player for {action} if required, true on success, false if can't afford
      */
-    public static boolean chargePlayer(Player player, String target, int cost) {
-        // If cost is 0
-        if (cost == 0) return true;
-        // Economy is disabled
-        if (!EconomyHandler.useEconomy()) return true;
-        // Charge player
-        return EconomyHandler.chargePlayer(player, target, cost);
-    }
-
-    /*
-     * Charge player for {action} if required, true on success, false if can't afford
-     */
     public static boolean chargePlayer(Player player, UUID target, int cost) {
         // If cost is 0
         if (cost == 0) return true;
@@ -817,11 +805,7 @@ public class Stargate extends JavaPlugin {
             if (cost > 0) {
                 boolean success;
                 if (portal.getGate().getToOwner()) {
-                    if (portal.getOwnerUUID() == null) {
-                        success = Stargate.chargePlayer(player, portal.getOwnerUUID(), cost);
-                    } else {
-                        success = Stargate.chargePlayer(player, portal.getOwnerName(), cost);
-                    }
+                    success = portal.getOwnerUUID() != null && Stargate.chargePlayer(player, portal.getOwnerUUID(), cost);
                 } else {
                     success = Stargate.chargePlayer(player, cost);
                 }
