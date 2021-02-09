@@ -40,7 +40,19 @@
 			<artifactId>VaultAPI</artifactId>
 			<version>1.7</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.seeseemelk</groupId>
+            <artifactId>MockBukkit-v1.16</artifactId>
+            <version>0.24.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
