@@ -179,8 +179,11 @@ public class Stargate extends JavaPlugin {
 
         // Check to see if Economy is loaded yet.
         if (EconomyHandler.setupEconomy(pm)) {
-            if (EconomyHandler.economy != null)
-                log.info("[stargate] Vault v" + EconomyHandler.vault.getDescription().getVersion() + " found");
+            if (EconomyHandler.economy != null) {
+                String vaultVersion = EconomyHandler.vault.getDescription().getVersion();
+                log.info(Stargate.getString("prefix") +
+                        replaceVars(Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
+            }
         }
 
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new StarGateThread(), 0L, 100L);
@@ -220,7 +223,7 @@ public class Stargate extends JavaPlugin {
         try {
             signColor = ChatColor.valueOf(sc.toUpperCase());
         } catch (Exception ignore) {
-            log.warning("[stargate] You have specified an invalid color in your config.yml. Defaulting to BLACK");
+            log.warning(Stargate.getString("prefix") + "You have specified an invalid color in your config.yml. Defaulting to BLACK");
             signColor = ChatColor.BLACK;
         }
         // Debug
@@ -247,7 +250,7 @@ public class Stargate extends JavaPlugin {
 
     public void loadGates() {
         Gate.loadGates(gateFolder);
-        log.info("[stargate] Loaded " + Gate.getGateCount() + " gate layouts");
+        log.info(Stargate.getString("prefix") + "Loaded " + Gate.getGateCount() + " gate layouts");
     }
 
     public void loadAllPortals() {
@@ -618,21 +621,38 @@ public class Stargate extends JavaPlugin {
 
     private Plugin checkPlugin(Plugin plugin) {
         if (plugin != null && plugin.isEnabled()) {
-            log.info("[stargate] Found " + plugin.getDescription().getName() + " (v" + plugin.getDescription().getVersion() + ")");
+            log.info(Stargate.getString("prefix") + "Found " + plugin.getDescription().getName() + " (v" + plugin.getDescription().getVersion() + ")");
             return plugin;
         }
         return null;
     }
 
-    /*
-     * Parse a given text string and replace the variables
+    /**
+     * Replaces a list of variables in a string in the order they are given
+     * @param input <p>The input containing the variables</p>
+     * @param search <p>The variables to replace</p>
+     * @param values <p>The replacement values</p>
+     * @return <p>The input string with the search values replaced with the given values</p>
      */
-    public static String replaceVars(String format, String[] search, String[] replace) {
-        if (search.length != replace.length) return "";
-        for (int i = 0; i < search.length; i++) {
-            format = format.replace(search[i], replace[i]);
+    public static String replaceVars(String input, String[] search, String[] values) {
+        if (search.length != values.length) {
+            throw new IllegalArgumentException("The number of search values and replace values do not match.");
         }
-        return format;
+        for (int i = 0; i < search.length; i++) {
+            input = replaceVars(input, search[i], values[i]);
+        }
+        return input;
+    }
+
+    /**
+     * Replaces a variable in a string
+     * @param input <p>The input containing the variables</p>
+     * @param search <p>The variable to replace</p>
+     * @param value <p>The replacement value</p>
+     * @return <p>The input string with the search replaced with value</p>
+     */
+    public static String replaceVars(String input, String search, String value) {
+        return input.replace(search, value);
     }
 
     private class vListener implements Listener {
@@ -860,7 +880,7 @@ public class Stargate extends JavaPlugin {
                     msgData.writeBytes(msg);            // Data
                     player.sendPluginMessage(stargate, "BungeeCord", bao.toByteArray());
                 } catch (IOException ex) {
-                    Stargate.log.severe("[stargate] Error sending BungeeCord teleport packet");
+                    Stargate.log.severe(Stargate.getString("prefix") + "Error sending BungeeCord teleport packet");
                     ex.printStackTrace();
                     return;
                 }
@@ -875,7 +895,7 @@ public class Stargate extends JavaPlugin {
                     player.sendPluginMessage(stargate, "BungeeCord", bao.toByteArray());
                     bao.reset();
                 } catch (IOException ex) {
-                    Stargate.log.severe("[stargate] Error sending BungeeCord connect packet");
+                    Stargate.log.severe(Stargate.getString("prefix") + "Error sending BungeeCord connect packet");
                     ex.printStackTrace();
                     return;
                 }
@@ -1018,7 +1038,7 @@ public class Stargate extends JavaPlugin {
             if (!Stargate.canDestroy(player, portal)) {
                 denyMsg = "Permission Denied"; // TODO: Change to stargate.getString()
                 deny = true;
-                Stargate.log.info("[stargate] " + player.getName() + " tried to destroy gate");
+                Stargate.log.info(Stargate.getString("prefix") + player.getName() + " tried to destroy gate");
             }
 
             int cost = Stargate.getDestroyCost(player, portal.getGate());
@@ -1154,14 +1174,16 @@ public class Stargate extends JavaPlugin {
         @EventHandler
         public void onPluginEnable(PluginEnableEvent event) {
             if (EconomyHandler.setupEconomy(getServer().getPluginManager())) {
-                log.info("[stargate] Vault v" + EconomyHandler.vault.getDescription().getVersion() + " found");
+                String vaultVersion = EconomyHandler.vault.getDescription().getVersion();
+                log.info(Stargate.getString("prefix") +
+                        replaceVars(Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
             }
         }
 
         @EventHandler
         public void onPluginDisable(PluginDisableEvent event) {
             if (event.getPlugin().equals(EconomyHandler.vault)) {
-                log.info("[stargate] Vault plugin lost.");
+                log.info(Stargate.getString("prefix") + "Vault plugin lost.");
             }
         }
     }
@@ -1233,8 +1255,11 @@ public class Stargate extends JavaPlugin {
                 // Load Economy support if enabled/clear if disabled
                 if (EconomyHandler.economyEnabled && EconomyHandler.economy == null) {
                     if (EconomyHandler.setupEconomy(pm)) {
-                        if (EconomyHandler.economy != null)
-                            log.info("[stargate] Vault v" + EconomyHandler.vault.getDescription().getVersion() + " found");
+                        if (EconomyHandler.economy != null) {
+                            String vaultVersion = EconomyHandler.vault.getDescription().getVersion();
+                            log.info(Stargate.getString("prefix") + Stargate.replaceVars(
+                                    Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
+                        }
                     }
                 }
                 if (!EconomyHandler.economyEnabled) {
