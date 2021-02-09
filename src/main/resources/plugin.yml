@@ -5,6 +5,7 @@ description: Stargate mod for Bukkit
 author: EpicKnarvik97
 website: https://knarcraft.net
 api-version: 1.16
+softdepend: [Vault]
 commands:
   sg:
     description: Used to reload the plugin. Console use only.
