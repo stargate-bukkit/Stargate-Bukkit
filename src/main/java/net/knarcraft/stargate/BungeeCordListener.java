@@ -40,7 +40,7 @@ public class BungeeCordListener implements PluginMessageListener {
             Portal destinationPortal = Portal.getBungeeGate(destination);
             // Specified an invalid gate. For now we'll just let them connect at their current location
             if (destinationPortal == null) {
-                Stargate.log.info("[stargate] Bungee gate " + destination + " does not exist");
+                Stargate.log.info(Stargate.getString("prefix") + "Bungee gate " + destination + " does not exist");
                 return;
             }
             destinationPortal.teleport(player, destinationPortal, null);
@@ -63,7 +63,7 @@ public class BungeeCordListener implements PluginMessageListener {
             data = new byte[dataLength];
             dataInputStream.readFully(data);
         } catch (IOException ex) {
-            Stargate.log.severe("[stargate] Error receiving BungeeCord message");
+            Stargate.log.severe(Stargate.getString("prefix") + "Error receiving BungeeCord message");
             ex.printStackTrace();
             return null;
         }

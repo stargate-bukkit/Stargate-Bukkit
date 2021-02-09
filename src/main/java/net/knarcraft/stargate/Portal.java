@@ -556,7 +556,7 @@ public class Portal {
             int back = (isBackwards()) ? -1 : 1;
             loc = exit.modRelativeLoc(0D, 0D, 1D, traveller.getYaw(), traveller.getPitch(), modX * back, 1, modZ * back);
         } else {
-            Stargate.log.log(Level.WARNING, "[stargate] Missing destination point in .gate file " + gate.getFilename());
+            Stargate.log.log(Level.WARNING, Stargate.getString("prefix") + "Missing destination point in .gate file " + gate.getFilename());
         }
 
         if (loc != null) {
@@ -711,7 +711,7 @@ public class Portal {
     public final void drawSign() {
         BlockState state = id.getBlock().getState();
         if (!(state instanceof Sign)) {
-            Stargate.log.warning("[stargate] Sign block is not a Sign object");
+            Stargate.log.warning(Stargate.getString("prefix") + "Sign block is not a Sign object");
             Stargate.debug("Portal::drawSign", "Block: " + id.getBlock().getType() + " @ " + id.getBlock().getLocation());
             return;
         }
@@ -1357,7 +1357,7 @@ public class Portal {
                     }
                     String[] split = line.split(":");
                     if (split.length < 8) {
-                        Stargate.log.info("[stargate] Invalid line - " + l);
+                        Stargate.log.info(Stargate.getString("prefix") + "Invalid line - " + l);
                         continue;
                     }
                     String name = split[0];
@@ -1369,7 +1369,7 @@ public class Portal {
                     BlockLocation topLeft = new BlockLocation(world, split[6]);
                     Gate gate = Gate.getGateByName(split[7]);
                     if (gate == null) {
-                        Stargate.log.info("[stargate] Gate layout on line " + l + " does not exist [" + split[7] + "]");
+                        Stargate.log.info(Stargate.getString("prefix") + "Gate layout on line " + l + " does not exist [" + split[7] + "]");
                         continue;
                     }
 
@@ -1427,7 +1427,7 @@ public class Portal {
                             }
                             portal.unregister(false);
                             iter.remove();
-                            Stargate.log.info("[stargate] Destroying stargate at " + portal.toString());
+                            Stargate.log.info(Stargate.getString("prefix") + "Destroying stargate at " + portal.toString());
                             continue;
                         }
                     }
@@ -1439,14 +1439,14 @@ public class Portal {
                         OpenCount++;
                     }
                 }
-                Stargate.log.info("[stargate] {" + world.getName() + "} Loaded " + portalCount + " stargates with " + OpenCount + " set as always-on");
+                Stargate.log.info(Stargate.getString("prefix") + "{" + world.getName() + "} Loaded " + portalCount + " stargates with " + OpenCount + " set as always-on");
                 return true;
             } catch (Exception e) {
                 Stargate.log.log(Level.SEVERE, "Exception while reading stargates from " + db.getName() + ": " + l);
                 e.printStackTrace();
             }
         } else {
-            Stargate.log.info("[stargate] {" + world.getName() + "} No stargates for world ");
+            Stargate.log.info(Stargate.getString("prefix") + "{" + world.getName() + "} No stargates for world ");
         }
         return false;
     }

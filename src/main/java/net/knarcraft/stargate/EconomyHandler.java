@@ -122,7 +122,7 @@ public class EconomyHandler {
                 return true;
             }
         }
-        Stargate.log.info("[stargate] Economy is enabled but vault could not be loaded. Economy disabled");
+        Stargate.log.info(Stargate.getString("prefix") + Stargate.getString("ecoLoadError"));
         economyEnabled = false;
         return false;
     }
