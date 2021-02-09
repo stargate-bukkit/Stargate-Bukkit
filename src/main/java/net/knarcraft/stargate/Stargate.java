@@ -45,6 +45,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -127,6 +128,21 @@ public class Stargate extends JavaPlugin {
 
     // World names that contain stargates
     public static HashSet<String> managedWorlds = new HashSet<>();
+
+    public Stargate() {
+        super();
+    }
+
+    /**
+     * Special constructor used for MockBukkit
+     * @param loader <p>The plugin loader to be used.</p>
+     * @param descriptionFile <p>The description file to be used.</p>
+     * @param dataFolder <p>The data folder to be used.</p>
+     * @param file <p>The file to be used</p>
+     */
+    protected Stargate(JavaPluginLoader loader, PluginDescriptionFile descriptionFile, File dataFolder, File file) {
+        super(loader, descriptionFile, dataFolder, file);
+    }
 
     @Override
     public void onDisable() {
