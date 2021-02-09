@@ -120,9 +120,12 @@ public class EconomyHandler {
                 economy = economyProvider.getProvider();
                 EconomyHandler.vault = vault;
                 return true;
+            } else {
+                Stargate.log.info(Stargate.getString("prefix") + Stargate.getString("ecoLoadError"));
             }
+        } else {
+            Stargate.log.info(Stargate.getString("prefix") + Stargate.getString("vaultLoadError"));
         }
-        Stargate.log.info(Stargate.getString("prefix") + Stargate.getString("ecoLoadError"));
         economyEnabled = false;
         return false;
     }
