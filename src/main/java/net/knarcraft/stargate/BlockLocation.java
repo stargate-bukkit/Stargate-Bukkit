@@ -33,7 +33,9 @@ import org.bukkit.block.data.type.WallSign;
 /**
  * This class represents a block location
  *
- * <p>The BlockLocation class is basically a Location with some extra functionality.</p>
+ * <p>The BlockLocation class is basically a Location with some extra functionality.
+ * Warning: Because of differences in the equals methods between Location and BlockLocation, a BlockLocation which
+ * equals another BlockLocation does not necessarily equal the name BlockLocation if treated as a Location.</p>
  */
 public class BlockLocation extends Location {
 
