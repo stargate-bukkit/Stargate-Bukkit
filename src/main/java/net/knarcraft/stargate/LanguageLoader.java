@@ -189,7 +189,7 @@ public class LanguageLoader {
                                             Map<String, String> currentLanguageValues) throws IOException {
         boolean updated = false;
         // Input stuff
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
         String line = bufferedReader.readLine();
