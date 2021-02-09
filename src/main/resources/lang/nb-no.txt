@@ -11,6 +11,9 @@ ecoDeduct=Fratrekk %cost%
 ecoRefund=Refundert %cost%
 ecoObtain=Fikk %cost% fra Stjerneport %portal%
 ecoInFunds=Manglende Midler
+ecoLoadError=Vault ble lastet inn men ingen brukbar økonomi-utvidelse ble funnet
+vaultLoadError=Økonomi er skrudd på, men Vault kunne ikke lastes inn. Økonomi er skrudd av
+vaultLoaded=Vault v%version% funnet
 
 createMsg=Port opprettet
 createNetDeny=Du har ikke tilgang til det nettverket

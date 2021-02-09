@@ -11,6 +11,9 @@ ecoDeduct=Fråtrekk %cost%
 ecoRefund=Refundert %cost%
 ecoObtain=Mottok %cost% frå Stjerneport %portal%
 ecoInFunds=Manglande Midlar
+ecoLoadError=Vault vart lasta inn men inga brukbar økonomi-utviding vart funnen
+vaultLoadError=Økonomi er skrudd på, men Vault kunne ikkje lastas inn. Økonomi er skrudd av
+vaultLoaded=Vault v%version% funnen
 
 createMsg=Port oppretta
 createNetDeny=Du har ikkje tilgang til det nettverket

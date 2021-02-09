@@ -10,7 +10,8 @@ ecoDeduct=Deducted %cost%
 ecoRefund=Refunded %cost%
 ecoObtain=Obtained %cost% from Stargate %portal%
 ecoInFunds=Insufficient Funds
-ecoLoadError=Economy is enabled but vault could not be loaded. Economy disabled
+ecoLoadError=Vault was loaded, but no economy plugin could be hooked into
+vaultLoadError=Economy is enabled but Vault could not be loaded. Economy disabled
 vaultLoaded=Vault v%version% found
 
 createMsg=Gate Created
