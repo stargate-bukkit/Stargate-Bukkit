@@ -7,7 +7,6 @@ import org.bukkit.block.Block;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -400,7 +399,7 @@ public class Gate {
             return null;
         }
 
-        if (!Tag.BUTTONS.isTagged(gate.button)) {
+        if (!Tag.BUTTONS.isTagged(gate.button) && !MaterialHelper.isWallCoral(gate.button)) {
             Stargate.log.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - Gate button must be a type of button.");
             return null;
         }
@@ -435,28 +434,39 @@ public class Gate {
         return def;
     }
 
+    /**
+     * Loads all gates inside the given folder
+     * @param gateFolder <p>The folder containing the gates</p>
+     */
     public static void loadGates(String gateFolder) {
-        File dir = new File(gateFolder);
+        File directory = new File(gateFolder);
         File[] files;
 
-        if (dir.exists()) {
-            files = dir.listFiles(new StargateFilenameFilter());
+        if (directory.exists()) {
+            files = directory.listFiles((file) -> file.isFile() && file.getName().endsWith(".gate"));
         } else {
             files = new File[0];
         }
 
         if (files == null || files.length == 0) {
-            if (dir.mkdir()) {
+            //The gates folder was not found. Assume this is the first run
+            if (directory.mkdir()) {
                 populateDefaults(gateFolder);
             }
         } else {
             for (File file : files) {
                 Gate gate = loadGate(file);
-                if (gate != null) registerGate(gate);
+                if (gate != null) {
+                    registerGate(gate);
+                }
             }
         }
     }
 
+    /**
+     * Writes the default gate specification to the given folder
+     * @param gateFolder <p>The folder containing gate config files</p>
+     */
     public static void populateDefaults(String gateFolder) {
         Character[][] layout = new Character[][]{
                 {' ', 'X', 'X', ' '},
@@ -485,32 +495,46 @@ public class Gate {
         Gate[] result = new Gate[0];
         ArrayList<Gate> lookup = controlBlocks.get(type);
 
-        if (lookup != null) result = lookup.toArray(result);
+        if (lookup != null) {
+            result = lookup.toArray(result);
+        }
 
         return result;
     }
 
+    /**
+     * Gets a portal by its name (filename before .gate)
+     * @param name <p>The name of the gate to get</p>
+     * @return <p>The gate with the given name</p>
+     */
     public static Gate getGateByName(String name) {
         return gates.get(name);
     }
 
+    /**
+     * Gets the number of loaded gate configurations
+     * @return <p>The number of loaded gate configurations</p>
+     */
     public static int getGateCount() {
         return gates.size();
     }
 
+    /**
+     * Checks whether the given material is used for the frame of any portals
+     * @param type <p>The material type to check</p>
+     * @return <p>True if the material is used for the frame of at least one portal</p>
+     */
     public static boolean isGateBlock(Material type) {
         return frameBlocks.contains(type);
     }
 
-    static class StargateFilenameFilter implements FilenameFilter {
-        public boolean accept(File dir, String name) {
-            return name.endsWith(".gate");
-        }
-    }
-
+    /**
+     * Clears all loaded gates
+     */
     public static void clearGates() {
         gates.clear();
         controlBlocks.clear();
         frameBlocks.clear();
     }
+
 }

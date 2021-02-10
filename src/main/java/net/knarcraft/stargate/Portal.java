@@ -911,7 +911,9 @@ public class Portal {
             return null;
         }
 
-        if (Gate.getGatesByControlBlock(idParent).length == 0) return null;
+        if (Gate.getGatesByControlBlock(idParent).length == 0) {
+            return null;
+        }
 
         if (Portal.getByBlock(idParent) != null) {
             Stargate.debug("createPortal", "idParent belongs to existing gate");
@@ -924,6 +926,7 @@ public class Portal {
         String destName = filterName(event.getLine(1));
         String network = filterName(event.getLine(2));
         String options = filterName(event.getLine(3)).toLowerCase();
+
         boolean hidden = (options.indexOf('h') != -1);
         boolean alwaysOn = (options.indexOf('a') != -1);
         boolean priv = (options.indexOf('p') != -1);
@@ -935,14 +938,30 @@ public class Portal {
         boolean bungee = (options.indexOf('u') != -1);
 
         // Check permissions for options.
-        if (hidden && !Stargate.canOption(player, "hidden")) hidden = false;
-        if (alwaysOn && !Stargate.canOption(player, "alwayson")) alwaysOn = false;
-        if (priv && !Stargate.canOption(player, "private")) priv = false;
-        if (free && !Stargate.canOption(player, "free")) free = false;
-        if (backwards && !Stargate.canOption(player, "backwards")) backwards = false;
-        if (show && !Stargate.canOption(player, "show")) show = false;
-        if (noNetwork && !Stargate.canOption(player, "nonetwork")) noNetwork = false;
-        if (random && !Stargate.canOption(player, "random")) random = false;
+        if (hidden && !Stargate.canOption(player, "hidden")) {
+            hidden = false;
+        }
+        if (alwaysOn && !Stargate.canOption(player, "alwayson")) {
+            alwaysOn = false;
+        }
+        if (priv && !Stargate.canOption(player, "private")) {
+            priv = false;
+        }
+        if (free && !Stargate.canOption(player, "free")) {
+            free = false;
+        }
+        if (backwards && !Stargate.canOption(player, "backwards")) {
+            backwards = false;
+        }
+        if (show && !Stargate.canOption(player, "show")) {
+            show = false;
+        }
+        if (noNetwork && !Stargate.canOption(player, "nonetwork")) {
+            noNetwork = false;
+        }
+        if (random && !Stargate.canOption(player, "random")) {
+            random = false;
+        }
 
         // Can not create a non-fixed always-on gate.
         if (alwaysOn && destName.length() == 0) {
@@ -995,28 +1014,29 @@ public class Portal {
         RelativeBlockVector buttonVector = null;
 
         for (Gate possibility : possibleGates) {
-            if ((gate == null) && (buttonVector == null)) {
-                RelativeBlockVector[] vectors = possibility.getControls();
-                RelativeBlockVector otherControl = null;
+            if (gate != null || buttonVector != null) {
+                break;
+            }
+            RelativeBlockVector[] vectors = possibility.getControls();
+            RelativeBlockVector otherControl = null;
 
-                for (RelativeBlockVector vector : vectors) {
-                    BlockLocation tl = parent.modRelative(-vector.getRight(), -vector.getDepth(), -vector.getDistance(), modX, 1, modZ);
+            for (RelativeBlockVector vector : vectors) {
+                BlockLocation tl = parent.modRelative(-vector.getRight(), -vector.getDepth(), -vector.getDistance(), modX, 1, modZ);
 
-                    if (gate == null) {
-                        if (possibility.matches(tl, modX, modZ, true)) {
-                            gate = possibility;
-                            topleft = tl;
+                if (gate == null) {
+                    if (possibility.matches(tl, modX, modZ, true)) {
+                        gate = possibility;
+                        topleft = tl;
 
-                            if (otherControl != null) {
-                                buttonVector = otherControl;
-                            }
+                        if (otherControl != null) {
+                            buttonVector = otherControl;
                         }
-                    } else if (otherControl != null) {
-                        buttonVector = vector;
                     }
-
-                    otherControl = vector;
+                } else if (otherControl != null) {
+                    buttonVector = vector;
                 }
+
+                otherControl = vector;
             }
         }
 
