@@ -1,0 +1,12 @@
+portal-open=KELP_PLANT
+portal-closed=WATER
+button=BRAIN_CORAL_WALL_FAN
+toowner=false
+X=SEA_LANTERN
+-=SEA_LANTERN
+
+ XX
+X..X
+-..-
+X*.X
+ XX
