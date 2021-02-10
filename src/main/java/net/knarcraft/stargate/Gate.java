@@ -303,6 +303,20 @@ public class Gate {
 
     public static Gate loadGate(File file) {
         Scanner scanner = null;
+        try {
+            scanner = new Scanner(file);
+            return loadGate(file.getName(), file.getParent(), scanner);
+        } catch (Exception ex) {
+            Stargate.log.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - " + ex.getMessage());
+            return null;
+        } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
+        }
+    }
+
+    public static Gate loadGate(String fileName, String parentFolder, Scanner scanner) {
         boolean designing = false;
         ArrayList<ArrayList<Character>> design = new ArrayList<>();
         HashMap<Character, Material> types = new HashMap<>();
@@ -316,8 +330,6 @@ public class Gate {
         types.put(ANYTHING, Material.AIR);
 
         try {
-            scanner = new Scanner(file);
-
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
 
@@ -330,7 +342,7 @@ public class Gate {
 
                     for (Character symbol : line.toCharArray()) {
                         if ((symbol.equals('?')) || (!types.containsKey(symbol))) {
-                            Stargate.log.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - Unknown symbol '" + symbol + "' in diagram");
+                            Stargate.log.log(Level.SEVERE, "Could not load Gate " + fileName + " - Unknown symbol '" + symbol + "' in diagram");
                             return null;
                         }
                         row.add(symbol);
@@ -338,9 +350,7 @@ public class Gate {
 
                     design.add(row);
                 } else {
-                    if ((line.isEmpty()) || (!line.contains("="))) {
-                        designing = true;
-                    } else {
+                    if (!line.isEmpty() && !line.startsWith("#")) {
                         String[] split = line.split("=");
                         String key = split[0].trim();
                         String value = split[1].trim();
@@ -356,14 +366,18 @@ public class Gate {
                         } else {
                             config.put(key, value);
                         }
+                    } else if ((line.isEmpty()) || (!line.contains("=") && !line.startsWith("#"))) {
+                        designing = true;
                     }
                 }
             }
         } catch (Exception ex) {
-            Stargate.log.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - " + ex.getMessage());
+            Stargate.log.log(Level.SEVERE, "Could not load Gate " + fileName + " - " + ex.getMessage());
             return null;
         } finally {
-            if (scanner != null) scanner.close();
+            if (scanner != null) {
+                scanner.close();
+            }
         }
 
         Character[][] layout = new Character[design.size()][cols];
@@ -383,58 +397,70 @@ public class Gate {
             layout[y] = result;
         }
 
-        Gate gate = new Gate(file.getName(), layout, types);
+        Gate gate = new Gate(fileName, layout, types);
 
-        gate.portalBlockOpen = readConfig(config, gate, file, "portal-open", gate.portalBlockOpen);
-        gate.portalBlockClosed = readConfig(config, gate, file, "portal-closed", gate.portalBlockClosed);
-        gate.button = readConfig(config, gate, file, "button", gate.button);
-        gate.useCost = readConfig(config, gate, file, "usecost", -1);
-        gate.destroyCost = readConfig(config, gate, file, "destroycost", -1);
-        gate.createCost = readConfig(config, gate, file, "createcost", -1);
+        gate.portalBlockOpen = readConfig(config, fileName, "portal-open", gate.portalBlockOpen);
+        gate.portalBlockClosed = readConfig(config, fileName, "portal-closed", gate.portalBlockClosed);
+        gate.button = readConfig(config, fileName, "button", gate.button);
+        gate.useCost = readConfig(config, fileName, "usecost", -1);
+        gate.destroyCost = readConfig(config, fileName, "destroycost", -1);
+        gate.createCost = readConfig(config, fileName, "createcost", -1);
         gate.toOwner = (config.containsKey("toowner") ? Boolean.valueOf(config.get("toowner")) : EconomyHandler.toOwner);
 
         if (gate.getControls().length != 2) {
-            Stargate.log.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - Gates must have exactly 2 control points.");
+            Stargate.log.log(Level.SEVERE, "Could not load Gate " + fileName + " - Gates must have exactly 2 control points.");
             return null;
         }
 
         if (!MaterialHelper.isButtonCompatible(gate.button)) {
-            Stargate.log.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - Gate button must be a type of button.");
+            Stargate.log.log(Level.SEVERE, "Could not load Gate " + fileName + " - Gate button must be a type of button.");
             return null;
         }
 
         // Merge frame types, add open mat to list
         frameBlocks.addAll(frameTypes);
 
-        gate.save(file.getParent() + "/"); // Updates format for version changes
+        gate.save(parentFolder + "/"); // Updates format for version changes
         return gate;
     }
 
-    private static int readConfig(HashMap<String, String> config, Gate gate, File file, String key, int def) {
+    private static int readConfig(HashMap<String, String> config, String fileName, String key, int defaultInteger) {
         if (config.containsKey(key)) {
             try {
                 return Integer.parseInt(config.get(key));
             } catch (NumberFormatException ex) {
-                Stargate.log.log(Level.WARNING, String.format("%s reading %s: %s is not numeric", ex.getClass().getName(), file, key));
+                Stargate.log.log(Level.WARNING, String.format("%s reading %s: %s is not numeric", ex.getClass().getName(), fileName, key));
             }
         }
 
-        return def;
+        return defaultInteger;
     }
 
-    private static Material readConfig(HashMap<String, String> config, Gate gate, File file, String key, Material def) {
+
+    /**
+     * Gets the material defined in the config
+     *
+     * @param config          <p>The config to read</p>
+     * @param fileName        <p>The config file the config belongs to</p>
+     * @param key             <p>The config key to read</p>
+     * @param defaultMaterial <p>The default material to use, in case the config is invalid</p>
+     * @return <p>The material to use</p>
+     */
+    private static Material readConfig(HashMap<String, String> config, String fileName, String key, Material defaultMaterial) {
         if (config.containsKey(key)) {
-            Material mat = Material.getMaterial(config.get(key));
-            if (mat != null) {
-                return mat;
+            Material material = Material.getMaterial(config.get(key));
+            if (material != null) {
+                return material;
+            } else {
+                Stargate.log.log(Level.WARNING, String.format("Error reading %s: %s is not a material", fileName, key));
             }
-            Stargate.log.log(Level.WARNING, String.format("Error reading %s: %s is not a material", file, key));
         }
-        return def;
+        return defaultMaterial;
     }
 
     /**
      * Loads all gates inside the given folder
+     *
      * @param gateFolder <p>The folder containing the gates</p>
      */
     public static void loadGates(String gateFolder) {
@@ -463,33 +489,47 @@ public class Gate {
     }
 
     /**
-     * Writes the default gate specification to the given folder
+     * Writes the default gate specifications to the given folder
+     *
      * @param gateFolder <p>The folder containing gate config files</p>
      */
     public static void populateDefaults(String gateFolder) {
-        Character[][] layout = new Character[][]{
-                {' ', 'X', 'X', ' '},
-                {'X', '.', '.', 'X'},
-                {'-', '.', '.', '-'},
-                {'X', '*', '.', 'X'},
-                {' ', 'X', 'X', ' '},
-        };
-        HashMap<Character, Material> types = new HashMap<>();
-        types.put(ENTRANCE, Material.AIR);
-        types.put(EXIT, Material.AIR);
-        types.put(ANYTHING, Material.AIR);
-        types.put('X', Material.OBSIDIAN);
-        types.put('-', Material.OBSIDIAN);
-
-        Gate gate = new Gate("nethergate.gate", layout, types);
-        gate.save(gateFolder);
-        registerGate(gate);
+        loadGateFromJar("nethergate.gate", gateFolder);
+        loadGateFromJar("watergate.gate", gateFolder);
     }
 
+    /**
+     * Loads the given gate file from within the Jar's resources directory
+     * @param gateFile <p>The name of the gate file</p>
+     * @param gateFolder <p>The folder containing gates</p>
+     */
+    private static void loadGateFromJar(String gateFile, String gateFolder) {
+        Scanner scanner = new Scanner(Gate.class.getResourceAsStream("/gates/" + gateFile));
+        Gate gate = loadGate(gateFile, gateFolder, scanner);
+        if (gate != null) {
+            registerGate(gate);
+        }
+    }
+
+    /**
+     * Gets the gates with the given control block
+     *
+     * <p>The control block is the block type where the sign should be placed. It is used to decide whether a user
+     * is creating a new portal.</p>
+     *
+     * @param block <p>The control block to check</p>
+     * @return <p>A list of gates using the given control block</p>
+     */
     public static Gate[] getGatesByControlBlock(Block block) {
         return getGatesByControlBlock(block.getType());
     }
 
+    /**
+     * Gets the gates with the given control block
+     *
+     * @param type <p>The type of the control block to check</p>
+     * @return <p>A list of gates using the given material for control block</p>
+     */
     public static Gate[] getGatesByControlBlock(Material type) {
         Gate[] result = new Gate[0];
         ArrayList<Gate> lookup = controlBlocks.get(type);
@@ -503,6 +543,7 @@ public class Gate {
 
     /**
      * Gets a portal by its name (filename before .gate)
+     *
      * @param name <p>The name of the gate to get</p>
      * @return <p>The gate with the given name</p>
      */
@@ -512,6 +553,7 @@ public class Gate {
 
     /**
      * Gets the number of loaded gate configurations
+     *
      * @return <p>The number of loaded gate configurations</p>
      */
     public static int getGateCount() {
@@ -520,6 +562,7 @@ public class Gate {
 
     /**
      * Checks whether the given material is used for the frame of any portals
+     *
      * @param type <p>The material type to check</p>
      * @return <p>True if the material is used for the frame of at least one portal</p>
      */
