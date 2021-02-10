@@ -144,11 +144,12 @@ a type of wall coral (dead or alive), a type of shulker box or a chest.
 In the gate format, you can see we use `X` to show where obsidian must be, `-` where the controls (Button/sign) are.  
 You will also notice a `*` in the gate layout, this is the "exit point" of the gate, the block at which the player will teleport in front of.
 
+## Buttons
+The actual buttons cannot be used underwater, but all the other items in the button list can be.
 <details>
-    <summary>The entire list of button types is as follows:</summary>
-    
-Normal:
-```
+    <summary>The entire list of button types is as follows: (Click to expand)</summary>
+
+``` 
 STONE_BUTTON
 OAK_BUTTON
 SPRUCE_BUTTON
@@ -159,9 +160,7 @@ DARK_OAK_BUTTON
 CRIMSON_BUTTON
 WARPED_BUTTON
 POLISHED_BLACKSTONE_BUTTON
-```
-Waterproof:
-```
+
 CHEST
 SHULKER_BOX
 WHITE_SHULKER_BOX
@@ -193,7 +192,7 @@ DEAD_HORN_CORAL_WALL_FAN
 ```
 </details>
 
-# Underwater Portals
+## Underwater Portals
 There is a default gate type for underwater gates. There are no real restrictions on underwater gate materials, except
 normal buttons cannot be used since they'd fall off. Using wall coral fans work much better, though `CHEST` and 
 `SHULKER_BOX` works too.
