@@ -22,4 +22,14 @@ public class MaterialHelper {
                 material.equals(Material.DEAD_TUBE_CORAL_WALL_FAN);
     }
 
+    /**
+     * Checks whether the given material can be used as a button
+     * @param material <p>The material to check</p>
+     * @return <p>True if the material can be used as a button</p>
+     */
+    public static boolean isButtonCompatible(Material material) {
+        return Tag.BUTTONS.isTagged(material) || isWallCoral(material) || Tag.SHULKER_BOXES.isTagged(material) ||
+                material == Material.CHEST;
+    }
+
 }

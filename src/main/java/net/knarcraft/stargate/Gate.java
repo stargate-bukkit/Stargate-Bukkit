@@ -1,7 +1,6 @@
 package net.knarcraft.stargate;
 
 import org.bukkit.Material;
-import org.bukkit.Tag;
 import org.bukkit.block.Block;
 
 import java.io.BufferedWriter;
@@ -399,7 +398,7 @@ public class Gate {
             return null;
         }
 
-        if (!Tag.BUTTONS.isTagged(gate.button) && !MaterialHelper.isWallCoral(gate.button)) {
+        if (!MaterialHelper.isButtonCompatible(gate.button)) {
             Stargate.log.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - Gate button must be a type of button.");
             return null;
         }

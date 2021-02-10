@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Server;
-import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.EndGateway;
@@ -846,7 +845,7 @@ public class Stargate extends JavaPlugin {
             // Handle keeping portal material and buttons around
             if (block.getType() == Material.NETHER_PORTAL) {
                 portal = Portal.getByEntrance(block);
-            } else if (Tag.BUTTONS.isTagged(block.getType()) || MaterialHelper.isWallCoral(block.getType())) {
+            } else if (MaterialHelper.isButtonCompatible(block.getType())) {
                 portal = Portal.getByControl(block);
             }
             if (portal != null) event.setCancelled(true);

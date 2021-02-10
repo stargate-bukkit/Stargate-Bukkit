@@ -1,7 +1,6 @@
 package net.knarcraft.stargate;
 
 import org.bukkit.GameMode;
-import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
@@ -230,7 +229,7 @@ public class PlayerEventsListener implements Listener {
             }
 
             // Implement right-click to toggle a stargate, gets around spawn protection problem.
-            if (Tag.BUTTONS.isTagged(block.getType()) || MaterialHelper.isWallCoral(block.getType())) {
+            if (MaterialHelper.isButtonCompatible(block.getType())) {
 
                 if (MaterialHelper.isWallCoral(block.getType())) {
                     if (previousEvent != null &&

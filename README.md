@@ -138,10 +138,20 @@ X*.X
  XX 
 ```
 The keys `portal-open` and `portal-closed` are used to define the material in the gate when it is open or closed.
-The key `button` is used to define the type of button that is generated for this gate. It must be a button material.
+The key `button` is used to define the type of button that is generated for this gate. It can be a button (of any type), 
+a type of wall coral (dead or alive), a type of shulker box or a chest.
 `X` and `-` are used to define block types for the layout (Any single-character can be used, such as `#`).  
 In the gate format, you can see we use `X` to show where obsidian must be, `-` where the controls (Button/sign) are.  
 You will also notice a `*` in the gate layout, this is the "exit point" of the gate, the block at which the player will teleport in front of.
+
+# Underwater Portals
+You can add a custom portal which will work underwater. You need to use `WATER`, not `AIR`, for the `portal-closed` material.
+
+The button must be a type of wall coral, like `BRAIN_CORAL_WALL_FAN` or `DEAD_BRAIN_CORAL_WALL_FAN`.
+
+Using `KELP_PLANT` as `portal-open` looks the part, but there are no particular restrictions.
+
+Any solid block can be used for the frame.
 
 # Configuration
 ```
@@ -228,6 +238,7 @@ bungeeSign=Teleport to
  - Uses text from the language files in more places
  - Changes how backup language works, causing english strings to be shown if not available from the chosen language
  - Removes some pre-UUID code
+ - Adds underwater portals
 #### \[Version 0.8.0.3] PseudoKnight fork
  - Fix economy
  - Add custom buttons
