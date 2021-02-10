@@ -144,14 +144,61 @@ a type of wall coral (dead or alive), a type of shulker box or a chest.
 In the gate format, you can see we use `X` to show where obsidian must be, `-` where the controls (Button/sign) are.  
 You will also notice a `*` in the gate layout, this is the "exit point" of the gate, the block at which the player will teleport in front of.
 
+<details>
+    <summary>The entire list of button types is as follows:</summary>
+    
+Normal:
+```
+STONE_BUTTON
+OAK_BUTTON
+SPRUCE_BUTTON
+BIRCH_BUTTON
+JUNGLE_BUTTON
+ACACIA_BUTTON
+DARK_OAK_BUTTON
+CRIMSON_BUTTON
+WARPED_BUTTON
+POLISHED_BLACKSTONE_BUTTON
+```
+Waterproof:
+```
+CHEST
+SHULKER_BOX
+WHITE_SHULKER_BOX
+ORANGE_SHULKER_BOX
+MAGENTA_SHULKER_BOX
+LIGHT_BLUE_SHULKER_BOX
+YELLOW_SHULKER_BOX
+LIME_SHULKER_BOX
+PINK_SHULKER_BOX
+GRAY_SHULKER_BOX
+LIGHT_GRAY_SHULKER_BOX
+CYAN_SHULKER_BOX
+PURPLE_SHULKER_BOX
+BLUE_SHULKER_BOX
+BROWN_SHULKER_BOX
+GREEN_SHULKER_BOX
+RED_SHULKER_BOX
+BLACK_SHULKER_BOX
+TUBE_CORAL_WALL_FAN
+BRAIN_CORAL_WALL_FAN
+BUBBLE_CORAL_WALL_FAN
+FIRE_CORAL_WALL_FAN
+HORN_CORAL_WALL_FAN
+DEAD_TUBE_CORAL_WALL_FAN
+DEAD_BRAIN_CORAL_WALL_FAN
+DEAD_BUBBLE_CORAL_WALL_FAN
+DEAD_FIRE_CORAL_WALL_FAN
+DEAD_HORN_CORAL_WALL_FAN
+```
+</details>
+
 # Underwater Portals
-You can add a custom portal which will work underwater. You need to use `WATER`, not `AIR`, for the `portal-closed` material.
+There is a default gate type for underwater gates. There are no real restrictions on underwater gate materials, except
+normal buttons cannot be used since they'd fall off. Using wall coral fans work much better, though `CHEST` and 
+`SHULKER_BOX` works too.
 
-The button must be a type of wall coral, like `BRAIN_CORAL_WALL_FAN` or `DEAD_BRAIN_CORAL_WALL_FAN`.
-
-Using `KELP_PLANT` as `portal-open` looks the part, but there are no particular restrictions.
-
-Any solid block can be used for the frame.
+Using `AIR` for a closed gate looks weird, so `WATER` might be better.
 
 # Configuration
 ```
@@ -239,6 +286,7 @@ bungeeSign=Teleport to
  - Changes how backup language works, causing english strings to be shown if not available from the chosen language
  - Removes some pre-UUID code
  - Adds underwater portals
+ - Makes it easier to add more default gates
 #### \[Version 0.8.0.3] PseudoKnight fork
  - Fix economy
  - Add custom buttons
