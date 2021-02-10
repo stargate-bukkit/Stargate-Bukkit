@@ -3,6 +3,7 @@ main: net.knarcraft.stargate.Stargate
 version: 0.9.0.0
 description: Stargate mod for Bukkit
 author: EpicKnarvik97
+authors: [Drakia, PseudoKnight, EpicKnarvik97]
 website: https://knarcraft.net
 api-version: 1.16
 softdepend: [Vault]
