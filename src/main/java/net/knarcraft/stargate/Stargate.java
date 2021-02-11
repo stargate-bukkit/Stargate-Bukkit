@@ -1,38 +1,24 @@
 package net.knarcraft.stargate;
 
 import net.knarcraft.stargate.event.StargateAccessEvent;
-import net.knarcraft.stargate.event.StargateDestroyEvent;
+import net.knarcraft.stargate.listener.BlockEventListener;
+import net.knarcraft.stargate.listener.BungeeCordListener;
+import net.knarcraft.stargate.listener.EntityEventListener;
+import net.knarcraft.stargate.listener.PlayerEventsListener;
+import net.knarcraft.stargate.listener.PluginEventListener;
+import net.knarcraft.stargate.listener.VehicleEventListener;
+import net.knarcraft.stargate.listener.WorldEventListener;
+import net.knarcraft.stargate.thread.BlockPopulatorThread;
+import net.knarcraft.stargate.thread.StarGateThread;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.EndGateway;
 import org.bukkit.block.Sign;
-import org.bukkit.block.data.Orientable;
-import org.bukkit.block.data.type.WallSign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
-import org.bukkit.event.vehicle.VehicleMoveEvent;
-import org.bukkit.event.world.WorldLoadEvent;
-import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -43,7 +29,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
@@ -86,6 +71,7 @@ public class Stargate extends JavaPlugin {
     private static String gateFolder;
     private static String langFolder;
     private static String defNetwork = "central";
+
     private static boolean destroyExplosion = false;
     public static int maxGates = 0;
     private static String langName = "en";
@@ -106,7 +92,7 @@ public class Stargate extends JavaPlugin {
     public static boolean debug = false;
     public static boolean permDebug = false;
 
-    public static ConcurrentLinkedQueue<Portal> openList = new ConcurrentLinkedQueue<>();
+    public static final ConcurrentLinkedQueue<Portal> openList = new ConcurrentLinkedQueue<>();
     public static ConcurrentLinkedQueue<Portal> activeList = new ConcurrentLinkedQueue<>();
 
     // Used for populating gate open/closed material.
@@ -160,12 +146,12 @@ public class Stargate extends JavaPlugin {
 
         // Register events before loading gates to stop weird things happening.
         pm.registerEvents(new PlayerEventsListener(), this);
-        pm.registerEvents(new bListener(), this);
+        pm.registerEvents(new BlockEventListener(), this);
 
-        pm.registerEvents(new vListener(), this);
-        pm.registerEvents(new eListener(), this);
-        pm.registerEvents(new wListener(), this);
-        pm.registerEvents(new sListener(), this);
+        pm.registerEvents(new VehicleEventListener(), this);
+        pm.registerEvents(new EntityEventListener(), this);
+        pm.registerEvents(new WorldEventListener(), this);
+        pm.registerEvents(new PluginEventListener(this), this);
 
         this.loadConfig();
 
@@ -193,6 +179,10 @@ public class Stargate extends JavaPlugin {
 
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new StarGateThread(), 0L, 100L);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new BlockPopulatorThread(), 0L, 1L);
+    }
+
+    public static boolean destroyedByExplosion() {
+        return destroyExplosion;
     }
 
     public static int getOpenTime() {
@@ -660,313 +650,6 @@ public class Stargate extends JavaPlugin {
         return input.replace(search, value);
     }
 
-    private class vListener implements Listener {
-        @EventHandler
-        public void onVehicleMove(VehicleMoveEvent event) {
-            if (!handleVehicles) return;
-            List<Entity> passengers = event.getVehicle().getPassengers();
-            Vehicle vehicle = event.getVehicle();
-
-            Portal portal = Portal.getByEntrance(event.getTo());
-            if (portal == null || !portal.isOpen()) return;
-
-            // We don't support vehicles in Bungee portals
-            if (portal.isBungee()) return;
-
-            if (!passengers.isEmpty() && passengers.get(0) instanceof Player) {
-				/*
-				Player player = (Player) passengers.get(0);
-				if (!portal.isOpenFor(player)) {
-					stargate.sendMessage(player, stargate.getString("denyMsg"));
-					return;
-				}
-				
-				Portal dest = portal.getDestination(player);
-				if (dest == null) return;
-				boolean deny = false;
-				// Check if player has access to this network
-				if (!canAccessNetwork(player, portal.getNetwork())) {
-					deny = true;
-				}
-				
-				// Check if player has access to destination world
-				if (!canAccessWorld(player, dest.getWorld().getName())) {
-					deny = true;
-				}
-				
-				if (!canAccessPortal(player, portal, deny)) {
-					stargate.sendMessage(player, stargate.getString("denyMsg"));
-					portal.close(false);
-					return;
-				}
-				
-				int cost = stargate.getUseCost(player, portal, dest);
-				if (cost > 0) {
-					boolean success;
-					if(portal.getGate().getToOwner()) {
-						if(portal.getOwnerUUID() == null) {
-							success = stargate.chargePlayer(player, portal.getOwnerUUID(), cost);
-						} else {
-							success = stargate.chargePlayer(player, portal.getOwnerName(), cost);
-						}
-					} else {
-						success = stargate.chargePlayer(player, cost);
-					}
-					if(!success) {
-						// Insufficient Funds
-						stargate.sendMessage(player, stargate.getString("inFunds"));
-						portal.close(false);
-						return;
-					}
-					String deductMsg = stargate.getString("ecoDeduct");
-					deductMsg = stargate.replaceVars(deductMsg, new String[] {"%cost%", "%portal%"}, new String[] {EconomyHandler.format(cost), portal.getName()});
-					sendMessage(player, deductMsg, false);
-					if (portal.getGate().getToOwner()) {
-						Player p;
-						if(portal.getOwnerUUID() != null) {
-							p = server.getPlayer(portal.getOwnerUUID());
-						} else {
-							p = server.getPlayer(portal.getOwnerName());
-						}
-						if (p != null) {
-							String obtainedMsg = stargate.getString("ecoObtain");
-							obtainedMsg = stargate.replaceVars(obtainedMsg, new String[] {"%cost%", "%portal%"}, new String[] {EconomyHandler.format(cost), portal.getName()});
-							stargate.sendMessage(p, obtainedMsg, false);
-						}
-					}
-				}
-				
-				stargate.sendMessage(player, stargate.getString("teleportMsg"), false);
-				dest.teleport(vehicle);
-				portal.close(false);
-				 */
-            } else {
-                Portal dest = portal.getDestination();
-                if (dest == null) return;
-                dest.teleport(vehicle);
-            }
-        }
-    }
-
-
-
-    private class bListener implements Listener {
-        @EventHandler
-        public void onSignChange(SignChangeEvent event) {
-            if (event.isCancelled()) {
-                return;
-            }
-            Player player = event.getPlayer();
-            Block block = event.getBlock();
-            if (!(block.getBlockData() instanceof WallSign)) {
-                return;
-            }
-
-            final Portal portal = Portal.createPortal(event, player);
-            // Not creating a gate, just placing a sign
-            if (portal == null) {
-                return;
-            }
-
-            Stargate.sendMessage(player, Stargate.getString("createMsg"), false);
-            Stargate.debug("onSignChange", "Initialized stargate: " + portal.getName());
-            Stargate.server.getScheduler().scheduleSyncDelayedTask(stargate, new Runnable() {
-                public void run() {
-                    portal.drawSign();
-                }
-            }, 1);
-        }
-
-        // Switch to HIGHEST priority so as to come after block protection plugins (Hopefully)
-        @EventHandler(priority = EventPriority.HIGHEST)
-        public void onBlockBreak(BlockBreakEvent event) {
-            if (event.isCancelled()) return;
-            Block block = event.getBlock();
-            Player player = event.getPlayer();
-
-            Portal portal = Portal.getByBlock(block);
-            if (portal == null && protectEntrance)
-                portal = Portal.getByEntrance(block);
-            if (portal == null) return;
-
-            boolean deny = false;
-            String denyMsg = "";
-
-            if (!Stargate.canDestroy(player, portal)) {
-                denyMsg = "Permission Denied"; // TODO: Change to stargate.getString()
-                deny = true;
-                Stargate.log.info(Stargate.getString("prefix") + player.getName() + " tried to destroy gate");
-            }
-
-            int cost = Stargate.getDestroyCost(player, portal.getGate());
-
-            StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, player, deny, denyMsg, cost);
-            Stargate.server.getPluginManager().callEvent(dEvent);
-            if (dEvent.isCancelled()) {
-                event.setCancelled(true);
-                return;
-            }
-            if (dEvent.getDeny()) {
-                Stargate.sendMessage(player, dEvent.getDenyReason());
-                event.setCancelled(true);
-                return;
-            }
-
-            cost = dEvent.getCost();
-
-            if (cost != 0) {
-                if (!Stargate.chargePlayer(player, cost)) {
-                    Stargate.debug("onBlockBreak", "Insufficient Funds");
-                    Stargate.sendMessage(player, Stargate.getString("inFunds"));
-                    event.setCancelled(true);
-                    return;
-                }
-
-                if (cost > 0) {
-                    String deductMsg = Stargate.getString("ecoDeduct");
-                    deductMsg = Stargate.replaceVars(deductMsg, new String[]{"%cost%", "%portal%"}, new String[]{EconomyHandler.format(cost), portal.getName()});
-                    sendMessage(player, deductMsg, false);
-                } else if (cost < 0) {
-                    String refundMsg = Stargate.getString("ecoRefund");
-                    refundMsg = Stargate.replaceVars(refundMsg, new String[]{"%cost%", "%portal%"}, new String[]{EconomyHandler.format(-cost), portal.getName()});
-                    sendMessage(player, refundMsg, false);
-                }
-            }
-
-            portal.unregister(true);
-            Stargate.sendMessage(player, Stargate.getString("destroyMsg"), false);
-        }
-
-        @EventHandler
-        public void onBlockPhysics(BlockPhysicsEvent event) {
-            Block block = event.getBlock();
-            Portal portal = null;
-
-            // Handle keeping portal material and buttons around
-            if (block.getType() == Material.NETHER_PORTAL) {
-                portal = Portal.getByEntrance(block);
-            } else if (MaterialHelper.isButtonCompatible(block.getType())) {
-                portal = Portal.getByControl(block);
-            }
-            if (portal != null) event.setCancelled(true);
-        }
-
-        @EventHandler
-        public void onBlockFromTo(BlockFromToEvent event) {
-            Portal portal = Portal.getByEntrance(event.getBlock());
-
-            if (portal != null) {
-                event.setCancelled((event.getBlock().getY() == event.getToBlock().getY()));
-            }
-        }
-
-        @EventHandler
-        public void onPistonExtend(BlockPistonExtendEvent event) {
-            for (Block block : event.getBlocks()) {
-                Portal portal = Portal.getByBlock(block);
-                if (portal != null) {
-                    event.setCancelled(true);
-                    return;
-                }
-            }
-        }
-
-        @EventHandler
-        public void onPistonRetract(BlockPistonRetractEvent event) {
-            if (!event.isSticky()) return;
-            for (Block block : event.getBlocks()) {
-                Portal portal = Portal.getByBlock(block);
-                if (portal != null) {
-                    event.setCancelled(true);
-                    return;
-                }
-            }
-        }
-    }
-
-    private class wListener implements Listener {
-        @EventHandler
-        public void onWorldLoad(WorldLoadEvent event) {
-            if (!managedWorlds.contains(event.getWorld().getName())
-                    && Portal.loadAllGates(event.getWorld())) {
-                managedWorlds.add(event.getWorld().getName());
-            }
-        }
-
-        // We need to reload all gates on world unload, boo
-        @EventHandler
-        public void onWorldUnload(WorldUnloadEvent event) {
-            Stargate.debug("onWorldUnload", "Reloading all Stargates");
-            World w = event.getWorld();
-            if (managedWorlds.contains(w.getName())) {
-                managedWorlds.remove(w.getName());
-                Portal.clearGates();
-                for (World world : server.getWorlds()) {
-                    if (managedWorlds.contains(world.getName())) {
-                        Portal.loadAllGates(world);
-                    }
-                }
-            }
-        }
-    }
-
-    private class eListener implements Listener {
-        @EventHandler
-        public void onEntityExplode(EntityExplodeEvent event) {
-            if (event.isCancelled()) return;
-            for (Block b : event.blockList()) {
-                Portal portal = Portal.getByBlock(b);
-                if (portal == null) continue;
-                if (destroyExplosion) {
-                    portal.unregister(true);
-                } else {
-                    event.setCancelled(true);
-                    break;
-                }
-            }
-        }
-    }
-
-    private class sListener implements Listener {
-        @EventHandler
-        public void onPluginEnable(PluginEnableEvent event) {
-            if (EconomyHandler.setupEconomy(getServer().getPluginManager())) {
-                String vaultVersion = EconomyHandler.vault.getDescription().getVersion();
-                log.info(Stargate.getString("prefix") +
-                        replaceVars(Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
-            }
-        }
-
-        @EventHandler
-        public void onPluginDisable(PluginDisableEvent event) {
-            if (event.getPlugin().equals(EconomyHandler.vault)) {
-                log.info(Stargate.getString("prefix") + "Vault plugin lost.");
-            }
-        }
-    }
-
-    private class BlockPopulatorThread implements Runnable {
-        public void run() {
-            long sTime = System.nanoTime();
-            while (System.nanoTime() - sTime < 25000000) {
-                BloxPopulator b = Stargate.blockPopulatorQueue.poll();
-                if (b == null) return;
-                Block blk = b.getBlockLocation().getBlock();
-                blk.setType(b.getMat(), false);
-                if (b.getMat() == Material.END_GATEWAY && blk.getWorld().getEnvironment() == World.Environment.THE_END) {
-                    // force a location to prevent exit gateway generation
-                    EndGateway gateway = (EndGateway) blk.getState();
-                    gateway.setExitLocation(blk.getWorld().getSpawnLocation());
-                    gateway.setExactTeleport(true);
-                    gateway.update(false, false);
-                } else if (b.getAxis() != null) {
-                    Orientable orientable = (Orientable) blk.getBlockData();
-                    orientable.setAxis(b.getAxis());
-                    blk.setBlockData(orientable);
-                }
-            }
-        }
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

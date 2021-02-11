@@ -29,7 +29,7 @@ import org.bukkit.event.Event;
 @SuppressWarnings("unused")
 public abstract class StargateEvent extends Event implements Cancellable {
 
-    protected Portal portal;
+    protected final Portal portal;
     protected boolean cancelled;
 
     public StargateEvent(String event, Portal portal) {

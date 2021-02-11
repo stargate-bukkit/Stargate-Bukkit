@@ -1290,12 +1290,11 @@ public class Portal {
                 String wName = portal.world.getName();
                 if (!wName.equalsIgnoreCase(world.getName())) continue;
                 StringBuilder builder = new StringBuilder();
-                BlockLocation sign = portal.id;
                 BlockLocation button = portal.button;
 
                 builder.append(portal.name);
                 builder.append(':');
-                builder.append(sign.toString());
+                builder.append(portal.id.toString());
                 builder.append(':');
                 builder.append((button != null) ? button.toString() : "");
                 builder.append(':');
@@ -1515,10 +1514,9 @@ public class Portal {
         } else if (!name.equalsIgnoreCase(other.name))
             return false;
         if (network == null) {
-            if (other.network != null)
-                return false;
-        } else if (!network.equalsIgnoreCase(other.network))
-            return false;
-        return true;
+            return other.network == null;
+        } else {
+            return network.equalsIgnoreCase(other.network);
+        }
     }
 }

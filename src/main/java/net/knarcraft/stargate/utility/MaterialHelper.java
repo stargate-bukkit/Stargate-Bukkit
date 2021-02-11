@@ -1,4 +1,4 @@
-package net.knarcraft.stargate;
+package net.knarcraft.stargate.utility;
 
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -6,7 +6,7 @@ import org.bukkit.Tag;
 /**
  * This class helps decide properties of materials not already present in the Spigot API
  */
-public class MaterialHelper {
+public final class MaterialHelper {
 
     /**
      * Checks whether the given material is a dead or alive wall coral

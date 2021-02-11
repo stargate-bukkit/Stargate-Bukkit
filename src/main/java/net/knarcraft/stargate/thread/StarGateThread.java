@@ -1,4 +1,7 @@
-package net.knarcraft.stargate;
+package net.knarcraft.stargate.thread;
+
+import net.knarcraft.stargate.Portal;
+import net.knarcraft.stargate.Stargate;
 
 import java.util.Iterator;
 

@@ -1,5 +1,6 @@
 package net.knarcraft.stargate;
 
+import net.knarcraft.stargate.utility.MaterialHelper;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 

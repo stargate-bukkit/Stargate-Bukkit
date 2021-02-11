@@ -1,5 +1,9 @@
-package net.knarcraft.stargate;
+package net.knarcraft.stargate.listener;
 
+import net.knarcraft.stargate.EconomyHandler;
+import net.knarcraft.stargate.utility.MaterialHelper;
+import net.knarcraft.stargate.Portal;
+import net.knarcraft.stargate.Stargate;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.block.Block;

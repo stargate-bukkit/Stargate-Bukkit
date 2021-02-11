@@ -1,5 +1,7 @@
-package net.knarcraft.stargate;
+package net.knarcraft.stargate.listener;
 
+import net.knarcraft.stargate.Portal;
+import net.knarcraft.stargate.Stargate;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
