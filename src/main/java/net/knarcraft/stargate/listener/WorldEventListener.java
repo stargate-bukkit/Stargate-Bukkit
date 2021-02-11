@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Portal;
+import net.knarcraft.stargate.PortalHandler;
 import net.knarcraft.stargate.Stargate;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -12,7 +13,7 @@ public class WorldEventListener implements Listener {
     @EventHandler
     public void onWorldLoad(WorldLoadEvent event) {
         if (!Stargate.managedWorlds.contains(event.getWorld().getName())
-                && Portal.loadAllGates(event.getWorld())) {
+                && PortalHandler.loadAllGates(event.getWorld())) {
             Stargate.managedWorlds.add(event.getWorld().getName());
         }
     }
@@ -24,10 +25,10 @@ public class WorldEventListener implements Listener {
         World w = event.getWorld();
         if (Stargate.managedWorlds.contains(w.getName())) {
             Stargate.managedWorlds.remove(w.getName());
-            Portal.clearGates();
+            PortalHandler.clearGates();
             for (World world : Stargate.server.getWorlds()) {
                 if (Stargate.managedWorlds.contains(world.getName())) {
-                    Portal.loadAllGates(world);
+                    PortalHandler.loadAllGates(world);
                 }
             }
         }

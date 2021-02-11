@@ -1,9 +1,11 @@
 package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Portal;
+import net.knarcraft.stargate.PortalHandler;
 import net.knarcraft.stargate.Stargate;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -19,7 +21,7 @@ import java.io.IOException;
 public class BungeeCordListener implements PluginMessageListener {
 
     @Override
-    public void onPluginMessageReceived(String channel, Player unused, byte[] message) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, @NotNull byte[] message) {
         if (!Stargate.enableBungee || !channel.equals("BungeeCord")) {
             return;
         }
@@ -39,7 +41,7 @@ public class BungeeCordListener implements PluginMessageListener {
         if (player == null) {
             Stargate.bungeeQueue.put(playerName.toLowerCase(), destination);
         } else {
-            Portal destinationPortal = Portal.getBungeeGate(destination);
+            Portal destinationPortal = PortalHandler.getBungeeGate(destination);
             // Specified an invalid gate. For now we'll just let them connect at their current location
             if (destinationPortal == null) {
                 Stargate.log.info(Stargate.getString("prefix") + "Bungee gate " + destination + " does not exist");

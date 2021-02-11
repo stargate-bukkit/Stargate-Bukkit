@@ -4,26 +4,6 @@ import net.knarcraft.stargate.Portal;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-/*
- * stargate - A portal plugin for Bukkit
- * Copyright (C) 2011, 2012 Steven "Drakia" Scott <Contact@TheDgtl.net>
- * Copyright (C) 2021 Kristian Knarvik
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-
 @SuppressWarnings("unused")
 public class StargateAccessEvent extends StargateEvent {
 
@@ -32,15 +12,21 @@ public class StargateAccessEvent extends StargateEvent {
 	
 	private static final HandlerList handlers = new HandlerList();
 
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
 
+    /**
+     * Gets a handler-list containing all event handlers
+     * @return <p>A handler-list with all event handlers</p>
+     */
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-	
+
+    /**
+     * Instantiates a new stargate access event
+     * @param player <p>The player involved in the vent</p>
+     * @param portal <p>The portal involved in the event</p>
+     * @param deny <p>Whether the event should be denied</p>
+     */
 	public StargateAccessEvent(Player player, Portal portal, boolean deny) {
 		super("StargateAccessEvent", portal);
 		
@@ -63,9 +49,17 @@ public class StargateAccessEvent extends StargateEvent {
 	public void setDeny(boolean deny) {
 		this.deny = deny;
 	}
-	
+
+    /**
+     * Gets the player involved in this stargate access event
+     * @return <p>The player involved in this event</p>
+     */
 	public Player getPlayer() {
 		return this.player;
 	}
 
+    @Override
+    public @org.jetbrains.annotations.NotNull HandlerList getHandlers() {
+        return handlers;
+    }
 }

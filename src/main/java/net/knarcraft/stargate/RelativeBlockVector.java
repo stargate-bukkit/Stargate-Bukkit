@@ -1,32 +1,22 @@
 package net.knarcraft.stargate;
 
 /**
- * stargate - A portal plugin for Bukkit
- * Copyright (C) 2011 Shaun (sturmeh)
- * Copyright (C) 2011 Dinnerbone
- * Copyright (C) 2011, 2012 Steven "Drakia" Scott <Contact@TheDgtl.net>
- * Copyright (C) 2021 Kristian Knarvik
- * <p>
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * <p>
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * <p>
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This stores a block location as a vector in an alternate coordinate system
+ *
+ * <p></p>
  */
-
 public class RelativeBlockVector {
 
-    private int right = 0;
-    private int depth = 0;
-    private int distance = 0;
+    private int right;
+    private int depth;
+    private int distance;
 
+    /**
+     * Instantiates a new relative block vector
+     * @param right <p>The x coordinate in the gate description</p>
+     * @param depth <p>The y coordinate in the gate description</p>
+     * @param distance <p></p>
+     */
     public RelativeBlockVector(int right, int depth, int distance) {
         this.right = right;
         this.depth = depth;

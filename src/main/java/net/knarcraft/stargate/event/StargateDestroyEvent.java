@@ -3,26 +3,11 @@ package net.knarcraft.stargate.event;
 import net.knarcraft.stargate.Portal;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * stargate - A portal plugin for Bukkit
- * Copyright (C) 2011, 2012 Steven "Drakia" Scott <Contact@TheDgtl.net>
- * Copyright (C) 2021 Kristian Knarvik
- * <p>
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * <p>
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * <p>
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This event represents an event where a star gate is destroyed or attempted to be destroyed
  */
-
 public class StargateDestroyEvent extends StargateEvent {
 
     private final Player player;
@@ -32,14 +17,27 @@ public class StargateDestroyEvent extends StargateEvent {
 
     private static final HandlerList handlers = new HandlerList();
 
+    @NotNull
     public HandlerList getHandlers() {
         return handlers;
     }
 
+    /**
+     * Gets a handler-list containing all event handlers
+     * @return <p>A handler-list with all event handlers</p>
+     */
     public static HandlerList getHandlerList() {
         return handlers;
     }
 
+    /**
+     * Instantiates a new Stargate Destroy Event
+     * @param portal <p>The portal destroyed</p>
+     * @param player <p>The player destroying the portal</p>
+     * @param deny <p>Whether the event should be denied (cancelled)</p>
+     * @param denyMsg <p>The message to display if the event is denied</p>
+     * @param cost <p>The cost of destroying the portal</p>
+     */
     public StargateDestroyEvent(Portal portal, Player player, boolean deny, String denyMsg, int cost) {
         super("StargateDestroyEvent", portal);
         this.player = player;
@@ -48,30 +46,58 @@ public class StargateDestroyEvent extends StargateEvent {
         this.cost = cost;
     }
 
+    /**
+     * Gets the player causing the destroy event
+     * @return <p>The player causing the destroy event</p>
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /**
+     * Gets whether this event should be denied
+     * @return <p>Whether this event should be denied</p>
+     */
     public boolean getDeny() {
         return deny;
     }
 
+    /**
+     * Sets whether this event should be denied
+     * @param deny <p>Whether this event should be denied</p>
+     */
     public void setDeny(boolean deny) {
         this.deny = deny;
     }
 
+    /**
+     * Gets the reason the event was denied
+     * @return <p>The reason the event was denied</p>
+     */
     public String getDenyReason() {
         return denyReason;
     }
 
+    /**
+     * Sets the reason the event was denied
+     * @param denyReason <p>The reason the event was denied</p>
+     */
     public void setDenyReason(String denyReason) {
         this.denyReason = denyReason;
     }
 
+    /**
+     * Gets the cost of destroying the portal
+     * @return <p>The cost of destroying the portal</p>
+     */
     public int getCost() {
         return cost;
     }
 
+    /**
+     * Sets the cost of destroying the portal
+     * @param cost <p>The cost of destroying the portal</p>
+     */
     public void setCost(int cost) {
         this.cost = cost;
     }

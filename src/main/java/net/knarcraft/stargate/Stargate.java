@@ -24,6 +24,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.HashMap;
@@ -35,27 +36,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-/**
- * stargate - A portal plugin for Bukkit
- * Copyright (C) 2011 Shaun (sturmeh)
- * Copyright (C) 2011 Dinnerbone
- * Copyright (C) 2011, 2012 Steven "Drakia" Scott <Contact@TheDgtl.net>
- * Copyright (C) 2021 Kristian Knarvik
- * <p>
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * <p>
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * <p>
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 @SuppressWarnings("unused")
 public class Stargate extends JavaPlugin {
@@ -121,8 +101,8 @@ public class Stargate extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Portal.closeAllGates();
-        Portal.clearGates();
+        PortalHandler.closeAllGates();
+        PortalHandler.clearGates();
         managedWorlds.clear();
         getServer().getScheduler().cancelTasks(this);
     }
@@ -251,7 +231,7 @@ public class Stargate extends JavaPlugin {
     public void loadAllPortals() {
         for (World world : getServer().getWorlds()) {
             if (!managedWorlds.contains(world.getName())) {
-                Portal.loadAllGates(world);
+                PortalHandler.loadAllGates(world);
                 managedWorlds.add(world.getName());
             }
         }
@@ -261,11 +241,15 @@ public class Stargate extends JavaPlugin {
         // Only migrate if new file doesn't exist.
         File newPortalDir = new File(portalFolder);
         if (!newPortalDir.exists()) {
-            newPortalDir.mkdirs();
+            if (!newPortalDir.mkdirs()) {
+                log.severe("Unable to create portal directory");
+            }
         }
         File newFile = new File(portalFolder, getServer().getWorlds().get(0).getName() + ".db");
         if (!newFile.exists()) {
-            newFile.getParentFile().mkdirs();
+            if (!newFile.getParentFile().mkdirs()) {
+                log.severe("Unable to create portal directory");
+            }
         }
     }
 
@@ -652,7 +636,7 @@ public class Stargate extends JavaPlugin {
 
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         String cmd = command.getName();
         if (cmd.equalsIgnoreCase("sg")) {
             if (args.length != 1) return false;
@@ -680,7 +664,7 @@ public class Stargate extends JavaPlugin {
                 activeList.clear();
                 openList.clear();
                 managedWorlds.clear();
-                Portal.clearGates();
+                PortalHandler.clearGates();
                 Gate.clearGates();
 
                 // Store the old Bungee enabled value
