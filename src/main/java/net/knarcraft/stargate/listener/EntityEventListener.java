@@ -5,14 +5,28 @@ import net.knarcraft.stargate.PortalHandler;
 import net.knarcraft.stargate.Stargate;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityPortalEvent;
 
 /**
  * This listener listens for any relevant events on portal entities
  */
 @SuppressWarnings("unused")
 public class EntityEventListener implements Listener {
+
+    /**
+     * This event handler prevents sending entities to the normal nether instead of the stargate target
+     * @param event <p>The event to check and possibly cancel</p>
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPortalEvent(EntityPortalEvent event) {
+        Portal portal = PortalHandler.getByAdjacentEntrance(event.getFrom());
+        if (portal != null) {
+            event.setCancelled(true);
+        }
+    }
 
     /**
      * This method catches any explosion events
