@@ -20,8 +20,12 @@ public class EntityEventListener implements Listener {
      * This event handler prevents sending entities to the normal nether instead of the stargate target
      * @param event <p>The event to check and possibly cancel</p>
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPortalEvent(EntityPortalEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
         Portal portal = PortalHandler.getByAdjacentEntrance(event.getFrom());
         if (portal != null) {
             event.setCancelled(true);
@@ -47,7 +51,7 @@ public class EntityEventListener implements Listener {
                 continue;
             }
             if (Stargate.destroyedByExplosion()) {
-                PortalHandler.unregister(portal, true);
+                PortalHandler.unregisterPortal(portal, true);
             } else {
                 event.setCancelled(true);
                 break;

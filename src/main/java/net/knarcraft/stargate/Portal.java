@@ -15,16 +15,16 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Powerable;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
-import org.bukkit.entity.minecart.StorageMinecart;
+import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -287,7 +287,7 @@ public class Portal {
 
     public Portal getDestination(Player player) {
         if (isRandom()) {
-            destinations = PortalHandler.getDestinations(player, getNetwork());
+            destinations = PortalHandler.getDestinations(this, player, getNetwork());
             if (destinations.size() == 0) {
                 return null;
             }
@@ -464,6 +464,10 @@ public class Portal {
         return (player != null) && (player.getName().equalsIgnoreCase(this.player.getName()));
     }
 
+    /**
+     * Gets whether this portal points to a fixed exit portal
+     * @return <p>True if this portal points to a fixed exit portal</p>
+     */
     public boolean isFixed() {
         return fixed;
     }
@@ -482,27 +486,34 @@ public class Portal {
         return false;
     }
 
+    /**
+     * Teleports a player to this portal
+     * @param player <p>The player to teleport</p>
+     * @param origin <p>The portal the player teleports from</p>
+     * @param event <p>The player move event triggering the event</p>
+     */
     public void teleport(Player player, Portal origin, PlayerMoveEvent event) {
         Location traveller = player.getLocation();
-        Location exit = getExit(traveller);
+        Location exit = getExit(player, traveller);
 
-        // Handle backwards gates
+        //Rotate the player to face out from the portal
         int adjust = 180;
-        if (isBackwards() != origin.isBackwards())
+        if (isBackwards() != origin.isBackwards()) {
             adjust = 0;
+        }
         exit.setYaw(traveller.getYaw() - origin.getRotation() + this.getRotation() + adjust);
 
         // Call the StargatePortalEvent to allow plugins to change destination
         if (!origin.equals(this)) {
-            StargatePortalEvent pEvent = new StargatePortalEvent(player, origin, this, exit);
-            Stargate.server.getPluginManager().callEvent(pEvent);
+            StargatePortalEvent stargatePortalEvent = new StargatePortalEvent(player, origin, this, exit);
+            Stargate.server.getPluginManager().callEvent(stargatePortalEvent);
             // Teleport is cancelled
-            if (pEvent.isCancelled()) {
+            if (stargatePortalEvent.isCancelled()) {
                 origin.teleport(player, origin, event);
                 return;
             }
             // Update exit if needed
-            exit = pEvent.getExit();
+            exit = stargatePortalEvent.getExit();
         }
 
         // If no event is passed in, assume it's a teleport, and act as such
@@ -515,10 +526,15 @@ public class Portal {
         }
     }
 
+    /**
+     * Teleports a vehicle to this portal
+     * @param vehicle <p>The vehicle to teleport</p>
+     */
     public void teleport(final Vehicle vehicle) {
         Location traveller = new Location(this.world, vehicle.getLocation().getX(), vehicle.getLocation().getY(),
                 vehicle.getLocation().getZ());
-        Location exit = getExit(traveller);
+        Stargate.log.info(Stargate.getString("prefix") + "Location of vehicle is " + traveller);
+        Location exit = getExit(vehicle, traveller);
 
         double velocity = vehicle.getVelocity().length();
 
@@ -535,61 +551,94 @@ public class Portal {
             Stargate.log.warning(Stargate.getString("prefix") + "Unable to get the world to teleport the vehicle to");
             return;
         }
-        Vehicle mineCart = vehicleWorld.spawn(exit, vehicle.getClass());
 
         if (!passengers.isEmpty()) {
-            final Entity passenger = passengers.get(0);
-            vehicle.eject();
-            vehicle.remove();
-            passenger.eject();
-            passenger.teleport(exit);
-            Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> {
-                mineCart.addPassenger(passenger);
-                mineCart.setVelocity(newVelocity);
-            }, 1);
-        } else {
-            if (mineCart instanceof StorageMinecart) {
-                StorageMinecart storageMinecart = (StorageMinecart) mineCart;
-                storageMinecart.getInventory().setContents(((StorageMinecart) vehicle).getInventory().getContents());
+            if (vehicle instanceof RideableMinecart || vehicle instanceof Boat) {
+                putPlayerInNewVehicle(vehicle, passengers, vehicleWorld, exit, newVelocity);
+                return;
             }
-            Stargate.log.info(Stargate.getString("prefix") + "Teleported minecart to " + mineCart.getLocation());
-            vehicle.remove();
+            vehicle.eject();
+            handleVehiclePassengers(vehicle, passengers, vehicle, exit);
+            vehicle.teleport(exit);
+            Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> vehicle.setVelocity(newVelocity), 3);
+        } else {
+            Stargate.log.info(Stargate.getString("prefix") + "Teleported vehicle to " + exit);
+            vehicle.teleport(exit);
             Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> {
-                mineCart.setVelocity(newVelocity);
+                vehicle.setVelocity(newVelocity);
             }, 1);
         }
     }
 
-    public Location getExit(Location traveller) {
-        Location loc = null;
+    private void putPlayerInNewVehicle(Vehicle vehicle, List<Entity> passengers, World vehicleWorld, Location exit, Vector newVelocity) {
+        Vehicle newVehicle = vehicleWorld.spawn(exit, vehicle.getClass());
+        vehicle.eject();
+        vehicle.remove();
+        handleVehiclePassengers(vehicle, passengers, newVehicle, exit);
+        Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> newVehicle.setVelocity(newVelocity), 1);
+    }
+
+    private void handleVehiclePassengers(Vehicle sourceVehicle, List<Entity> passengers, Vehicle targetVehicle, Location exit) {
+        for (Entity passenger : passengers) {
+            passenger.eject();
+            Stargate.log.info("Teleporting passenger" + passenger + " to " + exit);
+            if (!passenger.teleport(exit)) {
+                Stargate.log.info("Failed to teleport passenger");
+            }
+            Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> targetVehicle.addPassenger(passenger), 1);
+        }
+    }
+
+    /**
+     * Gets the exit location for a given entity and current location
+     * @param entity <p>The entity to teleport (used to determine distance from portal to avoid suffocation)</p>
+     * @param traveller <p>The location of the entity travelling</p>
+     * @return <p>The location the entity should be teleported to.</p>
+     */
+    public Location getExit(Entity entity, Location traveller) {
+        Location exitLocation = null;
         // Check if the gate has an exit block
         if (gate.getExit() != null) {
             BlockLocation exit = getBlockAt(gate.getExit());
             int back = (isBackwards()) ? -1 : 1;
-            loc = exit.modRelativeLoc(0D, 0D, 1D, traveller.getYaw(), traveller.getPitch(), modX * back, 1, modZ * back);
+            double entitySize = Math.ceil((float) Math.max(entity.getBoundingBox().getWidthX(), entity.getBoundingBox().getWidthZ()));
+            exitLocation = exit.modRelativeLoc(0D, 0D, entitySize, traveller.getYaw(), traveller.getPitch(), modX * back, 1, modZ * back);
         } else {
             Stargate.log.log(Level.WARNING, Stargate.getString("prefix") + "Missing destination point in .gate file " + gate.getFilename());
         }
 
-        if (loc != null) {
-            BlockData bd = getWorld().getBlockAt(loc).getBlockData();
-            if (bd instanceof Bisected && ((Bisected) bd).getHalf() == Bisected.Half.BOTTOM) {
-                loc.add(0, 0.5, 0);
+        if (exitLocation != null) {
+            //Prevent traveller from spawning inside a slab
+            BlockData blockData = getWorld().getBlockAt(exitLocation).getBlockData();
+            if (blockData instanceof Bisected && ((Bisected) blockData).getHalf() == Bisected.Half.BOTTOM) {
+                exitLocation.add(0, 0.5, 0);
             }
 
-            loc.setPitch(traveller.getPitch());
-            return loc;
+            exitLocation.setPitch(traveller.getPitch());
+            return exitLocation;
+        } else {
+            Stargate.log.log(Level.WARNING, Stargate.getString("prefix") + "Unable to generate exit location");
         }
         return traveller;
     }
 
+    /**
+     * Checks whether the chunk the portal is located at is loaded
+     * @return <p>True if the chunk containing the portal is loaded</p>
+     */
     public boolean isChunkLoaded() {
+        //TODO: Improve this in the case where the portal sits between two chunks
         return getWorld().isChunkLoaded(topLeft.getBlock().getChunk());
     }
 
+    /**
+     * Gets the identity (sign) location of the portal
+     * @return <p>The identity location of the portal</p>
+     */
     public BlockLocation getId() {
         return this.id;
     }
+
 
     public int getModX() {
         return this.modX;
@@ -603,10 +652,18 @@ public class Portal {
         return this.rotX;
     }
 
+    /**
+     * Gets the location of the top-left block of the portal
+     * @return <p>The location of the top-left portal block</p>
+     */
     public BlockLocation getTopLeft() {
         return this.topLeft;
     }
 
+    /**
+     * Verifies that all control blocks in this portal follows its gate template
+     * @return <p>True if all control blocks were verified</p>
+     */
     public boolean isVerified() {
         verified = true;
         if (!Stargate.verifyPortals) {
@@ -618,6 +675,10 @@ public class Portal {
         return verified;
     }
 
+    /**
+     * Gets the result of the last portal verification
+     * @return <p>True if this portal was verified</p>
+     */
     public boolean wasVerified() {
         if (!Stargate.verifyPortals) {
             return true;
@@ -625,6 +686,10 @@ public class Portal {
         return verified;
     }
 
+    /**
+     * Checks if all blocks in a gate matches the gate template
+     * @return <p>True if all blocks match the gate template</p>
+     */
     public boolean checkIntegrity() {
         if (!Stargate.verifyPortals) {
             return true;
@@ -632,13 +697,18 @@ public class Portal {
         return gate.matches(topLeft, modX, modZ);
     }
 
+    /**
+     * Activates this portal for the given player
+     * @param player <p>The player to activate the portal for</p>
+     * @return <p>True if the portal was activated</p>
+     */
     public boolean activate(Player player) {
         destinations.clear();
         destination = "";
         Stargate.activeList.add(this);
         activePlayer = player;
         String network = getNetwork();
-        destinations = PortalHandler.getDestinations(player, network);
+        destinations = PortalHandler.getDestinations(this, player, network);
         if (Stargate.sortLists) {
             Collections.sort(destinations);
         }
@@ -658,10 +728,15 @@ public class Portal {
         return true;
     }
 
+    /**
+     * Deactivates this portal
+     */
     public void deactivate() {
         StargateDeactivateEvent event = new StargateDeactivateEvent(this);
         Stargate.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return;
+        if (event.isCancelled()) {
+            return;
+        }
 
         Stargate.activeList.remove(this);
         if (isFixed()) {
@@ -810,6 +885,11 @@ public class Portal {
         sign.update();
     }
 
+    /**
+     * Gets the block at a relative block vector location
+     * @param vector <p>The relative block vector</p>
+     * @return <p>The block at the given relative position</p>
+     */
     BlockLocation getBlockAt(RelativeBlockVector vector) {
         return topLeft.modRelative(vector.getRight(), vector.getDepth(), vector.getDistance(), modX, 1, modZ);
     }

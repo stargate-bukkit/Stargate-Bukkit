@@ -232,23 +232,27 @@ public class Gate {
         return toOwner;
     }
 
-    public boolean matches(BlockLocation topleft, int modX, int modZ) {
-        return matches(topleft, modX, modZ, false);
+    public boolean matches(BlockLocation topLeft, int modX, int modZ) {
+        return matches(topLeft, modX, modZ, false);
     }
 
-    public boolean matches(BlockLocation topleft, int modX, int modZ, boolean onCreate) {
+    public boolean matches(BlockLocation topLeft, int modX, int modZ, boolean onCreate) {
         HashMap<Character, Material> portalTypes = new HashMap<>(types);
         for (int y = 0; y < layout.length; y++) {
             for (int x = 0; x < layout[y].length; x++) {
                 Character key = layout[y][x];
 
                 if (key.equals(ENTRANCE) || key.equals(EXIT)) {
-                    if (Stargate.ignoreEntrance) continue;
+                    if (Stargate.ignoreEntrance) {
+                        continue;
+                    }
 
-                    Material type = topleft.modRelative(x, y, 0, modX, 1, modZ).getType();
+                    Material type = topLeft.modRelative(x, y, 0, modX, 1, modZ).getType();
 
                     // Ignore entrance if it's air and we're creating a new gate
-                    if (onCreate && type == Material.AIR) continue;
+                    if (onCreate && type == Material.AIR) {
+                        continue;
+                    }
 
                     if (type != portalBlockClosed && type != portalBlockOpen) {
                         Stargate.debug("Gate::Matches", "Entrance/Exit Material Mismatch: " + type);
@@ -257,9 +261,9 @@ public class Gate {
                 } else if (!key.equals(ANYTHING)) {
                     Material id = portalTypes.get(key);
                     if (id == null) {
-                        portalTypes.put(key, topleft.modRelative(x, y, 0, modX, 1, modZ).getType());
-                    } else if (topleft.modRelative(x, y, 0, modX, 1, modZ).getType() != id) {
-                        Stargate.debug("Gate::Matches", "Block Type Mismatch: " + topleft.modRelative(x, y, 0, modX, 1, modZ).getType() + " != " + id);
+                        portalTypes.put(key, topLeft.modRelative(x, y, 0, modX, 1, modZ).getType());
+                    } else if (topLeft.modRelative(x, y, 0, modX, 1, modZ).getType() != id) {
+                        Stargate.debug("Gate::Matches", "Block Type Mismatch: " + topLeft.modRelative(x, y, 0, modX, 1, modZ).getType() + " != " + id);
                         return false;
                     }
                 }

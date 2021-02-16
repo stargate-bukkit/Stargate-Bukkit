@@ -1,9 +1,12 @@
 package net.knarcraft.stargate;
 
 /**
- * This stores a block location as a vector in an alternate coordinate system
+ * This stores a block location as a vector relative to a position
  *
- * <p></p>
+ * <p>A relative block vector stores a vector relative to some origin. The origin in this plugin is usually the
+ * top-left block of a gate. The right is therefore the distance from the top-left corner towards the top-right corner.
+ * Depth is the distance from the top-left corner to the bottom-left corner. Distance is the distance outward from the
+ * gate.</p>
  */
 public class RelativeBlockVector {
 
@@ -13,9 +16,9 @@ public class RelativeBlockVector {
 
     /**
      * Instantiates a new relative block vector
-     * @param right <p>The x coordinate in the gate description</p>
-     * @param depth <p>The y coordinate in the gate description</p>
-     * @param distance <p></p>
+     * @param right <p>The distance to the right relative to the origin</p>
+     * @param depth <p>The distance downward relative to the origin</p>
+     * @param distance <p>The distance outward relative to the origin</p>
      */
     public RelativeBlockVector(int right, int depth, int distance) {
         this.right = right;
@@ -23,14 +26,26 @@ public class RelativeBlockVector {
         this.distance = distance;
     }
 
+    /**
+     * Gets the distance to the right relative to the origin
+     * @return The distance to the right relative to the origin
+     */
     public int getRight() {
         return right;
     }
 
+    /**
+     * Gets the distance downward relative to the origin
+     * @return The distance downward relative to the origin
+     */
     public int getDepth() {
         return depth;
     }
 
+    /**
+     * Gets the distance outward relative to the origin
+     * @return The distance outward relative to the origin
+     */
     public int getDistance() {
         return distance;
     }

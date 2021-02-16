@@ -8,10 +8,26 @@ website: https://knarcraft.net
 api-version: 1.16
 softdepend: [Vault]
 commands:
-  sg:
-    description: Used to reload the plugin. Console use only.
-    usage: /<command> reload - Used to reload the plugin. Console use only.
+  stargate:
+    aliases:
+      - sg
+    description: Used to see stargate info
+    usage: /<command> <reload/about> - Used to see stargate info or reload the plugin
 permissions:
+  stargate.*:
+    description: Wildcard permission
+    default: op
+    children:
+      stargate.use: true
+      stargate.create: true
+      stargate.destroy: true
+      stargate.free: true
+      stargate.option: true
+      stargate.admin: true
+      stargate.reload: true
+  stargate.reload:
+    description: Allows reloading the plugin
+    default: false
   stargate.use:
     description: Allow use of all gates linking to any world in any network
     default: true
@@ -30,3 +46,5 @@ permissions:
   stargate.admin:
     description: Allow all admin features (Hidden/Private only so far)
     default: op
+    children:
+      stargate.reload: true

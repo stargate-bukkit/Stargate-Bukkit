@@ -77,13 +77,17 @@ public class BlockLocation extends Location {
     }
 
     /**
-     * Makes a block location relative to the current location according to given parameters
-     * @param right <p></p>
-     * @param depth <p>The y position relative to the current position</p>
-     * @param distance <p>The distance away from the previous location to the new location</p>
-     * @param modX <p>x modifier. Defines movement along the x-axis. 0 for no movement</p>
-     * @param modY <p></p>
-     * @param modZ <p>z modifier. Defines movement along the z-axis. 0 for no movement</p>
+     * Makes a block location relative to the current origin according to given parameters
+     *
+     * <p>See {@link RelativeBlockVector} to understand better. modX or modZ should always be 0 while the other is 1
+     * or -1.</p>
+     *
+     * @param right <p>The amount of right steps from the top-left origin</p>
+     * @param depth <p>The amount of downward steps from the top-left origin</p>
+     * @param distance <p>The distance outward from the top-left origin</p>
+     * @param modX <p>X modifier. If modX = -1, X will increase as right increases</p>
+     * @param modY <p>Y modifier. modY = 1 for Y decreasing as depth increases</p>
+     * @param modZ <p>Z modifier. If modZ = 1, X will increase as distance increases</p>
      * @return A new location relative to this block location
      */
     public BlockLocation modRelative(int right, int depth, int distance, int modX, int modY, int modZ) {

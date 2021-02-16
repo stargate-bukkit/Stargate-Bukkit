@@ -35,11 +35,39 @@ public class VehicleEventListener implements Listener {
             return;
         }
 
+        //TODO: As there are a lot of vehicles in the game now, a lot needs to be accounted for to make this work as expected
+
+        teleportVehicle(passengers, entrancePortal, vehicle);
+    }
+
+    public static void teleportVehicleAfterPlayer(Vehicle vehicle, Portal destinationPortal, Player player) {
+        destinationPortal.teleport(vehicle);
+        Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> vehicle.addPassenger(player), 6);
+    }
+
+    /**
+     * Teleports a vehicle through a stargate
+     * @param passengers <p>The passengers inside the vehicle</p>
+     * @param entrancePortal <p>The portal the vehicle is entering</p>
+     * @param vehicle <p>The vehicle passing through</p>
+     */
+    public static void teleportVehicle(List<Entity> passengers, Portal entrancePortal, Vehicle vehicle) {
+        teleportVehicle(passengers, entrancePortal, vehicle, false);
+    }
+
+    /**
+     * Teleports a vehicle through a stargate
+     * @param passengers <p>The passengers inside the vehicle</p>
+     * @param entrancePortal <p>The portal the vehicle is entering</p>
+     * @param vehicle <p>The vehicle passing through</p>
+     * @param skipOpenCheck <p>Skips the check for whether the portal is open for the player</p>
+     */
+    public static void teleportVehicle(List<Entity> passengers, Portal entrancePortal, Vehicle vehicle, boolean skipOpenCheck) {
         if (!passengers.isEmpty() && passengers.get(0) instanceof Player) {
-            Stargate.log.info(Stargate.getString("prefox") + "Found passenger minecart");
-            teleportPlayerAndVehicle(entrancePortal, vehicle, passengers);
+            Stargate.log.info(Stargate.getString("prefox") + "Found passenger vehicle");
+            teleportPlayerAndVehicle(entrancePortal, vehicle, passengers, skipOpenCheck);
         } else {
-            Stargate.log.info(Stargate.getString("prefox") + "Found empty minecart");
+            Stargate.log.info(Stargate.getString("prefox") + "Found empty vehicle");
             Portal destinationPortal = entrancePortal.getDestination();
             if (destinationPortal == null) {
                 Stargate.log.warning(Stargate.getString("prefox") + "Unable to find portal destination");
@@ -50,14 +78,15 @@ public class VehicleEventListener implements Listener {
     }
 
     /**
-     * Teleports a player and the minecart the player sits in
+     * Teleports a player and the vehicle the player sits in
      * @param entrancePortal <p>The portal the minecart entered</p>
      * @param vehicle <p>The vehicle to teleport</p>
      * @param passengers <p>Any entities sitting in the minecart</p>
      */
-    private void teleportPlayerAndVehicle(Portal entrancePortal, Vehicle vehicle, List<Entity> passengers) {
+    private static void teleportPlayerAndVehicle(Portal entrancePortal, Vehicle vehicle, List<Entity> passengers,
+                                                 boolean skipOpenCheck) {
         Player player = (Player) passengers.get(0);
-        if (!entrancePortal.isOpenFor(player)) {
+        if (!skipOpenCheck && !entrancePortal.isOpenFor(player)) {
             Stargate.sendMessage(player, Stargate.getString("denyMsg"));
             return;
         }
@@ -66,23 +95,15 @@ public class VehicleEventListener implements Listener {
         if (destinationPortal == null) {
             return;
         }
-        boolean deny = false;
-        // Check if player has access to this network
-        if (!Stargate.canAccessNetwork(player, entrancePortal.getNetwork())) {
-            deny = true;
-        }
 
-        // Check if player has access to destination world
-        if (!Stargate.canAccessWorld(player, destinationPortal.getWorld().getName())) {
-            deny = true;
-        }
-
-        if (!Stargate.canAccessPortal(player, entrancePortal, deny)) {
+        //Make sure the user can access the portal
+        if (!Stargate.canAccessPortal(player, entrancePortal, destinationPortal)) {
             Stargate.sendMessage(player, Stargate.getString("denyMsg"));
             entrancePortal.close(false);
             return;
         }
 
+        //Transfer payment if necessary
         int cost = Stargate.getUseCost(player, entrancePortal, destinationPortal);
         if (cost > 0) {
             if (!EconomyHelper.payTeleportFee(entrancePortal, player, cost)) {

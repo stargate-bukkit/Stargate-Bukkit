@@ -1,5 +1,7 @@
 package net.knarcraft.stargate;
 
+import net.knarcraft.stargate.command.CommandStarGate;
+import net.knarcraft.stargate.command.StarGateTabCompleter;
 import net.knarcraft.stargate.event.StargateAccessEvent;
 import net.knarcraft.stargate.listener.BlockEventListener;
 import net.knarcraft.stargate.listener.BungeeCordListener;
@@ -15,8 +17,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -24,7 +26,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.HashMap;
@@ -45,7 +46,9 @@ public class Stargate extends JavaPlugin {
     private PluginManager pm;
     public static Server server;
     public static Stargate stargate;
-    private static LanguageLoader languageLoader;
+    public static LanguageLoader languageLoader;
+
+    private static String pluginVersion;
 
     private static String portalFolder;
     private static String gateFolder;
@@ -109,7 +112,7 @@ public class Stargate extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        PluginDescriptionFile pdfFile = this.getDescription();
+        PluginDescriptionFile pluginDescriptionFile = this.getDescription();
         pm = getServer().getPluginManager();
         newConfig = this.getConfig();
         log = Logger.getLogger("Minecraft");
@@ -122,7 +125,9 @@ public class Stargate extends JavaPlugin {
         gateFolder = dataFolderPath + "/gates/";
         langFolder = dataFolderPath + "/lang/";
 
-        log.info(pdfFile.getName() + " v." + pdfFile.getVersion() + " is enabled.");
+        pluginVersion = pluginDescriptionFile.getVersion();
+
+        log.info(pluginDescriptionFile.getName() + " v." + pluginDescriptionFile.getVersion() + " is enabled.");
 
         // Register events before loading gates to stop weird things happening.
         pm.registerEvents(new PlayerEventsListener(), this);
@@ -159,6 +164,20 @@ public class Stargate extends JavaPlugin {
 
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new StarGateThread(), 0L, 100L);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new BlockPopulatorThread(), 0L, 1L);
+
+        this.registerCommands();
+    }
+
+    private void registerCommands() {
+        PluginCommand stargateCommand = this.getCommand("stargate");
+        if (stargateCommand != null) {
+            stargateCommand.setExecutor(new CommandStarGate(this));
+            stargateCommand.setTabCompleter(new StarGateTabCompleter());
+        }
+    }
+
+    public static String getPluginVersion() {
+        return pluginVersion;
     }
 
     public static boolean destroyedByExplosion() {
@@ -421,6 +440,26 @@ public class Stargate extends JavaPlugin {
         return !event.getDeny();
     }
 
+    /**
+     * Checks whether a given user can travel between two portals
+     * @param player <p>The player to check</p>
+     * @param entrancePortal <p>The portal the user wants to enter</p>
+     * @param destination <p>The portal the user wants to exit</p>
+     * @return <p>True if the user is allowed to access the portal</p>
+     */
+    public static boolean canAccessPortal(Player player, Portal entrancePortal, Portal destination) {
+        boolean deny = false;
+        // Check if player has access to this server for Bungee gates
+        if (entrancePortal.isBungee() && !Stargate.canAccessServer(player, entrancePortal.getNetwork())) {
+            deny = true;
+        } else if (!Stargate.canAccessNetwork(player, entrancePortal.getNetwork())) {
+            deny = true;
+        } else if (!Stargate.canAccessWorld(player, destination.getWorld().getName())) {
+            deny = true;
+        }
+        return Stargate.canAccessPortal(player, entrancePortal, deny);
+    }
+
     /*
      * Return true if the portal is free for the player
      */
@@ -634,80 +673,60 @@ public class Stargate extends JavaPlugin {
         return input.replace(search, value);
     }
 
-
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        String cmd = command.getName();
-        if (cmd.equalsIgnoreCase("sg")) {
-            if (args.length != 1) return false;
-            if (args[0].equalsIgnoreCase("about")) {
-                sender.sendMessage("stargate Plugin created by Drakia");
-                if (!languageLoader.getString("author").isEmpty())
-                    sender.sendMessage("Language created by " + languageLoader.getString("author"));
-                return true;
-            }
-            if (sender instanceof Player) {
-                Player p = (Player) sender;
-                if (!hasPerm(p, "stargate.admin") && !hasPerm(p, "stargate.admin.reload")) {
-                    sendMessage(sender, "Permission Denied");
-                    return true;
-                }
-            }
-            if (args[0].equalsIgnoreCase("reload")) {
-                // Deactivate portals
-                for (Portal p : activeList) {
-                    p.deactivate();
-                }
-                // Close portals
-                closeAllPortals();
-                // Clear all lists
-                activeList.clear();
-                openList.clear();
-                managedWorlds.clear();
-                PortalHandler.clearGates();
-                Gate.clearGates();
-
-                // Store the old Bungee enabled value
-                boolean oldEnableBungee = enableBungee;
-                // Reload data
-                loadConfig();
-                loadGates();
-                loadAllPortals();
-                languageLoader.setChosenLanguage(langName);
-                languageLoader.reload();
-
-                // Load Economy support if enabled/clear if disabled
-                if (EconomyHandler.economyEnabled && EconomyHandler.economy == null) {
-                    if (EconomyHandler.setupEconomy(pm)) {
-                        if (EconomyHandler.economy != null) {
-                            String vaultVersion = EconomyHandler.vault.getDescription().getVersion();
-                            log.info(Stargate.getString("prefix") + Stargate.replaceVars(
-                                    Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
-                        }
-                    }
-                }
-                if (!EconomyHandler.economyEnabled) {
-                    EconomyHandler.vault = null;
-                    EconomyHandler.economy = null;
-                }
-
-                // Enable the required channels for Bungee support
-                if (oldEnableBungee != enableBungee) {
-                    if (enableBungee) {
-                        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-                        Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordListener());
-                    } else {
-                        Bukkit.getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
-                        Bukkit.getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
-                    }
-                }
-
-                sendMessage(sender, "stargate reloaded");
-                return true;
-            }
-            return false;
+    /**
+     * Reloads all portals and files
+     * @param sender <p>The sender of the reload request</p>
+     */
+    public void reload(CommandSender sender) {
+        // Deactivate portals
+        for (Portal p : activeList) {
+            p.deactivate();
         }
-        return false;
+        // Close portals
+        closeAllPortals();
+        // Clear all lists
+        activeList.clear();
+        openList.clear();
+        managedWorlds.clear();
+        PortalHandler.clearGates();
+        Gate.clearGates();
+
+        // Store the old Bungee enabled value
+        boolean oldEnableBungee = enableBungee;
+        // Reload data
+        loadConfig();
+        loadGates();
+        loadAllPortals();
+        languageLoader.setChosenLanguage(langName);
+        languageLoader.reload();
+
+        // Load Economy support if enabled/clear if disabled
+        if (EconomyHandler.economyEnabled && EconomyHandler.economy == null) {
+            if (EconomyHandler.setupEconomy(pm)) {
+                if (EconomyHandler.economy != null) {
+                    String vaultVersion = EconomyHandler.vault.getDescription().getVersion();
+                    log.info(Stargate.getString("prefix") + Stargate.replaceVars(
+                            Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
+                }
+            }
+        }
+        if (!EconomyHandler.economyEnabled) {
+            EconomyHandler.vault = null;
+            EconomyHandler.economy = null;
+        }
+
+        // Enable the required channels for Bungee support
+        if (oldEnableBungee != enableBungee) {
+            if (enableBungee) {
+                Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+                Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordListener());
+            } else {
+                Bukkit.getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
+                Bukkit.getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
+            }
+        }
+
+        sendMessage(sender, "stargate reloaded");
     }
 
 }

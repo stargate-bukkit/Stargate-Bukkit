@@ -107,7 +107,7 @@ public class BlockEventListener implements Listener {
             return;
         }
 
-        PortalHandler.unregister(portal, true);
+        PortalHandler.unregisterPortal(portal, true);
         Stargate.sendMessage(player, Stargate.getString("destroyMsg"), false);
     }
 

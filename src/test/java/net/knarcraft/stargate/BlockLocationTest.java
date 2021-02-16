@@ -81,4 +81,13 @@ public class BlockLocationTest {
         assertEquals("56,87,34", location.toString());
     }
 
+    @Test
+    public void modRelativeTest() {
+        BlockLocation location = new BlockLocation(mockWorld, 5, 5, 5);
+        BlockLocation relativeLocation = location.modRelative(4, 2, 1, -1, 1, 0);
+        assertEquals(9, relativeLocation.getBlockX());
+        assertEquals(3, relativeLocation.getBlockY());
+        assertEquals(6, relativeLocation.getBlockZ());
+    }
+
 }

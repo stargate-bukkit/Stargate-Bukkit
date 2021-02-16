@@ -9,7 +9,9 @@ import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,6 +24,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 public class PlayerEventsListener implements Listener {
 
@@ -52,11 +55,24 @@ public class PlayerEventsListener implements Listener {
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         // cancel portal and endgateway teleportation if it's from a stargate entrance
         PlayerTeleportEvent.TeleportCause cause = event.getCause();
-        if (!event.isCancelled()
-                && (cause == PlayerTeleportEvent.TeleportCause.NETHER_PORTAL
-                || cause == PlayerTeleportEvent.TeleportCause.END_GATEWAY && World.Environment.THE_END == event.getFrom().getWorld().getEnvironment())
+        if (!event.isCancelled() && (cause == PlayerTeleportEvent.TeleportCause.NETHER_PORTAL
+                || cause == PlayerTeleportEvent.TeleportCause.END_GATEWAY && World.Environment.THE_END ==
+                Objects.requireNonNull(event.getFrom().getWorld()).getEnvironment())
                 && PortalHandler.getByAdjacentEntrance(event.getFrom()) != null) {
             event.setCancelled(true);
+        }
+        if (event.isCancelled()) {
+            return;
+        }
+
+        Entity playerVehicle = event.getPlayer().getVehicle();
+        Portal portal = PortalHandler.getByEntrance(event.getFrom());
+        if (playerVehicle != null && PortalHandler.getByEntrance(event.getFrom()) != null) {
+            Portal destinationPortal = portal.getDestination();
+            if (destinationPortal != null) {
+                VehicleEventListener.teleportVehicleAfterPlayer((Vehicle) playerVehicle, destinationPortal, event.getPlayer());
+                Stargate.log.info("Player was driving  " + playerVehicle.getName());
+            }
         }
     }
 
@@ -65,53 +81,40 @@ public class PlayerEventsListener implements Listener {
         if (event.isCancelled()) return;
 
         // Check to see if the player actually moved
-        if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockY() == event.getTo().getBlockY() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockY() ==
+                event.getTo().getBlockY() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
             return;
         }
 
         Player player = event.getPlayer();
-        Portal entracePortal = PortalHandler.getByEntrance(event.getTo());
+        Portal entrancePortal = PortalHandler.getByEntrance(event.getTo());
         // No portal or not open
-        if (entracePortal == null || !entracePortal.isOpen()) return;
+        if (entrancePortal == null || !entrancePortal.isOpen()) {
+            return;
+        }
 
         // Not open for this player
-        if (!entracePortal.isOpenFor(player)) {
+        if (!entrancePortal.isOpenFor(player)) {
             Stargate.sendMessage(player, Stargate.getString("denyMsg"));
-            entracePortal.teleport(player, entracePortal, event);
+            entrancePortal.teleport(player, entrancePortal, event);
             return;
         }
 
-        Portal destination = entracePortal.getDestination(player);
-        if (!entracePortal.isBungee() && destination == null) return;
-
-        boolean deny = false;
-        // Check if player has access to this server for Bungee gates
-        if (entracePortal.isBungee()) {
-            if (!Stargate.canAccessServer(player, entracePortal.getNetwork())) {
-                deny = true;
-            }
-        } else {
-            // Check if player has access to this network
-            if (!Stargate.canAccessNetwork(player, entracePortal.getNetwork())) {
-                deny = true;
-            }
-
-            // Check if player has access to destination world
-            if (!Stargate.canAccessWorld(player, destination.getWorld().getName())) {
-                deny = true;
-            }
-        }
-
-        if (!Stargate.canAccessPortal(player, entracePortal, deny)) {
-            Stargate.sendMessage(player, Stargate.getString("denyMsg"));
-            entracePortal.teleport(player, entracePortal, event);
-            entracePortal.close(false);
+        Portal destination = entrancePortal.getDestination(player);
+        if (!entrancePortal.isBungee() && destination == null) {
             return;
         }
 
-        int cost = Stargate.getUseCost(player, entracePortal, destination);
+        if (!Stargate.canAccessPortal(player, entrancePortal, destination)) {
+            Stargate.sendMessage(player, Stargate.getString("denyMsg"));
+            entrancePortal.teleport(player, entrancePortal, event);
+            entrancePortal.close(false);
+            return;
+        }
+
+        int cost = Stargate.getUseCost(player, entrancePortal, destination);
         if (cost > 0) {
-            if (!EconomyHelper.payTeleportFee(entracePortal, player, cost)) {
+            if (!EconomyHelper.payTeleportFee(entrancePortal, player, cost)) {
                 return;
             }
         }
@@ -119,25 +122,25 @@ public class PlayerEventsListener implements Listener {
         Stargate.sendMessage(player, Stargate.getString("teleportMsg"), false);
 
         // BungeeCord Support
-        if (entracePortal.isBungee()) {
+        if (entrancePortal.isBungee()) {
             if (!Stargate.enableBungee) {
                 player.sendMessage(Stargate.getString("bungeeDisabled"));
-                entracePortal.close(false);
+                entrancePortal.close(false);
                 return;
             }
 
             // Teleport the player back to this gate, for sanity's sake
-            entracePortal.teleport(player, entracePortal, event);
+            entrancePortal.teleport(player, entrancePortal, event);
 
             // Send the SGBungee packet first, it will be queued by BC if required
             try {
                 // Build the message, format is <player>#@#<destination>
-                String msg = event.getPlayer().getName() + "#@#" + entracePortal.getDestinationName();
+                String msg = event.getPlayer().getName() + "#@#" + entrancePortal.getDestinationName();
                 // Build the message data, sent over the SGBungee bungeecord channel
                 ByteArrayOutputStream bao = new ByteArrayOutputStream();
                 DataOutputStream msgData = new DataOutputStream(bao);
                 msgData.writeUTF("Forward");
-                msgData.writeUTF(entracePortal.getNetwork());    // Server
+                msgData.writeUTF(entrancePortal.getNetwork());    // Server
                 msgData.writeUTF("SGBungee");            // Channel
                 msgData.writeShort(msg.length());    // Data Length
                 msgData.writeBytes(msg);            // Data
@@ -153,7 +156,7 @@ public class PlayerEventsListener implements Listener {
                 ByteArrayOutputStream bao = new ByteArrayOutputStream();
                 DataOutputStream msgData = new DataOutputStream(bao);
                 msgData.writeUTF("Connect");
-                msgData.writeUTF(entracePortal.getNetwork());
+                msgData.writeUTF(entrancePortal.getNetwork());
 
                 player.sendPluginMessage(Stargate.stargate, "BungeeCord", bao.toByteArray());
                 bao.reset();
@@ -164,12 +167,12 @@ public class PlayerEventsListener implements Listener {
             }
 
             // Close portal if required (Should never be)
-            entracePortal.close(false);
+            entrancePortal.close(false);
             return;
         }
 
-        destination.teleport(player, entracePortal, event);
-        entracePortal.close(false);
+        destination.teleport(player, entrancePortal, event);
+        entrancePortal.close(false);
     }
 
     @EventHandler
