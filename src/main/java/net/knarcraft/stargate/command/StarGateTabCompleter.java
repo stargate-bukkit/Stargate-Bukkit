@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is the tab completer for the /stargate (/sg) command
+ */
 public class StarGateTabCompleter implements TabCompleter {
 
     @Override
