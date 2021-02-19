@@ -4,21 +4,37 @@ import net.knarcraft.stargate.Portal;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * This event should be called whenever a stargate is deactivated
+ * <p>A deactivation is usually caused by no activity for a set amount of time.</p>
+ */
+@SuppressWarnings("unused")
 public class StargateDeactivateEvent extends StargateEvent {
 
     private static final HandlerList handlers = new HandlerList();
 
-    @NotNull
-    public HandlerList getHandlers() {
-        return handlers;
+    /**
+     * Instantiates a new stargate deactivation event
+     *
+     * @param portal <p>The portal which was deactivated</p>
+     */
+    public StargateDeactivateEvent(Portal portal) {
+        super("StargatDeactivateEvent", portal);
     }
 
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
     public static HandlerList getHandlerList() {
         return handlers;
     }
 
-    public StargateDeactivateEvent(Portal portal) {
-        super("StargatDeactivateEvent", portal);
-
+    @NotNull
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
+
 }

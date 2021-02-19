@@ -8,27 +8,14 @@ import org.jetbrains.annotations.NotNull;
 /**
  * This event represents an event where a star gate is destroyed or attempted to be destroyed
  */
-public class StargateDestroyEvent extends StargateEvent {
+@SuppressWarnings("unused")
+public class StargateDestroyEvent extends StargatePlayerEvent {
 
-    private final Player player;
     private boolean deny;
     private String denyReason;
     private int cost;
 
     private static final HandlerList handlers = new HandlerList();
-
-    @NotNull
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    /**
-     * Gets a handler-list containing all event handlers
-     * @return <p>A handler-list with all event handlers</p>
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
 
     /**
      * Instantiates a new Stargate Destroy Event
@@ -39,19 +26,10 @@ public class StargateDestroyEvent extends StargateEvent {
      * @param cost <p>The cost of destroying the portal</p>
      */
     public StargateDestroyEvent(Portal portal, Player player, boolean deny, String denyMsg, int cost) {
-        super("StargateDestroyEvent", portal);
-        this.player = player;
+        super("StargateDestroyEvent", portal, player);
         this.deny = deny;
         this.denyReason = denyMsg;
         this.cost = cost;
-    }
-
-    /**
-     * Gets the player causing the destroy event
-     * @return <p>The player causing the destroy event</p>
-     */
-    public Player getPlayer() {
-        return player;
     }
 
     /**
@@ -100,6 +78,21 @@ public class StargateDestroyEvent extends StargateEvent {
      */
     public void setCost(int cost) {
         this.cost = cost;
+    }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @NotNull
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
 }

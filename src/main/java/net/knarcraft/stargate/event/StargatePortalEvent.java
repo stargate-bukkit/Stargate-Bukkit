@@ -6,38 +6,29 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class StargatePortalEvent extends StargateEvent {
+/**
+ * This event should be called whenever a player teleports through a stargate
+ */
+@SuppressWarnings("unused")
+public class StargatePortalEvent extends StargatePlayerEvent {
 
-    private final Player player;
     private final Portal destination;
     private Location exit;
 
     private static final HandlerList handlers = new HandlerList();
 
-    @NotNull
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    public StargatePortalEvent(Player player, Portal portal, Portal dest, Location exit) {
-        super("StargatePortalEvent", portal);
-
-        this.player = player;
-        this.destination = dest;
-        this.exit = exit;
-    }
-
     /**
-     * Return the player that went through the gate.
-     *
-     * @return player that went through the gate
+     * Instantiates a new stargate portal event
+     * @param player <p>The player teleporting</p>
+     * @param portal <p>The portal the player entered from</p>
+     * @param destination <p>The destination the player should exit from</p>
+     * @param exit <p>The exit location of the destination portal the user will be teleported to</p>
      */
-    public Player getPlayer() {
-        return player;
+    public StargatePortalEvent(Player player, Portal portal, Portal destination, Location exit) {
+        super("StargatePortalEvent", portal, player);
+
+        this.destination = destination;
+        this.exit = exit;
     }
 
     /**
@@ -63,6 +54,20 @@ public class StargatePortalEvent extends StargateEvent {
      */
     public void setExit(Location loc) {
         this.exit = loc;
+    }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
+    @NotNull
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
 }

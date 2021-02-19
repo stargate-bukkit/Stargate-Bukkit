@@ -10,15 +10,23 @@ import org.bukkit.event.Event;
 @SuppressWarnings("unused")
 public abstract class StargateEvent extends Event implements Cancellable {
 
-    protected final Portal portal;
-    protected boolean cancelled;
+    private final Portal portal;
+    private boolean cancelled;
 
-    public StargateEvent(String event, Portal portal) {
+    /**
+     * Instantiates a new stargate event
+     * @param event <p>UNUSED</p>
+     * @param portal <p>The portal involved in this stargate event</p>
+     */
+    StargateEvent(String event, Portal portal) {
         this.portal = portal;
         this.cancelled = false;
     }
 
-
+    /**
+     * Gets the portal involved in this stargate event
+     * @return <p>The portal involved in this stargate event</p>
+     */
     public Portal getPortal() {
         return portal;
     }
