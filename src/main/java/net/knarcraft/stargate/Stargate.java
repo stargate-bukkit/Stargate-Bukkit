@@ -41,25 +41,14 @@ import java.util.logging.Logger;
 @SuppressWarnings("unused")
 public class Stargate extends JavaPlugin {
 
+    public static final ConcurrentLinkedQueue<Portal> openList = new ConcurrentLinkedQueue<>();
+    private static final int activeTime = 10;
+    private static final int openTime = 10;
     public static Logger log;
-    private FileConfiguration newConfig;
-    private PluginManager pm;
     public static Server server;
     public static Stargate stargate;
     public static LanguageLoader languageLoader;
-
-    private static String pluginVersion;
-
-    private static String portalFolder;
-    private static String gateFolder;
-    private static String langFolder;
-    private static String defNetwork = "central";
-
-    private static boolean destroyExplosion = false;
     public static int maxGates = 0;
-    private static String langName = "en";
-    private static final int activeTime = 10;
-    private static final int openTime = 10;
     public static boolean destMemory = false;
     public static boolean handleVehicles = true;
     public static boolean sortLists = false;
@@ -67,113 +56,43 @@ public class Stargate extends JavaPlugin {
     public static boolean enableBungee = true;
     public static boolean verifyPortals = true;
     public static ChatColor signColor;
-
     // Temp workaround for snowmen, don't check gate entrance
     public static boolean ignoreEntrance = false;
-
     // Used for debug
     public static boolean debug = false;
     public static boolean permDebug = false;
-
-    public static final ConcurrentLinkedQueue<Portal> openList = new ConcurrentLinkedQueue<>();
     public static ConcurrentLinkedQueue<Portal> activeList = new ConcurrentLinkedQueue<>();
-
     // Used for populating gate open/closed material.
     public static Queue<BloxPopulator> blockPopulatorQueue = new LinkedList<>();
-
     // HashMap of player names for Bungee support
     public static Map<String, String> bungeeQueue = new HashMap<>();
-
     // World names that contain stargates
     public static HashSet<String> managedWorlds = new HashSet<>();
+    private static String pluginVersion;
+    private static String portalFolder;
+    private static String gateFolder;
+    private static String langFolder;
+    private static String defNetwork = "central";
+    private static boolean destroyExplosion = false;
+    private static String langName = "en";
+    private FileConfiguration newConfig;
+    private PluginManager pm;
 
     public Stargate() {
         super();
+
     }
 
     /**
      * Special constructor used for MockBukkit
-     * @param loader <p>The plugin loader to be used.</p>
+     *
+     * @param loader          <p>The plugin loader to be used.</p>
      * @param descriptionFile <p>The description file to be used.</p>
-     * @param dataFolder <p>The data folder to be used.</p>
-     * @param file <p>The file to be used</p>
+     * @param dataFolder      <p>The data folder to be used.</p>
+     * @param file            <p>The file to be used</p>
      */
     protected Stargate(JavaPluginLoader loader, PluginDescriptionFile descriptionFile, File dataFolder, File file) {
         super(loader, descriptionFile, dataFolder, file);
-    }
-
-    @Override
-    public void onDisable() {
-        PortalHandler.closeAllGates();
-        PortalHandler.clearGates();
-        managedWorlds.clear();
-        getServer().getScheduler().cancelTasks(this);
-    }
-
-    @Override
-    public void onEnable() {
-        PluginDescriptionFile pluginDescriptionFile = this.getDescription();
-        pm = getServer().getPluginManager();
-        newConfig = this.getConfig();
-        log = Logger.getLogger("Minecraft");
-        Stargate.server = getServer();
-        Stargate.stargate = this;
-
-        // Set portalFile and gateFolder to the plugin folder as defaults.
-        String dataFolderPath = getDataFolder().getPath().replaceAll("\\\\", "/");
-        portalFolder = dataFolderPath + "/portals/";
-        gateFolder = dataFolderPath + "/gates/";
-        langFolder = dataFolderPath + "/lang/";
-
-        pluginVersion = pluginDescriptionFile.getVersion();
-
-        log.info(pluginDescriptionFile.getName() + " v." + pluginDescriptionFile.getVersion() + " is enabled.");
-
-        // Register events before loading gates to stop weird things happening.
-        pm.registerEvents(new PlayerEventsListener(), this);
-        pm.registerEvents(new BlockEventListener(), this);
-
-        pm.registerEvents(new VehicleEventListener(), this);
-        pm.registerEvents(new EntityEventListener(), this);
-        pm.registerEvents(new WorldEventListener(), this);
-        pm.registerEvents(new PluginEventListener(this), this);
-
-        this.loadConfig();
-
-        // Enable the required channels for Bungee support
-        if (enableBungee) {
-            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-            Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordListener());
-        }
-
-        // It is important to load languages here, as they are used during reloadGates()
-        languageLoader = new LanguageLoader(langFolder, Stargate.langName);
-
-        this.migrate();
-        this.loadGates();
-        this.loadAllPortals();
-
-        // Check to see if Economy is loaded yet.
-        if (EconomyHandler.setupEconomy(pm)) {
-            if (EconomyHandler.economy != null) {
-                String vaultVersion = EconomyHandler.vault.getDescription().getVersion();
-                log.info(Stargate.getString("prefix") +
-                        replaceVars(Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
-            }
-        }
-
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new StarGateThread(), 0L, 100L);
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new BlockPopulatorThread(), 0L, 1L);
-
-        this.registerCommands();
-    }
-
-    private void registerCommands() {
-        PluginCommand stargateCommand = this.getCommand("stargate");
-        if (stargateCommand != null) {
-            stargateCommand.setExecutor(new CommandStarGate(this));
-            stargateCommand.setTabCompleter(new StarGateTabCompleter());
-        }
     }
 
     public static String getPluginVersion() {
@@ -190,86 +109,6 @@ public class Stargate extends JavaPlugin {
 
     public static int getActiveTime() {
         return activeTime;
-    }
-
-    public void loadConfig() {
-        reloadConfig();
-        newConfig = this.getConfig();
-        // Copy default values if required
-        newConfig.options().copyDefaults(true);
-
-        // Load values into variables
-        portalFolder = newConfig.getString("portal-folder");
-        gateFolder = newConfig.getString("gate-folder");
-        defNetwork = newConfig.getString("default-gate-network").trim();
-        destroyExplosion = newConfig.getBoolean("destroyexplosion");
-        maxGates = newConfig.getInt("maxgates");
-        langName = newConfig.getString("lang");
-        destMemory = newConfig.getBoolean("destMemory");
-        ignoreEntrance = newConfig.getBoolean("ignoreEntrance");
-        handleVehicles = newConfig.getBoolean("handleVehicles");
-        sortLists = newConfig.getBoolean("sortLists");
-        protectEntrance = newConfig.getBoolean("protectEntrance");
-        enableBungee = newConfig.getBoolean("enableBungee");
-        verifyPortals = newConfig.getBoolean("verifyPortals");
-        // Sign color
-        String sc = newConfig.getString("signColor");
-        try {
-            signColor = ChatColor.valueOf(sc.toUpperCase());
-        } catch (Exception ignore) {
-            log.warning(Stargate.getString("prefix") + "You have specified an invalid color in your config.yml. Defaulting to BLACK");
-            signColor = ChatColor.BLACK;
-        }
-        // Debug
-        debug = newConfig.getBoolean("debug");
-        permDebug = newConfig.getBoolean("permdebug");
-        // Economy
-        EconomyHandler.economyEnabled = newConfig.getBoolean("useeconomy");
-        EconomyHandler.createCost = newConfig.getInt("createcost");
-        EconomyHandler.destroyCost = newConfig.getInt("destroycost");
-        EconomyHandler.useCost = newConfig.getInt("usecost");
-        EconomyHandler.toOwner = newConfig.getBoolean("toowner");
-        EconomyHandler.chargeFreeDestination = newConfig.getBoolean("chargefreedestination");
-        EconomyHandler.freeGatesGreen = newConfig.getBoolean("freegatesgreen");
-
-        this.saveConfig();
-    }
-
-    public void closeAllPortals() {
-        // Close all gates prior to reloading
-        for (Portal p : openList) {
-            p.close(true);
-        }
-    }
-
-    public void loadGates() {
-        Gate.loadGates(gateFolder);
-        log.info(Stargate.getString("prefix") + "Loaded " + Gate.getGateCount() + " gate layouts");
-    }
-
-    public void loadAllPortals() {
-        for (World world : getServer().getWorlds()) {
-            if (!managedWorlds.contains(world.getName())) {
-                PortalHandler.loadAllGates(world);
-                managedWorlds.add(world.getName());
-            }
-        }
-    }
-
-    private void migrate() {
-        // Only migrate if new file doesn't exist.
-        File newPortalDir = new File(portalFolder);
-        if (!newPortalDir.exists()) {
-            if (!newPortalDir.mkdirs()) {
-                log.severe("Unable to create portal directory");
-            }
-        }
-        File newFile = new File(portalFolder, getServer().getWorlds().get(0).getName() + ".db");
-        if (!newFile.exists()) {
-            if (!newFile.getParentFile().mkdirs()) {
-                log.severe("Unable to create portal directory");
-            }
-        }
     }
 
     public static void debug(String rout, String msg) {
@@ -442,9 +281,10 @@ public class Stargate extends JavaPlugin {
 
     /**
      * Checks whether a given user can travel between two portals
-     * @param player <p>The player to check</p>
+     *
+     * @param player         <p>The player to check</p>
      * @param entrancePortal <p>The portal the user wants to enter</p>
-     * @param destination <p>The portal the user wants to exit</p>
+     * @param destination    <p>The portal the user wants to exit</p>
      * @return <p>True if the user is allowed to access the portal</p>
      */
     public static boolean canAccessPortal(Player player, Portal entrancePortal, Portal destination) {
@@ -497,11 +337,13 @@ public class Stargate extends JavaPlugin {
     /*
      * Check if the player has access to {option}
      */
-    public static boolean canOption(Player player, String option) {
+    public static boolean canOption(Player player, PortalOption option) {
         // Check if the player can use all options
-        if (hasPerm(player, "stargate.option")) return true;
+        if (hasPerm(player, "stargate.option") || option == PortalOption.BUNGEE) {
+            return true;
+        }
         // Check if they can use this specific option
-        return hasPerm(player, "stargate.option." + option);
+        return hasPerm(player, option.getPermissionString());
     }
 
     /*
@@ -629,6 +471,190 @@ public class Stargate extends JavaPlugin {
         return gate.getDestroyCost();
     }
 
+    /**
+     * Replaces a list of variables in a string in the order they are given
+     *
+     * @param input  <p>The input containing the variables</p>
+     * @param search <p>The variables to replace</p>
+     * @param values <p>The replacement values</p>
+     * @return <p>The input string with the search values replaced with the given values</p>
+     */
+    public static String replaceVars(String input, String[] search, String[] values) {
+        if (search.length != values.length) {
+            throw new IllegalArgumentException("The number of search values and replace values do not match.");
+        }
+        for (int i = 0; i < search.length; i++) {
+            input = replaceVars(input, search[i], values[i]);
+        }
+        return input;
+    }
+
+    /**
+     * Replaces a variable in a string
+     *
+     * @param input  <p>The input containing the variables</p>
+     * @param search <p>The variable to replace</p>
+     * @param value  <p>The replacement value</p>
+     * @return <p>The input string with the search replaced with value</p>
+     */
+    public static String replaceVars(String input, String search, String value) {
+        return input.replace(search, value);
+    }
+
+    @Override
+    public void onDisable() {
+        PortalHandler.closeAllGates();
+        PortalHandler.clearGates();
+        managedWorlds.clear();
+        getServer().getScheduler().cancelTasks(this);
+    }
+
+    @Override
+    public void onEnable() {
+        PluginDescriptionFile pluginDescriptionFile = this.getDescription();
+        pm = getServer().getPluginManager();
+        newConfig = this.getConfig();
+        log = Logger.getLogger("Minecraft");
+        Stargate.server = getServer();
+        Stargate.stargate = this;
+
+        // Set portalFile and gateFolder to the plugin folder as defaults.
+        String dataFolderPath = getDataFolder().getPath().replaceAll("\\\\", "/");
+        portalFolder = dataFolderPath + "/portals/";
+        gateFolder = dataFolderPath + "/gates/";
+        langFolder = dataFolderPath + "/lang/";
+
+        pluginVersion = pluginDescriptionFile.getVersion();
+
+        log.info(pluginDescriptionFile.getName() + " v." + pluginDescriptionFile.getVersion() + " is enabled.");
+
+        // Register events before loading gates to stop weird things happening.
+        pm.registerEvents(new PlayerEventsListener(), this);
+        pm.registerEvents(new BlockEventListener(), this);
+
+        pm.registerEvents(new VehicleEventListener(), this);
+        pm.registerEvents(new EntityEventListener(), this);
+        pm.registerEvents(new WorldEventListener(), this);
+        pm.registerEvents(new PluginEventListener(this), this);
+
+        this.loadConfig();
+
+        // Enable the required channels for Bungee support
+        if (enableBungee) {
+            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+            Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordListener());
+        }
+
+        // It is important to load languages here, as they are used during reloadGates()
+        languageLoader = new LanguageLoader(langFolder, Stargate.langName);
+
+        this.migrate();
+        this.loadGates();
+        this.loadAllPortals();
+
+        // Check to see if Economy is loaded yet.
+        if (EconomyHandler.setupEconomy(pm)) {
+            if (EconomyHandler.economy != null) {
+                String vaultVersion = EconomyHandler.vault.getDescription().getVersion();
+                log.info(Stargate.getString("prefix") +
+                        replaceVars(Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
+            }
+        }
+
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new StarGateThread(), 0L, 100L);
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new BlockPopulatorThread(), 0L, 1L);
+
+        this.registerCommands();
+    }
+
+    private void registerCommands() {
+        PluginCommand stargateCommand = this.getCommand("stargate");
+        if (stargateCommand != null) {
+            stargateCommand.setExecutor(new CommandStarGate(this));
+            stargateCommand.setTabCompleter(new StarGateTabCompleter());
+        }
+    }
+
+    public void loadConfig() {
+        reloadConfig();
+        newConfig = this.getConfig();
+        // Copy default values if required
+        newConfig.options().copyDefaults(true);
+
+        // Load values into variables
+        portalFolder = newConfig.getString("portal-folder");
+        gateFolder = newConfig.getString("gate-folder");
+        defNetwork = newConfig.getString("default-gate-network").trim();
+        destroyExplosion = newConfig.getBoolean("destroyexplosion");
+        maxGates = newConfig.getInt("maxgates");
+        langName = newConfig.getString("lang");
+        destMemory = newConfig.getBoolean("destMemory");
+        ignoreEntrance = newConfig.getBoolean("ignoreEntrance");
+        handleVehicles = newConfig.getBoolean("handleVehicles");
+        sortLists = newConfig.getBoolean("sortLists");
+        protectEntrance = newConfig.getBoolean("protectEntrance");
+        enableBungee = newConfig.getBoolean("enableBungee");
+        verifyPortals = newConfig.getBoolean("verifyPortals");
+        // Sign color
+        String sc = newConfig.getString("signColor");
+        try {
+            signColor = ChatColor.valueOf(sc.toUpperCase());
+        } catch (Exception ignore) {
+            log.warning(Stargate.getString("prefix") + "You have specified an invalid color in your config.yml. Defaulting to BLACK");
+            signColor = ChatColor.BLACK;
+        }
+        // Debug
+        debug = newConfig.getBoolean("debug");
+        permDebug = newConfig.getBoolean("permdebug");
+        // Economy
+        EconomyHandler.economyEnabled = newConfig.getBoolean("useeconomy");
+        EconomyHandler.createCost = newConfig.getInt("createcost");
+        EconomyHandler.destroyCost = newConfig.getInt("destroycost");
+        EconomyHandler.useCost = newConfig.getInt("usecost");
+        EconomyHandler.toOwner = newConfig.getBoolean("toowner");
+        EconomyHandler.chargeFreeDestination = newConfig.getBoolean("chargefreedestination");
+        EconomyHandler.freeGatesGreen = newConfig.getBoolean("freegatesgreen");
+
+        this.saveConfig();
+    }
+
+    public void closeAllPortals() {
+        // Close all gates prior to reloading
+        for (Portal p : openList) {
+            p.close(true);
+        }
+    }
+
+    public void loadGates() {
+        Gate.loadGates(gateFolder);
+        log.info(Stargate.getString("prefix") + "Loaded " + Gate.getGateCount() + " gate layouts");
+    }
+
+    public void loadAllPortals() {
+        for (World world : getServer().getWorlds()) {
+            if (!managedWorlds.contains(world.getName())) {
+                PortalHandler.loadAllGates(world);
+                managedWorlds.add(world.getName());
+            }
+        }
+    }
+
+    private void migrate() {
+        // Only migrate if new file doesn't exist.
+        File newPortalDir = new File(portalFolder);
+        if (!newPortalDir.exists()) {
+            if (!newPortalDir.mkdirs()) {
+                log.severe("Unable to create portal directory");
+            }
+        }
+        File newFile = new File(portalFolder, getServer().getWorlds().get(0).getName() + ".db");
+        if (!newFile.exists()) {
+            if (!newFile.getParentFile().mkdirs()) {
+                log.severe("Unable to create portal directory");
+            }
+        }
+    }
+
     /*
      * Check if a plugin is loaded/enabled already. Returns the plugin if so, null otherwise
      */
@@ -646,35 +672,8 @@ public class Stargate extends JavaPlugin {
     }
 
     /**
-     * Replaces a list of variables in a string in the order they are given
-     * @param input <p>The input containing the variables</p>
-     * @param search <p>The variables to replace</p>
-     * @param values <p>The replacement values</p>
-     * @return <p>The input string with the search values replaced with the given values</p>
-     */
-    public static String replaceVars(String input, String[] search, String[] values) {
-        if (search.length != values.length) {
-            throw new IllegalArgumentException("The number of search values and replace values do not match.");
-        }
-        for (int i = 0; i < search.length; i++) {
-            input = replaceVars(input, search[i], values[i]);
-        }
-        return input;
-    }
-
-    /**
-     * Replaces a variable in a string
-     * @param input <p>The input containing the variables</p>
-     * @param search <p>The variable to replace</p>
-     * @param value <p>The replacement value</p>
-     * @return <p>The input string with the search replaced with value</p>
-     */
-    public static String replaceVars(String input, String search, String value) {
-        return input.replace(search, value);
-    }
-
-    /**
      * Reloads all portals and files
+     *
      * @param sender <p>The sender of the reload request</p>
      */
     public void reload(CommandSender sender) {

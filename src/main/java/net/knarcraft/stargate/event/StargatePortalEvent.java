@@ -12,23 +12,32 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("unused")
 public class StargatePortalEvent extends StargatePlayerEvent {
 
+    private static final HandlerList handlers = new HandlerList();
     private final Portal destination;
     private Location exit;
 
-    private static final HandlerList handlers = new HandlerList();
-
     /**
      * Instantiates a new stargate portal event
-     * @param player <p>The player teleporting</p>
-     * @param portal <p>The portal the player entered from</p>
+     *
+     * @param player      <p>The player teleporting</p>
+     * @param portal      <p>The portal the player entered from</p>
      * @param destination <p>The destination the player should exit from</p>
-     * @param exit <p>The exit location of the destination portal the user will be teleported to</p>
+     * @param exit        <p>The exit location of the destination portal the user will be teleported to</p>
      */
     public StargatePortalEvent(Player player, Portal portal, Portal destination, Location exit) {
         super("StargatePortalEvent", portal, player);
 
         this.destination = destination;
         this.exit = exit;
+    }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     /**
@@ -54,14 +63,6 @@ public class StargatePortalEvent extends StargatePlayerEvent {
      */
     public void setExit(Location loc) {
         this.exit = loc;
-    }
-
-    /**
-     * Gets a handler-list containing all event handlers
-     * @return <p>A handler-list with all event handlers</p>
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     @Override

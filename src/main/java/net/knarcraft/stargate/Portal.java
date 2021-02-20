@@ -26,6 +26,7 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -41,49 +42,57 @@ public class Portal {
 
     // Block references
     private final BlockLocation id;
+    private final Gate gate;
+    private final World world;
     private BlockLocation button;
     private BlockLocation[] frame;
     private BlockLocation[] entrances;
-
     // Gate information
     private String name;
     private String destination;
     private String lastDestination = "";
     private String network;
-    private final Gate gate;
     private String ownerName;
     private UUID ownerUUID;
-    private final World world;
     private boolean verified;
     private boolean fixed;
-
-    // Options
-    private boolean hidden = false;
-    private boolean alwaysOn = false;
-    private boolean isPrivate = false;
-    private boolean free = false;
-    private boolean backwards = false;
-    private boolean show = false;
-    private boolean noNetwork = false;
-    private boolean random = false;
-    private boolean bungee = false;
+    private Map<PortalOption, Boolean> options;
 
     // In-use information
     private Player player;
     private Player activePlayer;
-    private ArrayList<String> destinations = new ArrayList<>();
+    private List<String> destinations = new ArrayList<>();
     private boolean isOpen = false;
     private long openTime;
 
+    /**
+     * Instantiates a new portal
+     *
+     * @param topLeft     <p>The top-left block of the portal. This is used to decide the positions of the rest of the portal</p>
+     * @param modX        <p></p>
+     * @param modZ        <p></p>
+     * @param rotX        <p></p>
+     * @param id          <p>The location of the portal's id block, which is the sign which activated the portal</p>
+     * @param button      <p>The location of the portal's open button</p>
+     * @param destination <p>The destination defined on the sign's destination line</p>
+     * @param name        <p>The name of the portal defined on the sign's first line</p>
+     * @param verified    <p>Whether the portal's gate has been verified to match its template</p>
+     * @param network     <p>The network the portal belongs to, defined on the sign's network line</p>
+     * @param gate        <p>The gate template this portal uses</p>
+     * @param ownerUUID   <p>The UUID of the gate's owner</p>
+     * @param ownerName   <p>The name of the gate's owner</p>
+     * @param options     <p>A map containing all possible portal options</p>
+     */
     Portal(BlockLocation topLeft, int modX, int modZ, float rotX, BlockLocation id, BlockLocation button,
-           String dest, String name, boolean verified, String network, Gate gate, UUID ownerUUID, String ownerName) {
+           String destination, String name, boolean verified, String network, Gate gate, UUID ownerUUID,
+           String ownerName, Map<PortalOption, Boolean> options) {
         this.topLeft = topLeft;
         this.modX = modX;
         this.modZ = modZ;
         this.rotX = rotX;
         this.rot = rotX == 0.0F || rotX == 180.0F ? Axis.X : Axis.Z;
         this.id = id;
-        this.destination = dest;
+        this.destination = destination;
         this.button = button;
         this.verified = verified;
         this.network = network;
@@ -91,62 +100,17 @@ public class Portal {
         this.gate = gate;
         this.ownerUUID = ownerUUID;
         this.ownerName = ownerName;
+        this.options = options;
         this.world = topLeft.getWorld();
-        this.fixed = dest.length() > 0 || this.random || this.bungee;
+        this.fixed = destination.length() > 0 || this.isRandom() || this.isBungee();
 
         if (this.isAlwaysOn() && !this.isFixed()) {
-            this.alwaysOn = false;
+            this.options.put(PortalOption.ALWAYS_ON, false);
             Stargate.debug("Portal", "Can not create a non-fixed always-on gate. Setting AlwaysOn = false");
         }
 
-        if (this.random && !this.isAlwaysOn()) {
-            this.alwaysOn = true;
-            Stargate.debug("Portal", "Gate marked as random, set to always-on");
-        }
-
-        if (verified) {
-            this.drawSign();
-        }
-    }
-
-    Portal(BlockLocation topLeft, int modX, int modZ,
-           float rotX, BlockLocation id, BlockLocation button,
-           String dest, String name,
-           boolean verified, String network, Gate gate, UUID ownerUUID, String ownerName,
-           boolean hidden, boolean alwaysOn, boolean isPrivate, boolean free, boolean backwards, boolean show, boolean noNetwork, boolean random, boolean bungee) {
-        this.topLeft = topLeft;
-        this.modX = modX;
-        this.modZ = modZ;
-        this.rotX = rotX;
-        this.rot = rotX == 0.0F || rotX == 180.0F ? Axis.X : Axis.Z;
-        this.id = id;
-        this.destination = dest;
-        this.button = button;
-        this.verified = verified;
-        this.network = network;
-        this.name = name;
-        this.gate = gate;
-        this.ownerUUID = ownerUUID;
-        this.ownerName = ownerName;
-        this.hidden = hidden;
-        this.alwaysOn = alwaysOn;
-        this.isPrivate = isPrivate;
-        this.free = free;
-        this.backwards = backwards;
-        this.show = show;
-        this.noNetwork = noNetwork;
-        this.random = random;
-        this.bungee = bungee;
-        this.world = topLeft.getWorld();
-        this.fixed = dest.length() > 0 || this.random || this.bungee;
-
-        if (this.isAlwaysOn() && !this.isFixed()) {
-            this.alwaysOn = false;
-            Stargate.debug("Portal", "Can not create a non-fixed always-on gate. Setting AlwaysOn = false");
-        }
-
-        if (this.random && !this.isAlwaysOn()) {
-            this.alwaysOn = true;
+        if (this.isRandom() && !this.isAlwaysOn()) {
+            this.options.put(PortalOption.ALWAYS_ON, true);
             Stargate.debug("Portal", "Gate marked as random, set to always-on");
         }
 
@@ -156,102 +120,115 @@ public class Portal {
     }
 
     /**
-     * Option Check Functions
+     * Removes the special characters |, : and # from a portal name
+     *
+     * @param input <p>The name to filter</p>
+     * @return <p>The filtered name</p>
+     */
+    public static String filterName(String input) {
+        if (input == null) {
+            return "";
+        }
+        return input.replaceAll("[|:#]", "").trim();
+    }
+
+    /**
+     * Gets whether this portal is currently open
+     *
+     * @return <p>Whether this portal is open</p>
      */
     public boolean isOpen() {
         return isOpen || isAlwaysOn();
     }
 
+    /**
+     * Gets whether this portal is always on
+     *
+     * @return <p>Whether this portal is always on</p>
+     */
     public boolean isAlwaysOn() {
-        return alwaysOn;
-    }
-
-    public boolean isHidden() {
-        return hidden;
-    }
-
-    public boolean isPrivate() {
-        return isPrivate;
-    }
-
-    public boolean isFree() {
-        return free;
-    }
-
-    public boolean isBackwards() {
-        return backwards;
-    }
-
-    public boolean isShown() {
-        return show;
-    }
-
-    public boolean isNoNetwork() {
-        return noNetwork;
-    }
-
-    public boolean isRandom() {
-        return random;
-    }
-
-    public boolean isBungee() {
-        return bungee;
-    }
-
-    public Portal setAlwaysOn(boolean alwaysOn) {
-        this.alwaysOn = alwaysOn;
-        return this;
-    }
-
-    public Portal setHidden(boolean hidden) {
-        this.hidden = hidden;
-        return this;
-    }
-
-    public Portal setPrivate(boolean priv) {
-        this.isPrivate = priv;
-        return this;
-    }
-
-    public Portal setFree(boolean free) {
-        this.free = free;
-        return this;
-    }
-
-    public Portal setBackwards(boolean backwards) {
-        this.backwards = backwards;
-        return this;
-    }
-
-    public Portal setShown(boolean show) {
-        this.show = show;
-        return this;
-    }
-
-
-    public Portal setNoNetwork(boolean noNetwork) {
-        this.noNetwork = noNetwork;
-        return this;
-    }
-
-    public Portal setRandom(boolean random) {
-        this.random = random;
-        return this;
-    }
-
-    public Portal setBungee(boolean bungee) {
-        this.bungee = bungee;
-        return this;
-    }
-
-    public void setFixed(boolean fixed) {
-        this.fixed = fixed;
+        return this.options.get(PortalOption.ALWAYS_ON);
     }
 
     /**
-     * Getters and Setters
+     * Gets whether this portal is hidden
+     *
+     * @return <p>Whether this portal is hidden</p>
      */
+    public boolean isHidden() {
+        return this.options.get(PortalOption.HIDDEN);
+    }
 
+    /**
+     * Gets whether this portal is private
+     *
+     * @return <p>Whether this portal is private</p>
+     */
+    public boolean isPrivate() {
+        return this.options.get(PortalOption.PRIVATE);
+    }
+
+    /**
+     * Gets whether this portal is free
+     *
+     * @return <p>Whether this portal is free</p>
+     */
+    public boolean isFree() {
+        return this.options.get(PortalOption.FREE);
+    }
+
+    /**
+     * Gets whether this portal is backwards
+     *
+     * <p>A backwards portal is one where players exit through the back.</p>
+     *
+     * @return <p>Whether this portal is backwards</p>
+     */
+    public boolean isBackwards() {
+        return this.options.get(PortalOption.BACKWARDS);
+    }
+
+    /**
+     * Gets whether this portal is shown on the network even if it's always on
+     *
+     * @return <p>Whether portal gate is shown</p>
+     */
+    public boolean isShown() {
+        return this.options.get(PortalOption.SHOW);
+    }
+
+    /**
+     * Gets whether this portal shows no network
+     *
+     * @return <p>Whether this portal shows no network/p>
+     */
+    public boolean isNoNetwork() {
+        return this.options.get(PortalOption.NO_NETWORK);
+    }
+
+    /**
+     * Gets whether this portal goes to a random location on the network
+     *
+     * @return <p>Whether this portal goes to a random location</p>
+     */
+    public boolean isRandom() {
+        return this.options.get(PortalOption.RANDOM);
+    }
+
+    /**
+     * Gets whether this portal is a bungee portal
+     *
+     * @return <p>Whether this portal is a bungee portal</p>
+     */
+    public boolean isBungee() {
+        return this.options.get(PortalOption.BUNGEE);
+    }
+
+    /**
+     * Gets the rotation of the portal in degrees
+     *
+     * @return <p>The rotation of the portal</p>
+     */
     public float getRotation() {
         return rotX;
     }
@@ -411,7 +388,7 @@ public class Portal {
 
             Portal end = getDestination();
             // Only open dest if it's not-fixed or points at this gate
-            if (!random && end != null && (!end.isFixed() || end.getDestinationName().equalsIgnoreCase(getName())) && !end.isOpen()) {
+            if (!isRandom() && end != null && (!end.isFixed() || end.getDestinationName().equalsIgnoreCase(getName())) && !end.isOpen()) {
                 end.open(openFor, false);
                 end.setDestination(this);
                 if (end.isVerified()) end.drawSign();
@@ -466,10 +443,15 @@ public class Portal {
 
     /**
      * Gets whether this portal points to a fixed exit portal
+     *
      * @return <p>True if this portal points to a fixed exit portal</p>
      */
     public boolean isFixed() {
         return fixed;
+    }
+
+    public void setFixed(boolean fixed) {
+        this.fixed = fixed;
     }
 
     public boolean isPowered() {
@@ -488,9 +470,10 @@ public class Portal {
 
     /**
      * Teleports a player to this portal
+     *
      * @param player <p>The player to teleport</p>
      * @param origin <p>The portal the player teleports from</p>
-     * @param event <p>The player move event triggering the event</p>
+     * @param event  <p>The player move event triggering the event</p>
      */
     public void teleport(Player player, Portal origin, PlayerMoveEvent event) {
         Location traveller = player.getLocation();
@@ -528,6 +511,7 @@ public class Portal {
 
     /**
      * Teleports a vehicle to this portal
+     *
      * @param vehicle <p>The vehicle to teleport</p>
      */
     public void teleport(final Vehicle vehicle) {
@@ -591,7 +575,8 @@ public class Portal {
 
     /**
      * Gets the exit location for a given entity and current location
-     * @param entity <p>The entity to teleport (used to determine distance from portal to avoid suffocation)</p>
+     *
+     * @param entity    <p>The entity to teleport (used to determine distance from portal to avoid suffocation)</p>
      * @param traveller <p>The location of the entity travelling</p>
      * @return <p>The location the entity should be teleported to.</p>
      */
@@ -624,6 +609,7 @@ public class Portal {
 
     /**
      * Checks whether the chunk the portal is located at is loaded
+     *
      * @return <p>True if the chunk containing the portal is loaded</p>
      */
     public boolean isChunkLoaded() {
@@ -633,12 +619,12 @@ public class Portal {
 
     /**
      * Gets the identity (sign) location of the portal
+     *
      * @return <p>The identity location of the portal</p>
      */
     public BlockLocation getId() {
         return this.id;
     }
-
 
     public int getModX() {
         return this.modX;
@@ -654,6 +640,7 @@ public class Portal {
 
     /**
      * Gets the location of the top-left block of the portal
+     *
      * @return <p>The location of the top-left portal block</p>
      */
     public BlockLocation getTopLeft() {
@@ -662,6 +649,7 @@ public class Portal {
 
     /**
      * Verifies that all control blocks in this portal follows its gate template
+     *
      * @return <p>True if all control blocks were verified</p>
      */
     public boolean isVerified() {
@@ -677,6 +665,7 @@ public class Portal {
 
     /**
      * Gets the result of the last portal verification
+     *
      * @return <p>True if this portal was verified</p>
      */
     public boolean wasVerified() {
@@ -688,6 +677,7 @@ public class Portal {
 
     /**
      * Checks if all blocks in a gate matches the gate template
+     *
      * @return <p>True if all blocks match the gate template</p>
      */
     public boolean checkIntegrity() {
@@ -699,6 +689,7 @@ public class Portal {
 
     /**
      * Activates this portal for the given player
+     *
      * @param player <p>The player to activate the portal for</p>
      * @return <p>True if the portal was activated</p>
      */
@@ -802,7 +793,7 @@ public class Portal {
         if (!isActive()) {
             Stargate.setLine(sign, ++done, Stargate.getString("signRightClick"));
             Stargate.setLine(sign, ++done, Stargate.getString("signToUse"));
-            if (!noNetwork) {
+            if (!isNoNetwork()) {
                 Stargate.setLine(sign, ++done, "(" + network + ")");
             }
         } else {
@@ -817,7 +808,7 @@ public class Portal {
                 } else {
                     Stargate.setLine(sign, ++done, ">" + destination + "<");
                 }
-                if (noNetwork) {
+                if (isNoNetwork()) {
                     Stargate.setLine(sign, ++done, "");
                 } else {
                     Stargate.setLine(sign, ++done, "(" + network + ")");
@@ -887,23 +878,12 @@ public class Portal {
 
     /**
      * Gets the block at a relative block vector location
+     *
      * @param vector <p>The relative block vector</p>
      * @return <p>The block at the given relative position</p>
      */
     BlockLocation getBlockAt(RelativeBlockVector vector) {
         return topLeft.modRelative(vector.getRight(), vector.getDepth(), vector.getDistance(), modX, 1, modZ);
-    }
-
-    /**
-     * Removes the special characters |, : and # from a portal name
-     * @param input <p>The name to filter</p>
-     * @return <p>The filtered name</p>
-     */
-    public static String filterName(String input) {
-        if (input == null) {
-            return "";
-        }
-        return input.replaceAll("[|:#]", "").trim();
     }
 
     @Override

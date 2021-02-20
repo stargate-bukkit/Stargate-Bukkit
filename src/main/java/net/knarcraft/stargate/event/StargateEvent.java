@@ -15,7 +15,8 @@ public abstract class StargateEvent extends Event implements Cancellable {
 
     /**
      * Instantiates a new stargate event
-     * @param event <p>UNUSED</p>
+     *
+     * @param event  <p>UNUSED</p>
      * @param portal <p>The portal involved in this stargate event</p>
      */
     StargateEvent(String event, Portal portal) {
@@ -25,6 +26,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
 
     /**
      * Gets the portal involved in this stargate event
+     *
      * @return <p>The portal involved in this stargate event</p>
      */
     public Portal getPortal() {

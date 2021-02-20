@@ -26,6 +26,7 @@ public class EconomyHandler {
 
     /**
      * Gets the balance (money) of the given player
+     *
      * @param player <p>The player to get balance for</p>
      * @return <p>The current balance of the player. Returns 0 if economy is disabled</p>
      */
@@ -39,6 +40,7 @@ public class EconomyHandler {
 
     /**
      * Charges a player, giving the charge to a target
+     *
      * @param player <p>The player to charge</p>
      * @param target <p>The UUID of the player to pay</p>
      * @param amount <p>The amount to charge</p>
@@ -57,6 +59,7 @@ public class EconomyHandler {
 
     /**
      * Charges a player
+     *
      * @param player <p>The player to charge</p>
      * @param amount <p>The amount to charge</p>
      * @return <p>True if the payment succeeded, or if no payment was necessary</p>
@@ -73,6 +76,7 @@ public class EconomyHandler {
 
     /**
      * Gets a formatted string for an amount, adding the name of the currency
+     *
      * @param amount <p>The amount to display</p>
      * @return <p>A formatted text string describing the amount</p>
      */
@@ -86,6 +90,7 @@ public class EconomyHandler {
 
     /**
      * Sets up economy by initializing vault and the vault economy provider
+     *
      * @param pluginManager <p>The plugin manager to get plugins from</p>
      * @return <p>True if economy was enabled</p>
      */
@@ -113,6 +118,7 @@ public class EconomyHandler {
 
     /**
      * Gets whether to use economy
+     *
      * @return <p>True if the user has turned on economy and economy is available</p>
      */
     public static boolean useEconomy() {

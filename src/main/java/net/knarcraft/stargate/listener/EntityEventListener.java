@@ -18,6 +18,7 @@ public class EntityEventListener implements Listener {
 
     /**
      * This event handler prevents sending entities to the normal nether instead of the stargate target
+     *
      * @param event <p>The event to check and possibly cancel</p>
      */
     @EventHandler(priority = EventPriority.LOWEST)

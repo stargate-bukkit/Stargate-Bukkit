@@ -22,10 +22,11 @@ public class BlockLocation extends Location {
 
     /**
      * Creates a new block location
+     *
      * @param world <p>The world the block exists in</p>
-     * @param x <p>The x coordinate of the block</p>
-     * @param y <p>The y coordinate of the block</p>
-     * @param z <p>The z coordinate of the block</p>
+     * @param x     <p>The x coordinate of the block</p>
+     * @param y     <p>The y coordinate of the block</p>
+     * @param z     <p>The z coordinate of the block</p>
      */
     public BlockLocation(World world, int x, int y, int z) {
         super(world, x, y, z);
@@ -33,6 +34,7 @@ public class BlockLocation extends Location {
 
     /**
      * Copies a craftbukkit block
+     *
      * @param block <p>The block to </p>
      */
     public BlockLocation(Block block) {
@@ -41,7 +43,8 @@ public class BlockLocation extends Location {
 
     /**
      * Gets a block from a string
-     * @param world <p>The world the block exists in</p>
+     *
+     * @param world  <p>The world the block exists in</p>
      * @param string <p>A comma separated list of z, y and z coordinates as integers</p>
      */
     public BlockLocation(World world, String string) {
@@ -51,6 +54,7 @@ public class BlockLocation extends Location {
 
     /**
      * Makes a new block in a relative position to this block
+     *
      * @param x <p>The x position relative to this block's position</p>
      * @param y <p>The y position relative to this block's position</p>
      * @param z <p>The z position relative to this block's position</p>
@@ -62,9 +66,10 @@ public class BlockLocation extends Location {
 
     /**
      * Makes a location relative to the block location
-     * @param x <p>The x position relative to this block's position</p>
-     * @param y <p>The y position relative to this block's position</p>
-     * @param z <p>The z position relative to this block's position</p>
+     *
+     * @param x    <p>The x position relative to this block's position</p>
+     * @param y    <p>The y position relative to this block's position</p>
+     * @param z    <p>The z position relative to this block's position</p>
      * @param rotX <p>The x rotation of the location</p>
      * @param rotY <p>The y rotation of the location</p>
      * @return <p>A new location</p>
@@ -82,12 +87,12 @@ public class BlockLocation extends Location {
      * <p>See {@link RelativeBlockVector} to understand better. modX or modZ should always be 0 while the other is 1
      * or -1.</p>
      *
-     * @param right <p>The amount of right steps from the top-left origin</p>
-     * @param depth <p>The amount of downward steps from the top-left origin</p>
+     * @param right    <p>The amount of right steps from the top-left origin</p>
+     * @param depth    <p>The amount of downward steps from the top-left origin</p>
      * @param distance <p>The distance outward from the top-left origin</p>
-     * @param modX <p>X modifier. If modX = -1, X will increase as right increases</p>
-     * @param modY <p>Y modifier. modY = 1 for Y decreasing as depth increases</p>
-     * @param modZ <p>Z modifier. If modZ = 1, X will increase as distance increases</p>
+     * @param modX     <p>X modifier. If modX = -1, X will increase as right increases</p>
+     * @param modY     <p>Y modifier. modY = 1 for Y decreasing as depth increases</p>
+     * @param modZ     <p>Z modifier. If modZ = 1, X will increase as distance increases</p>
      * @return A new location relative to this block location
      */
     public BlockLocation modRelative(int right, int depth, int distance, int modX, int modY, int modZ) {
@@ -96,14 +101,15 @@ public class BlockLocation extends Location {
 
     /**
      * Makes a location relative to the current location according to given parameters
-     * @param right <p></p>
-     * @param depth <p>The y position relative to the current position</p>
+     *
+     * @param right    <p></p>
+     * @param depth    <p>The y position relative to the current position</p>
      * @param distance <p>The distance away from the previous location to the new location</p>
-     * @param rotX <p>The yaw of the location</p>
-     * @param rotY <p>Unused</p>
-     * @param modX <p>x modifier. Defines movement along the x-axis. 0 for no movement</p>
-     * @param modY <p>Unused</p>
-     * @param modZ <p>z modifier. Defines movement along the z-axis. 0 for no movement</p>
+     * @param rotX     <p>The yaw of the location</p>
+     * @param rotY     <p>Unused</p>
+     * @param modX     <p>x modifier. Defines movement along the x-axis. 0 for no movement</p>
+     * @param modY     <p>Unused</p>
+     * @param modZ     <p>z modifier. Defines movement along the z-axis. 0 for no movement</p>
      * @return A new location relative to this block location
      */
     public Location modRelativeLoc(double right, double depth, double distance, float rotX, float rotY, int modX, int modY, int modZ) {
@@ -111,15 +117,8 @@ public class BlockLocation extends Location {
     }
 
     /**
-     * Sets the type for the block at this location
-     * @param type <p>The new block material type</p>
-     */
-    public void setType(Material type) {
-        this.getBlock().setType(type);
-    }
-
-    /**
      * Gets the type for the block at this location
+     *
      * @return <p>The block material type</p>
      */
     public Material getType() {
@@ -127,7 +126,17 @@ public class BlockLocation extends Location {
     }
 
     /**
+     * Sets the type for the block at this location
+     *
+     * @param type <p>The new block material type</p>
+     */
+    public void setType(Material type) {
+        this.getBlock().setType(type);
+    }
+
+    /**
      * Gets the location representing this block location
+     *
      * @return <p>The location representing this block location</p>
      */
     public Location getLocation() {
@@ -136,6 +145,7 @@ public class BlockLocation extends Location {
 
     /**
      * Gets this block location's parent block
+     *
      * @return <p>This block location's parent block</p>
      */
     public Block getParent() {

@@ -9,9 +9,10 @@ public class EconomyHelper {
 
     /**
      * Tries to make the given user pay the teleport fee
+     *
      * @param entrancePortal <p>The portal the player is entering</p>
-     * @param player <p>The player wishing to teleport</p>
-     * @param cost <p>The cost of teleportation</p>
+     * @param player         <p>The player wishing to teleport</p>
+     * @param cost           <p>The cost of teleportation</p>
      * @return <p>True if payment was successful</p>
      */
     public static boolean payTeleportFee(Portal entrancePortal, Player player, int cost) {
@@ -52,9 +53,10 @@ public class EconomyHelper {
 
     /**
      * Sends a message to the gate owner telling him/her how much he/she earned from a player using his/her gate
-     * @param portalName <p>The name of the used portal</p>
+     *
+     * @param portalName  <p>The name of the used portal</p>
      * @param portalOwner <p>The owner of the portal</p>
-     * @param earnings <p>The amount the owner earned</p>
+     * @param earnings    <p>The amount the owner earned</p>
      */
     public static void sendObtainMessage(String portalName, Player portalOwner, int earnings) {
         String obtainedMsg = Stargate.getString("ecoObtain");
@@ -64,9 +66,10 @@ public class EconomyHelper {
 
     /**
      * Sends a message telling the user how much they paid for interacting with a portal
+     *
      * @param portalName <p>The name of the portal interacted with</p>
-     * @param player <p>The interacting player</p>
-     * @param cost <p>The cost of the interaction</p>
+     * @param player     <p>The interacting player</p>
+     * @param cost       <p>The cost of the interaction</p>
      */
     public static void sendDeductMessage(String portalName, Player player, int cost) {
         String deductMsg = Stargate.getString("ecoDeduct");
@@ -76,9 +79,10 @@ public class EconomyHelper {
 
     /**
      * Sends a message telling the user they don't have enough funds to do a portal interaction
+     *
      * @param portalName <p>The name of the portal interacted with</p>
-     * @param player <p>The interacting player</p>
-     * @param cost <p>The cost of the interaction</p>
+     * @param player     <p>The interacting player</p>
+     * @param cost       <p>The cost of the interaction</p>
      */
     public static void sendInsufficientFundsMessage(String portalName, Player player, int cost) {
         String inFundMsg = Stargate.getString("ecoInFunds");
@@ -88,9 +92,10 @@ public class EconomyHelper {
 
     /**
      * Sends a message telling the user how much they are refunded for breaking their portal
+     *
      * @param portalName <p>The name of the broken portal</p>
-     * @param player <p>The player breaking the portal</p>
-     * @param cost <p>The amount the user has to pay for destroying the portal. (expects a negative value)</p>
+     * @param player     <p>The player breaking the portal</p>
+     * @param cost       <p>The amount the user has to pay for destroying the portal. (expects a negative value)</p>
      */
     public static void sendRefundMessage(String portalName, Player player, int cost) {
         String refundMsg = Stargate.getString("ecoRefund");
@@ -100,9 +105,10 @@ public class EconomyHelper {
 
     /**
      * Replaces the cost and portal variables in a string
-     * @param message <p>The message to replace variables in</p>
+     *
+     * @param message    <p>The message to replace variables in</p>
      * @param portalName <p>The name of the relevant portal</p>
-     * @param cost <p>The cost for a given interaction</p>
+     * @param cost       <p>The cost for a given interaction</p>
      * @return <p>The same string with cost and portal variables replaced</p>
      */
     private static String replaceVars(String message, String portalName, int cost) {

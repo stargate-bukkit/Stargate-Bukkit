@@ -57,7 +57,11 @@ public class BlockEventListener implements Listener {
         Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, portal::drawSign, 1);
     }
 
-    // Switch to HIGHEST priority so as to come after block protection plugins (Hopefully)
+    /**
+     * Detects block breaking to detect if the user is destroying a gate
+     *
+     * @param event <p>The triggered event</p>
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.isCancelled()) {
@@ -113,14 +117,15 @@ public class BlockEventListener implements Listener {
 
     /**
      * Handles economy payment for breaking the portal
+     *
      * @param destroyEvent <p>The destroy event</p>
-     * @param player <p>The player which triggered the event</p>
-     * @param portal <p>The broken portal</p>
-     * @param event <p>The break event</p>
+     * @param player       <p>The player which triggered the event</p>
+     * @param portal       <p>The broken portal</p>
+     * @param event        <p>The break event</p>
      * @return <p>True if the payment was successful. False if the event was cancelled</p>
      */
     private boolean handleEconomyPayment(StargateDestroyEvent destroyEvent, Player player, Portal portal,
-                                      BlockBreakEvent event) {
+                                         BlockBreakEvent event) {
         int cost = destroyEvent.getCost();
         if (cost != 0) {
             if (!Stargate.chargePlayer(player, cost)) {
@@ -140,6 +145,7 @@ public class BlockEventListener implements Listener {
 
     /**
      * Prevents any block physics events which may damage parts of the portal
+     *
      * @param event <p>The event to check and possibly cancel</p>
      */
     @EventHandler

@@ -10,6 +10,7 @@ public final class MaterialHelper {
 
     /**
      * Checks whether the given material is a dead or alive wall coral
+     *
      * @param material <p>The material to check</p>
      * @return <p>True if the material is a wall coral</p>
      */
@@ -24,6 +25,7 @@ public final class MaterialHelper {
 
     /**
      * Checks whether the given material can be used as a button
+     *
      * @param material <p>The material to check</p>
      * @return <p>True if the material can be used as a button</p>
      */

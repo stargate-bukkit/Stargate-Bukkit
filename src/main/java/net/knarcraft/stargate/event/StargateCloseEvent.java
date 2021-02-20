@@ -10,9 +10,8 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("unused")
 public class StargateCloseEvent extends StargateEvent {
 
-    private boolean force;
-
     private static final HandlerList handlers = new HandlerList();
+    private boolean force;
 
     /**
      * Instantiates a new stargate closing event
@@ -24,6 +23,15 @@ public class StargateCloseEvent extends StargateEvent {
         super("StargateCloseEvent", portal);
 
         this.force = force;
+    }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     /**
@@ -42,15 +50,6 @@ public class StargateCloseEvent extends StargateEvent {
      */
     public void setForce(boolean force) {
         this.force = force;
-    }
-
-    /**
-     * Gets a handler-list containing all event handlers
-     *
-     * @return <p>A handler-list with all event handlers</p>
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     @NotNull

@@ -14,8 +14,9 @@ public class BloxPopulator {
 
     /**
      * Instantiates a new block populator
+     *
      * @param blockLocation <p>The location to start from</p>
-     * @param material <p>The material to populate</p>
+     * @param material      <p>The material to populate</p>
      */
     public BloxPopulator(BlockLocation blockLocation, Material material) {
         this.blockLocation = blockLocation;
@@ -25,9 +26,10 @@ public class BloxPopulator {
 
     /**
      * Instantiates a new block populator
+     *
      * @param blockLocation <p>The location to start from</p>
-     * @param material <p>The material to populate</p>
-     * @param axis <p>The axis to populate along</p>
+     * @param material      <p>The material to populate</p>
+     * @param axis          <p>The axis to populate along</p>
      */
     public BloxPopulator(BlockLocation blockLocation, Material material, Axis axis) {
         this.blockLocation = blockLocation;
@@ -36,31 +38,8 @@ public class BloxPopulator {
     }
 
     /**
-     * Sets the location to start from
-     * @param blockLocation <p>The new start location</p>
-     */
-    public void setBlockLocation(BlockLocation blockLocation) {
-        this.blockLocation = blockLocation;
-    }
-
-    /**
-     * Sets the polulator material
-     * @param material <p>The new populator material</p>
-     */
-    public void setMat(Material material) {
-        nextMat = material;
-    }
-
-    /**
-     * Sets the populator axis
-     * @param axis <p>The new populator axis</p>
-     */
-    public void setAxis(Axis axis) {
-        nextAxis = axis;
-    }
-
-    /**
      * Gets the location to start from
+     *
      * @return <p>The location to start from</p>
      */
     public BlockLocation getBlockLocation() {
@@ -68,7 +47,17 @@ public class BloxPopulator {
     }
 
     /**
+     * Sets the location to start from
+     *
+     * @param blockLocation <p>The new start location</p>
+     */
+    public void setBlockLocation(BlockLocation blockLocation) {
+        this.blockLocation = blockLocation;
+    }
+
+    /**
      * Gets the material used for population
+     *
      * @return <p>The material used for population</p>
      */
     public Material getMat() {
@@ -76,11 +65,30 @@ public class BloxPopulator {
     }
 
     /**
+     * Sets the polulator material
+     *
+     * @param material <p>The new populator material</p>
+     */
+    public void setMat(Material material) {
+        nextMat = material;
+    }
+
+    /**
      * Gets the current population axis
+     *
      * @return <p>The current population axis</p>
      */
     public Axis getAxis() {
         return nextAxis;
+    }
+
+    /**
+     * Sets the populator axis
+     *
+     * @param axis <p>The new populator axis</p>
+     */
+    public void setAxis(Axis axis) {
+        nextAxis = axis;
     }
 
 }

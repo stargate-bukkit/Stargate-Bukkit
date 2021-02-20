@@ -16,6 +16,7 @@ public class CommandReload implements CommandExecutor {
 
     /**
      * Instantiates the reload command
+     *
      * @param plugin <p>A reference to the calling plugin object</p>
      */
     public CommandReload(Stargate plugin) {

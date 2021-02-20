@@ -14,10 +14,9 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class StargateActivateEvent extends StargatePlayerEvent {
 
+    private static final HandlerList handlers = new HandlerList();
     private List<String> destinations;
     private String destination;
-
-    private static final HandlerList handlers = new HandlerList();
 
     /**
      * Instantiates a new stargate activate event
@@ -32,6 +31,15 @@ public class StargateActivateEvent extends StargatePlayerEvent {
 
         this.destinations = destinations;
         this.destination = destination;
+    }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     /**
@@ -68,15 +76,6 @@ public class StargateActivateEvent extends StargatePlayerEvent {
      */
     public void setDestination(String destination) {
         this.destination = destination;
-    }
-
-    /**
-     * Gets a handler-list containing all event handlers
-     *
-     * @return <p>A handler-list with all event handlers</p>
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     @Override

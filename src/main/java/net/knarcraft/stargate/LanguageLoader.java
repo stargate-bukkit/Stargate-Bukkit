@@ -25,12 +25,13 @@ public class LanguageLoader {
 
     // Variables
     private final String languageFolder;
+    private final Map<String, String> loadedBackupStrings;
     private String chosenLanguage;
     private Map<String, String> loadedStringTranslations;
-    private final Map<String, String> loadedBackupStrings;
 
     /**
      * Instantiates a new language loader
+     *
      * @param languageFolder <p>The folder containing the language files</p>
      * @param chosenLanguage <p>The chosen plugin language</p>
      */
@@ -68,6 +69,7 @@ public class LanguageLoader {
 
     /**
      * Gets the string to display given its name/key
+     *
      * @param name <p>The name/key of the string to display</p>
      * @return <p>The string in the user's preferred language</p>
      */
@@ -87,6 +89,7 @@ public class LanguageLoader {
 
     /**
      * Sets the chosen plugin language
+     *
      * @param chosenLanguage <p>The new plugin language</p>
      */
     public void setChosenLanguage(String chosenLanguage) {
@@ -95,12 +98,13 @@ public class LanguageLoader {
 
     /**
      * Updates files in the plugin directory with contents from the compiled .jar
+     *
      * @param language <p>The language to update</p>
      */
     private void updateLanguage(String language) {
         // Load the current language file
-        ArrayList<String> keyList = new ArrayList<>();
-        ArrayList<String> valueList = new ArrayList<>();
+        List<String> keyList = new ArrayList<>();
+        List<String> valueList = new ArrayList<>();
 
         Map<String, String> currentLanguageValues = load(language);
 
@@ -159,15 +163,16 @@ public class LanguageLoader {
 
     /**
      * Reads language strings
-     * @param inputStream <p>The input stream to read from</p>
-     * @param keyList <p>The key list to add keys to</p>
-     * @param valueList <p>The value list to add values to</p>
+     *
+     * @param inputStream           <p>The input stream to read from</p>
+     * @param keyList               <p>The key list to add keys to</p>
+     * @param valueList             <p>The value list to add values to</p>
      * @param currentLanguageValues <p>The current values of the loaded/processed language</p>
      * @return <p>True if at least one line was updated</p>
      * @throws IOException <p>if unable to read a language file</p>
      */
     private boolean readChangedLanguageStrings(InputStream inputStream, List<String> keyList, List<String> valueList,
-                                            Map<String, String> currentLanguageValues) throws IOException {
+                                               Map<String, String> currentLanguageValues) throws IOException {
         boolean updated = false;
         // Input stuff
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
@@ -209,6 +214,7 @@ public class LanguageLoader {
 
     /**
      * Loads the given language
+     *
      * @param lang <p>The language to load</p>
      * @return <p>A mapping between loaded string indexes and the strings to display</p>
      */
@@ -218,7 +224,8 @@ public class LanguageLoader {
 
     /**
      * Loads the given language
-     * @param lang <p>The language to load</p>
+     *
+     * @param lang        <p>The language to load</p>
      * @param inputStream <p>An optional input stream to use. Defaults to using a file input stream</p>
      * @return <p>A mapping between loaded string indexes and the strings to display</p>
      */
@@ -253,8 +260,9 @@ public class LanguageLoader {
 
     /**
      * Reads a language file given its input stream
+     *
      * @param inputStreamReader <p>The input stream reader to read from</p>
-     * @param strings <p>The loaded string pairs</p>
+     * @param strings           <p>The loaded string pairs</p>
      * @throws IOException <p>If unable to read the file</p>
      */
     private void readLanguageFile(InputStreamReader inputStreamReader, Map<String, String> strings) throws IOException {
@@ -297,6 +305,7 @@ public class LanguageLoader {
 
     /**
      * Removes the UTF-8 Byte Order Mark if present
+     *
      * @param string <p>The string to remove the BOM from</p>
      * @return <p>A string guaranteed without a BOM</p>
      */

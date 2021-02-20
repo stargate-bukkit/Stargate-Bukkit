@@ -16,8 +16,9 @@ public class RelativeBlockVector {
 
     /**
      * Instantiates a new relative block vector
-     * @param right <p>The distance to the right relative to the origin</p>
-     * @param depth <p>The distance downward relative to the origin</p>
+     *
+     * @param right    <p>The distance to the right relative to the origin</p>
+     * @param depth    <p>The distance downward relative to the origin</p>
      * @param distance <p>The distance outward relative to the origin</p>
      */
     public RelativeBlockVector(int right, int depth, int distance) {
@@ -28,6 +29,7 @@ public class RelativeBlockVector {
 
     /**
      * Gets the distance to the right relative to the origin
+     *
      * @return The distance to the right relative to the origin
      */
     public int getRight() {
@@ -36,6 +38,7 @@ public class RelativeBlockVector {
 
     /**
      * Gets the distance downward relative to the origin
+     *
      * @return The distance downward relative to the origin
      */
     public int getDepth() {
@@ -44,6 +47,7 @@ public class RelativeBlockVector {
 
     /**
      * Gets the distance outward relative to the origin
+     *
      * @return The distance outward relative to the origin
      */
     public int getDistance() {

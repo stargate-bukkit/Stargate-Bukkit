@@ -11,12 +11,11 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("unused")
 public class StargateCreateEvent extends StargatePlayerEvent {
 
+    private static final HandlerList handlers = new HandlerList();
+    private final String[] lines;
     private boolean deny;
     private String denyReason;
-    private final String[] lines;
     private int cost;
-
-    private static final HandlerList handlers = new HandlerList();
 
     /**
      * Instantiates a new stargate creation event
@@ -34,6 +33,15 @@ public class StargateCreateEvent extends StargatePlayerEvent {
         this.deny = deny;
         this.denyReason = denyReason;
         this.cost = cost;
+    }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     /**
@@ -99,15 +107,6 @@ public class StargateCreateEvent extends StargatePlayerEvent {
      */
     public void setCost(int cost) {
         this.cost = cost;
-    }
-
-    /**
-     * Gets a handler-list containing all event handlers
-     *
-     * @return <p>A handler-list with all event handlers</p>
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     @NotNull

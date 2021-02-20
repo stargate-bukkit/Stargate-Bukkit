@@ -19,6 +19,7 @@ public class CommandStarGate implements CommandExecutor {
 
     /**
      * Instantiates the stargate command
+     *
      * @param plugin <p>A reference to the calling plugin object</p>
      */
     public CommandStarGate(Stargate plugin) {
