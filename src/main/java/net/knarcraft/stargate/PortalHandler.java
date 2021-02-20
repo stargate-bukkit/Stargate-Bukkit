@@ -684,7 +684,7 @@ public class PortalHandler {
     }
 
     /**
-     * Clears all loaded gates and gate data
+     * Clears all loaded gates and gate data from all worlds
      */
     public static void clearGates() {
         lookupBlocks.clear();
@@ -693,6 +693,44 @@ public class PortalHandler {
         lookupControls.clear();
         allPortals.clear();
         allPortalsNet.clear();
+    }
+
+    /**
+     * Clears all gates loaded in a given world
+     *
+     * @param world <p>The world containing the portals to clear</p>
+     */
+    public static void clearGates(World world) {
+        //This is necessary
+        List<Portal> portalsToRemove = new ArrayList<>();
+        allPortals.forEach((portal) -> {
+            if (portal.getWorld().equals(world)) {
+                portalsToRemove.add(portal);
+            }
+        });
+
+        clearGates(portalsToRemove);
+    }
+
+    /**
+     * Clears a given list of portals from all relevant variables
+     *
+     * @param portalsToRemove <p>A list of portals to remove</p>
+     */
+    private static void clearGates(List<Portal> portalsToRemove) {
+        List<String> portalNames = new ArrayList<>();
+        portalsToRemove.forEach((portal) -> portalNames.add(portal.getName()));
+        lookupBlocks.keySet().removeIf((key) -> portalsToRemove.contains(lookupBlocks.get(key)));
+        lookupNamesNet.keySet().forEach((network) -> lookupNamesNet.get(network).keySet().removeIf((key) ->
+                portalsToRemove.contains(lookupNamesNet.get(network).get(key))));
+        //Remove any networks with no portals
+        lookupNamesNet.keySet().removeIf((key) -> lookupNamesNet.get(key).isEmpty());
+        lookupEntrances.keySet().removeIf((key) -> portalsToRemove.contains(lookupEntrances.get(key)));
+        lookupControls.keySet().removeIf((key) -> portalsToRemove.contains(lookupControls.get(key)));
+        allPortals.removeIf(portalsToRemove::contains);
+        allPortalsNet.keySet().forEach((network) -> allPortalsNet.get(network).removeIf(portalNames::contains));
+        //Remove any networks with no portals
+        allPortalsNet.keySet().removeIf((network) -> allPortalsNet.get(network).isEmpty());
     }
 
     /**

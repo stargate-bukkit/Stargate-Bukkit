@@ -8,28 +8,37 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
+/**
+ * This listener listens for the loading and unloading of worlds to load and unload stargates
+ */
+@SuppressWarnings("unused")
 public class WorldEventListener implements Listener {
+
+    /**
+     * This listener listens for the loading of a world and loads all all gates from the world if not already loaded
+     *
+     * @param event <p>The triggered world load event</p>
+     */
     @EventHandler
     public void onWorldLoad(WorldLoadEvent event) {
-        if (!Stargate.managedWorlds.contains(event.getWorld().getName())
-                && PortalHandler.loadAllGates(event.getWorld())) {
+        if (!Stargate.managedWorlds.contains(event.getWorld().getName()) &&
+                PortalHandler.loadAllGates(event.getWorld())) {
             Stargate.managedWorlds.add(event.getWorld().getName());
         }
     }
 
-    // We need to reload all gates on world unload, boo
+    /**
+     * This listener listens for the unloading of a world
+     *
+     * @param event <p>The triggered world unload event</p>
+     */
     @EventHandler
     public void onWorldUnload(WorldUnloadEvent event) {
         Stargate.debug("onWorldUnload", "Reloading all Stargates");
-        World w = event.getWorld();
-        if (Stargate.managedWorlds.contains(w.getName())) {
-            Stargate.managedWorlds.remove(w.getName());
-            PortalHandler.clearGates();
-            for (World world : Stargate.server.getWorlds()) {
-                if (Stargate.managedWorlds.contains(world.getName())) {
-                    PortalHandler.loadAllGates(world);
-                }
-            }
+        World world = event.getWorld();
+        if (Stargate.managedWorlds.contains(world.getName())) {
+            Stargate.managedWorlds.remove(world.getName());
+            PortalHandler.clearGates(world);
         }
     }
 }
