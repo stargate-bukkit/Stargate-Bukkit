@@ -13,9 +13,19 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 
 import java.util.List;
 
+/**
+ * This listener listens for the vehicle move event to teleport vehicles through portals
+ */
 @SuppressWarnings("unused")
 public class VehicleEventListener implements Listener {
 
+    /**
+     * If the player teleported, but its vehicle was left behind, make the vehicle teleport to the player
+     *
+     * @param vehicle <p>The vehicle to teleport</p>
+     * @param destinationPortal <p>The portal the player teleported to</p>
+     * @param player <p>The player who teleported</p>
+     */
     public static void teleportVehicleAfterPlayer(Vehicle vehicle, Portal destinationPortal, Player player) {
         destinationPortal.teleport(vehicle);
         Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> vehicle.addPassenger(player), 6);
