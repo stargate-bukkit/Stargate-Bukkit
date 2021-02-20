@@ -28,6 +28,7 @@ import java.util.Objects;
 /**
  * This listener listens to any player-related events related to stargates
  */
+@SuppressWarnings("unused")
 public class PlayerEventsListener implements Listener {
 
     private static long eventTime;
