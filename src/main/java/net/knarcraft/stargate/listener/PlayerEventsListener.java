@@ -25,6 +25,9 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.Objects;
 
+/**
+ * This listener listens to any player-related events related to stargates
+ */
 public class PlayerEventsListener implements Listener {
 
     private static long eventTime;
@@ -92,7 +95,7 @@ public class PlayerEventsListener implements Listener {
     /**
      * This event handler detects if a player moves into a portal
      *
-     * @param event <p>Player move event which was triggered</p>
+     * @param event <p>The player move event which was triggered</p>
      */
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
@@ -126,6 +129,11 @@ public class PlayerEventsListener implements Listener {
         entrancePortal.close(false);
     }
 
+    /**
+     * This event handler detects if a player clicks a button or a sign
+     *
+     * @param event <p>The player interact event which was triggered</p>
+     */
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -135,104 +143,137 @@ public class PlayerEventsListener implements Listener {
             return;
         }
 
-        // Right click
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (block.getBlockData() instanceof WallSign) {
-                Portal portal = PortalHandler.getByBlock(block);
-                if (portal == null) {
-                    return;
-                }
-                // Cancel item use
-                event.setUseItemInHand(Event.Result.DENY);
-                event.setUseInteractedBlock(Event.Result.DENY);
+            handleRightClickBlock(event, player, block);
+        } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && block.getBlockData() instanceof WallSign) {
+            //Handle left click of a wall sign
+            handleSignClick(event, player, block, true);
+        }
+    }
 
-                boolean deny = false;
-                if (!Stargate.canAccessNetwork(player, portal.getNetwork())) {
-                    deny = true;
-                }
-
-                if (!Stargate.canAccessPortal(player, portal, deny)) {
-                    Stargate.sendMessage(player, Stargate.getString("denyMsg"));
-                    return;
-                }
-
-                if ((!portal.isOpen()) && (!portal.isFixed())) {
-                    portal.cycleDestination(player);
-                }
-                return;
-            }
-
-            // Implement right-click to toggle a stargate, gets around spawn protection problem.
-            if (MaterialHelper.isButtonCompatible(block.getType())) {
-
-                if (MaterialHelper.isWallCoral(block.getType())) {
-                    if (previousEvent != null &&
-                            event.getPlayer() == previousEvent.getPlayer() && eventTime + 10 > System.currentTimeMillis()) {
-                        previousEvent = null;
-                        eventTime = 0;
-                        return;
-                    }
-                    previousEvent = event;
-                    eventTime = System.currentTimeMillis();
-                }
-
-                Portal portal = PortalHandler.getByBlock(block);
-                if (portal == null) {
-                    return;
-                }
-
-                // Cancel item use
-                event.setUseItemInHand(Event.Result.DENY);
-                event.setUseInteractedBlock(Event.Result.DENY);
-
-                boolean deny = false;
-                if (!Stargate.canAccessNetwork(player, portal.getNetwork())) {
-                    deny = true;
-                }
-
-                if (!Stargate.canAccessPortal(player, portal, deny)) {
-                    Stargate.sendMessage(player, Stargate.getString("denyMsg"));
-                    return;
-                }
-
-                Stargate.openPortal(player, portal);
-                if (portal.isOpenFor(player)) {
-                    event.setUseInteractedBlock(Event.Result.ALLOW);
-                }
-            }
+    /**
+     * This method handles left- or right-clicking of a sign
+     *
+     * @param event     <p>The event causing the click</p>
+     * @param player    <p>The player clicking the sign</p>
+     * @param block     <p>The block that was clicked</p>
+     * @param leftClick <p>Whether the player performed a left click as opposed to a right click</p>
+     */
+    private void handleSignClick(PlayerInteractEvent event, Player player, Block block, boolean leftClick) {
+        Portal portal = PortalHandler.getByBlock(block);
+        if (portal == null) {
             return;
         }
 
-        // Left click
-        if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            // Check if we're scrolling a sign
-            if (block.getBlockData() instanceof WallSign) {
-                Portal portal = PortalHandler.getByBlock(block);
-                if (portal == null) {
-                    return;
-                }
+        event.setUseInteractedBlock(Event.Result.DENY);
+        if (leftClick) {
+            //Cancel event in creative mode to prevent breaking the sign
+            if (player.getGameMode().equals(GameMode.CREATIVE)) {
+                event.setCancelled(true);
+            }
+        } else {
+            //Prevent usage of item in the player's hand (placing block and such)
+            event.setUseItemInHand(Event.Result.DENY);
+        }
 
-                event.setUseInteractedBlock(Event.Result.DENY);
-                // Only cancel event in creative mode
-                if (player.getGameMode().equals(GameMode.CREATIVE)) {
-                    event.setCancelled(true);
-                }
+        //Check if the user can use the portal
+        if (cannotAccessPortal(player, portal)) {
+            return;
+        }
 
-                boolean deny = false;
-                if (!Stargate.canAccessNetwork(player, portal.getNetwork())) {
-                    deny = true;
-                }
-
-                if (!Stargate.canAccessPortal(player, portal, deny)) {
-                    Stargate.sendMessage(player, Stargate.getString("denyMsg"));
-                    return;
-                }
-
-                if ((!portal.isOpen()) && (!portal.isFixed())) {
-                    portal.cycleDestination(player, -1);
-                }
+        //Cycle portal destination
+        if ((!portal.isOpen()) && (!portal.isFixed())) {
+            if (leftClick) {
+                portal.cycleDestination(player, -1);
+            } else {
+                portal.cycleDestination(player);
             }
         }
+    }
+
+    /**
+     * Check if a player should be denied from accessing (using) a portal
+     *
+     * @param player <p>The player trying to access the portal</p>
+     * @param portal <p>The portal the player is trying to use</p>
+     * @return <p>True if the player should be denied</p>
+     */
+    private boolean cannotAccessPortal(Player player, Portal portal) {
+        boolean deny = false;
+        if (!Stargate.canAccessNetwork(player, portal.getNetwork())) {
+            deny = true;
+        }
+
+        if (!Stargate.canAccessPortal(player, portal, deny)) {
+            Stargate.sendMessage(player, Stargate.getString("denyMsg"));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * This method handles right clicking of a sign or button belonging to a stargate
+     *
+     * @param event  <p>The event triggering the right-click</p>
+     * @param player <p>The player doing the right-click</p>
+     * @param block  <p>The block the player clicked</p>
+     */
+    private void handleRightClickBlock(PlayerInteractEvent event, Player player, Block block) {
+        if (block.getBlockData() instanceof WallSign) {
+            handleSignClick(event, player, block, false);
+            return;
+        }
+
+        // Implement right-click to toggle a stargate, gets around spawn protection problem.
+        if (MaterialHelper.isButtonCompatible(block.getType())) {
+            //Prevent a double click caused by a Spigot bug
+            if (clickIsBug(event, block)) {
+                return;
+            }
+
+            Portal portal = PortalHandler.getByBlock(block);
+            if (portal == null) {
+                return;
+            }
+
+            // Cancel item use
+            event.setUseItemInHand(Event.Result.DENY);
+            event.setUseInteractedBlock(Event.Result.DENY);
+
+            //Check if the user can use the portal
+            if (cannotAccessPortal(player, portal)) {
+                return;
+            }
+
+            Stargate.openPortal(player, portal);
+            if (portal.isOpenFor(player)) {
+                event.setUseInteractedBlock(Event.Result.ALLOW);
+            }
+        }
+    }
+
+    /**
+     * This function decides if a right click of a coral is caused by a Spigot bug
+     *
+     * <p>The Spigot bug currently makes every right click of a coral trigger twice, causing the portal to close
+     * immediately. This fix should detect the bug without breaking wall coral buttons once the bug is fixed.</p>
+     *
+     * @param event <p>The event causing the right click</p>
+     * @param block <p>The block to check</p>
+     * @return <p>True if the click is a bug and should be cancelled</p>
+     */
+    private boolean clickIsBug(PlayerInteractEvent event, Block block) {
+        if (MaterialHelper.isWallCoral(block.getType())) {
+            if (previousEvent != null &&
+                    event.getPlayer() == previousEvent.getPlayer() && eventTime + 15 > System.currentTimeMillis()) {
+                previousEvent = null;
+                eventTime = 0;
+                return true;
+            }
+            previousEvent = event;
+            eventTime = System.currentTimeMillis();
+        }
+        return false;
     }
 
     /**
@@ -307,9 +348,7 @@ public class PlayerEventsListener implements Listener {
         //Player cannot pay for teleportation
         int cost = Stargate.getUseCost(player, entrancePortal, destination);
         if (cost > 0) {
-            if (!EconomyHelper.payTeleportFee(entrancePortal, player, cost)) {
-                return false;
-            }
+            return EconomyHelper.payTeleportFee(entrancePortal, player, cost);
         }
         return true;
     }
