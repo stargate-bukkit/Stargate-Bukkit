@@ -286,6 +286,10 @@ bungeeSign=Teleport to
  - Removes some pre-UUID code
  - Adds underwater portals
  - Makes it easier to add more default gates
+ - Adds a new default gate which can be used underwater
+ - Adds more items usable as buttons (corals, chest, shulker box), which allows underwater portals
+ - Splits a lot of the code into smaller objects
+ - Moves duplicated code into helper classes
 #### \[Version 0.8.0.3] PseudoKnight fork
  - Fix economy
  - Add custom buttons
