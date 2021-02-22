@@ -371,15 +371,19 @@ public class Portal {
         // Call the StargateOpenEvent
         StargateOpenEvent event = new StargateOpenEvent(openFor, this, force);
         Stargate.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return false;
+        if (event.isCancelled()) {
+            return false;
+        }
         force = event.getForce();
 
-        if (isOpen() && !force) return false;
+        if (isOpen() && !force) {
+            return false;
+        }
 
         Material openType = gate.getPortalOpenBlock();
-        Axis ax = openType == Material.NETHER_PORTAL ? rot : null;
+        Axis axis = openType == Material.NETHER_PORTAL ? rot : null;
         for (BlockLocation inside : getEntrances()) {
-            Stargate.blockPopulatorQueue.add(new BloxPopulator(inside, openType, ax));
+            Stargate.blockPopulatorQueue.add(new BloxPopulator(inside, openType, axis));
         }
 
         isOpen = true;
