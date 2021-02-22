@@ -12,7 +12,8 @@ import java.util.List;
  * The gate layout describes where every part of the gate should be
  *
  * <p>The gate layout parses a layout described by a Character matrix and stores the different parts of the gate as
- * relative block vectors.</p>
+ * relative block vectors. All relative vectors has an origin in the top-left block when looking at the gate's front
+ * (the side with the sign)</p>
  */
 public class GateLayout {
 
