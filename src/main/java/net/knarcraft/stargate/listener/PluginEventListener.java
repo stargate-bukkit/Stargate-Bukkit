@@ -1,6 +1,6 @@
 package net.knarcraft.stargate.listener;
 
-import net.knarcraft.stargate.EconomyHandler;
+import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.Stargate;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

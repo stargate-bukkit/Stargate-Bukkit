@@ -1,10 +1,12 @@
 package net.knarcraft.stargate.utility;
 
-import net.knarcraft.stargate.EconomyHandler;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.Stargate;
 import org.bukkit.entity.Player;
 
+/**
+ * The economy helper class has helper functions for player payment
+ */
 public final class EconomyHelper {
 
     private EconomyHelper() {
@@ -24,7 +26,8 @@ public final class EconomyHelper {
 
         //Try to charge the player
         if (entrancePortal.getGate().getToOwner()) {
-            success = entrancePortal.getOwnerUUID() != null && Stargate.chargePlayer(player, entrancePortal.getOwnerUUID(), cost);
+            success = entrancePortal.getOwnerUUID() != null && Stargate.chargePlayer(player,
+                    entrancePortal.getOwnerUUID(), cost);
         } else {
             success = Stargate.chargePlayer(player, cost);
         }

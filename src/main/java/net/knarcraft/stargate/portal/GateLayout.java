@@ -182,7 +182,7 @@ public class GateLayout {
                                       List<RelativeBlockVector> controlList, List<RelativeBlockVector> entranceList,
                                       List<RelativeBlockVector> borderList) {
         //Add control blocks
-        if (key.equals('-')) {
+        if (key.equals(GateHandler.getControlBlockCharacter())) {
             controlList.add(new RelativeBlockVector(rowIndex, lineIndex, 0));
         }
 

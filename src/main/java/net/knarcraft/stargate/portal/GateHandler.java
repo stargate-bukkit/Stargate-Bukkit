@@ -1,6 +1,6 @@
 package net.knarcraft.stargate.portal;
 
-import net.knarcraft.stargate.EconomyHandler;
+import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import org.bukkit.Material;
@@ -13,11 +13,15 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 
+/**
+ * The gate handler keeps track of all gates
+ */
 public class GateHandler {
 
     private static final Character ANYTHING = ' ';
     private static final Character ENTRANCE = '.';
     private static final Character EXIT = '*';
+    private static final Character CONTROL_BLOCK = '-';
 
     private static Material defaultPortalBlockOpen = Material.NETHER_PORTAL;
     private static Material defaultPortalBlockClosed = Material.AIR;
@@ -49,8 +53,23 @@ public class GateHandler {
         return ENTRANCE;
     }
 
+    /**
+     * Gets the character used for defining the exit
+     *
+     * @return <p>The character used for defining the exit</p>
+     */
     public static Character getExitCharacter() {
         return EXIT;
+    }
+
+
+    /**
+     * Gets the character used for defining control blocks
+     *
+     * @return <p>The character used for defining control blocks</p>
+     */
+    public static Character getControlBlockCharacter() {
+        return CONTROL_BLOCK;
     }
 
     public static void registerGate(Gate gate) {

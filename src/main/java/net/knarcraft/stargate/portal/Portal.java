@@ -2,7 +2,7 @@ package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.BlockLocation;
 import net.knarcraft.stargate.BloxPopulator;
-import net.knarcraft.stargate.EconomyHandler;
+import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.RelativeBlockVector;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargateActivateEvent;

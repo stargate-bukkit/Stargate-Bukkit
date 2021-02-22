@@ -17,6 +17,7 @@ import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.PortalOption;
 import net.knarcraft.stargate.thread.BlockPopulatorThread;
 import net.knarcraft.stargate.thread.StarGateThread;
+import net.knarcraft.stargate.utility.EconomyHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -613,9 +614,9 @@ public class Stargate extends JavaPlugin {
         permDebug = newConfig.getBoolean("permdebug");
         // Economy
         EconomyHandler.economyEnabled = newConfig.getBoolean("useeconomy");
-        EconomyHandler.createCost = newConfig.getInt("createcost");
-        EconomyHandler.destroyCost = newConfig.getInt("destroycost");
-        EconomyHandler.useCost = newConfig.getInt("usecost");
+        EconomyHandler.setCreateCost(newConfig.getInt("createcost"));
+        EconomyHandler.setDestroyCost(newConfig.getInt("destroycost"));
+        EconomyHandler.setUseCost(newConfig.getInt("usecost"));
         EconomyHandler.toOwner = newConfig.getBoolean("toowner");
         EconomyHandler.chargeFreeDestination = newConfig.getBoolean("chargefreedestination");
         EconomyHandler.freeGatesGreen = newConfig.getBoolean("freegatesgreen");

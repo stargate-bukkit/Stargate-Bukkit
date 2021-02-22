@@ -1,5 +1,6 @@
-package net.knarcraft.stargate;
+package net.knarcraft.stargate.utility;
 
+import net.knarcraft.stargate.Stargate;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -12,17 +13,78 @@ import java.util.UUID;
 /**
  * This handler handles economy actions such as payment for using a gate
  */
-public class EconomyHandler {
+public final class EconomyHandler {
+
     public static boolean economyEnabled = false;
     public static Economy economy = null;
     public static Plugin vault = null;
-
-    public static int useCost = 0;
-    public static int createCost = 0;
-    public static int destroyCost = 0;
+    private static int useCost = 0;
+    private static int createCost = 0;
+    private static int destroyCost = 0;
     public static boolean toOwner = false;
     public static boolean chargeFreeDestination = true;
     public static boolean freeGatesGreen = false;
+
+    /**
+     * Gets the cost of using a gate without a specified cost
+     *
+     * @return <p>The gate use cost</p>
+     */
+    public static int getUseCost() {
+        return useCost;
+    }
+
+    /**
+     * Sets the cost of using a gate without a specified cost
+     *
+     * <p>The use cost cannot be negative.</p>
+     *
+     * @param useCost <p>The gate use cost</p>
+     */
+    public static void setUseCost(int useCost) {
+        if (useCost < 0) {
+            throw new IllegalArgumentException("Using a gate cannot cost a negative amount");
+        }
+        EconomyHandler.useCost = useCost;
+    }
+
+    /**
+     * Gets the cost of creating a gate without a specified cost
+     *
+     * @return <p>The gate creation cost</p>
+     */
+    public static int getCreateCost() {
+        return createCost;
+    }
+
+    /**
+     * Sets the cost of creating a gate without a specified cost
+     *
+     * <p>The gate create cost cannot be negative</p>
+     *
+     * @param createCost <p>The gate creation cost</p>
+     */
+    public static void setCreateCost(int createCost) {
+        EconomyHandler.createCost = createCost;
+    }
+
+    /**
+     * Gets the cost of destroying a gate without a specified cost
+     *
+     * @return <p>The gate destruction cost</p>
+     */
+    public static int getDestroyCost() {
+        return destroyCost;
+    }
+
+    /**
+     * Sets the cost of destroying a gate without a specified cost
+     *
+     * @param destroyCost <p>The gate destruction cost</p>
+     */
+    public static void setDestroyCost(int destroyCost) {
+        EconomyHandler.destroyCost = destroyCost;
+    }
 
     /**
      * Gets the balance (money) of the given player
@@ -51,6 +113,7 @@ public class EconomyHandler {
             if (!economy.has(player, amount)) {
                 return false;
             }
+            //Take money from the user and give to the owner
             economy.withdrawPlayer(player, amount);
             economy.depositPlayer(Bukkit.getOfflinePlayer(target), amount);
         }
