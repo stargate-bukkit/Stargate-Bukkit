@@ -14,21 +14,24 @@ public class StarGateThread implements Runnable {
         long time = System.currentTimeMillis() / 1000;
         // Close open portals
         for (Iterator<Portal> iterator = Stargate.openList.iterator(); iterator.hasNext(); ) {
-            Portal p = iterator.next();
-            // Skip always open gates
-            if (p.isAlwaysOn()) continue;
-            if (!p.isOpen()) continue;
-            if (time > p.getOpenTime() + Stargate.getOpenTime()) {
-                p.close(false);
+            Portal portal = iterator.next();
+            // Skip always open and non-open gates
+            if (portal.isAlwaysOn() || !portal.isOpen()) {
+                continue;
+            }
+            if (time > portal.getOpenTime() + Stargate.getOpenTime()) {
+                portal.close(false);
                 iterator.remove();
             }
         }
         // Deactivate active portals
         for (Iterator<Portal> iterator = Stargate.activeList.iterator(); iterator.hasNext(); ) {
-            Portal p = iterator.next();
-            if (!p.isActive()) continue;
-            if (time > p.getOpenTime() + Stargate.getActiveTime()) {
-                p.deactivate();
+            Portal portal = iterator.next();
+            if (!portal.isActive()) {
+                continue;
+            }
+            if (time > portal.getOpenTime() + Stargate.getActiveTime()) {
+                portal.deactivate();
                 iterator.remove();
             }
         }

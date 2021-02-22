@@ -60,7 +60,7 @@ public class BloxPopulator {
      *
      * @return <p>The material used for population</p>
      */
-    public Material getMat() {
+    public Material getMaterial() {
         return nextMat;
     }
 

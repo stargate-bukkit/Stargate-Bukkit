@@ -12,20 +12,22 @@ public class BlockPopulatorThread implements Runnable {
     public void run() {
         long sTime = System.nanoTime();
         while (System.nanoTime() - sTime < 25000000) {
-            BloxPopulator b = Stargate.blockPopulatorQueue.poll();
-            if (b == null) return;
-            Block blk = b.getBlockLocation().getBlock();
-            blk.setType(b.getMat(), false);
-            if (b.getMat() == Material.END_GATEWAY && blk.getWorld().getEnvironment() == World.Environment.THE_END) {
+            BloxPopulator bloxPopulator = Stargate.blockPopulatorQueue.poll();
+            if (bloxPopulator == null) {
+                return;
+            }
+            Block block = bloxPopulator.getBlockLocation().getBlock();
+            block.setType(bloxPopulator.getMaterial(), false);
+            if (bloxPopulator.getMaterial() == Material.END_GATEWAY && block.getWorld().getEnvironment() == World.Environment.THE_END) {
                 // force a location to prevent exit gateway generation
-                EndGateway gateway = (EndGateway) blk.getState();
-                gateway.setExitLocation(blk.getWorld().getSpawnLocation());
+                EndGateway gateway = (EndGateway) block.getState();
+                gateway.setExitLocation(block.getWorld().getSpawnLocation());
                 gateway.setExactTeleport(true);
                 gateway.update(false, false);
-            } else if (b.getAxis() != null) {
-                Orientable orientable = (Orientable) blk.getBlockData();
-                orientable.setAxis(b.getAxis());
-                blk.setBlockData(orientable);
+            } else if (bloxPopulator.getAxis() != null) {
+                Orientable orientable = (Orientable) block.getBlockData();
+                orientable.setAxis(bloxPopulator.getAxis());
+                block.setBlockData(orientable);
             }
         }
     }
