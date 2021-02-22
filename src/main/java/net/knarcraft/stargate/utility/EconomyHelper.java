@@ -1,11 +1,15 @@
 package net.knarcraft.stargate.utility;
 
 import net.knarcraft.stargate.EconomyHandler;
-import net.knarcraft.stargate.Portal;
+import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.Stargate;
 import org.bukkit.entity.Player;
 
-public class EconomyHelper {
+public final class EconomyHelper {
+
+    private EconomyHelper() {
+
+    }
 
     /**
      * Tries to make the given user pay the teleport fee

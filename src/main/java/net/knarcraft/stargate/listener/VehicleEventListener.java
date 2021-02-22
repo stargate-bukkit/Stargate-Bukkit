@@ -1,7 +1,7 @@
 package net.knarcraft.stargate.listener;
 
-import net.knarcraft.stargate.Portal;
-import net.knarcraft.stargate.PortalHandler;
+import net.knarcraft.stargate.portal.Portal;
+import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import org.bukkit.entity.Entity;

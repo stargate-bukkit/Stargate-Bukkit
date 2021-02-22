@@ -8,6 +8,10 @@ import org.bukkit.Tag;
  */
 public final class MaterialHelper {
 
+    private MaterialHelper() {
+
+    }
+
     /**
      * Checks whether the given material is a dead or alive wall coral
      *

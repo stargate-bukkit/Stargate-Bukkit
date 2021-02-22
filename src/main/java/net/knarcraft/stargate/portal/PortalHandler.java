@@ -1,5 +1,9 @@
-package net.knarcraft.stargate;
+package net.knarcraft.stargate.portal;
 
+import net.knarcraft.stargate.BlockLocation;
+import net.knarcraft.stargate.RelativeBlockVector;
+import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.TwoTuple;
 import net.knarcraft.stargate.event.StargateCreateEvent;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import org.bukkit.Bukkit;
@@ -37,6 +41,10 @@ public class PortalHandler {
 
     // A list of Bungee gates
     private static final Map<String, Portal> bungeePortals = new HashMap<>();
+
+    private PortalHandler() {
+
+    }
 
     public static List<String> getNetwork(String network) {
         return allPortalsNet.get(network.toLowerCase());
@@ -208,7 +216,7 @@ public class PortalHandler {
             return null;
         }
 
-        if (Gate.getGatesByControlBlock(idParent).length == 0) {
+        if (GateHandler.getGatesByControlBlock(idParent).length == 0) {
             return null;
         }
 
@@ -250,7 +258,7 @@ public class PortalHandler {
             buttonFacing = BlockFace.SOUTH;
         }
 
-        Gate[] possibleGates = Gate.getGatesByControlBlock(idParent);
+        Gate[] possibleGates = GateHandler.getGatesByControlBlock(idParent);
         Gate gate = null;
         RelativeBlockVector buttonVector = null;
 
@@ -258,7 +266,7 @@ public class PortalHandler {
             if (gate != null || buttonVector != null) {
                 break;
             }
-            RelativeBlockVector[] vectors = possibility.getControls();
+            RelativeBlockVector[] vectors = possibility.getLayout().getControls();
             RelativeBlockVector otherControl = null;
 
             for (RelativeBlockVector vector : vectors) {
@@ -357,7 +365,7 @@ public class PortalHandler {
         }
 
         // Bleh, gotta check to make sure none of this gate belongs to another gate. Boo slow.
-        for (RelativeBlockVector v : gate.getBorder()) {
+        for (RelativeBlockVector v : gate.getLayout().getBorder()) {
             BlockLocation b = topLeft.modRelative(v.getRight(), v.getDepth(), v.getDistance(), modX, 1, modZ);
             if (getByBlock(b.getBlock()) != null) {
                 Stargate.debug("createPortal", "Gate conflicts with existing gate");
@@ -427,7 +435,7 @@ public class PortalHandler {
         // No button on an always-open gate.
         if (!portalOptions.get(PortalOption.ALWAYS_ON)) {
             button = topLeft.modRelative(buttonVector.getRight(), buttonVector.getDepth(), buttonVector.getDistance() + 1, modX, 1, modZ);
-            Directional buttonData = (Directional) Bukkit.createBlockData(gate.getButton());
+            Directional buttonData = (Directional) Bukkit.createBlockData(gate.getPortalButton());
             buttonData.setFacing(buttonFacing);
             button.getBlock().setBlockData(buttonData);
             portal.setButton(button);
@@ -447,7 +455,7 @@ public class PortalHandler {
             // Set the inside of the gate to its closed material
         } else {
             for (BlockLocation inside : portal.getEntrances()) {
-                inside.setType(portal.getGate().getPortalBlockClosed());
+                inside.setType(portal.getGate().getPortalClosedBlock());
             }
         }
 
@@ -813,7 +821,7 @@ public class PortalHandler {
         int modZ = Integer.parseInt(portalData[4]);
         float rotX = Float.parseFloat(portalData[5]);
         BlockLocation topLeft = new BlockLocation(world, portalData[6]);
-        Gate gate = Gate.getGateByName(portalData[7]);
+        Gate gate = GateHandler.getGateByName(portalData[7]);
         if (gate == null) {
             Stargate.log.info(Stargate.getString("prefix") + "Gate layout on line " + lineIndex +
                     " does not exist [" + portalData[7] + "]");
@@ -907,7 +915,7 @@ public class PortalHandler {
      */
     private static void destroyInvalidStarGate(Portal portal) {
         // DEBUG
-        for (RelativeBlockVector control : portal.getGate().getControls()) {
+        for (RelativeBlockVector control : portal.getGate().getLayout().getControls()) {
             if (!portal.getBlockAt(control).getBlock().getType().equals(portal.getGate().getControlBlock())) {
                 Stargate.debug("loadAllGates", "Control Block Type == " + portal.getBlockAt(control).getBlock().getType().name());
             }

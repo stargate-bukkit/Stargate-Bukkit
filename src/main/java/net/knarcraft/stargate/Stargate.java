@@ -10,6 +10,11 @@ import net.knarcraft.stargate.listener.PlayerEventsListener;
 import net.knarcraft.stargate.listener.PluginEventListener;
 import net.knarcraft.stargate.listener.VehicleEventListener;
 import net.knarcraft.stargate.listener.WorldEventListener;
+import net.knarcraft.stargate.portal.Gate;
+import net.knarcraft.stargate.portal.GateHandler;
+import net.knarcraft.stargate.portal.Portal;
+import net.knarcraft.stargate.portal.PortalHandler;
+import net.knarcraft.stargate.portal.PortalOption;
 import net.knarcraft.stargate.thread.BlockPopulatorThread;
 import net.knarcraft.stargate.thread.StarGateThread;
 import org.bukkit.Bukkit;
@@ -561,8 +566,8 @@ public class Stargate extends JavaPlugin {
             }
         }
 
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new StarGateThread(), 0L, 100L);
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new BlockPopulatorThread(), 0L, 1L);
+        getServer().getScheduler().runTaskTimer(this, new StarGateThread(), 0L, 100L);
+        getServer().getScheduler().runTaskTimer(this, new BlockPopulatorThread(), 0L, 100L);
 
         this.registerCommands();
     }
@@ -626,8 +631,8 @@ public class Stargate extends JavaPlugin {
     }
 
     public void loadGates() {
-        Gate.loadGates(gateFolder);
-        log.info(Stargate.getString("prefix") + "Loaded " + Gate.getGateCount() + " gate layouts");
+        GateHandler.loadGates(gateFolder);
+        log.info(Stargate.getString("prefix") + "Loaded " + GateHandler.getGateCount() + " gate layouts");
     }
 
     public void loadAllPortals() {
@@ -688,7 +693,7 @@ public class Stargate extends JavaPlugin {
         openList.clear();
         managedWorlds.clear();
         PortalHandler.clearGates();
-        Gate.clearGates();
+        GateHandler.clearGates();
 
         // Store the old Bungee enabled value
         boolean oldEnableBungee = enableBungee;

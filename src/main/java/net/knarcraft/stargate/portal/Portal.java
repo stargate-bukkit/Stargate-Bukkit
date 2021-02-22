@@ -1,5 +1,10 @@
-package net.knarcraft.stargate;
+package net.knarcraft.stargate.portal;
 
+import net.knarcraft.stargate.BlockLocation;
+import net.knarcraft.stargate.BloxPopulator;
+import net.knarcraft.stargate.EconomyHandler;
+import net.knarcraft.stargate.RelativeBlockVector;
+import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargateActivateEvent;
 import net.knarcraft.stargate.event.StargateCloseEvent;
 import net.knarcraft.stargate.event.StargateDeactivateEvent;
@@ -317,7 +322,7 @@ public class Portal {
 
     public BlockLocation[] getEntrances() {
         if (entrances == null) {
-            RelativeBlockVector[] space = gate.getEntrances();
+            RelativeBlockVector[] space = gate.getLayout().getEntrances();
             entrances = new BlockLocation[space.length];
             int i = 0;
 
@@ -330,7 +335,7 @@ public class Portal {
 
     public BlockLocation[] getFrame() {
         if (frame == null) {
-            RelativeBlockVector[] border = gate.getBorder();
+            RelativeBlockVector[] border = gate.getLayout().getBorder();
             frame = new BlockLocation[border.length];
             int i = 0;
 
@@ -371,7 +376,7 @@ public class Portal {
 
         if (isOpen() && !force) return false;
 
-        Material openType = gate.getPortalBlockOpen();
+        Material openType = gate.getPortalOpenBlock();
         Axis ax = openType == Material.NETHER_PORTAL ? rot : null;
         for (BlockLocation inside : getEntrances()) {
             Stargate.blockPopulatorQueue.add(new BloxPopulator(inside, openType, ax));
@@ -409,7 +414,7 @@ public class Portal {
         if (isAlwaysOn() && !force) return; // Only close always-open if forced
 
         // Close this gate, then the dest gate.
-        Material closedType = gate.getPortalBlockClosed();
+        Material closedType = gate.getPortalClosedBlock();
         for (BlockLocation inside : getEntrances()) {
             Stargate.blockPopulatorQueue.add(new BloxPopulator(inside, closedType));
         }
@@ -455,7 +460,7 @@ public class Portal {
     }
 
     public boolean isPowered() {
-        RelativeBlockVector[] controls = gate.getControls();
+        RelativeBlockVector[] controls = gate.getLayout().getControls();
 
         for (RelativeBlockVector vector : controls) {
             BlockData data = getBlockAt(vector).getBlock().getBlockData();
@@ -583,8 +588,8 @@ public class Portal {
     public Location getExit(Entity entity, Location traveller) {
         Location exitLocation = null;
         // Check if the gate has an exit block
-        if (gate.getExit() != null) {
-            BlockLocation exit = getBlockAt(gate.getExit());
+        if (gate.getLayout().getExit() != null) {
+            BlockLocation exit = getBlockAt(gate.getLayout().getExit());
             int back = (isBackwards()) ? -1 : 1;
             double entitySize = Math.ceil((float) Math.max(entity.getBoundingBox().getWidthX(), entity.getBoundingBox().getWidthZ()));
             exitLocation = exit.modRelativeLoc(0D, 0D, entitySize, traveller.getYaw(), traveller.getPitch(), modX * back, 1, modZ * back);
@@ -657,7 +662,7 @@ public class Portal {
         if (!Stargate.verifyPortals) {
             return true;
         }
-        for (RelativeBlockVector control : gate.getControls()) {
+        for (RelativeBlockVector control : gate.getLayout().getControls()) {
             verified = verified && getBlockAt(control).getBlock().getType().equals(gate.getControlBlock());
         }
         return verified;

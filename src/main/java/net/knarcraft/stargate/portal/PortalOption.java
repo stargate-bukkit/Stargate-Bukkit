@@ -1,4 +1,4 @@
-package net.knarcraft.stargate;
+package net.knarcraft.stargate.portal;
 
 public enum PortalOption {
 

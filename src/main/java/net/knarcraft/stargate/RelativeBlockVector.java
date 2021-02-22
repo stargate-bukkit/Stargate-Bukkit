@@ -4,9 +4,9 @@ package net.knarcraft.stargate;
  * This stores a block location as a vector relative to a position
  *
  * <p>A relative block vector stores a vector relative to some origin. The origin in this plugin is usually the
- * top-left block of a gate. The right is therefore the distance from the top-left corner towards the top-right corner.
- * Depth is the distance from the top-left corner to the bottom-left corner. Distance is the distance outward from the
- * gate.</p>
+ * top-left block of a gate (top-left when looking at the side with the sign). The right is therefore the distance
+ * from the top-left corner towards the top-right corner. Depth is the distance from the top-left corner to the
+ * bottom-left corner. Distance is the distance outward from the gate.</p>
  */
 public class RelativeBlockVector {
 
@@ -56,12 +56,15 @@ public class RelativeBlockVector {
 
     @Override
     public String toString() {
-        return String.format("right = %d, depth = %d, distance = %d", right, depth, distance);
+        return String.format("(right = %d, depth = %d, distance = %d)", right, depth, distance);
     }
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof RelativeBlockVector)) {
+        if (other == this) {
+            return true;
+        }
+        if (other == null || this.getClass() != other.getClass()) {
             return false;
         }
         RelativeBlockVector otherVector = (RelativeBlockVector) other;

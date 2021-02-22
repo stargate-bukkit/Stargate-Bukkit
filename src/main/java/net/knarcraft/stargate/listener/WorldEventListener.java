@@ -1,6 +1,6 @@
 package net.knarcraft.stargate.listener;
 
-import net.knarcraft.stargate.PortalHandler;
+import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.Stargate;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;

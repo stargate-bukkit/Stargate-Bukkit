@@ -1,7 +1,7 @@
 package net.knarcraft.stargate.utility;
 
-import net.knarcraft.stargate.Portal;
-import net.knarcraft.stargate.PortalHandler;
+import net.knarcraft.stargate.portal.Portal;
+import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.Stargate;
 import org.bukkit.entity.Player;
 
@@ -19,6 +19,10 @@ public final class BungeeHelper {
     private final static String bungeeSubChannel = "SGBungee";
     private final static String bungeeChannel = "BungeeCord";
     private final static String teleportMessageDelimiter = "#@#";
+
+    private BungeeHelper() {
+
+    }
 
     /**
      * Sends a plugin message to BungeeCord allowing the target server to catch it

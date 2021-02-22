@@ -1,6 +1,6 @@
 package net.knarcraft.stargate.event;
 
-import net.knarcraft.stargate.Portal;
+import net.knarcraft.stargate.portal.Portal;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 
