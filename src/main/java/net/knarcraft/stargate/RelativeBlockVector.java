@@ -54,4 +54,19 @@ public class RelativeBlockVector {
         return distance;
     }
 
+    @Override
+    public String toString() {
+        return String.format("right = %d, depth = %d, distance = %d", right, depth, distance);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof RelativeBlockVector)) {
+            return false;
+        }
+        RelativeBlockVector otherVector = (RelativeBlockVector) other;
+        return this.right == otherVector.right && this.depth == otherVector.depth &&
+                this.distance == otherVector.distance;
+    }
+
 }
