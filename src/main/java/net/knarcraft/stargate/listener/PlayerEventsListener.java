@@ -100,19 +100,23 @@ public class PlayerEventsListener implements Listener {
      */
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (event.isCancelled()) {
+        if (event.isCancelled() || event.getTo() == null) {
             return;
         }
 
         //Check to see if the player moved to another block
-        BlockLocation fromLocation = (BlockLocation) event.getFrom();
-        BlockLocation toLocation = (BlockLocation) event.getTo();
-        if (toLocation == null || fromLocation.equals(toLocation)) {
+        BlockLocation fromLocation = new BlockLocation(event.getFrom().getBlock());
+        BlockLocation toLocation = new BlockLocation(event.getTo().getBlock());
+        if (fromLocation.equals(toLocation)) {
             return;
         }
 
         Player player = event.getPlayer();
         Portal entrancePortal = PortalHandler.getByEntrance(toLocation);
+        if (entrancePortal == null) {
+            return;
+        }
+
         Portal destination = entrancePortal.getDestination(player);
 
         //Decide if the anything stops the player from teleport
