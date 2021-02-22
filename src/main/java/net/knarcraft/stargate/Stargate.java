@@ -568,7 +568,7 @@ public class Stargate extends JavaPlugin {
         }
 
         getServer().getScheduler().runTaskTimer(this, new StarGateThread(), 0L, 100L);
-        getServer().getScheduler().runTaskTimer(this, new BlockPopulatorThread(), 0L, 100L);
+        getServer().getScheduler().runTaskTimer(this, new BlockPopulatorThread(), 0L, 1L);
 
         this.registerCommands();
     }
