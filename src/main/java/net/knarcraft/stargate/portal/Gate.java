@@ -1,8 +1,9 @@
 package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.BlockLocation;
-import net.knarcraft.stargate.EconomyHandler;
+import net.knarcraft.stargate.RelativeBlockVector;
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.utility.EconomyHandler;
 import org.bukkit.Material;
 
 import java.io.BufferedWriter;
@@ -37,16 +38,16 @@ public class Gate {
     /**
      * Instantiates a new gate
      *
-     * @param filename <p>The name of the gate which equal the name of the file</p>
-     * @param layout <p>The character layout defined in the gate file</p>
-     * @param types <p>The block types the different layout characters represent</p>
-     * @param portalOpenBlock <p>The material to set the non-frame to when the portal is open</p>
+     * @param filename          <p>The name of the gate which equal the name of the file</p>
+     * @param layout            <p>The character layout defined in the gate file</p>
+     * @param types             <p>The block types the different layout characters represent</p>
+     * @param portalOpenBlock   <p>The material to set the non-frame to when the portal is open</p>
      * @param portalClosedBlock <p>The material to set the non-frame to when the portal is closed</p>
-     * @param portalButton <p>The material to use for the portal button</p>
-     * @param useCost <p>The cost of using a portal with this gate layout (-1 to disable)</p>
-     * @param createCost <p>The cost of creating a portal with this gate layout (-1 to disable)</p>
-     * @param destroyCost <p>The cost of destroying a portal with this gate layout (-1 to disable)</p>
-     * @param toOwner <p>Whether any payment should go to the owner of the gate, as opposed to just disappearing</p>
+     * @param portalButton      <p>The material to use for the portal button</p>
+     * @param useCost           <p>The cost of using a portal with this gate layout (-1 to disable)</p>
+     * @param createCost        <p>The cost of creating a portal with this gate layout (-1 to disable)</p>
+     * @param destroyCost       <p>The cost of destroying a portal with this gate layout (-1 to disable)</p>
+     * @param toOwner           <p>Whether any payment should go to the owner of the gate, as opposed to just disappearing</p>
      */
     public Gate(String filename, GateLayout layout, HashMap<Character, Material> types, Material portalOpenBlock,
                 Material portalClosedBlock, Material portalButton, int useCost, int createCost, int destroyCost,
@@ -81,93 +82,196 @@ public class Gate {
         return types;
     }
 
+    /**
+     * Gets the material type used for this gate's control blocks
+     *
+     * @return <p>The material type used for control blocks</p>
+     */
     public Material getControlBlock() {
-        return types.get('-');
+        return types.get(GateHandler.getControlBlockCharacter());
     }
 
+    /**
+     * Gets the filename of this gate
+     *
+     * @return <p>The filename of this gate</p>
+     */
     public String getFilename() {
         return filename;
     }
 
+    /**
+     * Gets the block type to use for the opening when a portal using this gate is open
+     *
+     * @return <p>The block type to use for the opening when open</p>
+     */
     public Material getPortalOpenBlock() {
         return portalOpenBlock;
     }
 
+    /**
+     * Sets the block to use for the opening when a portal using this gate is open
+     *
+     * @param type <p>The block type to use for the opening when open</p>
+     */
     public void setPortalOpenBlock(Material type) {
         portalOpenBlock = type;
     }
 
+    /**
+     * Gets the block type to use for the opening when a portal using this gate is closed
+     *
+     * @return <p>The block type to use for the opening when closed</p>
+     */
     public Material getPortalClosedBlock() {
         return portalClosedBlock;
     }
 
+    /**
+     * Sets the block type to use for the opening when a portal using this gate is closed
+     *
+     * @param type <p>The block type to use for the opening when closed</p>
+     */
     public void setPortalClosedBlock(Material type) {
         portalClosedBlock = type;
     }
 
+    /**
+     * Gets the material to use for a portal's button if using this gate type
+     *
+     * @return <p>The material to use for a portal's button if using this gate type</p>
+     */
     public Material getPortalButton() {
         return portalButton;
     }
 
+    /**
+     * Gets the cost of using a portal with this gate
+     *
+     * @return <p>The cost of using a portal with this gate</p>
+     */
     public int getUseCost() {
-        if (useCost < 0) return EconomyHandler.useCost;
-        return useCost;
+        return useCost < 0 ? EconomyHandler.getUseCost() : useCost;
     }
 
+    /**
+     * Gets the cost of creating a portal with this gate
+     *
+     * @return <p>The cost of creating a portal with this gate</p>
+     */
     public Integer getCreateCost() {
-        if (createCost < 0) return EconomyHandler.createCost;
-        return createCost;
+        return createCost < 0 ? EconomyHandler.getCreateCost() : createCost;
     }
 
+    /**
+     * Gets the cost of destroying a portal with this gate
+     *
+     * @return <p>The cost of destroying a portal with this gate</p>
+     */
     public Integer getDestroyCost() {
-        if (destroyCost < 0) return EconomyHandler.destroyCost;
+        if (destroyCost < 0) return EconomyHandler.getDestroyCost();
         return destroyCost;
     }
 
+    /**
+     * Gets whether portal payments go to this portal's owner
+     *
+     * @return <p>Whether portal payments go to the owner</p>
+     */
     public Boolean getToOwner() {
         return toOwner;
     }
 
+    /**
+     * Checks whether a portal's gate matches this gate type
+     *
+     * @param topLeft <p>The top-left block of the portal's gate</p>
+     * @param modX    <p>The x modifier used</p>
+     * @param modZ    <p>The z modifier used</p>
+     * @return <p>True if this gate matches the portal</p>
+     */
     public boolean matches(BlockLocation topLeft, int modX, int modZ) {
         return matches(topLeft, modX, modZ, false);
     }
 
+    /**
+     * Checks whether a portal's gate matches this gate type
+     *
+     * @param topLeft  <p>The top-left block of the portal's gate</p>
+     * @param modX     <p>The x modifier used</p>
+     * @param modZ     <p>The z modifier used</p>
+     * @param onCreate <p>Whether this is used in the context of creating a new gate</p>
+     * @return <p>True if this gate matches the portal</p>
+     */
     public boolean matches(BlockLocation topLeft, int modX, int modZ, boolean onCreate) {
-        HashMap<Character, Material> portalTypes = new HashMap<>(types);
-        Character[][] layout = this.layout.getLayout();
-        for (int y = 0; y < layout.length; y++) {
-            for (int x = 0; x < layout[y].length; x++) {
-                Character key = layout[y][x];
+        return verifyGateEntrancesMatch(topLeft, modX, modZ, onCreate) && verifyGateBorderMatches(topLeft, modX, modZ);
+    }
 
-                if (key.equals(GateHandler.getEntranceCharacter()) || key.equals(GateHandler.getExitCharacter())) {
-                    if (Stargate.ignoreEntrance) {
-                        continue;
-                    }
+    /**
+     * Verifies that all border blocks of a portal gate matches this gate type
+     *
+     * @param topLeft <p>The top-left block of the portal</p>
+     * @param modX    <p>The x modifier used</p>
+     * @param modZ    <p>The z modifier used</p>
+     * @return <p>True if all border blocks of the gate match the layout</p>
+     */
+    private boolean verifyGateBorderMatches(BlockLocation topLeft, int modX, int modZ) {
+        Map<Character, Material> portalTypes = new HashMap<>(types);
+        for (RelativeBlockVector borderVector : layout.getBorder()) {
+            int rowIndex = borderVector.getRight();
+            int lineIndex = borderVector.getDepth();
+            Character key = layout.getLayout()[lineIndex][rowIndex];
 
-                    Material type = topLeft.modRelative(x, y, 0, modX, 1, modZ).getType();
-
-                    // Ignore entrance if it's air and we're creating a new gate
-                    if (onCreate && type == Material.AIR) {
-                        continue;
-                    }
-
-                    if (type != portalClosedBlock && type != portalOpenBlock) {
-                        Stargate.debug("Gate::Matches", "Entrance/Exit Material Mismatch: " + type);
-                        return false;
-                    }
-                } else if (!key.equals(GateHandler.getAnythingCharacter())) {
-                    Material id = portalTypes.get(key);
-                    if (id == null) {
-                        portalTypes.put(key, topLeft.modRelative(x, y, 0, modX, 1, modZ).getType());
-                    } else if (topLeft.modRelative(x, y, 0, modX, 1, modZ).getType() != id) {
-                        Stargate.debug("Gate::Matches", "Block Type Mismatch: " + topLeft.modRelative(x, y, 0, modX, 1, modZ).getType() + " != " + id);
-                        return false;
-                    }
-                }
+            Material materialInLayout = portalTypes.get(key);
+            Material materialAtLocation = getBlockAt(topLeft, borderVector, modX, modZ).getType();
+            if (materialInLayout == null) {
+                portalTypes.put(key, materialAtLocation);
+            } else if (materialAtLocation != materialInLayout) {
+                Stargate.debug("Gate::Matches", String.format("Block Type Mismatch: %s != %s",
+                        materialAtLocation, materialInLayout));
+                return false;
             }
         }
-
         return true;
+    }
+
+    /**
+     * Verifies that all entrances of a portal gate matches this gate type
+     *
+     * @param topLeft  <p>The top-left block of this portal</p>
+     * @param modX     <p>The x modifier used</p>
+     * @param modZ     <p>The z modifier used</p>
+     * @param onCreate <p>Whether this is used in the context of creating a new gate</p>
+     * @return <p>Whether this is used in the context of creating a new gate</p>
+     */
+    private boolean verifyGateEntrancesMatch(BlockLocation topLeft, int modX, int modZ, boolean onCreate) {
+        if (Stargate.ignoreEntrance) {
+            return true;
+        }
+        for (RelativeBlockVector entranceVector : layout.getEntrances()) {
+            Material type = getBlockAt(topLeft, entranceVector, modX, modZ).getType();
+
+            // Ignore entrance if it's air and we're creating a new gate
+            if (onCreate && type == Material.AIR) {
+                continue;
+            }
+
+            if (type != portalClosedBlock && type != portalOpenBlock) {
+                Stargate.debug("Gate::Matches", "Entrance/Exit Material Mismatch: " + type);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Gets the block at a relative block vector location
+     *
+     * @param vector <p>The relative block vector</p>
+     * @return <p>The block at the given relative position</p>
+     */
+    private BlockLocation getBlockAt(BlockLocation topLeft, RelativeBlockVector vector, int modX, int modZ) {
+        return topLeft.modRelative(vector.getRight(), vector.getDepth(), vector.getDistance(), modX, 1, modZ);
     }
 
     /**
@@ -206,7 +310,7 @@ public class Gate {
      * Saves current economy related values using a buffered writer
      *
      * @param bufferedWriter <p>The buffered writer to write to</p>
-     *      * @throws IOException <p>If unable to write to the buffered writer</p>
+     *                       * @throws IOException <p>If unable to write to the buffered writer</p>
      */
     private void saveEconomyValues(BufferedWriter bufferedWriter) throws IOException {
         if (useCost != -1) {
@@ -251,8 +355,8 @@ public class Gate {
      * Writes an integer to a config
      *
      * @param bufferedWriter <p>The buffered writer to write the config to</p>
-     * @param key <p>The config key to save</p>
-     * @param value <p>The value of the config key</p>
+     * @param key            <p>The config key to save</p>
+     * @param value          <p>The value of the config key</p>
      * @throws IOException <p>If unable to write to the buffered writer</p>
      */
     private void writeConfig(BufferedWriter bufferedWriter, String key, int value) throws IOException {
@@ -263,8 +367,8 @@ public class Gate {
      * Writes a boolean to a config
      *
      * @param bufferedWriter <p>The buffered writer to write the config to</p>
-     * @param key <p>The config key to save</p>
-     * @param value <p>The value of the config key</p>
+     * @param key            <p>The config key to save</p>
+     * @param value          <p>The value of the config key</p>
      * @throws IOException <p>If unable to write to the buffered writer</p>
      */
     private void writeConfig(BufferedWriter bufferedWriter, String key, boolean value) throws IOException {
@@ -275,8 +379,8 @@ public class Gate {
      * Writes a string to a config
      *
      * @param bufferedWriter <p>The buffered writer to write the config to</p>
-     * @param key <p>The config key to save</p>
-     * @param value <p>The value of the config key</p>
+     * @param key            <p>The config key to save</p>
+     * @param value          <p>The value of the config key</p>
      * @throws IOException <p>If unable to write to the buffered writer</p>
      */
     private void writeConfig(BufferedWriter bufferedWriter, String key, String value) throws IOException {
@@ -287,9 +391,9 @@ public class Gate {
      * Writes a formatted string to a buffered writer
      *
      * @param bufferedWriter <p>The buffered writer to write the formatted string to</p>
-     * @param format <p>The format to use</p>
-     * @param key <p>The config key to save</p>
-     * @param value <p>The config value to save</p>
+     * @param format         <p>The format to use</p>
+     * @param key            <p>The config key to save</p>
+     * @param value          <p>The config value to save</p>
      * @throws IOException <p>If unable to write to the buffered writer</p>
      */
     private void writeConfig(BufferedWriter bufferedWriter, String format, String key, Object value) throws IOException {
