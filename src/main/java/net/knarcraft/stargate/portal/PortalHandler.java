@@ -588,7 +588,6 @@ public class PortalHandler {
         }
 
         for (BlockLocation adjacentPosition : adjacentPositions) {
-            Stargate.debug("getByAdjacentEntrance", "Testing" + adjacentPosition);
             Portal portal = lookupEntrances.get(adjacentPosition);
             if (portal != null) {
                 return portal;

@@ -10,6 +10,7 @@ import net.knarcraft.stargate.event.StargateCloseEvent;
 import net.knarcraft.stargate.event.StargateDeactivateEvent;
 import net.knarcraft.stargate.event.StargateOpenEvent;
 import net.knarcraft.stargate.event.StargatePortalEvent;
+import net.knarcraft.stargate.utility.EntityHelper;
 import org.bukkit.Axis;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -595,8 +596,10 @@ public class Portal {
         if (gate.getLayout().getExit() != null) {
             BlockLocation exit = getBlockAt(gate.getLayout().getExit());
             int back = (isBackwards()) ? -1 : 1;
-            double entitySize = Math.ceil((float) Math.max(entity.getBoundingBox().getWidthX(), entity.getBoundingBox().getWidthZ()));
-            exitLocation = exit.modRelativeLoc(0D, 0D, entitySize, traveller.getYaw(), traveller.getPitch(), modX * back, 1, modZ * back);
+            //TODO: Improve positioning to place the entity just far enough from the portal not to suffocate
+            double entitySize = EntityHelper.getEntityMaxSize(entity);
+            exitLocation = exit.modRelativeLoc(0D, 0D, entitySize, traveller.getYaw(),
+                    traveller.getPitch(), modX * back, 1, modZ * back);
         } else {
             Stargate.log.log(Level.WARNING, Stargate.getString("prefix") + "Missing destination point in .gate file " + gate.getFilename());
         }

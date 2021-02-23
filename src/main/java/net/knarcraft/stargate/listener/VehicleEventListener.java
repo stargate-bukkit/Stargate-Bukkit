@@ -4,6 +4,7 @@ import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.utility.EconomyHelper;
+import net.knarcraft.stargate.utility.EntityHelper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
@@ -44,7 +45,13 @@ public class VehicleEventListener implements Listener {
         List<Entity> passengers = event.getVehicle().getPassengers();
         Vehicle vehicle = event.getVehicle();
 
-        Portal entrancePortal = PortalHandler.getByEntrance(event.getTo());
+        Portal entrancePortal;
+        int entitySize = (int) EntityHelper.getEntityMaxSize(vehicle);
+        if (EntityHelper.getEntityMaxSize(vehicle) > 1) {
+            entrancePortal = PortalHandler.getByAdjacentEntrance(event.getTo(), entitySize - 1);
+        } else {
+            entrancePortal = PortalHandler.getByEntrance(event.getTo());
+        }
 
         //Return if the portal cannot be teleported through
         if (entrancePortal == null || !entrancePortal.isOpen() || entrancePortal.isBungee()) {

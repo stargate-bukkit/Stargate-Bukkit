@@ -10,6 +10,7 @@ import java.util.Iterator;
  */
 public class StarGateThread implements Runnable {
 
+    @Override
     public void run() {
         long time = System.currentTimeMillis() / 1000;
         // Close open portals
