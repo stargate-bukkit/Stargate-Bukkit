@@ -32,14 +32,26 @@ public class VehicleEventListener implements Listener {
     }
 
     /**
-     * Teleports a vehicle through a stargate
+     * Check for a vehicle moving through a portal
      *
-     * @param passengers     <p>The passengers inside the vehicle</p>
-     * @param entrancePortal <p>The portal the vehicle is entering</p>
-     * @param vehicle        <p>The vehicle passing through</p>
+     * @param event <p>The triggered move event</p>
      */
-    public static void teleportVehicle(List<Entity> passengers, Portal entrancePortal, Vehicle vehicle) {
-        teleportVehicle(passengers, entrancePortal, vehicle, false);
+    @EventHandler
+    public void onVehicleMove(VehicleMoveEvent event) {
+        if (!Stargate.handleVehicles) {
+            return;
+        }
+        List<Entity> passengers = event.getVehicle().getPassengers();
+        Vehicle vehicle = event.getVehicle();
+
+        Portal entrancePortal = PortalHandler.getByEntrance(event.getTo());
+
+        //Return if the portal cannot be teleported through
+        if (entrancePortal == null || !entrancePortal.isOpen() || entrancePortal.isBungee()) {
+            return;
+        }
+
+        teleportVehicle(passengers, entrancePortal, vehicle);
     }
 
     /**
@@ -48,12 +60,11 @@ public class VehicleEventListener implements Listener {
      * @param passengers     <p>The passengers inside the vehicle</p>
      * @param entrancePortal <p>The portal the vehicle is entering</p>
      * @param vehicle        <p>The vehicle passing through</p>
-     * @param skipOpenCheck  <p>Skips the check for whether the portal is open for the player</p>
      */
-    public static void teleportVehicle(List<Entity> passengers, Portal entrancePortal, Vehicle vehicle, boolean skipOpenCheck) {
+    private static void teleportVehicle(List<Entity> passengers, Portal entrancePortal, Vehicle vehicle) {
         if (!passengers.isEmpty() && passengers.get(0) instanceof Player) {
             Stargate.log.info(Stargate.getString("prefox") + "Found passenger vehicle");
-            teleportPlayerAndVehicle(entrancePortal, vehicle, passengers, skipOpenCheck);
+            teleportPlayerAndVehicle(entrancePortal, vehicle, passengers);
         } else {
             Stargate.log.info(Stargate.getString("prefox") + "Found empty vehicle");
             Portal destinationPortal = entrancePortal.getDestination();
@@ -72,10 +83,9 @@ public class VehicleEventListener implements Listener {
      * @param vehicle        <p>The vehicle to teleport</p>
      * @param passengers     <p>Any entities sitting in the minecart</p>
      */
-    private static void teleportPlayerAndVehicle(Portal entrancePortal, Vehicle vehicle, List<Entity> passengers,
-                                                 boolean skipOpenCheck) {
+    private static void teleportPlayerAndVehicle(Portal entrancePortal, Vehicle vehicle, List<Entity> passengers) {
         Player player = (Player) passengers.get(0);
-        if (!skipOpenCheck && !entrancePortal.isOpenFor(player)) {
+        if (!entrancePortal.isOpenFor(player)) {
             Stargate.sendMessage(player, Stargate.getString("denyMsg"));
             return;
         }
@@ -103,31 +113,6 @@ public class VehicleEventListener implements Listener {
         Stargate.sendMessage(player, Stargate.getString("teleportMsg"), false);
         destinationPortal.teleport(vehicle);
         entrancePortal.close(false);
-    }
-
-    /**
-     * Check for a vehicle moving through a portal
-     *
-     * @param event <p>The triggered move event</p>
-     */
-    @EventHandler
-    public void onVehicleMove(VehicleMoveEvent event) {
-        if (!Stargate.handleVehicles) {
-            return;
-        }
-        List<Entity> passengers = event.getVehicle().getPassengers();
-        Vehicle vehicle = event.getVehicle();
-
-        Portal entrancePortal = PortalHandler.getByEntrance(event.getTo());
-
-        //Return if the portal cannot be teleported through
-        if (entrancePortal == null || !entrancePortal.isOpen() || entrancePortal.isBungee()) {
-            return;
-        }
-
-        //TODO: As there are a lot of vehicles in the game now, a lot needs to be accounted for to make this work as expected
-
-        teleportVehicle(passengers, entrancePortal, vehicle);
     }
 
 }

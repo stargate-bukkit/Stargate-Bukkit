@@ -555,33 +555,44 @@ public class PortalHandler {
     /**
      * Gets a portal given a location adjacent to its entrance
      *
-     * @param loc <p>A location adjacent to the portal's entrance</p>
+     * @param location <p>A location adjacent to the portal's entrance</p>
      * @return <p>The portal adjacent to the given location</p>
      */
-    public static Portal getByAdjacentEntrance(Location loc) {
-        int centerX = loc.getBlockX();
-        int centerY = loc.getBlockY();
-        int centerZ = loc.getBlockZ();
-        World world = loc.getWorld();
-        Portal portal = lookupEntrances.get(new BlockLocation(world, centerX, centerY, centerZ));
-        if (portal != null) {
-            return portal;
+    public static Portal getByAdjacentEntrance(Location location) {
+        return getByAdjacentEntrance(location, 1);
+    }
+
+    /**
+     * Gets a portal given a location adjacent to its entrance
+     *
+     * @param location <p>A location adjacent to the portal's entrance</p>
+     * @param range <p>The range to scan for portals</p>
+     * @return <p>The portal adjacent to the given location</p>
+     */
+    public static Portal getByAdjacentEntrance(Location location, int range) {
+        List<BlockLocation> adjacentPositions = new ArrayList<>();
+        BlockLocation centerLocation = new BlockLocation(location.getBlock());
+        adjacentPositions.add(centerLocation);
+
+        for (int index = 1; index <= range; index++) {
+            adjacentPositions.add(centerLocation.makeRelative(index, 0, 0));
+            adjacentPositions.add(centerLocation.makeRelative(-index, 0, 0));
+            adjacentPositions.add(centerLocation.makeRelative(0, 0, index));
+            adjacentPositions.add(centerLocation.makeRelative(0, 0, -index));
+            if (index < range) {
+                adjacentPositions.add(centerLocation.makeRelative(index, 0, index));
+                adjacentPositions.add(centerLocation.makeRelative(-index, 0, -index));
+                adjacentPositions.add(centerLocation.makeRelative(index, 0, -index));
+                adjacentPositions.add(centerLocation.makeRelative(-index, 0, index));
+            }
         }
-        portal = lookupEntrances.get(new BlockLocation(world, centerX + 1, centerY, centerZ));
-        if (portal != null) {
-            return portal;
-        }
-        portal = lookupEntrances.get(new BlockLocation(world, centerX - 1, centerY, centerZ));
-        if (portal != null) {
-            return portal;
-        }
-        portal = lookupEntrances.get(new BlockLocation(world, centerX, centerY, centerZ + 1));
-        if (portal != null) {
-            return portal;
-        }
-        portal = lookupEntrances.get(new BlockLocation(world, centerX, centerY, centerZ - 1));
-        if (portal != null) {
-            return portal;
+
+        for (BlockLocation adjacentPosition : adjacentPositions) {
+            Stargate.debug("getByAdjacentEntrance", "Testing" + adjacentPosition);
+            Portal portal = lookupEntrances.get(adjacentPosition);
+            if (portal != null) {
+                return portal;
+            }
         }
         return null;
     }

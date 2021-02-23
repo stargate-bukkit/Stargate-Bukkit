@@ -11,7 +11,9 @@ import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.Event;
@@ -84,11 +86,13 @@ public class PlayerEventsListener implements Listener {
 
         Entity playerVehicle = event.getPlayer().getVehicle();
         Portal portal = PortalHandler.getByEntrance(event.getFrom());
-        if (playerVehicle != null && PortalHandler.getByEntrance(event.getFrom()) != null) {
+        if (playerVehicle != null && PortalHandler.getByEntrance(event.getFrom()) != null &&
+                !(playerVehicle instanceof Minecart) &&
+                !(playerVehicle instanceof Boat)) {
             Portal destinationPortal = portal.getDestination();
             if (destinationPortal != null) {
                 VehicleEventListener.teleportVehicleAfterPlayer((Vehicle) playerVehicle, destinationPortal, event.getPlayer());
-                Stargate.log.info("Player was driving  " + playerVehicle.getName());
+                Stargate.debug("playerTeleport", "Player was driving  " + playerVehicle.getName());
             }
         }
     }

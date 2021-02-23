@@ -4,6 +4,7 @@ import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.Stargate;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -27,8 +28,10 @@ public class EntityEventListener implements Listener {
             return;
         }
 
-        Portal portal = PortalHandler.getByAdjacentEntrance(event.getFrom());
-        if (portal != null) {
+        Entity entity = event.getEntity();
+        int entitySize = (int) Math.ceil((float) Math.max(entity.getBoundingBox().getWidthX(),
+                entity.getBoundingBox().getWidthZ()));
+        if (PortalHandler.getByAdjacentEntrance(event.getFrom(), entitySize) != null) {
             event.setCancelled(true);
         }
     }
