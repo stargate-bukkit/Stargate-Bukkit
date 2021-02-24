@@ -490,11 +490,7 @@ public class Portal {
         Location exit = getExit(player, traveller);
 
         //Rotate the player to face out from the portal
-        int adjust = 180;
-        if (isBackwards() != origin.isBackwards()) {
-            adjust = 0;
-        }
-        exit.setYaw(traveller.getYaw() - origin.getRotation() + this.getRotation() + adjust);
+        adjustRotation(traveller, exit, origin);
 
         // Call the StargatePortalEvent to allow plugins to change destination
         if (!origin.equals(this)) {
@@ -520,14 +516,27 @@ public class Portal {
     }
 
     /**
+     * Adjusts the rotation of the player to face out from the portal
+     *
+     * @param entry <p>The location the player entered from</p>
+     * @param exit <p>The location the player will exit from</p>
+     * @param origin <p>The portal the player entered from</p>
+     */
+    private void adjustRotation(Location entry, Location exit, Portal origin) {
+        int adjust = 180;
+        if (isBackwards() != origin.isBackwards()) {
+            adjust = 0;
+        }
+        exit.setYaw(entry.getYaw() - origin.getRotation() + this.getRotation() + adjust);
+    }
+
+    /**
      * Teleports a vehicle to this portal
      *
      * @param vehicle <p>The vehicle to teleport</p>
      */
     public void teleport(final Vehicle vehicle) {
-        Location traveller = new Location(this.world, vehicle.getLocation().getX(), vehicle.getLocation().getY(),
-                vehicle.getLocation().getZ());
-        Stargate.log.info(Stargate.getString("prefix") + "Location of vehicle is " + traveller);
+        Location traveller = vehicle.getLocation();
         Location exit = getExit(vehicle, traveller);
 
         double velocity = vehicle.getVelocity().length();
@@ -548,36 +557,60 @@ public class Portal {
 
         if (!passengers.isEmpty()) {
             if (vehicle instanceof RideableMinecart || vehicle instanceof Boat) {
-                putPlayerInNewVehicle(vehicle, passengers, vehicleWorld, exit, newVelocity);
-                return;
+                putPassengersInNewVehicle(vehicle, passengers, vehicleWorld, exit, newVelocity);
+            } else {
+                teleportLivingVehicle(vehicle, exit, passengers);
             }
-            vehicle.eject();
-            handleVehiclePassengers(vehicle, passengers, vehicle, exit);
-            vehicle.teleport(exit);
-            Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> vehicle.setVelocity(newVelocity), 3);
         } else {
-            Stargate.log.info(Stargate.getString("prefix") + "Teleported vehicle to " + exit);
             vehicle.teleport(exit);
-            Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> {
-                vehicle.setVelocity(newVelocity);
-            }, 1);
+            Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> vehicle.setVelocity(newVelocity), 1);
         }
     }
 
-    private void putPlayerInNewVehicle(Vehicle vehicle, List<Entity> passengers, World vehicleWorld, Location exit, Vector newVelocity) {
+    /**
+     * Teleport a vehicle which is not a minecart or a boat
+     *
+     * @param vehicle <p>The vehicle to teleport</p>
+     * @param exit <p>The location the vehicle will exit</p>
+     * @param passengers <p>The passengers of the vehicle</p>
+     */
+    private void teleportLivingVehicle(Vehicle vehicle, Location exit, List<Entity> passengers) {
+        vehicle.eject();
+        vehicle.teleport(exit);
+        handleVehiclePassengers(passengers, vehicle, exit);
+    }
+
+    /**
+     * Creates a new vehicle equal to the player's previous vehicle and
+     *
+     * @param vehicle <p>The player's old vehicle</p>
+     * @param passengers <p>A list of all passengers in the vehicle</p>
+     * @param vehicleWorld <p>The world to spawn the new vehicle in</p>
+     * @param exit <p>The exit location to spawn the new vehicle on</p>
+     * @param newVelocity <p>The new velocity of the new vehicle</p>
+     */
+    private void putPassengersInNewVehicle(Vehicle vehicle, List<Entity> passengers, World vehicleWorld, Location exit,
+                                           Vector newVelocity) {
         Vehicle newVehicle = vehicleWorld.spawn(exit, vehicle.getClass());
         vehicle.eject();
         vehicle.remove();
-        handleVehiclePassengers(vehicle, passengers, newVehicle, exit);
+        vehicle.setRotation(exit.getYaw(), exit.getPitch());
+        handleVehiclePassengers(passengers, newVehicle, exit);
         Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> newVehicle.setVelocity(newVelocity), 1);
     }
 
-    private void handleVehiclePassengers(Vehicle sourceVehicle, List<Entity> passengers, Vehicle targetVehicle, Location exit) {
+    /**
+     * Ejects, teleports and adds all passengers to the target vehicle
+     *
+     * @param passengers <p>The passengers to handle</p>
+     * @param targetVehicle <p>The vehicle the passengers should be put into</p>
+     * @param exit <p>The exit location to teleport the passengers to</p>
+     */
+    private void handleVehiclePassengers(List<Entity> passengers, Vehicle targetVehicle, Location exit) {
         for (Entity passenger : passengers) {
             passenger.eject();
-            Stargate.log.info("Teleporting passenger" + passenger + " to " + exit);
             if (!passenger.teleport(exit)) {
-                Stargate.log.info("Failed to teleport passenger");
+                Stargate.debug("handleVehiclePassengers", "Failed to teleport passenger");
             }
             Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> targetVehicle.addPassenger(passenger), 1);
         }
@@ -590,7 +623,7 @@ public class Portal {
      * @param traveller <p>The location of the entity travelling</p>
      * @return <p>The location the entity should be teleported to.</p>
      */
-    public Location getExit(Entity entity, Location traveller) {
+    private Location getExit(Entity entity, Location traveller) {
         Location exitLocation = null;
         // Check if the gate has an exit block
         if (gate.getLayout().getExit() != null) {
@@ -790,6 +823,9 @@ public class Portal {
         drawSign();
     }
 
+    /**
+     * Draws the sign on this portal
+     */
     public final void drawSign() {
         BlockState state = id.getBlock().getState();
         if (!(state instanceof Sign)) {
@@ -797,95 +833,148 @@ public class Portal {
             Stargate.debug("Portal::drawSign", "Block: " + id.getBlock().getType() + " @ " + id.getBlock().getLocation());
             return;
         }
+
         Sign sign = (Sign) state;
+
+        //Clear sign
+        for (int index = 0; index <= 3; index++) {
+            sign.setLine(index, "");
+        }
         Stargate.setLine(sign, 0, "-" + name + "-");
-        int max = destinations.size() - 1;
-        int done = 0;
 
         if (!isActive()) {
-            Stargate.setLine(sign, ++done, Stargate.getString("signRightClick"));
-            Stargate.setLine(sign, ++done, Stargate.getString("signToUse"));
-            if (!isNoNetwork()) {
-                Stargate.setLine(sign, ++done, "(" + network + ")");
-            }
+            //Default sign text
+            drawInactiveSign(sign);
         } else {
-            // Awesome new logic for Bungee gates
             if (isBungee()) {
-                Stargate.setLine(sign, ++done, Stargate.getString("bungeeSign"));
-                Stargate.setLine(sign, ++done, ">" + destination + "<");
-                Stargate.setLine(sign, ++done, "[" + network + "]");
+                //Bungee sign
+                drawBungeeSign(sign);
             } else if (isFixed()) {
-                if (isRandom()) {
-                    Stargate.setLine(sign, ++done, "> " + Stargate.getString("signRandom") + " <");
-                } else {
-                    Stargate.setLine(sign, ++done, ">" + destination + "<");
-                }
-                if (isNoNetwork()) {
-                    Stargate.setLine(sign, ++done, "");
-                } else {
-                    Stargate.setLine(sign, ++done, "(" + network + ")");
-                }
-                Portal dest = PortalHandler.getByName(destination, network);
-                if (dest == null && !isRandom()) {
-                    Stargate.setLine(sign, ++done, Stargate.getString("signDisconnected"));
-                } else {
-                    Stargate.setLine(sign, ++done, "");
-                }
+                //Sign pointing at one other portal
+                drawFixedSign(sign);
             } else {
-                int index = destinations.indexOf(destination);
-                if ((index == max) && (max > 1) && (++done <= 3)) {
-                    if (EconomyHandler.useEconomy() && EconomyHandler.freeGatesGreen) {
-                        Portal dest = PortalHandler.getByName(destinations.get(index - 2), network);
-                        boolean green = Stargate.isFree(activePlayer, this, dest);
-                        Stargate.setLine(sign, done, (green ? ChatColor.DARK_GREEN : "") + destinations.get(index - 2));
-                    } else {
-                        Stargate.setLine(sign, done, destinations.get(index - 2));
-                    }
-                }
-                if ((index > 0) && (++done <= 3)) {
-                    if (EconomyHandler.useEconomy() && EconomyHandler.freeGatesGreen) {
-                        Portal dest = PortalHandler.getByName(destinations.get(index - 1), network);
-                        boolean green = Stargate.isFree(activePlayer, this, dest);
-                        Stargate.setLine(sign, done, (green ? ChatColor.DARK_GREEN : "") + destinations.get(index - 1));
-                    } else {
-                        Stargate.setLine(sign, done, destinations.get(index - 1));
-                    }
-                }
-                if (++done <= 3) {
-                    if (EconomyHandler.useEconomy() && EconomyHandler.freeGatesGreen) {
-                        Portal dest = PortalHandler.getByName(destination, network);
-                        boolean green = Stargate.isFree(activePlayer, this, dest);
-                        Stargate.setLine(sign, done, (green ? ChatColor.DARK_GREEN : "") + ">" + destination + "<");
-                    } else {
-                        Stargate.setLine(sign, done, " >" + destination + "< ");
-                    }
-                }
-                if ((max >= index + 1) && (++done <= 3)) {
-                    if (EconomyHandler.useEconomy() && EconomyHandler.freeGatesGreen) {
-                        Portal dest = PortalHandler.getByName(destinations.get(index + 1), network);
-                        boolean green = Stargate.isFree(activePlayer, this, dest);
-                        Stargate.setLine(sign, done, (green ? ChatColor.DARK_GREEN : "") + destinations.get(index + 1));
-                    } else {
-                        Stargate.setLine(sign, done, destinations.get(index + 1));
-                    }
-                }
-                if ((max >= index + 2) && (++done <= 3)) {
-                    if (EconomyHandler.useEconomy() && EconomyHandler.freeGatesGreen) {
-                        Portal dest = PortalHandler.getByName(destinations.get(index + 2), network);
-                        boolean green = Stargate.isFree(activePlayer, this, dest);
-                        Stargate.setLine(sign, done, (green ? ChatColor.DARK_GREEN : "") + destinations.get(index + 2));
-                    } else {
-                        Stargate.setLine(sign, done, destinations.get(index + 2));
-                    }
-                }
+                //Networking stuff
+                drawNetworkSign(sign);
             }
-        }
-
-        for (done++; done <= 3; done++) {
-            sign.setLine(done, "");
         }
 
         sign.update();
+    }
+
+    /**
+     * Draws a sign with chooseable network locations
+     *
+     * @param sign <p>The sign to draw on</p>
+     */
+    private void drawNetworkSign(Sign sign) {
+        int maxIndex = destinations.size() - 1;
+        int signLineIndex = 0;
+        int destinationIndex = destinations.indexOf(destination);
+        boolean freeGatesGreen = EconomyHandler.useEconomy() && EconomyHandler.freeGatesGreen;
+
+        //Last entry, and not only entry. Draw the entry two previously
+        if ((destinationIndex == maxIndex) && (maxIndex > 1)) {
+            drawNetworkSignLine(freeGatesGreen, sign, ++signLineIndex, destinationIndex - 2);
+        }
+        //Not first entry. Draw the previous entry
+        if (destinationIndex > 0) {
+            drawNetworkSignLine(freeGatesGreen, sign, ++signLineIndex, destinationIndex - 1);
+        }
+        //Draw the chosen entry (line 2 or 3)
+        drawNetworkSignChosenLine(freeGatesGreen, sign, ++signLineIndex);
+        //Has another entry and space on the sign
+        if ((maxIndex >= destinationIndex + 1) && (++signLineIndex <= 3)) {
+            drawNetworkSignLine(freeGatesGreen, sign, signLineIndex, destinationIndex + 1);
+        }
+        //Has another entry and space on the sign
+        if ((maxIndex >= destinationIndex + 2) && (++signLineIndex <= 3)) {
+            drawNetworkSignLine(freeGatesGreen, sign, signLineIndex, destinationIndex + 2);
+        }
+    }
+
+    /**
+     * Draws the chosen destination on one sign line
+     *
+     * @param freeGatesGreen <p>Whether to display free gates in a green color</p>
+     * @param sign <p>The sign to draw on</p>
+     * @param signLineIndex <p>The line to draw on</p>
+     */
+    private void drawNetworkSignChosenLine(boolean freeGatesGreen, Sign sign, int signLineIndex) {
+        if (freeGatesGreen) {
+            Portal destination = PortalHandler.getByName(this.destination, network);
+            boolean green = Stargate.isFree(activePlayer, this, destination);
+            Stargate.setLine(sign, signLineIndex, (green ? ChatColor.DARK_GREEN : "") + ">" + this.destination + "<");
+        } else {
+            Stargate.setLine(sign, signLineIndex, " >" + destination + "< ");
+        }
+    }
+
+    /**
+     * Draws one network destination on one sign line
+     *
+     * @param freeGatesGreen <p>Whether to display free gates in a green color</p>
+     * @param sign <p>The sign to draw on</p>
+     * @param signLineIndex <p>The line to draw on</p>
+     * @param destinationIndex <p>The index of the destination to draw</p>
+     */
+    private void drawNetworkSignLine(boolean freeGatesGreen, Sign sign, int signLineIndex, int destinationIndex) {
+        if (freeGatesGreen) {
+            Portal destination = PortalHandler.getByName(destinations.get(destinationIndex), network);
+            boolean green = Stargate.isFree(activePlayer, this, destination);
+            Stargate.setLine(sign, signLineIndex, (green ? ChatColor.DARK_GREEN : "") + destinations.get(destinationIndex));
+        } else {
+            Stargate.setLine(sign, signLineIndex, destinations.get(destinationIndex));
+        }
+    }
+
+    /**
+     * Draws a bungee sign
+     *
+     * @param sign <p>The sign to draw on</p>
+     */
+    private void drawBungeeSign(Sign sign) {
+        Stargate.setLine(sign, 1, Stargate.getString("bungeeSign"));
+        Stargate.setLine(sign, 2, ">" + destination + "<");
+        Stargate.setLine(sign, 3, "[" + network + "]");
+    }
+
+    /**
+     * Draws an inactive sign
+     *
+     * @param sign <p>The sign to draw on</p>
+     */
+    private void drawInactiveSign(Sign sign) {
+        Stargate.setLine(sign, 1, Stargate.getString("signRightClick"));
+        Stargate.setLine(sign, 2, Stargate.getString("signToUse"));
+        if (!isNoNetwork()) {
+            Stargate.setLine(sign, 3, "(" + network + ")");
+        } else {
+            Stargate.setLine(sign, 3, "");
+        }
+    }
+
+    /**
+     * Draws a sign pointing to a fixed location
+     *
+     * @param sign <p>The sign to draw on</p>
+     */
+    private void drawFixedSign(Sign sign) {
+        if (isRandom()) {
+            Stargate.setLine(sign, 1, "> " + Stargate.getString("signRandom") + " <");
+        } else {
+            Stargate.setLine(sign, 1, ">" + destination + "<");
+        }
+        if (isNoNetwork()) {
+            Stargate.setLine(sign, 2, "");
+        } else {
+            Stargate.setLine(sign, 2, "(" + network + ")");
+        }
+        Portal destination = PortalHandler.getByName(this.destination, network);
+        if (destination == null && !isRandom()) {
+            Stargate.setLine(sign, 3, Stargate.getString("signDisconnected"));
+        } else {
+            Stargate.setLine(sign, 3, "");
+        }
     }
 
     /**
@@ -914,18 +1003,20 @@ public class Portal {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
-        if (getClass() != obj.getClass())
-            return false;
+        }
         Portal other = (Portal) obj;
         if (name == null) {
-            if (other.name != null)
+            if (other.name != null) {
                 return false;
-        } else if (!name.equalsIgnoreCase(other.name))
+            }
+        } else if (!name.equalsIgnoreCase(other.name)) {
             return false;
+        }
         if (network == null) {
             return other.network == null;
         } else {
