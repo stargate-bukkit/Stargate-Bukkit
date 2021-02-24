@@ -2,7 +2,6 @@ package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.BlockLocation;
 import net.knarcraft.stargate.BloxPopulator;
-import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.RelativeBlockVector;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargateActivateEvent;
@@ -11,8 +10,8 @@ import net.knarcraft.stargate.event.StargateDeactivateEvent;
 import net.knarcraft.stargate.event.StargateOpenEvent;
 import net.knarcraft.stargate.event.StargatePortalEvent;
 import net.knarcraft.stargate.utility.EntityHelper;
+import net.knarcraft.stargate.utility.SignHelper;
 import org.bukkit.Axis;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -266,6 +265,10 @@ public class Portal {
     public void setName(String name) {
         this.name = filterName(name);
         drawSign();
+    }
+
+    public List<String> getDestinations() {
+        return new ArrayList<>(this.destinations);
     }
 
     public Portal getDestination(Player player) {
@@ -792,7 +795,17 @@ public class Portal {
         cycleDestination(player, 1);
     }
 
-    public void cycleDestination(Player player, int dir) {
+    /**
+     * Cycles destination for a network gate
+     *
+     * @param player <p>The player cycling destinations</p>
+     * @param direction <p>The direction of the cycle (+1 for next, -1 for previous)</p>
+     */
+    public void cycleDestination(Player player, int direction) {
+        if (direction != 1 && direction != -1) {
+            throw new IllegalArgumentException("The destination direction must be 1 or -1.");
+        }
+
         boolean activate = false;
         if (!isActive() || getActivePlayer() != player) {
             // If the event is cancelled, return
@@ -811,7 +824,7 @@ public class Portal {
 
         if (!Stargate.destMemory || !activate || lastDestination.isEmpty()) {
             int index = destinations.indexOf(destination);
-            index += dir;
+            index += direction;
             if (index >= destinations.size())
                 index = 0;
             else if (index < 0)
@@ -835,146 +848,7 @@ public class Portal {
         }
 
         Sign sign = (Sign) state;
-
-        //Clear sign
-        for (int index = 0; index <= 3; index++) {
-            sign.setLine(index, "");
-        }
-        Stargate.setLine(sign, 0, "-" + name + "-");
-
-        if (!isActive()) {
-            //Default sign text
-            drawInactiveSign(sign);
-        } else {
-            if (isBungee()) {
-                //Bungee sign
-                drawBungeeSign(sign);
-            } else if (isFixed()) {
-                //Sign pointing at one other portal
-                drawFixedSign(sign);
-            } else {
-                //Networking stuff
-                drawNetworkSign(sign);
-            }
-        }
-
-        sign.update();
-    }
-
-    /**
-     * Draws a sign with chooseable network locations
-     *
-     * @param sign <p>The sign to draw on</p>
-     */
-    private void drawNetworkSign(Sign sign) {
-        int maxIndex = destinations.size() - 1;
-        int signLineIndex = 0;
-        int destinationIndex = destinations.indexOf(destination);
-        boolean freeGatesGreen = EconomyHandler.useEconomy() && EconomyHandler.freeGatesGreen;
-
-        //Last entry, and not only entry. Draw the entry two previously
-        if ((destinationIndex == maxIndex) && (maxIndex > 1)) {
-            drawNetworkSignLine(freeGatesGreen, sign, ++signLineIndex, destinationIndex - 2);
-        }
-        //Not first entry. Draw the previous entry
-        if (destinationIndex > 0) {
-            drawNetworkSignLine(freeGatesGreen, sign, ++signLineIndex, destinationIndex - 1);
-        }
-        //Draw the chosen entry (line 2 or 3)
-        drawNetworkSignChosenLine(freeGatesGreen, sign, ++signLineIndex);
-        //Has another entry and space on the sign
-        if ((maxIndex >= destinationIndex + 1) && (++signLineIndex <= 3)) {
-            drawNetworkSignLine(freeGatesGreen, sign, signLineIndex, destinationIndex + 1);
-        }
-        //Has another entry and space on the sign
-        if ((maxIndex >= destinationIndex + 2) && (++signLineIndex <= 3)) {
-            drawNetworkSignLine(freeGatesGreen, sign, signLineIndex, destinationIndex + 2);
-        }
-    }
-
-    /**
-     * Draws the chosen destination on one sign line
-     *
-     * @param freeGatesGreen <p>Whether to display free gates in a green color</p>
-     * @param sign <p>The sign to draw on</p>
-     * @param signLineIndex <p>The line to draw on</p>
-     */
-    private void drawNetworkSignChosenLine(boolean freeGatesGreen, Sign sign, int signLineIndex) {
-        if (freeGatesGreen) {
-            Portal destination = PortalHandler.getByName(this.destination, network);
-            boolean green = Stargate.isFree(activePlayer, this, destination);
-            Stargate.setLine(sign, signLineIndex, (green ? ChatColor.DARK_GREEN : "") + ">" + this.destination + "<");
-        } else {
-            Stargate.setLine(sign, signLineIndex, " >" + destination + "< ");
-        }
-    }
-
-    /**
-     * Draws one network destination on one sign line
-     *
-     * @param freeGatesGreen <p>Whether to display free gates in a green color</p>
-     * @param sign <p>The sign to draw on</p>
-     * @param signLineIndex <p>The line to draw on</p>
-     * @param destinationIndex <p>The index of the destination to draw</p>
-     */
-    private void drawNetworkSignLine(boolean freeGatesGreen, Sign sign, int signLineIndex, int destinationIndex) {
-        if (freeGatesGreen) {
-            Portal destination = PortalHandler.getByName(destinations.get(destinationIndex), network);
-            boolean green = Stargate.isFree(activePlayer, this, destination);
-            Stargate.setLine(sign, signLineIndex, (green ? ChatColor.DARK_GREEN : "") + destinations.get(destinationIndex));
-        } else {
-            Stargate.setLine(sign, signLineIndex, destinations.get(destinationIndex));
-        }
-    }
-
-    /**
-     * Draws a bungee sign
-     *
-     * @param sign <p>The sign to draw on</p>
-     */
-    private void drawBungeeSign(Sign sign) {
-        Stargate.setLine(sign, 1, Stargate.getString("bungeeSign"));
-        Stargate.setLine(sign, 2, ">" + destination + "<");
-        Stargate.setLine(sign, 3, "[" + network + "]");
-    }
-
-    /**
-     * Draws an inactive sign
-     *
-     * @param sign <p>The sign to draw on</p>
-     */
-    private void drawInactiveSign(Sign sign) {
-        Stargate.setLine(sign, 1, Stargate.getString("signRightClick"));
-        Stargate.setLine(sign, 2, Stargate.getString("signToUse"));
-        if (!isNoNetwork()) {
-            Stargate.setLine(sign, 3, "(" + network + ")");
-        } else {
-            Stargate.setLine(sign, 3, "");
-        }
-    }
-
-    /**
-     * Draws a sign pointing to a fixed location
-     *
-     * @param sign <p>The sign to draw on</p>
-     */
-    private void drawFixedSign(Sign sign) {
-        if (isRandom()) {
-            Stargate.setLine(sign, 1, "> " + Stargate.getString("signRandom") + " <");
-        } else {
-            Stargate.setLine(sign, 1, ">" + destination + "<");
-        }
-        if (isNoNetwork()) {
-            Stargate.setLine(sign, 2, "");
-        } else {
-            Stargate.setLine(sign, 2, "(" + network + ")");
-        }
-        Portal destination = PortalHandler.getByName(this.destination, network);
-        if (destination == null && !isRandom()) {
-            Stargate.setLine(sign, 3, Stargate.getString("signDisconnected"));
-        } else {
-            Stargate.setLine(sign, 3, "");
-        }
+        SignHelper.drawSign(sign, this);
     }
 
     /**
