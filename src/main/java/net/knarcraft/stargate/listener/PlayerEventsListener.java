@@ -80,19 +80,18 @@ public class PlayerEventsListener implements Listener {
                 && PortalHandler.getByAdjacentEntrance(event.getFrom()) != null) {
             event.setCancelled(true);
         }
-        if (event.isCancelled()) {
+        if (event.isCancelled() || cause != PlayerTeleportEvent.TeleportCause.PLUGIN) {
             return;
         }
 
         Entity playerVehicle = event.getPlayer().getVehicle();
-        Portal portal = PortalHandler.getByEntrance(event.getFrom());
-        if (playerVehicle != null && PortalHandler.getByEntrance(event.getFrom()) != null &&
+        Portal portal = PortalHandler.getByAdjacentEntrance(event.getFrom());
+        if (playerVehicle != null && portal != null &&
                 !(playerVehicle instanceof Minecart) &&
                 !(playerVehicle instanceof Boat)) {
             Portal destinationPortal = portal.getDestination();
             if (destinationPortal != null) {
                 VehicleEventListener.teleportVehicleAfterPlayer((Vehicle) playerVehicle, destinationPortal, event.getPlayer());
-                Stargate.debug("playerTeleport", "Player was driving  " + playerVehicle.getName());
             }
         }
     }
