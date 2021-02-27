@@ -26,9 +26,10 @@ public class VehicleEventListener implements Listener {
      * @param vehicle <p>The vehicle to teleport</p>
      * @param destinationPortal <p>The portal the player teleported to</p>
      * @param player <p>The player who teleported</p>
+     * @param origin <p>The portal the player entered</p>
      */
-    public static void teleportVehicleAfterPlayer(Vehicle vehicle, Portal destinationPortal, Player player) {
-        destinationPortal.teleport(vehicle);
+    public static void teleportVehicleAfterPlayer(Vehicle vehicle, Portal destinationPortal, Player player, Portal origin) {
+        destinationPortal.teleport(vehicle, origin);
         Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> vehicle.addPassenger(player), 6);
     }
 
@@ -46,7 +47,7 @@ public class VehicleEventListener implements Listener {
         Vehicle vehicle = event.getVehicle();
 
         Portal entrancePortal;
-        int entitySize = (int) EntityHelper.getEntityMaxSize(vehicle);
+        int entitySize = EntityHelper.getEntityMaxSizeInt(vehicle);
         if (EntityHelper.getEntityMaxSize(vehicle) > 1) {
             entrancePortal = PortalHandler.getByAdjacentEntrance(event.getTo(), entitySize - 1);
         } else {
@@ -79,7 +80,7 @@ public class VehicleEventListener implements Listener {
                 Stargate.log.warning(Stargate.getString("prefox") + "Unable to find portal destination");
                 return;
             }
-            destinationPortal.teleport(vehicle);
+            destinationPortal.teleport(vehicle, entrancePortal);
         }
     }
 
@@ -118,7 +119,7 @@ public class VehicleEventListener implements Listener {
         }
 
         Stargate.sendMessage(player, Stargate.getString("teleportMsg"), false);
-        destinationPortal.teleport(vehicle);
+        destinationPortal.teleport(vehicle, entrancePortal);
         entrancePortal.close(false);
     }
 

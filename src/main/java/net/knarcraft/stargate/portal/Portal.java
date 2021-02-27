@@ -692,10 +692,13 @@ public class Portal {
      * Teleports a vehicle to this portal
      *
      * @param vehicle <p>The vehicle to teleport</p>
+     * @param origin <p>The portal the vehicle entered</p>
      */
-    public void teleport(final Vehicle vehicle) {
+    public void teleport(final Vehicle vehicle, Portal origin) {
         Location traveller = vehicle.getLocation();
         Location exit = getExit(vehicle, traveller);
+
+        adjustRotation(traveller, exit, origin);
 
         double velocity = vehicle.getVelocity().length();
 
@@ -793,12 +796,11 @@ public class Portal {
 
             double entitySize = EntityHelper.getEntityMaxSize(entity);
             if (entitySize > 1) {
-                exitLocation = preventExitSuffocation(relativeExit, exitLocation, entitySize);
+                exitLocation = preventExitSuffocation(relativeExit, exitLocation, entity);
             }
         } else {
             Stargate.log.log(Level.WARNING, Stargate.getString("prefix") + "Missing destination point in .gate file " + gate.getFilename());
         }
-
 
         return adjustExitLocation(traveller, exitLocation);
     }
@@ -808,10 +810,10 @@ public class Portal {
      *
      * @param relativeExit <p>The relative exit defined as the portal's exit</p>
      * @param exitLocation <p>The currently calculated portal exit</p>
-     * @param entitySize <p>The size of the travelling entity</p>
+     * @param entity <p>The travelling entity</p>
      * @return <p>A location which won't suffocate the entity inside the portal</p>
      */
-    private Location preventExitSuffocation(RelativeBlockVector relativeExit, Location exitLocation, double entitySize) {
+    private Location preventExitSuffocation(RelativeBlockVector relativeExit, Location exitLocation, Entity entity) {
         //Go left to find start of opening
         RelativeBlockVector openingLeft = getPortalExitEdge(relativeExit, -1);
 
@@ -828,8 +830,16 @@ public class Portal {
             newOffset -= 0.5;
         }
         exitLocation = DirectionHelper.adjustLocation(exitLocation, newOffset, 0, 0, modX, modZ);
-        if (entitySize > openingWidth) {
-            exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0, (entitySize / 2D), modX, modZ);
+
+        //Move large entities further from the portal, especially if this portal will teleport them at once
+        double entitySize = EntityHelper.getEntityMaxSize(entity);
+        int entityBoxSize = EntityHelper.getEntityMaxSizeInt(entity);
+        if (entitySize > 1) {
+            if (isAlwaysOn()) {
+                exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0, (entityBoxSize / 2D), modX, modZ);
+            } else {
+                exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0, (entitySize / 2D) - 1, modX, modZ);
+            }
         }
 
         return exitLocation;
@@ -869,6 +879,8 @@ public class Portal {
             BlockData blockData = getWorld().getBlockAt(exitLocation).getBlockData();
             if (blockData instanceof Bisected && ((Bisected) blockData).getHalf() == Bisected.Half.BOTTOM) {
                 exitLocation.add(0, 0.5, 0);
+            } else if (blockData.getMaterial() == Material.WATER) {
+                exitLocation.add(0, 1, 0);
             }
 
             exitLocation.setPitch(traveller.getPitch());

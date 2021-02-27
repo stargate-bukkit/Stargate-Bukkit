@@ -91,7 +91,8 @@ public class PlayerEventsListener implements Listener {
                 !(playerVehicle instanceof Boat)) {
             Portal destinationPortal = portal.getDestination();
             if (destinationPortal != null) {
-                VehicleEventListener.teleportVehicleAfterPlayer((Vehicle) playerVehicle, destinationPortal, event.getPlayer());
+                VehicleEventListener.teleportVehicleAfterPlayer((Vehicle) playerVehicle, destinationPortal,
+                        event.getPlayer(), portal);
             }
         }
     }

@@ -7,7 +7,11 @@ import org.bukkit.Location;
 /**
  * This class helps with direction-dependent (modX, modZ) calculations
  */
-public class DirectionHelper {
+public final class DirectionHelper {
+
+    private DirectionHelper() {
+
+    }
 
     /**
      * Gets the block at a relative block vector location

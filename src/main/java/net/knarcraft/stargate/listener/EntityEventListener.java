@@ -30,7 +30,7 @@ public class EntityEventListener implements Listener {
         }
 
         Entity entity = event.getEntity();
-        if (PortalHandler.getByAdjacentEntrance(event.getFrom(), (int) EntityHelper.getEntityMaxSize(entity)) != null) {
+        if (PortalHandler.getByAdjacentEntrance(event.getFrom(), EntityHelper.getEntityMaxSizeInt(entity)) != null) {
             event.setCancelled(true);
         }
     }
