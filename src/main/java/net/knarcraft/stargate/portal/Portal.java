@@ -9,6 +9,7 @@ import net.knarcraft.stargate.event.StargateCloseEvent;
 import net.knarcraft.stargate.event.StargateDeactivateEvent;
 import net.knarcraft.stargate.event.StargateOpenEvent;
 import net.knarcraft.stargate.event.StargatePortalEvent;
+import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.EntityHelper;
 import net.knarcraft.stargate.utility.SignHelper;
 import org.bukkit.Axis;
@@ -19,6 +20,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.Powerable;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
@@ -125,19 +127,6 @@ public class Portal {
     }
 
     /**
-     * Removes the special characters |, : and # from a portal name
-     *
-     * @param input <p>The name to filter</p>
-     * @return <p>The filtered name</p>
-     */
-    public static String filterName(String input) {
-        if (input == null) {
-            return "";
-        }
-        return input.replaceAll("[|:#]", "").trim();
-    }
-
-    /**
      * Gets whether this portal is currently open
      *
      * @return <p>Whether this portal is open</p>
@@ -238,84 +227,181 @@ public class Portal {
         return rotX;
     }
 
+    /**
+     * Gets the axis the portal follows
+     *
+     * <p>If a relative vector's right is not zero, it will move along this axis.
+     * The axis is used to place the portal's open blocks correctly</p>
+     *
+     * @return <p>The axis the portal follows</p>
+     */
     public Axis getAxis() {
         return rot;
     }
 
+    /**
+     * Gets the player currently using this portal
+     *
+     * @return <p>The player currently using this portal</p>
+     */
     public Player getActivePlayer() {
         return activePlayer;
     }
 
+    /**
+     * Gets the network this gate belongs to
+     *
+     * @return <p>The network this gate belongs to</p>
+     */
     public String getNetwork() {
         return network;
     }
 
+    /**
+     * Sets the network this gate belongs to
+     *
+     * @param network <p>The new network for this gate</p>
+     */
     public void setNetwork(String network) {
         this.network = network;
     }
 
+    /**
+     * Gets the time this portal opened
+     *
+     * @return <p>The time this portal opened</p>
+     */
     public long getOpenTime() {
         return openTime;
     }
 
+    /**
+     * Gets the name of this portal
+     *
+     * @return <p>The name of this portal</p>
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the name of this portal
+     *
+     * @param name <p>The new name of this portal</p>
+     */
     public void setName(String name) {
         this.name = filterName(name);
         drawSign();
     }
 
+    /**
+     * Gets the destinations of this portal
+     *
+     * @return <p>The destinations of this portal</p>
+     */
     public List<String> getDestinations() {
         return new ArrayList<>(this.destinations);
     }
 
+    /**
+     * Gets the portal destination given a player
+     *
+     * @param player <p>Used for random gates to determine which destinations are available</p>
+     * @return <p>The destination portal the player should teleport to</p>
+     */
     public Portal getDestination(Player player) {
         if (isRandom()) {
             destinations = PortalHandler.getDestinations(this, player, getNetwork());
             if (destinations.size() == 0) {
                 return null;
             }
-            String dest = destinations.get((new Random()).nextInt(destinations.size()));
+            String destination = destinations.get((new Random()).nextInt(destinations.size()));
             destinations.clear();
-            return PortalHandler.getByName(dest, getNetwork());
+            return PortalHandler.getByName(destination, getNetwork());
         }
         return PortalHandler.getByName(destination, getNetwork());
     }
 
+    /**
+     * Gets the portal destination
+     *
+     * <p>If this portal is random, a player should be given to get correct destinations.</p>
+     *
+     * @return <p>The portal destination</p>
+     */
     public Portal getDestination() {
         return getDestination(null);
     }
 
+    /**
+     * Sets the destination of this portal
+     *
+     * @param destination <p>The new destination of this portal</p>
+     */
     public void setDestination(Portal destination) {
         setDestination(destination.getName());
     }
 
+    /**
+     * Sets the destination of this portal
+     *
+     * @param destination <p>The new destination of this portal</p>
+     */
     public void setDestination(String destination) {
         this.destination = destination;
     }
 
+    /**
+     * Gets the name of the destination of this portal
+     *
+     * @return <p>The name of this portal's destination</p>
+     */
     public String getDestinationName() {
         return destination;
     }
 
+    /**
+     * Gets the gate used by this portal
+     *
+     * @return <p>The gate used by this portal</p>
+     */
     public Gate getGate() {
         return gate;
     }
 
+    /**
+     * Gets the name of this portal's owner
+     *
+     * @return <p>The name of this portal's owner</p>
+     */
     public String getOwnerName() {
         return ownerName;
     }
 
+    /**
+     * Gets the UUID of this portal's owner
+     *
+     * @return <p>The UUID of this portal's owner</p>
+     */
     public UUID getOwnerUUID() {
         return ownerUUID;
     }
 
+    /**
+     * Sets the UUId of this portal's owner
+     *
+     * @param owner <p>The new UUID of this portal's owner</p>
+     */
     public void setOwner(UUID owner) {
         this.ownerUUID = owner;
     }
 
+    /**
+     * Checks whether a given player is the owner of this portal
+     *
+     * @param player <p>The player to check</p>
+     * @return <p>True if the player is the owner of this portal</p>
+     */
     public boolean isOwner(Player player) {
         if (this.ownerUUID != null) {
             return player.getUniqueId().compareTo(this.ownerUUID) == 0;
@@ -324,93 +410,134 @@ public class Portal {
         }
     }
 
+    /**
+     * Gets the locations of this portal's entrances
+     *
+     * @return <p>The locations of this portal's entrances</p>
+     */
     public BlockLocation[] getEntrances() {
         if (entrances == null) {
-            RelativeBlockVector[] space = gate.getLayout().getEntrances();
-            entrances = new BlockLocation[space.length];
-            int i = 0;
-
-            for (RelativeBlockVector vector : space) {
-                entrances[i++] = getBlockAt(vector);
-            }
+            entrances = relativeBlockVectorsToBlockLocations(gate.getLayout().getEntrances());
         }
         return entrances;
     }
 
+    /**
+     * Gets the locations of this portal's frame
+     *
+     * @return <p>The locations of this portal's frame</p>
+     */
     public BlockLocation[] getFrame() {
         if (frame == null) {
-            RelativeBlockVector[] border = gate.getLayout().getBorder();
-            frame = new BlockLocation[border.length];
-            int i = 0;
-
-            for (RelativeBlockVector vector : border) {
-                frame[i++] = getBlockAt(vector);
-            }
+            frame = relativeBlockVectorsToBlockLocations(gate.getLayout().getBorder());
         }
 
         return frame;
     }
 
+    /**
+     * Gets the location of this portal's sign
+     *
+     * @return <p>The location of this portal's sign</p>
+     */
     public BlockLocation getSign() {
         return id;
     }
 
+    /**
+     * Gets the world this portal belongs to
+     *
+     * @return <p>The world this portal belongs to</p>
+     */
     public World getWorld() {
         return world;
     }
 
+    /**
+     * Gets the location of this portal's button
+     *
+     * @return <p>The location of this portal's button</p>
+     */
     public BlockLocation getButton() {
         return button;
     }
 
+    /**
+     * Sets the location of this portal's button
+     *
+     * @param button <p>The location of this portal's button</p>
+     */
     public void setButton(BlockLocation button) {
         this.button = button;
     }
 
+    /**
+     * Open this portal
+     *
+     * @param force <p>Whether to force this portal open, even if it's already open for some player</p>
+     * @return <p>True if the portal was opened</p>
+     */
     public boolean open(boolean force) {
         return open(null, force);
     }
 
+    /**
+     * Open this portal
+     *
+     * @param force <p>Whether to force this portal open, even if it's already open for some player</p>
+     * @return <p>True if the portal was opened</p>
+     */
     public boolean open(Player openFor, boolean force) {
-        // Call the StargateOpenEvent
+        //Call the StargateOpenEvent
         StargateOpenEvent event = new StargateOpenEvent(openFor, this, force);
         Stargate.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            return false;
-        }
-        force = event.getForce();
-
-        if (isOpen() && !force) {
+        if (event.isCancelled() || (isOpen() && !event.getForce())) {
             return false;
         }
 
+        //Change the opening blocks to the correct type
         Material openType = gate.getPortalOpenBlock();
-        Axis axis = openType == Material.NETHER_PORTAL ? rot : null;
+        Axis axis = (openType.createBlockData() instanceof Orientable) ? rot : null;
         for (BlockLocation inside : getEntrances()) {
             Stargate.blockPopulatorQueue.add(new BloxPopulator(inside, openType, axis));
         }
 
+        updatePortalOpenState(openFor);
+        return true;
+    }
+
+    /**
+     * Updates this portal to be recognized as open and opens its destination portal
+     *
+     * @param openFor <p>The player to open this portal for</p>
+     */
+    private void updatePortalOpenState(Player openFor) {
+        //Update the open state of this portal
         isOpen = true;
         openTime = System.currentTimeMillis() / 1000;
         Stargate.openList.add(this);
         Stargate.activeList.remove(this);
 
-        // Open remote gate
+        //Open remote portal
         if (!isAlwaysOn()) {
             player = openFor;
 
-            Portal end = getDestination();
-            // Only open dest if it's not-fixed or points at this gate
-            if (!isRandom() && end != null && (!end.isFixed() || end.getDestinationName().equalsIgnoreCase(getName())) && !end.isOpen()) {
-                end.open(openFor, false);
-                end.setDestination(this);
-                if (end.isVerified()) end.drawSign();
+            Portal destination = getDestination();
+            // Only open destination if it's not-fixed or points at this portal
+            if (!isRandom() && destination != null && (!destination.isFixed() ||
+                    destination.getDestinationName().equalsIgnoreCase(getName())) && !destination.isOpen()) {
+                destination.open(openFor, false);
+                destination.setDestination(this);
+                if (destination.isVerified()) destination.drawSign();
             }
         }
-
-        return true;
     }
 
+    /**
+     * Closes this portal
+     *
+     * @param force <p>Whether to force this portal closed, even if it's set as always on</p>
+     */
     public void close(boolean force) {
         if (!isOpen) return;
         // Call the StargateCloseEvent
@@ -427,11 +554,21 @@ public class Portal {
             Stargate.blockPopulatorQueue.add(new BloxPopulator(inside, closedType));
         }
 
+        updatePortalClosedState();
+        deactivate();
+    }
+
+    /**
+     * Updates this portal to be recognized as closed and closes its destination portal
+     */
+    private void updatePortalClosedState() {
+        //Update the closed state of this portal
         player = null;
         isOpen = false;
         Stargate.openList.remove(this);
         Stargate.activeList.remove(this);
 
+        //Close remote portal
         if (!isAlwaysOn()) {
             Portal end = getDestination();
 
@@ -440,22 +577,28 @@ public class Portal {
                 end.close(false);
             }
         }
-
-        deactivate();
     }
 
+    /**
+     * Gets whether this portal is open for the given player
+     *
+     * @param player <p>The player to check portal state for</p>
+     * @return <p>True if this portal is open to the given player</p>
+     */
     public boolean isOpenFor(Player player) {
         if (!isOpen) {
             return false;
         }
-        if ((isAlwaysOn()) || (this.player == null)) {
+        if (isAlwaysOn() || this.player == null) {
             return true;
         }
-        return (player != null) && (player.getName().equalsIgnoreCase(this.player.getName()));
+        return player != null && player.getName().equalsIgnoreCase(this.player.getName());
     }
 
     /**
      * Gets whether this portal points to a fixed exit portal
+     *
+     * <p>A portal where portals can be chosen from a network is not fixed.</p>
      *
      * @return <p>True if this portal points to a fixed exit portal</p>
      */
@@ -463,10 +606,22 @@ public class Portal {
         return fixed;
     }
 
+    /**
+     * Sets whether this portal points to a fixed exit portal
+     *
+     * <p>A portal where portals can be chosen from a network is not fixed.</p>
+     *
+     * @param fixed <p>True if this portal points to a fixed exit portal</p>
+     */
     public void setFixed(boolean fixed) {
         this.fixed = fixed;
     }
 
+    /**
+     * Gets whether at least one of this portal's control blocks are powered
+     *
+     * @return <p>True if at least one control block is powered</p>
+     */
     public boolean isPowered() {
         RelativeBlockVector[] controls = gate.getLayout().getControls();
 
@@ -521,8 +676,8 @@ public class Portal {
     /**
      * Adjusts the rotation of the player to face out from the portal
      *
-     * @param entry <p>The location the player entered from</p>
-     * @param exit <p>The location the player will exit from</p>
+     * @param entry  <p>The location the player entered from</p>
+     * @param exit   <p>The location the player will exit from</p>
      * @param origin <p>The portal the player entered from</p>
      */
     private void adjustRotation(Location entry, Location exit, Portal origin) {
@@ -573,8 +728,8 @@ public class Portal {
     /**
      * Teleport a vehicle which is not a minecart or a boat
      *
-     * @param vehicle <p>The vehicle to teleport</p>
-     * @param exit <p>The location the vehicle will exit</p>
+     * @param vehicle    <p>The vehicle to teleport</p>
+     * @param exit       <p>The location the vehicle will exit</p>
      * @param passengers <p>The passengers of the vehicle</p>
      */
     private void teleportLivingVehicle(Vehicle vehicle, Location exit, List<Entity> passengers) {
@@ -586,11 +741,11 @@ public class Portal {
     /**
      * Creates a new vehicle equal to the player's previous vehicle and
      *
-     * @param vehicle <p>The player's old vehicle</p>
-     * @param passengers <p>A list of all passengers in the vehicle</p>
+     * @param vehicle      <p>The player's old vehicle</p>
+     * @param passengers   <p>A list of all passengers in the vehicle</p>
      * @param vehicleWorld <p>The world to spawn the new vehicle in</p>
-     * @param exit <p>The exit location to spawn the new vehicle on</p>
-     * @param newVelocity <p>The new velocity of the new vehicle</p>
+     * @param exit         <p>The exit location to spawn the new vehicle on</p>
+     * @param newVelocity  <p>The new velocity of the new vehicle</p>
      */
     private void putPassengersInNewVehicle(Vehicle vehicle, List<Entity> passengers, World vehicleWorld, Location exit,
                                            Vector newVelocity) {
@@ -605,9 +760,9 @@ public class Portal {
     /**
      * Ejects, teleports and adds all passengers to the target vehicle
      *
-     * @param passengers <p>The passengers to handle</p>
+     * @param passengers    <p>The passengers to handle</p>
      * @param targetVehicle <p>The vehicle the passengers should be put into</p>
-     * @param exit <p>The exit location to teleport the passengers to</p>
+     * @param exit          <p>The exit location to teleport the passengers to</p>
      */
     private void handleVehiclePassengers(List<Entity> passengers, Vehicle targetVehicle, Location exit) {
         for (Entity passenger : passengers) {
@@ -629,17 +784,86 @@ public class Portal {
     private Location getExit(Entity entity, Location traveller) {
         Location exitLocation = null;
         // Check if the gate has an exit block
-        if (gate.getLayout().getExit() != null) {
-            BlockLocation exit = getBlockAt(gate.getLayout().getExit());
+        RelativeBlockVector relativeExit = gate.getLayout().getExit();
+        if (relativeExit != null) {
+            BlockLocation exit = getBlockAt(relativeExit);
             int back = (isBackwards()) ? -1 : 1;
-            //TODO: Improve positioning to place the entity just far enough from the portal not to suffocate
-            double entitySize = EntityHelper.getEntityMaxSize(entity);
-            exitLocation = exit.modRelativeLoc(0D, 0D, entitySize, traveller.getYaw(),
+            exitLocation = exit.modRelativeLoc(0D, 0D, 1, traveller.getYaw(),
                     traveller.getPitch(), modX * back, 1, modZ * back);
+
+            double entitySize = EntityHelper.getEntityMaxSize(entity);
+            if (entitySize > 1) {
+                exitLocation = preventExitSuffocation(relativeExit, exitLocation, entitySize);
+            }
         } else {
             Stargate.log.log(Level.WARNING, Stargate.getString("prefix") + "Missing destination point in .gate file " + gate.getFilename());
         }
 
+
+        return adjustExitLocation(traveller, exitLocation);
+    }
+
+    /**
+     * Adjusts the positioning of the portal exit to prevent the given entity from suffocating
+     *
+     * @param relativeExit <p>The relative exit defined as the portal's exit</p>
+     * @param exitLocation <p>The currently calculated portal exit</p>
+     * @param entitySize <p>The size of the travelling entity</p>
+     * @return <p>A location which won't suffocate the entity inside the portal</p>
+     */
+    private Location preventExitSuffocation(RelativeBlockVector relativeExit, Location exitLocation, double entitySize) {
+        //Go left to find start of opening
+        RelativeBlockVector openingLeft = getPortalExitEdge(relativeExit, -1);
+
+        //Go right to find the end of the opening
+        RelativeBlockVector openingRight = getPortalExitEdge(relativeExit, 1);
+
+        //Get the width to check if the entity fits
+        int openingWidth = openingRight.getRight() - openingLeft.getRight() + 1;
+        int existingOffset = relativeExit.getRight() - openingLeft.getRight();
+        double newOffset = (openingWidth - existingOffset) / 2D;
+
+        //Remove the half offset for better centering
+        if (openingWidth > 1) {
+            newOffset -= 0.5;
+        }
+        exitLocation = DirectionHelper.adjustLocation(exitLocation, newOffset, 0, 0, modX, modZ);
+        if (entitySize > openingWidth) {
+            exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0, (entitySize / 2D), modX, modZ);
+        }
+
+        return exitLocation;
+    }
+
+    /**
+     * Gets one of the edges of a portal's opening/exit
+     *
+     * @param relativeExit <p>The known exit to start from</p>
+     * @param direction <p>The direction to move (+1 for right, -1 for left)</p>
+     * @return <p>The right or left edge of the opening</p>
+     */
+    private RelativeBlockVector getPortalExitEdge(RelativeBlockVector relativeExit, int direction) {
+        RelativeBlockVector openingEdge = relativeExit;
+        do {
+            RelativeBlockVector possibleOpening = new RelativeBlockVector(openingEdge.getRight() + direction,
+                    openingEdge.getDepth(), openingEdge.getDistance());
+            if (gate.getLayout().getExits().contains(possibleOpening)) {
+                openingEdge = possibleOpening;
+            } else {
+                break;
+            }
+        } while (true);
+        return openingEdge;
+    }
+
+    /**
+     * Adjusts an exit location with rotation and slab height incrementation
+     *
+     * @param traveller <p>The location of the travelling entity</p>
+     * @param exitLocation <p>The exit location generated</p>
+     * @return <p>The location the travelling entity should be teleported to</p>
+     */
+    private Location adjustExitLocation(Location traveller, Location exitLocation) {
         if (exitLocation != null) {
             //Prevent traveller from spawning inside a slab
             BlockData blockData = getWorld().getBlockAt(exitLocation).getBlockData();
@@ -741,7 +965,7 @@ public class Portal {
      * @param player <p>The player to activate the portal for</p>
      * @return <p>True if the portal was activated</p>
      */
-    public boolean activate(Player player) {
+    private boolean activate(Player player) {
         destinations.clear();
         destination = "";
         Stargate.activeList.add(this);
@@ -787,10 +1011,20 @@ public class Portal {
         drawSign();
     }
 
+    /**
+     * Gets whether this portal is active
+     *
+     * @return <p>Whether this portal is active</p>
+     */
     public boolean isActive() {
         return isFixed() || (destinations.size() > 0);
     }
 
+    /**
+     * Cycles destination for a network gate forwards
+     *
+     * @param player <p>The player to cycle the gate for</p>
+     */
     public void cycleDestination(Player player) {
         cycleDestination(player, 1);
     }
@@ -798,7 +1032,7 @@ public class Portal {
     /**
      * Cycles destination for a network gate
      *
-     * @param player <p>The player cycling destinations</p>
+     * @param player    <p>The player cycling destinations</p>
      * @param direction <p>The direction of the cycle (+1 for next, -1 for previous)</p>
      */
     public void cycleDestination(Player player, int direction) {
@@ -808,7 +1042,7 @@ public class Portal {
 
         boolean activate = false;
         if (!isActive() || getActivePlayer() != player) {
-            // If the event is cancelled, return
+            //If the stargate activate event is cancelled, return
             if (!activate(player)) {
                 return;
             }
@@ -823,17 +1057,30 @@ public class Portal {
         }
 
         if (!Stargate.destMemory || !activate || lastDestination.isEmpty()) {
-            int index = destinations.indexOf(destination);
-            index += direction;
-            if (index >= destinations.size())
-                index = 0;
-            else if (index < 0)
-                index = destinations.size() - 1;
-            destination = destinations.get(index);
-            lastDestination = destination;
+            cycleDestination(direction);
         }
         openTime = System.currentTimeMillis() / 1000;
         drawSign();
+    }
+
+    /**
+     * Performs the actual destination cycling with no input checks
+     *
+     * @param direction <p>The direction of the cycle (+1 for next, -1 for previous)</p>
+     */
+    private void cycleDestination(int direction) {
+        int index = destinations.indexOf(destination);
+        index += direction;
+
+        //Wrap around
+        if (index >= destinations.size()) {
+            index = 0;
+        } else if (index < 0) {
+            index = destinations.size() - 1;
+        }
+        //Store selected destination
+        destination = destinations.get(index);
+        lastDestination = destination;
     }
 
     /**
@@ -857,8 +1104,37 @@ public class Portal {
      * @param vector <p>The relative block vector</p>
      * @return <p>The block at the given relative position</p>
      */
-    BlockLocation getBlockAt(RelativeBlockVector vector) {
-        return topLeft.modRelative(vector.getRight(), vector.getDepth(), vector.getDistance(), modX, 1, modZ);
+    public BlockLocation getBlockAt(RelativeBlockVector vector) {
+        return DirectionHelper.getBlockAt(topLeft, vector, modX, modZ);
+    }
+
+    /**
+     * Removes the special characters |, : and # from a portal name
+     *
+     * @param input <p>The name to filter</p>
+     * @return <p>The filtered name</p>
+     */
+    private static String filterName(String input) {
+        if (input == null) {
+            return "";
+        }
+        return input.replaceAll("[|:#]", "").trim();
+    }
+
+    /**
+     * Gets a list of block locations from a list of relative block vectors
+     *
+     * @param vectors <p>The relative block vectors to convert</p>
+     * @return <p>A list of block locations</p>
+     */
+    private BlockLocation[] relativeBlockVectorsToBlockLocations(RelativeBlockVector[] vectors) {
+        BlockLocation[] locations = new BlockLocation[vectors.length];
+        int i = 0;
+
+        for (RelativeBlockVector vector : vectors) {
+            locations[i++] = getBlockAt(vector);
+        }
+        return locations;
     }
 
     @Override

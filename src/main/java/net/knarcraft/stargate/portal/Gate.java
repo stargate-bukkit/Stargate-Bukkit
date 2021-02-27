@@ -3,6 +3,7 @@ package net.knarcraft.stargate.portal;
 import net.knarcraft.stargate.BlockLocation;
 import net.knarcraft.stargate.RelativeBlockVector;
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import org.bukkit.Material;
 
@@ -271,7 +272,7 @@ public class Gate {
      * @return <p>The block at the given relative position</p>
      */
     private BlockLocation getBlockAt(BlockLocation topLeft, RelativeBlockVector vector, int modX, int modZ) {
-        return topLeft.modRelative(vector.getRight(), vector.getDepth(), vector.getDistance(), modX, 1, modZ);
+        return DirectionHelper.getBlockAt(topLeft, vector, modX, modZ);
     }
 
     /**

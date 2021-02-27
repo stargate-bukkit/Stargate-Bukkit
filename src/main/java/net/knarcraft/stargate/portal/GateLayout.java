@@ -18,7 +18,7 @@ import java.util.List;
 public class GateLayout {
 
     private Character [][] layout;
-    private final HashMap<RelativeBlockVector, Integer> exits = new HashMap<>();
+    private final List<RelativeBlockVector> exits = new ArrayList<>();
     private RelativeBlockVector[] entrances = new RelativeBlockVector[0];
     private RelativeBlockVector[] border = new RelativeBlockVector[0];
     private RelativeBlockVector[] controls = new RelativeBlockVector[0];
@@ -78,7 +78,7 @@ public class GateLayout {
      *
      * @return <p>Other possible gate exits</p>
      */
-    public HashMap<RelativeBlockVector, Integer> getExits() {
+    public List<RelativeBlockVector> getExits() {
         return exits;
     }
 
@@ -134,7 +134,7 @@ public class GateLayout {
             }
 
             if (exitDepths[x] > 0) {
-                this.exits.put(relativeExits[x], x);
+                this.exits.add(relativeExits[x]);
             }
         }
 
