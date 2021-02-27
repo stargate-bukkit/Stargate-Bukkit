@@ -910,14 +910,29 @@ public class Portal {
         return this.id;
     }
 
+    /**
+     * Gets the x modifier used by this portal
+     *
+     * @return <p>The x modifier used by this portal</p>
+     */
     public int getModX() {
         return this.modX;
     }
 
+    /**
+     * Gets the z modifier used by this portal
+     *
+     * @return <p>The z modifier used by this portal</p>
+     */
     public int getModZ() {
         return this.modZ;
     }
 
+    /**
+     * Gets the rotation of this portal
+     *
+     * @return <p>The rotation of this portal</p>
+     */
     public float getRotX() {
         return this.rotX;
     }
