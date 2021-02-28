@@ -23,7 +23,7 @@ public class Gate {
 
     private final String filename;
     private final GateLayout layout;
-    private final HashMap<Character, Material> types;
+    private final Map<Character, Material> types;
 
     //Gate materials
     private Material portalOpenBlock;
@@ -50,7 +50,7 @@ public class Gate {
      * @param destroyCost       <p>The cost of destroying a portal with this gate layout (-1 to disable)</p>
      * @param toOwner           <p>Whether any payment should go to the owner of the gate, as opposed to just disappearing</p>
      */
-    public Gate(String filename, GateLayout layout, HashMap<Character, Material> types, Material portalOpenBlock,
+    public Gate(String filename, GateLayout layout, Map<Character, Material> types, Material portalOpenBlock,
                 Material portalClosedBlock, Material portalButton, int useCost, int createCost, int destroyCost,
                 boolean toOwner) {
         this.filename = filename;
@@ -79,7 +79,7 @@ public class Gate {
      *
      * @return <p>The material types each layout character represents</p>
      */
-    public HashMap<Character, Material> getTypes() {
+    public Map<Character, Material> getTypes() {
         return types;
     }
 
