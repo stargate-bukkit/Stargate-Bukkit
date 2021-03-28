@@ -32,7 +32,7 @@ public class PermissionManager {
      * Check whether the player has the given permissions.
      */
     public static boolean hasPerm(Player player, String perm) {
-        if (Stargate.permDebug)
+        if (Stargate.isPermDebug())
         	Stargate.debug("hasPerm::SuperPerm(" + player.getName() + ")", perm + " => " + player.hasPermission(perm));
         return player.hasPermission(perm);
     }

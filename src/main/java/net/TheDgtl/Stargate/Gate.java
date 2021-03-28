@@ -187,14 +187,6 @@ public class Gate {
         bw.newLine();
     }
 
-    public Character[][] getLayout() {
-        return layout;
-    }
-
-    public HashMap<Character, Material> getTypes() {
-        return types;
-    }
-
     public RelativeBlockVector[] getEntrances() {
         return entrances;
     }
@@ -207,9 +199,6 @@ public class Gate {
         return controls;
     }
 
-    public HashMap<RelativeBlockVector, Integer> getExits() {
-        return exits;
-    }
 
     public RelativeBlockVector getExit() {
         return exitBlock;
@@ -235,7 +224,7 @@ public class Gate {
         return portalBlockClosed;
     }
 
-    public void setPortalBlockClosed(Material type) {
+    private void setPortalBlockClosed(Material type) {
         portalBlockClosed = type;
     }
 
@@ -290,7 +279,7 @@ public class Gate {
                     	type = Material.AIR;
 
                     if (type != portalBlockClosed && type != portalBlockOpen) {
-                        stargate.debug("Gate::Matches", "Entrance/Exit Material Mismatch: " + type);
+                        Stargate.debug("Gate::Matches", "Entrance/Exit Material Mismatch: " + type);
                         return false;
                     }
 
@@ -320,7 +309,7 @@ public class Gate {
                 }
 
                 if (!matches) {
-                    stargate.debug("Gate::Matches", "Block Type Mismatch: " + topleft.modRelative(x, y, 0, modX, 1, modZ).getType() + " != " + id);
+                    Stargate.debug("Gate::Matches", "Block Type Mismatch: " + topleft.modRelative(x, y, 0, modX, 1, modZ).getType() + " != " + id);
                     return false;
                 }
             }
@@ -329,7 +318,7 @@ public class Gate {
         return true;
     }
 
-    public static void registerGate(Gate gate) {
+    private static void registerGate(Gate gate) {
         gates.put(gate.getFilename(), gate);
 
         Material blockID = gate.getControlBlock();
@@ -341,7 +330,7 @@ public class Gate {
         controlBlocks.get(blockID).add(gate);
     }
 
-    public static Gate loadGate(Stargate stargate, File file) {
+    private static Gate loadGate(Stargate stargate, File file) {
         Scanner scanner = null;
         boolean designing = false;
         ArrayList<ArrayList<Character>> design = new ArrayList<>();
@@ -488,7 +477,7 @@ public class Gate {
         }
     }
 
-    public static void populateDefaults(Stargate stargate, String gateFolder) {
+    private static void populateDefaults(Stargate stargate, String gateFolder) {
         Character[][] layout = new Character[][]{
                 {' ', 'X', 'X', ' '},
                 {'X', '.', '.', 'X'},
@@ -508,7 +497,7 @@ public class Gate {
         Gate netherGate = new Gate(stargate, "nethergate.gate", layout, types);
         netherGate.save(gateFolder);
         registerGate(netherGate);
-        stargate.debug("Gate.populateDefaults"," created a nether gate");
+        Stargate.debug("Gate.populateDefaults"," created a nether gate");
         
         types.put(ENTRANCE, Material.WATER);
         types.put(EXIT, Material.WATER);
@@ -521,7 +510,7 @@ public class Gate {
         waterGate.setPortalBlockOpen(Material.KELP_PLANT);
         waterGate.save(gateFolder);
         registerGate(waterGate);
-        stargate.debug("Gate.populateDefaults"," created a water gate");
+        Stargate.debug("Gate.populateDefaults"," created a water gate");
     }
 
     public static Gate[] getGatesByControlBlock(Block block) {
@@ -543,10 +532,6 @@ public class Gate {
 
     public static int getGateCount() {
         return gates.size();
-    }
-
-    public static boolean isGateBlock(Material type) {
-        return frameBlocks.contains(type);
     }
 
     static class StargateFilenameFilter implements FilenameFilter {

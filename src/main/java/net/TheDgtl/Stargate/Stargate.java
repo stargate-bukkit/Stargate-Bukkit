@@ -27,7 +27,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.TheDgtl.Stargate.event.StargateAccessEvent;
 import net.TheDgtl.Stargate.listeners.BlockEventsListener;
 import net.TheDgtl.Stargate.listeners.EntityEventsListener;
 import net.TheDgtl.Stargate.listeners.MovementEventsListener;
@@ -40,7 +39,6 @@ import net.TheDgtl.Stargate.threads.SGThread;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
@@ -55,11 +53,8 @@ import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class Stargate extends JavaPlugin {
-    private Logger log;
-    private Server server;
-    private Stargate stargate;
+    static private Logger log;
     private EconomyHandler economyHandler;
     private LangLoader lang;
     private String portalFolder;
@@ -81,8 +76,8 @@ public class Stargate extends JavaPlugin {
     private boolean ignoreEntrance = false;
 
     // Used for debug
-    private boolean debug = false;
-    private boolean permDebug = false;
+    static private boolean debug = false;
+    static private boolean permDebug = false;
 
     private final ConcurrentLinkedQueue<Portal> openList = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<Portal> activeList = new ConcurrentLinkedQueue<>();
@@ -98,11 +93,6 @@ public class Stargate extends JavaPlugin {
 
     private FileConfiguration newConfig;
     private PluginManager pm;
-
-    @Override
-    public void onLoad() {
-        economyHandler = new EconomyHandler(this);
-    }
 
     @Override
     public void onDisable() {
@@ -126,10 +116,9 @@ public class Stargate extends JavaPlugin {
         pm = getServer().getPluginManager();
         newConfig = this.getConfig();
         log = getLogger();
-
-        server = getServer();
-        stargate = this;
-
+        
+        PermissionManager.server = getServer();
+        
         String dataFolder = getDataFolder().getPath().replaceAll("\\\\", "/");
 
         String langFolder = dataFolder + "/lang/";
@@ -163,7 +152,7 @@ public class Stargate extends JavaPlugin {
         this.migrate();
         this.loadGates();
         this.loadAllPortals();
-
+        
         // Check to see if Economy is loaded yet.
         if (economyHandler.setupEconomy(pm) && economyHandler.getEconomy() != null) {
             log.info("[Stargate] Vault v" + economyHandler.getVault().getDescription().getVersion() + " found");
@@ -211,36 +200,26 @@ public class Stargate extends JavaPlugin {
         // Debug
         debug = newConfig.getBoolean("debug");
         permDebug = newConfig.getBoolean("permdebug");
-
-        // Economy
-        economyHandler.setEconomyEnabled(newConfig.getBoolean("useeconomy"));
-        economyHandler.setCreateCost(newConfig.getInt("createcost"));
-        economyHandler.setDestroyCost(newConfig.getInt("destroycost"));
-        economyHandler.setUseCost(newConfig.getInt("usecost"));
-        economyHandler.setToOwner(newConfig.getBoolean("toowner"));
-        economyHandler.setChargeFreeDestination(newConfig.getBoolean("chargefreedestination"));
-        economyHandler.setFreeGatesGreen(newConfig.getBoolean("freegatesgreen"));
+        
+        
+        economyHandler = new EconomyHandler(getServer(),newConfig);
 
         this.saveConfig();
     }
 
-    public ChatColor getSignColor() {
-        return signColor;
-    }
-
-    public void closeAllPortals() {
+    private void closeAllPortals() {
         // Close all gates prior to reloading
         for (Portal p : openList) {
             p.close(true);
         }
     }
 
-    public void loadGates() {
+    private void loadGates() {
         Gate.loadGates(this, gateFolder);
         log.info("[Stargate] Loaded " + Gate.getGateCount() + " gate layouts");
     }
 
-    public void loadAllPortals() {
+    private void loadAllPortals() {
         for (World world : getServer().getWorlds()) {
             if (!managedWorlds.contains(world.getName())) {
                 Portal.loadAllGates(this, world);
@@ -261,7 +240,7 @@ public class Stargate extends JavaPlugin {
         }
     }
 
-    public void debug(String rout, String msg) {
+    static public void debug(String rout, String msg) {
         if (debug) {
             log.info("[" + rout + "] " + msg);
         } else {
@@ -283,23 +262,28 @@ public class Stargate extends JavaPlugin {
         else
             player.sendMessage(ChatColor.GREEN + getString("prefix") + ChatColor.WHITE + message);
     }
-
+    
+    /*
+     * TODO Stupid, just move signColor over to portal class instead and have the method over there
+     */
     public void setLine(Sign sign, int index, String text) {
         sign.setLine(index, signColor + text);
     }
-
+    /**
+     * TODO Contributes to bloated code
+     * @return
+     */
     public String getSaveLocation() {
         return portalFolder;
-    }
-
-    public String getGateFolder() {
-        return gateFolder;
     }
 
     public String getDefaultNetwork() {
         return defNetwork;
     }
-
+    /**
+     * TODO Contributes to bloated code
+     * @return
+     */
     public String getString(String name) {
         return lang.getString(name);
     }
@@ -353,188 +337,112 @@ public class Stargate extends JavaPlugin {
         portal.open(player, false);
     }
 
-    /*
-     * Check whether the player has the given permissions.
-     */
-    public boolean hasPerm(Player player, String perm) {
-        if (permDebug)
-            debug("hasPerm::SuperPerm(" + player.getName() + ")", perm + " => " + player.hasPermission(perm));
-        return player.hasPermission(perm);
-    }
+    
 
-    /*
-     * Check a deep permission, this will check to see if the permissions is defined for this use
-     * If using Permissions it will return the same as hasPerm
-     * If using SuperPerms will return true if the node isn't defined
-     * Or the value of the node if it is
-     */
-    public boolean hasPermDeep(Player player, String perm) {
-        if (!player.isPermissionSet(perm)) {
-            if (permDebug)
-                debug("hasPermDeep::SuperPerm", perm + " => true");
-            return true;
-        }
-        if (permDebug)
-            debug("hasPermDeep::SuperPerms", perm + " => " + player.hasPermission(perm));
-        return player.hasPermission(perm);
-    }
-
-    /*
-     * Check whether player can teleport to dest world
-     */
-    public boolean canAccessWorld(Player player, String world) {
-        // Can use all Stargate player features or access all worlds
-        if (hasPerm(player, "stargate.use") || hasPerm(player, "stargate.world")) {
-            // Do a deep check to see if the player lacks this specific world node
-            return hasPermDeep(player, "stargate.world." + world);
-        }
-        // Can access dest world
-        return hasPerm(player, "stargate.world." + world);
-    }
-
-    /*
-     * Check whether player can use network
-     */
-    public boolean canAccessNetwork(Player player, String network) {
-        // Can user all Stargate player features, or access all networks
-        if (hasPerm(player, "stargate.use") || hasPerm(player, "stargate.network")) {
-            // Do a deep check to see if the player lacks this specific network node
-            return hasPermDeep(player, "stargate.network." + network);
-        }
-        // Can access this network
-        if (hasPerm(player, "stargate.network." + network)) return true;
-        // Is able to create personal gates (Assumption is made they can also access them)
-        String playerName = player.getName();
-        if (playerName.length() > 11) playerName = playerName.substring(0, 11);
-        return network.equals(playerName) && hasPerm(player, "stargate.create.personal");
-    }
-
-    /*
-     * Check whether the player can access this server
-     */
-    public boolean canAccessServer(Player player, String server) {
-        // Can user all Stargate player features, or access all servers
-        if (hasPerm(player, "stargate.use") || hasPerm(player, "stargate.servers")) {
-            // Do a deep check to see if the player lacks this specific server node
-            return hasPermDeep(player, "stargate.server." + server);
-        }
-        // Can access this server
-        return hasPerm(player, "stargate.server." + server);
-    }
-
-    /*
-     * Call the StargateAccessPortal event, used for other plugins to bypass Permissions checks
-     */
-    public boolean canAccessPortal(Player player, Portal portal, boolean deny) {
-        StargateAccessEvent event = new StargateAccessEvent(player, portal, deny);
-        server.getPluginManager().callEvent(event);
-        return !event.getDeny();
-    }
-
-    /*
+    /**
      * Return true if the portal is free for the player
      */
     public boolean isFree(Player player, Portal src, Portal dest) {
         // This gate is free
         if (src.isFree()) return true;
         // Player gets free use
-        if (hasPerm(player, "stargate.free") || hasPerm(player, "stargate.free.use")) return true;
+        if (PermissionManager.hasPerm(player, "stargate.free") || PermissionManager.hasPerm(player, "stargate.free.use")) return true;
         // Don't charge for free destination gates
         return dest != null && !economyHandler.isChargeFreeDestination() && dest.isFree();
     }
 
-    /*
+    /**
      * Check whether the player can see this gate (Hidden property check)
      */
     public boolean canSee(Player player, Portal portal) {
         // The gate is not hidden
         if (!portal.isHidden()) return true;
         // The player is an admin with the ability to see hidden gates
-        if (hasPerm(player, "stargate.admin") || hasPerm(player, "stargate.admin.hidden")) return true;
+        if (PermissionManager.hasPerm(player, "stargate.admin") || PermissionManager.hasPerm(player, "stargate.admin.hidden")) return true;
         // The player is the owner of the gate
         return portal.isOwner(player);
     }
 
-    /*
+    /**
      * Check if the player can use this private gate
      */
     public boolean canPrivate(Player player, Portal portal) {
         // Check if the player is the owner of the gate
         if (portal.isOwner(player)) return true;
         // The player is an admin with the ability to use private gates
-        return hasPerm(player, "stargate.admin") || hasPerm(player, "stargate.admin.private");
+        return PermissionManager.hasPerm(player, "stargate.admin") || PermissionManager.hasPerm(player, "stargate.admin.private");
     }
 
-    /*
+    /**
      * Check if the player has access to {option}
      */
     public boolean canOption(Player player, String option) {
         // Check if the player can use all options
-        if (hasPerm(player, "stargate.option")) return true;
+        if (PermissionManager.hasPerm(player, "stargate.option")) return true;
         // Check if they can use this specific option
-        return hasPerm(player, "stargate.option." + option);
+        return PermissionManager.hasPerm(player, "stargate.option." + option);
     }
 
-    /*
+    /**
      * Check if the player can create gates on {network}
      */
     public boolean canCreate(Player player, String network) {
         // Check for general create
-        if (hasPerm(player, "stargate.create")) return true;
+        if (PermissionManager.hasPerm(player, "stargate.create")) return true;
         // Check for all network create permission
-        if (hasPerm(player, "stargate.create.network")) {
+        if (PermissionManager.hasPerm(player, "stargate.create.network")) {
             // Do a deep check to see if the player lacks this specific network node
-            return hasPermDeep(player, "stargate.create.network." + network);
+            return PermissionManager.hasPermDeep(player, "stargate.create.network." + network);
         }
         // Check for this specific network
-        return hasPerm(player, "stargate.create.network." + network);
+        return PermissionManager.hasPerm(player, "stargate.create.network." + network);
 
     }
 
-    /*
+    /**
      * Check if the player can create a personal gate
      */
     public boolean canCreatePersonal(Player player) {
         // Check for general create
-        if (hasPerm(player, "stargate.create")) return true;
+        if (PermissionManager.hasPerm(player, "stargate.create")) return true;
         // Check for personal
-        return hasPerm(player, "stargate.create.personal");
+        return PermissionManager.hasPerm(player, "stargate.create.personal");
     }
 
-    /*
+    /**
      * Check if the player can create this gate layout
      */
     public boolean canCreateGate(Player player, String gate) {
         // Check for general create
-        if (hasPerm(player, "stargate.create")) return true;
+        if (PermissionManager.hasPerm(player, "stargate.create")) return true;
         // Check for all gate create permissions
-        if (hasPerm(player, "stargate.create.gate")) {
+        if (PermissionManager.hasPerm(player, "stargate.create.gate")) {
             // Do a deep check to see if the player lacks this specific gate node
-            return hasPermDeep(player, "stargate.create.gate." + gate);
+            return PermissionManager.hasPermDeep(player, "stargate.create.gate." + gate);
         }
         // Check for this specific gate
-        return hasPerm(player, "stargate.create.gate." + gate);
+        return PermissionManager.hasPerm(player, "stargate.create.gate." + gate);
     }
 
-    /*
+    /**
      * Check if the player can destroy this gate
      */
     public boolean canDestroy(Player player, Portal portal) {
         String network = portal.getNetwork();
         // Check for general destroy
-        if (hasPerm(player, "stargate.destroy")) return true;
+        if (PermissionManager.hasPerm(player, "stargate.destroy")) return true;
         // Check for all network destroy permission
-        if (hasPerm(player, "stargate.destroy.network")) {
+        if (PermissionManager.hasPerm(player, "stargate.destroy.network")) {
             // Do a deep check to see if the player lacks permission for this network node
-            return hasPermDeep(player, "stargate.destroy.network." + network);
+            return PermissionManager.hasPermDeep(player, "stargate.destroy.network." + network);
         }
         // Check for this specific network
-        if (hasPerm(player, "stargate.destroy.network." + network)) return true;
+        if (PermissionManager.hasPerm(player, "stargate.destroy.network." + network)) return true;
         // Check for personal gate
-        return portal.isOwner(player) && hasPerm(player, "stargate.destroy.personal");
+        return portal.isOwner(player) && PermissionManager.hasPerm(player, "stargate.destroy.personal");
     }
 
-    /*
+    /**
      * Charge player for {action} if required, true on success, false if can't afford
      */
     @Deprecated
@@ -547,7 +455,7 @@ public class Stargate extends JavaPlugin {
         return economyHandler.chargePlayer(player, target, cost);
     }
 
-    /*
+    /**
      * Charge player for {action} if required, true on success, false if can't afford
      */
     public boolean chargePlayer(Player player, UUID target, int cost) {
@@ -559,7 +467,7 @@ public class Stargate extends JavaPlugin {
         return economyHandler.chargePlayer(player, target, cost);
     }
 
-    /*
+    /**
      * Charge player for {action} if required, true on success, false if can't afford
      */
     public boolean chargePlayer(Player player, int cost) {
@@ -571,7 +479,7 @@ public class Stargate extends JavaPlugin {
         return economyHandler.chargePlayer(player, cost);
     }
     
-    /*
+    /**
      * Determine the cost of a gate
      */
     public int getUseCost(Player player, Portal src, Portal dest) {
@@ -584,36 +492,36 @@ public class Stargate extends JavaPlugin {
         // Cost is 0 if the player owns this gate and funds go to the owner
         if (src.getGate().getToOwner() && src.isOwner(player)) return 0;
         // Player gets free gate use
-        if (hasPerm(player, "stargate.free") || hasPerm(player, "stargate.free.use")) return 0;
+        if (PermissionManager.hasPerm(player, "stargate.free") || PermissionManager.hasPerm(player, "stargate.free.use")) return 0;
 
         return src.getGate().getUseCost();
     }
 
-    /*
+    /**
      * Determine the cost to create the gate
      */
     public int getCreateCost(Player player, Gate gate) {
         // Not using Economy
         if (!economyHandler.useEconomy()) return 0;
         // Player gets free gate destruction
-        if (hasPerm(player, "stargate.free") || hasPerm(player, "stargate.free.create")) return 0;
+        if (PermissionManager.hasPerm(player, "stargate.free") || PermissionManager.hasPerm(player, "stargate.free.create")) return 0;
 
         return gate.getCreateCost();
     }
 
-    /*
+    /**
      * Determine the cost to destroy the gate
      */
     public int getDestroyCost(Player player, Gate gate) {
         // Not using Economy
         if (!economyHandler.useEconomy()) return 0;
         // Player gets free gate destruction
-        if (hasPerm(player, "stargate.free") || hasPerm(player, "stargate.free.destroy")) return 0;
+        if (PermissionManager.hasPerm(player, "stargate.free") || PermissionManager.hasPerm(player, "stargate.free.destroy")) return 0;
 
         return gate.getDestroyCost();
     }
 
-    /*
+    /**
      * Check if a plugin is loaded/enabled already. Returns the plugin if so, null otherwise
      */
     private Plugin checkPlugin(String p) {
@@ -629,7 +537,7 @@ public class Stargate extends JavaPlugin {
         return null;
     }
 
-    /*
+    /**
      * Parse a given text string and replace the variables
      */
     public String replaceVars(String format, String[] search, String[] replace) {
@@ -663,7 +571,7 @@ public class Stargate extends JavaPlugin {
 
             if (sender instanceof Player) {
                 Player p = (Player) sender;
-                if (!hasPerm(p, "stargate.admin") && !hasPerm(p, "stargate.admin.reload")) {
+                if (!PermissionManager.hasPerm(p, "stargate.admin") && !PermissionManager.hasPerm(p, "stargate.admin.reload")) {
                     sendMessage(sender, "Permission Denied");
                     return true;
                 }
@@ -704,11 +612,6 @@ public class Stargate extends JavaPlugin {
                     }
                 }
 
-                if (!economyHandler.isEconomyEnabled()) {
-                    economyHandler.setVault(null);
-                    economyHandler.setEconomy(null);
-                }
-
                 // Enable the required channels for Bungee support
                 if (oldEnableBungee != enableBungee) {
                     if (enableBungee) {
@@ -733,11 +636,6 @@ public class Stargate extends JavaPlugin {
     @NotNull
     public Logger getStargateLogger() {
         return log;
-    }
-
-    @NotNull
-    public Stargate getStargate() {
-        return stargate;
     }
 
     @NotNull
@@ -804,11 +702,11 @@ public class Stargate extends JavaPlugin {
         return ignoreEntrance;
     }
 
-    public boolean isDebug() {
+    static public boolean isDebug() {
         return debug;
     }
 
-    public boolean isPermDebug() {
+    static public boolean isPermDebug() {
         return permDebug;
     }
 

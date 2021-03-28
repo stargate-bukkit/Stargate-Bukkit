@@ -34,7 +34,7 @@ public class BlockEventsListener extends StargateListener {
         if (portal == null) return;
 
         stargate.sendMessage(player, stargate.getString("createMsg"), false);
-        stargate.debug("onSignChange", "Initialized stargate: " + portal.getName());
+        Stargate.debug("onSignChange", "Initialized stargate: " + portal.getName());
         stargate.getServer().getScheduler().scheduleSyncDelayedTask(stargate, portal::drawSign, 1L);
     }
 
@@ -81,7 +81,7 @@ public class BlockEventsListener extends StargateListener {
 
         if (cost != 0) {
             if (!stargate.chargePlayer(player, cost)) {
-                stargate.debug("onBlockBreak", "Insufficient Funds");
+                Stargate.debug("onBlockBreak", "Insufficient Funds");
                 stargate.sendMessage(player, stargate.getString("inFunds"));
 
                 event.setCancelled(true);

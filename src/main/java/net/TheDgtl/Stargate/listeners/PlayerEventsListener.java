@@ -3,6 +3,8 @@ package net.TheDgtl.Stargate.listeners;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Portal;
 import net.TheDgtl.Stargate.Stargate;
 import org.bukkit.GameMode;
@@ -28,7 +30,7 @@ public class PlayerEventsListener extends StargateListener {
     public PlayerEventsListener(@NotNull Stargate stargate) {
         super(stargate);
         //Var used for temp workaround for a spigot bug.
-        this.antiDoubleActivate = false;
+        antiDoubleActivate = false;
     }
     
     @EventHandler
@@ -41,7 +43,7 @@ public class PlayerEventsListener extends StargateListener {
 
         Portal portal = Portal.getBungeeGate(destination);
         if (portal == null) {
-            stargate.debug("PlayerJoin", "Error fetching destination portal: " + destination);
+            Stargate.debug("PlayerJoin", "Error fetching destination portal: " + destination);
             return;
         }
         portal.teleport(player, portal, null);
@@ -58,7 +60,10 @@ public class PlayerEventsListener extends StargateListener {
             event.setCancelled(true);
         }
     }
-
+    /**
+     * TODO A method should never be 150 lines long and have this many indentations
+     * @param event
+     */
     @EventHandler
     public void onPlayerMove(@NotNull PlayerMoveEvent event) {
         if (event.isCancelled()) {
@@ -94,22 +99,22 @@ public class PlayerEventsListener extends StargateListener {
         boolean deny = false;
         // Check if player has access to this server for Bungee gates
         if (portal.isBungee()) {
-            if (!stargate.canAccessServer(player, portal.getNetwork())) {
+            if (!PermissionManager.canAccessServer(player, portal.getNetwork())) {
                 deny = true;
             }
         } else {
             // Check if player has access to this network
-            if (!stargate.canAccessNetwork(player, portal.getNetwork())) {
+            if (!PermissionManager.canAccessNetwork(player, portal.getNetwork())) {
                 deny = true;
             }
 
             // Check if player has access to destination world
-            if (!stargate.canAccessWorld(player, destination.getWorld().getName())) {
+            if (!PermissionManager.canAccessWorld(player, destination.getWorld().getName())) {
                 deny = true;
             }
         }
 
-        if (!stargate.canAccessPortal(player, portal, deny)) {
+        if (!PermissionManager.canAccessPortal(player, portal, deny)) {
             stargate.sendMessage(player, stargate.getString("denyMsg"));
             portal.teleport(player, portal, event);
             portal.close(false);
@@ -241,11 +246,11 @@ public class PlayerEventsListener extends StargateListener {
             event.setUseInteractedBlock(Event.Result.DENY);
 
             boolean deny = false;
-            if (!stargate.canAccessNetwork(player, portal.getNetwork())) {
+            if (!PermissionManager.canAccessNetwork(player, portal.getNetwork())) {
                 deny = true;
             }
 
-            if (!stargate.canAccessPortal(player, portal, deny)) {
+            if (!PermissionManager.canAccessPortal(player, portal, deny)) {
                 stargate.sendMessage(player, stargate.getString("denyMsg"));
                 return;
             }
@@ -271,11 +276,11 @@ public class PlayerEventsListener extends StargateListener {
             }
 
             boolean deny = false;
-            if (!stargate.canAccessNetwork(player, portal.getNetwork())) {
+            if (!PermissionManager.canAccessNetwork(player, portal.getNetwork())) {
                 deny = true;
             }
 
-            if (!stargate.canAccessPortal(player, portal, deny)) {
+            if (!PermissionManager.canAccessPortal(player, portal, deny)) {
                 stargate.sendMessage(player, stargate.getString("denyMsg"));
                 return;
             }

@@ -25,7 +25,7 @@ public class WorldEventsListener extends StargateListener {
     // We need to reload all gates on world unload, boo
     @EventHandler
     public void onWorldUnload(WorldUnloadEvent event) {
-        stargate.debug("onWorldUnload", "Reloading all Stargates");
+        Stargate.debug("onWorldUnload", "Reloading all Stargates");
         World w = event.getWorld();
         if (stargate.getManagedWorlds().contains(w.getName())) {
             stargate.getManagedWorlds().remove(w.getName());
