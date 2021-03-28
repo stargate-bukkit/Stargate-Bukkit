@@ -21,6 +21,8 @@ import java.util.Objects;
 import java.util.UUID;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -29,24 +31,37 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class EconomyHandler {
-    private final Stargate stargate;
+	
+	private Server server;
+	private boolean economyEnabled = false;
+	private Economy economy = null;
+	private Plugin vault = null;
 
-    public EconomyHandler(@NotNull Stargate stargate) {
-        this.stargate = Objects.requireNonNull(stargate);
-    }
+	private int useCost = 0;
+	private int createCost = 0;
+	private int destroyCost = 0;
+	private boolean toOwner = false;
+	private boolean chargeFreeDestination = true;
+	private boolean freeGatesGreen = false;
 
-    private boolean economyEnabled = false;
-    private Economy economy = null;
-    private Plugin vault = null;
+	public EconomyHandler(Server server, FileConfiguration config) {
+        this.server = server;
+        this.economyEnabled = config.getBoolean("useeconomy");
+        this.createCost = config.getInt("createcost");
+        this.destroyCost = config.getInt("destroycost");
+        this.useCost = config.getInt("usecost");
+        this.toOwner = config.getBoolean("toowner");
+        this.chargeFreeDestination = config.getBoolean("chargefreedestination");
+        this.freeGatesGreen = config.getBoolean("freegatesgreen");
+        
 
-    private int useCost = 0;
-    private int createCost = 0;
-    private int destroyCost = 0;
-    private boolean toOwner = false;
-    private boolean chargeFreeDestination = true;
-    private boolean freeGatesGreen = false;
 
-    public double getBalance(@NotNull Player player) {
+        if (!economyEnabled) {
+        	vault = null;
+        	economy = null;
+        }
+	}
+	public double getBalance(@NotNull Player player) {
         return !economyEnabled ? 0 : economy.getBalance(player);
     }
 
@@ -95,7 +110,7 @@ public class EconomyHandler {
         // Check for Vault
         Plugin p = Objects.requireNonNull(pm).getPlugin("Vault");
         if (p != null && p.isEnabled()) {
-            RegisteredServiceProvider<Economy> economyProvider = stargate.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+            RegisteredServiceProvider<Economy> economyProvider = server.getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
 
             if (economyProvider != null) {
                 economy = economyProvider.getProvider();
@@ -113,82 +128,22 @@ public class EconomyHandler {
         return economyEnabled && economy != null;
     }
 
-    @NotNull
-    public Stargate getStargate() {
-        return stargate;
-    }
-
-    public boolean isEconomyEnabled() {
-        return economyEnabled;
-    }
-
+    public boolean isEconomyEnabled() { return economyEnabled;}
     @Nullable
-    public Economy getEconomy() {
-        return economy;
-    }
-
+    public Economy getEconomy() {return economy;}
     @Nullable
-    public Plugin getVault() {
-        return vault;
-    }
+    public Plugin getVault() {return vault;}
 
-    public int getUseCost() {
-        return useCost;
-    }
+    public int getUseCost() {return useCost;}
 
-    public int getCreateCost() {
-        return createCost;
-    }
+    public int getCreateCost() { return createCost;}
 
-    public int getDestroyCost() {
-        return destroyCost;
-    }
+    public int getDestroyCost() {return destroyCost;}
 
-    public boolean isToOwner() {
-        return toOwner;
-    }
+    public boolean isToOwner() {return toOwner; }
 
-    public boolean isChargeFreeDestination() {
-        return chargeFreeDestination;
-    }
+    public boolean isChargeFreeDestination() {return chargeFreeDestination;}
 
-    public boolean isFreeGatesGreen() {
-        return freeGatesGreen;
-    }
-
-    public void setEconomyEnabled(boolean economyEnabled) {
-        this.economyEnabled = economyEnabled;
-    }
-
-    public void setCreateCost(int createCost) {
-        this.createCost = createCost;
-    }
-
-    public void setDestroyCost(int destroyCost) {
-        this.destroyCost = destroyCost;
-    }
-
-    public void setUseCost(int useCost) {
-        this.useCost = useCost;
-    }
-
-    public void setToOwner(boolean toOwner) {
-        this.toOwner = toOwner;
-    }
-
-    public void setChargeFreeDestination(boolean chargeFreeDestination) {
-        this.chargeFreeDestination = chargeFreeDestination;
-    }
-
-    public void setFreeGatesGreen(boolean freeGatesGreen) {
-        this.freeGatesGreen = freeGatesGreen;
-    }
-
-    public void setVault(@Nullable Plugin vault) {
-        this.vault = vault;
-    }
-
-    public void setEconomy(@Nullable Economy economy) {
-        this.economy = economy;
-    }
+    public boolean isFreeGatesGreen() {return freeGatesGreen;}
+    
 }
