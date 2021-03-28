@@ -465,10 +465,12 @@ public class Portal {
     }
 
     public boolean isOpenFor(Player player) {
-        if (!isOpen) return false;
-        
-        if ((isAlwaysOn()) || (this.player == null)) return true;
-        
+        if (!isOpen) {
+            return false;
+        }
+        if ((isAlwaysOn()) || (this.player == null)) {
+            return true;
+        }
         return (player != null) && (player.getName().equalsIgnoreCase(this.player.getName()));
     }
 
@@ -1019,10 +1021,31 @@ public class Portal {
         RelativeBlockVector buttonVector = null;
 
         for (Gate possibility : possibleGates) {
-        	buttonVector = possibility.checkForAnyMatch(parent,modX,modZ);
-            if(buttonVector != null)
-            	gate = possibility;
-            
+            if (gate != null) {
+                break;
+            }
+
+            RelativeBlockVector[] vectors = possibility.getControls();
+            RelativeBlockVector otherControl = null;
+
+            for (RelativeBlockVector vector : vectors) {
+                Blox tl = parent.modRelative(-vector.getRight(), -vector.getDepth(), -vector.getDistance(), modX, 1, modZ);
+
+                if (gate == null) {
+                    if (possibility.matches(tl, modX, modZ, true)) {
+                        gate = possibility;
+                        topleft = tl;
+
+                        if (otherControl != null) {
+                            buttonVector = otherControl;
+                        }
+                    }
+                } else {
+                    buttonVector = vector;
+                }
+
+                otherControl = vector;
+            }
         }
         if (gate == null || buttonVector == null) {
         	Stargate.debug("createPortal", "Could not find matching gate layout");
