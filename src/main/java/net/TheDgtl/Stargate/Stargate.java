@@ -239,7 +239,20 @@ public class Stargate extends JavaPlugin {
             newFile.getParentFile().mkdirs();
         }
     }
-
+    /**
+     * Debug for permissions
+     * @param rout
+     * @param msg
+     */
+    static public void permDebug(String rout, String msg) {
+    	if(permDebug)
+    		debug(rout,msg);
+    }
+    /**
+     * Stargates debug function :)
+     * @param rout 
+     * @param msg
+     */
     static public void debug(String rout, String msg) {
         if (debug) {
             log.info("[" + rout + "] " + msg);

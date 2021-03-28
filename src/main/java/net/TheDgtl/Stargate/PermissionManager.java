@@ -32,8 +32,7 @@ public class PermissionManager {
      * Check whether the player has the given permissions.
      */
     public static boolean hasPerm(Player player, String perm) {
-        if (Stargate.isPermDebug())
-        	Stargate.debug("hasPerm::SuperPerm(" + player.getName() + ")", perm + " => " + player.hasPermission(perm));
+        Stargate.permDebug("hasPerm::SuperPerm(" + player.getName() + ")", perm + " => " + player.hasPermission(perm));
         return player.hasPermission(perm);
     }
 
@@ -45,12 +44,10 @@ public class PermissionManager {
      */
     public static boolean hasPermDeep(Player player, String perm) {
         if (!player.isPermissionSet(perm)) {
-            if (Stargate.permDebug)
-            	Stargate.debug("hasPermDeep::SuperPerm", perm + " => true");
+            Stargate.permDebug("hasPermDeep::SuperPerm", perm + " => true");
             return true;
         }
-        if (Stargate.permDebug)
-        	Stargate.debug("hasPermDeep::SuperPerms", perm + " => " + player.hasPermission(perm));
+        Stargate.permDebug("hasPermDeep::SuperPerms", perm + " => " + player.hasPermission(perm));
         return player.hasPermission(perm);
     }
 
