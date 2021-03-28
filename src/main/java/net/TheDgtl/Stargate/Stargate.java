@@ -301,57 +301,6 @@ public class Stargate extends JavaPlugin {
         return lang.getString(name);
     }
 
-    public void openPortal(Player player, Portal portal) {
-        Portal destination = portal.getDestination();
-
-        // Always-open gate -- Do nothing
-        if (portal.isAlwaysOn()) {
-            return;
-        }
-
-        // Random gate -- Do nothing
-        if (portal.isRandom())
-            return;
-
-        // Invalid destination
-        if ((destination == null) || (destination == portal)) {
-            sendMessage(player, getString("invalidMsg"));
-            return;
-        }
-
-        // Gate is already open
-        if (portal.isOpen()) {
-            // Close if this player opened the gate
-            if (portal.getActivePlayer() == player) {
-                portal.close(false);
-            }
-            return;
-        }
-
-        // Gate that someone else is using -- Deny access
-        if ((!portal.isFixed()) && portal.isActive() && (portal.getActivePlayer() != player)) {
-            sendMessage(player, getString("denyMsg"));
-            return;
-        }
-
-        // Check if the player can use the private gate
-        if (portal.isPrivate() && !canPrivate(player, portal)) {
-            sendMessage(player, getString("denyMsg"));
-            return;
-        }
-
-        // Destination blocked
-        if ((destination.isOpen()) && (!destination.isAlwaysOn())) {
-            sendMessage(player, getString("blockMsg"));
-            return;
-        }
-
-        // Open gate
-        portal.open(player, false);
-    }
-
-    
-
     /**
      * Return true if the portal is free for the player
      */
@@ -376,15 +325,6 @@ public class Stargate extends JavaPlugin {
         return portal.isOwner(player);
     }
 
-    /**
-     * Check if the player can use this private gate
-     */
-    public boolean canPrivate(Player player, Portal portal) {
-        // Check if the player is the owner of the gate
-        if (portal.isOwner(player)) return true;
-        // The player is an admin with the ability to use private gates
-        return PermissionManager.hasPerm(player, "stargate.admin") || PermissionManager.hasPerm(player, "stargate.admin.private");
-    }
 
     /**
      * Check if the player has access to {option}

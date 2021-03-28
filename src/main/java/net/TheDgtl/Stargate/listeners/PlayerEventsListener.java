@@ -255,7 +255,7 @@ public class PlayerEventsListener extends StargateListener {
                 return;
             }
 
-            stargate.openPortal(player, portal);
+            portal.innitateOpen(player, false);
             if (portal.isOpenFor(player)) {
                 event.setUseInteractedBlock(Event.Result.ALLOW);
             }

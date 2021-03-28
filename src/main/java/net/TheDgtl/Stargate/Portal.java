@@ -329,10 +329,72 @@ public class Portal {
         this.button = button;
     }
 
+    
+    /**
+     * Makes some checks before a open sequence 
+     * @param player
+     * @param force
+     */
+    public void innitateOpen(Player player,boolean force) {
+    	Portal destination = getDestination();
+
+        // Always-open gate -- Do nothing
+        if (isAlwaysOn()) return;
+
+        // Random gate -- Do nothing
+        if (isRandom()) return;
+
+        // Invalid destination
+        if ((destination == null) || (destination == this)) {
+            stargate.sendMessage(player, stargate.getString("invalidMsg"));
+            return;
+        }
+
+        // Gate is already open
+        if (isOpen()) {
+            // Close if this player opened the gate
+            if (getActivePlayer() == player) {
+                close(false);
+            }
+            return;
+        }
+
+        // Gate that someone else is using -- Deny access
+        if ((!isFixed()) && isActive() && (getActivePlayer() != player)) {
+        	stargate.sendMessage(player, stargate.getString("denyMsg"));
+            return;
+        }
+
+        // Check if the player can use the private gate
+        if (isPrivate() && !canPrivate(player)) {
+            stargate.sendMessage(player, stargate.getString("denyMsg"));
+            return;
+        }
+
+        // Destination blocked
+        if ((destination.isOpen()) && (!destination.isAlwaysOn())) {
+            stargate.sendMessage(player, stargate.getString("blockMsg"));
+            return;
+        }
+
+        // Open gate
+        open(player, false);
+        
+    }
+
+    /**
+     * Check if the player can use this private gate
+     */
+    public boolean canPrivate(Player player) {
+        // Check if the player is the owner of the gate
+        if (this.isOwner(player)) return true;
+        // The player is an admin with the ability to use private gates
+        return PermissionManager.hasPerm(player, "stargate.admin") || PermissionManager.hasPerm(player, "stargate.admin.private");
+    }
+    
     public boolean open(boolean force) {
         return open(null, force);
     }
-
     public boolean open(Player openFor, boolean force) {
         // Call the StargateOpenEvent
         StargateOpenEvent event = new StargateOpenEvent(openFor, this, force);
