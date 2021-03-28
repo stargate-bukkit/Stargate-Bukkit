@@ -249,7 +249,7 @@ public class Stargate extends JavaPlugin {
     		debug(rout,msg);
     }
     /**
-     * Stargates debug function :)
+     * Stargate's debug function :)
      * @param rout 
      * @param msg
      */
