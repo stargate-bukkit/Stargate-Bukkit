@@ -247,6 +247,24 @@ public class Gate {
         return toOwner;
     }
 
+    
+    public RelativeBlockVector checkForAnyMatch(Blox parent, int modX, int modZ) {
+    	RelativeBlockVector[] vectors = getControls();
+        RelativeBlockVector otherControl = null;
+
+        for (RelativeBlockVector vector : vectors) {
+            Blox tl = parent.modRelative(-vector.getRight(), -vector.getDepth(), -vector.getDistance(), modX, 1, modZ);
+            if (matches(tl, modX, modZ, true) ) {
+            	if(otherControl != null)
+            		return otherControl;
+            	return vector;
+            }
+
+            otherControl = vector;
+        }
+        return null;
+    }
+    
     public boolean matches(Blox topleft, int modX, int modZ) {
         return matches(topleft, modX, modZ, false);
     }
