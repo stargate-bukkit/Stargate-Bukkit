@@ -1,7 +1,7 @@
-> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!<br>
-> THIS BRANCH OF STARGATE IS **HIGHLY UNSTABLE**. DO __**NOT**__ USE IT ON PRODUCTION INSTANCES<br>
+> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!<br>
+>  THIS BRANCH OF STARGATE IS **HIGHLY UNSTABLE**.<br>DO __**NOT**__ USE IT ON PRODUCTION INSTANCES<br><br>
 >                              For now, please use [existing releases](https://github.com/the-lockedcraft-legacy-organization/Stargate-Bukkit/releases)!<br>
-> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!<br>
+> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!<br>
 
 # Stargate Version 1.0.0.0
 A complete recode of Dinnerbone's Stargate from the ground up, based on Drakia's bukkit port.
