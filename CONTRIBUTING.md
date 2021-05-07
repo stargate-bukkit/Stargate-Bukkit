@@ -20,4 +20,4 @@ I don't think it's a good idea if you mash your head against a wall until you fi
 
 *Programer 2: I don't know
 
-Nobody knows, and thats of course not going to be clearly coded. It's always more efficient to just research about your problem if you have come to a stop or even do the research before you code.
+Nobody knows, and thats of course not going to be clearly coded. It's always more efficient to just research about your problem if you have come to a stop.
