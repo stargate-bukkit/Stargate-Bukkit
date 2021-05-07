@@ -16,5 +16,6 @@ public class StargateNetwork {
 	 *  - Get portal by name
 	 *  - (listener) createPortalEvent; add portal if it is for this network
 	 *  - (listener) destroyPortalEvent; remove portal if in this network
+	 *  - 
 	 */
 }
