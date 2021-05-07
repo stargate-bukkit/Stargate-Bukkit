@@ -25,6 +25,7 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 public class PortalOpenEvent extends PortalEvent {
+	// oldname = StagateOpenEvent
     private final Player player;
     private boolean isForced;
 
