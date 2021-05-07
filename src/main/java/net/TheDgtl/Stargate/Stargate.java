@@ -28,4 +28,5 @@ public class Stargate extends JavaPlugin {
         int pluginId = 10451;
         new Metrics(this, pluginId);
     }
+    private void loadConfig() {};
 }
