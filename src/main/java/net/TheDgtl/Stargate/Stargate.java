@@ -29,4 +29,22 @@ public class Stargate extends JavaPlugin {
         new Metrics(this, pluginId);
     }
     private void loadConfig() {};
+    
+    @Override
+    public void onLoad() {
+        //economyHandler = new EconomyHandler(this);
+    }
+    
+    @Override
+    public void onDisable() {
+    	/*
+        Portal.closeAllGates(this);
+        Portal.clearGates();
+        managedWorlds.clear();
+        getServer().getScheduler().cancelTasks(this);
+        */
+    }
+    
+    
+    
 }
