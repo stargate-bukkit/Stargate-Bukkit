@@ -21,9 +21,9 @@ package net.TheDgtl.Stargate.event;
 import java.util.Objects;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-
-import net.TheDgtl.Stargate.Portal;
 import org.jetbrains.annotations.NotNull;
+
+import net.TheDgtl.portal.Portal;
 
 public class StargateAccessEvent extends StargateEvent {
     private final Player player;

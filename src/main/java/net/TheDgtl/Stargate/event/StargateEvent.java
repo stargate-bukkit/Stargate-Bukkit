@@ -18,10 +18,12 @@ package net.TheDgtl.Stargate.event;
  */
 
 import java.util.Objects;
-import net.TheDgtl.Stargate.Portal;
+
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
+
+import net.TheDgtl.portal.Portal;
 
 public abstract class StargateEvent extends Event implements Cancellable {
 	// oldname = StargateEvent

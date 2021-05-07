@@ -16,8 +16,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.TheDgtl.Stargate;
+package net.TheDgtl.portal;
 
 public class Portal {
-
+	/**
+	 * Behaviours:
+	 * - Cycle through PortalStates, make current state listener for movements
+	 * - (Listener) blockevents; listen for control input
+	 * - (Listener) listen for portalOpen events within the network
+	 * - (Static) check if layout is valid, return a layout with relevant info 
+	 * about validity, rotation, location and portaltype
+	 * - (Constructor) Write sign and do various logic that has not been done with 
+	 * layout already
+	 * 
+	 * Added behaviours
+	 * - (Listener) Listen for stargate clock (maybe 1 tick per minute or something)
+	 * maybe follow an external script that gives when the states should change
+	 */
 }
