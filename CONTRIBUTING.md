@@ -20,6 +20,6 @@ I don't think it's a good idea if you mash your head against a wall until you fi
 
 *Programer 1: How does this work?
 
-*Programer 2: I don't know
+*Programer 2: I don't fucking know
 
 Nobody knows, and thats of course not going to be clearly coded. It's always more efficient to just research about your problem if you have come to a stop.
