@@ -19,20 +19,19 @@
 package net.TheDgtl.Stargate.event;
 
 import java.util.Objects;
-import net.TheDgtl.Stargate.Portal;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+
+import net.TheDgtl.Stargate.Portal;
 import org.jetbrains.annotations.NotNull;
 
-public class PortalOpenEvent extends PortalEvent {
-	// oldname = StagateOpenEvent
+public class StargateAccessEvent extends StargateEvent {
     private final Player player;
-    private boolean isForced;
+    private boolean deny;
 
     private static final HandlerList handlers = new HandlerList();
 
-    @NotNull
-    public HandlerList getHandlers() {
+    public @NotNull HandlerList getHandlers() {
         return handlers;
     }
 
@@ -41,25 +40,23 @@ public class PortalOpenEvent extends PortalEvent {
         return handlers;
     }
 
-    public PortalOpenEvent(Player player, @NotNull Portal portal, boolean isForced) {
+    public StargateAccessEvent(@NotNull Player player, @NotNull Portal portal, boolean deny) {
         super(Objects.requireNonNull(portal));
-        this.player = player;
-        this.isForced = isForced;
+        this.player = Objects.requireNonNull(player);
+        this.deny = deny;
     }
 
-    /**
-     * @return player that opened the gate
-     */
+    public boolean getDeny() {
+        return this.deny;
+    }
+
+    public void setDeny(boolean deny) {
+        this.deny = deny;
+    }
+
     @NotNull
     public Player getPlayer() {
-        return player;
+        return this.player;
     }
 
-    public boolean getIsForced() {
-        return isForced;
-    }
-
-    public void setForce(boolean isForced) {
-        this.isForced = isForced;
-    }
 }

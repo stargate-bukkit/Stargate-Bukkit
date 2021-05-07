@@ -1,6 +1,8 @@
 package net.TheDgtl.Stargate;
 
-public class StargateNetwork {
+import org.bukkit.event.Listener;
+
+public class StargateNetwork implements Listener{
 	/**
 	 * Conceived as the class that can store a network of portals inside itself
 	 * Portals inside this class can only communicate with each other
@@ -16,6 +18,5 @@ public class StargateNetwork {
 	 *  - Get portal by name
 	 *  - (listener) createPortalEvent; add portal if it is for this network
 	 *  - (listener) destroyPortalEvent; remove portal if in this network
-	 *  - 
 	 */
 }

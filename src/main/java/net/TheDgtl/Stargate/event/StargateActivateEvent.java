@@ -15,20 +15,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package net.TheDgtl.Stargate.event;
 
+import java.util.List;
 import java.util.Objects;
 import net.TheDgtl.Stargate.Portal;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class PortalTeleportEvent extends PortalEvent {
-	// oldname = StagatePortalEvent
+public class StargateActivateEvent extends StargateEvent {
     private final Player player;
-    private final Portal destination;
-    private Location exit;
+    private List<String> destinations;
+    private String destination;
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -42,43 +42,33 @@ public class PortalTeleportEvent extends PortalEvent {
         return handlers;
     }
 
-    public PortalTeleportEvent(@NotNull Player player, @NotNull Portal portal, @NotNull Portal dest, @NotNull Location exit) {
+    public StargateActivateEvent(@NotNull Portal portal, @NotNull Player player, @NotNull List<String> destinations, @NotNull String destination) {
         super(Objects.requireNonNull(portal));
-
         this.player = Objects.requireNonNull(player);
-        this.destination = Objects.requireNonNull(dest);
-        this.exit = Objects.requireNonNull(exit);
+        this.destinations = Objects.requireNonNull(destinations);
+        this.destination = Objects.requireNonNull(destination);
     }
 
-    /**
-     * @return player that went through the gate
-     */
     @NotNull
     public Player getPlayer() {
         return player;
     }
 
-    /**
-     * @return destination gate
-     */
     @NotNull
-    public Portal getDestination() {
+    public List<String> getDestinations() {
+        return destinations;
+    }
+
+    public void setDestinations(@NotNull List<String> destinations) {
+        this.destinations = Objects.requireNonNull(destinations);
+    }
+
+    @NotNull
+    public String getDestination() {
         return destination;
     }
 
-    /**
-     * @return org.bukkit.Location Location players exit point
-     */
-    @NotNull
-    public Location getExit() {
-        return exit;
-    }
-
-    /**
-     * 
-     * @param exitLocation
-     */
-    public void setExit(@NotNull Location exitLocation) {
-        this.exit = Objects.requireNonNull(exitLocation);
+    public void setDestination(@NotNull String destination) {
+        this.destination = Objects.requireNonNull(destination);
     }
 }
