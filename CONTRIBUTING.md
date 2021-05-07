@@ -15,6 +15,9 @@ Refactors just keeps the code cleaner, and is almost always good. They are often
 When you modularise your methods it will be simpler to understand or debug the code if you devide it into methods that does calculations and returns a value and methods that only does sideeffects. I have also noticed that this often automatically makes it easier to not rewrite code.
 #### Don't know what you're doing? Read the manual!
 I don't think it's a good idea if you mash your head against a wall until you find a solution to your problem. You will get pissed, and it might even be so that you don't understand your solution
+
 *Programer 1: How does this work?
+
 *Programer 2: I don't know
+
 Nobody knows, and thats of course not going to be clearly coded. It's always more efficient to just research about your problem if you have come to a stop.
