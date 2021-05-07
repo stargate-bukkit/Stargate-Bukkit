@@ -28,6 +28,7 @@ public class Portal {
 	 * about validity, rotation, location and portaltype
 	 * - (Constructor) Write sign and do various logic that has not been done with 
 	 * layout already
+	 * - (Constructor) load from db
 	 * 
 	 * Added behaviours
 	 * - (Listener) Listen for stargate clock (maybe 1 tick per minute or something)
