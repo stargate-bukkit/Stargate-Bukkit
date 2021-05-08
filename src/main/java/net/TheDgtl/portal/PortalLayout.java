@@ -1,5 +1,5 @@
 package net.TheDgtl.portal;
 
-public class PortalLayout extends PortalType{
+public class PortalLayout extends Gate{
 
 }

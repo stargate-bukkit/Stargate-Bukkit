@@ -1,6 +1,6 @@
 package net.TheDgtl.portal;
 
-public class PortalType {
+public class Gate {
 	/**
 	 * Behaviors:
 	 * - (Static) a method that loads all existing portalTypes from file and saves
