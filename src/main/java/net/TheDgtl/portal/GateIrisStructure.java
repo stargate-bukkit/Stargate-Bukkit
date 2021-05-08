@@ -2,7 +2,7 @@ package net.TheDgtl.portal;
 
 import org.bukkit.Location;
 
-public class OpenedPortal extends GateState{
+public class GateIrisStructure extends GateStructure{
 	
 	@Override
 	public boolean isInPortal(Location location) {

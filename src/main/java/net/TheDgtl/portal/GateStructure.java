@@ -3,7 +3,7 @@ package net.TheDgtl.portal;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class GateState {
+public abstract class GateStructure {
 	/**
 	 * 
 	 */

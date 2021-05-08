@@ -3,21 +3,17 @@ package net.TheDgtl.portal;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
-public class ClosedPortal extends GateState{
+public class GateControllStructure extends GateStructure{
 
 	@Override
 	public boolean isInPortal(@NotNull Location loc) {
-		return false; // portal is closed
+		return false;
 	}
 
 	@Override
 	public boolean isValidState() {
-		/*
-		 * TODO Check if state is valid, for example if the portal is destroyed 
-		 */
-		
+		// TODO Auto-generated method stub
 		return false;
 	}
-
 
 }

@@ -14,8 +14,8 @@ public class Gate {
 	 * - have function that returns portalstates?
 	 */
 	
-	GateState currentState;
-	HashMap<String,GateState> availableStates;
+	GateStructure currentState;
+	HashMap<String,GateStructure> availableStates;
 	
 	/**
 	 * @param identifier
