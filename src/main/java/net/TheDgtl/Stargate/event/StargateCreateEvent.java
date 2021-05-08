@@ -24,7 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.portal.Portal;
+import net.TheDgtl.Stargate.portal.Portal;
 
 public class StargateCreateEvent extends StargateEvent {
     private final Player player;
