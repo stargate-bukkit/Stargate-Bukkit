@@ -27,6 +27,7 @@ import net.TheDgtl.portal.Portal;
 
 public class StargateCloseEvent extends StargateEvent {
     private boolean force;
+    //TODO add player?
 
     private static final HandlerList handlers = new HandlerList();
 

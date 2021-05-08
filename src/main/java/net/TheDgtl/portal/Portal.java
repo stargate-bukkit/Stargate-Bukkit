@@ -18,6 +18,8 @@
  */
 package net.TheDgtl.portal;
 
+
+
 public class Portal {
 	/**
 	 * Behaviours:
@@ -34,4 +36,8 @@ public class Portal {
 	 * - (Listener) Listen for stargate clock (maybe 1 tick per minute or something)
 	 * maybe follow an external script that gives when the states should change
 	 */
+	
+	
+	Gate gate;
+	
 }

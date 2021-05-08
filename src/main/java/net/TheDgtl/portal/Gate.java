@@ -1,5 +1,9 @@
 package net.TheDgtl.portal;
 
+import java.util.HashMap;
+
+import org.bukkit.Location;
+
 public class Gate {
 	/**
 	 * Behaviors:
@@ -9,4 +13,18 @@ public class Gate {
 	 * - Check if a possition of this portaltype at specified pos is valid
 	 * - have function that returns portalstates?
 	 */
+	
+	GateState currentState;
+	HashMap<String,GateState> availableStates;
+	
+	/**
+	 * @param identifier
+	 */
+	public void setGateState(String identifier){
+		currentState = availableStates.get(identifier);
+		
+	}
+	public boolean isInPortal(Location location) {
+		return currentState.isInPortal(location);
+	}
 }
