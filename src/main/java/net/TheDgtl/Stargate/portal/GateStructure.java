@@ -12,5 +12,5 @@ public abstract class GateStructure {
 	public void generateBlocks() {
 		
 	}
-	
+	 
 }

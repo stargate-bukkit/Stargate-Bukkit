@@ -23,7 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.portal.Portal;
+import net.TheDgtl.Stargate.portal.StargateNetwork;
 
 public class StargateAccessEvent extends StargateEvent {
     private final Player player;
@@ -40,7 +40,7 @@ public class StargateAccessEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateAccessEvent(@NotNull Player player, @NotNull Portal portal, boolean deny) {
+    public StargateAccessEvent(@NotNull Player player, @NotNull StargateNetwork.Portal portal, boolean deny) {
         super(Objects.requireNonNull(portal));
         this.player = Objects.requireNonNull(player);
         this.deny = deny;

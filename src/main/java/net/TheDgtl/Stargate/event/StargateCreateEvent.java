@@ -24,7 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.portal.Portal;
+import net.TheDgtl.Stargate.portal.StargateNetwork;
 
 public class StargateCreateEvent extends StargateEvent {
     private final Player player;
@@ -45,7 +45,7 @@ public class StargateCreateEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateCreateEvent(@NotNull Player player, @NotNull Portal portal, @NotNull String[] lines, boolean deny, @NotNull String denyReason, int cost) {
+    public StargateCreateEvent(@NotNull Player player, @NotNull StargateNetwork.Portal portal, @NotNull String[] lines, boolean deny, @NotNull String denyReason, int cost) {
         super(Objects.requireNonNull(portal));
         this.player = Objects.requireNonNull(player);
         this.lines = Objects.requireNonNull(lines);

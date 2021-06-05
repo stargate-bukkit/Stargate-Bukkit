@@ -3,7 +3,7 @@ package net.TheDgtl.Stargate.portal;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
-public class GateFrameStructure extends GateStructure{
+public class GateFrame extends GateStructure{
 
 	@Override
 	public boolean isInPortal(@NotNull Location loc) {

@@ -23,7 +23,7 @@ import java.util.Objects;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.portal.Portal;
+import net.TheDgtl.Stargate.portal.StargateNetwork;
 
 public class StargateDeactivateEvent extends StargateEvent {
     private static final HandlerList handlers = new HandlerList();
@@ -38,7 +38,7 @@ public class StargateDeactivateEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateDeactivateEvent(@NotNull Portal portal) {
+    public StargateDeactivateEvent(@NotNull StargateNetwork.Portal portal) {
         super(Objects.requireNonNull(portal));
     }
 }

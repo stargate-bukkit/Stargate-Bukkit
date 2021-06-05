@@ -2,7 +2,7 @@ package net.TheDgtl.Stargate.portal;
 
 import org.bukkit.Location;
 
-public class GateIrisStructure extends GateStructure{
+public class GateIris extends GateStructure{
 	
 	@Override
 	public boolean isInPortal(Location location) {

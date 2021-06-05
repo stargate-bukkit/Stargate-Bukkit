@@ -23,7 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.portal.Portal;
+import net.TheDgtl.Stargate.portal.StargateNetwork;
 
 /**
  * Stargate - A portal plugin for Bukkit
@@ -62,7 +62,7 @@ public class StargateDestroyEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateDestroyEvent(@NotNull Portal portal, @NotNull Player player, boolean deny, @NotNull String denyMsg, int cost) {
+    public StargateDestroyEvent(@NotNull StargateNetwork.Portal portal, @NotNull Player player, boolean deny, @NotNull String denyMsg, int cost) {
         super(Objects.requireNonNull(portal));
         this.player = Objects.requireNonNull(player);
         this.deny = deny;

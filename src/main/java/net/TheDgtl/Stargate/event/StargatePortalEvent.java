@@ -24,17 +24,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.portal.Portal;
+import net.TheDgtl.Stargate.portal.StargateNetwork;
 
 public class StargatePortalEvent extends StargateEvent {
 	/*
 	 * An event which occurs every time players teleport? 
-	 * (should be called stargateteleportevent)
 	 */
 	
 	
     private final Player player;
-    private final Portal destination;
+    private final StargateNetwork.Portal destination;
     private Location exit;
 
     private static final HandlerList handlers = new HandlerList();
@@ -49,7 +48,7 @@ public class StargatePortalEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargatePortalEvent(@NotNull Player player, @NotNull Portal portal, @NotNull Portal dest, @NotNull Location exit) {
+    public StargatePortalEvent(@NotNull Player player, @NotNull StargateNetwork.Portal portal, @NotNull StargateNetwork.Portal dest, @NotNull Location exit) {
         super(Objects.requireNonNull(portal));
 
         this.player = Objects.requireNonNull(player);
@@ -69,7 +68,7 @@ public class StargatePortalEvent extends StargateEvent {
      * @return destination gate
      */
     @NotNull
-    public Portal getDestination() {
+    public StargateNetwork.Portal getDestination() {
         return destination;
     }
 
