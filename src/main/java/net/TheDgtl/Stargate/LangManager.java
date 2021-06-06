@@ -63,6 +63,10 @@ public class LangManager {
     	// TODO show error message
     }
     
+    public void setLang(String language) {
+    	this.lang = language;
+    	strList = loadLanguage(language);
+    }
 	
 	
 	private class LangLoader{
