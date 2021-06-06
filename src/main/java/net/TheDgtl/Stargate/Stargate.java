@@ -17,34 +17,47 @@
  */
 package net.TheDgtl.Stargate;
 
+import java.util.logging.Level;
+
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Stargate extends JavaPlugin {
+	private static Stargate instance;
 
-    @Override
-    public void onEnable() {
-    	//registers bstats metrics
-        int pluginId = 10451;
-        new Metrics(this, pluginId);
-    }
-    private void loadConfig() {};
-    
-    @Override
-    public void onLoad() {
-        //economyHandler = new EconomyHandler(this);
-    }
-    
-    @Override
-    public void onDisable() {
-    	/*
-        Portal.closeAllGates(this);
-        Portal.clearGates();
-        managedWorlds.clear();
-        getServer().getScheduler().cancelTasks(this);
-        */
-    }
-    
-    
-    
+	private Level lowestMsgLevel = Level.INFO;
+
+	@Override
+	public void onEnable() {
+		// registers bstats metrics
+		int pluginId = 10451;
+		new Metrics(this, pluginId);
+
+		instance = this;
+	}
+
+	private void loadConfig() {
+	};
+
+	@Override
+	public void onLoad() {
+		// economyHandler = new EconomyHandler(this);
+	}
+
+	@Override
+	public void onDisable() {
+		/*
+		 * Portal.closeAllGates(this); Portal.clearGates(); managedWorlds.clear();
+		 * getServer().getScheduler().cancelTasks(this);
+		 */
+	}
+
+	public static void log(String msg, Level priorityLevel) {
+		if (instance.lowestMsgLevel.intValue() <= priorityLevel.intValue()
+				&& priorityLevel.intValue() < Level.INFO.intValue()) {
+			instance.getLogger().log(Level.INFO, msg);
+			return;
+		}
+		instance.getLogger().log(priorityLevel, msg);
+	}
 }

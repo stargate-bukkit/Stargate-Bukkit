@@ -88,10 +88,9 @@ public class LangManager {
 		void open() throws FileNotFoundException {
 			File langFile = new File(dataFolder, language + ".txt");
 			if(!langFile.exists()) {
-				langFile.mkdirs();
-				stargate.saveResource(language + ".txt", true);
+				stargate.saveResource("lang/"+language+".txt", false);
 			}
-				
+			
 			fis = new FileInputStream(langFile);
 			isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
 			br = new BufferedReader(isr);
@@ -117,6 +116,7 @@ public class LangManager {
 			
 			return output;
 		}
+		
 		void close() {
 			try {
 				fis.close();
