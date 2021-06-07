@@ -4,18 +4,17 @@ import java.util.HashMap;
 
 import org.bukkit.Location;
 
-public class Gate extends GateLayout{
-	GateStructure currentState;
-	HashMap<String,GateStructure> availableStates;
+public class Gate{
+	HashMap<String,GateStructure> portalParts;
 	
 	/**
-	 * @param identifier
+	 * 
+	 * @param location
+	 * @return
 	 */
-	public void setGateState(String identifier){
-		currentState = availableStates.get(identifier);
-		
-	}
 	public boolean isInPortal(Location location) {
-		return currentState.isInPortal(location);
+		return portalParts.get("iris").isInPortal(location);
 	}
+	
+	
 }
