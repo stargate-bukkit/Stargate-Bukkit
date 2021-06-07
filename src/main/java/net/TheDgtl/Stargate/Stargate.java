@@ -34,11 +34,21 @@ public class Stargate extends JavaPlugin {
 		new Metrics(this, pluginId);
 
 		instance = this;
+		saveDefaultGates();
+	}
+	
+	private void saveDefaultGates() {
+		//TODO is there a way to check all files in a resourcefolder? Possible solution seems unnecessarily complex
+		String[] gateList = {"nether.gate", "water.gate"};
+		boolean replace = false;
+		for(String gateName : gateList) {
+			this.saveResource("gates/" + gateName, replace);
+		}
 	}
 
 	private void loadConfig() {
 	};
-
+	
 	@Override
 	public void onLoad() {
 		// economyHandler = new EconomyHandler(this);
