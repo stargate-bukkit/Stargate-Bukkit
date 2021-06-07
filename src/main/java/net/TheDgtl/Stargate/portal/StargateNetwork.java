@@ -2,6 +2,8 @@ package net.TheDgtl.Stargate.portal;
 
 import java.util.HashMap;
 
+import org.bukkit.Location;
+
 public class StargateNetwork{
 	/**
 	 * Conceived as the class that can store a network of portals inside itself
@@ -21,15 +23,20 @@ public class StargateNetwork{
 		return portalList.get(name);
 	}
 	
+	public class InvalidPortalStructure extends Exception{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -5580284561192990683L;
+		
+	}
+	
 	public class Portal {
 		/**
 		 * Behaviours:
 		 * - Cycle through PortalStates, make current state listener for movements
-		 * - (Static) check if layout is valid, return a layout with relevant info 
-		 * about validity, rotation, location and portaltype
-		 * - (Constructor) Write sign and do various logic that has not been done with 
-		 * layout already
-		 * - (Constructor) load from db
+		 * - (Constructor) Check validity, write sign, add self to a list in the network
 		 * 
 		 * Added behaviours
 		 * - (Listener) Listen for stargate clock (maybe 1 tick per minute or something)
@@ -39,5 +46,8 @@ public class StargateNetwork{
 		
 		GateLayout gate;
 		
+		public Portal(Location signLoc, String[] config) throws InvalidPortalStructure{
+			// Check validity, write sign, add self to a list in the network
+		}
 	}
 }
