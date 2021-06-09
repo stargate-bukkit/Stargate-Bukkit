@@ -62,7 +62,7 @@ public class Stargate extends JavaPlugin {
 		 */
 	}
 
-	public static void log(String msg, Level priorityLevel) {
+	public static void log(Level priorityLevel, String msg) {
 		if (instance.lowestMsgLevel.intValue() <= priorityLevel.intValue()
 				&& priorityLevel.intValue() < Level.INFO.intValue()) {
 			instance.getLogger().log(Level.INFO, msg);
