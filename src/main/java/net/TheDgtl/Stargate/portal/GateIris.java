@@ -1,16 +1,36 @@
 package net.TheDgtl.Stargate.portal;
 
-import org.bukkit.Location;
+import java.util.List;
+
 import org.bukkit.Material;
+import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 public class GateIris extends GateStructure{
 	
-	Material openBlock;
-	Material closedBlock;
+	Material irisOpen;
+	Material irisClosed;
 	boolean isOpen = false;
+	Vector exit;
+	protected List<Vector> blocks;
+	
+	
+	public GateIris(Material irisOpen, Material irisClosed) {
+		this.irisOpen = irisOpen;
+		this.irisClosed = irisClosed;
+	}
+	
+	public void addPart(Vector blockVector) {
+		blocks.add(blockVector);
+	}
+	
+	public void addExit(Vector exitpoint) {
+		this.exit = exitpoint;
+		addPart(exitpoint);
+	}
 	
 	@Override
-	public boolean isInPortal(Location location) {
+	public boolean isInPortal(@NotNull Vector relativeLocation) {
 		//TODO write bounds checking algoritm / or use old
 		return isOpen;
 	}

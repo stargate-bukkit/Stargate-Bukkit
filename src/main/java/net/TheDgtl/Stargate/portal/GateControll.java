@@ -1,12 +1,12 @@
 package net.TheDgtl.Stargate.portal;
 
-import org.bukkit.Location;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 public class GateControll extends GateStructure{
 
 	@Override
-	public boolean isInPortal(@NotNull Location loc) {
+	public boolean isInPortal(@NotNull Vector relativeLocation) {
 		return false;
 	}
 

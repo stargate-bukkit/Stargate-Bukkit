@@ -23,14 +23,7 @@ public class StargateNetwork{
 		return portalList.get(name);
 	}
 	
-	public class InvalidPortalStructure extends Exception{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -5580284561192990683L;
-		
-	}
+	
 	
 	public class Portal {
 		/**
@@ -44,9 +37,9 @@ public class StargateNetwork{
 		 */
 		
 		
-		GateLayout gate;
+		Gate gate;
 		
-		public Portal(Location signLoc, String[] config) throws InvalidPortalStructure{
+		public Portal(Location signLoc, String[] config) throws Gate.InvalidStructure{
 			// Check validity, write sign, add self to a list in the network
 		}
 	}

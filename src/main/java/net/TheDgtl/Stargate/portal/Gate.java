@@ -1,188 +1,82 @@
 package net.TheDgtl.Stargate.portal;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
-import java.util.logging.Level;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.util.Vector;
 
-import net.TheDgtl.Stargate.Stargate;
-
-public class Gate {
-	public static List<Gate> gateTypes;
-
-	HashMap<String, GateStructure> portalParts;
-
+public class Gate{
+	/*
+	 * Variables to store location and rotation in comparison to the .gate design
+	 * these are mainly used to convert from location to gateFormat vector
+	 */
+	Location topLeft; 
+	Vector rotationAxis;
+	double rotation; // degrees
+	
+	GateFormat format;
+	/**
+	 * Constructor for gate 
+	 * @param loc
+	 */
+	public Gate(Location loc) {
+		rotationAxis = new Vector(0, 1, 0);
+		rotation = 0;
+		
+		//Fukin rotate a bit and flip and stuff to check if valid, should be fine
+		
+	}
+	
+	private boolean rotationMatches() {
+		for(int i = 0; i < 4; i++) {
+			if(format.matches(null)) {
+				return true;
+			}
+			rotation += 90;
+		}
+		return false;
+	}
 	/**
 	 * 
 	 * @param location
 	 * @return
 	 */
 	public boolean isInPortal(Location location) {
-		return portalParts.get("iris").isInPortal(location);
+		
+		Vector relativeVector = convertToGateFormatVector(location);
+		return format.portalParts.get("iris").isInPortal(relativeVector);
 	}
-
-	private static class StargateFilenameFilter implements FilenameFilter {
-		public boolean accept(File dir, String name) {
-			return name.endsWith(".gate");
-		}
+	
+	/**
+	 * Inverse operation of convertToMinecraftLocation; Convert from location to a gateFormat space vector
+	 * @param location in minecraft world
+	 * @return vector in gateFormat space
+	 */
+	private Vector convertToGateFormatVector(Location location) {
+		//TODO add mirror/flip operation
+		Vector output = location.subtract(topLeft).toVector();
+		output = output.rotateAroundAxis(rotationAxis, rotation);
+		return output;
 	}
-
-	public static List<Gate> loadGates(String gateFolder) {
-		List<Gate> allGateTypes = new ArrayList<Gate>();
-
-		File dir = new File(gateFolder);
-		File[] files = dir.exists() ? dir.listFiles(new StargateFilenameFilter()) : new File[0];
-
-		for (File file : files) {
-			GateParser gateParser = new GateParser(file);
-			try {
-				gateParser.open();
-				Gate gate = gateParser.parse();
-				allGateTypes.add(gate);
-			} catch (FileNotFoundException | GateParser.ParsingError e) {
-				Stargate.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - " + e.getMessage());
-			} finally {
-				gateParser.close();
-			}
-		}
-
-		return allGateTypes;
+	
+	/**
+	 * Inverse operation of convertToGateFormat; convert from gateFormat space vector
+	 * To minecraft world location
+	 * @param vector in gateFormat space
+	 * @return location in mincraft world
+	 */
+	private Location convertToMinecraftLocation(Vector vector) {
+		//TODO add mirror/flip operation
+		vector = vector.rotateAroundAxis(rotationAxis, -rotation);
+		Location output = topLeft.add(vector);
+		return output;
 	}
+	
+	public class InvalidStructure extends Exception{
 
-	private static class GateParser {
-		File file;
-		Scanner scanner;
-		String line;
-		Gate gate;
-		HashMap<Character, Material> frameConfig;
-
-		final static char NOTINGATE = ' ';
-		final static char EXIT = '*';
-		final static char ENTRANCE = '.';
-
-		Material irisOpen;
-		Material irisClosed;
-		HashMap<String, String> config;
-
-		GateParser(File file) {
-			this.file = file;
-
-			frameConfig = new HashMap<Character, Material>();
-			// Default settings
-			irisOpen = Material.WATER;
-			irisClosed = Material.AIR;
-		}
-
-		void open() throws FileNotFoundException {
-			scanner = new Scanner(file);
-		}
-
-		Gate parse() throws ParsingError {
-			parseSettings();
-
-			return parseGate();
-		}
-
-		private void parseSettings() throws ParsingError {
-			while (scanner.hasNextLine()) {
-				line = scanner.nextLine();
-				if (line.isBlank()) {
-					scanner.nextLine();
-					return;
-				}
-				if (!line.contains("="))
-					return;
-
-				String[] split = line.split("=");
-				String key = split[0].trim();
-				String value = split[1].trim();
-
-				if (key.length() != 1) {
-					switch (key) {
-					case "portal-open":
-						irisOpen = parseMaterial(value);
-						break;
-					case "portal-closed":
-						irisClosed = parseMaterial(value);
-						break;
-					default:
-						config.put(key, value);
-						break;
-					}
-					continue;
-				}
-
-				Character symbol = key.charAt(0);
-
-				Material id = parseMaterial(value);
-				frameConfig.put(symbol, id);
-
-			}
-		}
-
-		private Material parseMaterial(String stringId) throws ParsingError {
-			Material id = Material.getMaterial(stringId);
-
-			if (id == null) {
-				throw new ParsingError("Invalid material in line: " + line);
-			}
-			return id;
-
-		}
-
-		class ParsingError extends Exception {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = -8103799867513880231L;
-
-			ParsingError(String msg) {
-				super(msg);
-			}
-		}
-
-		private Gate parseGate() throws ParsingError {
-			Gate gate = new Gate();
-			int cols = 0;
-			ArrayList<ArrayList<Character>> design = new ArrayList<>();
-			while (scanner.hasNextLine()) {
-				ArrayList<Character> row = new ArrayList<>();
-
-				if (line.length() > cols) {
-					cols = line.length();
-				}
-
-				for (Character symbol : line.toCharArray()) {
-					switch (symbol) {
-					case NOTINGATE:
-						break;
-					case EXIT:
-						break;
-					case ENTRANCE:
-						break;
-					default:
-						if ((symbol.equals('?')) || (!frameConfig.containsKey(symbol))) {
-							throw new ParsingError("Unknown symbol '" + symbol + "' in gatedesign");
-						}
-					}
-
-					row.add(symbol);
-				}
-			}
-		}
-
-		void close() {
-			try {
-				scanner.close();
-			} catch (NullPointerException ex) {
-			}
-		}
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -5580284561192990683L;
+		
 	}
 }
