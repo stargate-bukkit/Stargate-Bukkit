@@ -33,7 +33,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 public class Gate {
-
     private static final Character ANYTHING = ' ';
     private static final Character ENTRANCE = '.';
     private static final Character EXIT = '*';
