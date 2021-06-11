@@ -27,9 +27,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 
 public class Gate {
@@ -39,7 +43,6 @@ public class Gate {
 
     private static final HashMap<String, Gate> gates = new HashMap<>();
     private static final HashMap<Material, ArrayList<Gate>> controlBlocks = new HashMap<>();
-    private static final HashSet<Material> frameBlocks = new HashSet<>();
 
     private final String filename;
     private final Character[][] layout;
@@ -60,13 +63,15 @@ public class Gate {
 
     // di
     private final Stargate stargate;
+	private HashMap<Character, Tag<Material>> tagTypes;
 
-    public Gate(Stargate stargate, String filename, Character[][] layout, HashMap<Character, Material> types) {
+    public Gate(Stargate stargate, String filename, Character[][] layout, HashMap<Character, Material> types,HashMap<Character,Tag<Material>> tagTypes ) {
         this.stargate = stargate;
         this.filename = filename;
         this.layout = layout;
         this.types = types;
-
+        this.tagTypes = tagTypes;
+        
         populateCoordinates();
     }
 
@@ -260,7 +265,8 @@ public class Gate {
      */
     public boolean matches(Blox topleft, int modX, int modZ, boolean onCreate) {
         HashMap<Character, Material> portalTypes = new HashMap<>(types);
-
+        HashMap<Character,Tag<Material>> tagPortalTypes = new HashMap<>(tagTypes);
+        
         for (int y = 0; y < layout.length; y++) {
             for (int x = 0; x < layout[y].length; x++) {
                 Character key = layout[y][x];
@@ -284,27 +290,33 @@ public class Gate {
 
                     continue;
                 }
-
                 Material id = portalTypes.get(key);
-
-                if (id == null) {
-                    portalTypes.put(key, topleft.modRelative(x, y, 0, modX, 1, modZ).getType());
-                    continue;
-                }
-
-                Material blockType = topleft.modRelative(x, y, 0, modX, 1, modZ).getType();
-
-                String idString = id.toString();
-                String blockString = blockType.toString();
-
-                boolean matches = blockType == id;
-
-                // Hack 7/5/2020
-                // using LEGACY_* as a wildcard
-                // Using LEGACY_CONCRETE will match ALL concrete colours
-                if (idString.contains("LEGACY") && !matches) {
-                    String noLegacy = idString.replace("LEGACY_", "");
-                    matches = blockString.contains(noLegacy);
+            	Material blockType = topleft.modRelative(x, y, 0, modX, 1, modZ).getType();
+                boolean matches = false;
+                if (id != null) {
+                	
+	                String idString = id.toString();
+	                String blockString = blockType.toString();
+	
+	                matches = blockType == id;
+	
+	                // Hack 7/5/2020
+	                // using LEGACY_* as a wildcard
+	                // Using LEGACY_CONCRETE will match ALL concrete colours
+	                if (idString.contains("LEGACY") && !matches) {
+	                    String noLegacy = idString.replace("LEGACY_", "");
+	                    matches = blockString.contains(noLegacy);
+	                }
+                } else {
+                	Stargate.debug("Gate::Matches", "Checking through Tags");
+                	Tag<Material> tag = tagPortalTypes.get(key);
+                	if(tag == null) {
+                		Stargate.debug("Gate::Matches", "Tag not found");
+                        portalTypes.put(key, topleft.modRelative(x, y, 0, modX, 1, modZ).getType());
+                        continue;
+                	}
+                	matches = tag.isTagged(blockType);
+                	
                 }
 
                 if (!matches) {
@@ -334,8 +346,8 @@ public class Gate {
         boolean designing = false;
         ArrayList<ArrayList<Character>> design = new ArrayList<>();
         HashMap<Character, Material> types = new HashMap<>();
+        HashMap<Character,Tag<Material>> tagTypes = new HashMap<>();
         HashMap<String, String> config = new HashMap<>();
-        HashSet<Material> frameTypes = new HashSet<>();
         int cols = 0;
 
         // Init types map
@@ -384,14 +396,25 @@ public class Gate {
                 }
 
                 Character symbol = key.charAt(0);
-                Material id = Material.getMaterial(value);
-
-                if (id == null) {
-                    throw new Exception("Invalid material in line: " + line);
+                // Load material from string
+                // Load tag from string
+                if(value.startsWith("#")) {
+                	Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.fromString(value), Material.class);
+                	if(tag != null) {
+                		tagTypes.put(symbol, tag);
+                		continue;
+                	}
                 }
-
-                types.put(symbol, id);
-                frameTypes.add(id);
+                else {
+                	Material id = Material.getMaterial(value);
+                    if (id != null) {
+                    	types.put(symbol, id);
+                        continue;
+                    }
+                }
+                
+                throw new Exception("Invalid material or tag in line: " + line);
+                
             }
         } catch (Exception ex) {
             stargate.getStargateLogger().log(Level.SEVERE, "Could not load Gate " + file.getName() + " - " + ex.getMessage());
@@ -415,7 +438,7 @@ public class Gate {
             layout[y] = result;
         }
 
-        Gate gate = new Gate(stargate, file.getName(), layout, types);
+        Gate gate = new Gate(stargate, file.getName(), layout, types, tagTypes);
 
         gate.portalBlockOpen = readConfig(stargate, config, file, "portal-open", gate.portalBlockOpen);
         gate.portalBlockClosed = readConfig(stargate, config, file, "portal-closed", gate.portalBlockClosed);
@@ -428,9 +451,6 @@ public class Gate {
             stargate.getStargateLogger().log(Level.SEVERE, "Could not load Gate " + file.getName() + " - Gates must have exactly 2 control points.");
             return null;
         }
-
-        // Merge frame types, add open mat to list
-        frameBlocks.addAll(frameTypes);
 
         gate.save(file.getParent() + "/"); // Updates format for version changes
         return gate;
@@ -493,7 +513,7 @@ public class Gate {
         types.put('X', Material.OBSIDIAN);
         types.put('-', Material.OBSIDIAN);
 
-        Gate netherGate = new Gate(stargate, "nethergate.gate", layout, types);
+        Gate netherGate = new Gate(stargate, "nethergate.gate", layout, types, new HashMap<Character,Tag<Material>>());
         netherGate.save(gateFolder);
         registerGate(netherGate);
         Stargate.debug("Gate.populateDefaults"," created a nether gate");
@@ -504,7 +524,7 @@ public class Gate {
         types.put('X', Material.SEA_LANTERN);
         types.put('-', Material.SEA_LANTERN);
 
-        Gate waterGate = new Gate(stargate, "water.gate", layout, types);
+        Gate waterGate = new Gate(stargate, "water.gate", layout, types, new HashMap<Character,Tag<Material>>());
         waterGate.setPortalBlockClosed(Material.WATER);
         waterGate.setPortalBlockOpen(Material.KELP_PLANT);
         waterGate.save(gateFolder);
@@ -542,7 +562,6 @@ public class Gate {
     public static void clearGates() {
         gates.clear();
         controlBlocks.clear();
-        frameBlocks.clear();
     }
 
 }

@@ -4,13 +4,13 @@
 
     <groupId>org.TheDgtl</groupId>
     <artifactId>Stargate</artifactId>
-    <version>0.10.6.1</version>
+    <version>0.10.6.3</version>
     <name>StarGate</name>
     <description>Spigot plugin to create and manage networks of Stargates.</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spigot-version>1.16</spigot-version>
+        <spigot-version>1.17</spigot-version>
     </properties>
 
     <repositories>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.4-R0.1-SNAPSHOT</version>
+            <version>1.17-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

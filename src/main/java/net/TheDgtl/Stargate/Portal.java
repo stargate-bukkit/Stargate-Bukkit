@@ -1058,6 +1058,7 @@ public class Portal {
 		RelativeBlockVector buttonVector = null;
 
 		for (Gate possibility : possibleGates) {
+			Stargate.debug("createPortal","checking design in file ''" + possibility.getFilename() + "''");
 			if (gate != null) {
 				break;
 			}
