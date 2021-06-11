@@ -80,6 +80,7 @@ public class VehicleEventListener implements Listener {
                 Stargate.log.warning(Stargate.getString("prefox") + "Unable to find portal destination");
                 return;
             }
+            Stargate.debug("vehicleTeleport", destinationPortal.getWorld() + " " + destinationPortal.getId());
             destinationPortal.teleport(vehicle, entrancePortal);
         }
     }

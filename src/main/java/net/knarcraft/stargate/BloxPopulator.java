@@ -17,18 +17,6 @@ public class BloxPopulator {
      *
      * @param blockLocation <p>The location to start from</p>
      * @param material      <p>The material to populate</p>
-     */
-    public BloxPopulator(BlockLocation blockLocation, Material material) {
-        this.blockLocation = blockLocation;
-        nextMat = material;
-        nextAxis = null;
-    }
-
-    /**
-     * Instantiates a new block populator
-     *
-     * @param blockLocation <p>The location to start from</p>
-     * @param material      <p>The material to populate</p>
      * @param axis          <p>The axis to populate along</p>
      */
     public BloxPopulator(BlockLocation blockLocation, Material material, Axis axis) {

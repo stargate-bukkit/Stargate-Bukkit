@@ -13,6 +13,7 @@ import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.EntityHelper;
 import net.knarcraft.stargate.utility.SignHelper;
 import org.bukkit.Axis;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -38,6 +39,9 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
+/**
+ * This class represents a portal in space which points to one or several other portals
+ */
 public class Portal {
 
     // Gate location block info
@@ -54,6 +58,7 @@ public class Portal {
     private BlockLocation button;
     private BlockLocation[] frame;
     private BlockLocation[] entrances;
+
     // Gate information
     private String name;
     private String destination;
@@ -551,7 +556,7 @@ public class Portal {
         // Close this gate, then the dest gate.
         Material closedType = gate.getPortalClosedBlock();
         for (BlockLocation inside : getEntrances()) {
-            Stargate.blockPopulatorQueue.add(new BloxPopulator(inside, closedType));
+            Stargate.blockPopulatorQueue.add(new BloxPopulator(inside, closedType, null));
         }
 
         updatePortalClosedState();
@@ -663,6 +668,8 @@ public class Portal {
             exit = stargatePortalEvent.getExit();
         }
 
+        loadChunks();
+
         // If no event is passed in, assume it's a teleport, and act as such
         if (event == null) {
             exit.setYaw(this.getRotation());
@@ -698,8 +705,6 @@ public class Portal {
         Location traveller = vehicle.getLocation();
         Location exit = getExit(vehicle, traveller);
 
-        adjustRotation(traveller, exit, origin);
-
         double velocity = vehicle.getVelocity().length();
 
         // Stop and teleport
@@ -707,7 +712,10 @@ public class Portal {
 
         // Get new velocity
         final Vector newVelocity = new Vector(modX, 0.0F, modZ);
+        //-z
+        Stargate.debug("teleport", modX + " " + modZ);
         newVelocity.multiply(velocity);
+        adjustRotation(traveller, exit, origin);
 
         List<Entity> passengers = vehicle.getPassengers();
         World vehicleWorld = exit.getWorld();
@@ -715,6 +723,8 @@ public class Portal {
             Stargate.log.warning(Stargate.getString("prefix") + "Unable to get the world to teleport the vehicle to");
             return;
         }
+
+        loadChunks();
 
         if (!passengers.isEmpty()) {
             if (vehicle instanceof RideableMinecart || vehicle instanceof Boat) {
@@ -770,6 +780,7 @@ public class Portal {
     private void handleVehiclePassengers(List<Entity> passengers, Vehicle targetVehicle, Location exit) {
         for (Entity passenger : passengers) {
             passenger.eject();
+            //TODO: Fix random java.lang.IllegalStateException: Removing entity while ticking!
             if (!passenger.teleport(exit)) {
                 Stargate.debug("handleVehiclePassengers", "Failed to teleport passenger");
             }
@@ -794,9 +805,11 @@ public class Portal {
             exitLocation = exit.modRelativeLoc(0D, 0D, 1, traveller.getYaw(),
                     traveller.getPitch(), modX * back, 1, modZ * back);
 
-            double entitySize = EntityHelper.getEntityMaxSize(entity);
-            if (entitySize > 1) {
-                exitLocation = preventExitSuffocation(relativeExit, exitLocation, entity);
+            if (entity != null) {
+                double entitySize = EntityHelper.getEntityMaxSize(entity);
+                if (entitySize > 1) {
+                    exitLocation = preventExitSuffocation(relativeExit, exitLocation, entity);
+                }
             }
         } else {
             Stargate.log.log(Level.WARNING, Stargate.getString("prefix") + "Missing destination point in .gate file " + gate.getFilename());
@@ -892,13 +905,16 @@ public class Portal {
     }
 
     /**
-     * Checks whether the chunk the portal is located at is loaded
-     *
-     * @return <p>True if the chunk containing the portal is loaded</p>
+     * Loads the chunks at the portal's corners
      */
-    public boolean isChunkLoaded() {
+    public void loadChunks() {
         //TODO: Improve this in the case where the portal sits between two chunks
-        return getWorld().isChunkLoaded(topLeft.getBlock().getChunk());
+        for (RelativeBlockVector vector : gate.getLayout().getCorners()) {
+            Chunk chunk = getBlockAt(vector).getChunk();
+            if (!getWorld().isChunkLoaded(chunk)) {
+                chunk.load();
+            }
+        }
     }
 
     /**
