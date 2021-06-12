@@ -1,21 +1,33 @@
-The following guidelines was mainly made to make the plugin more maintainable. These points are what I (Thorin) consider general good programming practise, and does of course not have to be the "truth"
+The following guidelines have been written in hopes of making the plugin more maintainable.<md>
+They represent what we consider to be good programming practices, and are not necessarily definitive.<md>
 
-#### Always use descriptive names
-Comments are good, but most that are made can just be replaced with a descriptive variable/method/class name. A good approach is to use comments to describe why you are doing things, but let the code describe what you are doing.
-Methodnames = verbs, classnames = nouns, booleann variables = a y/n statement (isRed)
-#### A method should never be longer than 20 lines, neither have more than 4 indents
-A good aproach is to strive for modularity, where every method has a clear function. This is mainly achieved by just checking the length of the module you're writing, and if it's getting to long to just split it into two different functions. You can also more easily avoid rewriting code if you do this.
-#### Avoid exess dataflow between classes
-Restricting dataflow makes the code much more maintable; This is mainly achived by starting with a plan before you code, but also to sometimes just to consider if a method fits into specific class. Getters and setters are usally a sign that too much data is being transmited between classes.
-#### If you think the code needs a refactor, it most probably does
-Refactors just keeps the code cleaner, and is almost always good. They are often easier to make than you think
-#### A note about sideeffects
-When you modularise your methods it will be simpler to understand or debug the code if you devide it into methods that does calculations and returns a value and methods that only does sideeffects. I have also noticed that this often automatically makes it easier to not rewrite code.
-## Don't know what you're doing? Read the manual!
-I don't think it's a good idea if you mash your head against a wall until you find a solution to your problem. You will get pissed, and it might even be so that you don't understand your solution
+## Submitting your code.
+Please work in a fork of the repository!<br><br>
+All changes should be made in a branch called `feature:#` or `fix:#` (with # being the [issue](https://github.com/the-lockedcraft-legacy-organization/Stargate-Bukkit/issues) your changes are correlated to).<br>
+Once you have tested your change, please make a pull request [here](https://github.com/the-lockedcraft-legacy-organization/Stargate-Bukkit/pulls).
+## Code Style
+#### Always use descriptive names.
+> Comments are great, however, they can generally be replaced with descriptive variable/method/class naming.
+  
+Please use comments to describe why you are using something, but let the code describe what you are doing.<br>Method names should be verbs, class names should be nouns, and Boolean variables should be yes/no statements '(i.e. isRed)'.
+#### Keep your methods short.
+> We strive for modularity, with every method correlated to a clear function.
+  
+Please try to keep your methods under 20 lines, with less than 4 indents.<br>Check the length of the module you are writing; if it is getting too long, please split it into different functions.
+#### Avoid excess dataflow between classes.
+> Restricting dataflow makes the code much more maintainable.
+  
+Please plan before you code, and consider what methods fit into each class.<br>Getters and setters are usually a sign that too much data is being transmitted between classes.
+#### Don’t be afraid of refactors.
+> Refactors lead to cleaner code, which makes maintenance easier for everyone involved.
+  
+They are often less scary than they seem and are almost always worthwhile.
+#### On side effects.
+> When methods are modularised, they become simpler to understand and debug.
+  
+Please divide your code into methods for calculations and methods for side-effects.
+#### If you are unsure about something, take the time to ask/read up on it.
+> Mashing your head against a wall to find a solution generally results in poor implementations.
+  
+If you hit a block, please look around for an answer; it will help everyone in the long term.
 
-*Programer 1: How does this work?
-
-*Programer 2: I don't fucking know
-
-Nobody knows, and thats of course not going to be clearly coded. It's always more efficient to just research about your problem if you have come to a stop.
