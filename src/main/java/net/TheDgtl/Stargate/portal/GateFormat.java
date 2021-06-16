@@ -67,6 +67,7 @@ public class GateFormat {
 		final static char NOTINGATE = ' ';
 		final static char EXIT = '*';
 		final static char ENTRANCE = '.';
+		final static char CONTROL = '-';
 
 		Material irisOpen;
 		Material irisClosed;
@@ -86,46 +87,55 @@ public class GateFormat {
 		}
 
 		GateFormat parse() throws ParsingError {
-			parseSettings();
+			HashMap<String,String> config = parseSettings();
+			setSettings(config);
 
 			return parseGateDesign();
 		}
 
-		private void parseSettings() throws ParsingError {
-			while (scanner.hasNextLine()) {
-				line = scanner.nextLine();
-				if (line.isBlank()) {
-					scanner.nextLine();
-					return;
-				}
-				if (!line.contains("="))
-					return;
 
-				String[] split = line.split("=");
-				String key = split[0].trim();
-				String value = split[1].trim();
-
+		public void setSettings(HashMap<String, String> config) throws ParsingError {
+			for(String key : config.keySet()) {
 				if (key.length() != 1) {
 					switch (key) {
 					case "portal-open":
-						irisOpen = parseMaterial(value);
+						irisOpen = parseMaterial(config.get(key));
 						break;
 					case "portal-closed":
-						irisClosed = parseMaterial(value);
+						irisClosed = parseMaterial(config.get(key));
 						break;
 					default:
-						config.put(key, value);
+						
 						break;
 					}
 					continue;
 				}
-
+	
 				Character symbol = key.charAt(0);
-
-				Material id = parseMaterial(value);
+	
+				Material id = parseMaterial(config.get(key));
 				frameConfig.put(symbol, id);
+			}
+		}
+		
+		private HashMap<String,String> parseSettings() throws ParsingError {
+			HashMap<String,String> config = new HashMap<>();
+			while (scanner.hasNextLine()) {
+				line = scanner.nextLine();
+				if (line.isBlank()) {
+					continue;
+				}
+				if (!line.contains("="))
+					break;
+
+				String[] split = line.split("=");
+				String key = split[0].trim();
+				String value = split[1].trim();
+				config.put(key, value);
+				
 
 			}
+			return config;
 		}
 
 		private Material parseMaterial(String stringId) throws ParsingError {
@@ -152,6 +162,7 @@ public class GateFormat {
 		private GateFormat parseGateDesign() throws ParsingError {
 			GateIris iris = new GateIris(irisOpen, irisClosed);
 			GateFrame frame = new GateFrame();
+			GateControll control = new GateControll();
 
 			int height = 0;
 			do {
@@ -168,6 +179,9 @@ public class GateFormat {
 						break;
 					case ENTRANCE:
 						iris.addPart(selectedLocation);
+						break;
+					case CONTROL:
+						
 						break;
 					default:
 						if ((charLine[i] == '?') || (!frameConfig.containsKey(charLine[i]))) {

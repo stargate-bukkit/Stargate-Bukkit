@@ -26,7 +26,11 @@ public class Stargate extends JavaPlugin {
 	private static Stargate instance;
 
 	private Level lowestMsgLevel = Level.INFO;
-
+	
+	final static String GATEFOLDER = "gates";
+	final static String LANGFOLDER = "lang";
+	final static String PORTALFOLDER = "portals";
+	
 	@Override
 	public void onEnable() {
 		// registers bstats metrics
@@ -39,10 +43,10 @@ public class Stargate extends JavaPlugin {
 	
 	private void saveDefaultGates() {
 		//TODO is there a way to check all files in a resourcefolder? Possible solution seems unnecessarily complex
-		String[] gateList = {"nether.gate", "water.gate"};
+		String[] gateList = {"nether.gate", "water.gate", "wool.gate"};
 		boolean replace = false;
 		for(String gateName : gateList) {
-			this.saveResource("gates/" + gateName, replace);
+			this.saveResource(GATEFOLDER+"/" + gateName, replace);
 		}
 	}
 
