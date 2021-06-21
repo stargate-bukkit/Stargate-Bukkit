@@ -11,6 +11,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
@@ -20,8 +21,9 @@ import net.TheDgtl.Stargate.Stargate;
 
 public class GateFormat {
 	public static List<GateFormat> gateFormats;
+	public static HashMap<Material,List<GateFormat>> controlMaterialFormatsMap;
 	public HashMap<String, GateStructure> portalParts;
-
+	
 	
 	private static String CONTROLLKEY = "controll";
 	private static String FRAMEKEY = "frame";
@@ -34,10 +36,10 @@ public class GateFormat {
 		portalParts.put(CONTROLLKEY, controll);
 	}
 
-	public boolean matches(Gate.VectorOperation converter) {
+	public boolean matches(Gate.VectorOperation converter, Location loc) {
 
 		for (String structKey : portalParts.keySet()) {
-			if (!(portalParts.get(structKey).isValidState(converter))) {
+			if (!(portalParts.get(structKey).isValidState(converter, loc))) {
 				return false;
 			}
 		}

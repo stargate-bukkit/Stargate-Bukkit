@@ -35,7 +35,7 @@ public class Gate {
 		List<Vector> controlBlocks = format.getControllBlocks();
 		for (Vector controlBlock : controlBlocks) {
 			topLeft = loc.subtract(converter.doInverse(controlBlock));
-			if (format.matches(converter))
+			if (format.matches(converter, topLeft))
 				return true;
 		}
 		return false;

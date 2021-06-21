@@ -8,7 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 
-public class StargateNetwork{
+public class Network{
 	/*
 	 * Conceived as the class that can store a network of portals inside itself
 	 * Portals inside this class can only communicate with each other

@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.portal.Gate;
-import net.TheDgtl.Stargate.portal.StargateNetwork;
+import net.TheDgtl.Stargate.portal.Network;
 
 public class StargateAPI {
 	/**
@@ -13,16 +13,16 @@ public class StargateAPI {
 	 * - Create a new portal; force generates a portal from nothing
 	 * - Destroy a portal
 	 */
-	public StargateNetwork.Portal getPortal(Location portalBlock) {
+	public Network.Portal getPortal(Location portalBlock) {
 		return null;
 	}
-	public StargateNetwork getNetwork(String networkName) {
+	public Network getNetwork(String networkName) {
 		return null;
 	}
 	public void createPortal(Gate config, Location location, Vector openFacing ) {
 		
 	}
-	public void destroyPortal(StargateNetwork.Portal portal) {
+	public void destroyPortal(Network.Portal portal) {
 		
 	}
 	/**
@@ -30,7 +30,7 @@ public class StargateAPI {
 	 * @param portal1
 	 * @param portal2
 	 */
-	public void forceConnect(StargateNetwork.Portal portal1, StargateNetwork.Portal portal2) {
+	public void forceConnect(Network.Portal portal1, Network.Portal portal2) {
 		
 	}
 }
