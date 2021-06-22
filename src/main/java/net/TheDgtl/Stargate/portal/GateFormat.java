@@ -24,22 +24,24 @@ public class GateFormat {
 	public static HashMap<Material,List<GateFormat>> controlMaterialFormatsMap;
 	public HashMap<String, GateStructure> portalParts;
 	
+	private final String name;
+	private static final String CONTROLLKEY = "controll";
+	private static final String FRAMEKEY = "frame";
+	private static final String IRISKEY = "iris";
 	
-	private static String CONTROLLKEY = "controll";
-	private static String FRAMEKEY = "frame";
-	private static String IRISKEY = "iris";
-	
-	public GateFormat(GateIris iris, GateFrame frame, GateControll controll, HashMap<String, String> config) {
+	public GateFormat(GateIris iris, GateFrame frame, GateControll controll, HashMap<String, String> config, String name) {
 		portalParts = new HashMap<>();
 		portalParts.put(IRISKEY, iris);
 		portalParts.put(FRAMEKEY, frame);
 		portalParts.put(CONTROLLKEY, controll);
+		this.name = name;
 	}
 
 	public boolean matches(Gate.VectorOperation converter, Location loc) {
-
+		Stargate.log(Level.INFO, "Checking " + name);
 		for (String structKey : portalParts.keySet()) {
 			if (!(portalParts.get(structKey).isValidState(converter, loc))) {
+				Stargate.log(Level.INFO, structKey + "returned negative");
 				return false;
 			}
 		}
@@ -59,6 +61,7 @@ public class GateFormat {
 		File[] files = dir.exists() ? dir.listFiles(new StargateFilenameFilter()) : new File[0];
 
 		for (File file : files) {
+			Stargate.log(Level.FINER, "Reading gateFormat from " + file.getName());
 			GateFormatParser gateParser = new GateFormatParser(file);
 			try {
 				gateParser.open();
@@ -70,7 +73,7 @@ public class GateFormat {
 				gateParser.close();
 			}
 		}
-
+		Stargate.log(Level.INFO, "This returned a list of " + gateFormats.size() + " number of gateformats");
 		return gateFormats;
 	}
 	
@@ -80,11 +83,10 @@ public class GateFormat {
 		
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<Vector> getControllBlocks() {
 		GateControll controll = (GateControll) portalParts.get(CONTROLLKEY);
 		
-		return (List<Vector>) controll.parts;
+		return controll.parts;
 	}
 	
 	private static class GateFormatParser {
@@ -133,7 +135,7 @@ public class GateFormat {
 			List<String> designLines = loadDesign();
 			setDesign(designLines);
 
-			return new GateFormat(iris, frame, control, remainingConfig);
+			return new GateFormat(iris, frame, control, remainingConfig, this.file.getName());
 		}
 
 		

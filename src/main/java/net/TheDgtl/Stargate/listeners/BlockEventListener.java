@@ -42,7 +42,7 @@ public class BlockEventListener implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onSignChange(SignChangeEvent event) {
 		Block block = event.getBlock();
-		if(!(block instanceof WallSign))
+		if(!(block.getBlockData() instanceof WallSign))
 			return;
 		
 		try {

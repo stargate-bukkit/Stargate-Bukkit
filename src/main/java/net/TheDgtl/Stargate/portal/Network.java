@@ -2,11 +2,14 @@ package net.TheDgtl.Stargate.portal;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
+
+import net.TheDgtl.Stargate.Stargate;
 
 public class Network{
 	/*
@@ -66,6 +69,7 @@ public class Network{
 		
 		private Gate FindMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing) throws NoFormatFound {
 			Gate outputGate = null;
+			Stargate.log(Level.INFO, "Length of GateFOrmats: " + gateFormats.size());
 			for (GateFormat gateFormat : gateFormats) {
 				try {
 					outputGate = new Gate(gateFormat, signLocation, signFacing);

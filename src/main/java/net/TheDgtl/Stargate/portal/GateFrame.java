@@ -1,7 +1,9 @@
 package net.TheDgtl.Stargate.portal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Material;
@@ -11,6 +13,10 @@ import org.jetbrains.annotations.NotNull;
 public class GateFrame extends GateStructure{
 	HashMap<Vector,HashSet<Material>> parts;
 
+	public GateFrame() {
+		parts = new HashMap<>();
+	}
+	
 	@Override
 	public boolean isInPortal(@NotNull Vector relativeLocation) {
 		return false; // portal is closed
@@ -29,8 +35,8 @@ public class GateFrame extends GateStructure{
 
 
 	@Override
-	protected Set<Vector> getPartsPos() {
-		return parts.keySet();
+	protected List<Vector> getPartsPos() {
+		return new ArrayList<>(parts.keySet());
 	}
 
 

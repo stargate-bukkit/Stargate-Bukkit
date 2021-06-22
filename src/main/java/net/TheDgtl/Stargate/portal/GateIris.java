@@ -1,12 +1,16 @@
 package net.TheDgtl.Stargate.portal;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.bukkit.Material;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+
+import net.TheDgtl.Stargate.Stargate;
 
 public class GateIris extends GateStructure{
 	
@@ -20,6 +24,7 @@ public class GateIris extends GateStructure{
 	public GateIris(HashSet<Material> irisOpen, HashSet<Material> irisClosed) {
 		this.irisOpen = irisOpen;
 		this.irisClosed = irisClosed;
+		blocks = new ArrayList<>();
 	}
 	
 	public void addPart(Vector blockVector) {
@@ -52,12 +57,19 @@ public class GateIris extends GateStructure{
 	}
 
 	@Override
-	protected Set<Vector> getPartsPos() {
-		return (Set<Vector>) blocks;
+	protected List<Vector> getPartsPos() {
+		return blocks;
 	}
 
 	@Override
 	protected boolean isValidBlock(Vector vec, Material mat) {
+		String logMsg = "Valid materials: ";
+		for(Material logMat : isOpen ? irisOpen : irisClosed) {
+			logMsg = logMsg + " " + logMat.name();
+		}
+		Stargate.log(Level.FINER, logMsg);
+		Stargate.log(Level.FINER, "Checking against " + mat.name() + " on position"+ vec.getBlockX()
+		+ "," + vec.getBlockY() + "," + vec.getBlockZ());
 		return (isOpen ? irisOpen : irisClosed).contains(mat);
 	}
 }

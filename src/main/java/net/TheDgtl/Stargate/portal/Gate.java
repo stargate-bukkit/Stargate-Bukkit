@@ -1,10 +1,13 @@
 package net.TheDgtl.Stargate.portal;
 
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
+
+import net.TheDgtl.Stargate.Stargate;
 
 public class Gate {
 
@@ -34,6 +37,8 @@ public class Gate {
 	private boolean matchesFormat(Location loc) {
 		List<Vector> controlBlocks = format.getControllBlocks();
 		for (Vector controlBlock : controlBlocks) {
+			Stargate.log(Level.FINEST, "Checking for controlblock with relative position " + controlBlock.getBlockX()
+					+ "," + controlBlock.getBlockY() + "," + controlBlock.getBlockZ());
 			topLeft = loc.subtract(converter.doInverse(controlBlock));
 			if (format.matches(converter, topLeft))
 				return true;
@@ -87,9 +92,12 @@ public class Gate {
 		 * @return vector in gateFormat space
 		 */
 		public Vector doOperation(Vector vector) {
-			Vector output = vector.rotateAroundAxis(rotationAxis, rotation);
+			Vector output = vector.clone().rotateAroundAxis(rotationAxis, rotation);
 			if(flipZAxis)
 				output = output.setZ(-output.getZ());
+			Stargate.log(Level.INFO, "converting vector " + vector.getBlockX()
+			+ "," + vector.getBlockY() + "," + vector.getBlockZ() + " to " + output.getBlockX()
+			+ "," + output.getBlockY() + "," + output.getBlockZ());
 			return output;
 		}
 
@@ -100,9 +108,14 @@ public class Gate {
 		 * @return location in mincraft world
 		 */
 		public Vector doInverse(Vector vector) {
+			Vector output = vector.clone();
 			if(flipZAxis)
-				vector = vector.setZ(-vector.getZ());
-			return vector.rotateAroundAxis(rotationAxis, -rotation);
+				output = output.setZ(-vector.getZ());
+			output = output.rotateAroundAxis(rotationAxis, -rotation);
+			Stargate.log(Level.INFO, "converting vector " + vector.getBlockX()
+					+ "," + vector.getBlockY() + "," + vector.getBlockZ() + " to " + output.getBlockX()
+					+ "," + output.getBlockY() + "," + output.getBlockZ());
+			return output;
 		}
 		
 		

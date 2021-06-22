@@ -1,7 +1,9 @@
 package net.TheDgtl.Stargate.portal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Material;
@@ -9,10 +11,10 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 public class GateControll extends GateStructure{
-	HashSet<Vector> parts;
+	List<Vector> parts;
 	
 	public GateControll() {
-		parts = new HashSet<>();
+		parts = new ArrayList<>();
 	}
 	
 	
@@ -34,7 +36,7 @@ public class GateControll extends GateStructure{
 
 
 	@Override
-	protected Set<Vector> getPartsPos() {
+	protected List<Vector> getPartsPos() {
 		return parts;
 	}
 
