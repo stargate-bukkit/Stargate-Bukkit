@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import net.TheDgtl.Stargate.listeners.BlockEventListener;
 import net.TheDgtl.Stargate.listeners.MoveEventListener;
@@ -42,6 +43,7 @@ public class Stargate extends JavaPlugin {
 	final String PORTALFOLDER = "portals";
 
 	private PluginManager pm;
+	public static final SyncronousBlockPopulator syncPopulator = new SyncronousBlockPopulator();
 	
 	@Override
 	public void onEnable() {
@@ -56,8 +58,11 @@ public class Stargate extends JavaPlugin {
 
 		pm = getServer().getPluginManager();
 		registerListeners();
+		
+		BukkitScheduler scheduler = getServer().getScheduler();
+		scheduler.scheduleSyncRepeatingTask(this, syncPopulator, 0L, 1L);
 	}
-	
+
 	private void registerListeners() {
 		pm.registerEvents(new BlockEventListener(),this);
 		pm.registerEvents(new MoveEventListener(),this);
