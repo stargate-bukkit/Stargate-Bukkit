@@ -15,6 +15,7 @@ public class Gate {
 	GateFormat format;
 	VectorOperation converter;
 	Location topLeft;
+	
 
 	/**
 	 * Compares the format to real world. If there is a valid configuration of either rotations or flips that of the format that matches with 
