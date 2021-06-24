@@ -19,6 +19,15 @@ public abstract class GateStructure {
 	 */
 	public abstract boolean isInPortal(@NotNull Vector relativeLocation);
 
+	/**
+	 * Goes through every part of the structure, finds the hypothetical location of
+	 * this part by doing a vector operation. Checks if that position is allowed to
+	 * have the material it has. 
+	 * 
+	 * @param converter
+	 * @param topleft
+	 * @return true if all parts had valid materials
+	 */
 	public boolean isValidState(Gate.VectorOperation converter, Location topleft) {
 		List<BlockVector> partsPos = getPartsPos();
 		for (BlockVector partPos : partsPos) {

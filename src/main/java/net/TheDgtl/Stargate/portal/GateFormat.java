@@ -21,7 +21,6 @@ import org.bukkit.util.Vector;
 import net.TheDgtl.Stargate.Stargate;
 
 public class GateFormat {
-	public static List<GateFormat> gateFormats;
 	public static HashMap<Material,List<GateFormat>> controlMaterialFormatsMap;
 	public HashMap<String, GateStructure> portalParts;
 	
@@ -37,7 +36,13 @@ public class GateFormat {
 		portalParts.put(CONTROLLKEY, controll);
 		this.name = name;
 	}
-
+	
+	/**
+	 * Checks through every structure in the format, and checks whether they are valid
+	 * @param converter
+	 * @param loc
+	 * @return true if all structures are valid
+	 */
 	public boolean matches(Gate.VectorOperation converter, Location loc) {
 		for (String structKey : portalParts.keySet()) {
 			Stargate.log(Level.FINER, "---Validating " + structKey);
@@ -54,10 +59,9 @@ public class GateFormat {
 			return name.endsWith(".gate");
 		}
 	}
-
-	public static List<GateFormat> loadGateFormats(String gateFolder) {
-		List<GateFormat> gateFormats = new ArrayList<GateFormat>();
-
+	
+	public static HashMap<Material, List<GateFormat>> loadGateFormats(String gateFolder) {
+		HashMap<Material, List<GateFormat>> controlToGateMap = new HashMap<>();
 		File dir = new File(gateFolder);
 		File[] files = dir.exists() ? dir.listFiles(new StargateFilenameFilter()) : new File[0];
 
@@ -66,21 +70,30 @@ public class GateFormat {
 			GateFormatParser gateParser = new GateFormatParser(file);
 			try {
 				gateParser.open();
-				GateFormat gate = gateParser.parse();
-				gateFormats.add(gate);
+				GateFormat format = gateParser.parse();
+				addGateFormat(controlToGateMap, format, gateParser.controlMaterials);
 			} catch (FileNotFoundException | GateFormatParser.ParsingError e) {
 				Stargate.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - " + e.getMessage());
 			} finally {
 				gateParser.close();
 			}
 		}
-		Stargate.log(Level.INFO, "This returned a list of " + gateFormats.size() + " number of gateformats");
-		return gateFormats;
+		return controlToGateMap;
 	}
-	
+
+	private static void addGateFormat(HashMap<Material, List<GateFormat>> register, GateFormat format,
+			HashSet<Material> controlMaterials) {
+		for (Material mat : controlMaterials) {
+			if (!(register.containsKey(mat))) {
+				List<GateFormat> gateFormatList = new ArrayList<>();
+				register.put(mat, gateFormatList);
+			}
+			register.get(mat).add(format);
+		}
+	}
+
 	public static List<GateFormat> getPossibleGatesFromControll(Material controlBlockId) {
-		//TODO
-		return gateFormats;
+		return controlMaterialFormatsMap.get(controlBlockId);
 		
 	}
 	
@@ -106,6 +119,7 @@ public class GateFormat {
 		GateIris iris;
 		GateFrame frame;
 		GateControll control;
+		HashSet<Material> controlMaterials;
 
 		GateFormatParser(File file) {
 			this.file = file;
@@ -161,6 +175,9 @@ public class GateFormat {
 				Character symbol = key.charAt(0);
 
 				HashSet<Material> id = parseMaterial(config.get(key));
+				if(symbol == '-') {
+					controlMaterials = id;
+				}
 				frameMaterials.put(symbol, id);
 			}
 			return remaining;

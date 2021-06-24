@@ -17,7 +17,7 @@ public class Gate {
 	Location topLeft;
 
 	/**
-	 * 
+	 * Compares the format to real world. If there is a valid configuration of either rotations or flips that of the format that matches with 
 	 * @param format
 	 * @param loc
 	 * @throws InvalidStructure
@@ -35,11 +35,22 @@ public class Gate {
 		throw new InvalidStructure();
 	}
 	
+	/**
+	 * Checks if format matches independent of controlBlock
+	 * @param loc
+	 * @return
+	 */
 	private boolean matchesFormat(Location loc) {
 		List<BlockVector> controlBlocks = format.getControllBlocks();
 		for (BlockVector controlBlock : controlBlocks) {
 			Stargate.log(Level.FINEST, "-Checking for controlblock with relative position " + controlBlock.getBlockX()
 					+ "," + controlBlock.getBlockY() + "," + controlBlock.getBlockZ());
+			/*
+			 * Topleft is origo for the format, everything becomes easier if you calculate
+			 * this position in the world; this is a hypothetical position, calculated from
+			 * the position of the sign minus a vector of a hypothetical sign position in
+			 * format.
+			 */
 			topLeft = loc.clone().subtract(converter.doInverse(controlBlock));
 			
 			Stargate.log(Level.FINEST, "Topleft is " + topLeft.getBlockX()
@@ -68,8 +79,13 @@ public class Gate {
 		Vector rotationAxis;
 		double rotation; // degrees
 		boolean flipZAxis = false;
-
-		private VectorOperation(BlockFace signFace) {
+		
+		/**
+		 * Compiles a vector operation which matches with the direction of a sign
+		 * @param signFace
+		 * @throws InvalidStructure 
+		 */
+		private VectorOperation(BlockFace signFace) throws InvalidStructure {
 			rotationAxis = new Vector(0, 1, 0);
 			switch(signFace) {
 			case EAST:
@@ -85,17 +101,17 @@ public class Gate {
 				rotation = 3*Math.PI/2;
 				break;
 			default:
-				//TODO throw a exception here
+				throw new InvalidStructure();
 			}
 			
 			Stargate.log(Level.FINE, "Chose a format rotation of " + rotation + "°");
 		}
 
 		/**
-		 * Inverse operation of toLocation; Convert from location to vectorspace
+		 * Inverse operation of doInverse; A vector operation that rotates around origo and flips z axis
 		 * 
-		 * @param location in minecraft world
-		 * @return vector in gateFormat space
+		 * @param vector 
+		 * @return vector
 		 */
 		public BlockVector doOperation(BlockVector vector) {
 			BlockVector output = vector.clone();
@@ -106,10 +122,10 @@ public class Gate {
 		}
 
 		/**
-		 * Inverse operation of toVectorspace; convert from vectorspace to location
+		 * Inverse operation of doOperation; A vector operation that rotates around origo and flips z axis
 		 * 
-		 * @param vector in gateFormat space
-		 * @return location in mincraft world
+		 * @param vector
+		 * @return vector
 		 */
 		public BlockVector doInverse(BlockVector vector) {
 			BlockVector output = vector.clone();

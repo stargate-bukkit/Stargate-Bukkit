@@ -51,9 +51,9 @@ public class Stargate extends JavaPlugin {
 
 		instance = this;
 		saveDefaultGates();
-		
-		GateFormat.gateFormats = GateFormat.loadGateFormats(DATAFOLDER+"/"+GATEFOLDER);
-		
+
+		GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATAFOLDER + "/" + GATEFOLDER);
+
 		pm = getServer().getPluginManager();
 		registerListeners();
 	}
