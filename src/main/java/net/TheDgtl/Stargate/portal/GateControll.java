@@ -1,17 +1,15 @@
 package net.TheDgtl.Stargate.portal;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.bukkit.Material;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 public class GateControll extends GateStructure{
-	List<Vector> parts;
+	List<BlockVector> parts;
 	
 	public GateControll() {
 		parts = new ArrayList<>();
@@ -23,7 +21,7 @@ public class GateControll extends GateStructure{
 		return false;
 	}
 	
-	public void addPart(Vector vec) {
+	public void addPart(BlockVector vec) {
 		parts.add(vec);
 	}
 
@@ -36,13 +34,13 @@ public class GateControll extends GateStructure{
 
 
 	@Override
-	protected List<Vector> getPartsPos() {
+	protected List<BlockVector> getPartsPos() {
 		return parts;
 	}
 
 
 	@Override
-	protected boolean isValidBlock(Vector vec, Material mat) {
+	protected boolean isValidBlock(BlockVector vec, Material mat) {
 		//TODO maybe add some fancy detection here
 		return true;
 	}

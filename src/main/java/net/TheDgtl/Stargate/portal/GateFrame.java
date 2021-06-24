@@ -5,13 +5,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.bukkit.Material;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
+import net.TheDgtl.Stargate.Stargate;
+
 public class GateFrame extends GateStructure{
-	HashMap<Vector,HashSet<Material>> parts;
+	HashMap<BlockVector,HashSet<Material>> parts;
 
 	public GateFrame() {
 		parts = new HashMap<>();
@@ -23,7 +27,7 @@ public class GateFrame extends GateStructure{
 	}
 	
 	
-	public void addPart(Vector vec, HashSet<Material> hashSet) {
+	public void addPart(BlockVector vec, HashSet<Material> hashSet) {
 		parts.put(vec, hashSet);
 	}
 
@@ -35,13 +39,13 @@ public class GateFrame extends GateStructure{
 
 
 	@Override
-	protected List<Vector> getPartsPos() {
+	protected List<BlockVector> getPartsPos() {
 		return new ArrayList<>(parts.keySet());
 	}
 
 
 	@Override
-	protected boolean isValidBlock(Vector vec, Material mat) {
+	protected boolean isValidBlock(BlockVector vec, Material mat) {
 		return parts.get(vec).contains(mat);
 	}
 }

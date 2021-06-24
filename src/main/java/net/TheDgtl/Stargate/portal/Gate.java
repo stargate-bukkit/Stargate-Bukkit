@@ -5,6 +5,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.Stargate;
@@ -35,11 +36,14 @@ public class Gate {
 	}
 	
 	private boolean matchesFormat(Location loc) {
-		List<Vector> controlBlocks = format.getControllBlocks();
-		for (Vector controlBlock : controlBlocks) {
-			Stargate.log(Level.FINEST, "Checking for controlblock with relative position " + controlBlock.getBlockX()
+		List<BlockVector> controlBlocks = format.getControllBlocks();
+		for (BlockVector controlBlock : controlBlocks) {
+			Stargate.log(Level.FINEST, "-Checking for controlblock with relative position " + controlBlock.getBlockX()
 					+ "," + controlBlock.getBlockY() + "," + controlBlock.getBlockZ());
-			topLeft = loc.subtract(converter.doInverse(controlBlock));
+			topLeft = loc.clone().subtract(converter.doInverse(controlBlock));
+			
+			Stargate.log(Level.FINEST, "Topleft is " + topLeft.getBlockX()
+			+ "," + topLeft.getBlockY() + "," + topLeft.getBlockZ());
 			if (format.matches(converter, topLeft))
 				return true;
 		}
@@ -52,8 +56,8 @@ public class Gate {
 	 * @return
 	 */
 	public boolean isInPortal(Location location) {
-		Vector relativeVec = location.subtract(topLeft).toVector();
-		Vector convertedVec = converter.doOperation(relativeVec);
+		BlockVector relativeVec = location.subtract(topLeft).toVector().toBlockVector();
+		BlockVector convertedVec = converter.doOperation(relativeVec);
 		return format.portalParts.get("iris").isInPortal(convertedVec);
 	}
 
@@ -68,21 +72,23 @@ public class Gate {
 		private VectorOperation(BlockFace signFace) {
 			rotationAxis = new Vector(0, 1, 0);
 			switch(signFace) {
-			case SOUTH:
+			case EAST:
 				rotation = 0;
 				break;
+			case SOUTH:
+				rotation = Math.PI/2;
+				break;
 			case WEST:
-				rotation = 90;
+				rotation = Math.PI;
 				break;
 			case NORTH:
-				rotation = 180;
-				break;
-			case EAST:
-				rotation = 270;
+				rotation = 3*Math.PI/2;
 				break;
 			default:
 				//TODO throw a exception here
 			}
+			
+			Stargate.log(Level.FINE, "Chose a format rotation of " + rotation + "°");
 		}
 
 		/**
@@ -91,13 +97,11 @@ public class Gate {
 		 * @param location in minecraft world
 		 * @return vector in gateFormat space
 		 */
-		public Vector doOperation(Vector vector) {
-			Vector output = vector.clone().rotateAroundAxis(rotationAxis, rotation);
-			if(flipZAxis)
-				output = output.setZ(-output.getZ());
-			Stargate.log(Level.INFO, "converting vector " + vector.getBlockX()
-			+ "," + vector.getBlockY() + "," + vector.getBlockZ() + " to " + output.getBlockX()
-			+ "," + output.getBlockY() + "," + output.getBlockZ());
+		public BlockVector doOperation(BlockVector vector) {
+			BlockVector output = vector.clone();
+			output.rotateAroundAxis(rotationAxis, rotation);
+			if (flipZAxis)
+				output.setZ(-output.getZ());
 			return output;
 		}
 
@@ -107,14 +111,11 @@ public class Gate {
 		 * @param vector in gateFormat space
 		 * @return location in mincraft world
 		 */
-		public Vector doInverse(Vector vector) {
-			Vector output = vector.clone();
-			if(flipZAxis)
-				output = output.setZ(-vector.getZ());
-			output = output.rotateAroundAxis(rotationAxis, -rotation);
-			Stargate.log(Level.INFO, "converting vector " + vector.getBlockX()
-					+ "," + vector.getBlockY() + "," + vector.getBlockZ() + " to " + output.getBlockX()
-					+ "," + output.getBlockY() + "," + output.getBlockZ());
+		public BlockVector doInverse(BlockVector vector) {
+			BlockVector output = vector.clone();
+			if (flipZAxis)
+				output.setZ(-output.getZ());
+			output.rotateAroundAxis(rotationAxis, -rotation);
 			return output;
 		}
 		

@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.bukkit.Material;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +19,7 @@ public class GateIris extends GateStructure{
 	HashSet<Material> irisClosed;
 	boolean isOpen = false;
 	Vector exit;
-	protected List<Vector> blocks;
+	protected List<BlockVector> blocks;
 	
 	
 	public GateIris(HashSet<Material> irisOpen, HashSet<Material> irisClosed) {
@@ -27,11 +28,11 @@ public class GateIris extends GateStructure{
 		blocks = new ArrayList<>();
 	}
 	
-	public void addPart(Vector blockVector) {
+	public void addPart(BlockVector blockVector) {
 		blocks.add(blockVector);
 	}
 	
-	public void addExit(Vector exitpoint) {
+	public void addExit(BlockVector exitpoint) {
 		this.exit = exitpoint;
 		addPart(exitpoint);
 	}
@@ -57,19 +58,12 @@ public class GateIris extends GateStructure{
 	}
 
 	@Override
-	protected List<Vector> getPartsPos() {
+	protected List<BlockVector> getPartsPos() {
 		return blocks;
 	}
 
 	@Override
-	protected boolean isValidBlock(Vector vec, Material mat) {
-		String logMsg = "Valid materials: ";
-		for(Material logMat : isOpen ? irisOpen : irisClosed) {
-			logMsg = logMsg + " " + logMat.name();
-		}
-		Stargate.log(Level.FINER, logMsg);
-		Stargate.log(Level.FINER, "Checking against " + mat.name() + " on position"+ vec.getBlockX()
-		+ "," + vec.getBlockY() + "," + vec.getBlockZ());
+	protected boolean isValidBlock(BlockVector vec, Material mat) {
 		return (isOpen ? irisOpen : irisClosed).contains(mat);
 	}
 }

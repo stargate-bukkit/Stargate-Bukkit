@@ -15,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.Stargate;
@@ -24,7 +25,7 @@ public class GateFormat {
 	public static HashMap<Material,List<GateFormat>> controlMaterialFormatsMap;
 	public HashMap<String, GateStructure> portalParts;
 	
-	private final String name;
+	public final String name;
 	private static final String CONTROLLKEY = "controll";
 	private static final String FRAMEKEY = "frame";
 	private static final String IRISKEY = "iris";
@@ -38,8 +39,8 @@ public class GateFormat {
 	}
 
 	public boolean matches(Gate.VectorOperation converter, Location loc) {
-		Stargate.log(Level.INFO, "Checking " + name);
 		for (String structKey : portalParts.keySet()) {
+			Stargate.log(Level.FINER, "---Validating " + structKey);
 			if (!(portalParts.get(structKey).isValidState(converter, loc))) {
 				Stargate.log(Level.INFO, structKey + "returned negative");
 				return false;
@@ -83,7 +84,7 @@ public class GateFormat {
 		
 	}
 	
-	public List<Vector> getControllBlocks() {
+	public List<BlockVector> getControllBlocks() {
 		GateControll controll = (GateControll) portalParts.get(CONTROLLKEY);
 		
 		return controll.parts;
@@ -259,8 +260,8 @@ public class GateFormat {
 			for (int lineNr = 0; lineNr < lines.size(); lineNr++) {
 				char[] charLine = lines.get(lineNr).toCharArray();
 				for (int i = 0; i < charLine.length; i++) {
-					Vector selectedLocation = new Vector(0, -lineNr, i);
-					setDesignPoint(charLine[i], selectedLocation);
+					BlockVector selectedLocation = new BlockVector(0, -lineNr, i);
+					setDesignPoint(charLine[i], selectedLocation.clone());
 				}
 			}
 		}
@@ -271,25 +272,27 @@ public class GateFormat {
 		 * @param selectedLocation
 		 * @throws ParsingError
 		 */
-		private void setDesignPoint(char key, Vector selectedLocation) throws ParsingError {
+		private void setDesignPoint(char key, BlockVector selectedLocation) throws ParsingError {
 			switch (key) {
 			case NOTINGATE:
 				break;
 			case EXIT:
-				iris.addExit(selectedLocation);
+				iris.addExit(selectedLocation.clone());
 				break;
 			case ENTRANCE:
-				iris.addPart(selectedLocation);
+				iris.addPart(selectedLocation.clone());
 				break;
 			case CONTROL:
 				frame.addPart(selectedLocation, frameMaterials.get(key));
-				control.addPart(selectedLocation.add(new Vector(1, 0, 0)));
+				BlockVector controlLocation = selectedLocation.clone();
+				controlLocation.add(new BlockVector(1, 0, 0));
+				control.addPart(controlLocation);
 				break;
 			default:
 				if ((key == '?') || (!frameMaterials.containsKey(key))) {
 					throw new ParsingError("Unknown symbol '" + key + "' in gatedesign");
 				}
-				frame.addPart(selectedLocation, frameMaterials.get(key));
+				frame.addPart(selectedLocation.clone(), frameMaterials.get(key));
 			}
 		}
 		

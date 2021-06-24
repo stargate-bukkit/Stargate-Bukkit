@@ -67,14 +67,17 @@ public class Network{
 			gate = FindMatchingGate(gateFormats,sign.getLocation(),signDirection.getFacing());
 		}
 		
-		private Gate FindMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing) throws NoFormatFound {
+		private Gate FindMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing)
+				throws NoFormatFound {
 			Gate outputGate = null;
-			Stargate.log(Level.INFO, "Length of GateFOrmats: " + gateFormats.size());
+			Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
 			for (GateFormat gateFormat : gateFormats) {
+				Stargate.log(Level.FINE, "--------- " + gateFormat.name + " ---------");
 				try {
 					outputGate = new Gate(gateFormat, signLocation, signFacing);
 					return outputGate;
-				} catch(Gate.InvalidStructure e) {}
+				} catch (Gate.InvalidStructure e) {
+				}
 			}
 			throw new NoFormatFound();
 		}
