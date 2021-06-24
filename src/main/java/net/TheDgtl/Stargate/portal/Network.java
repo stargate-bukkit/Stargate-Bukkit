@@ -25,14 +25,12 @@ public class Network{
 	 *  - Get portal by name
 	 */
 	private HashMap<String,Portal> portalList;
-	
+	public static final HashMap<String,Network> networkList = new HashMap<>();
 	public Portal getPortal(String name){
 		return portalList.get(name);
 	}
 	
-	
-	
-	public class Portal {
+ 	public class Portal {
 		/**
 		 * Behaviours:
 		 * - Cycle through PortalStates, make current state listener for movements
@@ -55,7 +53,7 @@ public class Network{
 			
 		}
 		
-		public Portal(Block sign, String[] config) throws NoFormatFound {
+		public Portal(Block sign, String[] lines) throws NoFormatFound {
 			/* 
 			 * Get the block behind the sign; the material of that block is stored in a
 			 * register with available gateFormats
@@ -65,6 +63,8 @@ public class Network{
 			List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
 			
 			gate = FindMatchingGate(gateFormats,sign.getLocation(),signDirection.getFacing());
+			//TODO add flags
+			portalList.put(lines[0], this); 
 		}
 		
 		private Gate FindMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing)

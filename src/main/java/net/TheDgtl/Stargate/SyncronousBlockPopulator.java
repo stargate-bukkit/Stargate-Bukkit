@@ -14,17 +14,14 @@ public class SyncronousBlockPopulator implements Runnable{
 		long sTime = System.nanoTime();
 		
 		//Why is this done in legacy?
-        while (System.nanoTime() - sTime < 25000000) {
-        	if(blockPopulatorQueue.isEmpty()) {
-        		return;
-        	}
-        	Action action = blockPopulatorQueue.poll();
-        	action.execute();
-        }
+		while (!(blockPopulatorQueue.isEmpty()) && (System.nanoTime() - sTime < 25000000)) {
+			Action action = blockPopulatorQueue.poll();
+			action.run();
+		}
 	}
 	
 	public interface Action{
-		public void execute();
+		public void run();
 	}
 	
 	public class BlockSetAction implements Action{
@@ -34,7 +31,7 @@ public class SyncronousBlockPopulator implements Runnable{
 			this.state = state;
 		}
 		@Override
-		public void execute() {
+		public void run() {
 			state.update();
 		}
 	}
