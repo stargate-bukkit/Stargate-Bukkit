@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.portal;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -10,6 +11,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.portal.Network.Flags.InvalidLabel;
 
 public class Network{
 	/*
@@ -44,6 +46,16 @@ public class Network{
 		private Flags(char label) {
 			this.label = label;
 		}
+		
+		public static Flags valueOf(char label) throws InvalidLabel {
+		    for (Flags e : values()) {
+		        if (e.label == label) {
+		            return e;
+		        }
+		    }
+		    throw new InvalidLabel();
+		}
+		static public class InvalidLabel extends Exception{}
 	}
 	
 	public class Portal {
@@ -58,6 +70,8 @@ public class Network{
 		 */
 
 		Gate gate;
+		HashSet<Flags> flags;
+		
 		
 		public class NoFormatFound extends Exception {
 
@@ -76,17 +90,23 @@ public class Network{
 			Directional signDirection = (Directional) sign.getBlockData();
 			Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
 			List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
-
 			gate = FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing());
-			// TODO add flags
+			
+			flags = new HashSet<>();
+			setFlagsFromLine(lines[3]);
 			
 			portalList.put(lines[0], this);
 		}
-		
+		/**
+		 * Go through every 
+		 * @param line
+		 */
 		private void setFlagsFromLine(String line) {
-			char[] charArray = line.toCharArray();
+			char[] charArray = line.toUpperCase().toCharArray();
 			for(char character : charArray) {
-				
+				try {
+					flags.add(Flags.valueOf(character));
+				} catch (InvalidLabel e) {}
 			}
 		}
 
