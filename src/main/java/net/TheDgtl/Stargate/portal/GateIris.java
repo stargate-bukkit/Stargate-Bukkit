@@ -15,8 +15,8 @@ import net.TheDgtl.Stargate.Stargate;
 
 public class GateIris extends GateStructure{
 	
-	HashSet<Material> irisOpen;
-	HashSet<Material> irisClosed;
+	public final HashSet<Material> irisOpen;
+	public final HashSet<Material> irisClosed;
 	boolean isOpen = false;
 	Vector exit;
 	protected List<BlockVector> blocks;

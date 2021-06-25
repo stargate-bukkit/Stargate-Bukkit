@@ -4,7 +4,11 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
+import org.bukkit.block.data.Directional;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
@@ -13,12 +17,21 @@ import net.TheDgtl.Stargate.Stargate;
 public class Gate {
 
 	GateFormat format;
-	VectorOperation converter;
+	/*
+	 * a vector operation that goes from world -> format. Also contains the inverse
+	 * operation for this
+	 */
+	VectorOperation converter; 
 	Location topLeft;
-	
+	BlockVector signPos;
+
+	static final private Material DEFAULTBUTTON = Material.STONE_BUTTON;
+	static final private Material WATERBUTTON = Material.STONE_BUTTON;
 
 	/**
-	 * Compares the format to real world. If there is a valid configuration of either rotations or flips that of the format that matches with 
+	 * Compares the format to real world. If there is a valid configuration of
+	 * either rotations or flips that of the format that matches with
+	 * 
 	 * @param format
 	 * @param loc
 	 * @throws InvalidStructure
@@ -56,8 +69,10 @@ public class Gate {
 			
 			Stargate.log(Level.FINEST, "Topleft is " + topLeft.getBlockX()
 			+ "," + topLeft.getBlockY() + "," + topLeft.getBlockZ());
-			if (format.matches(converter, topLeft))
+			if (format.matches(converter, topLeft)) {
+				signPos = controlBlock;
 				return true;
+			}
 		}
 		return false;
 	}
@@ -73,9 +88,63 @@ public class Gate {
 		return format.portalParts.get("iris").isInPortal(convertedVec);
 	}
 
+	/**
+	 * Set button and draw sign
+	 * 
+	 * @param signLines an array with 4 elements, representing each line of a sign
+	 */
+	public void drawControll(String[] signLines) {
+		Location signLoc = topLeft.clone().add(converter.doInverse(signPos));
+		BlockState signState = signLoc.getBlock().getState();
+		if (!(signState instanceof Sign)) {
+			Stargate.log(Level.FINE, "Could not find sign at position " + signLoc.toString());
+			return;
+		}
+
+		Sign sign = (Sign) signState;
+		for (int i = 0; i < 4; i++) {
+			sign.setLine(i, signLines[i]);
+		}
+		sign.update();
+		/*
+		 * Just a cheat to exclude the sign location, and determine the position of the
+		 * button. Note that this will have weird behaviour if there's more than 3
+		 * controllblocks
+		 */
+		Location buttonLoc = topLeft.clone();
+		for (BlockVector buttonVec : format.getControllBlocks()) {
+			if (signPos == buttonVec)
+				continue;
+			buttonLoc.add(buttonVec);
+			break;
+		}
+		/*
+		 * Set a button with the same facing as the sign
+		 */
+		BlockState buttonState = buttonLoc.getBlock().getState();
+		buttonState.setType(getButtonMaterial());
+		Directional buttonFacing = (Directional) buttonState;
+		Directional signFacing = (Directional) sign.getBlockData();
+		buttonFacing.setFacing(signFacing.getFacing());
+		buttonState.update();
+	}
+	
+	private Material getButtonMaterial() {
+		Material portalClosedMat = format.getPortalClosedMat();
+		switch(portalClosedMat){
+		case AIR:
+			return DEFAULTBUTTON;
+		case WATER:
+			return WATERBUTTON;
+		default:
+			Stargate.log(Level.INFO, portalClosedMat.name() + " is currently not suported as a portal closed material");
+			return DEFAULTBUTTON;
+		}
+	}
+	
 	public class VectorOperation {
 		/*
-		 * 
+		 * EVERY OPERATION DOES NOT MUTE/CHANGE THE INITIAL OBJECT!!!!
 		 */
 		Vector rotationAxis;
 		double rotation; // degrees
@@ -105,13 +174,14 @@ public class Gate {
 				throw new InvalidStructure();
 			}
 			
-			Stargate.log(Level.FINE, "Chose a format rotation of " + rotation + "°");
+			Stargate.log(Level.FINER, "Chose a format rotation of " + rotation + " radians");
 		}
 
 		/**
-		 * Inverse operation of doInverse; A vector operation that rotates around origo and flips z axis
+		 * Inverse operation of doInverse; A vector operation that rotates around origo
+		 * and flips z axis
 		 * 
-		 * @param vector 
+		 * @param vector
 		 * @return vector
 		 */
 		public BlockVector doOperation(BlockVector vector) {
@@ -123,7 +193,8 @@ public class Gate {
 		}
 
 		/**
-		 * Inverse operation of doOperation; A vector operation that rotates around origo and flips z axis
+		 * Inverse operation of doOperation; A vector operation that rotates around
+		 * origo and flips z axis
 		 * 
 		 * @param vector
 		 * @return vector

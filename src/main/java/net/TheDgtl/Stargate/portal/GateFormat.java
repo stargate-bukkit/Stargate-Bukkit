@@ -325,4 +325,11 @@ public class GateFormat {
 			}
 		}
 	}
+
+	public Material getPortalClosedMat() {
+		//TODO Temporary solution
+		for(Material mat : ((GateIris)portalParts.get(IRISKEY)).irisClosed)
+			return mat;
+		return Material.AIR;
+	}
 }
