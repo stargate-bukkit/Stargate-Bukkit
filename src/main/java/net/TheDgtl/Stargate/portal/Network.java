@@ -30,14 +30,17 @@ public class Network{
 	
 	Gate gate;
 	HashSet<PortalFlag> flags;
-	
+
+	public static String DEFAULTNET = "central";
 	static final String[] PORTALNAMESURROUND;
+	static final String[] DESTINAMESURROUND;
 	static final String[] NETWORKNAMESURROUND;
 	static {
 		PORTALNAMESURROUND = new String[] { "-", "-" };
-		NETWORKNAMESURROUND = new String[] {"<", ">"};
+		DESTINAMESURROUND = new String[] { "<", ">" };
+		NETWORKNAMESURROUND = new String[] { "(", ")" };
 	}
-	
+
 	public Network(String netName) {
 		this.netName = netName;
 		portalList = new HashMap<>();
@@ -100,17 +103,22 @@ public class Network{
 			 * Get the block behind the sign; the material of that block is stored in a
 			 * register with available gateFormats
 			 */
+			String name = lines[0];
+			if(name.isBlank())
+				throw new NoFormatFound();
 			Directional signDirection = (Directional) sign.getBlockData();
 			Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
 			List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
 			gate = FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing());
-
+			
 			flags = new HashSet<>();
 			setFlagsFromLine(lines[3]);
 			//TODO Check perms for flags (remove flags that are not permitted)
 
-			String name = lines[0];
 			lines[0] = PORTALNAMESURROUND[0] + name + PORTALNAMESURROUND[1];
+			if(!(lines[1].isBlank())) {
+				lines[1] = DESTINAMESURROUND[0] + lines[1] +  DESTINAMESURROUND[1];
+			}
 			lines[2] = NETWORKNAMESURROUND[0] + netName + NETWORKNAMESURROUND[1];
 			lines[3] = "";
 			gate.drawControll(lines);

@@ -28,7 +28,7 @@ public class Gate {
 	BlockVector signPos;
 
 	static final private Material DEFAULTBUTTON = Material.STONE_BUTTON;
-	static final private Material WATERBUTTON = Material.STONE_BUTTON;
+	static final private Material WATERBUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
 
 	/**
 	 * Compares the format to real world. If there is a valid configuration of
