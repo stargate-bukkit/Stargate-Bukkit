@@ -48,7 +48,7 @@ public class BlockEventListener implements Listener {
 			network = "central";
 		// TODO check perms
 		if (!(Network.networkList.containsKey(network))) {
-			Network.networkList.put(network, new Network());
+			Network.networkList.put(network, new Network(network));
 		}
 		Network selectedNet = Network.networkList.get(network);
 		try {

@@ -3,12 +3,14 @@ package net.TheDgtl.Stargate.portal;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.type.Switch.Face;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
@@ -115,20 +117,27 @@ public class Gate {
 		for (BlockVector buttonVec : format.getControllBlocks()) {
 			if (signPos == buttonVec)
 				continue;
-			buttonLoc.add(buttonVec);
+			buttonLoc.add(converter.doInverse(buttonVec));
 			break;
 		}
 		/*
 		 * Set a button with the same facing as the sign
 		 */
-		BlockState buttonState = buttonLoc.getBlock().getState();
-		buttonState.setType(getButtonMaterial());
-		Directional buttonFacing = (Directional) buttonState;
-		Directional signFacing = (Directional) sign.getBlockData();
-		buttonFacing.setFacing(signFacing.getFacing());
-		buttonState.update();
+		Material buttonMat = getButtonMaterial();
+        Directional buttonData = (Directional) Bukkit.createBlockData(buttonMat);
+        buttonData.setFacing(getButtonFacing(buttonMat,(Directional) sign.getBlockData()));
+        
+		BlockFace buttonFacing = getButtonFacing(buttonMat,(Directional) sign.getBlockData());
+		buttonLoc.getBlock().setBlockData(buttonData);
+		Stargate.log(Level.FINER,
+				"Trying to place " + buttonLoc.toString() + " " + buttonFacing.name());
+
 	}
 	
+	private BlockFace getButtonFacing(Material buttonMat, Directional signDirection) {
+		//TODO The oposite facing will be selected for watergates (i think)
+		return signDirection.getFacing();
+	}
 	private Material getButtonMaterial() {
 		Material portalClosedMat = format.getPortalClosedMat();
 		switch(portalClosedMat){

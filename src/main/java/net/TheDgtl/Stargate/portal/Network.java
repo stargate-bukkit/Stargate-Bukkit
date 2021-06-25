@@ -26,7 +26,23 @@ public class Network{
 	 */
 	private HashMap<String, Portal> portalList;
 	public static final HashMap<String, Network> networkList = new HashMap<>();
-
+	private String netName;
+	
+	Gate gate;
+	HashSet<PortalFlag> flags;
+	
+	static final String[] PORTALNAMESURROUND;
+	static final String[] NETWORKNAMESURROUND;
+	static {
+		PORTALNAMESURROUND = new String[] { "-", "-" };
+		NETWORKNAMESURROUND = new String[] {"<", ">"};
+	}
+	
+	public Network(String netName) {
+		this.netName = netName;
+		portalList = new HashMap<>();
+	}
+	
 	public Portal getPortal(String name) {
 		return portalList.get(name);
 	}
@@ -70,11 +86,6 @@ public class Network{
 		 * minute or something) maybe follow an external script that gives when the
 		 * states should change
 		 */
-
-		Gate gate;
-		HashSet<PortalFlag> flags;
-		
-		
 		public class NoFormatFound extends Exception {
 
 			/**
@@ -93,11 +104,18 @@ public class Network{
 			Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
 			List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
 			gate = FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing());
-			
+
 			flags = new HashSet<>();
 			setFlagsFromLine(lines[3]);
-			
-			portalList.put(lines[0], this);
+			//TODO Check perms for flags (remove flags that are not permitted)
+
+			String name = lines[0];
+			lines[0] = PORTALNAMESURROUND[0] + name + PORTALNAMESURROUND[1];
+			lines[2] = NETWORKNAMESURROUND[0] + netName + NETWORKNAMESURROUND[1];
+			lines[3] = "";
+			gate.drawControll(lines);
+
+			portalList.put(name, this);
 		}
 		/**
 		 * Go through every 
