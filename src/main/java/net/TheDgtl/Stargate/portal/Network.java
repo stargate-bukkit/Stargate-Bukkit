@@ -11,7 +11,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.portal.Network.Flags.InvalidLabel;
+import net.TheDgtl.Stargate.portal.Network.PortalFlag.NoFlagFound;
 
 public class Network{
 	/*
@@ -31,7 +31,7 @@ public class Network{
 		return portalList.get(name);
 	}
 	
-	public enum Flags{
+	public enum PortalFlag{
 		RANDOM('R'),
 		BUNGEE('U'),
 		ALWAYSON('A'),
@@ -43,19 +43,21 @@ public class Network{
 		FREE('F');
 		
 		public final char label;
-		private Flags(char label) {
+		private PortalFlag(char label) {
 			this.label = label;
 		}
 		
-		public static Flags valueOf(char label) throws InvalidLabel {
-		    for (Flags e : values()) {
-		        if (e.label == label) {
-		            return e;
+		public static PortalFlag valueOf(char label) throws NoFlagFound {
+		    for (PortalFlag flag : values()) {
+		        if (flag.label == label) {
+		            return flag;
 		        }
 		    }
-		    throw new InvalidLabel();
+		    throw new NoFlagFound();
 		}
-		static public class InvalidLabel extends Exception{}
+
+		
+		static public class NoFlagFound extends Exception{}
 	}
 	
 	public class Portal {
@@ -70,7 +72,7 @@ public class Network{
 		 */
 
 		Gate gate;
-		HashSet<Flags> flags;
+		HashSet<PortalFlag> flags;
 		
 		
 		public class NoFormatFound extends Exception {
@@ -105,8 +107,8 @@ public class Network{
 			char[] charArray = line.toUpperCase().toCharArray();
 			for(char character : charArray) {
 				try {
-					flags.add(Flags.valueOf(character));
-				} catch (InvalidLabel e) {}
+					flags.add(PortalFlag.valueOf(character));
+				} catch (NoFlagFound e) {}
 			}
 		}
 
