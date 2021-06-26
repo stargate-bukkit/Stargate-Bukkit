@@ -25,18 +25,18 @@ public class GateFormat {
 	public HashMap<String, GateStructure> portalParts;
 	
 	public final String name;
-	private static final String CONTROLLKEY = "controll";
-	private static final String FRAMEKEY = "frame";
-	private static final String IRISKEY = "iris";
-	
-	public GateFormat(GateIris iris, GateFrame frame, GateControll controll, HashMap<String, String> config, String name) {
+	public static final String CONTROLLKEY = "controll";
+	public static final String FRAMEKEY = "frame";
+	public static final String IRISKEY = "iris";
+	public GateFormat(GateIris iris, GateFrame frame, GateControll controll, HashMap<String, String> config,
+			String name) {
 		portalParts = new HashMap<>();
 		portalParts.put(IRISKEY, iris);
 		portalParts.put(FRAMEKEY, frame);
 		portalParts.put(CONTROLLKEY, controll);
 		this.name = name;
 	}
-	
+
 	/**
 	 * Checks through every structure in the format, and checks whether they are valid
 	 * @param converter
@@ -274,9 +274,10 @@ public class GateFormat {
 			iris = new GateIris(irisOpen, irisClosed);
 			frame = new GateFrame();
 			control = new GateControll();
-			for (int lineNr = 0; lineNr < lines.size(); lineNr++) {
+			int lineNr, i = 0;
+			for (lineNr = 0; lineNr < lines.size(); lineNr++) {
 				char[] charLine = lines.get(lineNr).toCharArray();
-				for (int i = 0; i < charLine.length; i++) {
+				for (i = 0; i < charLine.length; i++) {
 					BlockVector selectedLocation = new BlockVector(0, -lineNr, i);
 					setDesignPoint(charLine[i], selectedLocation.clone());
 				}

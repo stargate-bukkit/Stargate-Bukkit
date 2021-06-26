@@ -15,12 +15,6 @@ public class GateControll extends GateStructure{
 		parts = new ArrayList<>();
 	}
 	
-	
-	@Override
-	public boolean isInPortal(@NotNull Vector relativeLocation) {
-		return false;
-	}
-	
 	public void addPart(BlockVector vec) {
 		parts.add(vec);
 	}

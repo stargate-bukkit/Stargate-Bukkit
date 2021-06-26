@@ -9,11 +9,13 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
+import org.bukkit.util.BlockVector;
+import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.portal.Network.PortalFlag.NoFlagFound;
 
-public class Network{
+public class Network {
 	/*
 	 * Conceived as the class that can store a network of portals inside itself
 	 * Portals inside this class can only communicate with each other
@@ -27,11 +29,8 @@ public class Network{
 	private HashMap<String, Portal> portalList;
 	public static final HashMap<String, Network> networkList = new HashMap<>();
 	private String netName;
-	
-	Gate gate;
-	HashSet<PortalFlag> flags;
 
-	public static String DEFAULTNET = "central";
+	public static final String DEFAULTNET = "central";
 	static final String[] PORTALNAMESURROUND;
 	static final String[] DESTINAMESURROUND;
 	static final String[] NETWORKNAMESURROUND;
@@ -41,44 +40,51 @@ public class Network{
 		NETWORKNAMESURROUND = new String[] { "(", ")" };
 	}
 
+	final static HashMap<String, HashMap<SGLocation, Portal>> portalFromPartsMap = new HashMap<>();
+
 	public Network(String netName) {
 		this.netName = netName;
 		portalList = new HashMap<>();
 	}
-	
+
 	public Portal getPortal(String name) {
 		return portalList.get(name);
 	}
-	
-	public enum PortalFlag{
-		RANDOM('R'),
-		BUNGEE('U'),
-		ALWAYSON('A'),
-		BACKWARDS('B'), //Is this used?
-		HIDDEN('H'),
-		PRIVATE('P'),
-		SHOW('S'),
-		NONETWORK('N'), // ??
+
+	public Portal getPortal(Location loc, String[] keys) {
+		SGLocation sLoc = new SGLocation(loc);
+		for(String key : keys) {
+			Portal portal = portalFromPartsMap.get(key).get(sLoc);
+			if(portal != null)
+				return portal;
+		}
+		return null;
+	}
+
+	public enum PortalFlag {
+		RANDOM('R'), BUNGEE('U'), ALWAYSON('A'), BACKWARDS('B'), // Is this used?
+		HIDDEN('H'), PRIVATE('P'), SHOW('S'), NONETWORK('N'), // ??
 		FREE('F');
-		
+
 		public final char label;
+
 		private PortalFlag(char label) {
 			this.label = label;
 		}
-		
+
 		public static PortalFlag valueOf(char label) throws NoFlagFound {
-		    for (PortalFlag flag : values()) {
-		        if (flag.label == label) {
-		            return flag;
-		        }
-		    }
-		    throw new NoFlagFound();
+			for (PortalFlag flag : values()) {
+				if (flag.label == label) {
+					return flag;
+				}
+			}
+			throw new NoFlagFound();
 		}
 
-		
-		static public class NoFlagFound extends Exception{}
+		static public class NoFlagFound extends Exception {
+		}
 	}
-	
+
 	public class Portal {
 		/**
 		 * Behaviours: - Cycle through PortalStates, make current state listener for
@@ -89,6 +95,10 @@ public class Network{
 		 * minute or something) maybe follow an external script that gives when the
 		 * states should change
 		 */
+
+		Gate gate;
+		HashSet<PortalFlag> flags;
+		
 		public class NoFormatFound extends Exception {
 
 			/**
@@ -104,37 +114,56 @@ public class Network{
 			 * register with available gateFormats
 			 */
 			String name = lines[0];
-			if(name.isBlank())
+			if (name.isBlank())
 				throw new NoFormatFound();
 			Directional signDirection = (Directional) sign.getBlockData();
 			Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
 			List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
 			gate = FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing());
-			
+
 			flags = new HashSet<>();
 			setFlagsFromLine(lines[3]);
-			//TODO Check perms for flags (remove flags that are not permitted)
-
+			// TODO Check perms for flags (remove flags that are not permitted)
+			// TODO move drawControll to a seperate function, which does not get triggered
+			// in constructor
 			lines[0] = PORTALNAMESURROUND[0] + name + PORTALNAMESURROUND[1];
-			if(!(lines[1].isBlank())) {
-				lines[1] = DESTINAMESURROUND[0] + lines[1] +  DESTINAMESURROUND[1];
+			if (!(lines[1].isBlank())) {
+				lines[1] = DESTINAMESURROUND[0] + lines[1] + DESTINAMESURROUND[1];
 			}
 			lines[2] = NETWORKNAMESURROUND[0] + netName + NETWORKNAMESURROUND[1];
 			lines[3] = "";
 			gate.drawControll(lines);
-
+			
 			portalList.put(name, this);
+			for(String key : gate.format.portalParts.keySet()) {
+				if(!portalFromPartsMap.containsKey(key)) {
+					portalFromPartsMap.put(key, new HashMap<SGLocation, Portal>());
+				}
+				List<SGLocation> locations = gate.getLocations(key);
+				portalFromPartsMap.get(key).putAll(generateLocationHashMap(locations));
+			}
 		}
+
+		private HashMap<SGLocation, Portal> generateLocationHashMap(List<SGLocation> locations) {
+			HashMap<SGLocation, Portal> output = new HashMap<>();
+			for (SGLocation loc : locations) {
+				output.put(loc, this);
+			}
+			return output;
+		}
+
 		/**
-		 * Go through every 
+		 * Go through every
+		 * 
 		 * @param line
 		 */
 		private void setFlagsFromLine(String line) {
 			char[] charArray = line.toUpperCase().toCharArray();
-			for(char character : charArray) {
+			for (char character : charArray) {
 				try {
 					flags.add(PortalFlag.valueOf(character));
-				} catch (NoFlagFound e) {}
+				} catch (NoFlagFound e) {
+				}
 			}
 		}
 

@@ -20,13 +20,7 @@ public class GateFrame extends GateStructure{
 	public GateFrame() {
 		parts = new HashMap<>();
 	}
-	
-	@Override
-	public boolean isInPortal(@NotNull Vector relativeLocation) {
-		return false; // portal is closed
-	}
-	
-	
+
 	public void addPart(BlockVector vec, HashSet<Material> hashSet) {
 		parts.put(vec, hashSet);
 	}

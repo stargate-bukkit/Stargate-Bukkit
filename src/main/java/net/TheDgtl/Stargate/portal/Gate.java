@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.portal;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -27,6 +28,8 @@ public class Gate {
 	Location topLeft;
 	BlockVector signPos;
 
+	
+	
 	static final private Material DEFAULTBUTTON = Material.STONE_BUTTON;
 	static final private Material WATERBUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
 
@@ -78,17 +81,6 @@ public class Gate {
 		}
 		return false;
 	}
-	
-	/**
-	 * 
-	 * @param location
-	 * @return
-	 */
-	public boolean isInPortal(Location location) {
-		BlockVector relativeVec = location.subtract(topLeft).toVector().toBlockVector();
-		BlockVector convertedVec = converter.doOperation(relativeVec);
-		return format.portalParts.get("iris").isInPortal(convertedVec);
-	}
 
 	/**
 	 * Set button and draw sign
@@ -138,6 +130,7 @@ public class Gate {
 		//TODO The oposite facing will be selected for watergates (i think)
 		return signDirection.getFacing();
 	}
+	
 	private Material getButtonMaterial() {
 		Material portalClosedMat = format.getPortalClosedMat();
 		switch(portalClosedMat){
@@ -149,6 +142,20 @@ public class Gate {
 			Stargate.log(Level.INFO, portalClosedMat.name() + " is currently not suported as a portal closed material");
 			return DEFAULTBUTTON;
 		}
+	}
+	
+	/**
+	 * 
+	 * @param structKey , key for the structuretype to be retrieved
+	 * @return
+	 */
+	public List<SGLocation> getLocations(String structKey) {
+		List<SGLocation> output = new ArrayList<>();
+		for(BlockVector vec : format.portalParts.get(structKey).getPartsPos()) {
+			Location loc = topLeft.clone().add(converter.doInverse(vec));
+			output.add(new SGLocation(loc));
+		}
+		return output;
 	}
 	
 	public class VectorOperation {

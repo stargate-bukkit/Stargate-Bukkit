@@ -37,12 +37,6 @@ public class GateIris extends GateStructure{
 		addPart(exitpoint);
 	}
 	
-	@Override
-	public boolean isInPortal(@NotNull Vector relativeLocation) {
-		//TODO write bounds checking algoritm / or use old
-		return isOpen;
-	}
-	
 	public void open() {
 		//TODO
 	}

@@ -17,7 +17,6 @@ public abstract class GateStructure {
 	/**
 	 * 
 	 */
-	public abstract boolean isInPortal(@NotNull Vector relativeLocation);
 
 	/**
 	 * Goes through every part of the structure, finds the hypothetical location of
