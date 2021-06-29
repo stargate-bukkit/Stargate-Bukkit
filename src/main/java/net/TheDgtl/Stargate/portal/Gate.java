@@ -118,9 +118,10 @@ public class Gate {
 
 		Sign sign = (Sign) signState;
 		for (int i = 0; i < 4; i++) {
+			Stargate.log(Level.FINEST, signLines[i]);
 			sign.setLine(i, signLines[i]);
 		}
-		sign.update();
+		Stargate.syncPopulator.new BlockSetAction(sign, true);
 		/*
 		 * Just a cheat to exclude the sign location, and determine the position of the
 		 * button. Note that this will have weird behaviour if there's more than 3

@@ -53,7 +53,7 @@ public class BlockEventListener implements Listener {
 			return;
 
 		String[] lines = event.getLines();
-		String network = lines[1];
+		String network = lines[2];
 		if(network.isBlank())
 			network = Network.DEFAULTNET;
 		// TODO check perms
