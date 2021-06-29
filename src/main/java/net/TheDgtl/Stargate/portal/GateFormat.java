@@ -100,11 +100,8 @@ public class GateFormat {
 		return controll.parts;
 	}
 	
-	public Material getPortalClosedMat() {
-		//TODO Temporary solution
-		for(Material mat : ((GateIris)portalParts.get(GateStructure.Type.IRIS)).irisClosed)
-			return mat;
-		return Material.AIR;
+	public Material getIrisMat(boolean isOpen) {
+		return ((GateIris)portalParts.get(GateStructure.Type.IRIS)).getMat(isOpen);
 	}
 	
 	private static class GateFormatParser {
@@ -240,7 +237,6 @@ public class GateFormat {
 
 		}
 
-		
 		
 		private List<String> loadDesign() {
 			List<String> designLines = new ArrayList<>();

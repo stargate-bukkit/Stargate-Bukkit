@@ -13,6 +13,7 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.SyncronousPopulator;
 import net.TheDgtl.Stargate.portal.Gate.GateConflict;
 import net.TheDgtl.Stargate.portal.Network.PortalFlag.NoFlagFound;
 
@@ -51,14 +52,31 @@ public class Network {
 	public Portal getPortal(String name) {
 		return portalList.get(name);
 	}
-
+	
+	/**
+	 * Get a portal from location and the type of gateStructure targeted
+	 * @param loc
+	 * @param key
+	 * @return
+	 */
+	static public Portal getPortal(SGLocation loc, GateStructure.Type key) {
+		if (!(portalFromPartsMap.containsKey(key))) {
+			Stargate.log(Level.FINER, "portalFromPartsMap does not contain key " + key);
+			return null;
+		}
+		Portal portal = portalFromPartsMap.get(key).get(loc);
+		return portal;
+	}
+	
+	/**
+	 * Get a portal from location and the types of gateStructures targeted
+	 * @param loc
+	 * @param keys
+	 * @return
+	 */
 	static public Portal getPortal(SGLocation loc, GateStructure.Type[] keys) {
 		for(GateStructure.Type key : keys) {
-			if (!(portalFromPartsMap.containsKey(key))) {
-				Stargate.log(Level.FINER, "portalFromPartsMap does not contain key " + key);
-				continue;
-			}
-			Portal portal = portalFromPartsMap.get(key).get(loc);
+			Portal portal = getPortal(loc, key);
 			if(portal != null)
 				return portal;
 		}
@@ -99,7 +117,7 @@ public class Network {
 		 * minute or something) maybe follow an external script that gives when the
 		 * states should change
 		 */
-
+		int delay = 20*20; // ticks
 		Gate gate;
 		HashSet<PortalFlag> flags;
 		String name;
@@ -196,6 +214,33 @@ public class Network {
 					portalFromPartsMap.get(formatType).remove(loc);
 				}
 			}
+		}
+
+		public void open() {
+			gate.open();
+
+			// TODO do preparations for teleportation
+
+			// Create action which will close this portal
+			SyncronousPopulator.Action action = new SyncronousPopulator.Action() {
+
+				@Override
+				public void run() {
+					close();
+				}
+
+				@Override
+				public boolean isFinished() {
+					return true;
+				}
+			};
+			// Make the action on a delay
+			Stargate.syncPopulator.new DelayedAction(delay, action);
+		}
+
+		public void close() {
+			// TODO remove preparations for teleport
+			gate.close();
 		}
 	}
 }

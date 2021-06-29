@@ -26,13 +26,14 @@ import net.TheDgtl.Stargate.portal.SGLocation;
 public class BlockEventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
-		// Check if it's a portalblock
-		// check perms. If allowed, destroy portal
+		// TODO Have a list of all possible portalMaterials and skip in not any of those
 		SGLocation loc = new SGLocation(event.getBlock().getLocation());
-		Portal portal = Network.getPortal(loc, new GateStructure.Type[] {GateStructure.Type.FRAME});
-		if(portal != null) {
+		Portal portal = Network.getPortal(loc, GateStructure.Type.FRAME);
+		if (portal != null) {
+			// TODO check perms. If allowed, destroy portal
 			portal.destroy();
 		}
+
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

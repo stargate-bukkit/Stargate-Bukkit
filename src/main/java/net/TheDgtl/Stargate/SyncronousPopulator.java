@@ -56,7 +56,8 @@ public class SyncronousPopulator implements Runnable{
 		 * @param delay in ticks
 		 * @param action
 		 */
-		DelayedAction(int delay, Action action){
+		public DelayedAction(int delay, Action action){
+			blockPopulatorQueue.add(this);
 			this.delay = delay;
 			this.action = action;
 		}

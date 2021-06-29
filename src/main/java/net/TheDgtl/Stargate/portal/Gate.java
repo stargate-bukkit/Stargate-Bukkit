@@ -27,6 +27,7 @@ public class Gate {
 	VectorOperation converter; 
 	Location topLeft;
 	BlockVector signPos;
+	boolean isOpen = false;
 
 	
 	
@@ -146,7 +147,7 @@ public class Gate {
 	}
 	
 	private Material getButtonMaterial() {
-		Material portalClosedMat = format.getPortalClosedMat();
+		Material portalClosedMat = format.getIrisMat(false);
 		switch(portalClosedMat){
 		case AIR:
 			return DEFAULTBUTTON;
@@ -170,6 +171,25 @@ public class Gate {
 			output.add(new SGLocation(loc));
 		}
 		return output;
+	}
+	
+	private void setIrisMat(Material mat) {
+		GateStructure.Type targetType = GateStructure.Type.IRIS;
+		List<SGLocation> locs = getLocations(targetType);
+		for(SGLocation loc : locs) {
+			loc.getLocation().getBlock().setType(mat);
+		}
+	}
+	
+	public void open() {
+		Material mat = format.getIrisMat(true);
+		setIrisMat(mat);
+		
+	}
+	
+	public void close() {
+		Material mat = format.getIrisMat(false);
+		setIrisMat(mat);
 	}
 	
 	public class VectorOperation {
@@ -249,4 +269,5 @@ public class Gate {
 		private static final long serialVersionUID = -5580284561192990683L;
 
 	}
+	
 }
