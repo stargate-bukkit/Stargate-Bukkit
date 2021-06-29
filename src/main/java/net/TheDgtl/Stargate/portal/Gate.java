@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.portal;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -11,7 +12,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
-import org.bukkit.block.data.type.Switch.Face;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
@@ -32,7 +32,7 @@ public class Gate {
 	
 	static final private Material DEFAULTBUTTON = Material.STONE_BUTTON;
 	static final private Material WATERBUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
-
+	static final public HashSet<Material> ALLPORTALMATERALS = new HashSet<>();
 	/**
 	 * Compares the format to real world. If there is a valid configuration of
 	 * either rotations or flips that of the format that matches with

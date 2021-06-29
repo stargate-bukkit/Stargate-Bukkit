@@ -102,7 +102,7 @@ public class Network {
 
 		Gate gate;
 		HashSet<PortalFlag> flags;
-		
+		String name;
 		public class NoFormatFound extends Exception {
 
 			/**
@@ -117,7 +117,7 @@ public class Network {
 			 * Get the block behind the sign; the material of that block is stored in a
 			 * register with available gateFormats
 			 */
-			String name = lines[0];
+			this.name = lines[0];
 			if (name.isBlank())
 				throw new NoFormatFound();
 			Directional signDirection = (Directional) sign.getBlockData();
@@ -184,6 +184,18 @@ public class Network {
 				}
 			}
 			throw new NoFormatFound();
+		}
+		
+		/**
+		 * Remove all information stored on this gate
+		 */
+		public void destroy() {
+			portalList.remove(name);
+			for(GateStructure.Type formatType : portalFromPartsMap.keySet()) {
+				for(SGLocation loc : this.gate.getLocations(formatType)) {
+					portalFromPartsMap.get(formatType).remove(loc);
+				}
+			}
 		}
 	}
 }

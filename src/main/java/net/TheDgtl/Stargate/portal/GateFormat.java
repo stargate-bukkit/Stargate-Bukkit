@@ -33,7 +33,7 @@ public class GateFormat {
 		portalParts.put(GateStructure.Type.CONTROLL, controll);
 		this.name = name;
 	}
-
+	
 	/**
 	 * Checks through every structure in the format, and checks whether they are valid
 	 * @param converter
@@ -50,7 +50,7 @@ public class GateFormat {
 		}
 		return true;
 	}
-
+	
 	private static class StargateFilenameFilter implements FilenameFilter {
 		public boolean accept(File dir, String name) {
 			return name.endsWith(".gate");
@@ -98,6 +98,13 @@ public class GateFormat {
 		GateControll controll = (GateControll) portalParts.get(GateStructure.Type.CONTROLL);
 		
 		return controll.parts;
+	}
+	
+	public Material getPortalClosedMat() {
+		//TODO Temporary solution
+		for(Material mat : ((GateIris)portalParts.get(GateStructure.Type.IRIS)).irisClosed)
+			return mat;
+		return Material.AIR;
 	}
 	
 	private static class GateFormatParser {
@@ -250,7 +257,7 @@ public class GateFormat {
 		}
 		
 		/**
-		 * Creates a vector-structure from the character design following this reference system:
+		 * Creates a vector-structure from the character design, following this reference system:
 		 *     FFF    y 
 		 *     C.C    ^ 
 		 *     F*F    | 
@@ -322,12 +329,5 @@ public class GateFormat {
 				super(msg);
 			}
 		}
-	}
-
-	public Material getPortalClosedMat() {
-		//TODO Temporary solution
-		for(Material mat : ((GateIris)portalParts.get(GateStructure.Type.IRIS)).irisClosed)
-			return mat;
-		return Material.AIR;
 	}
 }
