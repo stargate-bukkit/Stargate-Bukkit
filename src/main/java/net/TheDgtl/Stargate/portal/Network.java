@@ -52,20 +52,13 @@ public class Network {
 		return portalList.get(name);
 	}
 
-	static public Portal getPortal(Location loc, GateStructure.Type[] keys) {
-		SGLocation sLoc = new SGLocation(loc);
-		Stargate.log(Level.FINEST, "Checking location" + loc.toString());
+	static public Portal getPortal(SGLocation loc, GateStructure.Type[] keys) {
 		for(GateStructure.Type key : keys) {
 			if (!(portalFromPartsMap.containsKey(key))) {
 				Stargate.log(Level.FINER, "portalFromPartsMap does not contain key " + key);
 				continue;
 			}
-			String debugMsg = "";
-			for(SGLocation logLoc : portalFromPartsMap.get(key).keySet()) {
-				debugMsg = debugMsg + " " + logLoc.toString();
-			}
-			Stargate.log(Level.FINEST, debugMsg);
-			Portal portal = portalFromPartsMap.get(key).get(sLoc);
+			Portal portal = portalFromPartsMap.get(key).get(loc);
 			if(portal != null)
 				return portal;
 		}

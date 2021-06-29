@@ -89,7 +89,7 @@ public class Gate {
 	private boolean isGateConflict() {
 		List<SGLocation> locations = this.getLocations(GateStructure.Type.FRAME);
 		for(SGLocation loc : locations) {
-			if(Network.getPortal(loc.getLocation(), GateStructure.Type.values()) != null ) {
+			if(Network.getPortal(loc, GateStructure.Type.values()) != null ) {
 				return true;
 			}
 		}
