@@ -13,6 +13,7 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.portal.Gate.GateConflict;
 import net.TheDgtl.Stargate.portal.Network.PortalFlag.NoFlagFound;
 
 public class Network {
@@ -40,7 +41,7 @@ public class Network {
 		NETWORKNAMESURROUND = new String[] { "(", ")" };
 	}
 
-	final static HashMap<String, HashMap<SGLocation, Portal>> portalFromPartsMap = new HashMap<>();
+	final static HashMap<GateStructure.Type, HashMap<SGLocation, Portal>> portalFromPartsMap = new HashMap<>();
 
 	public Network(String netName) {
 		this.netName = netName;
@@ -51,9 +52,19 @@ public class Network {
 		return portalList.get(name);
 	}
 
-	public Portal getPortal(Location loc, String[] keys) {
+	static public Portal getPortal(Location loc, GateStructure.Type[] keys) {
 		SGLocation sLoc = new SGLocation(loc);
-		for(String key : keys) {
+		Stargate.log(Level.FINEST, "Checking location" + loc.toString());
+		for(GateStructure.Type key : keys) {
+			if (!(portalFromPartsMap.containsKey(key))) {
+				Stargate.log(Level.FINER, "portalFromPartsMap does not contain key " + key);
+				continue;
+			}
+			String debugMsg = "";
+			for(SGLocation logLoc : portalFromPartsMap.get(key).keySet()) {
+				debugMsg = debugMsg + " " + logLoc.toString();
+			}
+			Stargate.log(Level.FINEST, debugMsg);
 			Portal portal = portalFromPartsMap.get(key).get(sLoc);
 			if(portal != null)
 				return portal;
@@ -108,7 +119,7 @@ public class Network {
 
 		}
 
-		public Portal(Block sign, String[] lines) throws NoFormatFound {
+		public Portal(Block sign, String[] lines) throws NoFormatFound, GateConflict {
 			/*
 			 * Get the block behind the sign; the material of that block is stored in a
 			 * register with available gateFormats
@@ -121,8 +132,8 @@ public class Network {
 			List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
 			gate = FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing());
 
-			flags = new HashSet<>();
-			setFlagsFromLine(lines[3]);
+			flags = getFlags(lines[3]);
+			
 			// TODO Check perms for flags (remove flags that are not permitted)
 			// TODO move drawControll to a seperate function, which does not get triggered
 			// in constructor
@@ -135,7 +146,7 @@ public class Network {
 			gate.drawControll(lines);
 			
 			portalList.put(name, this);
-			for(String key : gate.format.portalParts.keySet()) {
+			for(GateStructure.Type key : gate.format.portalParts.keySet()) {
 				if(!portalFromPartsMap.containsKey(key)) {
 					portalFromPartsMap.put(key, new HashMap<SGLocation, Portal>());
 				}
@@ -153,22 +164,24 @@ public class Network {
 		}
 
 		/**
-		 * Go through every
+		 * Go through every character in line, and
 		 * 
 		 * @param line
 		 */
-		private void setFlagsFromLine(String line) {
+		private HashSet<PortalFlag> getFlags(String line) {
+			HashSet<PortalFlag> foundFlags = new HashSet<>();
 			char[] charArray = line.toUpperCase().toCharArray();
 			for (char character : charArray) {
 				try {
-					flags.add(PortalFlag.valueOf(character));
+					foundFlags.add(PortalFlag.valueOf(character));
 				} catch (NoFlagFound e) {
 				}
 			}
+			return foundFlags;
 		}
 
 		private Gate FindMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing)
-				throws NoFormatFound {
+				throws NoFormatFound, GateConflict {
 			Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
 			for (GateFormat gateFormat : gateFormats) {
 				Stargate.log(Level.FINE, "--------- " + gateFormat.name + " ---------");

@@ -40,26 +40,28 @@ public class Gate {
 	 * @param format
 	 * @param loc
 	 * @throws InvalidStructure
+	 * @throws GateConflict 
 	 */
-	public Gate(GateFormat format, Location loc, BlockFace signFace) throws InvalidStructure {
+	public Gate(GateFormat format, Location loc, BlockFace signFace) throws InvalidStructure, GateConflict {
 		this.format = format;
 		converter = new VectorOperation(signFace);
-		
-		if(matchesFormat(loc))
+
+		if (matchesFormat(loc))
 			return;
 		converter.flipZAxis = true;
-		if(matchesFormat(loc))
+		if (matchesFormat(loc))
 			return;
-		
+
 		throw new InvalidStructure();
 	}
-	
+
 	/**
 	 * Checks if format matches independent of controlBlock
 	 * @param loc
 	 * @return
+	 * @throws GateConflict 
 	 */
-	private boolean matchesFormat(Location loc) {
+	private boolean matchesFormat(Location loc) throws GateConflict {
 		List<BlockVector> controlBlocks = format.getControllBlocks();
 		for (BlockVector controlBlock : controlBlocks) {
 			Stargate.log(Level.FINEST, "-Checking for controlblock with relative position " + controlBlock.getBlockX()
@@ -75,7 +77,19 @@ public class Gate {
 			Stargate.log(Level.FINEST, "Topleft is " + topLeft.getBlockX()
 			+ "," + topLeft.getBlockY() + "," + topLeft.getBlockZ());
 			if (format.matches(converter, topLeft)) {
+				if(isGateConflict()) {
+					throw new GateConflict();
+				}
 				signPos = controlBlock;
+				return true;
+			}
+		}
+		return false;
+	}
+	private boolean isGateConflict() {
+		List<SGLocation> locations = this.getLocations(GateStructure.Type.FRAME);
+		for(SGLocation loc : locations) {
+			if(Network.getPortal(loc.getLocation(), GateStructure.Type.values()) != null ) {
 				return true;
 			}
 		}
@@ -149,7 +163,7 @@ public class Gate {
 	 * @param structKey , key for the structuretype to be retrieved
 	 * @return
 	 */
-	public List<SGLocation> getLocations(String structKey) {
+	public List<SGLocation> getLocations(GateStructure.Type structKey) {
 		List<SGLocation> output = new ArrayList<>();
 		for(BlockVector vec : format.portalParts.get(structKey).getPartsPos()) {
 			Location loc = topLeft.clone().add(converter.doInverse(vec));
@@ -226,6 +240,7 @@ public class Gate {
 		
 	}
 
+	public class GateConflict extends Exception{}
 	public class InvalidStructure extends Exception {
 
 		/**

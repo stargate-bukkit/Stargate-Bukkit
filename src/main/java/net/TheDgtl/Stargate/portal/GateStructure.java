@@ -27,6 +27,18 @@ public abstract class GateStructure {
 	 * @param topleft
 	 * @return true if all parts had valid materials
 	 */
+	enum Type{
+		CONTROLL("controll"), FRAME("frame"), IRIS("iris");
+		
+		private String key;
+		private Type(String key) {
+			this.key = key;
+		}
+		public String valueOf() {
+			return key;
+		}
+		
+	}
 	public boolean isValidState(Gate.VectorOperation converter, Location topleft) {
 		List<BlockVector> partsPos = getPartsPos();
 		for (BlockVector partPos : partsPos) {
@@ -38,7 +50,6 @@ public abstract class GateStructure {
 				return false;
 			}
 		}
-
 		return true;
 	}
 

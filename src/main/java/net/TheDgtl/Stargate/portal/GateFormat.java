@@ -22,18 +22,15 @@ import net.TheDgtl.Stargate.Stargate;
 
 public class GateFormat {
 	public static HashMap<Material,List<GateFormat>> controlMaterialFormatsMap;
-	public HashMap<String, GateStructure> portalParts;
+	public HashMap<GateStructure.Type, GateStructure> portalParts;
 	
 	public final String name;
-	public static final String CONTROLLKEY = "controll";
-	public static final String FRAMEKEY = "frame";
-	public static final String IRISKEY = "iris";
 	public GateFormat(GateIris iris, GateFrame frame, GateControll controll, HashMap<String, String> config,
 			String name) {
 		portalParts = new HashMap<>();
-		portalParts.put(IRISKEY, iris);
-		portalParts.put(FRAMEKEY, frame);
-		portalParts.put(CONTROLLKEY, controll);
+		portalParts.put(GateStructure.Type.IRIS, iris);
+		portalParts.put(GateStructure.Type.FRAME, frame);
+		portalParts.put(GateStructure.Type.CONTROLL, controll);
 		this.name = name;
 	}
 
@@ -44,7 +41,7 @@ public class GateFormat {
 	 * @return true if all structures are valid
 	 */
 	public boolean matches(Gate.VectorOperation converter, Location loc) {
-		for (String structKey : portalParts.keySet()) {
+		for (GateStructure.Type structKey : portalParts.keySet()) {
 			Stargate.log(Level.FINER, "---Validating " + structKey);
 			if (!(portalParts.get(structKey).isValidState(converter, loc))) {
 				Stargate.log(Level.INFO, structKey + "returned negative");
@@ -98,7 +95,7 @@ public class GateFormat {
 	}
 	
 	public List<BlockVector> getControllBlocks() {
-		GateControll controll = (GateControll) portalParts.get(CONTROLLKEY);
+		GateControll controll = (GateControll) portalParts.get(GateStructure.Type.CONTROLL);
 		
 		return controll.parts;
 	}
@@ -329,7 +326,7 @@ public class GateFormat {
 
 	public Material getPortalClosedMat() {
 		//TODO Temporary solution
-		for(Material mat : ((GateIris)portalParts.get(IRISKEY)).irisClosed)
+		for(Material mat : ((GateIris)portalParts.get(GateStructure.Type.IRIS)).irisClosed)
 			return mat;
 		return Material.AIR;
 	}

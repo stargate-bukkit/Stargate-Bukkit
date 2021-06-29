@@ -16,6 +16,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.portal.Gate.GateConflict;
 import net.TheDgtl.Stargate.portal.Network;
 import net.TheDgtl.Stargate.portal.Network.Portal.NoFormatFound;
 
@@ -53,9 +54,12 @@ public class BlockEventListener implements Listener {
 		Network selectedNet = Network.networkList.get(network);
 		try {
 			selectedNet.new Portal(block, lines);
-			Stargate.log(Level.INFO, "A Gateformat matches");
+			Stargate.log(Level.FINE, "A Gateformat matches");
 		} catch (NoFormatFound e) {
-			Stargate.log(Level.INFO, "No Gateformat matches");
+			Stargate.log(Level.FINE, "No Gateformat matches");
+		} catch (GateConflict e) {
+			// TODO Send message to player
+			Stargate.log(Level.FINE, "Gateconflict");
 		}
 	}
 
