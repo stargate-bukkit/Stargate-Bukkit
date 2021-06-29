@@ -5,13 +5,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.EndGateway;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Orientable;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
@@ -172,12 +178,31 @@ public class Gate {
 		}
 		return output;
 	}
-	
+	/**
+	 * Set the iris mat, note that nether portals have to be oriented in the right axis, and 
+	 * force a location to prevent exit gateway generation.
+	 * @param mat
+	 */
 	private void setIrisMat(Material mat) {
 		GateStructure.Type targetType = GateStructure.Type.IRIS;
 		List<SGLocation> locs = getLocations(targetType);
-		for(SGLocation loc : locs) {
-			loc.getLocation().getBlock().setType(mat);
+		BlockData blockData = Bukkit.createBlockData(mat);
+
+		if (mat == Material.NETHER_PORTAL) {
+			Orientable orientation = (Orientable) blockData;
+			orientation.setAxis(converter.irisNormal);
+			blockData = orientation;
+		}
+		for (SGLocation loc : locs) {
+			Block blk = loc.getLocation().getBlock();
+			blk.setBlockData(blockData);
+			if (mat == Material.END_GATEWAY && blk.getWorld().getEnvironment() == World.Environment.THE_END) {
+				// force a location to prevent exit gateway generation
+				EndGateway gateway = (EndGateway) blk.getState();
+				gateway.setExitLocation(blk.getWorld().getSpawnLocation());
+				gateway.setExactTeleport(true);
+				gateway.update(false, false);
+			}
 		}
 	}
 	
@@ -198,6 +223,7 @@ public class Gate {
 		 */
 		Vector rotationAxis;
 		double rotation; // degrees
+		Axis irisNormal; //mathematical term for the normal axis orthogonal to the iris plane
 		boolean flipZAxis = false;
 		
 		/**
@@ -210,15 +236,19 @@ public class Gate {
 			switch(signFace) {
 			case EAST:
 				rotation = 0;
+				irisNormal = Axis.Z;
 				break;
 			case SOUTH:
 				rotation = Math.PI/2;
+				irisNormal = Axis.X;
 				break;
 			case WEST:
 				rotation = Math.PI;
+				irisNormal = Axis.Z;
 				break;
 			case NORTH:
 				rotation = 3*Math.PI/2;
+				irisNormal = Axis.X;
 				break;
 			default:
 				throw new InvalidStructure();
