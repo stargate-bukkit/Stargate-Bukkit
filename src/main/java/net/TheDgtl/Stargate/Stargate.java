@@ -43,7 +43,7 @@ public class Stargate extends JavaPlugin {
 	final String PORTALFOLDER = "portals";
 
 	private PluginManager pm;
-	public static final SyncronousBlockPopulator syncPopulator = new SyncronousBlockPopulator();
+	public static final SyncronousPopulator syncPopulator = new SyncronousPopulator();
 	
 	@Override
 	public void onEnable() {
