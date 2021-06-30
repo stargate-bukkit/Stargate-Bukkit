@@ -21,10 +21,11 @@ import org.bukkit.util.Vector;
 import net.TheDgtl.Stargate.Stargate;
 
 public class GateFormat {
-	public static HashMap<Material,List<GateFormat>> controlMaterialFormatsMap;
+	public static HashMap<Material, List<GateFormat>> controlMaterialFormatsMap;
 	public HashMap<GateStructure.Type, GateStructure> portalParts;
-	
+
 	public final String name;
+
 	public GateFormat(GateIris iris, GateFrame frame, GateControll controll, HashMap<String, String> config,
 			String name) {
 		portalParts = new HashMap<>();
@@ -33,9 +34,11 @@ public class GateFormat {
 		portalParts.put(GateStructure.Type.CONTROLL, controll);
 		this.name = name;
 	}
-	
+
 	/**
-	 * Checks through every structure in the format, and checks whether they are valid
+	 * Checks through every structure in the format, and checks whether they are
+	 * valid
+	 * 
 	 * @param converter
 	 * @param loc
 	 * @return true if all structures are valid
@@ -50,13 +53,13 @@ public class GateFormat {
 		}
 		return true;
 	}
-	
+
 	private static class StargateFilenameFilter implements FilenameFilter {
 		public boolean accept(File dir, String name) {
 			return name.endsWith(".gate");
 		}
 	}
-	
+
 	public static HashMap<Material, List<GateFormat>> loadGateFormats(String gateFolder) {
 		HashMap<Material, List<GateFormat>> controlToGateMap = new HashMap<>();
 		File dir = new File(gateFolder);
@@ -91,17 +94,21 @@ public class GateFormat {
 
 	public static List<GateFormat> getPossibleGatesFromControll(Material controlBlockId) {
 		return controlMaterialFormatsMap.get(controlBlockId);
-		
+
 	}
-	
+
 	public List<BlockVector> getControllBlocks() {
 		GateControll controll = (GateControll) portalParts.get(GateStructure.Type.CONTROLL);
-		
+
 		return controll.parts;
 	}
-	
+
 	public Material getIrisMat(boolean isOpen) {
-		return ((GateIris)portalParts.get(GateStructure.Type.IRIS)).getMat(isOpen);
+		return ((GateIris) portalParts.get(GateStructure.Type.IRIS)).getMat(isOpen);
+	}
+
+	public BlockVector getExit() {
+		return ((GateIris)portalParts.get(GateStructure.Type.IRIS)).getExit();
 	}
 	
 	private static class GateFormatParser {
@@ -301,7 +308,7 @@ public class GateFormat {
 				iris.addPart(selectedLocation.clone());
 				break;
 			case CONTROL:
-				frame.addPart(selectedLocation, frameMaterials.get(key));
+				frame.addPart(selectedLocation.clone(), frameMaterials.get(key));
 				BlockVector controlLocation = selectedLocation.clone();
 				controlLocation.add(new BlockVector(1, 0, 0));
 				control.addPart(controlLocation);
@@ -326,4 +333,6 @@ public class GateFormat {
 			}
 		}
 	}
+
+	
 }

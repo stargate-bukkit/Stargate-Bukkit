@@ -1,5 +1,7 @@
 package net.TheDgtl.Stargate.listeners;
 
+import java.util.logging.Level;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,6 +11,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.jetbrains.annotations.NotNull;
 
+import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.portal.GateStructure;
 import net.TheDgtl.Stargate.portal.Network;
 import net.TheDgtl.Stargate.portal.Network.Portal;
@@ -25,7 +28,7 @@ public class MoveEventListener implements Listener {
 				&& from.getBlockZ() == to.getBlockZ()) {
 			return;
 		}
-		
+		Stargate.log(Level.FINEST, "checking if in portal");
 		Portal portal = Network.getPortal(new SGLocation(to), GateStructure.Type.IRIS);
 
 		if (portal == null || !portal.isOpen())
@@ -36,9 +39,12 @@ public class MoveEventListener implements Listener {
 		}
 		
 		// check perm's
-		// get teleport destination
-		// teleport player
-		// close portal?
+		Portal desti = portal.getDestination();
+		Location exit = desti.getExit();
+		Stargate.log(Level.FINEST, "Teleporting " + player.getName() + " to " + exit.toString());
+		player.teleport(exit);
+		desti.close();
+		portal.close();
 	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleMove(VehicleMoveEvent event) {

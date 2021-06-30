@@ -123,6 +123,7 @@ public class Network {
 		HashSet<PortalFlag> flags;
 		String name;
 		String destiName;
+		
 		public class NoFormatFound extends Exception {
 
 			/**
@@ -257,7 +258,15 @@ public class Network {
 
 		public boolean isOpenFor(Player player) {
 			// TODO Auto-generated method stub
-			return false;
+			return gate.isOpen;
+		}
+
+		public Portal getDestination() {
+			return getPortal(destiName);
+		}
+
+		public Location getExit() {
+			return gate.getExit();
 		}
 	}
 }

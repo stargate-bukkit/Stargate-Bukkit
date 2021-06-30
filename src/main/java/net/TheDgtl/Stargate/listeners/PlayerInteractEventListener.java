@@ -65,5 +65,6 @@ public class PlayerInteractEventListener implements Listener {
 	private void openPortal(Portal portal, Player player) {
 		// TODO checkPerms
 		portal.open();
+		portal.getDestination().open();
 	}
 }

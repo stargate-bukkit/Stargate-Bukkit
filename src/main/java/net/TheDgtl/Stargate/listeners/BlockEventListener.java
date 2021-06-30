@@ -33,9 +33,9 @@ public class BlockEventListener implements Listener {
 			// TODO check perms. If allowed, destroy portal
 			portal.destroy();
 		}
-		
+
 		portal = Network.getPortal(loc, GateStructure.Type.CONTROLL);
-		if(portal != null) {
+		if (portal != null) {
 			event.setCancelled(true);
 		}
 	}
@@ -58,7 +58,7 @@ public class BlockEventListener implements Listener {
 
 		String[] lines = event.getLines();
 		String network = lines[2];
-		if(network.isBlank())
+		if (network.isBlank())
 			network = Network.DEFAULTNET;
 		// TODO check perms
 		if (!(Network.networkList.containsKey(network))) {
@@ -77,23 +77,26 @@ public class BlockEventListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPistonExtend(BlockPistonExtendEvent event) {
-        // check if portal is affected, if so cancel
-		
-    }
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPistonRetract(BlockPistonRetractEvent event) {
+	public void onPistonExtend(BlockPistonExtendEvent event) {
 		// check if portal is affected, if so cancel
-		
+
 	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onPistonRetract(BlockPistonRetractEvent event) {
+		// check if portal is affected, if so cancel
+
+	}
+
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onEntityExplode(EntityExplodeEvent event) {
 		// check if portal is affected, if so cancel
 	}
+
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onBlockFromTo(BlockFromToEvent event) {
+	public void onBlockFromTo(BlockFromToEvent event) {
 		// check if water or lava is flowing into a gate entrance?
 		// if so, cancel
-		
+
 	}
 }

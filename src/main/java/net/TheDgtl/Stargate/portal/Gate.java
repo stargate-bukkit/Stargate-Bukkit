@@ -71,8 +71,6 @@ public class Gate {
 	private boolean matchesFormat(Location loc) throws GateConflict {
 		List<BlockVector> controlBlocks = format.getControllBlocks();
 		for (BlockVector controlBlock : controlBlocks) {
-			Stargate.log(Level.FINEST, "-Checking for controlblock with relative position " + controlBlock.getBlockX()
-					+ "," + controlBlock.getBlockY() + "," + controlBlock.getBlockZ());
 			/*
 			 * Topleft is origo for the format, everything becomes easier if you calculate
 			 * this position in the world; this is a hypothetical position, calculated from
@@ -81,8 +79,6 @@ public class Gate {
 			 */
 			topLeft = loc.clone().subtract(converter.doInverse(controlBlock));
 			
-			Stargate.log(Level.FINEST, "Topleft is " + topLeft.getBlockX()
-			+ "," + topLeft.getBlockY() + "," + topLeft.getBlockZ());
 			if (format.matches(converter, topLeft)) {
 				if(isGateConflict()) {
 					throw new GateConflict();
@@ -210,12 +206,19 @@ public class Gate {
 	public void open() {
 		Material mat = format.getIrisMat(true);
 		setIrisMat(mat);
+		isOpen = true;
 		
 	}
 	
 	public void close() {
 		Material mat = format.getIrisMat(false);
 		setIrisMat(mat);
+		isOpen = false;
+	}
+
+	public Location getExit() {
+		BlockVector exit = format.getExit();
+		return topLeft.clone().add(converter.doInverse(exit));
 	}
 	
 	public class VectorOperation {

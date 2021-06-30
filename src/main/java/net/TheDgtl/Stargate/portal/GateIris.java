@@ -17,7 +17,7 @@ public class GateIris extends GateStructure{
 	
 	public final HashSet<Material> irisOpen;
 	public final HashSet<Material> irisClosed;
-	Vector exit;
+	BlockVector exit;
 	protected List<BlockVector> blocks;
 	
 	
@@ -32,7 +32,8 @@ public class GateIris extends GateStructure{
 	}
 	
 	public void addExit(BlockVector exitpoint) {
-		this.exit = exitpoint;
+		this.exit = exitpoint.clone();
+		exit.add(new BlockVector(1,0,0));
 		addPart(exitpoint);
 	}
 	
@@ -63,5 +64,9 @@ public class GateIris extends GateStructure{
 	public Material getMat(boolean isOpen) {
 		//TODO a bit lazy
 		return (isOpen?irisOpen : irisClosed).iterator().next();
+	}
+
+	public BlockVector getExit() {
+		return exit;
 	}
 }
