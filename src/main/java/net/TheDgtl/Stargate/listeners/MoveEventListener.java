@@ -3,11 +3,13 @@ package net.TheDgtl.Stargate.listeners;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +20,27 @@ import net.TheDgtl.Stargate.portal.Network.Portal;
 import net.TheDgtl.Stargate.portal.SGLocation;
 
 public class MoveEventListener implements Listener {
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
+		// cancel portal and endgateway teleportation if it's from a Stargate entrance
+		PlayerTeleportEvent.TeleportCause cause = event.getCause();
+
+		switch (cause) {
+		case END_GATEWAY:
+			if (!(World.Environment.THE_END == event.getFrom().getWorld().getEnvironment())) {
+				return;
+			}
+			break;
+		case NETHER_PORTAL:
+			if (Network.getPortal(event.getFrom(), GateStructure.Type.IRIS) == null) {
+				return;
+			}
+			break;
+		default:
+			return;
+		}
+		event.setCancelled(true);
+	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerMove(@NotNull PlayerMoveEvent event) {
 		Location from = event.getFrom();

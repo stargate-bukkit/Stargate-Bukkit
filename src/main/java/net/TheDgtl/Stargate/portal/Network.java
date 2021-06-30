@@ -54,6 +54,10 @@ public class Network {
 		return portalList.get(name);
 	}
 	
+	
+	static public Portal getPortal(Location loc, GateStructure.Type key) {
+		return getPortal(new SGLocation(loc),key);
+	}
 	/**
 	 * Get a portal from location and the type of gateStructure targeted
 	 * @param loc
