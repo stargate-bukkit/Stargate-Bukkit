@@ -33,7 +33,11 @@ public class BlockEventListener implements Listener {
 			// TODO check perms. If allowed, destroy portal
 			portal.destroy();
 		}
-
+		
+		portal = Network.getPortal(loc, GateStructure.Type.CONTROLL);
+		if(portal != null) {
+			event.setCancelled(true);
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

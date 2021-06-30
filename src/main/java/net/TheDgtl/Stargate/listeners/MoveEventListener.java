@@ -34,6 +34,7 @@ public class MoveEventListener implements Listener {
 		if(!portal.isOpenFor(player)) {
 			//TODO send deny message, teleport to this portals exit
 		}
+		
 		// check perm's
 		// get teleport destination
 		// teleport player
