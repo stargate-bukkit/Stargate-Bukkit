@@ -43,7 +43,7 @@ public class PlayerInteractEventListener implements Listener {
 		Material blockMat = block.getType();
 		if ((action == Action.RIGHT_CLICK_BLOCK)) {
 			// A cheat to avoid a glitch from bukkit
-			if (Tag.CORAL_PLANTS.isTagged(blockMat)) {
+			if (blockMat == Material.DEAD_TUBE_CORAL_WALL_FAN) {
 				antiDoubleActivate = !antiDoubleActivate;
 				if (antiDoubleActivate)
 					return;
@@ -59,7 +59,7 @@ public class PlayerInteractEventListener implements Listener {
 			}
 			return;
 		}
-		if (Tag.BUTTONS.isTagged(blockMat) || Tag.CORAL_PLANTS.isTagged(blockMat)) {
+		if (Tag.BUTTONS.isTagged(blockMat) || (blockMat == Material.DEAD_TUBE_CORAL_WALL_FAN)) {
 			openPortal(portal, player);
 			return;
 		}

@@ -93,7 +93,10 @@ public class GateFormat {
 	}
 
 	public static List<GateFormat> getPossibleGatesFromControll(Material controlBlockId) {
-		return controlMaterialFormatsMap.get(controlBlockId);
+		List<GateFormat> possibleGates = controlMaterialFormatsMap.get(controlBlockId);
+		if(possibleGates == null)
+			return new ArrayList<GateFormat>();
+		return possibleGates;
 
 	}
 
