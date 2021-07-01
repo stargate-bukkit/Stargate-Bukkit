@@ -41,8 +41,10 @@ public class Stargate extends JavaPlugin {
 	final String GATEFOLDER = "gates";
 	final String LANGFOLDER =  "lang";
 	final String PORTALFOLDER = "portals";
+	final String LANGUAGE = "en";
 
 	private PluginManager pm;
+	public static LangManager langManager;
 	public static final SyncronousPopulator syncPopulator = new SyncronousPopulator();
 	
 	@Override
@@ -52,6 +54,7 @@ public class Stargate extends JavaPlugin {
 		new Metrics(this, pluginId);
 
 		instance = this;
+		langManager = new LangManager(this, DATAFOLDER + "/" + LANGFOLDER, LANGUAGE);
 		saveDefaultGates();
 
 		GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATAFOLDER + "/" + GATEFOLDER);

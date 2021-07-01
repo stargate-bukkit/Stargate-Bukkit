@@ -47,26 +47,28 @@ public class MoveEventListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerMove(@NotNull PlayerMoveEvent event) {
 		Location from = event.getFrom();
 		Location to = event.getTo();
-		
-		//Check if player really moved
+
+		// Check if player really moved
 		if (to == null || from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY()
 				&& from.getBlockZ() == to.getBlockZ()) {
 			return;
 		}
-		Stargate.log(Level.FINEST, "checking if in portal");
 		Portal portal = Network.getPortal(new SGLocation(to), GateStructure.Type.IRIS);
 
 		if (portal == null || !portal.isOpen())
 			return;
 		Player player = event.getPlayer();
-		if(!portal.isOpenFor(player)) {
-			//TODO send deny message, teleport to this portals exit
+		if (!portal.isOpenFor(player)) {
+			// TODO send deny message
+			player.teleport(portal.getExit());
+			return;
 		}
-		
+
 		// check perm's
 		Portal desti = portal.getDestination();
 		Location exit = desti.getExit();
@@ -75,9 +77,10 @@ public class MoveEventListener implements Listener {
 		desti.close();
 		portal.close();
 	}
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onVehicleMove(VehicleMoveEvent event) {
-		//same thing as for player
-		//low priority implementation
+	public void onVehicleMove(VehicleMoveEvent event) {
+		// same thing as for player
+		// low priority implementation
 	}
 }

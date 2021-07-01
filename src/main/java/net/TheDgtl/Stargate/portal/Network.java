@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.portal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
@@ -99,6 +101,7 @@ public class Network {
 		}
 		return false;
 	}
+	
 	public enum PortalFlag {
 		RANDOM('R'), BUNGEE('U'), ALWAYSON('A'), BACKWARDS('B'), // Is this used?
 		HIDDEN('H'), PRIVATE('P'), SHOW('S'), NONETWORK('N'), // ??
@@ -137,7 +140,18 @@ public class Network {
 		Gate gate;
 		HashSet<PortalFlag> flags;
 		String name;
-		String destiName;
+		String[] destinations;
+		Player openFor;
+		
+		// used in networked portals
+		static final private int NO_DESTI_SELECTED = -1;
+		int selectedDesti = NO_DESTI_SELECTED;
+		
+		public class NameError extends Exception{
+			public NameError(String msg) {
+				super(msg);
+			}
+		}
 		
 		public class NoFormatFound extends Exception {
 
@@ -148,25 +162,33 @@ public class Network {
 
 		}
 
-		public Portal(Block sign, String[] lines) throws NoFormatFound, GateConflict {
+		public Portal(Block sign, String[] lines) throws NoFormatFound, GateConflict, NameError {
 			/*
 			 * Get the block behind the sign; the material of that block is stored in a
 			 * register with available gateFormats
 			 */
 			this.name = lines[0];
-			this.destiName = lines[1];
+			String destiName = lines[1];
 			if (name.isBlank())
-				throw new NoFormatFound();
+				throw new NameError("empty");
+			if (portalList.containsKey(name)) {
+				throw new NameError("taken");
+			}
+				
 			
 			Directional signDirection = (Directional) sign.getBlockData();
 			Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
 			List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
 			gate = FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing());
-			
+
 			flags = getFlags(lines[3]);
-			if(destiName.isBlank())
+			if (destiName.isBlank()) {
 				flags.add(PortalFlag.NETWORKED);
-			
+			} else {
+				destinations = new String[] { destiName };
+				selectedDesti = 0;
+			}
+
 			portalList.put(name, this);
 			for(GateStructure.Type key : gate.format.portalParts.keySet()) {
 				if(!portalFromPartsMap.containsKey(key)) {
@@ -178,16 +200,41 @@ public class Network {
 			drawControll();
 		}
 		
+		private String getDestination(int index) {
+			if (index == NO_DESTI_SELECTED) {
+				return "";
+			}
+			return getDestinations()[index];
+		}
+		
+		private String[] getDestinations(){
+			if(flags.contains(PortalFlag.NETWORKED)) {
+				return portalList.keySet().toArray(new String[0]);
+			}
+			return destinations;
+		}
+		
 		public void drawControll() {
-			// TODO Check perms for flags (remove flags that are not permitted)
 			String[] lines = new String[4];
-			lines[0] = PORTALNAMESURROUND[0] + name + PORTALNAMESURROUND[1];
+			lines[0] = surroundWith(name, PORTALNAMESURROUND);
 			if (!flags.contains(PortalFlag.NETWORKED)) {
-				lines[1] = DESTINAMESURROUND[0] + destiName + DESTINAMESURROUND[1];
-				lines[2] = NETWORKNAMESURROUND[0] + netName + NETWORKNAMESURROUND[1];
+				lines[1] = surroundWith(getDestination(selectedDesti), DESTINAMESURROUND);
+				lines[2] = surroundWith(netName, NETWORKNAMESURROUND);
 				lines[3] = "";
+			} else if (this.selectedDesti == NO_DESTI_SELECTED) {
+				lines[1] = Stargate.langManager.getString("signRightClick");
+				lines[2] = Stargate.langManager.getString("signToUse");
+				lines[3] = surroundWith(netName, NETWORKNAMESURROUND);
+			} else {
+				lines[1] = getDestination(getNextDesti(-1, selectedDesti));
+				lines[2] = surroundWith(getDestination(selectedDesti), DESTINAMESURROUND);
+				lines[3] = getDestination(getNextDesti(1, selectedDesti));
 			}
 			gate.drawControll(lines);
+		}
+		
+		private String surroundWith(String target, String[] surrounding) {
+			return surrounding[0] + target + surrounding[1];
 		}
 
 		private HashMap<SGLocation, Portal> generateLocationHashMap(List<SGLocation> locations) {
@@ -240,10 +287,9 @@ public class Network {
 			}
 		}
 
-		public void open() {
+		public void open(Player actor) {
 			gate.open();
-
-			// TODO do preparations for teleportation
+			this.openFor = actor;
 
 			// Create action which will close this portal
 			SyncronousPopulator.Action action = new SyncronousPopulator.Action() {
@@ -263,25 +309,89 @@ public class Network {
 		}
 
 		public void close() {
-			// TODO remove preparations for teleport
+			this.openFor = null;
+			if(flags.contains(PortalFlag.NETWORKED)) {
+				this.selectedDesti = NO_DESTI_SELECTED;
+			}
 			gate.close();
+			drawControll();
 		}
 
 		public boolean isOpen() {
 			return gate.isOpen;
 		}
-
+		
 		public boolean isOpenFor(Player player) {
 			// TODO Auto-generated method stub
-			return gate.isOpen;
+			return ((player == openFor) || (openFor == null));
 		}
 
 		public Portal getDestination() {
-			return getPortal(destiName);
+			if(selectedDesti == NO_DESTI_SELECTED)
+				return null;
+			return getPortal(getDestinations()[selectedDesti]);
 		}
 
 		public Location getExit() {
 			return gate.getExit();
+		}
+		
+		/**
+		 * TODO have this individual for each player?
+		 * @param action
+		 * @param player 
+		 */
+		public void scrollDesti(Action action, Player actor) {
+			Stargate.log(Level.FINEST, "Starting at pos " + selectedDesti);
+			if (!(flags.contains(PortalFlag.NETWORKED)) || getDestinations().length < 2)
+				return;
+			openFor = actor;
+			if ((selectedDesti == NO_DESTI_SELECTED) || getDestinations().length < 3) {
+				selectedDesti = getNextDesti(1, -1);
+			} else if (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK) {
+				int step = (action == Action.RIGHT_CLICK_BLOCK) ? -1 : 1;
+				selectedDesti = getNextDesti(step, selectedDesti);
+			}
+
+			Stargate.log(Level.FINEST, "Ended with pos " + selectedDesti);
+			drawControll();
+		}
+
+		private int getNextDesti(int step, int initialDesti) {
+			HashSet<Integer> illigalDestis = new HashSet<>();
+			return getNextDesti(step,initialDesti,illigalDestis);
+		}
+		/**
+		 * 
+		 * @param step
+		 * @param initialDesti
+		 * @param illigalDestis a list made to avoid infinite recursion
+		 * @return
+		 */
+		private int getNextDesti(int step, int initialDesti, HashSet<Integer> illigalDestis) {
+			int maxIndex = getDestinations().length - 1;
+			Stargate.log(Level.FINEST, "initial destination: " + initialDesti);
+			illigalDestis.add(initialDesti);
+			//Avoid infinite recursion if this is the only gate available
+			if(maxIndex < 1) {
+				return -1;
+			}
+			int testDesti = initialDesti + step;
+			
+			if (testDesti < 0)
+				testDesti += (maxIndex + 1);
+			if (testDesti > maxIndex)
+				testDesti -= (maxIndex + 1);
+			
+			if(illigalDestis.contains(testDesti)) {
+				Stargate.log(Level.FINEST, "Illigal destination");
+				return -1;
+			}
+			if (getDestinations()[testDesti] == this.name) {
+				return getNextDesti((step > 0) ? 1 : -1, testDesti, illigalDestis);
+			}
+
+			return testDesti;
 		}
 	}
 }

@@ -4,6 +4,7 @@ import java.util.logging.Level;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,6 +21,7 @@ import net.TheDgtl.Stargate.portal.Gate.GateConflict;
 import net.TheDgtl.Stargate.portal.GateStructure;
 import net.TheDgtl.Stargate.portal.Network;
 import net.TheDgtl.Stargate.portal.Network.Portal;
+import net.TheDgtl.Stargate.portal.Network.Portal.NameError;
 import net.TheDgtl.Stargate.portal.Network.Portal.NoFormatFound;
 import net.TheDgtl.Stargate.portal.SGLocation;
 
@@ -31,10 +33,12 @@ public class BlockEventListener implements Listener {
 		Portal portal = Network.getPortal(loc, GateStructure.Type.FRAME);
 		if (portal != null) {
 			// TODO check perms. If allowed, destroy portal
+			String msg = Stargate.langManager.getString("destroyMsg");
+			event.getPlayer().sendMessage(msg);
 			portal.destroy();
 		}
-
-		portal = Network.getPortal(loc, GateStructure.Type.CONTROLL);
+		GateStructure.Type[] targetStructures = { GateStructure.Type.CONTROLL, GateStructure.Type.IRIS };
+		portal = Network.getPortal(loc, targetStructures);
 		if (portal != null) {
 			event.setCancelled(true);
 		}
@@ -65,14 +69,22 @@ public class BlockEventListener implements Listener {
 			Network.networkList.put(network, new Network(network));
 		}
 		Network selectedNet = Network.networkList.get(network);
+		Player player = event.getPlayer();
 		try {
 			selectedNet.new Portal(block, lines);
 			Stargate.log(Level.FINE, "A Gateformat matches");
 		} catch (NoFormatFound e) {
 			Stargate.log(Level.FINE, "No Gateformat matches");
 		} catch (GateConflict e) {
-			// TODO Send message to player
-			Stargate.log(Level.FINE, "Gateconflict");
+			player.sendMessage(Stargate.langManager.getString("createConflict"));
+		} catch (NameError e) {
+			switch(e.getMessage()) {
+			case "empty":
+				break;
+			case "taken":
+				player.sendMessage(Stargate.langManager.getString("createExists"));
+				break;
+			}
 		}
 	}
 

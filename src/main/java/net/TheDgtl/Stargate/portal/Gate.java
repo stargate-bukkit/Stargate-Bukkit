@@ -115,7 +115,6 @@ public class Gate {
 
 		Sign sign = (Sign) signState;
 		for (int i = 0; i < 4; i++) {
-			Stargate.log(Level.FINEST, signLines[i]);
 			sign.setLine(i, signLines[i]);
 		}
 		Stargate.syncPopulator.new BlockSetAction(sign, true);
@@ -138,11 +137,8 @@ public class Gate {
         Directional buttonData = (Directional) Bukkit.createBlockData(buttonMat);
         buttonData.setFacing(getButtonFacing(buttonMat,(Directional) sign.getBlockData()));
         
-		BlockFace buttonFacing = getButtonFacing(buttonMat,(Directional) sign.getBlockData());
 		buttonLoc.getBlock().setBlockData(buttonData);
-		Stargate.log(Level.FINER,
-				"Trying to place " + buttonLoc.toString() + " " + buttonFacing.name());
-
+		
 	}
 	
 	private BlockFace getButtonFacing(Material buttonMat, Directional signDirection) {

@@ -35,15 +35,15 @@ public class PlayerInteractEventListener implements Listener {
 			return;
 		Action action = event.getAction();
 		// TODO material optimisation?
-
 		Portal portal = Network.getPortal(new SGLocation(block.getLocation()), GateStructure.Type.CONTROLL);
 		if (portal == null) {
 			return;
 		}
 
+		Material blockMat = block.getType();
 		if ((action == Action.RIGHT_CLICK_BLOCK)) {
 			// A cheat to avoid a glitch from bukkit
-			if (block.getType() == Material.DEAD_TUBE_CORAL_WALL_FAN) {
+			if (Tag.CORAL_PLANTS.isTagged(blockMat)) {
 				antiDoubleActivate = !antiDoubleActivate;
 				if (antiDoubleActivate)
 					return;
@@ -52,22 +52,28 @@ public class PlayerInteractEventListener implements Listener {
 			event.setUseItemInHand(Event.Result.DENY);
 			event.setUseInteractedBlock(Event.Result.DENY);
 		}
-		Material blockMat = block.getType();
-		if(Tag.WALL_SIGNS.isTagged(blockMat)) {
-			
+		Player player = event.getPlayer();
+		if (Tag.WALL_SIGNS.isTagged(blockMat)) {
+			if (portal.isOpenFor(player)) {
+				portal.scrollDesti(action, player);
+			}
 			return;
 		}
-		if(Tag.BUTTONS.isTagged(blockMat) || Tag.BUTTONS.isTagged(blockMat)) {
-			openPortal(portal,event.getPlayer());
+		if (Tag.BUTTONS.isTagged(blockMat) || Tag.CORAL_PLANTS.isTagged(blockMat)) {
+			openPortal(portal, player);
 			return;
 		}
-		
+
 		Stargate.log(Level.WARNING, "This should never be triggered, an unkown glitch is occuring");
 	}
 
 	private void openPortal(Portal portal, Player player) {
+		if (portal.getDestination() == null) {
+			// TODO write message?
+			return;
+		}
 		// TODO checkPerms
-		portal.open();
-		portal.getDestination().open();
+		portal.open(player);
+		portal.getDestination().open(player);
 	}
 }
