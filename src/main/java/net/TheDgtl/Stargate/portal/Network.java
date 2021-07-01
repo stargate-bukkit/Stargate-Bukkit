@@ -41,7 +41,7 @@ public class Network {
 	static final String[] NETWORKNAMESURROUND;
 	static {
 		PORTALNAMESURROUND = new String[] { "-", "-" };
-		DESTINAMESURROUND = new String[] { "<", ">" };
+		DESTINAMESURROUND = new String[] { ">", "<" };
 		NETWORKNAMESURROUND = new String[] { "(", ")" };
 	}
 
@@ -186,6 +186,7 @@ public class Network {
 				flags.add(PortalFlag.NETWORKED);
 			} else {
 				destinations = new String[] { destiName };
+				getPortal(destiName).drawControll();
 				selectedDesti = 0;
 			}
 
@@ -220,7 +221,8 @@ public class Network {
 			if (!flags.contains(PortalFlag.NETWORKED)) {
 				lines[1] = surroundWith(getDestination(selectedDesti), DESTINAMESURROUND);
 				lines[2] = surroundWith(netName, NETWORKNAMESURROUND);
-				lines[3] = "";
+				lines[3] = (portalList.containsKey(getDestination(selectedDesti))) ? ""
+						: Stargate.langManager.getString("signDisconnected");
 			} else if (this.selectedDesti == NO_DESTI_SELECTED) {
 				lines[1] = Stargate.langManager.getString("signRightClick");
 				lines[2] = Stargate.langManager.getString("signToUse");
@@ -285,6 +287,11 @@ public class Network {
 					portalFromPartsMap.get(formatType).remove(loc);
 				}
 			}
+			
+			// Refresh all portals in this network. TODO is this too extensive?
+			for (String portal : portalList.keySet()) {
+				portalList.get(portal).drawControll();
+			}
 		}
 
 		public void open(Player actor) {
@@ -342,7 +349,6 @@ public class Network {
 		 * @param player 
 		 */
 		public void scrollDesti(Action action, Player actor) {
-			Stargate.log(Level.FINEST, "Starting at pos " + selectedDesti);
 			if (!(flags.contains(PortalFlag.NETWORKED)) || getDestinations().length < 2)
 				return;
 			openFor = actor;
@@ -352,8 +358,6 @@ public class Network {
 				int step = (action == Action.RIGHT_CLICK_BLOCK) ? -1 : 1;
 				selectedDesti = getNextDesti(step, selectedDesti);
 			}
-
-			Stargate.log(Level.FINEST, "Ended with pos " + selectedDesti);
 			drawControll();
 		}
 
@@ -362,36 +366,34 @@ public class Network {
 			return getNextDesti(step,initialDesti,illigalDestis);
 		}
 		/**
-		 * 
+		 * A method which allows selecting a index x steps away from a reference index
+		 * without having to bother with index out of bounds stuff. If the index is out
+		 * of bounds, it will just start from 0
 		 * @param step
 		 * @param initialDesti
 		 * @param illigalDestis a list made to avoid infinite recursion
 		 * @return
 		 */
 		private int getNextDesti(int step, int initialDesti, HashSet<Integer> illigalDestis) {
-			int maxIndex = getDestinations().length - 1;
-			Stargate.log(Level.FINEST, "initial destination: " + initialDesti);
+			int destiLength = getDestinations().length;
 			illigalDestis.add(initialDesti);
-			//Avoid infinite recursion if this is the only gate available
-			if(maxIndex < 1) {
+			// Avoid infinite recursion if this is the only gate available
+			if (destiLength < 2) {
 				return -1;
 			}
-			int testDesti = initialDesti + step;
-			
-			if (testDesti < 0)
-				testDesti += (maxIndex + 1);
-			if (testDesti > maxIndex)
-				testDesti -= (maxIndex + 1);
-			
-			if(illigalDestis.contains(testDesti)) {
-				Stargate.log(Level.FINEST, "Illigal destination");
+			int testDesti = initialDesti + step % destiLength;
+
+			int endDesti = testDesti % destiLength;
+			if (endDesti < 0)
+				endDesti += destiLength;
+			if (illigalDestis.contains(endDesti)) {
 				return -1;
 			}
-			if (getDestinations()[testDesti] == this.name) {
-				return getNextDesti((step > 0) ? 1 : -1, testDesti, illigalDestis);
+			if (getDestinations()[endDesti] == this.name) {
+				return getNextDesti((step > 0) ? 1 : -1, endDesti, illigalDestis);
 			}
 
-			return testDesti;
+			return endDesti;
 		}
 	}
 }
