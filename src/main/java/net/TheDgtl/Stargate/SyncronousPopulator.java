@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.bukkit.block.BlockState;
+import java.util.logging.Level;
 
 public class SyncronousPopulator implements Runnable{
 	
@@ -14,6 +15,7 @@ public class SyncronousPopulator implements Runnable{
 		long sTime = System.nanoTime();
 
 		blockPopulatorQueue.addAll(addList);
+		addList.clear();
 		Iterator<Action> it = blockPopulatorQueue.iterator();
 		// Why is this done in legacy?
 		while (it.hasNext() && (System.nanoTime() - sTime < 25000000)) {
@@ -26,6 +28,8 @@ public class SyncronousPopulator implements Runnable{
 	}
 	
 	public void addAction(Action action) {
+		if(action != null)
+			Stargate.log(Level.FINEST,"Adding action " + action.toString());
 		addList.add(action);
 	}
 	
@@ -38,9 +42,9 @@ public class SyncronousPopulator implements Runnable{
 		final private BlockState state;
 		final private boolean force;
 		public BlockSetAction(BlockState state, boolean force){
-			addAction(this);
 			this.state = state;
 			this.force = force;
+			addAction(this);
 		}
 		@Override
 		public void run() {
@@ -49,6 +53,10 @@ public class SyncronousPopulator implements Runnable{
 		@Override
 		public boolean isFinished() {
 			return true;
+		}
+		@Override
+		public String toString() {
+			return state.toString();
 		}
 	}
 	
@@ -62,9 +70,9 @@ public class SyncronousPopulator implements Runnable{
 		 * @param action
 		 */
 		public DelayedAction(int delay, Action action){
-			addAction(this);
 			this.delay = delay;
 			this.action = action;
+			addAction(this);
 		}
 
 		@Override
@@ -78,6 +86,10 @@ public class SyncronousPopulator implements Runnable{
 		@Override
 		public boolean isFinished() {
 			return (delay <= 0);
+		}
+		@Override
+		public String toString() {
+			return "[" + delay + "](" + action.toString() + ")";
 		}
 	}
 }
