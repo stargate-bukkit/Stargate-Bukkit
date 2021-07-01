@@ -87,7 +87,18 @@ public class Network {
 		}
 		return null;
 	}
-
+	//Adjacent
+	public static boolean isNextToPortal(Location loc, GateStructure.Type key) {
+		BlockVector adjacentVec = new BlockVector(1,0,0);
+		for(int i = 0; i < 4; i++) {
+			Location adjacentLoc = loc.clone().add(adjacentVec);
+			if(getPortal(adjacentLoc, key) != null) {
+				return true;
+			}
+			adjacentVec.rotateAroundY(Math.PI/2);
+		}
+		return false;
+	}
 	public enum PortalFlag {
 		RANDOM('R'), BUNGEE('U'), ALWAYSON('A'), BACKWARDS('B'), // Is this used?
 		HIDDEN('H'), PRIVATE('P'), SHOW('S'), NONETWORK('N'), // ??

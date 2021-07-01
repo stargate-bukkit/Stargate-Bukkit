@@ -89,6 +89,7 @@ public class Gate {
 		}
 		return false;
 	}
+	
 	private boolean isGateConflict() {
 		List<SGLocation> locations = this.getLocations(GateStructure.Type.FRAME);
 		for(SGLocation loc : locations) {
@@ -98,7 +99,7 @@ public class Gate {
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Set button and draw sign
 	 * 

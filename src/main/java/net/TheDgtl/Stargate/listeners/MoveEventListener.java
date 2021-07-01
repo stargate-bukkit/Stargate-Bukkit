@@ -25,21 +25,27 @@ public class MoveEventListener implements Listener {
 		// cancel portal and endgateway teleportation if it's from a Stargate entrance
 		PlayerTeleportEvent.TeleportCause cause = event.getCause();
 
+		/*
+		 * A refactor of the legacy version, I don't know the exact purpose of the
+		 * end_gateway logic, but it's there now, This is done to avoid players from
+		 * teleporting in the vanilla way:
+		 * 
+		 * Check if the cause is one of the critical scenarios, if not the case return.
+		 */
 		switch (cause) {
 		case END_GATEWAY:
-			if (!(World.Environment.THE_END == event.getFrom().getWorld().getEnvironment())) {
-				return;
+			if ((World.Environment.THE_END == event.getFrom().getWorld().getEnvironment())) {
+				break;
 			}
-			break;
+			return;
 		case NETHER_PORTAL:
-			if (Network.getPortal(event.getFrom(), GateStructure.Type.IRIS) == null) {
-				return;
-			}
 			break;
 		default:
 			return;
 		}
-		event.setCancelled(true);
+		if (Network.isNextToPortal(event.getFrom(), GateStructure.Type.IRIS)) {
+			event.setCancelled(true);
+		}
 	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerMove(@NotNull PlayerMoveEvent event) {
