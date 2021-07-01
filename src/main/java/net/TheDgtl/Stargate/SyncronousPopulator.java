@@ -8,11 +8,12 @@ import org.bukkit.block.BlockState;
 public class SyncronousPopulator implements Runnable{
 	
 	private final ArrayList<Action> blockPopulatorQueue = new ArrayList<>(); 
-	
+	private final ArrayList<Action> addList = new ArrayList<>();
 	@Override
 	public void run() {
 		long sTime = System.nanoTime();
 
+		blockPopulatorQueue.addAll(addList);
 		Iterator<Action> it = blockPopulatorQueue.iterator();
 		// Why is this done in legacy?
 		while (it.hasNext() && (System.nanoTime() - sTime < 25000000)) {
@@ -24,6 +25,10 @@ public class SyncronousPopulator implements Runnable{
 		}
 	}
 	
+	public void addAction(Action action) {
+		addList.add(action);
+	}
+	
 	public interface Action{
 		public void run();
 		public boolean isFinished();
@@ -33,7 +38,7 @@ public class SyncronousPopulator implements Runnable{
 		final private BlockState state;
 		final private boolean force;
 		public BlockSetAction(BlockState state, boolean force){
-			blockPopulatorQueue.add(this);
+			addAction(this);
 			this.state = state;
 			this.force = force;
 		}
@@ -57,7 +62,7 @@ public class SyncronousPopulator implements Runnable{
 		 * @param action
 		 */
 		public DelayedAction(int delay, Action action){
-			blockPopulatorQueue.add(this);
+			addAction(this);
 			this.delay = delay;
 			this.action = action;
 		}
