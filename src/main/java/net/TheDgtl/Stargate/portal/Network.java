@@ -101,7 +101,7 @@ public class Network {
 	}
 	
 	public enum PortalFlag {
-		RANDOM('R'), BUNGEE('U'), ALWAYSON('A'), BACKWARDS('B'), // Is this used?
+		RANDOM('R'), BUNGEE('U'), ALWAYSON('A'), BACKWARDS('B'),
 		HIDDEN('H'), PRIVATE('P'), SHOW('S'), NONETWORK('N'), // ??
 		FREE('F'), NETWORKED('W');
 
@@ -187,7 +187,13 @@ public class Network {
 				getPortal(destiName).drawControll();
 				selectedDesti = 0;
 			}
-
+			
+			String msg = "Selected with flags ";
+			for(PortalFlag flag : flags) {
+				msg = msg + flag.label;
+			}
+			Stargate.log(Level.FINE, msg);
+			
 			portalList.put(name, this);
 			for(GateStructure.Type key : gate.format.portalParts.keySet()) {
 				if(!portalFromPartsMap.containsKey(key)) {
@@ -211,6 +217,12 @@ public class Network {
 				return portalList.keySet().toArray(new String[0]);
 			}
 			return destinations;
+		}
+		
+		public Portal getDestination() {
+			if(selectedDesti == NO_DESTI_SELECTED)
+				return null;
+			return getPortal(getDestinations()[selectedDesti]);
 		}
 		
 		public void drawControll() {
@@ -331,11 +343,7 @@ public class Network {
 			return ((player == openFor) || (openFor == null));
 		}
 
-		public Portal getDestination() {
-			if(selectedDesti == NO_DESTI_SELECTED)
-				return null;
-			return getPortal(getDestinations()[selectedDesti]);
-		}
+		
 
 		public Location getExit() {
 			return gate.getExit();
@@ -366,7 +374,7 @@ public class Network {
 		/**
 		 * A method which allows selecting a index x steps away from a reference index
 		 * without having to bother with index out of bounds stuff. If the index is out
-		 * of bounds, it will just start from 0
+		 * of bounds, it will just start counting from 0
 		 * @param step
 		 * @param initialDesti
 		 * @param illigalDestis a list made to avoid infinite recursion
@@ -379,9 +387,8 @@ public class Network {
 			if (destiLength < 2) {
 				return -1;
 			}
-			int testDesti = initialDesti + step % destiLength;
 
-			int endDesti = testDesti % destiLength;
+			int endDesti = initialDesti + step % destiLength;
 			if (endDesti < 0)
 				endDesti += destiLength;
 			if (illigalDestis.contains(endDesti)) {

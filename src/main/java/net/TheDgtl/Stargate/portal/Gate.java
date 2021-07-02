@@ -40,14 +40,15 @@ public class Gate {
 	static final private Material DEFAULTBUTTON = Material.STONE_BUTTON;
 	static final private Material WATERBUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
 	static final public HashSet<Material> ALLPORTALMATERALS = new HashSet<>();
+	
 	/**
-	 * Compares the format to real world. If there is a valid configuration of
-	 * either rotations or flips that of the format that matches with
+	 * Compares the format to real world; If the format matches with the world,
+	 * independent of rotation and mirroring.
 	 * 
 	 * @param format
 	 * @param loc
 	 * @throws InvalidStructure
-	 * @throws GateConflict 
+	 * @throws GateConflict
 	 */
 	public Gate(GateFormat format, Location loc, BlockFace signFace) throws InvalidStructure, GateConflict {
 		this.format = format;
@@ -292,6 +293,7 @@ public class Gate {
 	}
 
 	public class GateConflict extends Exception{}
+	
 	public class InvalidStructure extends Exception {
 
 		/**
