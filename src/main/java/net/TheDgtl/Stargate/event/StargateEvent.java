@@ -17,6 +17,7 @@ package net.TheDgtl.Stargate.event;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.List;
 import java.util.Objects;
 
 import org.bukkit.event.Cancellable;
@@ -48,4 +49,6 @@ public abstract class StargateEvent extends Event implements Cancellable {
     public void setCancelled(boolean cancelled) {
         this.cancelled = cancelled;
     }
+
+	protected abstract List<String> getRelatedPerms();
 }
