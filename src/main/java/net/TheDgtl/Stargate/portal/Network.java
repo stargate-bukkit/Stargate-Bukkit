@@ -182,6 +182,9 @@ public class Network {
 			flags = getFlags(lines[3]);
 			if (destiName.isBlank()) {
 				flags.add(PortalFlag.NETWORKED);
+				HashSet<String> tempPortalList = new HashSet<>(portalList.keySet());
+				tempPortalList.remove(name);
+				destinations = tempPortalList.toArray(new String[0]);
 			} else {
 				destinations = new String[] { destiName };
 				getPortal(destiName).drawControll();
@@ -213,9 +216,6 @@ public class Network {
 		}
 		
 		private String[] getDestinations(){
-			if(flags.contains(PortalFlag.NETWORKED)) {
-				return portalList.keySet().toArray(new String[0]);
-			}
 			return destinations;
 		}
 		
@@ -366,37 +366,22 @@ public class Network {
 			}
 			drawControll();
 		}
-
-		private int getNextDesti(int step, int initialDesti) {
-			HashSet<Integer> illigalDestis = new HashSet<>();
-			return getNextDesti(step,initialDesti,illigalDestis);
-		}
 		/**
 		 * A method which allows selecting a index x steps away from a reference index
 		 * without having to bother with index out of bounds stuff. If the index is out
 		 * of bounds, it will just start counting from 0
 		 * @param step
 		 * @param initialDesti
-		 * @param illigalDestis a list made to avoid infinite recursion
 		 * @return
 		 */
-		private int getNextDesti(int step, int initialDesti, HashSet<Integer> illigalDestis) {
+		private int getNextDesti(int step, int initialDesti) {
 			int destiLength = getDestinations().length;
-			illigalDestis.add(initialDesti);
 			// Avoid infinite recursion if this is the only gate available
-			if (destiLength < 2) {
+			if (destiLength < 1) {
 				return -1;
 			}
-
-			int endDesti = initialDesti + step % destiLength;
-			if (endDesti < 0)
-				endDesti += destiLength;
-			if (illigalDestis.contains(endDesti)) {
-				return -1;
-			}
-			if (getDestinations()[endDesti] == this.name) {
-				return getNextDesti((step > 0) ? 1 : -1, endDesti, illigalDestis);
-			}
+			int endDesti = initialDesti + destiLength;
+			endDesti = endDesti + step % destiLength;
 
 			return endDesti;
 		}
