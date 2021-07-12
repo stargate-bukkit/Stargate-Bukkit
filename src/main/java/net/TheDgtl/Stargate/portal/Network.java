@@ -292,6 +292,8 @@ public class Network {
 		 */
 		public void destroy() {
 			portalList.remove(name);
+			String[] lines = new String[] {name,"","",""};
+			gate.drawControll(lines);
 			for(GateStructure.Type formatType : portalFromPartsMap.keySet()) {
 				for(SGLocation loc : this.gate.getLocations(formatType)) {
 					portalFromPartsMap.get(formatType).remove(loc);
@@ -385,5 +387,13 @@ public class Network {
 
 			return endDesti;
 		}
+	}
+
+	public class NetworkedPortal extends Portal{
+
+		public NetworkedPortal(Block sign, String[] lines) throws NoFormatFound, GateConflict, NameError {
+			super(sign, lines);
+		}
+		
 	}
 }

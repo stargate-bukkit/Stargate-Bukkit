@@ -13,6 +13,6 @@ public class WorldEventListener implements Listener{
 	
 	@EventHandler
     public void onWorldUnload(WorldUnloadEvent event) {
-		// unload all portals in world
+		
 	}
 }
