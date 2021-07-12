@@ -96,8 +96,11 @@ public class Stargate extends JavaPlugin {
 	public void onDisable() {
 		/*
 		 * Portal.closeAllGates(this); Portal.clearGates(); managedWorlds.clear();
-		 * getServer().getScheduler().cancelTasks(this);
+		 * 
 		 */
+		syncPopulator.forceDoAllTasks();
+		
+		getServer().getScheduler().cancelTasks(this);
 	}
 
 	public static void log(Level priorityLevel, String msg) {

@@ -12,15 +12,19 @@ public class SyncronousPopulator implements Runnable{
 	private final ArrayList<Action> addList = new ArrayList<>();
 	@Override
 	public void run() {
-		long sTime = System.nanoTime();
-
+		boolean forceEnd = false;
 		blockPopulatorQueue.addAll(addList);
 		addList.clear();
+		cycleQueue(forceEnd);
+	}
+	
+	private void cycleQueue(boolean forceEnd) {
 		Iterator<Action> it = blockPopulatorQueue.iterator();
+		long sTime = System.nanoTime();
 		// Why is this done in legacy?
 		while (it.hasNext() && (System.nanoTime() - sTime < 25000000)) {
 			Action action = it.next();
-			action.run();
+			action.run(forceEnd);
 			if(action.isFinished()) {
 				it.remove();
 			}
@@ -32,9 +36,18 @@ public class SyncronousPopulator implements Runnable{
 			Stargate.log(Level.FINEST,"Adding action " + action.toString());
 		addList.add(action);
 	}
+
+	public void forceDoAllTasks() {
+		boolean forceEnd = true;
+		cycleQueue(forceEnd);
+	}
 	
 	public interface Action{
-		public void run();
+		/**
+		 * 
+		 * @param forceEnd , finish the action instantly
+		 */
+		public void run(boolean forceEnd);
 		public boolean isFinished();
 	}
 	
@@ -47,7 +60,7 @@ public class SyncronousPopulator implements Runnable{
 			addAction(this);
 		}
 		@Override
-		public void run() {
+		public void run(boolean forceEnd) {
 			state.update(force);
 		}
 		@Override
@@ -76,10 +89,13 @@ public class SyncronousPopulator implements Runnable{
 		}
 
 		@Override
-		public void run() {
+		public void run(boolean forceEnd) {
 			delay--;
+			if(forceEnd)
+				delay = 0;
+			
 			if(delay <= 0) {
-				action.run();
+				action.run(forceEnd);
 			}
 		}
 
@@ -92,4 +108,5 @@ public class SyncronousPopulator implements Runnable{
 			return "[" + delay + "](" + action.toString() + ")";
 		}
 	}
+
 }

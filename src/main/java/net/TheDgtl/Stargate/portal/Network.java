@@ -312,7 +312,7 @@ public class Network {
 			SyncronousPopulator.Action action = new SyncronousPopulator.Action() {
 
 				@Override
-				public void run() {
+				public void run(boolean forceEnd) {
 					close();
 				}
 
