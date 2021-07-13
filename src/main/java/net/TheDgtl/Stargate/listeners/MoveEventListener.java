@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.portal.GateStructure;
 import net.TheDgtl.Stargate.portal.Network;
+import net.TheDgtl.Stargate.portal.Network.FixedPortal;
 import net.TheDgtl.Stargate.portal.Network.Portal;
 import net.TheDgtl.Stargate.portal.SGLocation;
 

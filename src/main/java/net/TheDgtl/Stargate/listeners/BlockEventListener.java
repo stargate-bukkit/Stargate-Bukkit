@@ -20,9 +20,8 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.portal.Gate.GateConflict;
 import net.TheDgtl.Stargate.portal.GateStructure;
 import net.TheDgtl.Stargate.portal.Network;
+import net.TheDgtl.Stargate.portal.Network.FixedPortal;
 import net.TheDgtl.Stargate.portal.Network.Portal;
-import net.TheDgtl.Stargate.portal.Network.Portal.NameError;
-import net.TheDgtl.Stargate.portal.Network.Portal.NoFormatFound;
 import net.TheDgtl.Stargate.portal.SGLocation;
 
 public class BlockEventListener implements Listener {
@@ -71,13 +70,16 @@ public class BlockEventListener implements Listener {
 		Network selectedNet = Network.networkList.get(network);
 		Player player = event.getPlayer();
 		try {
-			selectedNet.new Portal(block, lines);
+			if(lines[1].isBlank())
+				selectedNet.new NetworkedPortal(block, lines);
+			else
+				selectedNet.new FixedPortal(block, lines);
 			Stargate.log(Level.FINE, "A Gateformat matches");
-		} catch (NoFormatFound e) {
+		} catch (Portal.NoFormatFound e) {
 			Stargate.log(Level.FINE, "No Gateformat matches");
 		} catch (GateConflict e) {
 			player.sendMessage(Stargate.langManager.getString("createConflict"));
-		} catch (NameError e) {
+		} catch (Portal.NameError e) {
 			switch(e.getMessage()) {
 			case "empty":
 				break;

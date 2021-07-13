@@ -103,7 +103,7 @@ public class Network {
 	public enum PortalFlag {
 		RANDOM('R'), BUNGEE('U'), ALWAYSON('A'), BACKWARDS('B'),
 		HIDDEN('H'), PRIVATE('P'), SHOW('S'), NONETWORK('N'), // ??
-		FREE('F'), NETWORKED('W');
+		FREE('F');
 
 		public final char label;
 
@@ -124,7 +124,7 @@ public class Network {
 		}
 	}
 
-	public class Portal {
+	public abstract class Portal{
 		/**
 		 * Behaviours: - Cycle through PortalStates, make current state listener for
 		 * movements - (Constructor) Check validity, write sign, add self to a list in
@@ -138,59 +138,27 @@ public class Network {
 		Gate gate;
 		HashSet<PortalFlag> flags;
 		String name;
-		String[] destinations;
 		Player openFor;
 		
-		// used in networked portals
-		static final private int NO_DESTI_SELECTED = -1;
-		int selectedDesti = NO_DESTI_SELECTED;
-		
-		public class NameError extends Exception{
-			public NameError(String msg) {
-				super(msg);
-			}
-		}
-		
-		public class NoFormatFound extends Exception {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1134125769081020233L;
-
-		}
-
-		public Portal(Block sign, String[] lines) throws NoFormatFound, GateConflict, NameError {
-			/*
-			 * Get the block behind the sign; the material of that block is stored in a
-			 * register with available gateFormats
-			 */
+		Portal(Block sign, String[] lines) throws NameError, NoFormatFound, GateConflict{
+			
 			this.name = lines[0];
-			String destiName = lines[1];
 			if (name.isBlank())
 				throw new NameError("empty");
 			if (portalList.containsKey(name)) {
 				throw new NameError("taken");
 			}
-				
 			
+			/*
+			 * Get the block behind the sign; the material of that block is stored in a
+			 * register with available gateFormats
+			 */
 			Directional signDirection = (Directional) sign.getBlockData();
 			Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
 			List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
 			gate = FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing());
 
 			flags = getFlags(lines[3]);
-			if (destiName.isBlank()) {
-				flags.add(PortalFlag.NETWORKED);
-				HashSet<String> tempPortalList = new HashSet<>(portalList.keySet());
-				tempPortalList.remove(name);
-				destinations = tempPortalList.toArray(new String[0]);
-			} else {
-				destinations = new String[] { destiName };
-				getPortal(destiName).drawControll();
-				selectedDesti = 0;
-			}
-			
 			String msg = "Selected with flags ";
 			for(PortalFlag flag : flags) {
 				msg = msg + flag.label;
@@ -205,58 +173,21 @@ public class Network {
 				List<SGLocation> locations = gate.getLocations(key);
 				portalFromPartsMap.get(key).putAll(generateLocationHashMap(locations));
 			}
-			drawControll();
 		}
 		
-		private String getDestination(int index) {
-			if (index == NO_DESTI_SELECTED) {
-				return "";
+		private Gate FindMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing)
+				throws NoFormatFound, GateConflict {
+			Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
+			for (GateFormat gateFormat : gateFormats) {
+				Stargate.log(Level.FINE, "--------- " + gateFormat.name + " ---------");
+				try {
+					return new Gate(gateFormat, signLocation, signFacing);
+				} catch (Gate.InvalidStructure e) {
+				}
 			}
-			return getDestinations()[index];
+			throw new NoFormatFound();
 		}
 		
-		private String[] getDestinations(){
-			return destinations;
-		}
-		
-		public Portal getDestination() {
-			if(selectedDesti == NO_DESTI_SELECTED)
-				return null;
-			return getPortal(getDestinations()[selectedDesti]);
-		}
-		
-		public void drawControll() {
-			String[] lines = new String[4];
-			lines[0] = surroundWith(name, PORTALNAMESURROUND);
-			if (!flags.contains(PortalFlag.NETWORKED)) {
-				lines[1] = surroundWith(getDestination(selectedDesti), DESTINAMESURROUND);
-				lines[2] = surroundWith(netName, NETWORKNAMESURROUND);
-				lines[3] = (portalList.containsKey(getDestination(selectedDesti))) ? ""
-						: Stargate.langManager.getString("signDisconnected");
-			} else if (this.selectedDesti == NO_DESTI_SELECTED) {
-				lines[1] = Stargate.langManager.getString("signRightClick");
-				lines[2] = Stargate.langManager.getString("signToUse");
-				lines[3] = surroundWith(netName, NETWORKNAMESURROUND);
-			} else {
-				lines[1] = getDestination(getNextDesti(-1, selectedDesti));
-				lines[2] = surroundWith(getDestination(selectedDesti), DESTINAMESURROUND);
-				lines[3] = getDestination(getNextDesti(1, selectedDesti));
-			}
-			gate.drawControll(lines);
-		}
-		
-		private String surroundWith(String target, String[] surrounding) {
-			return surrounding[0] + target + surrounding[1];
-		}
-
-		private HashMap<SGLocation, Portal> generateLocationHashMap(List<SGLocation> locations) {
-			HashMap<SGLocation, Portal> output = new HashMap<>();
-			for (SGLocation loc : locations) {
-				output.put(loc, this);
-			}
-			return output;
-		}
-
 		/**
 		 * Go through every character in line, and
 		 * 
@@ -273,20 +204,24 @@ public class Network {
 			}
 			return foundFlags;
 		}
-
-		private Gate FindMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing)
-				throws NoFormatFound, GateConflict {
-			Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
-			for (GateFormat gateFormat : gateFormats) {
-				Stargate.log(Level.FINE, "--------- " + gateFormat.name + " ---------");
-				try {
-					return new Gate(gateFormat, signLocation, signFacing);
-				} catch (Gate.InvalidStructure e) {
-				}
+		
+		private HashMap<SGLocation, Portal> generateLocationHashMap(List<SGLocation> locations) {
+			HashMap<SGLocation, Portal> output = new HashMap<>();
+			for (SGLocation loc : locations) {
+				output.put(loc, this);
 			}
-			throw new NoFormatFound();
+			return output;
 		}
 		
+		public abstract void onSignClick(Action action, Player actor);
+		
+		public abstract void drawControll();
+		
+		public abstract Portal getDestination();
+		
+		public boolean isOpen() {
+			return gate.isOpen;
+		}
 		/**
 		 * Remove all information stored on this gate
 		 */
@@ -305,7 +240,7 @@ public class Network {
 				portalList.get(portal).drawControll();
 			}
 		}
-
+		
 		public void open(Player actor) {
 			gate.open();
 			this.openFor = actor;
@@ -326,29 +261,104 @@ public class Network {
 			// Make the action on a delay
 			Stargate.syncPopulator.new DelayedAction(delay, action);
 		}
-
+		
 		public void close() {
-			this.openFor = null;
-			if(flags.contains(PortalFlag.NETWORKED)) {
-				this.selectedDesti = NO_DESTI_SELECTED;
-			}
 			gate.close();
 			drawControll();
-		}
-
-		public boolean isOpen() {
-			return gate.isOpen;
 		}
 		
 		public boolean isOpenFor(Player player) {
 			// TODO Auto-generated method stub
 			return ((player == openFor) || (openFor == null));
 		}
-
 		
-
 		public Location getExit() {
 			return gate.getExit();
+		}
+		
+		/**
+		 * Surrounds one string with two strings
+		 * @param target
+		 * @param surrounding
+		 * @return
+		 */
+		protected String surroundWith(String target, String[] surrounding) {
+			return surrounding[0] + target + surrounding[1];
+		}
+		
+		public class NameError extends Exception{
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -9187508162071170232L;
+
+			public NameError(String msg) {
+				super(msg);
+			}
+		}
+		
+		public class NoFormatFound extends Exception {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1134125769081020233L;
+
+		}
+	}
+	
+	public class FixedPortal extends Portal{
+		String destination;
+
+		public FixedPortal(Block sign, String[] lines) throws NoFormatFound, GateConflict, NameError {
+			super(sign,lines);
+			destination = lines[1];
+			
+			drawControll();
+		}
+		
+		
+		
+		/**
+		 * What will happen when a player clicks the sign?
+		 * @param action
+		 * @param player 
+		 */
+		@Override
+		public void onSignClick(Action action, Player actor) {}
+
+		@Override
+		public void drawControll() {
+			String[] lines = new String[4];
+			lines[0] = surroundWith(name, PORTALNAMESURROUND);
+			lines[1] = surroundWith(destination, DESTINAMESURROUND);
+			lines[2] = surroundWith(netName, NETWORKNAMESURROUND);
+			lines[3] = (portalList.containsKey(destination)) ? ""
+						: Stargate.langManager.getString("signDisconnected");
+			gate.drawControll(lines);
+		}
+		
+		@Override
+		public Portal getDestination() {
+			return getPortal(destination);
+		}
+		
+		@Override
+		public void close() {
+			super.close();
+			this.openFor = null;
+		}
+	}
+
+	public class NetworkedPortal extends Portal {
+		// used in networked portals
+		static final private int NO_DESTI_SELECTED = -1;
+		private int selectedDesti = NO_DESTI_SELECTED;
+		
+		public NetworkedPortal(Block sign, String[] lines) throws NoFormatFound, GateConflict, NameError {
+			super(sign, lines);
+			
+			drawControll();
 		}
 		
 		/**
@@ -356,8 +366,9 @@ public class Network {
 		 * @param action
 		 * @param player 
 		 */
-		public void scrollDesti(Action action, Player actor) {
-			if (!(flags.contains(PortalFlag.NETWORKED)) || getDestinations().length < 2)
+		@Override
+		public void onSignClick(Action action, Player actor) {
+			if (getDestinations().length < 2)
 				return;
 			openFor = actor;
 			if ((selectedDesti == NO_DESTI_SELECTED) || getDestinations().length < 3) {
@@ -367,6 +378,26 @@ public class Network {
 				selectedDesti = getNextDesti(step, selectedDesti);
 			}
 			drawControll();
+		}
+		
+		private String getDestination(int index) {
+			if (index == NO_DESTI_SELECTED) {
+				return "";
+			}
+			return getDestinations()[index];
+		}
+		
+		private String[] getDestinations() {
+			HashSet<String> tempPortalList = new HashSet<>(portalList.keySet());
+			tempPortalList.remove(name);
+			return tempPortalList.toArray(new String[0]);
+		}
+		
+		@Override
+		public Portal getDestination() {
+			if(selectedDesti == NO_DESTI_SELECTED)
+				return null;
+			return getPortal(getDestinations()[selectedDesti]);
 		}
 		/**
 		 * A method which allows selecting a index x steps away from a reference index
@@ -383,17 +414,31 @@ public class Network {
 				return -1;
 			}
 			int endDesti = initialDesti + destiLength;
-			endDesti = endDesti + step % destiLength;
+			endDesti = (endDesti + step) % destiLength;
 
 			return endDesti;
 		}
-	}
-
-	public class NetworkedPortal extends Portal{
-
-		public NetworkedPortal(Block sign, String[] lines) throws NoFormatFound, GateConflict, NameError {
-			super(sign, lines);
+		
+		@Override
+		public void close() {
+			this.selectedDesti = NO_DESTI_SELECTED;
+			super.close();
 		}
 		
+		@Override
+		public void drawControll() {
+			String[] lines = new String[4];
+			lines[0] = surroundWith(name, PORTALNAMESURROUND);
+			if (this.selectedDesti == NO_DESTI_SELECTED) {
+				lines[1] = Stargate.langManager.getString("signRightClick");
+				lines[2] = Stargate.langManager.getString("signToUse");
+				lines[3] = surroundWith(netName, NETWORKNAMESURROUND);
+			} else {
+				lines[1] = getDestination(getNextDesti(-1, selectedDesti));
+				lines[2] = surroundWith(getDestination(selectedDesti), DESTINAMESURROUND);
+				lines[3] = getDestination(getNextDesti(1, selectedDesti));
+			}
+			gate.drawControll(lines);
+		}
 	}
 }
