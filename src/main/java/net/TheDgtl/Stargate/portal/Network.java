@@ -368,10 +368,10 @@ public class Network {
 		 */
 		@Override
 		public void onSignClick(Action action, Player actor) {
-			if (getDestinations().length < 2)
+			if (getDestinations().length < 1)
 				return;
 			openFor = actor;
-			if ((selectedDesti == NO_DESTI_SELECTED) || getDestinations().length < 3) {
+			if ((selectedDesti == NO_DESTI_SELECTED) || getDestinations().length < 2) {
 				selectedDesti = getNextDesti(1, -1);
 			} else if (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK) {
 				int step = (action == Action.RIGHT_CLICK_BLOCK) ? -1 : 1;
@@ -413,10 +413,8 @@ public class Network {
 			if (destiLength < 1) {
 				return -1;
 			}
-			int endDesti = initialDesti + destiLength;
-			endDesti = (endDesti + step) % destiLength;
-
-			return endDesti;
+			int temp = initialDesti + destiLength;
+			return (temp + step) % destiLength;
 		}
 		
 		@Override
@@ -434,9 +432,19 @@ public class Network {
 				lines[2] = Stargate.langManager.getString("signToUse");
 				lines[3] = surroundWith(netName, NETWORKNAMESURROUND);
 			} else {
-				lines[1] = getDestination(getNextDesti(-1, selectedDesti));
-				lines[2] = surroundWith(getDestination(selectedDesti), DESTINAMESURROUND);
-				lines[3] = getDestination(getNextDesti(1, selectedDesti));
+				int destiIndex = selectedDesti % 3;
+				int desti1 = selectedDesti - destiIndex;
+				int maxLength = getDestinations().length;
+				for (int i = 0; i < 3; i++) {
+					int desti = i + desti1;
+					if(desti == maxLength)
+						break;
+					String name = getDestination(desti);
+					if (destiIndex == i) {
+						name = surroundWith(name, DESTINAMESURROUND);
+					}
+					lines[i + 1] = name;
+				}
 			}
 			gate.drawControll(lines);
 		}
