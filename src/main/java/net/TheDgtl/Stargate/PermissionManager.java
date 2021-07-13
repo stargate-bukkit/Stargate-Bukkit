@@ -10,12 +10,12 @@ import net.TheDgtl.Stargate.portal.Network.PortalFlag;
 
 public class PermissionManager {
 	private Player player;
-	
-	private final static String FLAGPERMISSION = "stargate.flag.";
-	private final static String DESTROYPERMISSION = "stargate.destroy.";
-	private final static String CREATEPERMISSION = "stargate.create.";
-	private final static String USEPERMISSION = "stargate.use.";
-	private final static String FREEPERMISSION = "stargate.free.";
+	private String denyMsg;
+	public final static String FLAGPERMISSION = "stargate.flag.";
+	public final static String DESTROYPERMISSION = "stargate.destroy.";
+	public final static String CREATEPERMISSION = "stargate.create.";
+	public final static String USEPERMISSION = "stargate.use.";
+	public final static String FREEPERMISSION = "stargate.free.";
 
 	public PermissionManager(Player player) {
 		this.player = player;
@@ -46,5 +46,20 @@ public class PermissionManager {
 		}
 		//TODO throw event to bukkit event thing 
 		return true;
+	}
+	/**
+	 * @param targetNetwork
+	 * @return allowedNetwork
+	 */
+	public String getAllowedNetwork(String targetNetwork, String permType) {
+		if (player.getName() != targetNetwork && player.hasPermission(permType + "." + targetNetwork))
+			return targetNetwork;
+		if(player.hasPermission(permType + ".personal"))
+			return player.getName();
+		return null;
+	}
+
+	public String getDenyMsg() {
+		return denyMsg;
 	}
 }

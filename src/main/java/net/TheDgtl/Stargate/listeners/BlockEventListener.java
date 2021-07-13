@@ -16,11 +16,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
+import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.portal.Gate.GateConflict;
 import net.TheDgtl.Stargate.portal.GateStructure;
 import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.Network.FixedPortal;
 import net.TheDgtl.Stargate.portal.Network.Portal;
 import net.TheDgtl.Stargate.portal.SGLocation;
 
@@ -47,10 +47,13 @@ public class BlockEventListener implements Listener {
 	public void onBlockPlace(BlockPlaceEvent event) {
 		// Check if a portal control block is selected
 		// If so, cancel event if not shift clicking
-		/*
-		 * if(event.getBlockAgainst() != controllBlock) return;
-		 * if(event.getPlayer().isSneaking()) return; event.setCancelled(true);
-		 */
+		if(event.getPlayer().isSneaking())
+			return;
+		
+		if(Network.getPortal(event.getBlockAgainst().getLocation(), GateStructure.Type.CONTROLL) == null)
+			return;
+		
+		event.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -61,16 +64,20 @@ public class BlockEventListener implements Listener {
 
 		String[] lines = event.getLines();
 		String network = lines[2];
+		Player player = event.getPlayer();
+		PermissionManager permMngr = new PermissionManager(player);
+		network = permMngr.getAllowedNetwork(network, PermissionManager.CREATEPERMISSION);
+		if (network == null) {
+			player.sendMessage(Stargate.langManager.getString(permMngr.getDenyMsg()));
+		}
 		if (network.isBlank())
 			network = Network.DEFAULTNET;
-		// TODO check perms
 		if (!(Network.networkList.containsKey(network))) {
 			Network.networkList.put(network, new Network(network));
 		}
 		Network selectedNet = Network.networkList.get(network);
-		Player player = event.getPlayer();
 		try {
-			if(lines[1].isBlank())
+			if (lines[1].isBlank())
 				selectedNet.new NetworkedPortal(block, lines);
 			else
 				selectedNet.new FixedPortal(block, lines);
@@ -80,7 +87,7 @@ public class BlockEventListener implements Listener {
 		} catch (GateConflict e) {
 			player.sendMessage(Stargate.langManager.getString("createConflict"));
 		} catch (Portal.NameError e) {
-			switch(e.getMessage()) {
+			switch (e.getMessage()) {
 			case "empty":
 				break;
 			case "taken":
@@ -93,24 +100,31 @@ public class BlockEventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPistonExtend(BlockPistonExtendEvent event) {
 		// check if portal is affected, if so cancel
-
+		if(Network.isInPortal(event.getBlocks(), GateStructure.Type.values()))
+			event.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPistonRetract(BlockPistonRetractEvent event) {
 		// check if portal is affected, if so cancel
-
+		if(Network.isInPortal(event.getBlocks(), GateStructure.Type.values()))
+			event.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onEntityExplode(EntityExplodeEvent event) {
-		// check if portal is affected, if so cancel
+		if(Network.isInPortal(event.blockList(), GateStructure.Type.values()))
+			event.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockFromTo(BlockFromToEvent event) {
 		// check if water or lava is flowing into a gate entrance?
 		// if so, cancel
-
+		Block to = event.getToBlock();
+		Block from = event.getBlock();
+		if ((Network.getPortal(to.getLocation(), GateStructure.Type.IRIS) != null)
+				|| (Network.getPortal(from.getLocation(), GateStructure.Type.IRIS) != null))
+			event.setCancelled(true);
 	}
 }

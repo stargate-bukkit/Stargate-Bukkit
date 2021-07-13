@@ -16,6 +16,7 @@ import org.bukkit.util.BlockVector;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.SyncronousPopulator;
 import net.TheDgtl.Stargate.portal.Gate.GateConflict;
+import net.TheDgtl.Stargate.portal.GateStructure.Type;
 import net.TheDgtl.Stargate.portal.Network.PortalFlag.NoFlagFound;
 
 public class Network {
@@ -58,6 +59,12 @@ public class Network {
 	static public Portal getPortal(Location loc, GateStructure.Type key) {
 		return getPortal(new SGLocation(loc),key);
 	}
+	
+	public static Portal getPortal(Location loc, Type[] keys) {
+		
+		return getPortal(new SGLocation(loc), keys);
+	}
+	
 	/**
 	 * Get a portal from location and the type of gateStructure targeted
 	 * @param loc
@@ -87,6 +94,16 @@ public class Network {
 		}
 		return null;
 	}
+	
+	public static boolean isInPortal(List<Block> blocks, GateStructure.Type[] keys) {
+		for (Block block : blocks) {
+			if (getPortal(block.getLocation(), GateStructure.Type.values()) != null) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	//Adjacent
 	public static boolean isNextToPortal(Location loc, GateStructure.Type key) {
 		BlockVector adjacentVec = new BlockVector(1,0,0);
@@ -222,6 +239,7 @@ public class Network {
 		public boolean isOpen() {
 			return gate.isOpen;
 		}
+		
 		/**
 		 * Remove all information stored on this gate
 		 */
@@ -449,4 +467,6 @@ public class Network {
 			gate.drawControll(lines);
 		}
 	}
+
+	
 }
