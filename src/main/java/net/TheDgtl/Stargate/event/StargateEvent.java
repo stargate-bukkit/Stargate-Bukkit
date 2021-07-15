@@ -17,6 +17,7 @@ package net.TheDgtl.Stargate.event;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,5 +51,5 @@ public abstract class StargateEvent extends Event implements Cancellable {
         this.cancelled = cancelled;
     }
     //TODO temporary, this method should be abstract
-	public List<String> getRelatedPerms(){return null;}
+	public List<String> getRelatedPerms(){return new ArrayList<>();}
 }

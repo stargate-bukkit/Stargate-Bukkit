@@ -18,6 +18,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.event.StargateDestroyEvent;
 import net.TheDgtl.Stargate.portal.Gate.GateConflict;
 import net.TheDgtl.Stargate.portal.GateStructure;
 import net.TheDgtl.Stargate.portal.Network;
@@ -31,14 +32,23 @@ public class BlockEventListener implements Listener {
 		SGLocation loc = new SGLocation(event.getBlock().getLocation());
 		Portal portal = Network.getPortal(loc, GateStructure.Type.FRAME);
 		if (portal != null) {
-			// TODO check perms. If allowed, destroy portal
-			String msg = Stargate.langManager.getString("destroyMsg");
-			event.getPlayer().sendMessage(msg);
-			portal.destroy();
+			int cost = 0; //TODO economy manager
+			StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, event.getPlayer(), false, "", cost);
+			PermissionManager permMngr = new PermissionManager(event.getPlayer());
+			if(permMngr.hasPerm(dEvent)) {
+				
+				String msg = Stargate.langManager.getString("destroyMsg");
+				event.getPlayer().sendMessage(msg);
+				portal.destroy();
+				return;
+			}
+			
+			String reason = Stargate.langManager.getString(permMngr.getDenyMsg());
+			event.getPlayer().sendMessage(reason);
+			event.setCancelled(true);
+			return;
 		}
-		GateStructure.Type[] targetStructures = { GateStructure.Type.CONTROLL, GateStructure.Type.IRIS };
-		portal = Network.getPortal(loc, targetStructures);
-		if (portal != null) {
+		if (Network.getPortal(loc, GateStructure.Type.CONTROLL) != null) {
 			event.setCancelled(true);
 		}
 	}
@@ -66,21 +76,33 @@ public class BlockEventListener implements Listener {
 		String network = lines[2];
 		Player player = event.getPlayer();
 		PermissionManager permMngr = new PermissionManager(player);
-		network = permMngr.getAllowedNetwork(network, PermissionManager.CREATEPERMISSION);
-		if (network == null) {
-			player.sendMessage(Stargate.langManager.getString(permMngr.getDenyMsg()));
-		}
+
 		if (network.isBlank())
 			network = Network.DEFAULTNET;
+		boolean hasPerm = true;
+		if (!permMngr.canCreateInNetwork(network)) {
+			if (!permMngr.canCreateInNetwork(player.getName())) {
+				hasPerm = false;
+			}
+			network = player.getName();
+		}
+
 		if (!(Network.networkList.containsKey(network))) {
 			Network.networkList.put(network, new Network(network));
 		}
 		Network selectedNet = Network.networkList.get(network);
 		try {
+			Portal portal;
 			if (lines[1].isBlank())
-				selectedNet.new NetworkedPortal(block, lines);
+				portal = selectedNet.new NetworkedPortal(block, lines);
 			else
-				selectedNet.new FixedPortal(block, lines);
+				portal = selectedNet.new FixedPortal(block, lines);
+
+			if (!hasPerm) {
+				player.sendMessage(Stargate.langManager.getString(permMngr.getDenyMsg()));
+				portal.destroy();
+				return;
+			}
 			Stargate.log(Level.FINE, "A Gateformat matches");
 		} catch (Portal.NoFormatFound e) {
 			Stargate.log(Level.FINE, "No Gateformat matches");

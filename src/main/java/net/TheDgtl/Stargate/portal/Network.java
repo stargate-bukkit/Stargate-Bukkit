@@ -55,6 +55,9 @@ public class Network {
 		return portalList.get(name);
 	}
 	
+	public void addPortal(Portal portal) {
+		this.portalList.put(portal.name, portal);
+	}
 	
 	static public Portal getPortal(Location loc, GateStructure.Type key) {
 		return getPortal(new SGLocation(loc),key);
@@ -115,6 +118,10 @@ public class Network {
 			adjacentVec.rotateAroundY(Math.PI/2);
 		}
 		return false;
+	}
+
+	public static Network getNetwork(String networkName) {
+		return networkList.get(networkName);
 	}
 	
 	public enum PortalFlag {
@@ -180,9 +187,8 @@ public class Network {
 			for(PortalFlag flag : flags) {
 				msg = msg + flag.label;
 			}
+			addPortal(this);
 			Stargate.log(Level.FINE, msg);
-			
-			portalList.put(name, this);
 			for(GateStructure.Type key : gate.format.portalParts.keySet()) {
 				if(!portalFromPartsMap.containsKey(key)) {
 					portalFromPartsMap.put(key, new HashMap<SGLocation, Portal>());

@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.portal.Gate;
+import net.TheDgtl.Stargate.portal.GateStructure;
 import net.TheDgtl.Stargate.portal.Network;
 
 public class StargateAPI {
@@ -14,16 +15,13 @@ public class StargateAPI {
 	 * - Destroy a portal
 	 */
 	public Network.Portal getPortal(Location portalBlock) {
-		return null;
+		return Network.getPortal(portalBlock, GateStructure.Type.values());
 	}
 	public Network getNetwork(String networkName) {
-		return null;
+		return Network.getNetwork(networkName);
 	}
 	public void createPortal(Gate config, Location location, Vector openFacing ) {
-		
-	}
-	public void destroyPortal(Network.Portal portal) {
-		
+		//TODO write a method that does this
 	}
 	/**
 	 * Force a connection between two portals that are not in the same network, instantly opens both gates

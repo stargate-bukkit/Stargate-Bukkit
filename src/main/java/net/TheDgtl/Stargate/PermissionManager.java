@@ -11,11 +11,11 @@ import net.TheDgtl.Stargate.portal.Network.PortalFlag;
 public class PermissionManager {
 	private Player player;
 	private String denyMsg;
-	public final static String FLAGPERMISSION = "stargate.flag.";
-	public final static String DESTROYPERMISSION = "stargate.destroy.";
-	public final static String CREATEPERMISSION = "stargate.create.";
-	public final static String USEPERMISSION = "stargate.use.";
-	public final static String FREEPERMISSION = "stargate.free.";
+	public final static String FLAGPERMISSION = "stargate.flag";
+	public final static String DESTROYPERMISSION = "stargate.destroy";
+	public final static String CREATEPERMISSION = "stargate.create";
+	public final static String USEPERMISSION = "stargate.use";
+	public final static String FREEPERMISSION = "stargate.free";
 
 	public PermissionManager(Player player) {
 		this.player = player;
@@ -47,16 +47,17 @@ public class PermissionManager {
 		//TODO throw event to bukkit event thing 
 		return true;
 	}
-	/**
-	 * @param targetNetwork
-	 * @return allowedNetwork
-	 */
-	public String getAllowedNetwork(String targetNetwork, String permType) {
-		if (player.getName() != targetNetwork && player.hasPermission(permType + "." + targetNetwork))
-			return targetNetwork;
-		if(player.hasPermission(permType + ".personal"))
-			return player.getName();
-		return null;
+	
+	public boolean canCreateInNetwork(String network) {
+		boolean hasPerm = true;
+		
+		if(player.getName() == network)
+			hasPerm = player.hasPermission(CREATEPERMISSION + ".personal");
+		else
+			hasPerm =  player.hasPermission(CREATEPERMISSION + "." + network);
+		if(!hasPerm)
+			denyMsg = "createNetDeny";
+		return hasPerm;
 	}
 
 	public String getDenyMsg() {
