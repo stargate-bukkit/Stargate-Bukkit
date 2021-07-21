@@ -36,7 +36,7 @@ public class PlayerInteractEventListener implements Listener {
 			return;
 		Action action = event.getAction();
 		// TODO material optimisation?
-		Portal portal = Network.getPortal(new SGLocation(block.getLocation()), GateStructure.Type.CONTROLL);
+		Portal portal = Network.getPortal(block.getLocation(), GateStructure.Type.CONTROLL);
 		if (portal == null) {
 			return;
 		}

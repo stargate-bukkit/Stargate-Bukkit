@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.listeners;
 
 import java.util.logging.Level;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
@@ -23,13 +24,12 @@ import net.TheDgtl.Stargate.portal.Gate.GateConflict;
 import net.TheDgtl.Stargate.portal.GateStructure;
 import net.TheDgtl.Stargate.portal.Network;
 import net.TheDgtl.Stargate.portal.Network.Portal;
-import net.TheDgtl.Stargate.portal.SGLocation;
 
 public class BlockEventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
-		// TODO Have a list of all possible portalMaterials and skip in not any of those
-		SGLocation loc = new SGLocation(event.getBlock().getLocation());
+		// TODO Have a list of all possible portalMaterials and skip if not any of those
+		Location loc = event.getBlock().getLocation();
 		Portal portal = Network.getPortal(loc, GateStructure.Type.FRAME);
 		if (portal != null) {
 			int cost = 0; // TODO economy manager

@@ -248,7 +248,8 @@ public class Network {
 		public void open(Player actor) {
 			gate.open();
 			this.openFor = actor;
-			this.openTime = System.currentTimeMillis();
+			long openTime = System.currentTimeMillis();
+			this.openTime = openTime;
 
 			// Create action which will close this portal
 			SyncronousPopulator.Action action = new SyncronousPopulator.Action() {
