@@ -1,7 +1,7 @@
 package net.TheDgtl.Stargate.portal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -12,6 +12,7 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 
+import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.SyncronousPopulator;
 import net.TheDgtl.Stargate.exception.GateConflict;
@@ -23,7 +24,7 @@ import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.portal.PortalFlag.NoFlagFound;
 
-public abstract class Portal{
+public abstract class Portal {
 	/**
 	 * 
 	 */
@@ -37,17 +38,16 @@ public abstract class Portal{
 	 * minute or something) maybe follow an external script that gives when the
 	 * states should change
 	 */
-	int delay = 20*20; // ticks
+	int delay = 20 * 20; // ticks
 	private Gate gate;
-	HashSet<PortalFlag> flags;
+	List<PortalFlag> flags;
 	String name;
 	Player openFor;
 	Portal overrideDesti = null;
 	private long openTime = -1;
-	
-	
-	Portal(Network network, Block sign, String[] lines) throws NameError, NoFormatFound, GateConflict{
-		
+
+	Portal(Network network, Block sign, String[] lines) throws NameError, NoFormatFound, GateConflict {
+
 		this.network = network;
 		this.name = lines[0];
 		if (name.isBlank())
@@ -55,7 +55,7 @@ public abstract class Portal{
 		if (this.network.portalList.containsKey(name)) {
 			throw new NameError("taken");
 		}
-		
+
 		/*
 		 * Get the block behind the sign; the material of that block is stored in a
 		 * register with available gateFormats
@@ -67,20 +67,22 @@ public abstract class Portal{
 
 		flags = getFlags(lines[3]);
 		String msg = "Selected with flags ";
-		for(PortalFlag flag : flags) {
+		for (PortalFlag flag : flags) {
 			msg = msg + flag.label;
 		}
 		this.network.addPortal(this);
 		Stargate.log(Level.FINE, msg);
-		for(GateStructureType key : getGate().getFormat().portalParts.keySet()) {
-			if(!Network.portalFromPartsMap.containsKey(key)) {
+		for (GateStructureType key : getGate().getFormat().portalParts.keySet()) {
+			if (!Network.portalFromPartsMap.containsKey(key)) {
 				Network.portalFromPartsMap.put(key, new HashMap<SGLocation, Portal>());
 			}
 			List<SGLocation> locations = getGate().getLocations(key);
 			Network.portalFromPartsMap.get(key).putAll(generateLocationHashMap(locations));
 		}
+		if(flags.contains(PortalFlag.ALWAYSON))
+			this.open(null);
 	}
-	
+
 	private Gate FindMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing)
 			throws NoFormatFound, GateConflict {
 		Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
@@ -93,14 +95,14 @@ public abstract class Portal{
 		}
 		throw new NoFormatFound();
 	}
-	
+
 	/**
 	 * Go through every character in line, and
 	 * 
 	 * @param line
 	 */
-	private HashSet<PortalFlag> getFlags(String line) {
-		HashSet<PortalFlag> foundFlags = new HashSet<>();
+	private List<PortalFlag> getFlags(String line) {
+		List<PortalFlag> foundFlags = new ArrayList<>();
 		char[] charArray = line.toUpperCase().toCharArray();
 		for (char character : charArray) {
 			try {
@@ -110,7 +112,7 @@ public abstract class Portal{
 		}
 		return foundFlags;
 	}
-	
+
 	private HashMap<SGLocation, Portal> generateLocationHashMap(List<SGLocation> locations) {
 		HashMap<SGLocation, Portal> output = new HashMap<>();
 		for (SGLocation loc : locations) {
@@ -118,49 +120,50 @@ public abstract class Portal{
 		}
 		return output;
 	}
-	
+
 	public abstract void onSignClick(Action action, Player actor);
-	
+
 	public abstract void drawControll();
-	
+
 	public abstract Portal getDestination();
-	
+
 	public boolean isOpen() {
 		return getGate().isOpen();
 	}
-	
-	public Network getNetwork() {
-		return this.network;
-	}
-	
-	public HashSet<PortalFlag> getFlags(){
+
+	public List<PortalFlag> getFlags() {
 		return flags;
 	}
+
 	/**
 	 * Remove all information stored on this gate
 	 */
 	public void destroy() {
 		this.network.portalList.remove(name);
-		String[] lines = new String[] {name,"","",""};
+		String[] lines = new String[] { name, "", "", "" };
 		getGate().drawControll(lines);
-		for(GateStructureType formatType : Network.portalFromPartsMap.keySet()) {
-			for(SGLocation loc : this.getGate().getLocations(formatType)) {
+		for (GateStructureType formatType : Network.portalFromPartsMap.keySet()) {
+			for (SGLocation loc : this.getGate().getLocations(formatType)) {
 				Network.portalFromPartsMap.get(formatType).remove(loc);
 			}
 		}
-		
+
 		// Refresh all portals in this network. TODO is this too extensive?
 		for (String portal : this.network.portalList.keySet()) {
 			this.network.portalList.get(portal).drawControll();
 		}
 	}
-	
+
 	public void open(Player actor) {
 		getGate().open();
 		this.openFor = actor;
 		long openTime = System.currentTimeMillis();
 		this.openTime = openTime;
 
+		if(flags.contains(PortalFlag.ALWAYSON)) {
+			return;
+		}
+		
 		// Create action which will close this portal
 		SyncronousPopulator.Action action = new SyncronousPopulator.Action() {
 
@@ -177,14 +180,14 @@ public abstract class Portal{
 		// Make the action on a delay
 		Stargate.syncPopulator.new DelayedAction(delay, action);
 	}
-	
+
 	/**
 	 * Everytime most of the portals opens, there is going to be a scheduled event
 	 * to close it after a specific time. If a player enters the portal before this,
 	 * then it is going to close, but the scheduled close event is still going to be
 	 * there. And if the portal gets activated again, it is going to close
 	 * prematurely, because of this already scheduled event. Solution to avoid this
-	 * is to assign a opentime for each scheduled close event and only close if the 
+	 * is to assign a opentime for each scheduled close event and only close if the
 	 * related open time matches with the most recent time the portal was closed.
 	 * 
 	 * @param relatedOpenTime
@@ -193,33 +196,37 @@ public abstract class Portal{
 		if (relatedOpenTime == openTime)
 			close();
 	}
-	
+
 	public void close() {
 		getGate().close();
 		drawControll();
 	}
-	
+
 	public boolean isOpenFor(Player player) {
 		// TODO Auto-generated method stub
-		return ((player == openFor) || (openFor == null));
+		return ((openFor == null) || (player == openFor));
 	}
-	
+
 	public Location getExit() {
 		return getGate().getExit();
 	}
-	
+
 	public void setOverrideDesti(Portal desti) {
 		this.overrideDesti = desti;
 	}
-	
+
+	public Network getNetwork() {
+		return this.network;
+	}
+
 	public void setNetwork(Network net) {
 		this.network = net;
 		this.drawControll();
 	}
-	
+
 	public Portal getFinalDesti() {
 		Portal destination;
-		if(overrideDesti != null) {
+		if (overrideDesti != null) {
 			destination = overrideDesti;
 			overrideDesti = null;
 		} else {
@@ -227,9 +234,10 @@ public abstract class Portal{
 		}
 		return destination;
 	}
-	
+
 	/**
 	 * Surrounds one string with two strings
+	 * 
 	 * @param target
 	 * @param surrounding
 	 * @return
@@ -237,18 +245,16 @@ public abstract class Portal{
 	protected String surroundWith(String target, String[] surrounding) {
 		return surrounding[0] + target + surrounding[1];
 	}
-	
+
 	public void openDestAndThis(Player player) {
-		// TODO Auto-generated method stub
 		if (getDestination() == null) {
-			// TODO write message?
+			player.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
 			return;
 		}
 		// TODO checkPerms
 		open(player);
 		getDestination().open(player);
 	}
-
 
 	public Gate getGate() {
 		return gate;

@@ -4,6 +4,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 
+import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
@@ -39,7 +40,7 @@ public class FixedPortal extends Portal{
 		lines[1] = surroundWith(destination, Network.DESTINAMESURROUND);
 		lines[2] = surroundWith(this.network.netName, Network.NETWORKNAMESURROUND);
 		lines[3] = (this.network.portalList.containsKey(destination)) ? ""
-					: Stargate.langManager.getString("signDisconnected");
+					: Stargate.langManager.getString(LangMsg.DISCONNECTED);
 		getGate().drawControll(lines);
 	}
 	

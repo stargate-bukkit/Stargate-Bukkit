@@ -10,7 +10,7 @@ import net.TheDgtl.Stargate.portal.PortalFlag;
 
 public class PermissionManager {
 	private Player player;
-	private String denyMsg;
+	private LangMsg denyMsg;
 	public final static String FLAGPERMISSION = "stargate.flag";
 	public final static String DESTROYPERMISSION = "stargate.destroy";
 	public final static String CREATEPERMISSION = "stargate.create";
@@ -56,11 +56,11 @@ public class PermissionManager {
 		else
 			hasPerm =  player.hasPermission(CREATEPERMISSION + "." + network);
 		if(!hasPerm)
-			denyMsg = "createNetDeny";
+			denyMsg = LangMsg.NET_DENY;
 		return hasPerm;
 	}
 
-	public String getDenyMsg() {
+	public LangMsg getDenyMsg() {
 		return denyMsg;
 	}
 }

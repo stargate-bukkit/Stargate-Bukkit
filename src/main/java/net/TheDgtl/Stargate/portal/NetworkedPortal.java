@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 
+import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
@@ -92,8 +93,8 @@ public class NetworkedPortal extends Portal {
 		String[] lines = new String[4];
 		lines[0] = surroundWith(name, Network.PORTALNAMESURROUND);
 		if (this.selectedDesti == NO_DESTI_SELECTED) {
-			lines[1] = Stargate.langManager.getString("signRightClick");
-			lines[2] = Stargate.langManager.getString("signToUse");
+			lines[1] = Stargate.langManager.getString(LangMsg.RIGHT_CLICK);
+			lines[2] = Stargate.langManager.getString(LangMsg.TO_USE);
 			lines[3] = surroundWith(this.network.netName, Network.NETWORKNAMESURROUND);
 		} else {
 			int destiIndex = selectedDesti % 3;

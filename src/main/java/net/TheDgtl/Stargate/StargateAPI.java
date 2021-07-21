@@ -92,7 +92,7 @@ public class StargateAPI {
 		portal.setNetwork(targetNet);
 	}
 	/**
-	 * //TODO currently not implemented
+	 * TODO currently not implemented
 	 * @param config
 	 * @param location
 	 * @param openFacing
@@ -103,13 +103,12 @@ public class StargateAPI {
 
 	/**
 	 * Force a connection between two portals. They do not have to be in the same
-	 * network, instantly opens both gates
+	 * network. When portal has been entered, the destination will get removed
 	 * 
-	 * @param portal1
-	 * @param portal2
+	 * @param target the portal which will have it's destination changed
+	 * @param destination
 	 */
-	public void forceConnect(Portal portal1, Portal portal2) {
-		portal1.setOverrideDesti(portal2);
-		portal1.openDestAndThis(null);
+	public void forceConnect(Portal target, Portal destination) {
+		target.setOverrideDesti(destination);
 	}
 }

@@ -1,6 +1,5 @@
 package net.TheDgtl.Stargate;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,17 +9,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import org.bukkit.ChatColor;
 
 public class LangManager {
 	
-	private static final String PREFIX = "prefix";
 	private final String dataFolder;
     private String lang;
-    private HashMap<String, String> strList;
-    private final HashMap<String, String> defList;
+    private HashMap<LangMsg, String> strList;
+    private final HashMap<LangMsg, String> defList;
     
     private Stargate stargate;
 
@@ -36,22 +33,22 @@ public class LangManager {
         strList = loadLanguage(lang);
         defList = loadLanguage(defaultLang);
     }
-    
-    public String getMessage(String textAlias, boolean isError) {
-		String prefix = (isError ? ChatColor.RED : ChatColor.GREEN) + strList.get(PREFIX);
-		String msg =  getString(textAlias).replaceAll("(&([a-f0-9]))", "\u00A7$2");
+
+	public String getMessage(LangMsg key, boolean isError) {
+		String prefix = (isError ? ChatColor.RED : ChatColor.GREEN) + strList.get(LangMsg.PREFIX);
+		String msg = getString(key).replaceAll("(&([a-f0-9]))", "\u00A7$2");
 		return prefix + ChatColor.WHITE + msg;
 	}
-    
-    public String getString(String textAlias) {
-    	String msg = strList.get(textAlias);
+
+	public String getString(LangMsg key) {
+    	String msg = strList.get(key);
     	if(msg == null)
-    		msg = defList.get(textAlias);
+    		msg = defList.get(key);
     	return msg;
     }
     
     
-    private HashMap<String,String> loadLanguage(String language) {
+    private HashMap<LangMsg,String> loadLanguage(String language) {
     	
     	LangLoader loader = new LangLoader(language);
     	try {
@@ -68,7 +65,7 @@ public class LangManager {
 		}
     	
     	// This code only gets triggered if an error was thrown in the try clause
-    	return new HashMap<String,String>();
+    	return new HashMap<LangMsg,String>();
     	// TODO show error message
     }
     
@@ -105,8 +102,8 @@ public class LangManager {
 			br = new BufferedReader(isr);
 		}
 		
-		HashMap<String,String> load() throws IOException {
-			HashMap<String, String> output = new HashMap<>();
+		HashMap<LangMsg,String> load() throws IOException {
+			HashMap<LangMsg, String> output = new HashMap<>();
 			
 			String line = br.readLine();
             line = removeUTF8BOM(line);
@@ -117,7 +114,8 @@ public class LangManager {
                     line = br.readLine();
                     continue;
                 }
-                String key = line.substring(0, eq);
+                LangMsg key = LangMsg.valueOf(line.substring(0, eq));
+                
                 String val = ChatColor.translateAlternateColorCodes('&', line.substring(eq + 1));
                 output.put(key, val);
                 line = br.readLine();

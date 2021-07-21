@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -22,13 +24,13 @@ import net.TheDgtl.Stargate.Stargate;
 
 public class GateFormat {
 	public static HashMap<Material, List<GateFormat>> controlMaterialFormatsMap;
-	public HashMap<GateStructureType, GateStructure> portalParts;
+	public EnumMap<GateStructureType, GateStructure> portalParts;
 
 	public final String name;
 
 	public GateFormat(GateIris iris, GateFrame frame, GateControll controll, HashMap<String, String> config,
 			String name) {
-		portalParts = new HashMap<>();
+		portalParts = new EnumMap<>(GateStructureType.class);
 		portalParts.put(GateStructureType.IRIS, iris);
 		portalParts.put(GateStructureType.FRAME, frame);
 		portalParts.put(GateStructureType.CONTROLL, controll);

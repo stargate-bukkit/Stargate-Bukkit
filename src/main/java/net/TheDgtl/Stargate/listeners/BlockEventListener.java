@@ -17,6 +17,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
+import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.event.StargateDestroyEvent;
@@ -41,7 +42,7 @@ public class BlockEventListener implements Listener {
 			PermissionManager permMngr = new PermissionManager(event.getPlayer());
 			if (permMngr.hasPerm(dEvent)) {
 
-				String msg = Stargate.langManager.getMessage("destroyMsg", false);
+				String msg = Stargate.langManager.getMessage(LangMsg.DESTROY, false);
 				event.getPlayer().sendMessage(msg);
 				portal.destroy();
 				return;
@@ -108,17 +109,17 @@ public class BlockEventListener implements Listener {
 				return;
 			}
 			Stargate.log(Level.FINE, "A Gateformat matches");
-			player.sendMessage(Stargate.langManager.getMessage("createMsg", false));
+			player.sendMessage(Stargate.langManager.getMessage(LangMsg.CREATE, false));
 		} catch (NoFormatFound e) {
 			Stargate.log(Level.FINE, "No Gateformat matches");
 		} catch (GateConflict e) {
-			player.sendMessage(Stargate.langManager.getMessage("createConflict", true));
+			player.sendMessage(Stargate.langManager.getMessage(LangMsg.GATE_CONFLICT, true));
 		} catch (NameError e) {
 			switch (e.getMessage()) {
 			case "empty":
 				break;
 			case "taken":
-				player.sendMessage(Stargate.langManager.getMessage("createExists", true));
+				player.sendMessage(Stargate.langManager.getMessage(LangMsg.ALREADY_EXIST, true));
 				break;
 			}
 		}
