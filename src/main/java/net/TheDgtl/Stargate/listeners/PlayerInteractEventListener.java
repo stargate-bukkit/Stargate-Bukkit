@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.bukkit.event.Event;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.gate.GateStructure;
+import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.portal.Network;
 import net.TheDgtl.Stargate.portal.Portal;
 import net.TheDgtl.Stargate.portal.SGLocation;
@@ -35,7 +35,7 @@ public class PlayerInteractEventListener implements Listener {
 			return;
 		Action action = event.getAction();
 		// TODO material optimisation?
-		Portal portal = Network.getPortal(block.getLocation(), GateStructure.Type.CONTROLL);
+		Portal portal = Network.getPortal(block.getLocation(), GateStructureType.CONTROLL);
 		if (portal == null) {
 			return;
 		}

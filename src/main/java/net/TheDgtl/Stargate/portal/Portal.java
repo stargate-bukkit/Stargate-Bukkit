@@ -14,10 +14,13 @@ import org.bukkit.event.block.Action;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.SyncronousPopulator;
+import net.TheDgtl.Stargate.exception.GateConflict;
+import net.TheDgtl.Stargate.exception.InvalidStructure;
+import net.TheDgtl.Stargate.exception.NameError;
+import net.TheDgtl.Stargate.exception.NoFormatFound;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
-import net.TheDgtl.Stargate.gate.GateStructure;
-import net.TheDgtl.Stargate.gate.Gate.GateConflict;
+import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.portal.PortalFlag.NoFlagFound;
 
 public abstract class Portal{
@@ -69,7 +72,7 @@ public abstract class Portal{
 		}
 		this.network.addPortal(this);
 		Stargate.log(Level.FINE, msg);
-		for(GateStructure.Type key : getGate().getFormat().portalParts.keySet()) {
+		for(GateStructureType key : getGate().getFormat().portalParts.keySet()) {
 			if(!Network.portalFromPartsMap.containsKey(key)) {
 				Network.portalFromPartsMap.put(key, new HashMap<SGLocation, Portal>());
 			}
@@ -85,7 +88,7 @@ public abstract class Portal{
 			Stargate.log(Level.FINE, "--------- " + gateFormat.name + " ---------");
 			try {
 				return new Gate(gateFormat, signLocation, signFacing);
-			} catch (Gate.InvalidStructure e) {
+			} catch (InvalidStructure e) {
 			}
 		}
 		throw new NoFormatFound();
@@ -140,7 +143,7 @@ public abstract class Portal{
 		this.network.portalList.remove(name);
 		String[] lines = new String[] {name,"","",""};
 		getGate().drawControll(lines);
-		for(GateStructure.Type formatType : Network.portalFromPartsMap.keySet()) {
+		for(GateStructureType formatType : Network.portalFromPartsMap.keySet()) {
 			for(SGLocation loc : this.getGate().getLocations(formatType)) {
 				Network.portalFromPartsMap.get(formatType).remove(loc);
 			}
@@ -211,6 +214,7 @@ public abstract class Portal{
 	
 	public void setNetwork(Network net) {
 		this.network = net;
+		this.drawControll();
 	}
 	
 	public Portal getFinalDesti() {
@@ -252,27 +256,6 @@ public abstract class Portal{
 
 	public void setGate(Gate gate) {
 		this.gate = gate;
-	}
-
-
-	public class NameError extends Exception {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -9187508162071170232L;
-
-		public NameError(String msg) {
-			super(msg);
-		}
-	}
-
-	public class NoFormatFound extends Exception {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1134125769081020233L;
-
 	}
 
 }

@@ -7,9 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.gate.Gate.GateConflict;
-import net.TheDgtl.Stargate.portal.Portal.NameError;
-import net.TheDgtl.Stargate.portal.Portal.NoFormatFound;
+import net.TheDgtl.Stargate.exception.GateConflict;
+import net.TheDgtl.Stargate.exception.NameError;
+import net.TheDgtl.Stargate.exception.NoFormatFound;
 
 public class NetworkedPortal extends Portal {
 	/**

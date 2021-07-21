@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.gate.GateStructure;
+import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.portal.Network;
 import net.TheDgtl.Stargate.portal.Portal;
 
@@ -39,7 +39,7 @@ public class MoveEventListener implements Listener {
 		default:
 			return;
 		}
-		if (Network.isNextToPortal(event.getFrom(), GateStructure.Type.IRIS)) {
+		if (Network.isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
 			event.setCancelled(true);
 		}
 	}
@@ -53,7 +53,7 @@ public class MoveEventListener implements Listener {
 				&& from.getBlockZ() == to.getBlockZ()) {
 			return;
 		}
-		Portal portal = Network.getPortal(to, GateStructure.Type.IRIS);
+		Portal portal = Network.getPortal(to, GateStructureType.IRIS);
 
 		if (portal == null || !portal.isOpen())
 			return;

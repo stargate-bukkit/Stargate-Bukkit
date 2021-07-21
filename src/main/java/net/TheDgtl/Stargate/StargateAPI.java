@@ -1,13 +1,11 @@
 package net.TheDgtl.Stargate;
 
-import java.lang.reflect.Constructor;
 
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.gate.Gate;
-import net.TheDgtl.Stargate.gate.GateStructure;
+import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.portal.Network;
 import net.TheDgtl.Stargate.portal.Portal;
 
@@ -25,7 +23,7 @@ public class StargateAPI {
 	 * @return the portal if found / otherwise null
 	 */
 	public Portal getPortal(Location portalBlock) {
-		return Network.getPortal(portalBlock, GateStructure.Type.values());
+		return Network.getPortal(portalBlock, GateStructureType.values());
 	}
 	
 	/**
@@ -34,7 +32,7 @@ public class StargateAPI {
 	 * @param structure , the type of part of the portal
 	 * @return the portal if found / otherwise null
 	 */
-	public Portal getPortal(Location portalBlock, GateStructure.Type structure){
+	public Portal getPortal(Location portalBlock, GateStructureType structure){
 		return Network.getPortal(portalBlock, structure);
 	}
 	
@@ -44,7 +42,7 @@ public class StargateAPI {
 	 * @param structures , the types of parts of the portal
 	 * @return the portal if found / otherwise null
 	 */
-	public Portal getPortal(Location portalBlock, GateStructure.Type[] structures){
+	public Portal getPortal(Location portalBlock, GateStructureType[] structures){
 		return Network.getPortal(portalBlock, structures);
 	}
 	
@@ -85,7 +83,8 @@ public class StargateAPI {
 	}
 	
 	/**
-	 * Change the network which a portal is operating at
+	 * Change the network which a portal is operating at, note that you will need
+	 * to change it has a fixed destination
 	 * @param portal
 	 * @param targetNet
 	 */

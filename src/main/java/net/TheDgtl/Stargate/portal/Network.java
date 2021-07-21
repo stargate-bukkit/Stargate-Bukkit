@@ -9,8 +9,7 @@ import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.gate.GateStructure;
-import net.TheDgtl.Stargate.gate.GateStructure.Type;
+import net.TheDgtl.Stargate.gate.GateStructureType;
 
 public class Network {
 	/*
@@ -37,7 +36,7 @@ public class Network {
 		NETWORKNAMESURROUND = new String[] { "(", ")" };
 	}
 
-	final static HashMap<GateStructure.Type, HashMap<SGLocation, Portal>> portalFromPartsMap = new HashMap<>();
+	final static HashMap<GateStructureType, HashMap<SGLocation, Portal>> portalFromPartsMap = new HashMap<>();
 
 	public Network(String netName) {
 		this.netName = netName;
@@ -52,11 +51,11 @@ public class Network {
 		this.portalList.put(portal.name, portal);
 	}
 	
-	static public Portal getPortal(Location loc, GateStructure.Type key) {
+	static public Portal getPortal(Location loc, GateStructureType key) {
 		return getPortal(new SGLocation(loc),key);
 	}
 	
-	public static Portal getPortal(Location loc, Type[] keys) {
+	public static Portal getPortal(Location loc, GateStructureType[] keys) {
 		
 		return getPortal(new SGLocation(loc), keys);
 	}
@@ -67,7 +66,7 @@ public class Network {
 	 * @param key
 	 * @return
 	 */
-	static public Portal getPortal(SGLocation loc, GateStructure.Type key) {
+	static public Portal getPortal(SGLocation loc, GateStructureType key) {
 		if (!(portalFromPartsMap.containsKey(key))) {
 			Stargate.log(Level.FINER, "portalFromPartsMap does not contain key " + key);
 			return null;
@@ -82,8 +81,8 @@ public class Network {
 	 * @param keys
 	 * @return
 	 */
-	static public Portal getPortal(SGLocation loc, GateStructure.Type[] keys) {
-		for(GateStructure.Type key : keys) {
+	static public Portal getPortal(SGLocation loc, GateStructureType[] keys) {
+		for(GateStructureType key : keys) {
 			Portal portal = getPortal(loc, key);
 			if(portal != null)
 				return portal;
@@ -91,9 +90,9 @@ public class Network {
 		return null;
 	}
 	
-	public static boolean isInPortal(List<Block> blocks, GateStructure.Type[] keys) {
+	public static boolean isInPortal(List<Block> blocks, GateStructureType[] keys) {
 		for (Block block : blocks) {
-			if (getPortal(block.getLocation(), GateStructure.Type.values()) != null) {
+			if (getPortal(block.getLocation(), GateStructureType.values()) != null) {
 				return true;
 			}
 		}
@@ -101,7 +100,7 @@ public class Network {
 	}
 	
 	//Adjacent
-	public static boolean isNextToPortal(Location loc, GateStructure.Type key) {
+	public static boolean isNextToPortal(Location loc, GateStructureType key) {
 		BlockVector adjacentVec = new BlockVector(1,0,0);
 		for(int i = 0; i < 4; i++) {
 			Location adjacentLoc = loc.clone().add(adjacentVec);

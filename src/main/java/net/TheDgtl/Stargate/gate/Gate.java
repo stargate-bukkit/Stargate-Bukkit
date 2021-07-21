@@ -22,6 +22,8 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.exception.GateConflict;
+import net.TheDgtl.Stargate.exception.InvalidStructure;
 import net.TheDgtl.Stargate.portal.Network;
 import net.TheDgtl.Stargate.portal.SGLocation;
 
@@ -94,9 +96,9 @@ public class Gate {
 	}
 	
 	private boolean isGateConflict() {
-		List<SGLocation> locations = this.getLocations(GateStructure.Type.FRAME);
+		List<SGLocation> locations = this.getLocations(GateStructureType.FRAME);
 		for(SGLocation loc : locations) {
-			if(Network.getPortal(loc, GateStructure.Type.values()) != null ) {
+			if(Network.getPortal(loc, GateStructureType.values()) != null ) {
 				return true;
 			}
 		}
@@ -171,7 +173,7 @@ public class Gate {
 	 * @param structKey , key for the structuretype to be retrieved
 	 * @return
 	 */
-	public List<SGLocation> getLocations(GateStructure.Type structKey) {
+	public List<SGLocation> getLocations(GateStructureType structKey) {
 		List<SGLocation> output = new ArrayList<>();
 		for(BlockVector vec : getFormat().portalParts.get(structKey).getPartsPos()) {
 			Location loc = topLeft.clone().add(converter.doInverse(vec));
@@ -185,7 +187,7 @@ public class Gate {
 	 * @param mat
 	 */
 	private void setIrisMat(Material mat) {
-		GateStructure.Type targetType = GateStructure.Type.IRIS;
+		GateStructureType targetType = GateStructureType.IRIS;
 		List<SGLocation> locs = getLocations(targetType);
 		BlockData blockData = Bukkit.createBlockData(mat);
 
@@ -312,17 +314,6 @@ public class Gate {
 		}
 		
 		
-	}
-
-	public class GateConflict extends Exception{}
-	
-	public class InvalidStructure extends Exception {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -5580284561192990683L;
-
 	}
 	
 }

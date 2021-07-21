@@ -22,16 +22,16 @@ import net.TheDgtl.Stargate.Stargate;
 
 public class GateFormat {
 	public static HashMap<Material, List<GateFormat>> controlMaterialFormatsMap;
-	public HashMap<GateStructure.Type, GateStructure> portalParts;
+	public HashMap<GateStructureType, GateStructure> portalParts;
 
 	public final String name;
 
 	public GateFormat(GateIris iris, GateFrame frame, GateControll controll, HashMap<String, String> config,
 			String name) {
 		portalParts = new HashMap<>();
-		portalParts.put(GateStructure.Type.IRIS, iris);
-		portalParts.put(GateStructure.Type.FRAME, frame);
-		portalParts.put(GateStructure.Type.CONTROLL, controll);
+		portalParts.put(GateStructureType.IRIS, iris);
+		portalParts.put(GateStructureType.FRAME, frame);
+		portalParts.put(GateStructureType.CONTROLL, controll);
 		this.name = name;
 	}
 
@@ -44,7 +44,7 @@ public class GateFormat {
 	 * @return true if all structures are valid
 	 */
 	public boolean matches(Gate.VectorOperation converter, Location loc) {
-		for (GateStructure.Type structKey : portalParts.keySet()) {
+		for (GateStructureType structKey : portalParts.keySet()) {
 			Stargate.log(Level.FINER, "---Validating " + structKey);
 			if (!(portalParts.get(structKey).isValidState(converter, loc))) {
 				Stargate.log(Level.INFO, structKey + "returned negative");
@@ -101,17 +101,17 @@ public class GateFormat {
 	}
 
 	public List<BlockVector> getControllBlocks() {
-		GateControll controll = (GateControll) portalParts.get(GateStructure.Type.CONTROLL);
+		GateControll controll = (GateControll) portalParts.get(GateStructureType.CONTROLL);
 
 		return controll.parts;
 	}
 
 	public Material getIrisMat(boolean isOpen) {
-		return ((GateIris) portalParts.get(GateStructure.Type.IRIS)).getMat(isOpen);
+		return ((GateIris) portalParts.get(GateStructureType.IRIS)).getMat(isOpen);
 	}
 
 	public BlockVector getExit() {
-		return ((GateIris)portalParts.get(GateStructure.Type.IRIS)).getExit();
+		return ((GateIris)portalParts.get(GateStructureType.IRIS)).getExit();
 	}
 	
 	private static class GateFormatParser {

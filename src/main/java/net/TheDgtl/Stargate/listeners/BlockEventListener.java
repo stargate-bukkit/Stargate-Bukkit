@@ -20,8 +20,10 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.event.StargateDestroyEvent;
-import net.TheDgtl.Stargate.gate.GateStructure;
-import net.TheDgtl.Stargate.gate.Gate.GateConflict;
+import net.TheDgtl.Stargate.exception.GateConflict;
+import net.TheDgtl.Stargate.exception.NameError;
+import net.TheDgtl.Stargate.exception.NoFormatFound;
+import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.portal.FixedPortal;
 import net.TheDgtl.Stargate.portal.Network;
 import net.TheDgtl.Stargate.portal.NetworkedPortal;
@@ -32,7 +34,7 @@ public class BlockEventListener implements Listener {
 	public void onBlockBreak(BlockBreakEvent event) {
 		// TODO Have a list of all possible portalMaterials and skip if not any of those
 		Location loc = event.getBlock().getLocation();
-		Portal portal = Network.getPortal(loc, GateStructure.Type.FRAME);
+		Portal portal = Network.getPortal(loc, GateStructureType.FRAME);
 		if (portal != null) {
 			int cost = 0; // TODO economy manager
 			StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, event.getPlayer(), false, "", cost);
@@ -50,7 +52,7 @@ public class BlockEventListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-		if (Network.getPortal(loc, GateStructure.Type.CONTROLL) != null) {
+		if (Network.getPortal(loc, GateStructureType.CONTROLL) != null) {
 			event.setCancelled(true);
 		}
 	}
@@ -62,7 +64,7 @@ public class BlockEventListener implements Listener {
 		if(event.getPlayer().isSneaking())
 			return;
 		
-		if(Network.getPortal(event.getBlockAgainst().getLocation(), GateStructure.Type.CONTROLL) == null)
+		if(Network.getPortal(event.getBlockAgainst().getLocation(), GateStructureType.CONTROLL) == null)
 			return;
 		
 		event.setCancelled(true);
@@ -107,11 +109,11 @@ public class BlockEventListener implements Listener {
 			}
 			Stargate.log(Level.FINE, "A Gateformat matches");
 			player.sendMessage(Stargate.langManager.getMessage("createMsg", false));
-		} catch (Portal.NoFormatFound e) {
+		} catch (NoFormatFound e) {
 			Stargate.log(Level.FINE, "No Gateformat matches");
 		} catch (GateConflict e) {
 			player.sendMessage(Stargate.langManager.getMessage("createConflict", true));
-		} catch (Portal.NameError e) {
+		} catch (NameError e) {
 			switch (e.getMessage()) {
 			case "empty":
 				break;
@@ -125,20 +127,20 @@ public class BlockEventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPistonExtend(BlockPistonExtendEvent event) {
 		// check if portal is affected, if so cancel
-		if(Network.isInPortal(event.getBlocks(), GateStructure.Type.values()))
+		if(Network.isInPortal(event.getBlocks(), GateStructureType.values()))
 			event.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPistonRetract(BlockPistonRetractEvent event) {
 		// check if portal is affected, if so cancel
-		if(Network.isInPortal(event.getBlocks(), GateStructure.Type.values()))
+		if(Network.isInPortal(event.getBlocks(), GateStructureType.values()))
 			event.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onEntityExplode(EntityExplodeEvent event) {
-		if(Network.isInPortal(event.blockList(), GateStructure.Type.values()))
+		if(Network.isInPortal(event.blockList(), GateStructureType.values()))
 			event.setCancelled(true);
 	}
 
@@ -148,8 +150,8 @@ public class BlockEventListener implements Listener {
 		// if so, cancel
 		Block to = event.getToBlock();
 		Block from = event.getBlock();
-		if ((Network.getPortal(to.getLocation(), GateStructure.Type.IRIS) != null)
-				|| (Network.getPortal(from.getLocation(), GateStructure.Type.IRIS) != null))
+		if ((Network.getPortal(to.getLocation(), GateStructureType.IRIS) != null)
+				|| (Network.getPortal(from.getLocation(), GateStructureType.IRIS) != null))
 			event.setCancelled(true);
 	}
 }
