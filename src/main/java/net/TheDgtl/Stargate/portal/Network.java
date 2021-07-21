@@ -17,7 +17,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.SyncronousPopulator;
 import net.TheDgtl.Stargate.portal.Gate.GateConflict;
 import net.TheDgtl.Stargate.portal.GateStructure.Type;
-import net.TheDgtl.Stargate.portal.Network.PortalFlag.NoFlagFound;
+import net.TheDgtl.Stargate.portal.PortalFlag.NoFlagFound;
 
 public class Network {
 	/*
@@ -124,30 +124,7 @@ public class Network {
 		return networkList.get(networkName);
 	}
 	
-	public enum PortalFlag {
-		RANDOM('R'), BUNGEE('U'), ALWAYSON('A'), BACKWARDS('B'),
-		HIDDEN('H'), PRIVATE('P'), SHOW('S'), NONETWORK('N'), // ??
-		FREE('F');
-
-		public final char label;
-
-		private PortalFlag(char label) {
-			this.label = label;
-		}
-
-		public static PortalFlag valueOf(char label) throws NoFlagFound {
-			for (PortalFlag flag : values()) {
-				if (flag.label == label) {
-					return flag;
-				}
-			}
-			throw new NoFlagFound();
-		}
-
-		static public class NoFlagFound extends Exception {
-		}
-	}
-
+	
 	public abstract class Portal{
 		/**
 		 * Behaviours: - Cycle through PortalStates, make current state listener for
@@ -163,6 +140,9 @@ public class Network {
 		HashSet<PortalFlag> flags;
 		String name;
 		Player openFor;
+		Portal overrideDesti = null;
+		private long openTime = -1;
+		
 		
 		Portal(Block sign, String[] lines) throws NameError, NoFormatFound, GateConflict{
 			
@@ -268,13 +248,14 @@ public class Network {
 		public void open(Player actor) {
 			gate.open();
 			this.openFor = actor;
+			this.openTime = System.currentTimeMillis();
 
 			// Create action which will close this portal
 			SyncronousPopulator.Action action = new SyncronousPopulator.Action() {
 
 				@Override
 				public void run(boolean forceEnd) {
-					close();
+					close(openTime);
 				}
 
 				@Override
@@ -284,6 +265,22 @@ public class Network {
 			};
 			// Make the action on a delay
 			Stargate.syncPopulator.new DelayedAction(delay, action);
+		}
+		
+		/**
+		 * Everytime most of the portals opens, there is going to be a scheduled event
+		 * to close it after a specific time. If a player enters the portal before this,
+		 * then it is going to close, but the scheduled close event is still going to be
+		 * there. And if the portal gets activated again, it is going to close
+		 * prematurely, because of this already scheduled event. Solution to avoid this
+		 * is to assign a opentime for each scheduled close event and only close if the 
+		 * related open time matches with the most recent time the portal was closed.
+		 * 
+		 * @param relatedOpenTime
+		 */
+		public void close(long relatedOpenTime) {
+			if (relatedOpenTime == openTime)
+				close();
 		}
 		
 		public void close() {
@@ -300,6 +297,25 @@ public class Network {
 			return gate.getExit();
 		}
 		
+		public void setOverrideDesti(Portal desti) {
+			this.overrideDesti = desti;
+		}
+		
+		public void removOverrideDesti() {
+			this.overrideDesti = null;
+		}
+		
+		public Portal getFinalDesti() {
+			Portal destination;
+			if(overrideDesti != null) {
+				destination = overrideDesti;
+				overrideDesti = null;
+			} else {
+				destination = getDestination();
+			}
+			return destination;
+		}
+		
 		/**
 		 * Surrounds one string with two strings
 		 * @param target
@@ -310,7 +326,19 @@ public class Network {
 			return surrounding[0] + target + surrounding[1];
 		}
 		
-		public class NameError extends Exception{
+		public void openDestAndThis(Player player) {
+			// TODO Auto-generated method stub
+			if (getDestination() == null) {
+				// TODO write message?
+				return;
+			}
+			// TODO checkPerms
+			open(player);
+			getDestination().open(player);
+		}
+	
+
+		public class NameError extends Exception {
 			/**
 			 * 
 			 */
@@ -320,7 +348,7 @@ public class Network {
 				super(msg);
 			}
 		}
-		
+
 		public class NoFormatFound extends Exception {
 
 			/**
@@ -329,6 +357,7 @@ public class Network {
 			private static final long serialVersionUID = 1134125769081020233L;
 
 		}
+
 	}
 	
 	public class FixedPortal extends Portal{
@@ -373,7 +402,8 @@ public class Network {
 			this.openFor = null;
 		}
 	}
-
+	
+	
 	public class NetworkedPortal extends Portal {
 		// used in networked portals
 		static final private int NO_DESTI_SELECTED = -1;

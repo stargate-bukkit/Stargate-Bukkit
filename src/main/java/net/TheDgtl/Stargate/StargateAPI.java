@@ -29,6 +29,7 @@ public class StargateAPI {
 	 * @param portal2
 	 */
 	public void forceConnect(Network.Portal portal1, Network.Portal portal2) {
-		
+		portal1.setOverrideDesti(portal2);
+		portal1.openDestAndThis(null);
 	}
 }

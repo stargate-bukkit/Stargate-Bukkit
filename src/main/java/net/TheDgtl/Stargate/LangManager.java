@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,18 +10,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.bukkit.ChatColor;
 
 public class LangManager {
 	
+	private static final String PREFIX = "prefix";
 	private final String dataFolder;
     private String lang;
     private HashMap<String, String> strList;
     private final HashMap<String, String> defList;
     
     private Stargate stargate;
-    
+
     public LangManager(Stargate stargate, String datFolder, String lang) {
         this.lang = lang;
         this.dataFolder = datFolder;
@@ -34,11 +37,17 @@ public class LangManager {
         defList = loadLanguage(defaultLang);
     }
     
+    public String getMessage(String textAlias, boolean isError) {
+		String prefix = (isError ? ChatColor.RED : ChatColor.GREEN) + strList.get(PREFIX);
+		String msg =  getString(textAlias).replaceAll("(&([a-f0-9]))", "\u00A7$2");
+		return prefix + ChatColor.WHITE + msg;
+	}
+    
     public String getString(String textAlias) {
-    	String output = strList.get(textAlias);
-    	if(output == null)
-    		output = defList.get(textAlias);
-    	return output;
+    	String msg = strList.get(textAlias);
+    	if(msg == null)
+    		msg = defList.get(textAlias);
+    	return msg;
     }
     
     

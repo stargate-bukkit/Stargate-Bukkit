@@ -61,20 +61,10 @@ public class PlayerInteractEventListener implements Listener {
 			return;
 		}
 		if (Tag.BUTTONS.isTagged(blockMat) || (blockMat == Material.DEAD_TUBE_CORAL_WALL_FAN)) {
-			openPortal(portal, player);
+			portal.openDestAndThis(player);
 			return;
 		}
 
 		Stargate.log(Level.WARNING, "This should never be triggered, an unkown glitch is occuring");
-	}
-
-	private void openPortal(Portal portal, Player player) {
-		if (portal.getDestination() == null) {
-			// TODO write message?
-			return;
-		}
-		// TODO checkPerms
-		portal.open(player);
-		portal.getDestination().open(player);
 	}
 }

@@ -32,18 +32,18 @@ public class BlockEventListener implements Listener {
 		SGLocation loc = new SGLocation(event.getBlock().getLocation());
 		Portal portal = Network.getPortal(loc, GateStructure.Type.FRAME);
 		if (portal != null) {
-			int cost = 0; //TODO economy manager
+			int cost = 0; // TODO economy manager
 			StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, event.getPlayer(), false, "", cost);
 			PermissionManager permMngr = new PermissionManager(event.getPlayer());
-			if(permMngr.hasPerm(dEvent)) {
-				
-				String msg = Stargate.langManager.getString("destroyMsg");
+			if (permMngr.hasPerm(dEvent)) {
+
+				String msg = Stargate.langManager.getMessage("destroyMsg", false);
 				event.getPlayer().sendMessage(msg);
 				portal.destroy();
 				return;
 			}
-			
-			String reason = Stargate.langManager.getString(permMngr.getDenyMsg());
+
+			String reason = Stargate.langManager.getMessage(permMngr.getDenyMsg(), true);
 			event.getPlayer().sendMessage(reason);
 			event.setCancelled(true);
 			return;
@@ -99,21 +99,22 @@ public class BlockEventListener implements Listener {
 				portal = selectedNet.new FixedPortal(block, lines);
 
 			if (!hasPerm) {
-				player.sendMessage(Stargate.langManager.getString(permMngr.getDenyMsg()));
+				player.sendMessage(Stargate.langManager.getMessage(permMngr.getDenyMsg(), true));
 				portal.destroy();
 				return;
 			}
 			Stargate.log(Level.FINE, "A Gateformat matches");
+			player.sendMessage(Stargate.langManager.getMessage("createMsg", false));
 		} catch (Portal.NoFormatFound e) {
 			Stargate.log(Level.FINE, "No Gateformat matches");
 		} catch (GateConflict e) {
-			player.sendMessage(Stargate.langManager.getString("createConflict"));
+			player.sendMessage(Stargate.langManager.getMessage("createConflict", true));
 		} catch (Portal.NameError e) {
 			switch (e.getMessage()) {
 			case "empty":
 				break;
 			case "taken":
-				player.sendMessage(Stargate.langManager.getString("createExists"));
+				player.sendMessage(Stargate.langManager.getMessage("createExists", true));
 				break;
 			}
 		}
