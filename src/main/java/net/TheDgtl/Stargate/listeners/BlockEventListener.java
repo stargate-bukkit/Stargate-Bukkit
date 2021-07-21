@@ -1,5 +1,7 @@
 package net.TheDgtl.Stargate.listeners;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
@@ -97,12 +99,7 @@ public class BlockEventListener implements Listener {
 		}
 		Network selectedNet = Network.networkList.get(network);
 		try {
-			Portal portal;
-			if (lines[1].isBlank())
-				portal = new NetworkedPortal(selectedNet, block, lines);
-			else
-				portal = new FixedPortal(selectedNet, block, lines);
-
+			Portal portal = Portal.createPortalFromSign(selectedNet, block, lines);
 			if (!hasPerm) {
 				player.sendMessage(Stargate.langManager.getMessage(permMngr.getDenyMsg(), true));
 				portal.destroy();

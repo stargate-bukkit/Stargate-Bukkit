@@ -257,4 +257,12 @@ public abstract class Portal {
 		this.gate = gate;
 	}
 
+	public static Portal createPortalFromSign(Network net, Block block, String[] lines)
+			throws NameError, NoFormatFound, GateConflict {
+		if (lines[3].contains("R"))
+			return new RandomPortal(net, block, lines);
+		if (lines[1].isBlank())
+			return new NetworkedPortal(net, block, lines);
+		return new FixedPortal(net, block, lines);
+	}
 }
