@@ -45,7 +45,7 @@ public class NetworkedPortal extends Portal {
 		drawControll();
 	}
 	
-	private String getDestination(int index) {
+	private String getDestinationName(int index) {
 		if (index == NO_DESTI_SELECTED) {
 			return "";
 		}
@@ -91,11 +91,11 @@ public class NetworkedPortal extends Portal {
 	@Override
 	public void drawControll() {
 		String[] lines = new String[4];
-		lines[0] = surroundWith(name, Network.PORTALNAMESURROUND);
+		lines[0] = NameSurround.PORTAL.getSurround(name);
 		if (this.selectedDesti == NO_DESTI_SELECTED) {
 			lines[1] = Stargate.langManager.getString(LangMsg.RIGHT_CLICK);
 			lines[2] = Stargate.langManager.getString(LangMsg.TO_USE);
-			lines[3] = surroundWith(this.network.netName, Network.NETWORKNAMESURROUND);
+			lines[3] = NameSurround.NETWORK.getSurround(this.network.netName);
 		} else {
 			int destiIndex = selectedDesti % 3;
 			int desti1 = selectedDesti - destiIndex;
@@ -104,11 +104,11 @@ public class NetworkedPortal extends Portal {
 				int desti = i + desti1;
 				if(desti == maxLength)
 					break;
-				String name = getDestination(desti);
+				String aDestinationName = getDestinationName(desti);
 				if (destiIndex == i) {
-					name = surroundWith(name, Network.DESTINAMESURROUND);
+					aDestinationName = NameSurround.DESTI.getSurround(aDestinationName);
 				}
-				lines[i + 1] = name;
+				lines[i + 1] = aDestinationName;
 			}
 		}
 		getGate().drawControll(lines);

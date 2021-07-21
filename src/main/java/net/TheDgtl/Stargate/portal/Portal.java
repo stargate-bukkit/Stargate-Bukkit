@@ -70,8 +70,12 @@ public abstract class Portal {
 		for (PortalFlag flag : flags) {
 			msg = msg + flag.label;
 		}
-		this.network.addPortal(this);
 		Stargate.log(Level.FINE, msg);
+		
+		this.network.addPortal(this);
+		for (String portal : this.network.portalList.keySet()) {
+			this.network.portalList.get(portal).drawControll();
+		}
 		for (GateStructureType key : getGate().getFormat().portalParts.keySet()) {
 			if (!Network.portalFromPartsMap.containsKey(key)) {
 				Network.portalFromPartsMap.put(key, new HashMap<SGLocation, Portal>());
@@ -234,18 +238,7 @@ public abstract class Portal {
 		}
 		return destination;
 	}
-
-	/**
-	 * Surrounds one string with two strings
-	 * 
-	 * @param target
-	 * @param surrounding
-	 * @return
-	 */
-	protected String surroundWith(String target, String[] surrounding) {
-		return surrounding[0] + target + surrounding[1];
-	}
-
+	
 	public void openDestAndThis(Player player) {
 		if (getDestination() == null) {
 			player.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));

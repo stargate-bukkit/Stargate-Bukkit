@@ -36,9 +36,9 @@ public class FixedPortal extends Portal{
 	@Override
 	public void drawControll() {
 		String[] lines = new String[4];
-		lines[0] = surroundWith(name, Network.PORTALNAMESURROUND);
-		lines[1] = surroundWith(destination, Network.DESTINAMESURROUND);
-		lines[2] = surroundWith(this.network.netName, Network.NETWORKNAMESURROUND);
+		lines[0] = NameSurround.PORTAL.getSurround(name);
+		lines[1] = NameSurround.DESTI.getSurround(destination);
+		lines[2] = NameSurround.NETWORK.getSurround(this.network.netName);
 		lines[3] = (this.network.portalList.containsKey(destination)) ? ""
 					: Stargate.langManager.getString(LangMsg.DISCONNECTED);
 		getGate().drawControll(lines);
