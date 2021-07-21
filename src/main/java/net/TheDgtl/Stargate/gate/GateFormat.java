@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.portal;
+package net.TheDgtl.Stargate.gate;
 
 import java.io.File;
 import java.io.FileNotFoundException;

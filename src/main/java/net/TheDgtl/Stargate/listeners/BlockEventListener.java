@@ -20,10 +20,12 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.event.StargateDestroyEvent;
-import net.TheDgtl.Stargate.portal.Gate.GateConflict;
-import net.TheDgtl.Stargate.portal.GateStructure;
+import net.TheDgtl.Stargate.gate.GateStructure;
+import net.TheDgtl.Stargate.gate.Gate.GateConflict;
+import net.TheDgtl.Stargate.portal.FixedPortal;
 import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.Network.Portal;
+import net.TheDgtl.Stargate.portal.NetworkedPortal;
+import net.TheDgtl.Stargate.portal.Portal;
 
 public class BlockEventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -94,9 +96,9 @@ public class BlockEventListener implements Listener {
 		try {
 			Portal portal;
 			if (lines[1].isBlank())
-				portal = selectedNet.new NetworkedPortal(block, lines);
+				portal = new NetworkedPortal(selectedNet, block, lines);
 			else
-				portal = selectedNet.new FixedPortal(block, lines);
+				portal = new FixedPortal(selectedNet, block, lines);
 
 			if (!hasPerm) {
 				player.sendMessage(Stargate.langManager.getMessage(permMngr.getDenyMsg(), true));

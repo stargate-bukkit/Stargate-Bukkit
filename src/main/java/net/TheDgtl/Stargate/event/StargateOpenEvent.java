@@ -24,7 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.portal.Network;
+import net.TheDgtl.Stargate.portal.Portal;
 
 public class StargateOpenEvent extends StargateEvent {
     private final Player player;
@@ -42,7 +42,7 @@ public class StargateOpenEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateOpenEvent(Player player, @NotNull Network.Portal portal, boolean isForced) {
+    public StargateOpenEvent(Player player, @NotNull Portal portal, boolean isForced) {
         super(Objects.requireNonNull(portal));
         this.player = player;
         this.isForced = isForced;

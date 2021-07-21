@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.portal;
+package net.TheDgtl.Stargate.gate;
 
 import java.util.ArrayList;
 import java.util.HashMap;

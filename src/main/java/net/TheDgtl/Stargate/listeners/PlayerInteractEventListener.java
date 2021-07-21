@@ -20,10 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import org.bukkit.event.Event;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.portal.GateStructure;
+import net.TheDgtl.Stargate.gate.GateStructure;
 import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.Network.FixedPortal;
-import net.TheDgtl.Stargate.portal.Network.Portal;
+import net.TheDgtl.Stargate.portal.Portal;
 import net.TheDgtl.Stargate.portal.SGLocation;
 
 public class PlayerInteractEventListener implements Listener {

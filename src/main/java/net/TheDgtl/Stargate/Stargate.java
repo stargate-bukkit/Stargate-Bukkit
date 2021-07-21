@@ -25,12 +25,12 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.listeners.BlockEventListener;
 import net.TheDgtl.Stargate.listeners.MoveEventListener;
 import net.TheDgtl.Stargate.listeners.PlayerInteractEventListener;
 import net.TheDgtl.Stargate.listeners.PluginEventListener;
 import net.TheDgtl.Stargate.listeners.WorldEventListener;
-import net.TheDgtl.Stargate.portal.GateFormat;
 
 public class Stargate extends JavaPlugin {
 	private static Stargate instance;

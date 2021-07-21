@@ -11,9 +11,9 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.portal.GateStructure;
+import net.TheDgtl.Stargate.gate.GateStructure;
 import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.Network.Portal;
+import net.TheDgtl.Stargate.portal.Portal;
 
 public class MoveEventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

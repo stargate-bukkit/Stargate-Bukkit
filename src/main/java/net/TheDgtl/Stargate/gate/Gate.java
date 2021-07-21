@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.portal;
+package net.TheDgtl.Stargate.gate;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,10 +22,12 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.portal.Network;
+import net.TheDgtl.Stargate.portal.SGLocation;
 
 public class Gate {
 
-	GateFormat format;
+	private GateFormat format;
 	/*
 	 * a vector operation that goes from world -> format. Also contains the inverse
 	 * operation for this
@@ -33,7 +35,7 @@ public class Gate {
 	VectorOperation converter; 
 	Location topLeft;
 	BlockVector signPos;
-	boolean isOpen = false;
+	private boolean isOpen = false;
 
 	
 	
@@ -51,7 +53,7 @@ public class Gate {
 	 * @throws GateConflict
 	 */
 	public Gate(GateFormat format, Location loc, BlockFace signFace) throws InvalidStructure, GateConflict {
-		this.format = format;
+		this.setFormat(format);
 		converter = new VectorOperation(signFace);
 
 		if (matchesFormat(loc))
@@ -70,7 +72,7 @@ public class Gate {
 	 * @throws GateConflict 
 	 */
 	private boolean matchesFormat(Location loc) throws GateConflict {
-		List<BlockVector> controlBlocks = format.getControllBlocks();
+		List<BlockVector> controlBlocks = getFormat().getControllBlocks();
 		for (BlockVector controlBlock : controlBlocks) {
 			/*
 			 * Topleft is origo for the format, everything becomes easier if you calculate
@@ -80,7 +82,7 @@ public class Gate {
 			 */
 			topLeft = loc.clone().subtract(converter.doInverse(controlBlock));
 			
-			if (format.matches(converter, topLeft)) {
+			if (getFormat().matches(converter, topLeft)) {
 				if(isGateConflict()) {
 					throw new GateConflict();
 				}
@@ -125,7 +127,7 @@ public class Gate {
 		 * controllblocks
 		 */
 		Location buttonLoc = topLeft.clone();
-		for (BlockVector buttonVec : format.getControllBlocks()) {
+		for (BlockVector buttonVec : getFormat().getControllBlocks()) {
 			if (signPos == buttonVec)
 				continue;
 			buttonLoc.add(converter.doInverse(buttonVec));
@@ -142,13 +144,17 @@ public class Gate {
 		
 	}
 	
+	public Location getSignLoc() {
+		return topLeft.add(signPos);
+	}
+	
 	private BlockFace getButtonFacing(Material buttonMat, Directional signDirection) {
 		//TODO The oposite facing will be selected for watergates (i think)
 		return signDirection.getFacing();
 	}
 	
 	private Material getButtonMaterial() {
-		Material portalClosedMat = format.getIrisMat(false);
+		Material portalClosedMat = getFormat().getIrisMat(false);
 		switch(portalClosedMat){
 		case AIR:
 			return DEFAULTBUTTON;
@@ -167,7 +173,7 @@ public class Gate {
 	 */
 	public List<SGLocation> getLocations(GateStructure.Type structKey) {
 		List<SGLocation> output = new ArrayList<>();
-		for(BlockVector vec : format.portalParts.get(structKey).getPartsPos()) {
+		for(BlockVector vec : getFormat().portalParts.get(structKey).getPartsPos()) {
 			Location loc = topLeft.clone().add(converter.doInverse(vec));
 			output.add(new SGLocation(loc));
 		}
@@ -202,23 +208,39 @@ public class Gate {
 	}
 	
 	public void open() {
-		Material mat = format.getIrisMat(true);
+		Material mat = getFormat().getIrisMat(true);
 		setIrisMat(mat);
-		isOpen = true;
+		setOpen(true);
 		
 	}
 	
 	public void close() {
-		Material mat = format.getIrisMat(false);
+		Material mat = getFormat().getIrisMat(false);
 		setIrisMat(mat);
-		isOpen = false;
+		setOpen(false);
 	}
 
 	public Location getExit() {
-		BlockVector exit = format.getExit();
+		BlockVector exit = getFormat().getExit();
 		return topLeft.clone().add(converter.doInverse(exit));
 	}
 	
+	public boolean isOpen() {
+		return isOpen;
+	}
+
+	public void setOpen(boolean isOpen) {
+		this.isOpen = isOpen;
+	}
+
+	public GateFormat getFormat() {
+		return format;
+	}
+
+	public void setFormat(GateFormat format) {
+		this.format = format;
+	}
+
 	public class VectorOperation {
 		/*
 		 * EVERY OPERATION DOES NOT MUTE/CHANGE THE INITIAL OBJECT!!!!

@@ -23,7 +23,7 @@ import java.util.Objects;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.portal.Network;
+import net.TheDgtl.Stargate.portal.Portal;
 
 public class StargateCloseEvent extends StargateEvent {
     private boolean force;
@@ -41,7 +41,7 @@ public class StargateCloseEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateCloseEvent(@NotNull Network.Portal portal, boolean force) {
+    public StargateCloseEvent(@NotNull Portal portal, boolean force) {
         super(Objects.requireNonNull(portal));
         this.force = force;
     }
