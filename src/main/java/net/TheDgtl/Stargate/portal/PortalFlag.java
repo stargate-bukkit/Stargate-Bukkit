@@ -1,8 +1,8 @@
 package net.TheDgtl.Stargate.portal;
 
 public enum PortalFlag {
-	RANDOM('R'), BUNGEE('U'), ALWAYSON('A'), BACKWARDS('B'),
-	HIDDEN('H'), PRIVATE('P'), SHOW('S'), NONETWORK('N'), // ??
+	RANDOM('R'), BUNGEE('U'), ALWAYS_ON('A'), BACKWARDS('B'),
+	HIDDEN('H'), PRIVATE('P'), FORCE_SHOW('S'), NO_NETWORK('N'), // ??
 	FREE('F');
 
 	public final char label;

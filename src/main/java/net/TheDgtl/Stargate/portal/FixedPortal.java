@@ -41,7 +41,7 @@ public class FixedPortal extends Portal{
 		lines[2] = NameSurround.NETWORK.getSurround(this.network.netName);
 		lines[3] = (this.network.portalList.containsKey(destination)) ? ""
 					: Stargate.langManager.getString(LangMsg.DISCONNECTED);
-		getGate().drawControll(lines,!flags.contains(PortalFlag.ALWAYSON));
+		getGate().drawControll(lines,!flags.contains(PortalFlag.ALWAYS_ON));
 	}
 	
 	@Override

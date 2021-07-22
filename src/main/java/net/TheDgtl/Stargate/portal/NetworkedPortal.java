@@ -55,12 +55,14 @@ public class NetworkedPortal extends Portal {
 	private String[] getDestinations() {
 		HashSet<String> tempPortalList = new HashSet<>(this.network.portalList.keySet());
 		tempPortalList.remove(name);
-		HashSet<String> removeList = new HashSet<>();
-		for (String portalName : tempPortalList) {
-			if (network.getPortal(portalName).isHidden())
-				removeList.add(portalName);
+		if (!flags.contains(PortalFlag.FORCE_SHOW)) {
+			HashSet<String> removeList = new HashSet<>();
+			for (String portalName : tempPortalList) {
+				if (network.getPortal(portalName).isHidden())
+					removeList.add(portalName);
+			}
+			tempPortalList.removeAll(removeList);
 		}
-		tempPortalList.removeAll(removeList);
 		return tempPortalList.toArray(new String[0]);
 	}
 
@@ -118,6 +120,6 @@ public class NetworkedPortal extends Portal {
 				lines[i + 1] = aDestinationName;
 			}
 		}
-		getGate().drawControll(lines,!flags.contains(PortalFlag.ALWAYSON));
+		getGate().drawControll(lines,!flags.contains(PortalFlag.ALWAYS_ON));
 	}
 }

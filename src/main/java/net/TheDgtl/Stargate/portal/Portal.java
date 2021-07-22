@@ -83,7 +83,7 @@ public abstract class Portal {
 			List<SGLocation> locations = getGate().getLocations(key);
 			Network.portalFromPartsMap.get(key).putAll(generateLocationHashMap(locations));
 		}
-		if(flags.contains(PortalFlag.ALWAYSON))
+		if(flags.contains(PortalFlag.ALWAYS_ON))
 			this.open(null);
 	}
 
@@ -164,7 +164,7 @@ public abstract class Portal {
 		long openTime = System.currentTimeMillis();
 		this.openTime = openTime;
 
-		if(flags.contains(PortalFlag.ALWAYSON)) {
+		if(flags.contains(PortalFlag.ALWAYS_ON)) {
 			return;
 		}
 		
@@ -202,7 +202,7 @@ public abstract class Portal {
 	}
 
 	public void close() {
-		if(flags.contains(PortalFlag.ALWAYSON))
+		if(flags.contains(PortalFlag.ALWAYS_ON))
 			return;
 		getGate().close();
 		drawControll();

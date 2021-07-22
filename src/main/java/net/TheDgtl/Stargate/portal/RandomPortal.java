@@ -32,7 +32,7 @@ public class RandomPortal extends Portal{
 			NameSurround.NETWORK.getSurround(network.netName),
 			""
 		};
-		getGate().drawControll(lines,!flags.contains(PortalFlag.ALWAYSON));
+		getGate().drawControll(lines,!flags.contains(PortalFlag.ALWAYS_ON));
 	}
 	
 	@Override
