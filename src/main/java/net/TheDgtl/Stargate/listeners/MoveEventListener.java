@@ -11,6 +11,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.jetbrains.annotations.NotNull;
 
+import net.TheDgtl.Stargate.LangMsg;
+import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.portal.Network;
 import net.TheDgtl.Stargate.portal.Portal;
@@ -66,6 +68,11 @@ public class MoveEventListener implements Listener {
 
 		// check perm's
 		Portal desti = portal.getFinalDesti();
+		if(desti == null) {
+			player.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
+			player.teleport(portal.getExit());
+			return;
+		}
 		Location exit = desti.getExit();
 		player.teleport(exit);
 		desti.close();
