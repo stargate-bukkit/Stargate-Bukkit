@@ -12,6 +12,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Stargate;
@@ -218,7 +219,7 @@ public abstract class Portal {
 	}
 
 	public Location getExit() {
-		return getGate().getExit();
+		return gate.getExit(flags.contains(PortalFlag.BACKWARDS));
 	}
 
 	public void setOverrideDesti(Portal desti) {

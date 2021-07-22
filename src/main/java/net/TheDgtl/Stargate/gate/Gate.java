@@ -25,6 +25,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.InvalidStructure;
 import net.TheDgtl.Stargate.portal.Network;
+import net.TheDgtl.Stargate.portal.PortalFlag;
 import net.TheDgtl.Stargate.portal.SGLocation;
 
 public class Gate {
@@ -37,6 +38,7 @@ public class Gate {
 	VectorOperation converter; 
 	Location topLeft;
 	BlockVector signPos;
+	private BlockFace facing;
 	private boolean isOpen = false;
 
 	
@@ -56,6 +58,7 @@ public class Gate {
 	 */
 	public Gate(GateFormat format, Location loc, BlockFace signFace) throws InvalidStructure, GateConflict {
 		this.setFormat(format);
+		facing = signFace;
 		converter = new VectorOperation(signFace);
 
 		if (matchesFormat(loc))
@@ -224,9 +227,14 @@ public class Gate {
 		setOpen(false);
 	}
 
-	public Location getExit() {
-		BlockVector exit = getFormat().getExit();
-		return topLeft.clone().add(converter.doInverse(exit));
+	public Location getExit(boolean isBackwards) {
+		BlockVector formatExit = getFormat().getExit();
+		Location exit = topLeft.clone().add(converter.doInverse(formatExit));
+		
+		Vector offsett = facing.getDirection();
+		if(isBackwards)
+			return exit.subtract(offsett);
+		return exit.add(offsett);
 	}
 	
 	public boolean isOpen() {

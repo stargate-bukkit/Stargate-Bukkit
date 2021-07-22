@@ -33,7 +33,6 @@ public class GateIris extends GateStructure{
 	
 	public void addExit(BlockVector exitpoint) {
 		this.exit = exitpoint.clone();
-		exit.add(new BlockVector(1,0,0));
 		addPart(exitpoint);
 	}
 	
