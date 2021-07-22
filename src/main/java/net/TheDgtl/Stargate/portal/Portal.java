@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.portal;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -40,12 +41,11 @@ public abstract class Portal {
 	 */
 	int delay = 20 * 20; // ticks
 	private Gate gate;
-	List<PortalFlag> flags;
+	EnumSet<PortalFlag> flags;
 	String name;
 	Player openFor;
 	Portal overrideDesti = null;
 	private long openTime = -1;
-
 	Portal(Network network, Block sign, String[] lines) throws NameError, NoFormatFound, GateConflict {
 
 		this.network = network;
@@ -65,7 +65,7 @@ public abstract class Portal {
 		List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
 		setGate(FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing()));
 
-		flags = getFlags(lines[3]);
+		flags = parseFlags(lines[3]);
 		String msg = "Selected with flags ";
 		for (PortalFlag flag : flags) {
 			msg = msg + flag.label;
@@ -105,8 +105,8 @@ public abstract class Portal {
 	 * 
 	 * @param line
 	 */
-	private List<PortalFlag> getFlags(String line) {
-		List<PortalFlag> foundFlags = new ArrayList<>();
+	private EnumSet<PortalFlag> parseFlags(String line) {
+		EnumSet<PortalFlag> foundFlags = EnumSet.noneOf(PortalFlag.class);
 		char[] charArray = line.toUpperCase().toCharArray();
 		for (char character : charArray) {
 			try {
@@ -135,7 +135,7 @@ public abstract class Portal {
 		return getGate().isOpen();
 	}
 
-	public List<PortalFlag> getFlags() {
+	public EnumSet<PortalFlag> getFlags() {
 		return flags;
 	}
 
@@ -259,7 +259,7 @@ public abstract class Portal {
 
 	public static Portal createPortalFromSign(Network net, Block block, String[] lines)
 			throws NameError, NoFormatFound, GateConflict {
-		if (lines[3].contains("R"))
+		if (lines[3].toUpperCase().contains("R"))
 			return new RandomPortal(net, block, lines);
 		if (lines[1].isBlank())
 			return new NetworkedPortal(net, block, lines);
