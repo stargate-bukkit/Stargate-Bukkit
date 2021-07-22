@@ -59,7 +59,7 @@ public class NetworkedPortal extends Portal {
 	}
 	
 	@Override
-	public Portal getDestination() {
+	public Portal loadDestination() {
 		if(selectedDesti == NO_DESTI_SELECTED)
 			return null;
 		return this.network.getPortal(getDestinations()[selectedDesti]);
@@ -111,6 +111,6 @@ public class NetworkedPortal extends Portal {
 				lines[i + 1] = aDestinationName;
 			}
 		}
-		getGate().drawControll(lines);
+		getGate().drawControll(lines,!flags.contains(PortalFlag.ALWAYSON));
 	}
 }

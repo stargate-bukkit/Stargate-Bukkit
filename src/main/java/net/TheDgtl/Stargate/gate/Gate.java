@@ -110,7 +110,7 @@ public class Gate {
 	 * 
 	 * @param signLines an array with 4 elements, representing each line of a sign
 	 */
-	public void drawControll(String[] signLines) {
+	public void drawControll(String[] signLines, boolean isDrawButton) {
 		Location signLoc = topLeft.clone().add(converter.doInverse(signPos));
 		BlockState signState = signLoc.getBlock().getState();
 		if (!(signState instanceof Sign)) {
@@ -123,6 +123,8 @@ public class Gate {
 			sign.setLine(i, signLines[i]);
 		}
 		Stargate.syncPopulator.new BlockSetAction(sign, true);
+		if(!isDrawButton)
+			return;
 		/*
 		 * Just a cheat to exclude the sign location, and determine the position of the
 		 * button. Note that this will have weird behaviour if there's more than 3

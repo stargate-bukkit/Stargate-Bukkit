@@ -32,11 +32,11 @@ public class RandomPortal extends Portal{
 			NameSurround.NETWORK.getSurround(network.netName),
 			""
 		};
-		getGate().drawControll(lines);
+		getGate().drawControll(lines,!flags.contains(PortalFlag.ALWAYSON));
 	}
 	
 	@Override
-	public Portal getDestination() {
+	public Portal loadDestination() {
 		Set<String> allPortalNames = network.portalList.keySet();
 		allPortalNames.remove(this.name);
 		String[] destinations = allPortalNames.toArray(new String[0]);
@@ -48,5 +48,11 @@ public class RandomPortal extends Portal{
 
         return network.getPortal(dest);
 	}
-
+	
+	@Override
+	public void close() {
+		super.close();
+		destination = null;
+	}
 }
+

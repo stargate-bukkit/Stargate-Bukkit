@@ -44,7 +44,7 @@ public abstract class Portal {
 	EnumSet<PortalFlag> flags;
 	String name;
 	Player openFor;
-	Portal overrideDesti = null;
+	Portal destination = null;
 	private long openTime = -1;
 	Portal(Network network, Block sign, String[] lines) throws NameError, NoFormatFound, GateConflict {
 
@@ -129,7 +129,7 @@ public abstract class Portal {
 
 	public abstract void drawControll();
 
-	public abstract Portal getDestination();
+	public abstract Portal loadDestination();
 
 	public boolean isOpen() {
 		return getGate().isOpen();
@@ -145,7 +145,7 @@ public abstract class Portal {
 	public void destroy() {
 		this.network.portalList.remove(name);
 		String[] lines = new String[] { name, "", "", "" };
-		getGate().drawControll(lines);
+		getGate().drawControll(lines, false);
 		for (GateStructureType formatType : Network.portalFromPartsMap.keySet()) {
 			for (SGLocation loc : this.getGate().getLocations(formatType)) {
 				Network.portalFromPartsMap.get(formatType).remove(loc);
@@ -202,6 +202,8 @@ public abstract class Portal {
 	}
 
 	public void close() {
+		if(flags.contains(PortalFlag.ALWAYSON))
+			return;
 		getGate().close();
 		drawControll();
 	}
@@ -216,7 +218,7 @@ public abstract class Portal {
 	}
 
 	public void setOverrideDesti(Portal desti) {
-		this.overrideDesti = desti;
+		this.destination = desti;
 	}
 
 	public Network getNetwork() {
@@ -229,24 +231,21 @@ public abstract class Portal {
 	}
 
 	public Portal getFinalDesti() {
-		Portal destination;
-		if (overrideDesti != null) {
-			destination = overrideDesti;
-			overrideDesti = null;
-		} else {
-			destination = getDestination();
-		}
+		if(destination == null)
+			destination = loadDestination();
 		return destination;
 	}
 	
 	public void openDestAndThis(Player player) {
-		if (getDestination() == null) {
+		Portal destination = loadDestination();
+		if (destination == null) {
 			player.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
 			return;
 		}
 		// TODO checkPerms
+		this.destination = destination;
 		open(player);
-		getDestination().open(player);
+		destination.open(player);
 	}
 
 	public Gate getGate() {
