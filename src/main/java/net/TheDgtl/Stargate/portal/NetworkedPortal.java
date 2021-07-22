@@ -55,19 +55,26 @@ public class NetworkedPortal extends Portal {
 	private String[] getDestinations() {
 		HashSet<String> tempPortalList = new HashSet<>(this.network.portalList.keySet());
 		tempPortalList.remove(name);
+		HashSet<String> removeList = new HashSet<>();
+		for (String portalName : tempPortalList) {
+			if (network.getPortal(portalName).isHidden())
+				removeList.add(portalName);
+		}
+		tempPortalList.removeAll(removeList);
 		return tempPortalList.toArray(new String[0]);
 	}
-	
-	@Override
+
 	public Portal loadDestination() {
-		if(selectedDesti == NO_DESTI_SELECTED)
+		if (selectedDesti == NO_DESTI_SELECTED)
 			return null;
 		return this.network.getPortal(getDestinations()[selectedDesti]);
 	}
+
 	/**
 	 * A method which allows selecting a index x steps away from a reference index
 	 * without having to bother with index out of bounds stuff. If the index is out
 	 * of bounds, it will just start counting from 0
+	 * 
 	 * @param step
 	 * @param initialDesti
 	 * @return

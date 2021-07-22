@@ -208,6 +208,10 @@ public abstract class Portal {
 		drawControll();
 	}
 
+	protected boolean isHidden() {
+		return flags.contains(PortalFlag.HIDDEN);
+	}
+	
 	public boolean isOpenFor(Player player) {
 		// TODO Auto-generated method stub
 		return ((openFor == null) || (player == openFor));
