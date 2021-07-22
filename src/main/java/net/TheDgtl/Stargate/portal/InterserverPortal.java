@@ -55,9 +55,9 @@ public class InterserverPortal extends Portal{
             ByteArrayOutputStream bao = new ByteArrayOutputStream();
             DataOutputStream msgData = new DataOutputStream(bao);
             msgData.writeUTF("Forward");
-            msgData.writeUTF(network.name);    // Server
-            msgData.writeUTF("SGBungee");            // Channel
-            msgData.writeShort(msg.length());    // Data Length
+            msgData.writeUTF(network.name);    	// Server
+            msgData.writeUTF("SGBungee");      	// Channel
+            msgData.writeShort(msg.length());   // Data Length
             msgData.writeBytes(msg);            // Data
             player.sendPluginMessage(stargate, "BungeeCord", bao.toByteArray());
 		} catch (IOException ex) {
