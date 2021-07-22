@@ -85,19 +85,18 @@ public class BlockEventListener implements Listener {
 		PermissionManager permMngr = new PermissionManager(player);
 
 		if (network.isBlank())
-			network = Network.DEFAULTNET;
+			network = Network.DEFAULT_NET;
 		boolean hasPerm = true;
+		boolean isPersonal = false;
 		if (!permMngr.canCreateInNetwork(network)) {
 			if (!permMngr.canCreateInNetwork(player.getName())) {
 				hasPerm = false;
 			}
 			network = player.getName();
+			isPersonal = true;
 		}
-
-		if (!(Network.networkList.containsKey(network))) {
-			Network.networkList.put(network, new Network(network));
-		}
-		Network selectedNet = Network.networkList.get(network);
+		Network selectedNet = Network.getOrCreateNetwork(network, isPersonal);
+		
 		try {
 			Portal portal = Portal.createPortalFromSign(selectedNet, block, lines);
 			if (!hasPerm) {
@@ -112,13 +111,7 @@ public class BlockEventListener implements Listener {
 		} catch (GateConflict e) {
 			player.sendMessage(Stargate.langManager.getMessage(LangMsg.GATE_CONFLICT, true));
 		} catch (NameError e) {
-			switch (e.getMessage()) {
-			case "empty":
-				break;
-			case "taken":
-				player.sendMessage(Stargate.langManager.getMessage(LangMsg.ALREADY_EXIST, true));
-				break;
-			}
+			player.sendMessage(Stargate.langManager.getMessage(e.getMsg(), true));
 		}
 	}
 

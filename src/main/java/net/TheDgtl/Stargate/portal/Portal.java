@@ -51,9 +51,9 @@ public abstract class Portal {
 		this.network = network;
 		this.name = lines[0];
 		if (name.isBlank())
-			throw new NameError("empty");
+			throw new NameError(LangMsg.NAME_LENGTH_FAULT);
 		if (this.network.portalList.containsKey(name)) {
-			throw new NameError("taken");
+			throw new NameError(LangMsg.ALREADY_EXIST);
 		}
 
 		/*

@@ -6,6 +6,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.util.BlockVector;
 
 import net.TheDgtl.Stargate.Stargate;
@@ -26,7 +27,7 @@ public class Network {
 	public static final HashMap<String, Network> networkList = new HashMap<>();
 	String netName;
 
-	public static final String DEFAULTNET = "central";
+	public static final String DEFAULT_NET = "central";
 	static final String[] PORTALNAMESURROUND;
 	static final String[] DESTINAMESURROUND;
 	static final String[] NETWORKNAMESURROUND;
@@ -43,6 +44,13 @@ public class Network {
 		portalList = new HashMap<>();
 	}
 
+	public static Network getOrCreateNetwork(String netName, boolean isPersonal) {
+		if (!(networkList.containsKey(netName))) {
+			Network.networkList.put(netName, new Network(netName));
+		}
+		return Network.networkList.get(netName);
+	}
+	
 	public Portal getPortal(String name) {
 		return portalList.get(name);
 	}
