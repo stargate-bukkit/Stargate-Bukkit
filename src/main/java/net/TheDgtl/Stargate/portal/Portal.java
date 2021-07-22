@@ -241,7 +241,7 @@ public abstract class Portal {
 		return destination;
 	}
 	
-	public void openDestAndThis(Player player) {
+	public void onButtonClick(Player player) {
 		Portal destination = loadDestination();
 		if (destination == null) {
 			player.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));

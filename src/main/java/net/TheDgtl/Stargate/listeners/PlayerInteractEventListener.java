@@ -60,7 +60,7 @@ public class PlayerInteractEventListener implements Listener {
 			return;
 		}
 		if (Tag.BUTTONS.isTagged(blockMat) || (blockMat == Material.DEAD_TUBE_CORAL_WALL_FAN)) {
-			portal.openDestAndThis(player);
+			portal.onButtonClick(player);
 			return;
 		}
 

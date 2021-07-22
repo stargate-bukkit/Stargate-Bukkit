@@ -29,7 +29,7 @@ public class RandomPortal extends Portal{
 		String lines[] = {
 			NameSurround.PORTAL.getSurround(name),
 			NameSurround.DESTI.getSurround(Stargate.langManager.getString(LangMsg.RANDOM)),
-			NameSurround.NETWORK.getSurround(network.netName),
+			NameSurround.NETWORK.getSurround(network.name),
 			""
 		};
 		getGate().drawControll(lines,!flags.contains(PortalFlag.ALWAYS_ON));

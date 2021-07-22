@@ -25,7 +25,7 @@ public class Network {
 	 */
 	HashMap<String, Portal> portalList;
 	public static final HashMap<String, Network> networkList = new HashMap<>();
-	String netName;
+	String name;
 
 	public static final String DEFAULT_NET = "central";
 	static final String[] PORTALNAMESURROUND;
@@ -40,7 +40,7 @@ public class Network {
 	final static HashMap<GateStructureType, HashMap<SGLocation, Portal>> portalFromPartsMap = new HashMap<>();
 
 	public Network(String netName) {
-		this.netName = netName;
+		this.name = netName;
 		portalList = new HashMap<>();
 	}
 

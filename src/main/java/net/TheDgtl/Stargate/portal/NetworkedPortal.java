@@ -104,7 +104,7 @@ public class NetworkedPortal extends Portal {
 		if (this.selectedDesti == NO_DESTI_SELECTED) {
 			lines[1] = Stargate.langManager.getString(LangMsg.RIGHT_CLICK);
 			lines[2] = Stargate.langManager.getString(LangMsg.TO_USE);
-			lines[3] = NameSurround.NETWORK.getSurround(this.network.netName);
+			lines[3] = NameSurround.NETWORK.getSurround(this.network.name);
 		} else {
 			int destiIndex = selectedDesti % 3;
 			int desti1 = selectedDesti - destiIndex;
