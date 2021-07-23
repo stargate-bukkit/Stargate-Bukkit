@@ -98,12 +98,19 @@ public class Stargate extends JavaPlugin {
 	}
 
 	private EnumMap<Setting, Object>  loadConfig() {
+		saveDefaultConfig();
 		reloadConfig();
 		FileConfiguration config = getConfig();
 		EnumMap<Setting, Object> settings = new EnumMap<>(Setting.class);
+		getLogger().log(Level.INFO,"IS THIS WORKING?");
 		for(String key : config.getKeys(true)) {
-			settings.put(Setting.valueOf(key), config.get(key));
+			Setting setting = Setting.getSetting(key);
+			if(setting == null)
+				continue;
+			getLogger().log(Level.INFO,"Storing setting: " + key + ":" + config.get(key));
+			settings.put(setting, config.get(key));
 		}
+		getLogger().log(Level.INFO,"IS THIS WORKING????");
 		return settings;
 	}
 	

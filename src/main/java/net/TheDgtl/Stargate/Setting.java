@@ -6,7 +6,7 @@ public enum Setting {
 	
 	GATE_LIMIT("behaviour.gateLimit"),
 	HANDLE_VEHICLES("behaviour.handleVehicles"), CHECK_PORTAL_VALIDITY("behaviour.checkPortalValidity"),
-	CHECK_TRAVERSIBLES("behaviour.checkTravirsibles"), PROTECT_ENTRANCE("behaviour.protectEntrance"),
+	CHECK_TRAVERSIBLES("behaviour.checkTraversables"), PROTECT_ENTRANCE("behaviour.protectEntrance"),
 	DESTROY_ON_EXPLOSION("behaviour.destroyOnExplosion"),
 	
 	USE_ECONOMY("economy.useEconomy"), TAX_DESTINATION("economy.taxDestination"), UPKEEP_COST("economy.upkeepCost"),
