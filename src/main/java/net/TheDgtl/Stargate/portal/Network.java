@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.portal;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -27,18 +28,8 @@ public class Network {
 	public static final HashMap<String, Network> networkList = new HashMap<>();
 	String name;
 
-	public static final String DEFAULT_NET = "central";
-	static final String[] PORTALNAMESURROUND;
-	static final String[] DESTINAMESURROUND;
-	static final String[] NETWORKNAMESURROUND;
-	static {
-		PORTALNAMESURROUND = new String[] { "-", "-" };
-		DESTINAMESURROUND = new String[] { ">", "<" };
-		NETWORKNAMESURROUND = new String[] { "(", ")" };
-	}
-
-	final static HashMap<GateStructureType, HashMap<SGLocation, Portal>> portalFromPartsMap = new HashMap<>();
-
+	final static EnumMap<GateStructureType, HashMap<SGLocation, Portal>> portalFromPartsMap = new EnumMap<>(GateStructureType.class);
+	final static Network bungeeNet = new Network("bungee<3");
 	public Network(String netName) {
 		this.name = netName;
 		portalList = new HashMap<>();
@@ -128,7 +119,9 @@ public class Network {
 		return this;
 	}
 
-
+	public static Portal getBungeePortal(String name) {
+		return bungeeNet.getPortal(name);
+	}
 
 
 	

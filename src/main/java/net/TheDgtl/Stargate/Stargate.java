@@ -18,9 +18,12 @@
 package net.TheDgtl.Stargate;
 
 import java.io.File;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.logging.Level;
 
 import org.bstats.bukkit.Metrics;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -28,9 +31,11 @@ import org.bukkit.scheduler.BukkitScheduler;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.listeners.BlockEventListener;
 import net.TheDgtl.Stargate.listeners.MoveEventListener;
-import net.TheDgtl.Stargate.listeners.PlayerInteractEventListener;
+import net.TheDgtl.Stargate.listeners.PlayerEventListener;
 import net.TheDgtl.Stargate.listeners.PluginEventListener;
 import net.TheDgtl.Stargate.listeners.WorldEventListener;
+import net.TheDgtl.Stargate.portal.Network;
+import net.TheDgtl.Stargate.portal.Portal;
 
 public class Stargate extends JavaPlugin {
 	private static Stargate instance;
@@ -41,10 +46,12 @@ public class Stargate extends JavaPlugin {
 	final String GATEFOLDER = "gates";
 	final String LANGFOLDER =  "lang";
 	final String PORTALFOLDER = "portals";
-	final String LANGUAGE = "en";
 
 	private PluginManager pm;
 	public static LangManager langManager;
+	private final int CURRENT_CONFIG_VERSION = 5;
+	private EnumMap<Setting, Object> settings;
+	private HashMap<String,Portal> bungeeQueue = new HashMap<>();
 	public static final SyncronousPopulator syncPopulator = new SyncronousPopulator();
 	
 	@Override
@@ -54,7 +61,13 @@ public class Stargate extends JavaPlugin {
 		new Metrics(this, pluginId);
 
 		instance = this;
-		langManager = new LangManager(this, DATAFOLDER + "/" + LANGFOLDER, LANGUAGE);
+		settings = loadConfig();
+		
+		if ((int) settings.get(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
+			// TODO refactoring
+		}
+
+		langManager = new LangManager(this, DATAFOLDER + "/" + LANGFOLDER, (String) settings.get(Setting.LANGUAGE));
 		saveDefaultGates();
 
 		GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATAFOLDER + "/" + GATEFOLDER);
@@ -69,7 +82,7 @@ public class Stargate extends JavaPlugin {
 	private void registerListeners() {
 		pm.registerEvents(new BlockEventListener(),this);
 		pm.registerEvents(new MoveEventListener(),this);
-		pm.registerEvents(new PlayerInteractEventListener(),this);
+		pm.registerEvents(new PlayerEventListener(),this);
 		pm.registerEvents(new PluginEventListener(),this);
 		pm.registerEvents(new WorldEventListener(),this);
 	}
@@ -84,8 +97,15 @@ public class Stargate extends JavaPlugin {
 		}
 	}
 
-	private void loadConfig() {
-	};
+	private EnumMap<Setting, Object>  loadConfig() {
+		reloadConfig();
+		FileConfiguration config = getConfig();
+		EnumMap<Setting, Object> settings = new EnumMap<>(Setting.class);
+		for(String key : config.getKeys(true)) {
+			settings.put(Setting.valueOf(key), config.get(key));
+		}
+		return settings;
+	}
 	
 	@Override
 	public void onLoad() {
@@ -110,5 +130,17 @@ public class Stargate extends JavaPlugin {
 			return;
 		}
 		instance.getLogger().log(priorityLevel, msg);
+	}
+	
+	public static Object getSetting(Setting setting) {
+		return instance.settings.get(setting);
+	}
+	
+	public static void addItemToBungeeQueue(String playerName, String portalName) {
+		instance.bungeeQueue.put(playerName, Network.getBungeePortal(portalName));
+	}
+	
+	public static Portal pullBungeeDestination(String playerName) {
+		return instance.bungeeQueue.remove(playerName);
 	}
 }
