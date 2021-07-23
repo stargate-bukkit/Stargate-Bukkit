@@ -21,6 +21,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 
 import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.PermissionManager;
+import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.event.StargateDestroyEvent;
 import net.TheDgtl.Stargate.exception.GateConflict;
@@ -85,7 +86,7 @@ public class BlockEventListener implements Listener {
 		PermissionManager permMngr = new PermissionManager(player);
 
 		if (network.isBlank())
-			network = Network.DEFAULT_NET;
+			network = (String) Stargate.getSetting(Setting.DEFAULT_NET);
 		boolean hasPerm = true;
 		boolean isPersonal = false;
 		if (!permMngr.canCreateInNetwork(network)) {

@@ -137,7 +137,12 @@ public class Stargate extends JavaPlugin {
 	}
 	
 	public static void addItemToBungeeQueue(String playerName, String portalName) {
-		instance.bungeeQueue.put(playerName, Network.getBungeePortal(portalName));
+		Portal destination = Network.getBungeePortal(portalName);
+		if (destination == null) {
+			Stargate.log(Level.WARNING, "Error fetching destination portal: " + destination);
+			return;
+		}
+		instance.bungeeQueue.put(playerName, destination);
 	}
 	
 	public static Portal pullBungeeDestination(String playerName) {

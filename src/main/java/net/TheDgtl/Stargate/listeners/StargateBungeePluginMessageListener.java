@@ -28,11 +28,13 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.portal.Network;
+import net.TheDgtl.Stargate.portal.Portal;
 
 public class StargateBungeePluginMessageListener implements PluginMessageListener {
 	
 	static boolean IS_ENABLE_BUNGEE = true;
-
+	
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {
         if (!IS_ENABLE_BUNGEE || !channel.equals("BungeeCord")) return;
@@ -68,15 +70,15 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         // Check if the player is online, if so, teleport, otherwise, queue
         Player player = stargate.getServer().getPlayer(playerName);
         if (player == null) {
-            stargate.getBungeeQueue().put(playerName.toLowerCase(), destination);
+        	Stargate.addItemToBungeeQueue(playerName.toLowerCase(), destination);
         } else {
-            Portal dest = Portal.getBungeeGate(destination);
+            Portal dest = Network.getBungeePortal(destination);
             // Specified an invalid gate. For now we'll just let them connect at their current location
             if (dest == null) {
-                stargate.getStargateLogger().info("[Stargate] Bungee gate " + destination + " does not exist");
+                Stargate.log(Level.INFO,"Bungee gate " + destination + " does not exist");
                 return;
             }
-            dest.teleport(player, dest, null);
+            dest.teleportToExit(player);
         }
     }
 }

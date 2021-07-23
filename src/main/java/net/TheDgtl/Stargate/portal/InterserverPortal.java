@@ -15,9 +15,11 @@ import net.TheDgtl.Stargate.exception.NoFormatFound;
 
 public class InterserverPortal extends Portal{
 
-	InterserverPortal(Network network, Block sign, String[] lines) throws NameError, NoFormatFound, GateConflict {
+	private String targetServer;
+
+	InterserverPortal(Network network, Block sign, String[] lines, String targetServer) throws NameError, NoFormatFound, GateConflict {
 		super(network, sign, lines);
-		// TODO Auto-generated constructor stub
+		this.targetServer = targetServer;
 	}
 
 	@Override
@@ -42,7 +44,7 @@ public class InterserverPortal extends Portal{
 	 * Legacy bungee implementation
 	 */
 	@Override
-	public void onButtonClick(Player player) {
+	public void doTeleport(Player player) {
 		// Teleport the player back to this gate, for sanity's sake
 		player.teleport(getExit());
 		
@@ -55,7 +57,7 @@ public class InterserverPortal extends Portal{
             ByteArrayOutputStream bao = new ByteArrayOutputStream();
             DataOutputStream msgData = new DataOutputStream(bao);
             msgData.writeUTF("Forward");
-            msgData.writeUTF(network.name);    	// Server
+            msgData.writeUTF(targetServer);    	// Server
             msgData.writeUTF("SGBungee");      	// Channel
             msgData.writeShort(msg.length());   // Data Length
             msgData.writeBytes(msg);            // Data

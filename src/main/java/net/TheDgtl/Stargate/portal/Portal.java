@@ -235,7 +235,7 @@ public abstract class Portal {
 		this.drawControll();
 	}
 
-	public Portal getFinalDesti() {
+	protected Portal getFinalDesti() {
 		if(destination == null)
 			destination = loadDestination();
 		return destination;
@@ -260,7 +260,24 @@ public abstract class Portal {
 	public void setGate(Gate gate) {
 		this.gate = gate;
 	}
-
+	
+	public void teleportToExit(Player player) {
+		Location exit = getExit();
+		player.teleport(exit);
+	}
+	
+	public void doTeleport(Player player) {
+		Portal desti = getFinalDesti();
+		if(desti == null) {
+			player.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
+			player.teleport(getExit());
+			return;
+		}
+		desti.teleportToExit(player);
+		desti.close();
+		close();
+	}
+	
 	public static Portal createPortalFromSign(Network net, Block block, String[] lines)
 			throws NameError, NoFormatFound, GateConflict {
 		if (lines[3].toUpperCase().contains("R"))
@@ -269,4 +286,5 @@ public abstract class Portal {
 			return new NetworkedPortal(net, block, lines);
 		return new FixedPortal(net, block, lines);
 	}
+	
 }

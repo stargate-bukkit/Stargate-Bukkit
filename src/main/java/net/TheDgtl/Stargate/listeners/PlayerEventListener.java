@@ -15,17 +15,19 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
 import org.bukkit.event.Event;
 
+import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.portal.Network;
 import net.TheDgtl.Stargate.portal.Portal;
 import net.TheDgtl.Stargate.portal.SGLocation;
 
-public class PlayerInteractEventListener implements Listener {
+public class PlayerEventListener implements Listener {
 	private static boolean antiDoubleActivate = true;
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -66,4 +68,19 @@ public class PlayerInteractEventListener implements Listener {
 
 		Stargate.log(Level.WARNING, "This should never be triggered, an unkown glitch is occuring");
 	}
+	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		if (!(boolean) Stargate.getSetting(Setting.USING_BUNGEE))
+			return;
+
+		Player player = event.getPlayer();
+		Portal destination = Stargate.pullBungeeDestination(player.getName().toLowerCase());
+
+		if (destination == null) {
+			return;
+		}
+		destination.doTeleport(player);
+	}
+    
 }

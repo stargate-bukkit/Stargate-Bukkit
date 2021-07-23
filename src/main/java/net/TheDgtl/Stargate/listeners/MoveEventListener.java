@@ -62,21 +62,12 @@ public class MoveEventListener implements Listener {
 		Player player = event.getPlayer();
 		if (!portal.isOpenFor(player)) {
 			// TODO send deny message
-			player.teleport(portal.getExit());
+			portal.teleportToExit(player);
 			return;
 		}
-
-		// check perm's
-		Portal desti = portal.getFinalDesti();
-		if(desti == null) {
-			player.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
-			player.teleport(portal.getExit());
-			return;
-		}
-		Location exit = desti.getExit();
-		player.teleport(exit);
-		desti.close();
-		portal.close();
+		// TODO check perm's
+		
+		portal.doTeleport(player);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
