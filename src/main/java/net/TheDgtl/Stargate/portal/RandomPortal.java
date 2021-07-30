@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.portal;
 
+import java.util.EnumSet;
 import java.util.Random;
 import java.util.Set;
 
@@ -17,8 +18,8 @@ public class RandomPortal extends Portal{
 
 	private final Random randomizer = new Random();
 	
-	RandomPortal(Network network, Block sign, String[] lines) throws NameError, NoFormatFound, GateConflict {
-		super(network, sign, lines);
+	RandomPortal(Network network, String name, Block sign, EnumSet<PortalFlag> flags) throws NameError, NoFormatFound, GateConflict {
+		super(network, name, sign, flags);
 	}
 
 	@Override
@@ -29,26 +30,25 @@ public class RandomPortal extends Portal{
 		String lines[] = {
 			NameSurround.PORTAL.getSurround(name),
 			NameSurround.DESTI.getSurround(Stargate.langManager.getString(LangMsg.RANDOM)),
-			NameSurround.NETWORK.getSurround(network.name),
+			network.concatName(),
 			""
 		};
-		getGate().drawControll(lines,!flags.contains(PortalFlag.ALWAYS_ON));
+		getGate().drawControll(lines,!hasFlag(PortalFlag.ALWAYS_ON));
 	}
-	
-	@Override
-	public Portal loadDestination() {
-		Set<String> allPortalNames = network.portalList.keySet();
-		allPortalNames.remove(this.name);
-		String[] destinations = allPortalNames.toArray(new String[0]);
-        if (destinations.length < 1) {
-            return null;
-        }
-        int randomNumber = randomizer.nextInt(destinations.length);
-        String dest = destinations[randomNumber];
 
-        return network.getPortal(dest);
+	@Override
+	public IPortal loadDestination() {
+		Set<String> allPortalNames = network.getAvailablePortals(hasFlag(PortalFlag.FORCE_SHOW), this);
+		String[] destinations = allPortalNames.toArray(new String[0]);
+		if (destinations.length < 1) {
+			return null;
+		}
+		int randomNumber = randomizer.nextInt(destinations.length);
+		String dest = destinations[randomNumber];
+
+		return network.getPortal(dest);
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();

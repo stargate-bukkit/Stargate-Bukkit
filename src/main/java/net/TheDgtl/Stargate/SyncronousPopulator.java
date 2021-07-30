@@ -103,10 +103,53 @@ public class SyncronousPopulator implements Runnable{
 		public boolean isFinished() {
 			return (delay <= 0);
 		}
+		
 		@Override
 		public String toString() {
 			return "[" + delay + "](" + action.toString() + ")";
 		}
 	}
 
+	/**
+	 * Does a task every time time it gets triggered. If the condition is met, remove from queue
+	 * @author Thorin
+	 *
+	 */
+	public abstract class ConditionallRepeatedTask implements Action {
+		private Action action;
+		private boolean isFinished = false;
+
+		public ConditionallRepeatedTask(Action action) {
+			this.action = action;
+			addAction(this);
+		}
+
+		@Override
+		public void run(boolean forceEnd) {
+			if (isCondition() || forceEnd) {
+				isFinished = true;
+				return;
+			}
+
+			action.run(forceEnd);
+		}
+
+		@Override
+		public boolean isFinished() {
+			return isFinished;
+		}
+
+		@Override
+		public String toString() {
+			return "[RepeatedCond](" + action.toString() + ")";
+		}
+
+		/**
+		 * If this returns true, then the repeated task will stop.
+		 * 
+		 * @return
+		 */
+		public abstract boolean isCondition();
+
+	}
 }

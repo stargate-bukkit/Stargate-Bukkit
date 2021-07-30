@@ -1,5 +1,7 @@
 package net.TheDgtl.Stargate.portal;
 
+import java.util.EnumSet;
+
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -16,9 +18,10 @@ public class FixedPortal extends Portal{
 	 */
 	String destination;
 
-	public FixedPortal(Network network, Block sign, String[] lines) throws NoFormatFound, GateConflict, NameError {
-		super(network, sign, lines);
-		destination = lines[1];
+	public FixedPortal(Network network, String name, String destiName, Block sign, EnumSet<PortalFlag> flags)
+			throws NoFormatFound, GateConflict, NameError {
+		super(network, name, sign, flags);
+		destination = destiName;
 
 		drawControll();
 	}
@@ -38,14 +41,14 @@ public class FixedPortal extends Portal{
 		String[] lines = new String[4];
 		lines[0] = NameSurround.PORTAL.getSurround(name);
 		lines[1] = NameSurround.DESTI.getSurround(destination);
-		lines[2] = NameSurround.NETWORK.getSurround(this.network.name);
-		lines[3] = (this.network.portalList.containsKey(destination)) ? ""
+		lines[2] = this.network.concatName();
+		lines[3] = (this.network.isPortalNameTaken(destination)) ? ""
 					: Stargate.langManager.getString(LangMsg.DISCONNECTED);
-		getGate().drawControll(lines,!flags.contains(PortalFlag.ALWAYS_ON));
+		getGate().drawControll(lines,!hasFlag(PortalFlag.ALWAYS_ON));
 	}
 	
 	@Override
-	public Portal loadDestination() {
+	public IPortal loadDestination() {
 		return this.network.getPortal(destination);
 	}
 	

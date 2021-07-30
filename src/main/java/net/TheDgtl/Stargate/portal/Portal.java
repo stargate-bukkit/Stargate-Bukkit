@@ -20,13 +20,18 @@ import net.TheDgtl.Stargate.SyncronousPopulator;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.InvalidStructure;
 import net.TheDgtl.Stargate.exception.NameError;
+import net.TheDgtl.Stargate.exception.NoFlagFound;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateStructureType;
-import net.TheDgtl.Stargate.portal.PortalFlag.NoFlagFound;
 
-public abstract class Portal {
+/**
+ * The parent class for ever portal that interacts with server worlds
+ * @author Thorin
+ *
+ */
+public abstract class Portal implements IPortal {
 	/**
 	 * 
 	 */
@@ -40,20 +45,21 @@ public abstract class Portal {
 	 * minute or something) maybe follow an external script that gives when the
 	 * states should change
 	 */
-	int delay = 20 * 20; // ticks
+	int delay = 20; // seconds
 	private Gate gate;
-	EnumSet<PortalFlag> flags;
+	private EnumSet<PortalFlag> flags;
 	String name;
 	Player openFor;
-	Portal destination = null;
+	IPortal destination = null;
 	private long openTime = -1;
-	Portal(Network network, Block sign, String[] lines) throws NameError, NoFormatFound, GateConflict {
+	Portal(Network network, String name, Block sign, EnumSet<PortalFlag> flags) throws NameError, NoFormatFound, GateConflict {
 
 		this.network = network;
-		this.name = lines[0];
+		this.name = name;
+		this.flags = flags;
 		if (name.isBlank())
 			throw new NameError(LangMsg.NAME_LENGTH_FAULT);
-		if (this.network.portalList.containsKey(name)) {
+		if (this.network.isPortalNameTaken(name)) {
 			throw new NameError(LangMsg.ALREADY_EXIST);
 		}
 
@@ -66,7 +72,6 @@ public abstract class Portal {
 		List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
 		setGate(FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing()));
 
-		flags = parseFlags(lines[3]);
 		String msg = "Selected with flags ";
 		for (PortalFlag flag : flags) {
 			msg = msg + flag.label;
@@ -74,20 +79,28 @@ public abstract class Portal {
 		Stargate.log(Level.FINE, msg);
 		
 		this.network.addPortal(this);
-		for (String portal : this.network.portalList.keySet()) {
-			this.network.portalList.get(portal).drawControll();
-		}
+		network.updatePortals();
+		
 		for (GateStructureType key : getGate().getFormat().portalParts.keySet()) {
 			if (!Network.portalFromPartsMap.containsKey(key)) {
-				Network.portalFromPartsMap.put(key, new HashMap<SGLocation, Portal>());
+				Network.portalFromPartsMap.put(key, new HashMap<SGLocation, IPortal>());
 			}
 			List<SGLocation> locations = getGate().getLocations(key);
 			Network.portalFromPartsMap.get(key).putAll(generateLocationHashMap(locations));
 		}
-		if(flags.contains(PortalFlag.ALWAYS_ON))
+		if(hasFlag(PortalFlag.ALWAYS_ON))
 			this.open(null);
 	}
-
+	
+	/**
+	 * Look through every stored gateFormat, checks every possible rotation / flip
+	 * @param gateFormats
+	 * @param signLocation
+	 * @param signFacing
+	 * @return A gate with matching format
+	 * @throws NoFormatFound
+	 * @throws GateConflict
+	 */
 	private Gate FindMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing)
 			throws NoFormatFound, GateConflict {
 		Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
@@ -100,26 +113,9 @@ public abstract class Portal {
 		}
 		throw new NoFormatFound();
 	}
-
-	/**
-	 * Go through every character in line, and
-	 * 
-	 * @param line
-	 */
-	private EnumSet<PortalFlag> parseFlags(String line) {
-		EnumSet<PortalFlag> foundFlags = EnumSet.noneOf(PortalFlag.class);
-		char[] charArray = line.toUpperCase().toCharArray();
-		for (char character : charArray) {
-			try {
-				foundFlags.add(PortalFlag.valueOf(character));
-			} catch (NoFlagFound e) {
-			}
-		}
-		return foundFlags;
-	}
-
-	private HashMap<SGLocation, Portal> generateLocationHashMap(List<SGLocation> locations) {
-		HashMap<SGLocation, Portal> output = new HashMap<>();
+	
+	private HashMap<SGLocation, IPortal> generateLocationHashMap(List<SGLocation> locations) {
+		HashMap<SGLocation, IPortal> output = new HashMap<>();
 		for (SGLocation loc : locations) {
 			output.put(loc, this);
 		}
@@ -130,7 +126,7 @@ public abstract class Portal {
 
 	public abstract void drawControll();
 
-	public abstract Portal loadDestination();
+	public abstract IPortal loadDestination();
 
 	public boolean isOpen() {
 		return getGate().isOpen();
@@ -144,7 +140,7 @@ public abstract class Portal {
 	 * Remove all information stored on this gate
 	 */
 	public void destroy() {
-		this.network.portalList.remove(name);
+		this.network.removePortal(name);
 		String[] lines = new String[] { name, "", "", "" };
 		getGate().drawControll(lines, false);
 		for (GateStructureType formatType : Network.portalFromPartsMap.keySet()) {
@@ -153,10 +149,7 @@ public abstract class Portal {
 			}
 		}
 
-		// Refresh all portals in this network. TODO is this too extensive?
-		for (String portal : this.network.portalList.keySet()) {
-			this.network.portalList.get(portal).drawControll();
-		}
+		network.updatePortals();
 	}
 
 	public void open(Player actor) {
@@ -165,7 +158,7 @@ public abstract class Portal {
 		long openTime = System.currentTimeMillis();
 		this.openTime = openTime;
 
-		if(flags.contains(PortalFlag.ALWAYS_ON)) {
+		if(hasFlag(PortalFlag.ALWAYS_ON)) {
 			return;
 		}
 		
@@ -183,7 +176,7 @@ public abstract class Portal {
 			}
 		};
 		// Make the action on a delay
-		Stargate.syncPopulator.new DelayedAction(delay, action);
+		Stargate.syncSecPopulator.new DelayedAction(delay, action);
 	}
 
 	/**
@@ -203,14 +196,10 @@ public abstract class Portal {
 	}
 
 	public void close() {
-		if(flags.contains(PortalFlag.ALWAYS_ON))
+		if(hasFlag(PortalFlag.ALWAYS_ON))
 			return;
 		getGate().close();
 		drawControll();
-	}
-
-	protected boolean isHidden() {
-		return flags.contains(PortalFlag.HIDDEN);
 	}
 	
 	public boolean isOpenFor(Player player) {
@@ -219,10 +208,10 @@ public abstract class Portal {
 	}
 
 	public Location getExit() {
-		return gate.getExit(flags.contains(PortalFlag.BACKWARDS));
+		return gate.getExit(hasFlag(PortalFlag.BACKWARDS));
 	}
 
-	public void setOverrideDesti(Portal desti) {
+	public void setOverrideDesti(IPortal desti) {
 		this.destination = desti;
 	}
 
@@ -235,14 +224,14 @@ public abstract class Portal {
 		this.drawControll();
 	}
 
-	protected Portal getFinalDesti() {
+	protected IPortal getFinalDesti() {
 		if(destination == null)
 			destination = loadDestination();
 		return destination;
 	}
 	
 	public void onButtonClick(Player player) {
-		Portal destination = loadDestination();
+		IPortal destination = loadDestination();
 		if (destination == null) {
 			player.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
 			return;
@@ -261,30 +250,46 @@ public abstract class Portal {
 		this.gate = gate;
 	}
 	
-	public void teleportToExit(Player player) {
+	public void teleportHere(Player player) {
 		Location exit = getExit();
 		player.teleport(exit);
 	}
 	
 	public void doTeleport(Player player) {
-		Portal desti = getFinalDesti();
+		IPortal desti = getFinalDesti();
 		if(desti == null) {
 			player.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
 			player.teleport(getExit());
 			return;
 		}
-		desti.teleportToExit(player);
+		desti.teleportHere(player);
 		desti.close();
 		close();
 	}
 	
-	public static Portal createPortalFromSign(Network net, Block block, String[] lines)
+	public static IPortal createPortalFromSign(Network net, String[] lines, Block block, EnumSet<PortalFlag> flags)
 			throws NameError, NoFormatFound, GateConflict {
-		if (lines[3].toUpperCase().contains("R"))
-			return new RandomPortal(net, block, lines);
+		if (flags.contains(PortalFlag.RANDOM))
+			return new RandomPortal(net, lines[0], block, flags);
 		if (lines[1].isBlank())
-			return new NetworkedPortal(net, block, lines);
-		return new FixedPortal(net, block, lines);
+			return new NetworkedPortal(net, lines[0], block, flags);
+		return new FixedPortal(net, lines[0], lines[1], block, flags);
 	}
 	
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	public boolean hasFlag(PortalFlag flag) {
+		return flags.contains(flag);
+	}
+	
+	public String getAllFlagsString() {
+		String out = "";
+		for(PortalFlag flag : flags) {
+			out = out + flag.label;
+		}
+		return out;
+	}
 }

@@ -115,7 +115,7 @@ public class LangManager {
                     line = br.readLine();
                     continue;
                 }
-                LangMsg key = LangMsg.getEnum(line.substring(0, eq));
+                LangMsg key = LangMsg.parse(line.substring(0, eq));
                 if(key == null) {
                 	Stargate.log(Level.CONFIG, "Skipping line: " + line);
                 	line = br.readLine();

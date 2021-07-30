@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.listeners;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.EnumSet;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
@@ -32,13 +33,16 @@ import net.TheDgtl.Stargate.portal.FixedPortal;
 import net.TheDgtl.Stargate.portal.Network;
 import net.TheDgtl.Stargate.portal.NetworkedPortal;
 import net.TheDgtl.Stargate.portal.Portal;
+import net.TheDgtl.Stargate.portal.PortalFlag;
+import net.TheDgtl.Stargate.portal.IPortal;
+import net.TheDgtl.Stargate.portal.InterserverNetwork;
 
 public class BlockEventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
 		// TODO Have a list of all possible portalMaterials and skip if not any of those
 		Location loc = event.getBlock().getLocation();
-		Portal portal = Network.getPortal(loc, GateStructureType.FRAME);
+		IPortal portal = Network.getPortal(loc, GateStructureType.FRAME);
 		if (portal != null) {
 			int cost = 0; // TODO economy manager
 			StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, event.getPlayer(), false, "", cost);
@@ -83,12 +87,19 @@ public class BlockEventListener implements Listener {
 		String[] lines = event.getLines();
 		String network = lines[2];
 		Player player = event.getPlayer();
+		EnumSet<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
 		PermissionManager permMngr = new PermissionManager(player);
 
 		if (network.isBlank())
 			network = (String) Stargate.getSetting(Setting.DEFAULT_NET);
 		boolean hasPerm = true;
 		boolean isPersonal = false;
+		
+		if(network.endsWith("]") && network.startsWith("[")) {
+			network = network.substring(1, network.length()-1);
+			flags.add(PortalFlag.BUNGEE);
+		}
+		
 		if (!permMngr.canCreateInNetwork(network)) {
 			if (!permMngr.canCreateInNetwork(player.getName())) {
 				hasPerm = false;
@@ -96,10 +107,10 @@ public class BlockEventListener implements Listener {
 			network = player.getName();
 			isPersonal = true;
 		}
-		Network selectedNet = Network.getOrCreateNetwork(network, isPersonal);
-		
+		Network selectedNet = getNetwork(network, flags.contains(PortalFlag.BUNGEE), isPersonal);
+
 		try {
-			Portal portal = Portal.createPortalFromSign(selectedNet, block, lines);
+			IPortal portal = Portal.createPortalFromSign(selectedNet, lines, block, flags);
 			if (!hasPerm) {
 				player.sendMessage(Stargate.langManager.getMessage(permMngr.getDenyMsg(), true));
 				portal.destroy();
@@ -114,6 +125,14 @@ public class BlockEventListener implements Listener {
 		} catch (NameError e) {
 			player.sendMessage(Stargate.langManager.getMessage(e.getMsg(), true));
 		}
+	}
+	
+	private Network getNetwork(String name, boolean isBungee, boolean isPersonal) {
+		
+		
+		if(isBungee)
+			return InterserverNetwork.getOrCreateNetwork(name, isPersonal);
+		return Network.getOrCreateNetwork(name, isPersonal);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

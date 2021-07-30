@@ -23,37 +23,52 @@ import java.util.HashMap;
 import java.util.logging.Level;
 
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
+
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.listeners.BlockEventListener;
 import net.TheDgtl.Stargate.listeners.MoveEventListener;
 import net.TheDgtl.Stargate.listeners.PlayerEventListener;
 import net.TheDgtl.Stargate.listeners.PluginEventListener;
+import net.TheDgtl.Stargate.listeners.StargateBungeePluginMessageListener;
 import net.TheDgtl.Stargate.listeners.WorldEventListener;
 import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.Portal;
+import net.TheDgtl.Stargate.portal.IPortal;
+import net.TheDgtl.Stargate.portal.InterserverNetwork;
 
 public class Stargate extends JavaPlugin {
 	private static Stargate instance;
 
-	private Level lowestMsgLevel = Level.FINEST;
+	private Level lowestMsgLevel = Level.FINEST;//setting before config loads
 	
 	final String DATAFOLDER = this.getDataFolder().getPath().replaceAll("\\\\", "/");
 	final String GATEFOLDER = "gates";
 	final String LANGFOLDER =  "lang";
 	final String PORTALFOLDER = "portals";
-
+	
 	private PluginManager pm;
 	public static LangManager langManager;
 	private final int CURRENT_CONFIG_VERSION = 5;
-	private EnumMap<Setting, Object> settings;
-	private HashMap<String,Portal> bungeeQueue = new HashMap<>();
-	public static final SyncronousPopulator syncPopulator = new SyncronousPopulator();
+	/**
+	 * Goes through every action in the queue every 1 tick. Should be used in tasks that need to be finished within a short time frame
+	 */
+	public static final SyncronousPopulator syncTickPopulator = new SyncronousPopulator();
+	/**
+	 * Goes through every action it the queue every 1 second (20 ticks). Should be used in delayed actions
+	 */
+	public static final SyncronousPopulator syncSecPopulator = new SyncronousPopulator();
+	private HashMap<String,IPortal> bungeeQueue = new HashMap<>();
 	
+	public static String serverName; //used in bungee / waterfall
+	public static boolean knowsServerName = false;
 	@Override
 	public void onEnable() {
 		// registers bstats metrics
@@ -61,22 +76,21 @@ public class Stargate extends JavaPlugin {
 		new Metrics(this, pluginId);
 
 		instance = this;
-		settings = loadConfig();
+		loadConfig();
 		
-		if ((int) settings.get(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
-			// TODO refactoring
-		}
-
-		langManager = new LangManager(this, DATAFOLDER + "/" + LANGFOLDER, (String) settings.get(Setting.LANGUAGE));
+		
+		
+		lowestMsgLevel = Level.parse((String) getSetting(Setting.DEBUG_LEVEL));
+		langManager = new LangManager(this, DATAFOLDER + "/" + LANGFOLDER, (String) getSetting(Setting.LANGUAGE));
 		saveDefaultGates();
 
 		GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATAFOLDER + "/" + GATEFOLDER);
 
 		pm = getServer().getPluginManager();
 		registerListeners();
-		
 		BukkitScheduler scheduler = getServer().getScheduler();
-		scheduler.scheduleSyncRepeatingTask(this, syncPopulator, 0L, 1L);
+		scheduler.scheduleSyncRepeatingTask(this, syncTickPopulator, 0L, 1L);
+		scheduler.scheduleSyncRepeatingTask(this, syncSecPopulator, 0L, 20L);
 	}
 
 	private void registerListeners() {
@@ -85,6 +99,12 @@ public class Stargate extends JavaPlugin {
 		pm.registerEvents(new PlayerEventListener(),this);
 		pm.registerEvents(new PluginEventListener(),this);
 		pm.registerEvents(new WorldEventListener(),this);
+		if ((boolean) getSetting(Setting.USING_BUNGEE)) {
+			Messenger msgr = Bukkit.getMessenger();
+
+			msgr.registerOutgoingPluginChannel(this, Channel.BUNGEE.getChannel());
+			msgr.registerIncomingPluginChannel(this, Channel.BUNGEE.getChannel(), new StargateBungeePluginMessageListener());
+		}
 	}
 
 	private void saveDefaultGates() {
@@ -97,21 +117,12 @@ public class Stargate extends JavaPlugin {
 		}
 	}
 
-	private EnumMap<Setting, Object>  loadConfig() {
+	private void loadConfig() {
 		saveDefaultConfig();
 		reloadConfig();
-		FileConfiguration config = getConfig();
-		EnumMap<Setting, Object> settings = new EnumMap<>(Setting.class);
-		getLogger().log(Level.INFO,"IS THIS WORKING?");
-		for(String key : config.getKeys(true)) {
-			Setting setting = Setting.getSetting(key);
-			if(setting == null)
-				continue;
-			getLogger().log(Level.INFO,"Storing setting: " + key + ":" + config.get(key));
-			settings.put(setting, config.get(key));
+		if ((int) getSetting(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
+			// TODO refactoring
 		}
-		getLogger().log(Level.INFO,"IS THIS WORKING????");
-		return settings;
 	}
 	
 	@Override
@@ -125,8 +136,12 @@ public class Stargate extends JavaPlugin {
 		 * Portal.closeAllGates(this); Portal.clearGates(); managedWorlds.clear();
 		 * 
 		 */
-		syncPopulator.forceDoAllTasks();
-		
+		syncTickPopulator.forceDoAllTasks();
+		if((boolean)getSetting(Setting.USING_BUNGEE)) {
+			Messenger msgr = Bukkit.getMessenger();
+			msgr.unregisterOutgoingPluginChannel(this);
+			msgr.unregisterIncomingPluginChannel(this);
+		}
 		getServer().getScheduler().cancelTasks(this);
 	}
 
@@ -140,19 +155,23 @@ public class Stargate extends JavaPlugin {
 	}
 	
 	public static Object getSetting(Setting setting) {
-		return instance.settings.get(setting);
+		return instance.getConfig().get(setting.getKey());
 	}
 	
-	public static void addItemToBungeeQueue(String playerName, String portalName) {
-		Portal destination = Network.getBungeePortal(portalName);
-		if (destination == null) {
-			Stargate.log(Level.WARNING, "Error fetching destination portal: " + destination);
-			return;
-		}
-		instance.bungeeQueue.put(playerName, destination);
-	}
-	
-	public static Portal pullBungeeDestination(String playerName) {
-		return instance.bungeeQueue.remove(playerName);
-	}
+	public static void addToQueue(String playerName, String portalName, String netName) {
+    	Network net = InterserverNetwork.getNetwork(netName, false);
+    	if(net == null) {
+    		//do some error thing
+    	}
+    	IPortal portal = net.getPortal(portalName);
+    	if(portal == null) {
+    		//same here
+    	}
+    	
+    	instance.bungeeQueue.put(playerName, portal);
+    }
+    
+    public static IPortal pullFromQueue(String playerName) {
+    	return instance.bungeeQueue.remove(playerName);
+    }
 }

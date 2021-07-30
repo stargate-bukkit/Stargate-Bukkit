@@ -25,19 +25,19 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.portal.Portal;
+import net.TheDgtl.Stargate.portal.IPortal;
 
 public abstract class StargateEvent extends Event implements Cancellable {
 	// oldname = StargateEvent
-    protected final Portal portal;
+    protected final IPortal portal;
     protected boolean cancelled;
 
-    public StargateEvent(@NotNull Portal portal) {
+    public StargateEvent(@NotNull IPortal portal) {
         this.portal = Objects.requireNonNull(portal);
         this.cancelled = false;
     }
 
-    public Portal getPortal() {
+    public IPortal getPortal() {
         return portal;
     }
 

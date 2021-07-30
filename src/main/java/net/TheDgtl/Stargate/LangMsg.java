@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate;
 
+import java.util.HashMap;
 import java.util.logging.Level;
 
 public enum LangMsg {
@@ -13,17 +14,21 @@ public enum LangMsg {
 	BUNGEE_EMPTY("bungeeEmpty"), BUNGEE_SIGN("bungeeSign");
 
 	private final String key;
-
+	private static final HashMap<String,LangMsg> map = new HashMap<>();
+	static {
+		for(LangMsg value : values()) {
+			map.put(value.getString(), value);
+		}
+	}
 	LangMsg(String key) {
 		this.key = key;
 	}
-	public String getValue() {
+	public String getString() {
 		return key;
 	}
-	public static LangMsg getEnum(String value) {
-		Stargate.log(Level.FINER, "getting enum from value: ''" + value + "''");
+	public static LangMsg parse(String value) {
 		for(LangMsg enumeration : values()) {
-			if(enumeration.getValue().equals(value))
+			if(enumeration.getString().equals(value))
 				return enumeration;
 		}
 		return null;

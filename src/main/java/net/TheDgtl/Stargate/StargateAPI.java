@@ -7,7 +7,7 @@ import org.bukkit.util.Vector;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.Portal;
+import net.TheDgtl.Stargate.portal.IPortal;
 
 public class StargateAPI {
 	/*
@@ -22,7 +22,7 @@ public class StargateAPI {
 	 * @param portalBlock
 	 * @return the portal if found / otherwise null
 	 */
-	public Portal getPortal(Location portalBlock) {
+	public IPortal getPortal(Location portalBlock) {
 		return Network.getPortal(portalBlock, GateStructureType.values());
 	}
 	
@@ -32,7 +32,7 @@ public class StargateAPI {
 	 * @param structure , the type of part of the portal
 	 * @return the portal if found / otherwise null
 	 */
-	public Portal getPortal(Location portalBlock, GateStructureType structure){
+	public IPortal getPortal(Location portalBlock, GateStructureType structure){
 		return Network.getPortal(portalBlock, structure);
 	}
 	
@@ -42,7 +42,7 @@ public class StargateAPI {
 	 * @param structures , the types of parts of the portal
 	 * @return the portal if found / otherwise null
 	 */
-	public Portal getPortal(Location portalBlock, GateStructureType[] structures){
+	public IPortal getPortal(Location portalBlock, GateStructureType[] structures){
 		return Network.getPortal(portalBlock, structures);
 	}
 	
@@ -51,7 +51,7 @@ public class StargateAPI {
 	 * @param portalName Portal
 	 * @return The portal found / otherwise null
 	 */
-	public Portal getPortal(Network net, String portalName){
+	public IPortal getPortal(Network net, String portalName){
 		return net.getPortal(portalName);
 	}
 	
@@ -60,8 +60,8 @@ public class StargateAPI {
 	 * @param portalName name of the portal
 	 * @return The portal found / otherwise null
 	 */
-	public Portal getPortal(String netName, String portalName){
-		return Network.getNetwork(netName).getPortal(portalName);
+	public IPortal getPortal(String netName, String portalName){
+		return Network.getNetwork(netName,false).getPortal(portalName);
 	}
 	
 	/**
@@ -69,7 +69,7 @@ public class StargateAPI {
 	 * @param portal
 	 * @return The network which the portal is assigned to
 	 */
-	public Network getNetwork(Portal portal) {
+	public Network getNetwork(IPortal portal) {
 		return portal.getNetwork();
 	}
 	
@@ -79,7 +79,7 @@ public class StargateAPI {
 	 * @return The network found / otherwise null
 	 */
 	public Network getNetwork(String networkName) {
-		return Network.getNetwork(networkName);
+		return Network.getNetwork(networkName,false);
 	}
 	
 	/**
@@ -88,7 +88,7 @@ public class StargateAPI {
 	 * @param portal
 	 * @param targetNet
 	 */
-	public void changeNetwork(Portal portal, Network targetNet) {
+	public void changeNetwork(IPortal portal, Network targetNet) {
 		portal.setNetwork(targetNet);
 	}
 	/**
@@ -108,7 +108,7 @@ public class StargateAPI {
 	 * @param target the portal which will have it's destination changed
 	 * @param destination
 	 */
-	public void forceConnect(Portal target, Portal destination) {
+	public void forceConnect(IPortal target, IPortal destination) {
 		target.setOverrideDesti(destination);
 	}
 }

@@ -28,6 +28,11 @@ import net.TheDgtl.Stargate.portal.Network;
 import net.TheDgtl.Stargate.portal.PortalFlag;
 import net.TheDgtl.Stargate.portal.SGLocation;
 
+/**
+ * Acts as an interface for portals to modify worlds
+ * @author Thorin
+ *
+ */
 public class Gate {
 
 	private GateFormat format;
@@ -125,7 +130,7 @@ public class Gate {
 		for (int i = 0; i < 4; i++) {
 			sign.setLine(i, signLines[i]);
 		}
-		Stargate.syncPopulator.new BlockSetAction(sign, true);
+		Stargate.syncTickPopulator.new BlockSetAction(sign, true);
 		if(!isDrawButton)
 			return;
 		/*

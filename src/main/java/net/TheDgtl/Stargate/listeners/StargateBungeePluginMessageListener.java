@@ -17,68 +17,69 @@
  */
 package net.TheDgtl.Stargate.listeners;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
+
+import java.io.InvalidClassException;
 import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
+
+import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.Portal;
+import net.TheDgtl.Stargate.Channel;
+import net.TheDgtl.Stargate.StargateData.PotalDataReceiver;
 
 public class StargateBungeePluginMessageListener implements PluginMessageListener {
+
+	/**
+	 * TODO
+	 * - Send plugin enable message to all servers
+	 * - Send all loaded bungeeportals to all servers
+	 */
+	public StargateBungeePluginMessageListener() {
+		
+	}
 	
-	static boolean IS_ENABLE_BUNGEE = true;
-	
-    @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {
-        if (!IS_ENABLE_BUNGEE || !channel.equals("BungeeCord")) return;
+	/**
+	 * Types of messages that can be received and their response
+	 * - All loadeded portals messages - add all loaded portals as "virtual portals"
+	 * - Plugin enabled message - send all loaded portals message to specific server
+	 * - portal destroyed message - remove virtual portal from specific network
+	 * - portal added message - add virtual portal from specific network
+	 * - plugin disable message - remove all virtual portals given in message
+	 * - portal open message - open selected portal. Too much ?
+	 */
+	@Override
+	public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {
+		boolean usingBungee = (boolean) Stargate.getSetting(Setting.USING_BUNGEE);
+		if (!usingBungee || !channel.equals("BungeeCord"))
+			return;
 
-        // Get data from message
-        String inChannel;
-        byte[] data;
-        Stargate stargate = JavaPlugin.getPlugin(Stargate.class);
-        try {
-            DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
-            inChannel = in.readUTF();
-            short len = in.readShort();
-            data = new byte[len];
-            in.readFully(data);
-        } catch (IOException ex) {
-            Stargate.log(Level.SEVERE, "Error receiving BungeeCord message");
-            ex.printStackTrace();
-            return;
-        }
-
-        // Verify that it's an SGBungee packet
-        if (!inChannel.equals("SGBungee")) {
-            return;
-        }
-
-        // Data should be player name, and destination gate name
-        String msg = new String(data);
-        String[] parts = msg.split("#@#");
-
-        String playerName = parts[0];
-        String destination = parts[1];
-
-        // Check if the player is online, if so, teleport, otherwise, queue
-        Player player = stargate.getServer().getPlayer(playerName);
-        if (player == null) {
-        	Stargate.addItemToBungeeQueue(playerName.toLowerCase(), destination);
-        } else {
-            Portal dest = Network.getBungeePortal(destination);
-            // Specified an invalid gate. For now we'll just let them connect at their current location
-            if (dest == null) {
-                Stargate.log(Level.INFO,"Bungee gate " + destination + " does not exist");
-                return;
-            }
-            dest.teleportToExit(player);
-        }
+		ByteArrayDataInput in = ByteStreams.newDataInput(message);
+		String subChannel = in.readUTF();
+		switch (Channel.parse(subChannel)) {
+		case GET_SERVER:
+			Stargate.serverName = in.readUTF();
+			Stargate.knowsServerName = (Stargate.serverName != null) && (!Stargate.serverName.isEmpty());
+			break;
+		case PORTAL:
+			Stargate.log(Level.FINEST, "trying to read portal json msg");
+			PotalDataReceiver receiver = new PotalDataReceiver(in.readUTF());
+			receiver.doResponse();
+			break;
+		case PLUGIN_ENABLE:
+			break;
+		case PLUGIN_DISABLE:
+			break;
+		case PLAYER_TELEPORT:
+			break;
+		default:
+			Stargate.log(Level.FINEST, "Recieved unknown message with a subchannel: " + subChannel);
+			break;
+		}
     }
 }

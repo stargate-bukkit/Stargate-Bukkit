@@ -15,7 +15,7 @@ import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.Portal;
+import net.TheDgtl.Stargate.portal.IPortal;
 
 public class MoveEventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -55,14 +55,14 @@ public class MoveEventListener implements Listener {
 				&& from.getBlockZ() == to.getBlockZ()) {
 			return;
 		}
-		Portal portal = Network.getPortal(to, GateStructureType.IRIS);
+		IPortal portal = Network.getPortal(to, GateStructureType.IRIS);
 
 		if (portal == null || !portal.isOpen())
 			return;
 		Player player = event.getPlayer();
 		if (!portal.isOpenFor(player)) {
 			// TODO send deny message
-			portal.teleportToExit(player);
+			portal.teleportHere(player);
 			return;
 		}
 		// TODO check perm's

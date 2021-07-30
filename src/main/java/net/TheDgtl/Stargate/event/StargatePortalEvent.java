@@ -24,7 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.portal.Portal;
+import net.TheDgtl.Stargate.portal.IPortal;
 
 public class StargatePortalEvent extends StargateEvent {
 	/*
@@ -33,7 +33,7 @@ public class StargatePortalEvent extends StargateEvent {
 	
 	
     private final Player player;
-    private final Portal destination;
+    private final IPortal destination;
     private Location exit;
 
     private static final HandlerList handlers = new HandlerList();
@@ -48,7 +48,7 @@ public class StargatePortalEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargatePortalEvent(@NotNull Player player, @NotNull Portal portal, @NotNull Portal dest, @NotNull Location exit) {
+    public StargatePortalEvent(@NotNull Player player, @NotNull IPortal portal, @NotNull IPortal dest, @NotNull Location exit) {
         super(Objects.requireNonNull(portal));
 
         this.player = Objects.requireNonNull(player);
@@ -68,7 +68,7 @@ public class StargatePortalEvent extends StargateEvent {
      * @return destination gate
      */
     @NotNull
-    public Portal getDestination() {
+    public IPortal getDestination() {
         return destination;
     }
 

@@ -1,5 +1,7 @@
 package net.TheDgtl.Stargate;
 
+import java.util.HashMap;
+
 public enum Setting {
 	DEFAULT_NET("preferences.defaultGateNetwork"), LANGUAGE("preferences.language"),
 	USING_BUNGEE("preferences.usingBungee"), 
@@ -18,13 +20,18 @@ public enum Setting {
 	
 	DEBUG_LEVEL("technical.debug.debug-level"), CONFIG_VERSION("configVersion");
 
-	String key;
+	private String key;
+	static private final HashMap<String,Setting> map = new HashMap<>();
+	static {
+		for(Setting value : values())
+			map.put(value.getKey(), value);
+	}
 
 	Setting(String key) {
 		this.key = key;
 	}
 
-	static Setting getSetting(String key) {
+	static Setting parse(String key) {
 		for (Setting testSetting : values())
 			if (testSetting.getKey().equals(key))
 				return testSetting;

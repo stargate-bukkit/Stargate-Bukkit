@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.portal;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 
 import org.bukkit.block.Block;
@@ -19,10 +20,11 @@ public class NetworkedPortal extends Portal {
 	// used in networked portals
 	static final private int NO_DESTI_SELECTED = -1;
 	private int selectedDesti = NO_DESTI_SELECTED;
-	
-	public NetworkedPortal(Network network, Block sign, String[] lines) throws NoFormatFound, GateConflict, NameError {
-		super(network, sign, lines);
-		
+
+	public NetworkedPortal(Network network, String name, Block sign, EnumSet<PortalFlag> flags)
+			throws NoFormatFound, GateConflict, NameError {
+		super(network, name, sign, flags);
+
 		drawControll();
 	}
 	
@@ -51,22 +53,13 @@ public class NetworkedPortal extends Portal {
 		}
 		return getDestinations()[index];
 	}
-	
+
 	private String[] getDestinations() {
-		HashSet<String> tempPortalList = new HashSet<>(this.network.portalList.keySet());
-		tempPortalList.remove(name);
-		if (!flags.contains(PortalFlag.FORCE_SHOW)) {
-			HashSet<String> removeList = new HashSet<>();
-			for (String portalName : tempPortalList) {
-				if (network.getPortal(portalName).isHidden())
-					removeList.add(portalName);
-			}
-			tempPortalList.removeAll(removeList);
-		}
+		HashSet<String> tempPortalList = network.getAvailablePortals(hasFlag(PortalFlag.FORCE_SHOW), this);
 		return tempPortalList.toArray(new String[0]);
 	}
 
-	public Portal loadDestination() {
+	public IPortal loadDestination() {
 		if (selectedDesti == NO_DESTI_SELECTED)
 			return null;
 		return this.network.getPortal(getDestinations()[selectedDesti]);
@@ -104,7 +97,7 @@ public class NetworkedPortal extends Portal {
 		if (this.selectedDesti == NO_DESTI_SELECTED) {
 			lines[1] = Stargate.langManager.getString(LangMsg.RIGHT_CLICK);
 			lines[2] = Stargate.langManager.getString(LangMsg.TO_USE);
-			lines[3] = NameSurround.NETWORK.getSurround(this.network.name);
+			lines[3] = network.concatName();
 		} else {
 			int destiIndex = selectedDesti % 3;
 			int desti1 = selectedDesti - destiIndex;
@@ -120,6 +113,6 @@ public class NetworkedPortal extends Portal {
 				lines[i + 1] = aDestinationName;
 			}
 		}
-		getGate().drawControll(lines,!flags.contains(PortalFlag.ALWAYS_ON));
+		getGate().drawControll(lines,!hasFlag(PortalFlag.ALWAYS_ON));
 	}
 }

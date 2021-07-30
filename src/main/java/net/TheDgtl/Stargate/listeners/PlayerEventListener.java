@@ -18,14 +18,21 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
+
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+
 import org.bukkit.event.Event;
 
+import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.SyncronousPopulator;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.Portal;
+import net.TheDgtl.Stargate.portal.IPortal;
 import net.TheDgtl.Stargate.portal.SGLocation;
+import net.TheDgtl.Stargate.SyncronousPopulator.ConditionallRepeatedTask;
 
 public class PlayerEventListener implements Listener {
 	private static boolean antiDoubleActivate = true;
@@ -37,7 +44,7 @@ public class PlayerEventListener implements Listener {
 			return;
 		Action action = event.getAction();
 		// TODO material optimisation?
-		Portal portal = Network.getPortal(block.getLocation(), GateStructureType.CONTROLL);
+		IPortal portal = Network.getPortal(block.getLocation(), GateStructureType.CONTROLL);
 		if (portal == null) {
 			return;
 		}
@@ -69,18 +76,52 @@ public class PlayerEventListener implements Listener {
 		Stargate.log(Level.WARNING, "This should never be triggered, an unkown glitch is occuring");
 	}
 	
+	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (!(boolean) Stargate.getSetting(Setting.USING_BUNGEE))
 			return;
 
+		if(!Stargate.knowsServerName)
+			getBungeeServerName();
+
 		Player player = event.getPlayer();
-		Portal destination = Stargate.pullBungeeDestination(player.getName().toLowerCase());
+		IPortal destination = Stargate.pullFromQueue(player.getName());
 
 		if (destination == null) {
 			return;
 		}
 		destination.doTeleport(player);
+	}
+	
+	/**
+	 * A stupid cheat to get serverName. A client is needed o get this data, hence
+	 * this stupid solution
+	 * @return
+	 */
+	private void getBungeeServerName() {
+		SyncronousPopulator.Action action = new SyncronousPopulator.Action() {			
+			@Override
+			public boolean isFinished() {
+				return true;
+			}
+
+			@Override
+			public void run(boolean forceEnd) {
+				ByteArrayDataOutput out = ByteStreams.newDataOutput();
+				out.writeUTF(Channel.GET_SERVER.getChannel());
+				Bukkit.getServer().sendPluginMessage(Stargate.getPlugin(Stargate.class), Channel.BUNGEE.getChannel(),
+						out.toByteArray());
+			}
+		};
+
+		Stargate.syncSecPopulator.new ConditionallRepeatedTask(action) {
+
+			@Override
+			public boolean isCondition() {
+				return (Stargate.knowsServerName) || (1 > Bukkit.getServer().getOnlinePlayers().size());
+			}
+		};
 	}
     
 }
