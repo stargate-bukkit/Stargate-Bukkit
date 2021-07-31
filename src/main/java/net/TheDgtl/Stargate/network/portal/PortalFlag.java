@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.portal;
+package net.TheDgtl.Stargate.network.portal;
 
 import java.util.EnumSet;
 import java.util.HashMap;

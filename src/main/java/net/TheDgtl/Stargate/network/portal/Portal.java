@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.portal;
+package net.TheDgtl.Stargate.network.portal;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -25,6 +25,7 @@ import net.TheDgtl.Stargate.exception.NoFormatFound;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateStructureType;
+import net.TheDgtl.Stargate.network.Network;
 
 /**
  * The parent class for ever portal that interacts with server worlds
@@ -52,7 +53,9 @@ public abstract class Portal implements IPortal {
 	Player openFor;
 	IPortal destination = null;
 	private long openTime = -1;
-	Portal(Network network, String name, Block sign, EnumSet<PortalFlag> flags) throws NameError, NoFormatFound, GateConflict {
+
+	Portal(Network network, String name, Block sign, EnumSet<PortalFlag> flags)
+			throws NameError, NoFormatFound, GateConflict {
 
 		this.network = network;
 		this.name = name;
@@ -82,11 +85,8 @@ public abstract class Portal implements IPortal {
 		network.updatePortals();
 		
 		for (GateStructureType key : getGate().getFormat().portalParts.keySet()) {
-			if (!Network.portalFromPartsMap.containsKey(key)) {
-				Network.portalFromPartsMap.put(key, new HashMap<SGLocation, IPortal>());
-			}
 			List<SGLocation> locations = getGate().getLocations(key);
-			Network.portalFromPartsMap.get(key).putAll(generateLocationHashMap(locations));
+			network.registerLocations(key, generateLocationHashMap(locations));
 		}
 		if(hasFlag(PortalFlag.ALWAYS_ON))
 			this.open(null);
@@ -121,6 +121,11 @@ public abstract class Portal implements IPortal {
 		}
 		return output;
 	}
+	
+	@Override
+	public Location getSignPos() {
+		return gate.getSignLoc();
+	}
 
 	public abstract void onSignClick(Action action, Player actor);
 
@@ -140,27 +145,27 @@ public abstract class Portal implements IPortal {
 	 * Remove all information stored on this gate
 	 */
 	public void destroy() {
-		this.network.removePortal(name);
+		this.network.removePortal(this);
 		String[] lines = new String[] { name, "", "", "" };
 		getGate().drawControll(lines, false);
-		for (GateStructureType formatType : Network.portalFromPartsMap.keySet()) {
+		for (GateStructureType formatType : GateStructureType.values()) {
 			for (SGLocation loc : this.getGate().getLocations(formatType)) {
-				Network.portalFromPartsMap.get(formatType).remove(loc);
+				network.unRegisterLocation(formatType, loc);
 			}
 		}
-
 		network.updatePortals();
 	}
 
 	public void open(Player actor) {
 		getGate().open();
 		this.openFor = actor;
-		long openTime = System.currentTimeMillis();
-		this.openTime = openTime;
-
 		if(hasFlag(PortalFlag.ALWAYS_ON)) {
 			return;
 		}
+		long openTime = System.currentTimeMillis();
+		this.openTime = openTime;
+
+		
 		
 		// Create action which will close this portal
 		SyncronousPopulator.Action action = new SyncronousPopulator.Action() {

@@ -40,9 +40,9 @@ import net.TheDgtl.Stargate.listeners.PlayerEventListener;
 import net.TheDgtl.Stargate.listeners.PluginEventListener;
 import net.TheDgtl.Stargate.listeners.StargateBungeePluginMessageListener;
 import net.TheDgtl.Stargate.listeners.WorldEventListener;
-import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.IPortal;
-import net.TheDgtl.Stargate.portal.InterserverNetwork;
+import net.TheDgtl.Stargate.network.InterserverNetwork;
+import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.IPortal;
 
 public class Stargate extends JavaPlugin {
 	private static Stargate instance;

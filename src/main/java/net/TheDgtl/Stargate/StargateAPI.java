@@ -6,8 +6,8 @@ import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateStructureType;
-import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.IPortal;
+import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.IPortal;
 
 public class StargateAPI {
 	/*

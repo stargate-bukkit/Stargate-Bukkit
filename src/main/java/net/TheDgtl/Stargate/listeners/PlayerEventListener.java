@@ -29,9 +29,9 @@ import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.SyncronousPopulator;
 import net.TheDgtl.Stargate.gate.GateStructureType;
-import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.IPortal;
-import net.TheDgtl.Stargate.portal.SGLocation;
+import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.SGLocation;
 import net.TheDgtl.Stargate.SyncronousPopulator.ConditionallRepeatedTask;
 
 public class PlayerEventListener implements Listener {

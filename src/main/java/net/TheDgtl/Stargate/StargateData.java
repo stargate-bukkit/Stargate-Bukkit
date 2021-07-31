@@ -13,9 +13,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
-import net.TheDgtl.Stargate.portal.IPortal;
-import net.TheDgtl.Stargate.portal.InterserverNetwork;
-import net.TheDgtl.Stargate.portal.VirtualPortal;
+import net.TheDgtl.Stargate.network.InterserverNetwork;
+import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 
 public class StargateData {
 	static final String ADD_PORTAL = "add";

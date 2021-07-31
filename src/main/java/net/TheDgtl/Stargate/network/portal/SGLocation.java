@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.portal;
+package net.TheDgtl.Stargate.network.portal;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

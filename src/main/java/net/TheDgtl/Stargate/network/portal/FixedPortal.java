@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.portal;
+package net.TheDgtl.Stargate.network.portal;
 
 import java.util.EnumSet;
 
@@ -11,6 +11,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
+import net.TheDgtl.Stargate.network.Network;
 
 public class FixedPortal extends Portal{
 	/**

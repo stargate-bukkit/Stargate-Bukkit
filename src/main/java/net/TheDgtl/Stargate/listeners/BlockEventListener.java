@@ -29,13 +29,13 @@ import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
 import net.TheDgtl.Stargate.gate.GateStructureType;
-import net.TheDgtl.Stargate.portal.FixedPortal;
-import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.NetworkedPortal;
-import net.TheDgtl.Stargate.portal.Portal;
-import net.TheDgtl.Stargate.portal.PortalFlag;
-import net.TheDgtl.Stargate.portal.IPortal;
-import net.TheDgtl.Stargate.portal.InterserverNetwork;
+import net.TheDgtl.Stargate.network.InterserverNetwork;
+import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.FixedPortal;
+import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.PortalFlag;
 
 public class BlockEventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

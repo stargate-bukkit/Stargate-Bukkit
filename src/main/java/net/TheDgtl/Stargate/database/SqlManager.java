@@ -59,14 +59,14 @@ public class SqlManager {
         this.plugin = plugin;
         
         switch(this.driver) {
-        case SQLITE:
-        	setupSQLITE();
-        	break;
         case MYSQL:
         case MARIADB:
         	setupMySQL();
         	break;
         default:
+        	Stargate.log(Level.WARNING, "Unknown driver, '"+driver+"' , using SQLite by default. Stargate currently supports SQLite, MariaDB, MySql");
+        case SQLITE:
+        	setupSQLITE();
         	break;
         }
     }
@@ -81,11 +81,9 @@ public class SqlManager {
     	case MYSQL:
     	case MARIADB:
     		return connection = this.boneCP.getConnection();
+    	default:
     	case SQLITE:
     		return connection = DriverManager.getConnection(this.url);
-    	default:
-    		plugin.getLogger().log(Level.INFO, "{0} {1} {2}", new Object[]{this.url, this.database, this.connection.toString()});
-            return this.connection;
     	}
         
     }

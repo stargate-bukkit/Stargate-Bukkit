@@ -14,8 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.gate.GateStructureType;
-import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.IPortal;
+import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.IPortal;
 
 public class MoveEventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -1,12 +1,15 @@
-package net.TheDgtl.Stargate.portal;
+package net.TheDgtl.Stargate.network.portal;
 
 
 import java.util.EnumSet;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 
 import net.TheDgtl.Stargate.StargateData.PlayerDataSender;
+import net.TheDgtl.Stargate.network.InterserverNetwork;
+import net.TheDgtl.Stargate.network.Network;
 
 /**
  * A virtual portal, which does not exist. Symbolises a portal that is outside
@@ -96,6 +99,11 @@ public class VirtualPortal implements IPortal{
 	@Override
 	public String getAllFlagsString() {
 		return "";
+	}
+
+	@Override
+	public Location getSignPos() {
+		return null;
 	}
 
 	

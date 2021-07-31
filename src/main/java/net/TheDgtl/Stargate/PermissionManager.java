@@ -6,7 +6,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 import net.TheDgtl.Stargate.event.StargateEvent;
-import net.TheDgtl.Stargate.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.PortalFlag;
 
 public class PermissionManager {
 	private Player player;

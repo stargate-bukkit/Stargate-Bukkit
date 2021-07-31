@@ -23,7 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.IPortal;
 
 /**
  * Stargate - A portal plugin for Bukkit

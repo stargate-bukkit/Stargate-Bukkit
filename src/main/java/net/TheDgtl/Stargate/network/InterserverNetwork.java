@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.portal;
+package net.TheDgtl.Stargate.network;
 
 import java.io.InvalidClassException;
 import java.util.HashMap;
@@ -6,6 +6,9 @@ import java.util.List;
 
 import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.StargateData.PortalDataSender;
+import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.NameSurround;
+import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 
 
 public class InterserverNetwork extends Network{
@@ -60,10 +63,11 @@ public class InterserverNetwork extends Network{
 	}
 
 	@Override
-	public void removePortal(String portalName) {
-		super.removePortal(portalName);
+	public void removePortal(IPortal portal) {
+		super.removePortal(portal);
 		PortalDataSender sender = new PortalDataSender(TARGET);
-		sender.destroyPortal(getPortal(portalName));
+		
+		sender.destroyPortal(getPortal(portal.getName()));
 		sender.send();
 	}
 	
@@ -74,16 +78,16 @@ public class InterserverNetwork extends Network{
 	public void removeVirtualPortal(String virtualName) throws InvalidClassException {
 		if(!(getPortal(virtualName) instanceof VirtualPortal))
 			throw new InvalidClassException("portal has to be InterserverPortal class");
-		super.removePortal(virtualName);
+		super.removePortal(getPortal(virtualName));
 	}
 	
 	public void removeVirtualPortal(VirtualPortal portal) {
-		super.removePortal(portal.getName());
+		super.removePortal(portal);
 	}
 	
 	@Override
 	public String concatName() {
-		return NameSurround.BUNGEE.getSurround(name);
+		return NameSurround.BUNGEE.getSurround(getName());
 	}
 	
 	

@@ -25,7 +25,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.IPortal;
 
 public abstract class StargateEvent extends Event implements Cancellable {
 	// oldname = StargateEvent

@@ -24,9 +24,9 @@ import org.bukkit.util.Vector;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.InvalidStructure;
-import net.TheDgtl.Stargate.portal.Network;
-import net.TheDgtl.Stargate.portal.PortalFlag;
-import net.TheDgtl.Stargate.portal.SGLocation;
+import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.SGLocation;
 
 /**
  * Acts as an interface for portals to modify worlds

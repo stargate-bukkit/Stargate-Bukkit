@@ -1,15 +1,18 @@
-package net.TheDgtl.Stargate.portal;
+package net.TheDgtl.Stargate.network.portal;
 
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.network.InterserverNetwork;
+import net.TheDgtl.Stargate.network.Network;
 
 public interface IPortal {
 
@@ -44,7 +47,8 @@ public interface IPortal {
 	boolean hasFlag(PortalFlag flag);
 	
 	String getAllFlagsString();
-	
+
+	Location getSignPos();
 	/**
 	 * Convert a portal into a string, would look like this:
 	 * 		Classname{key1=data1,key2=data2 ... }
@@ -57,7 +61,7 @@ public interface IPortal {
 		HashMap<String, String> data = new HashMap<>();
 		data.put("flags", portal.getAllFlagsString());
 		data.put("name", portal.getName());
-		data.put("net", portal.getNetwork().name);
+		data.put("net", portal.getNetwork().getName());
 		if((boolean) Stargate.getSetting(Setting.USING_BUNGEE)) {
 			data.put("server", Stargate.serverName);
 		}
@@ -119,4 +123,5 @@ public interface IPortal {
 		}
 		return null; // TODO Not implemented yet
 	}
+
 }
