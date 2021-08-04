@@ -17,8 +17,10 @@ public enum Setting {
 	
 	DEFAULT_SIGN_COLOR("tweaks.defaultSignColour"), HIGHLIGHT_FREE_GATES("tweaks.highlightFreeGates"),
 	ALPHABETIC_NETWORKS("tweaks.alphabeticNetworks"), REMEMBER_LAST_DESTINATION("tweaks.rememberLastDestination"),
-	
-	DEBUG_LEVEL("technical.debug.debug-level"), CONFIG_VERSION("configVersion");
+
+	DEBUG_LEVEL("technical.debug.debug-level"), CONFIG_VERSION("configVersion"), DATABASE_NAME("technical.database"),
+	BUNGEE_DRIVER("technical.bungee.driver"), BUNGEE_DATABASE("technical.bungee.database"),
+	BUNGEE_PORT("technical.bungee.port"), BUNGEE_ADDRESS("technical.bungee.address");
 
 	private String key;
 	static private final HashMap<String,Setting> map = new HashMap<>();

@@ -18,6 +18,7 @@
 package net.TheDgtl.Stargate;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -42,6 +43,7 @@ import net.TheDgtl.Stargate.listeners.StargateBungeePluginMessageListener;
 import net.TheDgtl.Stargate.listeners.WorldEventListener;
 import net.TheDgtl.Stargate.network.InterserverNetwork;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 
 public class Stargate extends JavaPlugin {
@@ -55,6 +57,8 @@ public class Stargate extends JavaPlugin {
 	final String PORTALFOLDER = "portals";
 	
 	private PluginManager pm;
+	
+	public static StargateFactory factory;
 	public static LangManager langManager;
 	private final int CURRENT_CONFIG_VERSION = 5;
 	/**
@@ -65,9 +69,19 @@ public class Stargate extends JavaPlugin {
 	 * Goes through every action it the queue every 1 second (20 ticks). Should be used in delayed actions
 	 */
 	public static final SyncronousPopulator syncSecPopulator = new SyncronousPopulator();
-	private HashMap<String,IPortal> bungeeQueue = new HashMap<>();
+	/**
+	 *  The string length of a name consisting of only 'i'. This will fill a sign (including <>)
+	 *  Note that this is a terribly relaxed restriction, mainly done to avoid any weird issues for
+	 *  in a SQL database
+	 */
+	public static final int MAX_TEXT_LENGTH = 40; 
 	
-	public static String serverName; //used in bungee / waterfall
+	
+	/*
+	 * used in bungee / waterfall
+	 */
+	private HashMap<String,IPortal> bungeeQueue = new HashMap<>();
+	public static String serverName; 
 	public static boolean knowsServerName = false;
 	@Override
 	public void onEnable() {
@@ -85,7 +99,12 @@ public class Stargate extends JavaPlugin {
 		saveDefaultGates();
 
 		GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATAFOLDER + "/" + GATEFOLDER);
-
+		try {
+			factory = new StargateFactory(this);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		pm = getServer().getPluginManager();
 		registerListeners();
 		BukkitScheduler scheduler = getServer().getScheduler();
@@ -137,6 +156,7 @@ public class Stargate extends JavaPlugin {
 		 * 
 		 */
 		syncTickPopulator.forceDoAllTasks();
+		syncSecPopulator.forceDoAllTasks();
 		if((boolean)getSetting(Setting.USING_BUNGEE)) {
 			Messenger msgr = Bukkit.getMessenger();
 			msgr.unregisterOutgoingPluginChannel(this);
@@ -158,8 +178,8 @@ public class Stargate extends JavaPlugin {
 		return instance.getConfig().get(setting.getKey());
 	}
 	
-	public static void addToQueue(String playerName, String portalName, String netName) {
-    	Network net = InterserverNetwork.getNetwork(netName, false);
+	public static void addToQueue(String playerName, String portalName, String netName, boolean isPersonal) {
+    	Network net = factory.getNetwork(netName, true, isPersonal);
     	if(net == null) {
     		//do some error thing
     	}

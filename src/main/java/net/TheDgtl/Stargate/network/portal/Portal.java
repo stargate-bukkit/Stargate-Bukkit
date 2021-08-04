@@ -53,14 +53,14 @@ public abstract class Portal implements IPortal {
 	Player openFor;
 	IPortal destination = null;
 	private long openTime = -1;
+	
 
 	Portal(Network network, String name, Block sign, EnumSet<PortalFlag> flags)
 			throws NameError, NoFormatFound, GateConflict {
-
 		this.network = network;
 		this.name = name;
 		this.flags = flags;
-		if (name.isBlank())
+		if (name.isBlank() || (name.length() == Stargate.MAX_TEXT_LENGTH))
 			throw new NameError(LangMsg.NAME_LENGTH_FAULT);
 		if (this.network.isPortalNameTaken(name)) {
 			throw new NameError(LangMsg.ALREADY_EXIST);

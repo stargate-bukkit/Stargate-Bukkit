@@ -78,7 +78,6 @@ public class SyncronousPopulator implements Runnable{
 		Action action;
 		
 		/**
-		 * 
 		 * @param delay in ticks
 		 * @param action
 		 */

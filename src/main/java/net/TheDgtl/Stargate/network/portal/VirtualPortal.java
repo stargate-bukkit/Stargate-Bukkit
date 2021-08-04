@@ -1,13 +1,19 @@
 package net.TheDgtl.Stargate.network.portal;
 
-
 import java.util.EnumSet;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import net.TheDgtl.Stargate.StargateData.PlayerDataSender;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
+import net.TheDgtl.Stargate.Channel;
+import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.network.InterserverNetwork;
 import net.TheDgtl.Stargate.network.Network;
 
@@ -18,7 +24,7 @@ import net.TheDgtl.Stargate.network.Network;
  * @author Thorin
  *
  */
-public class VirtualPortal implements IPortal{
+public class VirtualPortal implements IPortal {
 
 	private String server;
 	private String name;
@@ -35,14 +41,33 @@ public class VirtualPortal implements IPortal{
 
 	@Override
 	public void teleportHere(Player player) {
-		PlayerDataSender sender = new PlayerDataSender(server,name,player);
-		sender.send();
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF(Channel.PLAYER_TELEPORT.getChannel());
+		out.writeUTF(server);
+		JsonObject data = new JsonObject();
+		data.add("playerName", new JsonPrimitive(player.getName()));
+		data.add("portalName", new JsonPrimitive(this.name));
+		data.add("network", new JsonPrimitive(network.getName()));
+		data.add("isPrivate", new JsonPrimitive(flags.contains(PortalFlag.PERSONAL_NETWORK)));
+		String dataMsg = data.toString();
+		out.writeShort(dataMsg.length());
+		out.writeUTF(dataMsg);
+		Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
+		player.sendPluginMessage(plugin, Channel.BUNGEE.getChannel(), out.toByteArray());
+
+		ByteArrayDataOutput out1 = ByteStreams.newDataOutput();
+		out1.writeUTF(Channel.PLAYER_CONNECT.getChannel());
+		out1.writeUTF(server);
+		player.sendPluginMessage(plugin, Channel.BUNGEE.getChannel(), out1.toByteArray());
 	}
 
+	/**
+	 * TODO not implemented
+	 */
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -55,46 +80,63 @@ public class VirtualPortal implements IPortal{
 		this.network = (InterserverNetwork) targetNet;
 	}
 
+	/**
+	 * TODO Not implemented
+	 */
 	@Override
-	public void setOverrideDesti(IPortal destination) {}
+	public void setOverrideDesti(IPortal destination) {
+	}
 
 	@Override
 	public Network getNetwork() {
 		return network;
 	}
-	
+
+	/**
+	 * TODO not implemented
+	 */
 	@Override
-	public void open(Player player) {}
-	
+	public void open(Player player) {
+	}
+
 	@Override
 	public void destroy() {
 		network.removeVirtualPortal(this);
 	}
-	
+
 	@Override
 	public boolean hasFlag(PortalFlag flag) {
 		return flags.contains(flag);
 	}
+
 	/*
 	 * WASTE METHODS WHICH WILL NEVER BE TRIGGERED IN ANY CIRCUMSTANCE
 	 */
 	@Override
-	public void onSignClick(Action action, Player actor) {}
+	public void onSignClick(Action action, Player actor) {
+	}
 
 	@Override
-	public void drawControll() {}
-	
-	@Override
-	public void doTeleport(Player player) {}
+	public void drawControll() {
+	}
 
 	@Override
-	public boolean isOpen() {return false;}
+	public void doTeleport(Player player) {
+	}
 
 	@Override
-	public boolean isOpenFor(Player player) {return false;}
-	
+	public boolean isOpen() {
+		return false;
+	}
+
 	@Override
-	public void onButtonClick(Player player) {}
+	public boolean isOpenFor(Player player) {
+		return false;
+	}
+
+	@Override
+	public void onButtonClick(Player player) {
+	}
 
 	@Override
 	public String getAllFlagsString() {
@@ -105,6 +147,5 @@ public class VirtualPortal implements IPortal{
 	public Location getSignPos() {
 		return null;
 	}
-
 	
 }

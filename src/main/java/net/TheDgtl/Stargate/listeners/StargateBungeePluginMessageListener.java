@@ -27,11 +27,13 @@ import org.jetbrains.annotations.NotNull;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.Channel;
-import net.TheDgtl.Stargate.StargateData.PotalDataReceiver;
 
 public class StargateBungeePluginMessageListener implements PluginMessageListener {
 
@@ -66,10 +68,18 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 			Stargate.serverName = in.readUTF();
 			Stargate.knowsServerName = (Stargate.serverName != null) && (!Stargate.serverName.isEmpty());
 			break;
-		case PORTAL:
-			Stargate.log(Level.FINEST, "trying to read portal json msg");
-			PotalDataReceiver receiver = new PotalDataReceiver(in.readUTF());
-			receiver.doResponse();
+		case PLAYER_CONNECT:
+			Stargate.log(Level.FINEST, "trying to read player join json msg");
+			short length = in.readShort();
+			byte[] buffer = new byte[length];
+			in.readFully(buffer);
+			JsonParser parser = new JsonParser();
+			JsonObject json = (JsonObject) parser.parse(buffer.toString());
+			String playerName = json.get("playerName").getAsString();
+			String portalName = json.get("portalName").getAsString();
+			String network = json.get("network").getAsString();
+			boolean isPersonalNet = json.get("isPrivate").getAsBoolean();
+			Stargate.addToQueue(playerName, portalName, network, isPersonalNet);
 			break;
 		case PLUGIN_ENABLE:
 			break;

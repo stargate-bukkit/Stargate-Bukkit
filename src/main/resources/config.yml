@@ -25,8 +25,20 @@ tweaks:
   alphabeticNetworks: false
   rememberLastDestination: false
 technical:
+  # Name of internal stargate storage
+  database: stargate
+  
+  # Settings for bungee portal storage. Note that this has to be the same for all stargate-bungeeinstances.
+  bungee:
+    # current tested drivers[mysql,mariadb,sqlite]
+    # sqlite not recomended for non local server networks or large networks
+    driver: sqlite
+    database: stargateBungee
+    port:
+    address: C:\Users\46737\Desktop\Stupid location
   debug:
     # Lowest level of visibility for the plugin
     debug-level: INFO
+    debug-targets: []
     
 configVersion: 5

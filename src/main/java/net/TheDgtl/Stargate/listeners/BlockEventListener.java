@@ -107,7 +107,16 @@ public class BlockEventListener implements Listener {
 			network = player.getName();
 			isPersonal = true;
 		}
-		Network selectedNet = getNetwork(network, flags.contains(PortalFlag.BUNGEE), isPersonal);
+		try {
+			Stargate.factory.createNetwork(network, flags.contains(PortalFlag.BUNGEE), isPersonal);
+		} catch (NameError e1) {
+			LangMsg msg= e1.getMsg();
+			if(msg != null) {
+				player.sendMessage(Stargate.langManager.getMessage(e1.getMsg(), true));
+				return;
+			}
+		}
+		Network selectedNet = Stargate.factory.getNetwork(network, flags.contains(PortalFlag.BUNGEE), isPersonal);
 
 		try {
 			IPortal portal = Portal.createPortalFromSign(selectedNet, lines, block, flags);
@@ -125,14 +134,6 @@ public class BlockEventListener implements Listener {
 		} catch (NameError e) {
 			player.sendMessage(Stargate.langManager.getMessage(e.getMsg(), true));
 		}
-	}
-	
-	private Network getNetwork(String name, boolean isBungee, boolean isPersonal) {
-		
-		
-		if(isBungee)
-			return InterserverNetwork.getOrCreateNetwork(name, isPersonal);
-		return Network.getOrCreateNetwork(name, isPersonal);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

@@ -7,12 +7,17 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
 
-import net.TheDgtl.Stargate.database.SqlManager;
+import net.TheDgtl.Stargate.LangMsg;
+import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.database.Database;
+import net.TheDgtl.Stargate.database.MySqlDatabase;
+import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.NameSurround;
@@ -21,40 +26,18 @@ import net.TheDgtl.Stargate.network.portal.SGLocation;
 
 public class Network {
 	protected HashMap<String, IPortal> portalList;
-	private static final HashMap<String, Network> networkList = new HashMap<>();
-	private static SqlManager database;
+	private Database database;
 	protected String name;
 	
 
 	final static EnumMap<GateStructureType, HashMap<SGLocation, IPortal>> portalFromPartsMap = new EnumMap<>(GateStructureType.class);
 	
-	public Network(String netName) {
-		this.name = netName;
+	public Network(String name, Database database) throws NameError {
+		if (name.isBlank() || (name.length() == Stargate.MAX_TEXT_LENGTH))
+			throw new NameError(LangMsg.NAME_LENGTH_FAULT);
+		this.name = name;
+		this.database = database;
 		portalList = new HashMap<>();
-	}
-
-	final static public void setDatabase(SqlManager database) throws SQLException {
-		Network.database = database;
-		Connection conn = database.getConnection();
-		PreparedStatement statement = conn.prepareStatement(
-				"CREATE TABLE IF NOT EXISTS portals("
-				+ " network VARCHAR(255), name VARCHAR(255), world VARCHAR(255),"
-				+ " x INTEGER, y INTEGER, z INTEGER, flags VARCHAR(255), design VARCHAR(255)"
-				+ " UNIQUE(network,name) );");
-		statement.execute();
-		statement.close();
-		conn.close();
-	}
-
-	public static Network getOrCreateNetwork(String netName, boolean isPersonal) {
-		if (!(networkList.containsKey(netName))) {
-			Network.networkList.put(netName, new Network(netName));
-		}
-		return getNetwork(netName, isPersonal);
-	}
-	
-	public static Network getNetwork(String networkName, boolean isPersonal) {
-		return networkList.get(networkName);
 	}
 	
 	public IPortal getPortal(String name) {
@@ -66,27 +49,35 @@ public class Network {
 			portalFromPartsMap.put(type, new HashMap<SGLocation, IPortal>());
 		}
 		portalFromPartsMap.get(type).putAll(locationsMap);
+
+		for (SGLocation loc : locationsMap.keySet()) {
+			Stargate.log(Level.FINEST, "Registering portal " + locationsMap.get(loc).getName() + " with structType "
+					+ type + " at location " + loc.toString());
+		}
 	}
-	
+
 	public void unRegisterLocation(GateStructureType type, SGLocation loc) {
-		HashMap<SGLocation,IPortal> map = portalFromPartsMap.get(type);
-		if(map != null)
+		HashMap<SGLocation, IPortal> map = portalFromPartsMap.get(type);
+		if (map != null) {
+			Stargate.log(Level.FINEST, "Unregistering portal " + map.get(loc).getName() + " with structType " + type
+					+ " at location " + loc.toString());
 			map.remove(loc);
+		}
 	}
 	
 	protected PreparedStatement compileRemoveStatement(Connection conn, IPortal portal) throws SQLException {
 		PreparedStatement output = conn.prepareStatement(
 				"DELETE FROM portals"
-				+ " WHERE name = ?, network = ?");
-		output.setString(0, portal.getName());
-		output.setString(1, this.name);
+				+ " WHERE name = ? AND network = ?");
+		output.setString(1, portal.getName());
+		output.setString(2, this.name);
 		return output;
 	}
 	
 	protected PreparedStatement compileAddStatement(Connection conn, IPortal portal) throws SQLException {
 		PreparedStatement output = conn.prepareStatement(
-				"INSERT INTO portals (network,name,world,x,y,z,flags,design)"
-				+ " VALUES(?,?,?,?,?,?,?,?);");
+				"INSERT INTO portals (network,name,world,x,y,z,flags)"
+				+ " VALUES(?,?,?,?,?,?,?);");
 		output.setString(1, this.name);
 		output.setString(2, portal.getName());
 		
@@ -96,7 +87,6 @@ public class Network {
 		output.setInt(5, loc.getBlockY());
 		output.setInt(6, loc.getBlockZ());
 		output.setString(7, portal.getAllFlagsString());
-		output.setString(8, portal.ge);
 		return output;
 	}
 	
@@ -229,10 +219,6 @@ public class Network {
 			portal.destroy();
 		}
 		portalList.clear();
-	}
-
-	protected SqlManager getDatabase() {
-		return Network.database;
 	}
 
 	public String getName() {

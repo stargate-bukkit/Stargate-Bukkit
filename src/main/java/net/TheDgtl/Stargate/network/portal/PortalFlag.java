@@ -8,7 +8,7 @@ import net.TheDgtl.Stargate.exception.NoFlagFound;
 public enum PortalFlag {
 	RANDOM('R'), BUNGEE('U'), ALWAYS_ON('A'), BACKWARDS('B'),
 	HIDDEN('H'), PRIVATE('P'), FORCE_SHOW('S'), NO_NETWORK('N'), // ??
-	FREE('F');
+	FREE('F'), FIXED('X'), PERSONAL_NETWORK('L');
 
 	public final char label;
 	static private final HashMap<Character, PortalFlag> map = new HashMap<>();

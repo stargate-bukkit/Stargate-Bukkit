@@ -157,7 +157,7 @@ public class Gate {
 	}
 	
 	public Location getSignLoc() {
-		return topLeft.add(signPos);
+		return topLeft.clone().add(signPos);
 	}
 	
 	private BlockFace getButtonFacing(Material buttonMat, Directional signDirection) {
