@@ -26,6 +26,8 @@ public class StargateFactory {
 	private final HashMap<String,InterserverNetwork> bungeeNetList = new HashMap<>(); 
 	private final HashMap<String,InterserverNetwork> privateBungeeNetList = new HashMap<>(); 
 	
+	private final HashMap<byte[], HashMap<String,? extends Network>> test = new HashMap<>();
+	
 	private final Database database;
 	private final Database bungeeDatabase;
 	
@@ -52,7 +54,7 @@ public class StargateFactory {
 		createTables();
 	}
 	
-	final private void createTables() throws SQLException {
+	private void createTables() throws SQLException {
 		Connection conn = database.getConnection();
 		PreparedStatement statement = conn.prepareStatement(
 				"CREATE TABLE IF NOT EXISTS portals("
@@ -74,6 +76,10 @@ public class StargateFactory {
 		bungeeStatement.execute();
 		bungeeStatement.close();
 		bungeeConn.close();
+	}
+	
+	public void loadAllPortals() {
+		
 	}
 	
 	/**
@@ -120,8 +126,6 @@ public class StargateFactory {
 		}
 		return net;
 	}
-	
-
 	
 	/**
 	 * Convert a string processed from IPortal.getString(IPortal portal) back into a portal
