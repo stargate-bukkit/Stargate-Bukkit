@@ -31,7 +31,7 @@ import java.util.Objects;
  * This listener listens to any player-related events related to stargates
  */
 @SuppressWarnings("unused")
-public class PlayerEventsListener implements Listener {
+public class PlayerEventListener implements Listener {
 
     private static long eventTime;
     private static PlayerInteractEvent previousEvent;
@@ -208,10 +208,7 @@ public class PlayerEventsListener implements Listener {
      * @return <p>True if the player should be denied</p>
      */
     private boolean cannotAccessPortal(Player player, Portal portal) {
-        boolean deny = false;
-        if (!Stargate.canAccessNetwork(player, portal.getNetwork())) {
-            deny = true;
-        }
+        boolean deny = !Stargate.canAccessNetwork(player, portal.getNetwork());
 
         if (!Stargate.canAccessPortal(player, portal, deny)) {
             Stargate.sendMessage(player, Stargate.getString("denyMsg"));

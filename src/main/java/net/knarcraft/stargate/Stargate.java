@@ -6,7 +6,7 @@ import net.knarcraft.stargate.event.StargateAccessEvent;
 import net.knarcraft.stargate.listener.BlockEventListener;
 import net.knarcraft.stargate.listener.BungeeCordListener;
 import net.knarcraft.stargate.listener.EntityEventListener;
-import net.knarcraft.stargate.listener.PlayerEventsListener;
+import net.knarcraft.stargate.listener.PlayerEventListener;
 import net.knarcraft.stargate.listener.PluginEventListener;
 import net.knarcraft.stargate.listener.VehicleEventListener;
 import net.knarcraft.stargate.listener.WorldEventListener;
@@ -535,7 +535,7 @@ public class Stargate extends JavaPlugin {
         log.info(pluginDescriptionFile.getName() + " v." + pluginDescriptionFile.getVersion() + " is enabled.");
 
         // Register events before loading gates to stop weird things happening.
-        pm.registerEvents(new PlayerEventsListener(), this);
+        pm.registerEvents(new PlayerEventListener(), this);
         pm.registerEvents(new BlockEventListener(), this);
 
         pm.registerEvents(new VehicleEventListener(), this);
