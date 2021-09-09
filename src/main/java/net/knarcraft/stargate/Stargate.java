@@ -654,7 +654,7 @@ public class Stargate extends JavaPlugin {
             }
         }
         File newFile = new File(portalFolder, getServer().getWorlds().get(0).getName() + ".db");
-        if (!newFile.exists()) {
+        if (!newFile.exists() && !newFile.getParentFile().exists()) {
             if (!newFile.getParentFile().mkdirs()) {
                 log.severe("Unable to create portal database folder: " + newFile.getParentFile().getPath());
             }
