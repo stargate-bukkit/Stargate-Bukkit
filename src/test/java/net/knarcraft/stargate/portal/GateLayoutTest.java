@@ -15,7 +15,6 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class GateLayoutTest {
 
@@ -40,7 +39,7 @@ public class GateLayoutTest {
         expected.add(new RelativeBlockVector(1, 3, 0));
         expected.add(new RelativeBlockVector(2, 3, 0));
 
-        Set<RelativeBlockVector> exits = layout.getExits().keySet();
+        List<RelativeBlockVector> exits = layout.getExits();
         exits.forEach((blockVector) -> assertTrue(expected.contains(blockVector)));
     }
 

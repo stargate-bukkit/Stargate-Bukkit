@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CommandStarGate implements CommandExecutor {
 
-    private Stargate plugin;
+    private final Stargate plugin;
 
     /**
      * Instantiates the stargate command

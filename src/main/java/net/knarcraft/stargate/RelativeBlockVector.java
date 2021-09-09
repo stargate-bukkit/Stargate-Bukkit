@@ -10,9 +10,9 @@ package net.knarcraft.stargate;
  */
 public class RelativeBlockVector {
 
-    private int right;
-    private int depth;
-    private int distance;
+    private final int right;
+    private final int depth;
+    private final int distance;
 
     /**
      * Instantiates a new relative block vector

@@ -59,11 +59,11 @@ public class Portal {
     private String destination;
     private String lastDestination = "";
     private String network;
-    private String ownerName;
+    private final String ownerName;
     private UUID ownerUUID;
     private boolean verified;
     private boolean fixed;
-    private Map<PortalOption, Boolean> options;
+    private final Map<PortalOption, Boolean> options;
 
     // In-use information
     private Player player;

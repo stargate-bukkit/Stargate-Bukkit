@@ -25,9 +25,9 @@ public class GateHandler {
     private static final Character EXIT = '*';
     private static final Character CONTROL_BLOCK = '-';
 
-    private static Material defaultPortalBlockOpen = Material.NETHER_PORTAL;
-    private static Material defaultPortalBlockClosed = Material.AIR;
-    private static Material defaultButton = Material.STONE_BUTTON;
+    private static final Material defaultPortalBlockOpen = Material.NETHER_PORTAL;
+    private static final Material defaultPortalBlockClosed = Material.AIR;
+    private static final Material defaultButton = Material.STONE_BUTTON;
 
     private static final HashMap<String, Gate> gates = new HashMap<>();
     private static final HashMap<Material, List<Gate>> controlBlocks = new HashMap<>();
@@ -162,7 +162,7 @@ public class GateHandler {
         int useCost = readConfig(config, fileName, "usecost", -1);
         int createCost = readConfig(config, fileName, "createcost", -1);
         int destroyCost = readConfig(config, fileName, "destroycost", -1);
-        boolean toOwner = (config.containsKey("toowner") ? Boolean.valueOf(config.get("toowner")) : EconomyHandler.toOwner);
+        boolean toOwner = (config.containsKey("toowner") ? Boolean.parseBoolean(config.get("toowner")) : EconomyHandler.toOwner);
 
         Gate gate = new Gate(fileName, new GateLayout(layout), types, portalOpenBlock, portalClosedBlock, portalButton, useCost,
                 createCost, destroyCost, toOwner);

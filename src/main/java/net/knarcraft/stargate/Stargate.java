@@ -67,13 +67,13 @@ public class Stargate extends JavaPlugin {
     // Used for debug
     public static boolean debug = false;
     public static boolean permDebug = false;
-    public static ConcurrentLinkedQueue<Portal> activeList = new ConcurrentLinkedQueue<>();
+    public static final ConcurrentLinkedQueue<Portal> activeList = new ConcurrentLinkedQueue<>();
     // Used for populating gate open/closed material.
-    public static Queue<BloxPopulator> blockPopulatorQueue = new LinkedList<>();
+    public static final Queue<BloxPopulator> blockPopulatorQueue = new LinkedList<>();
     // HashMap of player names for Bungee support
-    public static Map<String, String> bungeeQueue = new HashMap<>();
+    public static final Map<String, String> bungeeQueue = new HashMap<>();
     // World names that contain stargates
-    public static HashSet<String> managedWorlds = new HashSet<>();
+    public static final HashSet<String> managedWorlds = new HashSet<>();
     private static String pluginVersion;
     private static String portalFolder;
     private static String gateFolder;
@@ -656,7 +656,7 @@ public class Stargate extends JavaPlugin {
         File newFile = new File(portalFolder, getServer().getWorlds().get(0).getName() + ".db");
         if (!newFile.exists()) {
             if (!newFile.getParentFile().mkdirs()) {
-                log.severe("Unable to create portal directory");
+                log.severe("Unable to create portal database folder: " + newFile.getParentFile().getPath());
             }
         }
     }

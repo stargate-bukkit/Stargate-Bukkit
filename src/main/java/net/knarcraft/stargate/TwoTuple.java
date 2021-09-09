@@ -8,8 +8,8 @@ package net.knarcraft.stargate;
  */
 public class TwoTuple<K, L> {
 
-    private K firstValue;
-    private L secondValue;
+    private final K firstValue;
+    private final L secondValue;
 
     /**
      * Instantiate a new TwoTuple

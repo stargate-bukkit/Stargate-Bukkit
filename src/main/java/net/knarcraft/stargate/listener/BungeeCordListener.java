@@ -23,7 +23,7 @@ public class BungeeCordListener implements PluginMessageListener {
      * @param message <p>The message received from the plugin</p>
      */
     @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, @NotNull byte[] message) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {
         //Ignore plugin messages if bungee support is not enabled or some other plugin message is received
         if (!Stargate.enableBungee || !channel.equals("BungeeCord")) {
             return;
