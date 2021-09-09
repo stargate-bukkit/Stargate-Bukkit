@@ -28,13 +28,13 @@ public class Gate {
     //Gate materials
     private Material portalOpenBlock;
     private Material portalClosedBlock;
-    private Material portalButton;
+    private final Material portalButton;
 
     // Economy information
-    private int useCost;
-    private int createCost;
-    private int destroyCost;
-    private boolean toOwner;
+    private final int useCost;
+    private final int createCost;
+    private final int destroyCost;
+    private final boolean toOwner;
 
     /**
      * Instantiates a new gate

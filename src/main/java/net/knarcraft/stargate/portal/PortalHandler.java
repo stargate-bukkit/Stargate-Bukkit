@@ -931,7 +931,7 @@ public class PortalHandler {
             }
         }
         PortalHandler.unregisterPortal(portal, false);
-        Stargate.log.info(Stargate.getString("prefix") + "Destroying stargate at " + portal.toString());
+        Stargate.log.info(Stargate.getString("prefix") + "Destroying stargate at " + portal);
     }
 
     /**

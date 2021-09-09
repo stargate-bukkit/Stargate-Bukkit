@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CommandReload implements CommandExecutor {
 
-    private Stargate plugin;
+    private final Stargate plugin;
 
     /**
      * Instantiates the reload command

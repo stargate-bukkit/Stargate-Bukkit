@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class GateLayout {
 
-    private Character [][] layout;
+    private final Character [][] layout;
     private final List<RelativeBlockVector> exits = new ArrayList<>();
     private RelativeBlockVector[] entrances = new RelativeBlockVector[0];
     private RelativeBlockVector[] border = new RelativeBlockVector[0];
