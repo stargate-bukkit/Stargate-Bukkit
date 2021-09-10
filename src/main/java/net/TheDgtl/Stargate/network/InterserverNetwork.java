@@ -27,11 +27,11 @@ public class InterserverNetwork extends Network{
 	public InterserverNetwork(String netName, Database database, List<IPortal> portals) throws NameError {
 		super(netName, database);
 		for(IPortal portal : portals)
-			addPortal(portal);
+			addPortal(portal,false);
 	}
 	
 	public void addVirtualPortal(VirtualPortal virtual) {
-		super.addPortal(virtual);
+		super.addPortal(virtual,false);
 	}
 	
 	public void removeVirtualPortal(String virtualName) throws InvalidClassException {

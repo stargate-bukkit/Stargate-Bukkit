@@ -3,9 +3,14 @@ package net.TheDgtl.Stargate.network;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.EnumSet;
 import java.util.HashMap;
+
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
@@ -13,8 +18,11 @@ import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.DriverEnum;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.database.MySqlDatabase;
+import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
+import net.TheDgtl.Stargate.exception.NoFormatFound;
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 
@@ -52,13 +60,15 @@ public class StargateFactory {
 			bungeeDatabase = null;
 		}
 		createTables();
+		
+		loadAllPortals();
 	}
 	
 	private void createTables() throws SQLException {
 		Connection conn = database.getConnection();
 		PreparedStatement statement = conn.prepareStatement(
 				"CREATE TABLE IF NOT EXISTS portals("
-				+ " network VARCHAR, name VARCHAR, world VARCHAR,"
+				+ " network VARCHAR, name VARCHAR, desti VARCHAR, world VARCHAR,"
 				+ " x INTEGER, y INTEGER, z INTEGER, flags VARCHAR,"
 				+ " UNIQUE(network,name) );");
 		statement.execute();
@@ -70,7 +80,7 @@ public class StargateFactory {
 		Connection bungeeConn = bungeeDatabase.getConnection();
 		PreparedStatement bungeeStatement = bungeeConn.prepareStatement(
 				"CREATE TABLE IF NOT EXISTS portals("
-				+ " network VARCHAR, name VARCHAR, world VARCHAR,"
+				+ " network VARCHAR, name VARCHAR, desti VARCHAR, world VARCHAR,"
 				+ " x INTEGER, y INTEGER, z INTEGER, flags VARCHAR,"
 				+ " server VARCHAR, UNIQUE(network,name) );");
 		bungeeStatement.execute();
@@ -78,54 +88,96 @@ public class StargateFactory {
 		bungeeConn.close();
 	}
 	
-	public void loadAllPortals() {
+	public void loadAllPortals() throws SQLException {
+		Connection connection = database.getConnection();
+		PreparedStatement statement = connection.prepareStatement(
+				"SELECT * FROM portals");
 		
+		ResultSet set = statement.executeQuery();
+		while(set.next()) {
+			String netName = set.getString(1);
+			String name = set.getString(2);
+			String desti = set.getString(3);
+			String worldName = set.getString(4);
+			int x = set.getInt(5);
+			int y = set.getInt(6);
+			int z = set.getInt(7);
+			String flagsMsg = set.getString(8);
+			
+			EnumSet<PortalFlag> flags = PortalFlag.parseFlags(flagsMsg);
+			
+			boolean isBungee = flags.contains(PortalFlag.BUNGEE);
+			boolean isPersonal = flags.contains(PortalFlag.PERSONAL_NETWORK);
+			
+			try {
+				createNetwork(netName, isBungee, isPersonal);
+			} catch (NameError e) {}
+			Network net = getNetwork(netName, isBungee, isPersonal);
+			
+			
+			World world = Bukkit.getWorld(worldName);
+			Block block = world.getBlockAt(x, y, z);
+			String[] virtualSign = {name, desti, netName};
+			
+			try {
+				IPortal portal = Portal.createPortalFromSign(net, virtualSign, block, flags);
+				net.addPortal(portal, false);
+			} catch (NameError e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoFormatFound e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (GateConflict e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
-	/**
-	 * TODO there's probably a hashmap or something to simplify this situation
-	 * 
-	 * @param name
-	 * @param isBungee
-	 * @param isPersonal
-	 * @throws NameError
-	 */
-	public void createNetwork(String name, boolean isBungee, boolean isPersonal) throws NameError {
-		if (getNetwork(name, isBungee, isPersonal) != null)
+	public void createNetwork(String netName, boolean isBungee, boolean isPersonal) throws NameError {
+		if (netExists(netName, isBungee, isPersonal))
 			throw new NameError(null);
 		if (isBungee) {
-			InterserverNetwork net = new InterserverNetwork(name, bungeeDatabase);
+			InterserverNetwork net = new InterserverNetwork(netName, bungeeDatabase);
 			HashMap<String, InterserverNetwork> map;
 			if (isPersonal)
 				map = privateBungeeNetList;
 			else
 				map = bungeeNetList;
-			map.put(name, net);
+			map.put(netName, net);
 			return;
 		}
-		Network net = new Network(name,database);
+		Network net = new Network(netName,database);
 		HashMap<String, Network> map;
 		if (isPersonal)
 			map = privateNetworkList;
 		map = networkList;
-		map.put(name, net);
+		map.put(netName, net);
 	}
-
-	public Network getNetwork(String name, boolean isBungee, boolean isPersonal) {
-		Network net;
+	
+	public boolean netExists(String netName, boolean isBungee, boolean isPersonal) {
+		return (getNetwork(netName,isBungee,isPersonal) != null);
+	}
+	
+ 	public Network getNetwork(String name, boolean isBungee, boolean isPersonal) {
+		return getNetMap(isBungee,isPersonal).get(name);
+	}
+	
+	private HashMap<String, ? extends Network> getNetMap(boolean isBungee, boolean isPersonal){
 		if (isBungee) {
 			if (isPersonal)
-				net = privateBungeeNetList.get(name);
+				return privateBungeeNetList;
 			else
-				net = bungeeNetList.get(name);
+				return bungeeNetList;
 		} else {
 			if (isPersonal)
-				net = privateNetworkList.get(name);
+				return privateNetworkList;
 			else
-				net = networkList.get(name);
+				return networkList;
 		}
-		return net;
 	}
+	
 	
 	/**
 	 * Convert a string processed from IPortal.getString(IPortal portal) back into a portal

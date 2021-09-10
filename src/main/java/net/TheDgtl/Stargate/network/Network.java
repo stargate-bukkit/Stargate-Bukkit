@@ -40,6 +40,10 @@ public class Network {
 		portalList = new HashMap<>();
 	}
 	
+	public boolean portalExists(String name) {
+		return (getPortal(name) != null);
+	}
+	
 	public IPortal getPortal(String name) {
 		return portalList.get(name);
 	}
@@ -102,18 +106,22 @@ public class Network {
 		}
 	}
 
-	public void addPortal(IPortal portal) {
-		try {
-			Connection connection = database.getConnection();
-			PreparedStatement statement = compileAddStatement(connection, portal);
-			statement.execute();
-			statement.close();
-			portalList.put(portal.getName(), portal);
-		} catch (SQLException e) {
-			e.printStackTrace();
+	public void addPortal(IPortal portal, boolean saveToDatabase) {
+		if(saveToDatabase) {
+			try {
+				Connection connection = database.getConnection();
+				PreparedStatement statement = compileAddStatement(connection, portal);
+				statement.execute();
+				statement.close();
+				updatePortals();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return;
+			}
 		}
+		portalList.put(portal.getName(), portal);
 	}
-	
+
 	public boolean isPortalNameTaken(String name) {
 		return portalList.containsKey(name);
 	}

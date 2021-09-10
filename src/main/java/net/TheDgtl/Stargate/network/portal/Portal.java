@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.util.Vector;
@@ -80,9 +82,6 @@ public abstract class Portal implements IPortal {
 			msg = msg + flag.label;
 		}
 		Stargate.log(Level.FINE, msg);
-		
-		this.network.addPortal(this);
-		network.updatePortals();
 		
 		for (GateStructureType key : getGate().getFormat().portalParts.keySet()) {
 			List<SGLocation> locations = getGate().getLocations(key);
@@ -276,7 +275,7 @@ public abstract class Portal implements IPortal {
 			throws NameError, NoFormatFound, GateConflict {
 		if (flags.contains(PortalFlag.RANDOM))
 			return new RandomPortal(net, lines[0], block, flags);
-		if (lines[1].isBlank())
+		if ((lines[1] == null) || lines[1].isBlank())
 			return new NetworkedPortal(net, lines[0], block, flags);
 		return new FixedPortal(net, lines[0], lines[1], block, flags);
 	}
