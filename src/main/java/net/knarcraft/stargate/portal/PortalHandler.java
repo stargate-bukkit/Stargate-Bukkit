@@ -237,24 +237,24 @@ public class PortalHandler {
         // Moved the layout check so as to avoid invalid messages when not making a gate
         int modX = 0;
         int modZ = 0;
-        float rotX = 0f;
+        float yaw = 0f;
         BlockFace buttonFacing = BlockFace.DOWN;
 
         if (idParent.getX() > id.getBlock().getX()) {
             modZ -= 1;
-            rotX = 90f;
+            yaw = 90f;
             buttonFacing = BlockFace.WEST;
         } else if (idParent.getX() < id.getBlock().getX()) {
             modZ += 1;
-            rotX = 270f;
+            yaw = 270f;
             buttonFacing = BlockFace.EAST;
         } else if (idParent.getZ() > id.getBlock().getZ()) {
             modX += 1;
-            rotX = 180f;
+            yaw = 180f;
             buttonFacing = BlockFace.NORTH;
         } else if (idParent.getZ() < id.getBlock().getZ()) {
             modX -= 1;
-            rotX = 0f;
+            yaw = 0f;
             buttonFacing = BlockFace.SOUTH;
         }
 
@@ -376,7 +376,7 @@ public class PortalHandler {
 
         BlockLocation button = null;
         Portal portal;
-        portal = new Portal(topLeft, modX, modZ, rotX, id, button, destinationName, name, false, network,
+        portal = new Portal(topLeft, modX, modZ, yaw, id, button, destinationName, name, false, network,
                 gate, player.getUniqueId(), player.getName(), portalOptions);
 
         int cost = Stargate.getCreateCost(player, gate);
@@ -654,7 +654,7 @@ public class PortalHandler {
                 builder.append(':');
                 builder.append(portal.getModZ());
                 builder.append(':');
-                builder.append(portal.getRotX());
+                builder.append(portal.getYaw());
                 builder.append(':');
                 builder.append(portal.getTopLeft().toString());
                 builder.append(':');
@@ -829,7 +829,7 @@ public class PortalHandler {
         BlockLocation button = (portalData[2].length() > 0) ? new BlockLocation(world, portalData[2]) : null;
         int modX = Integer.parseInt(portalData[3]);
         int modZ = Integer.parseInt(portalData[4]);
-        float rotX = Float.parseFloat(portalData[5]);
+        float yaw = Float.parseFloat(portalData[5]);
         BlockLocation topLeft = new BlockLocation(world, portalData[6]);
         Gate gate = GateHandler.getGateByName(portalData[7]);
         if (gate == null) {
@@ -864,7 +864,7 @@ public class PortalHandler {
         }
 
         //Creates the new portal
-        Portal portal = new Portal(topLeft, modX, modZ, rotX, sign, button, destination, name, false,
+        Portal portal = new Portal(topLeft, modX, modZ, yaw, sign, button, destination, name, false,
                 network, gate, ownerUUID, ownerName, getPortalOptions(portalData));
 
         registerPortal(portal);

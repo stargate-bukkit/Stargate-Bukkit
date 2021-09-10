@@ -48,7 +48,7 @@ public class Portal {
     private final BlockLocation topLeft;
     private final int modX;
     private final int modZ;
-    private final float rotX;
+    private final float yaw;
     private final Axis rot;
 
     // Block references
@@ -83,7 +83,7 @@ public class Portal {
      * @param topLeft     <p>The top-left block of the portal. This is used to decide the positions of the rest of the portal</p>
      * @param modX        <p></p>
      * @param modZ        <p></p>
-     * @param rotX        <p></p>
+     * @param yaw        <p></p>
      * @param id          <p>The location of the portal's id block, which is the sign which activated the portal</p>
      * @param button      <p>The location of the portal's open button</p>
      * @param destination <p>The destination defined on the sign's destination line</p>
@@ -95,14 +95,14 @@ public class Portal {
      * @param ownerName   <p>The name of the gate's owner</p>
      * @param options     <p>A map containing all possible portal options</p>
      */
-    Portal(BlockLocation topLeft, int modX, int modZ, float rotX, BlockLocation id, BlockLocation button,
+    Portal(BlockLocation topLeft, int modX, int modZ, float yaw, BlockLocation id, BlockLocation button,
            String destination, String name, boolean verified, String network, Gate gate, UUID ownerUUID,
            String ownerName, Map<PortalOption, Boolean> options) {
         this.topLeft = topLeft;
         this.modX = modX;
         this.modZ = modZ;
-        this.rotX = rotX;
-        this.rot = rotX == 0.0F || rotX == 180.0F ? Axis.X : Axis.Z;
+        this.yaw = yaw;
+        this.rot = yaw == 0.0F || yaw == 180.0F ? Axis.X : Axis.Z;
         this.id = id;
         this.destination = destination;
         this.button = button;
@@ -229,7 +229,7 @@ public class Portal {
      * @return <p>The rotation of the portal</p>
      */
     public float getRotation() {
-        return rotX;
+        return yaw;
     }
 
     /**
@@ -653,18 +653,18 @@ public class Portal {
         Location exit = getExit(player, traveller);
 
         //Rotate the player to face out from the portal
-        adjustRotation(traveller, exit, origin);
+        adjustRotation(exit, origin);
 
-        // Call the StargatePortalEvent to allow plugins to change destination
+        //Call the StargatePortalEvent to allow plugins to change destination
         if (!origin.equals(this)) {
             StargatePortalEvent stargatePortalEvent = new StargatePortalEvent(player, origin, this, exit);
             Stargate.server.getPluginManager().callEvent(stargatePortalEvent);
-            // Teleport is cancelled
+            //Teleport is cancelled. Teleport the player back to where it came from
             if (stargatePortalEvent.isCancelled()) {
                 origin.teleport(player, origin, event);
                 return;
             }
-            // Update exit if needed
+            //Update exit if needed
             exit = stargatePortalEvent.getExit();
         }
 
@@ -672,7 +672,6 @@ public class Portal {
 
         // If no event is passed in, assume it's a teleport, and act as such
         if (event == null) {
-            exit.setYaw(this.getRotation());
             player.teleport(exit);
         } else {
             // The new method to teleport in a move event is set the "to" field.
@@ -683,16 +682,17 @@ public class Portal {
     /**
      * Adjusts the rotation of the player to face out from the portal
      *
-     * @param entry  <p>The location the player entered from</p>
      * @param exit   <p>The location the player will exit from</p>
      * @param origin <p>The portal the player entered from</p>
      */
-    private void adjustRotation(Location entry, Location exit, Portal origin) {
-        int adjust = 180;
+    private void adjustRotation(Location exit, Portal origin) {
+        int adjust = 0;
         if (isBackwards() != origin.isBackwards()) {
-            adjust = 0;
+            adjust = 180;
         }
-        exit.setYaw(entry.getYaw() - origin.getRotation() + this.getRotation() + adjust);
+        float newYaw = (this.getRotation() + adjust) % 360;
+        Stargate.debug("Portal::adjustRotation", "Setting exit yaw to " + newYaw);
+        exit.setYaw(newYaw);
     }
 
     /**
@@ -707,15 +707,13 @@ public class Portal {
 
         double velocity = vehicle.getVelocity().length();
 
-        // Stop and teleport
+        //Stop and teleport
         vehicle.setVelocity(new Vector());
 
-        // Get new velocity
-        final Vector newVelocity = new Vector(modX, 0.0F, modZ);
-        //-z
-        Stargate.debug("teleport", modX + " " + modZ);
-        newVelocity.multiply(velocity);
-        adjustRotation(traveller, exit, origin);
+        //Get new velocity
+        Vector newVelocityDirection = getVectorFromYaw(this.getRotation());
+        Vector newVelocity = newVelocityDirection.multiply(velocity);
+        adjustRotation(exit, origin);
 
         List<Entity> passengers = vehicle.getPassengers();
         World vehicleWorld = exit.getWorld();
@@ -736,6 +734,30 @@ public class Portal {
             vehicle.teleport(exit);
             Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate,
                     () -> vehicle.setVelocity(newVelocity), 1);
+        }
+    }
+
+    /**
+     * Gets a direction vector given a yaw
+     * @param yaw <p>The yaw to use</p>
+     * @return <p>The direction vector of the yaw</p>
+     */
+    private Vector getVectorFromYaw(double yaw) {
+        while (yaw < 0) {
+            yaw += 360;
+        }
+        yaw = yaw % 360;
+
+        if (yaw == 0) {
+            return new Vector(0, 0, 1);
+        } else if (yaw == 90) {
+            return new Vector(-1, 0, 0);
+        } else if (yaw == 180) {
+            return new Vector(0, 0, -1);
+        } else if (yaw == 270) {
+            return new Vector(1, 0, 0);
+        } else {
+            throw new IllegalArgumentException("Invalid yaw given");
         }
     }
 
@@ -768,7 +790,8 @@ public class Portal {
         vehicle.remove();
         vehicle.setRotation(exit.getYaw(), exit.getPitch());
         handleVehiclePassengers(passengers, newVehicle);
-        Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> newVehicle.setVelocity(newVelocity), 1);
+        Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate,
+                () -> newVehicle.setVelocity(newVelocity), 1);
     }
 
     /**
@@ -950,8 +973,8 @@ public class Portal {
      *
      * @return <p>The rotation of this portal</p>
      */
-    public float getRotX() {
-        return this.rotX;
+    public float getYaw() {
+        return this.yaw;
     }
 
     /**

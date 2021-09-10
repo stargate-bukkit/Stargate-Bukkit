@@ -70,13 +70,13 @@ public class BlockLocation extends Location {
      * @param x    <p>The x position relative to this block's position</p>
      * @param y    <p>The y position relative to this block's position</p>
      * @param z    <p>The z position relative to this block's position</p>
-     * @param rotX <p>The x rotation of the location</p>
+     * @param yaw <p>The yaw of the location</p>
      * @param rotY <p>The y rotation of the location</p>
      * @return <p>A new location</p>
      */
-    public Location makeRelativeLoc(double x, double y, double z, float rotX, float rotY) {
+    public Location makeRelativeLoc(double x, double y, double z, float yaw, float rotY) {
         Location newLocation = this.clone();
-        newLocation.setYaw(rotX);
+        newLocation.setYaw(yaw);
         newLocation.setPitch(rotY);
         return newLocation.add(x, y, z);
     }
@@ -105,15 +105,15 @@ public class BlockLocation extends Location {
      * @param right    <p></p>
      * @param depth    <p>The y position relative to the current position</p>
      * @param distance <p>The distance away from the previous location to the new location</p>
-     * @param rotX     <p>The yaw of the location</p>
+     * @param yaw     <p>The yaw of the location</p>
      * @param rotY     <p>Unused</p>
      * @param modX     <p>x modifier. Defines movement along the x-axis. 0 for no movement</p>
      * @param modY     <p>Unused</p>
      * @param modZ     <p>z modifier. Defines movement along the z-axis. 0 for no movement</p>
      * @return A new location relative to this block location
      */
-    public Location modRelativeLoc(double right, double depth, double distance, float rotX, float rotY, int modX, int modY, int modZ) {
-        return makeRelativeLoc(0.5 + -right * modX + distance * modZ, depth, 0.5 + -right * modZ + -distance * modX, rotX, 0);
+    public Location modRelativeLoc(double right, double depth, double distance, float yaw, float rotY, int modX, int modY, int modZ) {
+        return makeRelativeLoc(0.5 + -right * modX + distance * modZ, depth, 0.5 + -right * modZ + -distance * modX, yaw, 0);
     }
 
     /**

@@ -21,7 +21,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -80,16 +79,6 @@ public class PlayerEventListener implements Listener {
                 || cause == PlayerTeleportEvent.TeleportCause.END_GATEWAY && World.Environment.THE_END ==
                 Objects.requireNonNull(event.getFrom().getWorld()).getEnvironment())
                 && PortalHandler.getByAdjacentEntrance(event.getFrom()) != null) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onEntityTeleport(EntityTeleportEvent event) {
-        //Prevent any entities from teleporting through stargates
-        Portal entryPortal = PortalHandler.getByAdjacentEntrance(event.getFrom());
-        Portal exitPortal = PortalHandler.getByAdjacentEntrance(event.getTo());
-        if (!event.isCancelled() && entryPortal != null && exitPortal != null && exitPortal == entryPortal.getDestination()) {
             event.setCancelled(true);
         }
     }

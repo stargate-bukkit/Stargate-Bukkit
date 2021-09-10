@@ -8,6 +8,7 @@ import net.knarcraft.stargate.listener.BungeeCordListener;
 import net.knarcraft.stargate.listener.EntityEventListener;
 import net.knarcraft.stargate.listener.PlayerEventListener;
 import net.knarcraft.stargate.listener.PluginEventListener;
+import net.knarcraft.stargate.listener.PortalEventListener;
 import net.knarcraft.stargate.listener.VehicleEventListener;
 import net.knarcraft.stargate.listener.WorldEventListener;
 import net.knarcraft.stargate.portal.Gate;
@@ -540,6 +541,7 @@ public class Stargate extends JavaPlugin {
 
         pm.registerEvents(new VehicleEventListener(), this);
         pm.registerEvents(new EntityEventListener(), this);
+        pm.registerEvents(new PortalEventListener(), this);
         pm.registerEvents(new WorldEventListener(), this);
         pm.registerEvents(new PluginEventListener(this), this);
 
