@@ -699,7 +699,7 @@ public class Portal {
      * Teleports a vehicle to this portal
      *
      * @param vehicle <p>The vehicle to teleport</p>
-     * @param origin <p>The portal the vehicle entered</p>
+     * @param origin  <p>The portal the vehicle entered</p>
      */
     public void teleport(final Vehicle vehicle, Portal origin) {
         Location traveller = vehicle.getLocation();
@@ -734,7 +734,8 @@ public class Portal {
             }
         } else {
             vehicle.teleport(exit);
-            Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> vehicle.setVelocity(newVelocity), 1);
+            Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate,
+                    () -> vehicle.setVelocity(newVelocity), 1);
         }
     }
 
@@ -748,7 +749,7 @@ public class Portal {
     private void teleportLivingVehicle(Vehicle vehicle, Location exit, List<Entity> passengers) {
         vehicle.eject();
         vehicle.teleport(exit);
-        handleVehiclePassengers(passengers, vehicle, exit);
+        handleVehiclePassengers(passengers, vehicle);
     }
 
     /**
@@ -766,7 +767,7 @@ public class Portal {
         vehicle.eject();
         vehicle.remove();
         vehicle.setRotation(exit.getYaw(), exit.getPitch());
-        handleVehiclePassengers(passengers, newVehicle, exit);
+        handleVehiclePassengers(passengers, newVehicle);
         Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> newVehicle.setVelocity(newVelocity), 1);
     }
 
@@ -775,16 +776,16 @@ public class Portal {
      *
      * @param passengers    <p>The passengers to handle</p>
      * @param targetVehicle <p>The vehicle the passengers should be put into</p>
-     * @param exit          <p>The exit location to teleport the passengers to</p>
      */
-    private void handleVehiclePassengers(List<Entity> passengers, Vehicle targetVehicle, Location exit) {
+    private void handleVehiclePassengers(List<Entity> passengers, Vehicle targetVehicle) {
         for (Entity passenger : passengers) {
             passenger.eject();
             //TODO: Fix random java.lang.IllegalStateException: Removing entity while ticking!
-            if (!passenger.teleport(exit)) {
+            if (!passenger.teleport(targetVehicle.getLocation())) {
                 Stargate.debug("handleVehiclePassengers", "Failed to teleport passenger");
             }
-            Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> targetVehicle.addPassenger(passenger), 1);
+            Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate,
+                    () -> targetVehicle.addPassenger(passenger), 6);
         }
     }
 
@@ -823,7 +824,7 @@ public class Portal {
      *
      * @param relativeExit <p>The relative exit defined as the portal's exit</p>
      * @param exitLocation <p>The currently calculated portal exit</p>
-     * @param entity <p>The travelling entity</p>
+     * @param entity       <p>The travelling entity</p>
      * @return <p>A location which won't suffocate the entity inside the portal</p>
      */
     private Location preventExitSuffocation(RelativeBlockVector relativeExit, Location exitLocation, Entity entity) {
@@ -862,7 +863,7 @@ public class Portal {
      * Gets one of the edges of a portal's opening/exit
      *
      * @param relativeExit <p>The known exit to start from</p>
-     * @param direction <p>The direction to move (+1 for right, -1 for left)</p>
+     * @param direction    <p>The direction to move (+1 for right, -1 for left)</p>
      * @return <p>The right or left edge of the opening</p>
      */
     private RelativeBlockVector getPortalExitEdge(RelativeBlockVector relativeExit, int direction) {
@@ -882,7 +883,7 @@ public class Portal {
     /**
      * Adjusts an exit location with rotation and slab height incrementation
      *
-     * @param traveller <p>The location of the travelling entity</p>
+     * @param traveller    <p>The location of the travelling entity</p>
      * @param exitLocation <p>The exit location generated</p>
      * @return <p>The location the travelling entity should be teleported to</p>
      */

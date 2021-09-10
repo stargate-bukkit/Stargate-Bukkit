@@ -11,15 +11,17 @@ import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
+import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -80,20 +82,15 @@ public class PlayerEventListener implements Listener {
                 && PortalHandler.getByAdjacentEntrance(event.getFrom()) != null) {
             event.setCancelled(true);
         }
-        if (event.isCancelled() || cause != PlayerTeleportEvent.TeleportCause.PLUGIN) {
-            return;
-        }
+    }
 
-        Entity playerVehicle = event.getPlayer().getVehicle();
-        Portal portal = PortalHandler.getByAdjacentEntrance(event.getFrom());
-        if (playerVehicle != null && portal != null &&
-                !(playerVehicle instanceof Minecart) &&
-                !(playerVehicle instanceof Boat)) {
-            Portal destinationPortal = portal.getDestination();
-            if (destinationPortal != null) {
-                VehicleEventListener.teleportVehicleAfterPlayer((Vehicle) playerVehicle, destinationPortal,
-                        event.getPlayer(), portal);
-            }
+    @EventHandler
+    public void onEntityTeleport(EntityTeleportEvent event) {
+        //Prevent any entities from teleporting through stargates
+        Portal entryPortal = PortalHandler.getByAdjacentEntrance(event.getFrom());
+        Portal exitPortal = PortalHandler.getByAdjacentEntrance(event.getTo());
+        if (!event.isCancelled() && entryPortal != null && exitPortal != null && exitPortal == entryPortal.getDestination()) {
+            event.setCancelled(true);
         }
     }
 
@@ -108,34 +105,73 @@ public class PlayerEventListener implements Listener {
             return;
         }
 
-        //Check to see if the player moved to another block
         BlockLocation fromLocation = new BlockLocation(event.getFrom().getBlock());
         BlockLocation toLocation = new BlockLocation(event.getTo().getBlock());
-        if (fromLocation.equals(toLocation)) {
+        Player player = event.getPlayer();
+
+        //Check whether the event needs to be considered
+        if (!isRelevantMoveEvent(event, player, fromLocation, toLocation)) {
             return;
         }
+        Portal entrancePortal = PortalHandler.getByEntrance(toLocation);
+        Portal destination = entrancePortal.getDestination(player);
 
-        Player player = event.getPlayer();
+        //Teleport the vehicle to the player
+        Entity playerVehicle = player.getVehicle();
+        if (playerVehicle != null && !(playerVehicle instanceof Boat) && !(playerVehicle instanceof RideableMinecart)) {
+
+            //Make sure the horse can be sat on
+            if (playerVehicle instanceof AbstractHorse) {
+                AbstractHorse horse = ((AbstractHorse) playerVehicle);
+                if (!horse.isTamed()) {
+                    horse.setOwner(player);
+                }
+            }
+            destination.teleport((Vehicle) playerVehicle, entrancePortal);
+        } else {
+            destination.teleport(player, entrancePortal, event);
+        }
+        Stargate.sendMessage(player, Stargate.getString("teleportMsg"), false);
+        entrancePortal.close(false);
+    }
+
+    /**
+     * Checks whether a player move event is relevant for this plugin
+     * @param event <p>The player move event to check</p>
+     * @param player <p>The player which moved</p>
+     * @param fromLocation <p>The location the player is moving from</p>
+     * @param toLocation <p>The location the player is moving to</p>
+     * @return <p>True if the event is relevant</p>
+     */
+    private boolean isRelevantMoveEvent(PlayerMoveEvent event, Player player, BlockLocation fromLocation, BlockLocation toLocation) {
+        //Check to see if the player moved to another block
+        if (fromLocation.equals(toLocation)) {
+            return false;
+        }
+
+        //Check if the player moved from a portal
         Portal entrancePortal = PortalHandler.getByEntrance(toLocation);
         if (entrancePortal == null) {
-            return;
+            return false;
         }
 
         Portal destination = entrancePortal.getDestination(player);
 
         //Decide if the anything stops the player from teleport
         if (!playerCanTeleport(entrancePortal, destination, player, event)) {
-            return;
+            return false;
         }
-
-        Stargate.sendMessage(player, Stargate.getString("teleportMsg"), false);
 
         //Decide if the user should be teleported to another bungee server
-        if (entrancePortal.isBungee() && bungeeTeleport(player, entrancePortal, event)) {
-            return;
+        if (entrancePortal.isBungee()) {
+            if (bungeeTeleport(player, entrancePortal, event)) {
+                Stargate.sendMessage(player, Stargate.getString("teleportMsg"), false);
+                return true;
+            } else {
+                return false;
+            }
         }
-        destination.teleport(player, entrancePortal, event);
-        entrancePortal.close(false);
+        return true;
     }
 
     /**
