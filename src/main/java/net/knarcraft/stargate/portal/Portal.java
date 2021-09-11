@@ -1,7 +1,7 @@
 package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.BlockLocation;
-import net.knarcraft.stargate.BloxPopulator;
+import net.knarcraft.stargate.BlockChangeRequest;
 import net.knarcraft.stargate.RelativeBlockVector;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargateActivateEvent;
@@ -49,7 +49,8 @@ public class Portal {
     private final int modX;
     private final int modZ;
     private final float yaw;
-    private final Axis rot;
+    //The rotation axis is the axis along which the gate is placed. It's the cross axis of the button's axis
+    private final Axis rotationAxis;
 
     // Block references
     private final BlockLocation id;
@@ -102,7 +103,7 @@ public class Portal {
         this.modX = modX;
         this.modZ = modZ;
         this.yaw = yaw;
-        this.rot = yaw == 0.0F || yaw == 180.0F ? Axis.X : Axis.Z;
+        this.rotationAxis = yaw == 0.0F || yaw == 180.0F ? Axis.X : Axis.Z;
         this.id = id;
         this.destination = destination;
         this.button = button;
@@ -230,18 +231,6 @@ public class Portal {
      */
     public float getRotation() {
         return yaw;
-    }
-
-    /**
-     * Gets the axis the portal follows
-     *
-     * <p>If a relative vector's right is not zero, it will move along this axis.
-     * The axis is used to place the portal's open blocks correctly</p>
-     *
-     * @return <p>The axis the portal follows</p>
-     */
-    public Axis getAxis() {
-        return rot;
     }
 
     /**
@@ -502,9 +491,9 @@ public class Portal {
 
         //Change the opening blocks to the correct type
         Material openType = gate.getPortalOpenBlock();
-        Axis axis = (openType.createBlockData() instanceof Orientable) ? rot : null;
+        Axis axis = (openType.createBlockData() instanceof Orientable) ? rotationAxis : null;
         for (BlockLocation inside : getEntrances()) {
-            Stargate.blockPopulatorQueue.add(new BloxPopulator(inside, openType, axis));
+            Stargate.blockChangeRequestQueue.add(new BlockChangeRequest(inside, openType, axis));
         }
 
         updatePortalOpenState(openFor);
@@ -556,7 +545,7 @@ public class Portal {
         // Close this gate, then the dest gate.
         Material closedType = gate.getPortalClosedBlock();
         for (BlockLocation inside : getEntrances()) {
-            Stargate.blockPopulatorQueue.add(new BloxPopulator(inside, closedType, null));
+            Stargate.blockChangeRequestQueue.add(new BlockChangeRequest(inside, closedType, null));
         }
 
         updatePortalClosedState();

@@ -16,7 +16,7 @@ import net.knarcraft.stargate.portal.GateHandler;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.PortalOption;
-import net.knarcraft.stargate.thread.BlockPopulatorThread;
+import net.knarcraft.stargate.thread.BlockChangeThread;
 import net.knarcraft.stargate.thread.StarGateThread;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import org.bukkit.Bukkit;
@@ -70,7 +70,7 @@ public class Stargate extends JavaPlugin {
     public static boolean permDebug = false;
     public static final ConcurrentLinkedQueue<Portal> activeList = new ConcurrentLinkedQueue<>();
     // Used for populating gate open/closed material.
-    public static final Queue<BloxPopulator> blockPopulatorQueue = new LinkedList<>();
+    public static final Queue<BlockChangeRequest> blockChangeRequestQueue = new LinkedList<>();
     // HashMap of player names for Bungee support
     public static final Map<String, String> bungeeQueue = new HashMap<>();
     // World names that contain stargates
@@ -570,7 +570,7 @@ public class Stargate extends JavaPlugin {
         }
 
         getServer().getScheduler().runTaskTimer(this, new StarGateThread(), 0L, 100L);
-        getServer().getScheduler().runTaskTimer(this, new BlockPopulatorThread(), 0L, 1L);
+        getServer().getScheduler().runTaskTimer(this, new BlockChangeThread(), 0L, 1L);
 
         this.registerCommands();
     }
