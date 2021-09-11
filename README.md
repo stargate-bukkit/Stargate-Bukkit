@@ -86,6 +86,7 @@ This is the default gate configuration. See the Custom Gate Layout section on ho
   - 'S' is for showing an always-on gate in the network list
   - 'N' is for hiding the network name
   - 'R' is for random gates. These follow standard permissions of gates, but have a random exit location every time a player enters.
+  - 'U' is for a gate connecting to another through bungee
 
 The options are the single letter, not the word. So to make a private hidden gate, your 4th line would be 'PH'.
 
@@ -93,13 +94,15 @@ The options are the single letter, not the word. So to make a private hidden gat
  - Gates are all part of a network, by default this is "central".
  - You can specify (and create) your own network on the third line of the sign when making a new gate.
  - Gates on one network will not see gates on the second network, and vice versa.
- - Gates on different worlds, but in the same network, will see eachother.
+ - Gates on different worlds, but in the same network, will see each other.
+ - If the gate is a bungee gate, the network name should be the name of the server as displayed when typing /servers
 
 #### Fixed gates:
  - Fixed gates go to only one set destination.
  - Fixed gates can be linked to other fixed gates, or normal gates. A normal gate cannot open a portal to a fixed gate however.
  - To create a fixed gate, specify a destination on the second line of the stargate sign.
  - Set the 4th line of the stargate sign to "A" to enable an always-open fixed gate.
+ - A bungee gate is always automatically a fixed gate
  
 #### Hidden Gates:
  - Hidden gates are like normal gates, but only show on the destination list of other gates under certain conditions.
