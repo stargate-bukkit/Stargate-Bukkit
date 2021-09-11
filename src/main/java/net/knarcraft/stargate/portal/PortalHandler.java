@@ -5,6 +5,7 @@ import net.knarcraft.stargate.RelativeBlockVector;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.TwoTuple;
 import net.knarcraft.stargate.event.StargateCreateEvent;
+import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,6 +18,7 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.util.Vector;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -234,29 +236,16 @@ public class PortalHandler {
 
         Map<PortalOption, Boolean> portalOptions = getPortalOptions(player, destinationName, options);
 
-        // Moved the layout check so as to avoid invalid messages when not making a gate
-        int modX = 0;
-        int modZ = 0;
-        float yaw = 0f;
-        BlockFace buttonFacing = BlockFace.DOWN;
+        //Get the yaw
+        float yaw = DirectionHelper.getYawFromLocationDifference(idParent.getLocation(), id.getLocation());
 
-        if (idParent.getX() > id.getBlock().getX()) {
-            modZ -= 1;
-            yaw = 90f;
-            buttonFacing = BlockFace.WEST;
-        } else if (idParent.getX() < id.getBlock().getX()) {
-            modZ += 1;
-            yaw = 270f;
-            buttonFacing = BlockFace.EAST;
-        } else if (idParent.getZ() > id.getBlock().getZ()) {
-            modX += 1;
-            yaw = 180f;
-            buttonFacing = BlockFace.NORTH;
-        } else if (idParent.getZ() < id.getBlock().getZ()) {
-            modX -= 1;
-            yaw = 0f;
-            buttonFacing = BlockFace.SOUTH;
-        }
+        //Get the direction the button should be facing
+        BlockFace buttonFacing = DirectionHelper.getBlockFaceFromYaw(yaw);
+
+        //Get the x and z modifiers
+        Vector direction = DirectionHelper.getDirectionVectorFromYaw(yaw);
+        int modX = -direction.getBlockZ();
+        int modZ = direction.getBlockX();
 
         Gate[] possibleGates = GateHandler.getGatesByControlBlock(idParent);
         Gate gate = null;

@@ -711,7 +711,7 @@ public class Portal {
         vehicle.setVelocity(new Vector());
 
         //Get new velocity
-        Vector newVelocityDirection = getVectorFromYaw(this.getRotation());
+        Vector newVelocityDirection = DirectionHelper.getDirectionVectorFromYaw(this.getRotation());
         Vector newVelocity = newVelocityDirection.multiply(velocity);
         adjustRotation(exit, origin);
 
@@ -734,30 +734,6 @@ public class Portal {
             vehicle.teleport(exit);
             Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate,
                     () -> vehicle.setVelocity(newVelocity), 1);
-        }
-    }
-
-    /**
-     * Gets a direction vector given a yaw
-     * @param yaw <p>The yaw to use</p>
-     * @return <p>The direction vector of the yaw</p>
-     */
-    private Vector getVectorFromYaw(double yaw) {
-        while (yaw < 0) {
-            yaw += 360;
-        }
-        yaw = yaw % 360;
-
-        if (yaw == 0) {
-            return new Vector(0, 0, 1);
-        } else if (yaw == 90) {
-            return new Vector(-1, 0, 0);
-        } else if (yaw == 180) {
-            return new Vector(0, 0, -1);
-        } else if (yaw == 270) {
-            return new Vector(1, 0, 0);
-        } else {
-            throw new IllegalArgumentException("Invalid yaw given");
         }
     }
 
