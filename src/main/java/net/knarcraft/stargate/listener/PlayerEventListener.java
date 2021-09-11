@@ -155,10 +155,8 @@ public class PlayerEventListener implements Listener {
         if (entrancePortal.isBungee()) {
             if (bungeeTeleport(player, entrancePortal, event)) {
                 Stargate.sendMessage(player, Stargate.getString("teleportMsg"), false);
-                return true;
-            } else {
-                return false;
             }
+            return false;
         }
         return true;
     }
@@ -328,15 +326,18 @@ public class PlayerEventListener implements Listener {
 
         //Send the SGBungee packet first, it will be queued by BC if required
         if (!BungeeHelper.sendTeleportationMessage(player, entrancePortal)) {
+            Stargate.debug("bungeeTeleport", "Unable to send teleportation message");
             return false;
         }
 
         // Connect player to new server
         if (!BungeeHelper.changeServer(player, entrancePortal)) {
+            Stargate.debug("bungeeTeleport", "Unable to change server");
             return false;
         }
 
         // Close portal if required (Should never be)
+        Stargate.debug("bungeeTeleport", "Teleported player to another server");
         entrancePortal.close(false);
         return true;
     }

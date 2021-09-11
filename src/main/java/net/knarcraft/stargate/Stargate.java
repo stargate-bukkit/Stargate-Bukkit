@@ -217,21 +217,27 @@ public class Stargate extends JavaPlugin {
         return player.hasPermission(perm);
     }
 
-    /*
+    /**
      * Check a deep permission, this will check to see if the permissions is defined for this use
-     * If using Permissions it will return the same as hasPerm
-     * If using SuperPerms will return true if the node isn't defined
-     * Or the value of the node if it is
+     *
+     * <p>If using Permissions it will return the same as hasPerm. If using SuperPerms will return true if the node
+     * isn't defined, or the value of the node if it is</p>
+     *
+     * @param player <p>The player to check</p>
+     * @param permission <p>The permission to check</p>
+     * @return <p>True if the player has the permission or it is not set</p>
      */
-    public static boolean hasPermDeep(Player player, String perm) {
-        if (!player.isPermissionSet(perm)) {
-            if (permDebug)
-                Stargate.debug("hasPermDeep::SuperPerm", perm + " => true");
+    public static boolean hasPermDeep(Player player, String permission) {
+        if (!player.isPermissionSet(permission)) {
+            if (permDebug) {
+                Stargate.debug("hasPermDeep::SuperPerm", permission + " => true");
+            }
             return true;
         }
-        if (permDebug)
-            Stargate.debug("hasPermDeep::SuperPerms", perm + " => " + player.hasPermission(perm));
-        return player.hasPermission(perm);
+        if (permDebug) {
+            Stargate.debug("hasPermDeep::SuperPerms", permission + " => " + player.hasPermission(permission));
+        }
+        return player.hasPermission(permission);
     }
 
     /*
@@ -309,10 +315,13 @@ public class Stargate extends JavaPlugin {
         boolean deny = false;
         // Check if player has access to this server for Bungee gates
         if (entrancePortal.isBungee() && !Stargate.canAccessServer(player, entrancePortal.getNetwork())) {
+            Stargate.debug("cannotAccessPortal", "Cannot access server");
             deny = true;
         } else if (!Stargate.canAccessNetwork(player, entrancePortal.getNetwork())) {
+            Stargate.debug("cannotAccessPortal", "Cannot access network");
             deny = true;
-        } else if (!Stargate.canAccessWorld(player, destination.getWorld().getName())) {
+        } else if (!entrancePortal.isBungee() && !Stargate.canAccessWorld(player, destination.getWorld().getName())) {
+            Stargate.debug("cannotAccessPortal", "Cannot access world");
             deny = true;
         }
         return Stargate.cannotAccessPortal(player, entrancePortal, deny);
