@@ -6,6 +6,7 @@ import net.knarcraft.stargate.utility.MaterialHelper;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -159,9 +160,9 @@ public class GateHandler {
         Material portalOpenBlock = readConfig(config, fileName, "portal-open", defaultPortalBlockOpen);
         Material portalClosedBlock = readConfig(config, fileName, "portal-closed", defaultPortalBlockClosed);
         Material portalButton = readConfig(config, fileName, "button", defaultButton);
-        int useCost = readConfig(config, fileName, "usecost", -1);
-        int createCost = readConfig(config, fileName, "createcost", -1);
-        int destroyCost = readConfig(config, fileName, "destroycost", -1);
+        int useCost = readConfig(config, fileName, "usecost");
+        int createCost = readConfig(config, fileName, "createcost");
+        int destroyCost = readConfig(config, fileName, "destroycost");
         boolean toOwner = (config.containsKey("toowner") ? Boolean.parseBoolean(config.get("toowner")) : EconomyHandler.toOwner);
 
         Gate gate = new Gate(fileName, new GateLayout(layout), types, portalOpenBlock, portalClosedBlock, portalButton, useCost,
@@ -323,7 +324,14 @@ public class GateHandler {
         }
     }
 
-    private static int readConfig(Map<String, String> config, String fileName, String key, int defaultInteger) {
+    /**
+     * Reads an integer configuration key
+     * @param config <p>The configuration to read</p>
+     * @param fileName <p>The filename of the config file</p>
+     * @param key <p>The config key to read</p>
+     * @return <p>The read value, or -1 if it cannot be read</p>
+     */
+    private static int readConfig(Map<String, String> config, String fileName, String key) {
         if (config.containsKey(key)) {
             try {
                 return Integer.parseInt(config.get(key));
@@ -332,7 +340,7 @@ public class GateHandler {
             }
         }
 
-        return defaultInteger;
+        return -1;
     }
 
     /**
@@ -403,10 +411,13 @@ public class GateHandler {
      * @param gateFolder <p>The folder containing gates</p>
      */
     private static void loadGateFromJar(String gateFile, String gateFolder) {
-        Scanner scanner = new Scanner(Gate.class.getResourceAsStream("/gates/" + gateFile));
-        Gate gate = loadGate(gateFile, gateFolder, scanner);
-        if (gate != null) {
-            registerGate(gate);
+        InputStream gateFileStream = Gate.class.getResourceAsStream("/gates/" + gateFile);
+        if (gateFileStream != null) {
+            Scanner scanner = new Scanner(gateFileStream);
+            Gate gate = loadGate(gateFile, gateFolder, scanner);
+            if (gate != null) {
+                registerGate(gate);
+            }
         }
     }
 
