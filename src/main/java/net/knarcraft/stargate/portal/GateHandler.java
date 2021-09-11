@@ -32,7 +32,6 @@ public class GateHandler {
 
     private static final HashMap<String, Gate> gates = new HashMap<>();
     private static final HashMap<Material, List<Gate>> controlBlocks = new HashMap<>();
-    private static final HashSet<Material> frameBlocks = new HashSet<>();
 
     private GateHandler() {
 
@@ -138,9 +137,6 @@ public class GateHandler {
         if (gate == null) {
             return null;
         }
-
-        //Update list of all frame blocks
-        frameBlocks.addAll(frameTypes);
 
         gate.save(parentFolder + "/"); // Updates format for version changes
         return gate;
@@ -471,22 +467,11 @@ public class GateHandler {
     }
 
     /**
-     * Checks whether the given material is used for the frame of any portals
-     *
-     * @param type <p>The material type to check</p>
-     * @return <p>True if the material is used for the frame of at least one portal</p>
-     */
-    public static boolean isGateBlock(Material type) {
-        return frameBlocks.contains(type);
-    }
-
-    /**
      * Clears all loaded gates
      */
     public static void clearGates() {
         gates.clear();
         controlBlocks.clear();
-        frameBlocks.clear();
     }
 
 }
