@@ -92,7 +92,7 @@ public class VehicleEventListener implements Listener {
         }
 
         //Make sure the user can access the portal
-        if (!Stargate.canAccessPortal(player, entrancePortal, destinationPortal)) {
+        if (Stargate.cannotAccessPortal(player, entrancePortal, destinationPortal)) {
             Stargate.sendMessage(player, Stargate.getString("denyMsg"));
             entrancePortal.close(false);
             return;

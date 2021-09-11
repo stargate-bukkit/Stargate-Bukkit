@@ -79,7 +79,7 @@ public class Stargate extends JavaPlugin {
     private static String portalFolder;
     private static String gateFolder;
     private static String langFolder;
-    private static String defNetwork = "central";
+    private static String defaultGateNetwork = "central";
     private static boolean destroyExplosion = false;
     private static String langName = "en";
     private FileConfiguration newConfig;
@@ -152,7 +152,7 @@ public class Stargate extends JavaPlugin {
     }
 
     public static String getDefaultNetwork() {
-        return defNetwork;
+        return defaultGateNetwork;
     }
 
     public static String getString(String name) {
@@ -280,21 +280,32 @@ public class Stargate extends JavaPlugin {
     /*
      * Call the StargateAccessPortal event, used for other plugins to bypass Permissions checks
      */
-    public static boolean canAccessPortal(Player player, Portal portal, boolean deny) {
+
+    /**
+     * Creates a stargate access event and gives the result
+     *
+     * <p>The event is used for other plugins to bypass the permission checks</p>
+     *
+     * @param player <p>The player trying to use the portal</p>
+     * @param portal <p>The portal the player is trying to use</p>
+     * @param deny <p>Whether the player's access has already been denied by a check</p>
+     * @return <p>False if the player should be allowed through the portal</p>
+     */
+    public static boolean cannotAccessPortal(Player player, Portal portal, boolean deny) {
         StargateAccessEvent event = new StargateAccessEvent(player, portal, deny);
         Stargate.server.getPluginManager().callEvent(event);
-        return !event.getDeny();
+        return event.getDeny();
     }
 
     /**
-     * Checks whether a given user can travel between two portals
+     * Checks whether a given user cannot travel between two portals
      *
      * @param player         <p>The player to check</p>
      * @param entrancePortal <p>The portal the user wants to enter</p>
      * @param destination    <p>The portal the user wants to exit</p>
-     * @return <p>True if the user is allowed to access the portal</p>
+     * @return <p>False if the user is allowed to access the portal</p>
      */
-    public static boolean canAccessPortal(Player player, Portal entrancePortal, Portal destination) {
+    public static boolean cannotAccessPortal(Player player, Portal entrancePortal, Portal destination) {
         boolean deny = false;
         // Check if player has access to this server for Bungee gates
         if (entrancePortal.isBungee() && !Stargate.canAccessServer(player, entrancePortal.getNetwork())) {
@@ -304,7 +315,7 @@ public class Stargate extends JavaPlugin {
         } else if (!Stargate.canAccessWorld(player, destination.getWorld().getName())) {
             deny = true;
         }
-        return Stargate.canAccessPortal(player, entrancePortal, deny);
+        return Stargate.cannotAccessPortal(player, entrancePortal, deny);
     }
 
     /*
@@ -592,7 +603,9 @@ public class Stargate extends JavaPlugin {
         // Load values into variables
         portalFolder = newConfig.getString("portal-folder");
         gateFolder = newConfig.getString("gate-folder");
-        defNetwork = newConfig.getString("default-gate-network").trim();
+
+        String defaultNetwork = newConfig.getString("default-gate-network");
+        defaultGateNetwork = defaultNetwork != null ? defaultNetwork.trim() : null;
         destroyExplosion = newConfig.getBoolean("destroyexplosion");
         maxGates = newConfig.getInt("maxgates");
         langName = newConfig.getString("lang");
@@ -604,13 +617,7 @@ public class Stargate extends JavaPlugin {
         enableBungee = newConfig.getBoolean("enableBungee");
         verifyPortals = newConfig.getBoolean("verifyPortals");
         // Sign color
-        String sc = newConfig.getString("signColor");
-        try {
-            signColor = ChatColor.valueOf(sc.toUpperCase());
-        } catch (Exception ignore) {
-            log.warning(Stargate.getString("prefix") + "You have specified an invalid color in your config.yml. Defaulting to BLACK");
-            signColor = ChatColor.BLACK;
-        }
+        loadSignColor(newConfig.getString("signColor"));
         // Debug
         debug = newConfig.getBoolean("debug");
         permDebug = newConfig.getBoolean("permdebug");
@@ -624,6 +631,23 @@ public class Stargate extends JavaPlugin {
         EconomyHandler.freeGatesGreen = newConfig.getBoolean("freegatesgreen");
 
         this.saveConfig();
+    }
+
+    /**
+     * Loads the correct sign color given a sign color string
+     * @param signColor <p>A string representing a sign color</p>
+     */
+    private void loadSignColor(String signColor) {
+        if (signColor != null) {
+            try {
+                Stargate.signColor = ChatColor.valueOf(signColor.toUpperCase());
+                return;
+            } catch (IllegalArgumentException | NullPointerException ignored) {
+            }
+        }
+        log.warning(Stargate.getString("prefix") + "You have specified an invalid color in your config.yml." +
+                " Defaulting to BLACK");
+        Stargate.signColor = ChatColor.BLACK;
     }
 
     public void closeAllPortals() {

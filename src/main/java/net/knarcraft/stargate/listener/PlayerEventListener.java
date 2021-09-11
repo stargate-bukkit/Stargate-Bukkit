@@ -235,7 +235,7 @@ public class PlayerEventListener implements Listener {
     private boolean cannotAccessPortal(Player player, Portal portal) {
         boolean deny = !Stargate.canAccessNetwork(player, portal.getNetwork());
 
-        if (!Stargate.canAccessPortal(player, portal, deny)) {
+        if (Stargate.cannotAccessPortal(player, portal, deny)) {
             Stargate.sendMessage(player, Stargate.getString("denyMsg"));
             return true;
         }
@@ -369,7 +369,7 @@ public class PlayerEventListener implements Listener {
         }
 
         //Player cannot access portal
-        if (!Stargate.canAccessPortal(player, entrancePortal, destination)) {
+        if (Stargate.cannotAccessPortal(player, entrancePortal, destination)) {
             Stargate.sendMessage(player, Stargate.getString("denyMsg"));
             entrancePortal.teleport(player, entrancePortal, event);
             entrancePortal.close(false);
