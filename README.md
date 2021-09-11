@@ -138,6 +138,10 @@ X*.X
  XX 
 ```
 The keys `portal-open` and `portal-closed` are used to define the material in the gate when it is open or closed.
+The material for `portal-closed` can be most things, including solid blocks. Some materials may act weirdly though.
+The material for `portal-open` can be any block the player can partially enter, even things like `GLOW_LICHEN`. 
+`NETHER_PORTAL` and `END_GATEWAY` work, but `END_PORTAL` does not.
+
 The key `button` is used to define the type of button that is generated for this gate. It can be a button (of any type), 
 a type of wall coral (dead or alive), a type of shulker box or a chest.
 `X` and `-` are used to define block types for the layout (Any single-character can be used, such as `#`).  
@@ -197,7 +201,7 @@ There is a default gate type for underwater gates. There are no real restriction
 normal buttons cannot be used since they'd fall off. Using wall coral fans work much better, though `CHEST` and 
 `SHULKER_BOX` works too.
 
-Using `AIR` for a closed gate looks weird, so `WATER` might be better.
+Using `AIR` for a closed underwater gate looks weird, so `WATER` might be better.
 
 # Configuration
 ```
