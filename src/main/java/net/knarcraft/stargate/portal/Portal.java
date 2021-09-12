@@ -24,6 +24,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.Powerable;
 import org.bukkit.block.data.type.Slab;
+import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -843,6 +844,9 @@ public class Portal {
             } else {
                 exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0, (entitySize / 2D) - 1, modX, modZ);
             }
+        }
+        if (entity instanceof AbstractHorse) {
+            exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0, 1, modX, modZ);
         }
 
         return exitLocation;
