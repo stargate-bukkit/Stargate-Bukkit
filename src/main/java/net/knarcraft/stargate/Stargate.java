@@ -342,11 +342,25 @@ public class Stargate extends JavaPlugin {
     /*
      * Check whether the player can see this gate (Hidden property check)
      */
+
+    /**
+     * Checks whether the player can see this gate (Hidden property check)
+     *
+     * <p>This decides if the player can see the gate on the network selection screen</p>
+     *
+     * @param player <p>The player to check</p>
+     * @param portal <p>The portal to check</p>
+     * @return <p>True if the given player can see the given portal</p>
+     */
     public static boolean canSee(Player player, Portal portal) {
         // The gate is not hidden
-        if (!portal.isHidden()) return true;
+        if (!portal.isHidden()) {
+            return true;
+        }
         // The player is an admin with the ability to see hidden gates
-        if (hasPerm(player, "stargate.admin") || hasPerm(player, "stargate.admin.hidden")) return true;
+        if (hasPerm(player, "stargate.admin") || hasPerm(player, "stargate.admin.hidden")) {
+            return true;
+        }
         // The player is the owner of the gate
         return portal.isOwner(player);
     }
