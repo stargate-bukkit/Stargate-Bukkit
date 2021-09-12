@@ -904,11 +904,21 @@ public class Portal {
      * Loads the chunks at the portal's corners
      */
     public void loadChunks() {
-        //TODO: Improve this in the case where the portal sits between two chunks
         for (RelativeBlockVector vector : gate.getLayout().getCorners()) {
             Chunk chunk = getBlockAt(vector).getChunk();
+
+            //Get the chunk in front of the gate corner
+            Location cornerLocation = getBlockAt(vector).getLocation();
+            int blockOffset = this.isBackwards() ? -5 : 5;
+            Location fiveBlocksForward = DirectionHelper.adjustLocation(cornerLocation, 0, 0, blockOffset, modX, modZ);
+            Chunk forwardChunk = fiveBlocksForward.getChunk();
+
+            //Load the chunks
             if (!getWorld().isChunkLoaded(chunk)) {
                 chunk.load();
+            }
+            if (!getWorld().isChunkLoaded(forwardChunk)) {
+                forwardChunk.load();
             }
         }
     }
