@@ -23,6 +23,7 @@ import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.Powerable;
+import org.bukkit.block.data.type.Slab;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -879,7 +880,9 @@ public class Portal {
         if (exitLocation != null) {
             //Prevent traveller from spawning inside a slab
             BlockData blockData = getWorld().getBlockAt(exitLocation).getBlockData();
-            if (blockData instanceof Bisected && ((Bisected) blockData).getHalf() == Bisected.Half.BOTTOM) {
+            if ((blockData instanceof Bisected && ((Bisected) blockData).getHalf() == Bisected.Half.BOTTOM) ||
+                    (blockData instanceof Slab) && ((Slab) blockData).getType() == Slab.Type.BOTTOM) {
+                Stargate.debug("adjustExitLocation", "Added half a block to get above a slab");
                 exitLocation.add(0, 0.5, 0);
             } else if (blockData.getMaterial() == Material.WATER) {
                 exitLocation.add(0, 1, 0);
