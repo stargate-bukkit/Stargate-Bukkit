@@ -707,16 +707,16 @@ public class Portal {
         adjustRotation(exit, origin);
 
         List<Entity> passengers = vehicle.getPassengers();
-        World vehicleWorld = exit.getWorld();
-        if (vehicleWorld == null) {
-            Stargate.log.warning(Stargate.getString("prefix") + "Unable to get the world to teleport the vehicle to");
-            return;
-        }
 
         loadChunks();
 
         if (!passengers.isEmpty()) {
             if (vehicle instanceof RideableMinecart || vehicle instanceof Boat) {
+                World vehicleWorld = exit.getWorld();
+                if (vehicleWorld == null) {
+                    Stargate.log.warning(Stargate.getString("prefix") + "Unable to get the world to teleport the vehicle to");
+                    return;
+                }
                 putPassengersInNewVehicle(vehicle, passengers, vehicleWorld, exit, newVelocity);
             } else {
                 teleportLivingVehicle(vehicle, exit, passengers);
@@ -914,11 +914,19 @@ public class Portal {
             Chunk forwardChunk = fiveBlocksForward.getChunk();
 
             //Load the chunks
-            if (!getWorld().isChunkLoaded(chunk)) {
-                chunk.load();
-            }
-            if (!getWorld().isChunkLoaded(forwardChunk)) {
-                forwardChunk.load();
+            loadOneChunk(chunk);
+            loadOneChunk(forwardChunk);
+        }
+    }
+
+    /**
+     * Loads one chunk
+     * @param chunk <p>The chunk to load</p>
+     */
+    private void loadOneChunk(Chunk chunk) {
+        if (!getWorld().isChunkLoaded(chunk)) {
+            if (!chunk.load()) {
+                Stargate.debug("loadChunks", "Failed to load chunk " + chunk);
             }
         }
     }
