@@ -1,6 +1,6 @@
 package net.knarcraft.stargate.thread;
 
-import net.knarcraft.stargate.BlockChangeRequest;
+import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.Stargate;
 import org.bukkit.Axis;
 import org.bukkit.Material;

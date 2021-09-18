@@ -1,5 +1,6 @@
 package net.knarcraft.stargate;
 
+import net.knarcraft.stargate.container.RelativeBlockVector;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

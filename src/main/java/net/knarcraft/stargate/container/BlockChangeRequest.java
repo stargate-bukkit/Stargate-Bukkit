@@ -1,4 +1,4 @@
-package net.knarcraft.stargate;
+package net.knarcraft.stargate.container;
 
 import org.bukkit.Axis;
 import org.bukkit.Material;

@@ -2,7 +2,7 @@ package net.knarcraft.stargate.portal;
 
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
-import net.knarcraft.stargate.RelativeBlockVector;
+import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.Stargate;
 import org.bukkit.Material;
 import org.junit.jupiter.api.BeforeAll;

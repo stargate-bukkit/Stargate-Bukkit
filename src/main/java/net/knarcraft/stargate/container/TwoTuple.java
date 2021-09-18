@@ -1,4 +1,4 @@
-package net.knarcraft.stargate;
+package net.knarcraft.stargate.container;
 
 /**
  * This class allows storing two values of any type

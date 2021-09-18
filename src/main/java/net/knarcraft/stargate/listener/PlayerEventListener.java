@@ -1,6 +1,6 @@
 package net.knarcraft.stargate.listener;
 
-import net.knarcraft.stargate.BlockLocation;
+import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.Stargate;
@@ -231,7 +231,7 @@ public class PlayerEventListener implements Listener {
      * @return <p>True if the player should be denied</p>
      */
     private boolean cannotAccessPortal(Player player, Portal portal) {
-        boolean deny = !Stargate.canAccessNetwork(player, portal.getNetwork());
+        boolean deny = Stargate.cannotAccessNetwork(player, portal.getNetwork());
 
         if (Stargate.cannotAccessPortal(player, portal, deny)) {
             Stargate.sendMessage(player, Stargate.getString("denyMsg"));

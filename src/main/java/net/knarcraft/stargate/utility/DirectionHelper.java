@@ -1,7 +1,7 @@
 package net.knarcraft.stargate.utility;
 
-import net.knarcraft.stargate.BlockLocation;
-import net.knarcraft.stargate.RelativeBlockVector;
+import net.knarcraft.stargate.container.BlockLocation;
+import net.knarcraft.stargate.container.RelativeBlockVector;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;

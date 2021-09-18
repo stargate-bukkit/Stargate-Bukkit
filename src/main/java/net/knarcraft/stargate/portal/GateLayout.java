@@ -1,6 +1,6 @@
 package net.knarcraft.stargate.portal;
 
-import net.knarcraft.stargate.RelativeBlockVector;
+import net.knarcraft.stargate.container.RelativeBlockVector;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

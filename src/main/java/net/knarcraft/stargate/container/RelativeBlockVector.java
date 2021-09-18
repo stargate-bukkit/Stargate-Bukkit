@@ -1,4 +1,4 @@
-package net.knarcraft.stargate;
+package net.knarcraft.stargate.container;
 
 /**
  * This stores a block location as a vector relative to a position
