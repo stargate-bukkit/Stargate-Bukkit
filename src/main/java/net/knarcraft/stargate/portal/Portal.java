@@ -1029,10 +1029,10 @@ public class Portal {
         activePlayer = player;
         String network = getNetwork();
         destinations = PortalHandler.getDestinations(this, player, network);
-        if (Stargate.sortLists) {
+        if (Stargate.sortNetworkDestinations) {
             Collections.sort(destinations);
         }
-        if (Stargate.destMemory && !lastDestination.isEmpty() && destinations.contains(lastDestination)) {
+        if (Stargate.rememberDestination && !lastDestination.isEmpty() && destinations.contains(lastDestination)) {
             destination = lastDestination;
         }
 
@@ -1113,7 +1113,7 @@ public class Portal {
             return;
         }
 
-        if (!Stargate.destMemory || !activate || lastDestination.isEmpty()) {
+        if (!Stargate.rememberDestination || !activate || lastDestination.isEmpty()) {
             cycleDestination(direction);
         }
         openTime = System.currentTimeMillis() / 1000;

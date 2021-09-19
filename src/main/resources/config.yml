@@ -1,54 +1,62 @@
 # stargate Configuration File
 # Main stargate config
-#
-# portal-folder -  The folder for storing portals
-# gate-folder - The folder for storing gate layouts
-# default-gate-network - The default gate network
-# destroyexplosion - Whether or not to destroy gates with explosions (Creeper, TNT, etc)
-# maxgates - The maximum number of gates allowed on a network - 0 for unlimited
-# lang - The language file to load for messages
-# destMemory - Whether to remember the cursor location between uses
+# I----------I----------I #
+# portalFolder -  The folder for storing portals
+# gateFolder - The folder for storing gate layouts
+# defaultGateNetwork - The default gate network
+# destroyedByExplosion - Whether to destroy gates with explosions (Creeper, TNT, etc.)
+# maxGatesEachNetwork - The maximum number of gates allowed on a network - 0 for unlimited
+# language - The language file to load for messages
+# rememberDestination - Whether to remember the cursor location between uses
 # ignoreEntrance - Ignore the entrance blocks of a gate when checking. Used to work around snowmen
 # handleVehicles - Whether to allow vehicles through gates
-# sortLists - Whether to sort network lists alphabetically
+# sortNetworkDestinations - Whether to sort network lists alphabetically
 # protectEntrance - Whether to protect gate entrance material (More resource intensive. Only enable if using destroyable open/closed material)
 # signColor - The color used for drawing signs (Default: BLACK).
-# verifyPortals - Whether or not all the non-sign blocks are checked to match the gate layout when a stargate is loaded.
-############################
+# verifyPortals - Whether all the non-sign blocks are checked to match the gate layout when a stargate is loaded.
+# I------------I-------------I #
 # stargate economy options #
-############################
-# useeconomy - Whether to use an economy plugin
-# createcost - The cost to create a gate
-# destroycost - The cost to destroy a gate
-# usecost - The cost to use a gate
-# toowner - Whether the charge for using a gate goes to the gates owner
-# chargefreedestination - Whether a gate whose destination is a free gate is still charged
-# freegatesgreen - Whether a free gate in the destination list is drawn green
-#################
+# I------------I-------------I #
+# useEconomy - Whether to use an economy plugin
+# createCost - The cost to create a gate
+# destroyCost - The cost to destroy a gate
+# useCost - The cost to use a gate
+# toOwner - Whether the charge for using a gate goes to the gate's owner
+# chargeFreeDestination - Whether a gate whose destination is a free gate is still charged
+# freeGatesGreen - Whether a free gate in the destination list is drawn green
+# I-------I-------I #
 # Debug options #
-#################
+# I-------I-------I #
 # debug - Debug -- Only enable if you have issues, massive console output
-# permdebug - This will output any and all Permissions checks to console, used for permissions debugging (Requires debug: true)
-portal-folder: plugins/stargate/portals/
-gate-folder: plugins/stargate/gates/
-default-gate-network: central
-destroyexplosion: false
-maxgates: 0
-lang: en
-destMemory: false
-ignoreEntrance: false
-handleVehicles: true
-sortLists: false
-protectEntrance: false
-signColor: BLACK
-useeconomy: false
-createcost: 0
-destroycost: 0
-usecost: 0
-toowner: false
-chargefreedestination: true
-freegatesgreen: false
-debug: false
-permdebug: false
-enableBungee: false
-verifyPortals: false
+# permissionDebug - This will output any and all Permissions checks to console, used for permissions debugging (Requires debug: true)
+
+language: en
+folders:
+  portalFolder: plugins/stargate/portals/
+  gateFolder: plugins/stargate/gates/
+gates:
+  maxGatesEachNetwork: 0
+  defaultGateNetwork: central
+  cosmetic:
+      rememberDestination: false
+      sortNetworkDestinations: false
+      signColor: BLACK
+  integrity:
+      destroyedByExplosion: false
+      verifyPortals: false
+      protectEntrance: false
+      ignoreEntrance: false
+  functionality:
+      enableBungee: false
+      handleVehicles: true
+economy:
+  useEconomy: false
+  createCost: 0
+  destroyCost: 0
+  useCost: 0
+  toOwner: false
+  chargeFreeDestination: true
+  freeGatesGreen: false
+debugging:
+  debug: false
+  permissionDebug: false
