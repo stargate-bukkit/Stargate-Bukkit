@@ -89,20 +89,6 @@ public final class EconomyHandler {
     }
 
     /**
-     * Gets the balance (money) of the given player
-     *
-     * @param player <p>The player to get balance for</p>
-     * @return <p>The current balance of the player. Returns 0 if economy is disabled</p>
-     */
-    public static double getBalance(Player player) {
-        if (economyEnabled) {
-            return economy.getBalance(player);
-        } else {
-            return 0;
-        }
-    }
-
-    /**
      * Charges the player for an action, if required
      * @param player <p>The player to take money from</p>
      * @param cost <p>The cost of the transaction</p>
