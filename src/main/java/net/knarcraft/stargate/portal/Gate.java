@@ -161,7 +161,7 @@ public class Gate {
      * @return <p>The cost of creating a portal with this gate</p>
      */
     public Integer getCreateCost() {
-        return createCost < 0 ? EconomyHandler.getCreateCost() : createCost;
+        return createCost < 0 ? EconomyHandler.getDefaultCreateCost() : createCost;
     }
 
     /**
@@ -170,8 +170,7 @@ public class Gate {
      * @return <p>The cost of destroying a portal with this gate</p>
      */
     public Integer getDestroyCost() {
-        if (destroyCost < 0) return EconomyHandler.getDestroyCost();
-        return destroyCost;
+        return destroyCost < 0 ? EconomyHandler.getDefaultDestroyCost() : destroyCost;
     }
 
     /**

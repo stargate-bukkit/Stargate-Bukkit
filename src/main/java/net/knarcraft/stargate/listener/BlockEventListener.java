@@ -4,6 +4,7 @@ import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargateDestroyEvent;
+import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import org.bukkit.Material;
@@ -89,7 +90,7 @@ public class BlockEventListener implements Listener {
             Stargate.log.info(Stargate.getString("prefix") + player.getName() + " tried to destroy gate");
         }
 
-        int cost = Stargate.getDestroyCost(player, portal.getGate());
+        int cost = EconomyHandler.getDestroyCost(player, portal.getGate());
 
         //Create and call a StarGateDestroyEvent
         StargateDestroyEvent destroyEvent = new StargateDestroyEvent(portal, player, deny, denyMsg, cost);
@@ -128,16 +129,19 @@ public class BlockEventListener implements Listener {
                                          BlockBreakEvent event) {
         int cost = destroyEvent.getCost();
         if (cost != 0) {
-            if (!Stargate.chargePlayer(player, cost)) {
+            String portalName = portal.getName();
+            //Cannot pay
+            if (!EconomyHandler.chargePlayerIfNecessary(player, cost)) {
                 Stargate.debug("onBlockBreak", "Insufficient Funds");
-                EconomyHelper.sendInsufficientFundsMessage(portal.getName(), player, cost);
+                EconomyHelper.sendInsufficientFundsMessage(portalName, player, cost);
                 event.setCancelled(true);
                 return false;
             }
+            //Tell the player they've paid or deceived money
             if (cost > 0) {
-                EconomyHelper.sendDeductMessage(portal.getName(), player, cost);
+                EconomyHelper.sendDeductMessage(portalName, player, cost);
             } else {
-                EconomyHelper.sendRefundMessage(portal.getName(), player, cost);
+                EconomyHelper.sendRefundMessage(portalName, player, cost);
             }
         }
         return true;

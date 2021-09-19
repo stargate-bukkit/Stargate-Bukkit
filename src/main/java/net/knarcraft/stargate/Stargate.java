@@ -264,8 +264,11 @@ public class Stargate extends JavaPlugin {
         return !hasPermission(player, "stargate.world." + world);
     }
 
-    /*
-     * Check whether player can use network
+    /**
+     * Checks whether a player can access the given network
+     * @param player <p>The player to check</p>
+     * @param network <p>The network to check</p>
+     * @return <p>True if the player is denied from accessing the network</p>
      */
     public static boolean cannotAccessNetwork(Player player, String network) {
         // Can user all stargate player features, or access all networks
@@ -273,8 +276,10 @@ public class Stargate extends JavaPlugin {
             // Do a deep check to see if the player lacks this specific network node
             return !hasPermDeep(player, "stargate.network." + network);
         }
-        // Can access this network
-        if (hasPermission(player, "stargate.network." + network)) return false;
+        //Check if the player can access this network
+        if (hasPermission(player, "stargate.network." + network)) {
+            return false;
+        }
         // Is able to create personal gates (Assumption is made they can also access them)
         String playerName = player.getName();
         if (playerName.length() > 11) playerName = playerName.substring(0, 11);
@@ -455,72 +460,6 @@ public class Stargate extends JavaPlugin {
         if (hasPermission(player, "stargate.destroy.network." + network)) return true;
         // Check for personal gate
         return portal.isOwner(player) && hasPermission(player, "stargate.destroy.personal");
-    }
-
-    /*
-     * Charge player for {action} if required, true on success, false if can't afford
-     */
-    public static boolean chargePlayer(Player player, UUID target, int cost) {
-        // If cost is 0
-        if (cost == 0) return true;
-        // Economy is disabled
-        if (!EconomyHandler.useEconomy()) return true;
-        // Charge player
-        return EconomyHandler.chargePlayer(player, target, cost);
-    }
-
-    /*
-     * Charge player for {action} if required, true on success, false if can't afford
-     */
-    public static boolean chargePlayer(Player player, int cost) {
-        // If cost is 0
-        if (cost == 0) return true;
-        // Economy is disabled
-        if (!EconomyHandler.useEconomy()) return true;
-        // Charge player
-        return EconomyHandler.chargePlayer(player, cost);
-    }
-
-    /*
-     * Determine the cost of a gate
-     */
-    public static int getUseCost(Player player, Portal src, Portal dest) {
-        // Not using Economy
-        if (!EconomyHandler.useEconomy()) return 0;
-        // Portal is free
-        if (src.isFree()) return 0;
-        // Not charging for free destinations
-        if (dest != null && !EconomyHandler.chargeFreeDestination && dest.isFree()) return 0;
-        // Cost is 0 if the player owns this gate and funds go to the owner
-        if (src.getGate().getToOwner() && src.isOwner(player)) return 0;
-        // Player gets free gate use
-        if (hasPermission(player, "stargate.free") || hasPermission(player, "stargate.free.use")) return 0;
-
-        return src.getGate().getUseCost();
-    }
-
-    /*
-     * Determine the cost to create the gate
-     */
-    public static int getCreateCost(Player player, Gate gate) {
-        // Not using Economy
-        if (!EconomyHandler.useEconomy()) return 0;
-        // Player gets free gate destruction
-        if (hasPermission(player, "stargate.free") || hasPermission(player, "stargate.free.create")) return 0;
-
-        return gate.getCreateCost();
-    }
-
-    /*
-     * Determine the cost to destroy the gate
-     */
-    public static int getDestroyCost(Player player, Gate gate) {
-        // Not using Economy
-        if (!EconomyHandler.useEconomy()) return 0;
-        // Player gets free gate destruction
-        if (hasPermission(player, "stargate.free") || hasPermission(player, "stargate.free.destroy")) return 0;
-
-        return gate.getDestroyCost();
     }
 
     /**

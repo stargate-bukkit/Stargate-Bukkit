@@ -26,10 +26,10 @@ public final class EconomyHelper {
 
         //Try to charge the player
         if (entrancePortal.getGate().getToOwner()) {
-            success = entrancePortal.getOwnerUUID() != null && Stargate.chargePlayer(player,
+            success = entrancePortal.getOwnerUUID() != null && EconomyHandler.chargePlayerIfNecessary(player,
                     entrancePortal.getOwnerUUID(), cost);
         } else {
-            success = Stargate.chargePlayer(player, cost);
+            success = EconomyHandler.chargePlayerIfNecessary(player, cost);
         }
 
         // Insufficient Funds

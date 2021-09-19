@@ -5,6 +5,7 @@ import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.utility.BungeeHelper;
+import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import org.bukkit.GameMode;
@@ -378,7 +379,7 @@ public class PlayerEventListener implements Listener {
         }
 
         //Player cannot pay for teleportation
-        int cost = Stargate.getUseCost(player, entrancePortal, destination);
+        int cost = EconomyHandler.getUseCost(player, entrancePortal, destination);
         if (cost > 0) {
             return EconomyHelper.payTeleportFee(entrancePortal, player, cost);
         }

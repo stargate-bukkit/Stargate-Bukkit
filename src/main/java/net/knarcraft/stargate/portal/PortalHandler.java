@@ -6,6 +6,7 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.TwoTuple;
 import net.knarcraft.stargate.event.StargateCreateEvent;
 import net.knarcraft.stargate.utility.DirectionHelper;
+import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -395,7 +396,7 @@ public class PortalHandler {
         portal = new Portal(topLeft, modX, modZ, yaw, id, button, destinationName, name, false, network,
                 gate, player.getUniqueId(), player.getName(), portalOptions);
 
-        int cost = Stargate.getCreateCost(player, gate);
+        int cost = EconomyHandler.getCreateCost(player, gate);
 
         // Call StargateCreateEvent
         StargateCreateEvent cEvent = new StargateCreateEvent(player, portal, event.getLines(), deny, denyMsg, cost);
@@ -440,7 +441,7 @@ public class PortalHandler {
         }
 
         if (cost > 0) {
-            if (!Stargate.chargePlayer(player, cost)) {
+            if (!EconomyHandler.chargePlayerIfNecessary(player, cost)) {
                 EconomyHelper.sendInsufficientFundsMessage(name, player, cost);
                 Stargate.debug("createPortal", "Insufficient Funds");
                 return null;
