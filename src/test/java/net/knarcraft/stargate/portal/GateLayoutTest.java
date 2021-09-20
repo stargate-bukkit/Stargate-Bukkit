@@ -1,20 +1,19 @@
 package net.knarcraft.stargate.portal;
 
+import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
-import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.container.RelativeBlockVector;
 import org.bukkit.Material;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import be.seeseemelk.mockbukkit.MockBukkit;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GateLayoutTest {
 

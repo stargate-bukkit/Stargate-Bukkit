@@ -38,17 +38,17 @@ gates:
   maxGatesEachNetwork: 0
   defaultGateNetwork: central
   cosmetic:
-      rememberDestination: false
-      sortNetworkDestinations: false
-      signColor: BLACK
+    rememberDestination: false
+    sortNetworkDestinations: false
+    signColor: BLACK
   integrity:
-      destroyedByExplosion: false
-      verifyPortals: false
-      protectEntrance: false
-      ignoreEntrance: false
+    destroyedByExplosion: false
+    verifyPortals: false
+    protectEntrance: false
+    ignoreEntrance: false
   functionality:
-      enableBungee: false
-      handleVehicles: true
+    enableBungee: false
+    handleVehicles: true
 economy:
   useEconomy: false
   createCost: 0
