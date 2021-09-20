@@ -41,6 +41,7 @@ public final class DirectionHelper {
 
     /**
      * Gets a block face given a yaw
+     *
      * @param yaw <p>The yaw to use</p>
      * @return <p>The block face the yaw corresponds to</p>
      */
@@ -63,6 +64,7 @@ public final class DirectionHelper {
 
     /**
      * Gets a direction vector given a yaw
+     *
      * @param yaw <p>The yaw to use</p>
      * @return <p>The direction vector of the yaw</p>
      */
@@ -95,12 +97,13 @@ public final class DirectionHelper {
 
     /**
      * Adds a relative block vector to a location, accounting for direction
+     *
      * @param location <p>The location to adjust</p>
-     * @param right <p>The amount of blocks to the right to adjust</p>
-     * @param depth <p>The amount of blocks upward to adjust</p>
+     * @param right    <p>The amount of blocks to the right to adjust</p>
+     * @param depth    <p>The amount of blocks upward to adjust</p>
      * @param distance <p>The distance outward to adjust</p>
-     * @param modX <p>The x modifier to use</p>
-     * @param modZ <p>The z modifier to use</p>
+     * @param modX     <p>The x modifier to use</p>
+     * @param modZ     <p>The z modifier to use</p>
      * @return <p>The altered location</p>
      */
     public static Location adjustLocation(Location location, double right, double depth, double distance, int modX,
@@ -110,6 +113,7 @@ public final class DirectionHelper {
 
     /**
      * Normalizes a yaw to make it positive and no larger than 360 degrees
+     *
      * @param yaw <p>The yaw to normalize</p>
      * @return <p>The normalized yaw</p>
      */

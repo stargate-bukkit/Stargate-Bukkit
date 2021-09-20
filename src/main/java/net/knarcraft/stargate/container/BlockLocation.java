@@ -70,7 +70,7 @@ public class BlockLocation extends Location {
      * @param x    <p>The x position relative to this block's position</p>
      * @param y    <p>The y position relative to this block's position</p>
      * @param z    <p>The z position relative to this block's position</p>
-     * @param yaw <p>The yaw of the location</p>
+     * @param yaw  <p>The yaw of the location</p>
      * @param rotY <p>The y rotation of the location</p>
      * @return <p>A new location</p>
      */
@@ -105,7 +105,7 @@ public class BlockLocation extends Location {
      * @param right    <p></p>
      * @param depth    <p>The y position relative to the current position</p>
      * @param distance <p>The distance away from the previous location to the new location</p>
-     * @param yaw     <p>The yaw of the location</p>
+     * @param yaw      <p>The yaw of the location</p>
      * @param rotY     <p>Unused</p>
      * @param modX     <p>x modifier. Defines movement along the x-axis. 0 for no movement</p>
      * @param modY     <p>Unused</p>

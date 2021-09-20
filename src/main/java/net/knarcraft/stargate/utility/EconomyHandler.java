@@ -90,8 +90,9 @@ public final class EconomyHandler {
 
     /**
      * Charges the player for an action, if required
+     *
      * @param player <p>The player to take money from</p>
-     * @param cost <p>The cost of the transaction</p>
+     * @param cost   <p>The cost of the transaction</p>
      * @return <p>True if the player was charged successfully</p>
      */
     public static boolean chargePlayerIfNecessary(Player player, int cost) {
@@ -104,9 +105,10 @@ public final class EconomyHandler {
 
     /**
      * Charges the player for an action, if required
+     *
      * @param player <p>The player to take money from</p>
      * @param target <p>The target to pay</p>
-     * @param cost <p>The cost of the transaction</p>
+     * @param cost   <p>The cost of the transaction</p>
      * @return <p>True if the player was charged successfully</p>
      */
     public static boolean chargePlayerIfNecessary(Player player, UUID target, int cost) {
@@ -170,6 +172,7 @@ public final class EconomyHandler {
 
     /**
      * Checks whether a payment transaction should be skipped
+     *
      * @param cost <p>The cost of the transaction</p>
      * @return <p>True if the transaction should be skipped</p>
      */
@@ -180,8 +183,8 @@ public final class EconomyHandler {
     /**
      * Determines the cost of using a gate
      *
-     * @param player <p>The player trying to use the gate</p>
-     * @param source <p>The source/entry portal</p>
+     * @param player      <p>The player trying to use the gate</p>
+     * @param source      <p>The source/entry portal</p>
      * @param destination <p>The destination portal</p>
      * @return <p>The cost of using the portal</p>
      */
@@ -199,7 +202,8 @@ public final class EconomyHandler {
             return 0;
         }
         //Player gets free gate use
-        if (Stargate.hasPermission(player, "stargate.free") || Stargate.hasPermission(player, "stargate.free.use")) {
+        if (PermissionHelper.hasPermission(player, "stargate.free") ||
+                PermissionHelper.hasPermission(player, "stargate.free.use")) {
             return 0;
         }
 
@@ -208,8 +212,9 @@ public final class EconomyHandler {
 
     /**
      * Gets the cost of creating the given gate
+     *
      * @param player <p>The player creating the gate</p>
-     * @param gate <p>The gate type used</p>
+     * @param gate   <p>The gate type used</p>
      * @return <p>The cost of creating the gate</p>
      */
     public static int getCreateCost(Player player, Gate gate) {
@@ -222,8 +227,9 @@ public final class EconomyHandler {
 
     /**
      * Gets the cost of destroying the given gate
+     *
      * @param player <p>The player creating the gate</p>
-     * @param gate <p>The gate type used</p>
+     * @param gate   <p>The gate type used</p>
      * @return <p>The cost of destroying the gate</p>
      */
     public static int getDestroyCost(Player player, Gate gate) {
@@ -236,13 +242,14 @@ public final class EconomyHandler {
 
     /**
      * Determines if a player can do a gate action for free
-     * @param player <p>The player to check</p>
+     *
+     * @param player         <p>The player to check</p>
      * @param permissionNode <p>The free.permissionNode necessary to allow free gate {action}</p>
      * @return <p></p>
      */
     private static boolean isFree(Player player, String permissionNode) {
-        return !EconomyHandler.useEconomy() || Stargate.hasPermission(player, "stargate.free") ||
-                Stargate.hasPermission(player, "stargate.free." + permissionNode);
+        return !EconomyHandler.useEconomy() || PermissionHelper.hasPermission(player, "stargate.free") ||
+                PermissionHelper.hasPermission(player, "stargate.free." + permissionNode);
     }
 
     /**

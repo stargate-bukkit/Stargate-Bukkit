@@ -1,13 +1,14 @@
 package net.knarcraft.stargate.portal;
 
+import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
-import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.TwoTuple;
 import net.knarcraft.stargate.event.StargateCreateEvent;
 import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
+import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -90,12 +91,12 @@ public class PortalHandler {
                 continue;
             }
             // Check if this player can access the dest world
-            if (Stargate.cannotAccessWorld(player, portal.getWorld().getName())) {
+            if (PermissionHelper.cannotAccessWorld(player, portal.getWorld().getName())) {
                 Stargate.log.info("cannot access world");
                 continue;
             }
             // Visible to this player.
-            if (Stargate.canSee(player, portal)) {
+            if (PermissionHelper.canSeePortal(player, portal)) {
                 destinations.add(portal.getName());
             }
         }
@@ -314,7 +315,7 @@ public class PortalHandler {
 
         //If the player is trying to create a Bungee gate without permissions, drop out here
         if (options.indexOf(PortalOption.BUNGEE.getCharacterRepresentation()) != -1) {
-            if (!Stargate.hasPermission(player, "stargate.admin.bungee")) {
+            if (!PermissionHelper.hasPermission(player, "stargate.admin.bungee")) {
                 Stargate.sendMessage(player, Stargate.getString("bungeeDeny"));
                 return null;
             }
@@ -344,9 +345,9 @@ public class PortalHandler {
         String denyMsg = "";
 
         // Check if the player can create gates on this network
-        if (!portalOptions.get(PortalOption.BUNGEE) && !Stargate.canCreate(player, network)) {
+        if (!portalOptions.get(PortalOption.BUNGEE) && !PermissionHelper.canCreateNetworkGate(player, network)) {
             Stargate.debug("createPortal", "Player doesn't have create permissions on network. Trying personal");
-            if (Stargate.canCreatePersonal(player)) {
+            if (PermissionHelper.canCreatePersonalGate(player)) {
                 network = player.getName();
                 if (network.length() > 11) network = network.substring(0, 11);
                 Stargate.debug("createPortal", "Creating personal portal");
@@ -362,7 +363,7 @@ public class PortalHandler {
         // Check if the player can create this gate layout
         String gateName = gate.getFilename();
         gateName = gateName.substring(0, gateName.indexOf('.'));
-        if (!deny && !Stargate.canCreateGate(player, gateName)) {
+        if (!deny && !PermissionHelper.canCreateGate(player, gateName)) {
             Stargate.debug("createPortal", "Player does not have access to gate layout");
             deny = true;
             denyMsg = Stargate.getString("createGateDeny");
@@ -373,8 +374,8 @@ public class PortalHandler {
             Portal p = getByName(destinationName, network);
             if (p != null) {
                 String world = p.getWorld().getName();
-                if (Stargate.cannotAccessWorld(player, world)) {
-                    Stargate.debug("canCreate", "Player does not have access to destination world");
+                if (PermissionHelper.cannotAccessWorld(player, world)) {
+                    Stargate.debug("canCreateNetworkGate", "Player does not have access to destination world");
                     deny = true;
                     denyMsg = Stargate.getString("createWorldDeny");
                 }
@@ -506,7 +507,7 @@ public class PortalHandler {
         Map<PortalOption, Boolean> portalOptions = new HashMap<>();
         for (PortalOption option : PortalOption.values()) {
             portalOptions.put(option, options.indexOf(option.getCharacterRepresentation()) != -1 &&
-                    Stargate.canOption(player, option));
+                    PermissionHelper.canUseOption(player, option));
         }
 
         // Can not create a non-fixed always-on gate.
@@ -583,7 +584,7 @@ public class PortalHandler {
      * Gets a portal given a location adjacent to its entrance
      *
      * @param location <p>A location adjacent to the portal's entrance</p>
-     * @param range <p>The range to scan for portals</p>
+     * @param range    <p>The range to scan for portals</p>
      * @return <p>The portal adjacent to the given location</p>
      */
     public static Portal getByAdjacentEntrance(Location location, int range) {

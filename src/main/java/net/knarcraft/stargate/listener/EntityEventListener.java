@@ -1,8 +1,8 @@
 package net.knarcraft.stargate.listener;
 
+import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
-import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.utility.EntityHelper;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;

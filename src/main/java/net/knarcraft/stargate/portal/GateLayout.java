@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class GateLayout {
 
-    private final Character [][] layout;
+    private final Character[][] layout;
     private final List<RelativeBlockVector> exits = new ArrayList<>();
     private RelativeBlockVector[] entrances = new RelativeBlockVector[0];
     private RelativeBlockVector[] border = new RelativeBlockVector[0];
@@ -39,7 +39,7 @@ public class GateLayout {
      * @return <p>Two of the gate's corners</p>
      */
     public RelativeBlockVector[] getCorners() {
-        return new RelativeBlockVector[] {
+        return new RelativeBlockVector[]{
                 new RelativeBlockVector(0, 0, 0),
                 new RelativeBlockVector(layout[0].length - 1, layout.length - 1, 1)
         };
@@ -157,9 +157,9 @@ public class GateLayout {
     /**
      * Reads the given layout matrix, filling in the given lists of relative block vectors
      *
-     * @param controlList <p>The list of control blocks to save to</p>
+     * @param controlList  <p>The list of control blocks to save to</p>
      * @param entranceList <p>The list of entrances to save to</p>
-     * @param borderList <p>The list of border blocks to save to</p>
+     * @param borderList   <p>The list of border blocks to save to</p>
      * @return <p>A list of depths of possible extra exits</p>
      */
     private int[] readLayout(List<RelativeBlockVector> controlList, List<RelativeBlockVector> entranceList,
@@ -181,13 +181,13 @@ public class GateLayout {
     /**
      * Parses one character of the layout
      *
-     * @param key <p>The character read</p>
-     * @param rowIndex <p>The row of the read character</p>
-     * @param lineIndex <p>The line of the read character</p>
-     * @param exitDepths <p>The list of exit depths to save to</p>
-     * @param controlList <p>The list of control blocks to save to</p>
+     * @param key          <p>The character read</p>
+     * @param rowIndex     <p>The row of the read character</p>
+     * @param lineIndex    <p>The line of the read character</p>
+     * @param exitDepths   <p>The list of exit depths to save to</p>
+     * @param controlList  <p>The list of control blocks to save to</p>
      * @param entranceList <p>The list of entrances to save to</p>
-     * @param borderList <p>The list of border blocks to save to</p>
+     * @param borderList   <p>The list of border blocks to save to</p>
      */
     private void parseLayoutCharacter(Character key, int rowIndex, int lineIndex, int[] exitDepths,
                                       List<RelativeBlockVector> controlList, List<RelativeBlockVector> entranceList,

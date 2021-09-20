@@ -1,9 +1,9 @@
 package net.knarcraft.stargate.portal;
 
-import net.knarcraft.stargate.container.BlockLocation;
-import net.knarcraft.stargate.container.BlockChangeRequest;
-import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.container.BlockChangeRequest;
+import net.knarcraft.stargate.container.BlockLocation;
+import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.event.StargateActivateEvent;
 import net.knarcraft.stargate.event.StargateCloseEvent;
 import net.knarcraft.stargate.event.StargateDeactivateEvent;
@@ -86,7 +86,7 @@ public class Portal {
      * @param topLeft     <p>The top-left block of the portal. This is used to decide the positions of the rest of the portal</p>
      * @param modX        <p></p>
      * @param modZ        <p></p>
-     * @param yaw        <p></p>
+     * @param yaw         <p></p>
      * @param id          <p>The location of the portal's id block, which is the sign which activated the portal</p>
      * @param button      <p>The location of the portal's open button</p>
      * @param destination <p>The destination defined on the sign's destination line</p>
@@ -921,6 +921,7 @@ public class Portal {
 
     /**
      * Loads one chunk
+     *
      * @param chunk <p>The chunk to load</p>
      */
     private void loadOneChunk(Chunk chunk) {

@@ -1,7 +1,7 @@
 package net.knarcraft.stargate.utility;
 
-import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.portal.Portal;
 import org.bukkit.entity.Player;
 
 /**

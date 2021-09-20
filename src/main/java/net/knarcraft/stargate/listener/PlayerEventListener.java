@@ -1,13 +1,14 @@
 package net.knarcraft.stargate.listener;
 
+import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
-import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.utility.BungeeHelper;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
+import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -127,10 +128,11 @@ public class PlayerEventListener implements Listener {
 
     /**
      * Checks whether a player move event is relevant for this plugin
-     * @param event <p>The player move event to check</p>
-     * @param player <p>The player which moved</p>
+     *
+     * @param event        <p>The player move event to check</p>
+     * @param player       <p>The player which moved</p>
      * @param fromLocation <p>The location the player is moving from</p>
-     * @param toLocation <p>The location the player is moving to</p>
+     * @param toLocation   <p>The location the player is moving to</p>
      * @return <p>True if the event is relevant</p>
      */
     private boolean isRelevantMoveEvent(PlayerMoveEvent event, Player player, BlockLocation fromLocation, BlockLocation toLocation) {
@@ -232,7 +234,7 @@ public class PlayerEventListener implements Listener {
      * @return <p>True if the player should be denied</p>
      */
     private boolean cannotAccessPortal(Player player, Portal portal) {
-        boolean deny = Stargate.cannotAccessNetwork(player, portal.getNetwork());
+        boolean deny = PermissionHelper.cannotAccessNetwork(player, portal.getNetwork());
 
         if (Stargate.cannotAccessPortal(player, portal, deny)) {
             Stargate.sendMessage(player, Stargate.getString("denyMsg"));

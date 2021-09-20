@@ -1,8 +1,8 @@
 package net.knarcraft.stargate.portal;
 
+import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
-import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import org.bukkit.Material;

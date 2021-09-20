@@ -1,12 +1,13 @@
 package net.knarcraft.stargate.listener;
 
-import net.knarcraft.stargate.portal.Portal;
-import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargateDestroyEvent;
+import net.knarcraft.stargate.portal.Portal;
+import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
+import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
@@ -84,7 +85,7 @@ public class BlockEventListener implements Listener {
         String denyMsg = "";
 
         //Decide if the user can destroy the portal
-        if (!Stargate.canDestroy(player, portal)) {
+        if (!PermissionHelper.canDestroyPortal(player, portal)) {
             denyMsg = Stargate.getString("denyMsg");
             deny = true;
             Stargate.log.info(Stargate.getString("prefix") + player.getName() + " tried to destroy gate");

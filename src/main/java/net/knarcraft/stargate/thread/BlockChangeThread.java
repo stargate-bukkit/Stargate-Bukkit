@@ -1,7 +1,7 @@
 package net.knarcraft.stargate.thread;
 
-import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.container.BlockChangeRequest;
 import org.bukkit.Axis;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -44,6 +44,7 @@ public class BlockChangeThread implements Runnable {
 
     /**
      * Prevents end gateway portal from behaving strangely
+     *
      * @param block <p>The block to fix</p>
      */
     private void fixEndGatewayGate(Block block) {
@@ -55,8 +56,9 @@ public class BlockChangeThread implements Runnable {
 
     /**
      * Sets the orientation axis of the placed block
+     *
      * @param block <p>The block to orient</p>
-     * @param axis <p>The axis to use for orienting the block</p>
+     * @param axis  <p>The axis to use for orienting the block</p>
      */
     private void orientBlock(Block block, Axis axis) {
         Orientable orientable = (Orientable) block.getBlockData();

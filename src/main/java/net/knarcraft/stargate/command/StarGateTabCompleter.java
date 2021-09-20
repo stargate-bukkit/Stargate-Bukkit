@@ -16,11 +16,16 @@ public class StarGateTabCompleter implements TabCompleter {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command,
-                                                @NotNull String s, @NotNull String[] strings) {
+                                                @NotNull String s, @NotNull String[] args) {
         List<String> commands = new ArrayList<>();
         commands.add("about");
         commands.add("reload");
-        return commands;
+
+        if (args.length == 1) {
+            return commands;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
 }

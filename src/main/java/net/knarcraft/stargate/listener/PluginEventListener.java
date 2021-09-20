@@ -1,7 +1,7 @@
 package net.knarcraft.stargate.listener;
 
-import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.utility.EconomyHandler;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -28,6 +28,7 @@ public class PluginEventListener implements Listener {
      * This event listens for and announces that the vault plugin was detected and enabled
      *
      * <p>Each time this event is called, the economy handler will try to enable vault</p>
+     *
      * @param ignored <p>The actual event called. This is currently not used</p>
      */
     @EventHandler
