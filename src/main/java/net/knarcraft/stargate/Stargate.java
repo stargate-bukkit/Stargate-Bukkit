@@ -90,6 +90,13 @@ public class Stargate extends JavaPlugin {
     private PluginManager pluginManager;
 
     /**
+     * Empty constructor necessary for Spigot
+     */
+    public Stargate() {
+        super();
+    }
+
+    /**
      * Special constructor used for MockBukkit
      *
      * @param loader          <p>The plugin loader to be used.</p>
