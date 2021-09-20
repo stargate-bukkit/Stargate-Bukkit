@@ -34,6 +34,9 @@ import java.util.Scanner;
 import java.util.UUID;
 import java.util.logging.Level;
 
+/**
+ * Keeps track of all loaded portals, and handles portal creation
+ */
 public class PortalHandler {
     // Static variables used to store portal lists
     private static final Map<BlockLocation, Portal> lookupBlocks = new HashMap<>();
@@ -92,7 +95,7 @@ public class PortalHandler {
             }
             // Check if this player can access the dest world
             if (PermissionHelper.cannotAccessWorld(player, portal.getWorld().getName())) {
-                Stargate.log.info("cannot access world");
+                Stargate.logger.info("cannot access world");
                 continue;
             }
             // Visible to this player.
@@ -316,16 +319,16 @@ public class PortalHandler {
         //If the player is trying to create a Bungee gate without permissions, drop out here
         if (options.indexOf(PortalOption.BUNGEE.getCharacterRepresentation()) != -1) {
             if (!PermissionHelper.hasPermission(player, "stargate.admin.bungee")) {
-                Stargate.sendMessage(player, Stargate.getString("bungeeDeny"));
+                Stargate.sendErrorMessage(player, Stargate.getString("bungeeDeny"));
                 return null;
             }
         }
         if (portalOptions.get(PortalOption.BUNGEE)) {
             if (!Stargate.enableBungee) {
-                Stargate.sendMessage(player, Stargate.getString("bungeeDisabled"));
+                Stargate.sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
                 return null;
             } else if (destinationName.isEmpty() || network.isEmpty()) {
-                Stargate.sendMessage(player, Stargate.getString("bungeeEmpty"));
+                Stargate.sendErrorMessage(player, Stargate.getString("bungeeEmpty"));
                 return null;
             }
         }
@@ -351,7 +354,7 @@ public class PortalHandler {
                 network = player.getName();
                 if (network.length() > 11) network = network.substring(0, 11);
                 Stargate.debug("createPortal", "Creating personal portal");
-                Stargate.sendMessage(player, Stargate.getString("createPersonal"));
+                Stargate.sendErrorMessage(player, Stargate.getString("createPersonal"));
             } else {
                 Stargate.debug("createPortal", "Player does not have access to network");
                 deny = true;
@@ -387,7 +390,7 @@ public class PortalHandler {
             BlockLocation b = topLeft.modRelative(v.getRight(), v.getDepth(), v.getDistance(), modX, 1, modZ);
             if (getByBlock(b.getBlock()) != null) {
                 Stargate.debug("createPortal", "Gate conflicts with existing gate");
-                Stargate.sendMessage(player, Stargate.getString("createConflict"));
+                Stargate.sendErrorMessage(player, Stargate.getString("createConflict"));
                 return null;
             }
         }
@@ -406,7 +409,7 @@ public class PortalHandler {
             return null;
         }
         if (cEvent.getDeny()) {
-            Stargate.sendMessage(player, cEvent.getDenyReason());
+            Stargate.sendErrorMessage(player, cEvent.getDenyReason());
             return null;
         }
 
@@ -415,7 +418,7 @@ public class PortalHandler {
         // Name & Network can be changed in the event, so do these checks here.
         if (portal.getName().length() < 1 || portal.getName().length() > 11) {
             Stargate.debug("createPortal", "Name length error");
-            Stargate.sendMessage(player, Stargate.getString("createNameLength"));
+            Stargate.sendErrorMessage(player, Stargate.getString("createNameLength"));
             return null;
         }
 
@@ -423,20 +426,20 @@ public class PortalHandler {
         if (portal.isBungee()) {
             if (bungeePortals.get(portal.getName().toLowerCase()) != null) {
                 Stargate.debug("createPortal::Bungee", "Gate Exists");
-                Stargate.sendMessage(player, Stargate.getString("createExists"));
+                Stargate.sendErrorMessage(player, Stargate.getString("createExists"));
                 return null;
             }
         } else {
             if (getByName(portal.getName(), portal.getNetwork()) != null) {
                 Stargate.debug("createPortal", "Name Error");
-                Stargate.sendMessage(player, Stargate.getString("createExists"));
+                Stargate.sendErrorMessage(player, Stargate.getString("createExists"));
                 return null;
             }
 
             // Check if there are too many gates in this network
             List<String> netList = allPortalNetworks.get(portal.getNetwork().toLowerCase());
-            if (Stargate.maxGates > 0 && netList != null && netList.size() >= Stargate.maxGates) {
-                Stargate.sendMessage(player, Stargate.getString("createFull"));
+            if (Stargate.maxGatesEachNetwork > 0 && netList != null && netList.size() >= Stargate.maxGatesEachNetwork) {
+                Stargate.sendErrorMessage(player, Stargate.getString("createFull"));
                 return null;
             }
         }
@@ -715,7 +718,7 @@ public class PortalHandler {
 
             bw.close();
         } catch (Exception e) {
-            Stargate.log.log(Level.SEVERE, "Exception while writing stargates to " + loc + ": " + e);
+            Stargate.logger.log(Level.SEVERE, "Exception while writing stargates to " + loc + ": " + e);
         }
     }
 
@@ -783,7 +786,7 @@ public class PortalHandler {
         if (database.exists()) {
             return loadGates(world, database);
         } else {
-            Stargate.log.info(Stargate.getString("prefix") + "{" + world.getName() + "} No stargates for world ");
+            Stargate.logger.info(Stargate.getString("prefix") + "{" + world.getName() + "} No stargates for world ");
         }
         return false;
     }
@@ -811,7 +814,7 @@ public class PortalHandler {
                 //Check if the min. required portal data is present
                 String[] portalData = line.split(":");
                 if (portalData.length < 8) {
-                    Stargate.log.info(Stargate.getString("prefix") + "Invalid line - " + lineIndex);
+                    Stargate.logger.info(Stargate.getString("prefix") + "Invalid line - " + lineIndex);
                     continue;
                 }
 
@@ -822,12 +825,12 @@ public class PortalHandler {
             // Open any always-on gates. Do this here as it should be more efficient than in the loop.
             TwoTuple<Integer, Integer> portalCounts = openAlwaysOpenGates();
 
-            Stargate.log.info(String.format("%s{%s} Loaded %d stargates with %d set as always-on",
+            Stargate.logger.info(String.format("%s{%s} Loaded %d stargates with %d set as always-on",
                     Stargate.getString("prefix"), world.getName(), portalCounts.getSecondValue(),
                     portalCounts.getFirstValue()));
             return true;
         } catch (Exception e) {
-            Stargate.log.log(Level.SEVERE, "Exception while reading stargates from " + database.getName() + ": " + lineIndex);
+            Stargate.logger.log(Level.SEVERE, "Exception while reading stargates from " + database.getName() + ": " + lineIndex);
             e.printStackTrace();
         }
         return false;
@@ -851,7 +854,7 @@ public class PortalHandler {
         BlockLocation topLeft = new BlockLocation(world, portalData[6]);
         Gate gate = GateHandler.getGateByName(portalData[7]);
         if (gate == null) {
-            Stargate.log.info(Stargate.getString("prefix") + "Gate layout on line " + lineIndex +
+            Stargate.logger.info(Stargate.getString("prefix") + "Gate layout on line " + lineIndex +
                     " does not exist [" + portalData[7] + "]");
             return;
         }
@@ -949,14 +952,14 @@ public class PortalHandler {
             }
         }
         PortalHandler.unregisterPortal(portal, false);
-        Stargate.log.info(Stargate.getString("prefix") + "Destroying stargate at " + portal);
+        Stargate.logger.info(Stargate.getString("prefix") + "Destroying stargate at " + portal);
     }
 
     /**
      * Closes all star gate portals
      */
     public static void closeAllGates() {
-        Stargate.log.info("Closing all stargates.");
+        Stargate.logger.info("Closing all stargates.");
         for (Portal portal : allPortals) {
             if (portal != null) {
                 portal.close(true);

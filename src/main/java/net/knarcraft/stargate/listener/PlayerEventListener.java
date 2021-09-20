@@ -122,7 +122,7 @@ public class PlayerEventListener implements Listener {
         } else {
             destination.teleport(player, entrancePortal, event);
         }
-        Stargate.sendMessage(player, Stargate.getString("teleportMsg"), false);
+        Stargate.sendSuccessMessage(player, Stargate.getString("teleportMsg"));
         entrancePortal.close(false);
     }
 
@@ -157,7 +157,7 @@ public class PlayerEventListener implements Listener {
         //Decide if the user should be teleported to another bungee server
         if (entrancePortal.isBungee()) {
             if (bungeeTeleport(player, entrancePortal, event)) {
-                Stargate.sendMessage(player, Stargate.getString("teleportMsg"), false);
+                Stargate.sendSuccessMessage(player, Stargate.getString("teleportMsg"));
             }
             return false;
         }
@@ -236,8 +236,8 @@ public class PlayerEventListener implements Listener {
     private boolean cannotAccessPortal(Player player, Portal portal) {
         boolean deny = PermissionHelper.cannotAccessNetwork(player, portal.getNetwork());
 
-        if (Stargate.cannotAccessPortal(player, portal, deny)) {
-            Stargate.sendMessage(player, Stargate.getString("denyMsg"));
+        if (PermissionHelper.cannotAccessPortal(player, portal, deny)) {
+            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
             return true;
         }
         return false;
@@ -277,7 +277,7 @@ public class PlayerEventListener implements Listener {
                 return;
             }
 
-            Stargate.openPortal(player, portal);
+            PermissionHelper.openPortal(player, portal);
             if (portal.isOpenFor(player)) {
                 event.setUseInteractedBlock(Event.Result.ALLOW);
             }
@@ -319,7 +319,7 @@ public class PlayerEventListener implements Listener {
     private boolean bungeeTeleport(Player player, Portal entrancePortal, PlayerMoveEvent event) {
         //Check if bungee is actually enabled
         if (!Stargate.enableBungee) {
-            player.sendMessage(Stargate.getString("bungeeDisabled"));
+            Stargate.sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
             entrancePortal.close(false);
             return false;
         }
@@ -362,7 +362,7 @@ public class PlayerEventListener implements Listener {
 
         // Not open for this player
         if (!entrancePortal.isOpenFor(player)) {
-            Stargate.sendMessage(player, Stargate.getString("denyMsg"));
+            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
             entrancePortal.teleport(player, entrancePortal, event);
             return false;
         }
@@ -373,8 +373,8 @@ public class PlayerEventListener implements Listener {
         }
 
         //Player cannot access portal
-        if (Stargate.cannotAccessPortal(player, entrancePortal, destination)) {
-            Stargate.sendMessage(player, Stargate.getString("denyMsg"));
+        if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destination)) {
+            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
             entrancePortal.teleport(player, entrancePortal, event);
             entrancePortal.close(false);
             return false;

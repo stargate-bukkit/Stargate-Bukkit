@@ -6,6 +6,7 @@ import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.EntityHelper;
+import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
@@ -59,13 +60,13 @@ public class VehicleEventListener implements Listener {
      */
     private static void teleportVehicle(List<Entity> passengers, Portal entrancePortal, Vehicle vehicle) {
         if (!passengers.isEmpty() && passengers.get(0) instanceof Player) {
-            Stargate.log.info(Stargate.getString("prefox") + "Found passenger vehicle");
+            Stargate.logger.info(Stargate.getString("prefox") + "Found passenger vehicle");
             teleportPlayerAndVehicle(entrancePortal, vehicle, passengers);
         } else {
-            Stargate.log.info(Stargate.getString("prefox") + "Found empty vehicle");
+            Stargate.logger.info(Stargate.getString("prefox") + "Found empty vehicle");
             Portal destinationPortal = entrancePortal.getDestination();
             if (destinationPortal == null) {
-                Stargate.log.warning(Stargate.getString("prefox") + "Unable to find portal destination");
+                Stargate.logger.warning(Stargate.getString("prefox") + "Unable to find portal destination");
                 return;
             }
             Stargate.debug("vehicleTeleport", destinationPortal.getWorld() + " " + destinationPortal.getId());
@@ -83,7 +84,7 @@ public class VehicleEventListener implements Listener {
     private static void teleportPlayerAndVehicle(Portal entrancePortal, Vehicle vehicle, List<Entity> passengers) {
         Player player = (Player) passengers.get(0);
         if (!entrancePortal.isOpenFor(player)) {
-            Stargate.sendMessage(player, Stargate.getString("denyMsg"));
+            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
             return;
         }
 
@@ -93,8 +94,8 @@ public class VehicleEventListener implements Listener {
         }
 
         //Make sure the user can access the portal
-        if (Stargate.cannotAccessPortal(player, entrancePortal, destinationPortal)) {
-            Stargate.sendMessage(player, Stargate.getString("denyMsg"));
+        if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destinationPortal)) {
+            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
             entrancePortal.close(false);
             return;
         }
@@ -107,7 +108,7 @@ public class VehicleEventListener implements Listener {
             }
         }
 
-        Stargate.sendMessage(player, Stargate.getString("teleportMsg"), false);
+        Stargate.sendSuccessMessage(player, Stargate.getString("teleportMsg"));
         destinationPortal.teleport(vehicle, entrancePortal);
         entrancePortal.close(false);
     }

@@ -54,7 +54,7 @@ public class BlockEventListener implements Listener {
             return;
         }
 
-        Stargate.sendMessage(player, Stargate.getString("createMsg"), false);
+        Stargate.sendSuccessMessage(player, Stargate.getString("createMsg"));
         Stargate.debug("onSignChange", "Initialized stargate: " + portal.getName());
         Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, portal::drawSign, 1);
     }
@@ -88,7 +88,7 @@ public class BlockEventListener implements Listener {
         if (!PermissionHelper.canDestroyPortal(player, portal)) {
             denyMsg = Stargate.getString("denyMsg");
             deny = true;
-            Stargate.log.info(Stargate.getString("prefix") + player.getName() + " tried to destroy gate");
+            Stargate.logger.info(Stargate.getString("prefix") + player.getName() + " tried to destroy gate");
         }
 
         int cost = EconomyHandler.getDestroyCost(player, portal.getGate());
@@ -103,7 +103,7 @@ public class BlockEventListener implements Listener {
 
         //Destroy denied
         if (destroyEvent.getDeny()) {
-            Stargate.sendMessage(player, destroyEvent.getDenyReason());
+            Stargate.sendErrorMessage(player, destroyEvent.getDenyReason());
             event.setCancelled(true);
             return;
         }
@@ -114,7 +114,7 @@ public class BlockEventListener implements Listener {
         }
 
         PortalHandler.unregisterPortal(portal, true);
-        Stargate.sendMessage(player, Stargate.getString("destroyMsg"), false);
+        Stargate.sendSuccessMessage(player, Stargate.getString("destroyMsg"));
     }
 
     /**

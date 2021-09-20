@@ -42,7 +42,7 @@ public class LanguageLoader {
         File tmp = new File(languageFolder, chosenLanguage + ".txt");
         if (!tmp.exists()) {
             if (tmp.getParentFile().mkdirs() && Stargate.debuggingEnabled) {
-                Stargate.log.info("[stargate] Created language folder");
+                Stargate.logger.info("[stargate] Created language folder");
             }
         }
         updateLanguage(chosenLanguage);
@@ -54,7 +54,7 @@ public class LanguageLoader {
             loadedBackupStrings = load("en", inputStream);
         } else {
             loadedBackupStrings = null;
-            Stargate.log.severe("[stargate] Error loading backup language. There may be missing text in-game");
+            Stargate.logger.severe("[stargate] Error loading backup language. There may be missing text in-game");
         }
     }
 
@@ -110,10 +110,10 @@ public class LanguageLoader {
 
         InputStream inputStream = getClass().getResourceAsStream("/lang/" + language + ".txt");
         if (inputStream == null) {
-            Stargate.log.info("[stargate] The language " + language + " is not available. Falling back to " +
+            Stargate.logger.info("[stargate] The language " + language + " is not available. Falling back to " +
                     "english, You can add a custom language by creating a new text file in the lang directory.");
             if (Stargate.debuggingEnabled) {
-                Stargate.log.info("[stargate] Unable to load /lang/" + language + ".txt");
+                Stargate.logger.info("[stargate] Unable to load /lang/" + language + ".txt");
             }
             return;
         }
@@ -157,7 +157,7 @@ public class LanguageLoader {
             }
         }
         if (updated) {
-            Stargate.log.info("[stargate] Your language file (" + language + ".txt) has been updated");
+            Stargate.logger.info("[stargate] Your language file (" + language + ".txt) has been updated");
         }
     }
 
@@ -243,7 +243,7 @@ public class LanguageLoader {
             readLanguageFile(inputStreamReader, strings);
         } catch (Exception e) {
             if (Stargate.debuggingEnabled) {
-                Stargate.log.info("Unable to load chosen language");
+                Stargate.logger.info("Unable to load chosen language");
             }
             return null;
         } finally {

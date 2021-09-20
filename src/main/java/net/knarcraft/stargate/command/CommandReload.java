@@ -29,7 +29,7 @@ public class CommandReload implements CommandExecutor {
         if (commandSender instanceof Player) {
             Player player = (Player) commandSender;
             if (!player.hasPermission("stargate.reload")) {
-                Stargate.sendMessage(commandSender, "Permission Denied");
+                Stargate.sendErrorMessage(commandSender, "Permission Denied");
                 return true;
             }
         }

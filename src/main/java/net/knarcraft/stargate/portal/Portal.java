@@ -511,8 +511,8 @@ public class Portal {
         //Update the open state of this portal
         isOpen = true;
         openTime = System.currentTimeMillis() / 1000;
-        Stargate.openList.add(this);
-        Stargate.activeList.remove(this);
+        Stargate.openPortalsQueue.add(this);
+        Stargate.activePortalsQueue.remove(this);
 
         //Open remote portal
         if (!isAlwaysOn()) {
@@ -561,8 +561,8 @@ public class Portal {
         //Update the closed state of this portal
         player = null;
         isOpen = false;
-        Stargate.openList.remove(this);
-        Stargate.activeList.remove(this);
+        Stargate.openPortalsQueue.remove(this);
+        Stargate.activePortalsQueue.remove(this);
 
         //Close remote portal
         if (!isAlwaysOn()) {
@@ -714,7 +714,7 @@ public class Portal {
             if (vehicle instanceof RideableMinecart || vehicle instanceof Boat) {
                 World vehicleWorld = exit.getWorld();
                 if (vehicleWorld == null) {
-                    Stargate.log.warning(Stargate.getString("prefix") + "Unable to get the world to teleport the vehicle to");
+                    Stargate.logger.warning(Stargate.getString("prefix") + "Unable to get the world to teleport the vehicle to");
                     return;
                 }
                 putPassengersInNewVehicle(vehicle, passengers, vehicleWorld, exit, newVelocity);
@@ -803,7 +803,7 @@ public class Portal {
                 }
             }
         } else {
-            Stargate.log.log(Level.WARNING, Stargate.getString("prefix") + "Missing destination point in .gate file " + gate.getFilename());
+            Stargate.logger.log(Level.WARNING, Stargate.getString("prefix") + "Missing destination point in .gate file " + gate.getFilename());
         }
 
         return adjustExitLocation(traveller, exitLocation);
@@ -895,7 +895,7 @@ public class Portal {
             exitLocation.setPitch(traveller.getPitch());
             return exitLocation;
         } else {
-            Stargate.log.log(Level.WARNING, Stargate.getString("prefix") + "Unable to generate exit location");
+            Stargate.logger.log(Level.WARNING, Stargate.getString("prefix") + "Unable to generate exit location");
         }
         return traveller;
     }
@@ -1026,7 +1026,7 @@ public class Portal {
     private boolean activate(Player player) {
         destinations.clear();
         destination = "";
-        Stargate.activeList.add(this);
+        Stargate.activePortalsQueue.add(this);
         activePlayer = player;
         String network = getNetwork();
         destinations = PortalHandler.getDestinations(this, player, network);
@@ -1040,7 +1040,7 @@ public class Portal {
         StargateActivateEvent event = new StargateActivateEvent(this, player, destinations, destination);
         Stargate.server.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
-            Stargate.activeList.remove(this);
+            Stargate.activePortalsQueue.remove(this);
             return false;
         }
         destination = event.getDestination();
@@ -1059,7 +1059,7 @@ public class Portal {
             return;
         }
 
-        Stargate.activeList.remove(this);
+        Stargate.activePortalsQueue.remove(this);
         if (isFixed()) {
             return;
         }
@@ -1110,7 +1110,7 @@ public class Portal {
         }
 
         if (destinations.size() == 0) {
-            Stargate.sendMessage(player, Stargate.getString("destEmpty"));
+            Stargate.sendErrorMessage(player, Stargate.getString("destEmpty"));
             return;
         }
 
@@ -1147,7 +1147,7 @@ public class Portal {
     public final void drawSign() {
         BlockState state = id.getBlock().getState();
         if (!(state instanceof Sign)) {
-            Stargate.log.warning(Stargate.getString("prefix") + "Sign block is not a Sign object");
+            Stargate.logger.warning(Stargate.getString("prefix") + "Sign block is not a Sign object");
             Stargate.debug("Portal::drawSign", "Block: " + id.getBlock().getType() + " @ " + id.getBlock().getLocation());
             return;
         }

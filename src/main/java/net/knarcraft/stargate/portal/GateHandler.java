@@ -102,7 +102,7 @@ public class GateHandler {
         try (Scanner scanner = new Scanner(file)) {
             return loadGate(file.getName(), file.getParent(), scanner);
         } catch (Exception ex) {
-            Stargate.log.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - " + ex.getMessage());
+            Stargate.logger.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - " + ex.getMessage());
             return null;
         }
     }
@@ -180,13 +180,13 @@ public class GateHandler {
      */
     private static boolean validateGate(Gate gate, String fileName) {
         if (gate.getLayout().getControls().length != 2) {
-            Stargate.log.log(Level.SEVERE, "Could not load Gate " + fileName +
+            Stargate.logger.log(Level.SEVERE, "Could not load Gate " + fileName +
                     " - Gates must have exactly 2 control points.");
             return false;
         }
 
         if (!MaterialHelper.isButtonCompatible(gate.getPortalButton())) {
-            Stargate.log.log(Level.SEVERE, "Could not load Gate " + fileName +
+            Stargate.logger.log(Level.SEVERE, "Could not load Gate " + fileName +
                     " - Gate button must be a type of button.");
             return false;
         }
@@ -253,7 +253,7 @@ public class GateHandler {
                 }
             }
         } catch (Exception ex) {
-            Stargate.log.log(Level.SEVERE, "Could not load Gate " + fileName + " - " + ex.getMessage());
+            Stargate.logger.log(Level.SEVERE, "Could not load Gate " + fileName + " - " + ex.getMessage());
             return -1;
         } finally {
             if (scanner != null) {
@@ -283,7 +283,7 @@ public class GateHandler {
 
         for (Character symbol : line.toCharArray()) {
             if ((symbol.equals('?')) || (!types.containsKey(symbol))) {
-                Stargate.log.log(Level.SEVERE, "Could not load Gate " + fileName + " - Unknown symbol '" + symbol + "' in diagram");
+                Stargate.logger.log(Level.SEVERE, "Could not load Gate " + fileName + " - Unknown symbol '" + symbol + "' in diagram");
                 return -1;
             }
             row.add(symbol);
@@ -334,7 +334,7 @@ public class GateHandler {
             try {
                 return Integer.parseInt(config.get(key));
             } catch (NumberFormatException ex) {
-                Stargate.log.log(Level.WARNING, String.format("%s reading %s: %s is not numeric", ex.getClass().getName(), fileName, key));
+                Stargate.logger.log(Level.WARNING, String.format("%s reading %s: %s is not numeric", ex.getClass().getName(), fileName, key));
             }
         }
 
@@ -356,7 +356,7 @@ public class GateHandler {
             if (material != null) {
                 return material;
             } else {
-                Stargate.log.log(Level.WARNING, String.format("Error reading %s: %s is not a material", fileName, key));
+                Stargate.logger.log(Level.WARNING, String.format("Error reading %s: %s is not a material", fileName, key));
             }
         }
         return defaultMaterial;
