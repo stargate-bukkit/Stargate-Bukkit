@@ -784,7 +784,7 @@ public class PortalHandler {
         File database = new File(location, world.getName() + ".db");
 
         if (database.exists()) {
-            return loadGates(world, database);
+            return loadStarGates(world, database);
         } else {
             Stargate.logger.info(Stargate.getString("prefix") + "{" + world.getName() + "} No stargates for world ");
         }
@@ -798,7 +798,7 @@ public class PortalHandler {
      * @param database <p>The database file containing the gates</p>
      * @return <p>True if the gates were loaded successfully</p>
      */
-    private static boolean loadGates(World world, File database) {
+    private static boolean loadStarGates(World world, File database) {
         int lineIndex = 0;
         try {
             Scanner scanner = new Scanner(database);
@@ -818,7 +818,7 @@ public class PortalHandler {
                     continue;
                 }
 
-                loadGate(portalData, world, lineIndex);
+                loadStarGate(portalData, world, lineIndex);
             }
             scanner.close();
 
@@ -843,7 +843,7 @@ public class PortalHandler {
      * @param world      <p>The world to create the portal in</p>
      * @param lineIndex  <p>The line index to report in case the user needs to fix an error</p>
      */
-    private static void loadGate(String[] portalData, World world, int lineIndex) {
+    private static void loadStarGate(String[] portalData, World world, int lineIndex) {
         //Load min. required portal data
         String name = portalData[0];
         BlockLocation sign = new BlockLocation(world, portalData[1]);
