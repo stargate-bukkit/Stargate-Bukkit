@@ -28,12 +28,12 @@ public class CommandStarGate implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
-                             @NotNull String[] strings) {
-        if (strings.length > 0) {
-            if (strings[0].equalsIgnoreCase("about")) {
-                return new CommandAbout().onCommand(commandSender, command, s, strings);
-            } else if (strings[0].equalsIgnoreCase("reload")) {
-                return new CommandReload(plugin).onCommand(commandSender, command, s, strings);
+                             @NotNull String[] args) {
+        if (args.length > 0) {
+            if (args[0].equalsIgnoreCase("about")) {
+                return new CommandAbout().onCommand(commandSender, command, s, args);
+            } else if (args[0].equalsIgnoreCase("reload")) {
+                return new CommandReload(plugin).onCommand(commandSender, command, s, args);
             }
             return false;
         } else {
