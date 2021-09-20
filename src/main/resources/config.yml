@@ -32,8 +32,8 @@
 
 language: en
 folders:
-  portalFolder: plugins/stargate/portals/
-  gateFolder: plugins/stargate/gates/
+  portalFolder: plugins/Stargate/portals/
+  gateFolder: plugins/Stargate/gates/
 gates:
   maxGatesEachNetwork: 0
   defaultGateNetwork: central
