@@ -72,33 +72,33 @@ public class PortalHandler {
             if (portal == null) {
                 continue;
             }
-            // Check if destination is a random gate
+            //Check if destination is a random portal
             if (portal.isRandom()) {
                 continue;
             }
-            // Check if destination is always open (Don't show if so)
+            //Check if destination is always open (Don't show if so)
             if (portal.isAlwaysOn() && !portal.isShown()) {
                 continue;
             }
-            // Check if destination is this portal
+            //Check if destination is this portal
             if (destination.equalsIgnoreCase(entrancePortal.getName())) {
                 continue;
             }
-            // Check if destination is a fixed gate not pointing to this gate
+            //Check if destination is a fixed portal not pointing to this portal
             if (portal.isFixed() && !portal.getDestinationName().equalsIgnoreCase(entrancePortal.getName())) {
                 continue;
             }
-            // Allow random use by non-players (Minecarts)
+            //Allow random use by non-players (Minecarts)
             if (player == null) {
                 destinations.add(portal.getName());
                 continue;
             }
-            // Check if this player can access the dest world
+            //Check if this player can access the dest world
             if (PermissionHelper.cannotAccessWorld(player, portal.getWorld().getName())) {
                 Stargate.logger.info("cannot access world");
                 continue;
             }
-            // Visible to this player.
+            //Visible to this player.
             if (PermissionHelper.canSeePortal(player, portal)) {
                 destinations.add(portal.getName());
             }
@@ -177,7 +177,7 @@ public class PortalHandler {
             sign.update();
         }
 
-        saveAllGates(portal.getWorld());
+        saveAllPortals(portal.getWorld());
     }
 
     /**
@@ -191,7 +191,7 @@ public class PortalHandler {
         String portalName = portal.getName().toLowerCase();
         String networkName = portal.getNetwork().toLowerCase();
 
-        // Bungee gates are stored in their own list
+        //Bungee portals are stored in their own list
         if (portal.isBungee()) {
             bungeePortals.put(portalName, portal);
         } else {
@@ -250,7 +250,7 @@ public class PortalHandler {
         }
 
         if (getByBlock(idParent) != null) {
-            Stargate.debug("createPortal", "idParent belongs to existing gate");
+            Stargate.debug("createPortal", "idParent belongs to existing stargate");
             return null;
         }
 
@@ -316,7 +316,7 @@ public class PortalHandler {
             return null;
         }
 
-        //If the player is trying to create a Bungee gate without permissions, drop out here
+        //If the player is trying to create a Bungee portal without permissions, drop out here
         if (options.indexOf(PortalOption.BUNGEE.getCharacterRepresentation()) != -1) {
             if (!PermissionHelper.hasPermission(player, "stargate.admin.bungee")) {
                 Stargate.sendErrorMessage(player, Stargate.getString("bungeeDeny"));
@@ -347,7 +347,7 @@ public class PortalHandler {
         boolean deny = false;
         String denyMsg = "";
 
-        // Check if the player can create gates on this network
+        // Check if the player can create portals on this network
         if (!portalOptions.get(PortalOption.BUNGEE) && !PermissionHelper.canCreateNetworkGate(player, network)) {
             Stargate.debug("createPortal", "Player doesn't have create permissions on network. Trying personal");
             if (PermissionHelper.canCreatePersonalGate(player)) {
@@ -372,11 +372,11 @@ public class PortalHandler {
             denyMsg = Stargate.getString("createGateDeny");
         }
 
-        // Check if the user can create gates to this world.
+        //Check if the user can create portals to this world.
         if (!portalOptions.get(PortalOption.BUNGEE) && !deny && destinationName.length() > 0) {
-            Portal p = getByName(destinationName, network);
-            if (p != null) {
-                String world = p.getWorld().getName();
+            Portal portal = getByName(destinationName, network);
+            if (portal != null) {
+                String world = portal.getWorld().getName();
                 if (PermissionHelper.cannotAccessWorld(player, world)) {
                     Stargate.debug("canCreateNetworkGate", "Player does not have access to destination world");
                     deny = true;
@@ -386,9 +386,9 @@ public class PortalHandler {
         }
 
         // Bleh, gotta check to make sure none of this gate belongs to another gate. Boo slow.
-        for (RelativeBlockVector v : gate.getLayout().getBorder()) {
-            BlockLocation b = topLeft.modRelative(v.getRight(), v.getDepth(), v.getDistance(), modX, 1, modZ);
-            if (getByBlock(b.getBlock()) != null) {
+        for (RelativeBlockVector vector : gate.getLayout().getBorder()) {
+            BlockLocation blockLocation = topLeft.modRelative(vector.getRight(), vector.getDepth(), vector.getDistance(), modX, 1, modZ);
+            if (getByBlock(blockLocation.getBlock()) != null) {
                 Stargate.debug("createPortal", "Gate conflicts with existing gate");
                 Stargate.sendErrorMessage(player, Stargate.getString("createConflict"));
                 return null;
@@ -422,7 +422,7 @@ public class PortalHandler {
             return null;
         }
 
-        // Don't do network checks for bungee gates
+        //Don't do network checks for bungee portals
         if (portal.isBungee()) {
             if (bungeePortals.get(portal.getName().toLowerCase()) != null) {
                 Stargate.debug("createPortal::Bungee", "Gate Exists");
@@ -436,7 +436,7 @@ public class PortalHandler {
                 return null;
             }
 
-            // Check if there are too many gates in this network
+            //Check if there are too many gates in this network
             List<String> netList = allPortalNetworks.get(portal.getNetwork().toLowerCase());
             if (Stargate.maxGatesEachNetwork > 0 && netList != null && netList.size() >= Stargate.maxGatesEachNetwork) {
                 Stargate.sendErrorMessage(player, Stargate.getString("createFull"));
@@ -453,7 +453,7 @@ public class PortalHandler {
             EconomyHelper.sendDeductMessage(name, player, cost);
         }
 
-        // No button on an always-open gate.
+        //No button on an always-open portal.
         if (!portalOptions.get(PortalOption.ALWAYS_ON)) {
             button = topLeft.modRelative(buttonVector.getRight(), buttonVector.getDepth(), buttonVector.getDistance() + 1, modX, 1, modZ);
             Directional buttonData = (Directional) Bukkit.createBlockData(gate.getPortalButton());
@@ -464,7 +464,7 @@ public class PortalHandler {
 
         registerPortal(portal);
         portal.drawSign();
-        // Open always on gate
+        //Open an always on portal
         if (portal.isRandom() || portal.isBungee()) {
             portal.open(true);
         } else if (portal.isAlwaysOn()) {
@@ -480,9 +480,9 @@ public class PortalHandler {
             }
         }
 
-        // Don't do network stuff for bungee gates
+        //Don't do network stuff for bungee portals
         if (!portal.isBungee()) {
-            // Open any always on gate pointing at this gate
+            //Open any always on portal pointing at this portal
             for (String originName : allPortalNetworks.get(portal.getNetwork().toLowerCase())) {
                 Portal origin = getByName(originName, portal.getNetwork());
                 if (origin == null) continue;
@@ -493,13 +493,13 @@ public class PortalHandler {
             }
         }
 
-        saveAllGates(portal.getWorld());
+        saveAllPortals(portal.getWorld());
 
         return portal;
     }
 
     /**
-     * Gets all portal options to be applied to a new gate
+     * Gets all portal options to be applied to a new portal
      *
      * @param player          <p>The player creating the portal</p>
      * @param destinationName <p>The destination of the portal</p>
@@ -513,23 +513,23 @@ public class PortalHandler {
                     PermissionHelper.canUseOption(player, option));
         }
 
-        // Can not create a non-fixed always-on gate.
+        //Can not create a non-fixed always-on portal
         if (portalOptions.get(PortalOption.ALWAYS_ON) && destinationName.length() == 0) {
             portalOptions.put(PortalOption.ALWAYS_ON, false);
         }
 
-        // Show isn't useful if always on is false
+        //Show isn't useful if always on is false
         if (portalOptions.get(PortalOption.SHOW) && !portalOptions.get(PortalOption.ALWAYS_ON)) {
             portalOptions.put(PortalOption.SHOW, false);
         }
 
-        // Random gates are always on and can't be shown
+        //Random portals are always on and can't be shown
         if (portalOptions.get(PortalOption.RANDOM)) {
             portalOptions.put(PortalOption.ALWAYS_ON, true);
             portalOptions.put(PortalOption.SHOW, false);
         }
 
-        // Bungee gates are always on and don't support Random
+        //Bungee portals are always on and don't support Random
         if (portalOptions.get(PortalOption.BUNGEE)) {
             portalOptions.put(PortalOption.ALWAYS_ON, true);
             portalOptions.put(PortalOption.RANDOM, false);
@@ -621,7 +621,7 @@ public class PortalHandler {
      * Gets a portal given its control block (the block type used for the sign and button)
      *
      * @param block <p>The portal's control block</p>
-     * @return <p>The gate with the given control block</p>
+     * @return <p>The portal with the given control block</p>
      */
     public static Portal getByControl(Block block) {
         return lookupControls.get(new BlockLocation(block));
@@ -638,21 +638,21 @@ public class PortalHandler {
     }
 
     /**
-     * Gets a bungee gate given its name
+     * Gets a bungee portal given its name
      *
-     * @param name <p>The name of the bungee gate to get</p>
-     * @return <p>A bungee gate</p>
+     * @param name <p>The name of the bungee portal to get</p>
+     * @return <p>A bungee portal</p>
      */
-    public static Portal getBungeeGate(String name) {
+    public static Portal getBungeePortal(String name) {
         return bungeePortals.get(name.toLowerCase());
     }
 
     /**
-     * Saves all gates for the given world
+     * Saves all portals for the given world
      *
-     * @param world <p>The world to save gates for</p>
+     * @param world <p>The world to save portals for</p>
      */
-    public static void saveAllGates(World world) {
+    public static void saveAllPortals(World world) {
         Stargate.managedWorlds.add(world.getName());
         String loc = Stargate.getSaveLocation() + "/" + world.getName() + ".db";
 
@@ -665,26 +665,16 @@ public class PortalHandler {
                 StringBuilder builder = new StringBuilder();
                 BlockLocation button = portal.getButton();
 
-                builder.append(portal.getName());
-                builder.append(':');
-                builder.append(portal.getId().toString());
-                builder.append(':');
-                builder.append((button != null) ? button.toString() : "");
-                builder.append(':');
-                builder.append(portal.getModX());
-                builder.append(':');
-                builder.append(portal.getModZ());
-                builder.append(':');
-                builder.append(portal.getYaw());
-                builder.append(':');
-                builder.append(portal.getTopLeft().toString());
-                builder.append(':');
-                builder.append(portal.getGate().getFilename());
-                builder.append(':');
-                builder.append(portal.isFixed() ? portal.getDestinationName() : "");
-                builder.append(':');
-                builder.append(portal.getNetwork());
-                builder.append(':');
+                builder.append(portal.getName()).append(':');
+                builder.append(portal.getId().toString()).append(':');
+                builder.append((button != null) ? button.toString() : "").append(':');
+                builder.append(portal.getModX()).append(':');
+                builder.append(portal.getModZ()).append(':');
+                builder.append(portal.getYaw()).append(':');
+                builder.append(portal.getTopLeft().toString()).append(':');
+                builder.append(portal.getGate().getFilename()).append(':');
+                builder.append(portal.isFixed() ? portal.getDestinationName() : "").append(':');
+                builder.append(portal.getNetwork()).append(':');
                 UUID owner = portal.getOwnerUUID();
                 if (owner != null) {
                     builder.append(portal.getOwnerUUID().toString());
@@ -692,24 +682,15 @@ public class PortalHandler {
                     builder.append(portal.getOwnerName());
                 }
                 builder.append(':');
-                builder.append(portal.isHidden());
-                builder.append(':');
-                builder.append(portal.isAlwaysOn());
-                builder.append(':');
-                builder.append(portal.isPrivate());
-                builder.append(':');
-                builder.append(portal.getWorld().getName());
-                builder.append(':');
-                builder.append(portal.isFree());
-                builder.append(':');
-                builder.append(portal.isBackwards());
-                builder.append(':');
-                builder.append(portal.isShown());
-                builder.append(':');
-                builder.append(portal.isNoNetwork());
-                builder.append(':');
-                builder.append(portal.isRandom());
-                builder.append(':');
+                builder.append(portal.isHidden()).append(':');
+                builder.append(portal.isAlwaysOn()).append(':');
+                builder.append(portal.isPrivate()).append(':');
+                builder.append(portal.getWorld().getName()).append(':');
+                builder.append(portal.isFree()).append(':');
+                builder.append(portal.isBackwards()).append(':');
+                builder.append(portal.isShown()).append(':');
+                builder.append(portal.isNoNetwork()).append(':');
+                builder.append(portal.isRandom()).append(':');
                 builder.append(portal.isBungee());
 
                 bw.append(builder.toString());
@@ -723,9 +704,9 @@ public class PortalHandler {
     }
 
     /**
-     * Clears all loaded gates and gate data from all worlds
+     * Clears all loaded portals and portal data from all worlds
      */
-    public static void clearGates() {
+    public static void clearPortals() {
         lookupBlocks.clear();
         portalLookupByNetwork.clear();
         lookupEntrances.clear();
@@ -735,11 +716,11 @@ public class PortalHandler {
     }
 
     /**
-     * Clears all gates loaded in a given world
+     * Clears all portals loaded in a given world
      *
      * @param world <p>The world containing the portals to clear</p>
      */
-    public static void clearGates(World world) {
+    public static void clearPortals(World world) {
         //This is necessary
         List<Portal> portalsToRemove = new ArrayList<>();
         allPortals.forEach((portal) -> {
@@ -748,7 +729,7 @@ public class PortalHandler {
             }
         });
 
-        clearGates(portalsToRemove);
+        clearPortals(portalsToRemove);
     }
 
     /**
@@ -756,7 +737,7 @@ public class PortalHandler {
      *
      * @param portalsToRemove <p>A list of portals to remove</p>
      */
-    private static void clearGates(List<Portal> portalsToRemove) {
+    private static void clearPortals(List<Portal> portalsToRemove) {
         List<String> portalNames = new ArrayList<>();
         portalsToRemove.forEach((portal) -> portalNames.add(portal.getName()));
         lookupBlocks.keySet().removeIf((key) -> portalsToRemove.contains(lookupBlocks.get(key)));
@@ -773,18 +754,18 @@ public class PortalHandler {
     }
 
     /**
-     * Loads all gates for the given world
+     * Loads all portals for the given world
      *
-     * @param world <p>The world to load gates for</p>
-     * @return <p>True if gates could be loaded</p>
+     * @param world <p>The world to load portals for</p>
+     * @return <p>True if portals could be loaded</p>
      */
-    public static boolean loadAllGates(World world) {
+    public static boolean loadAllPortals(World world) {
         String location = Stargate.getSaveLocation();
 
         File database = new File(location, world.getName() + ".db");
 
         if (database.exists()) {
-            return loadStarGates(world, database);
+            return loadPortals(world, database);
         } else {
             Stargate.logger.info(Stargate.getString("prefix") + "{" + world.getName() + "} No stargates for world ");
         }
@@ -792,13 +773,13 @@ public class PortalHandler {
     }
 
     /**
-     * Loads all the given gates
+     * Loads all the given portals
      *
-     * @param world    <p>The world to load gates for</p>
-     * @param database <p>The database file containing the gates</p>
-     * @return <p>True if the gates were loaded successfully</p>
+     * @param world    <p>The world to load portals for</p>
+     * @param database <p>The database file containing the portals</p>
+     * @return <p>True if the portals were loaded successfully</p>
      */
-    private static boolean loadStarGates(World world, File database) {
+    private static boolean loadPortals(World world, File database) {
         int lineIndex = 0;
         try {
             Scanner scanner = new Scanner(database);
@@ -818,12 +799,12 @@ public class PortalHandler {
                     continue;
                 }
 
-                loadStarGate(portalData, world, lineIndex);
+                loadPortal(portalData, world, lineIndex);
             }
             scanner.close();
 
             // Open any always-on gates. Do this here as it should be more efficient than in the loop.
-            TwoTuple<Integer, Integer> portalCounts = openAlwaysOpenGates();
+            TwoTuple<Integer, Integer> portalCounts = openAlwaysOpenPortals();
 
             Stargate.logger.info(String.format("%s{%s} Loaded %d stargates with %d set as always-on",
                     Stargate.getString("prefix"), world.getName(), portalCounts.getSecondValue(),
@@ -837,13 +818,13 @@ public class PortalHandler {
     }
 
     /**
-     * Loads one gate from a data array
+     * Loads one portal from a data array
      *
      * @param portalData <p>The array describing the portal</p>
      * @param world      <p>The world to create the portal in</p>
      * @param lineIndex  <p>The line index to report in case the user needs to fix an error</p>
      */
-    private static void loadStarGate(String[] portalData, World world, int lineIndex) {
+    private static void loadPortal(String[] portalData, World world, int lineIndex) {
         //Load min. required portal data
         String name = portalData[0];
         BlockLocation sign = new BlockLocation(world, portalData[1]);
@@ -878,7 +859,7 @@ public class PortalHandler {
             } catch (IllegalArgumentException ex) {
                 // neither name nor UUID, so keep it as-is
                 ownerName = ownerString;
-                Stargate.debug("loadAllGates", "Invalid stargate owner string: " + ownerString);
+                Stargate.debug("loadAllPortals", "Invalid stargate owner string: " + ownerString);
             }
         } else {
             ownerName = ownerString;
@@ -908,11 +889,11 @@ public class PortalHandler {
     }
 
     /**
-     * Opens all always open gates
+     * Opens all always open portals
      *
-     * @return <p>A TwoTuple where the first value is the number of always open gates and the second value is the total number of gates</p>
+     * @return <p>A TwoTuple where the first value is the number of always open portals and the second value is the total number of portals</p>
      */
-    private static TwoTuple<Integer, Integer> openAlwaysOpenGates() {
+    private static TwoTuple<Integer, Integer> openAlwaysOpenPortals() {
         int portalCount = 0;
         int openCount = 0;
         for (Iterator<Portal> iterator = allPortals.iterator(); iterator.hasNext(); ) {
@@ -923,7 +904,7 @@ public class PortalHandler {
 
             // Verify portal integrity/register portal
             if (!portal.wasVerified() && (!portal.isVerified() || !portal.checkIntegrity())) {
-                destroyInvalidStarGate(portal);
+                destroyInvalidPortal(portal);
                 iterator.remove();
                 continue;
             }
@@ -940,15 +921,15 @@ public class PortalHandler {
     }
 
     /**
-     * Destroys a star gate which has failed its integrity test
+     * Destroys a portal which has failed its integrity test
      *
-     * @param portal <p>The portal of the star gate</p>
+     * @param portal <p>The portal of the star portal</p>
      */
-    private static void destroyInvalidStarGate(Portal portal) {
+    private static void destroyInvalidPortal(Portal portal) {
         // DEBUG
         for (RelativeBlockVector control : portal.getGate().getLayout().getControls()) {
             if (!portal.getBlockAt(control).getBlock().getType().equals(portal.getGate().getControlBlock())) {
-                Stargate.debug("loadAllGates", "Control Block Type == " + portal.getBlockAt(control).getBlock().getType().name());
+                Stargate.debug("loadAllPortals", "Control Block Type == " + portal.getBlockAt(control).getBlock().getType().name());
             }
         }
         PortalHandler.unregisterPortal(portal, false);
@@ -956,9 +937,9 @@ public class PortalHandler {
     }
 
     /**
-     * Closes all star gate portals
+     * Closes all portals
      */
-    public static void closeAllGates() {
+    public static void closeAllPortals() {
         Stargate.logger.info("Closing all stargates.");
         for (Portal portal : allPortals) {
             if (portal != null) {

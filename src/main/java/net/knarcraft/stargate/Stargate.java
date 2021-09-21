@@ -282,8 +282,8 @@ public class Stargate extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        PortalHandler.closeAllGates();
-        PortalHandler.clearGates();
+        PortalHandler.closeAllPortals();
+        PortalHandler.clearPortals();
         managedWorlds.clear();
         getServer().getScheduler().cancelTasks(this);
     }
@@ -466,7 +466,7 @@ public class Stargate extends JavaPlugin {
     public void loadAllPortals() {
         for (World world : getServer().getWorlds()) {
             if (!managedWorlds.contains(world.getName())) {
-                PortalHandler.loadAllGates(world);
+                PortalHandler.loadAllPortals(world);
                 managedWorlds.add(world.getName());
             }
         }
@@ -506,7 +506,7 @@ public class Stargate extends JavaPlugin {
         activePortalsQueue.clear();
         openPortalsQueue.clear();
         managedWorlds.clear();
-        PortalHandler.clearGates();
+        PortalHandler.clearPortals();
         GateHandler.clearGates();
 
         // Store the old Bungee enabled value

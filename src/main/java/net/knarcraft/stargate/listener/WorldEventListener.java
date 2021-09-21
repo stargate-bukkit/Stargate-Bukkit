@@ -22,7 +22,7 @@ public class WorldEventListener implements Listener {
     @EventHandler
     public void onWorldLoad(WorldLoadEvent event) {
         if (!Stargate.managedWorlds.contains(event.getWorld().getName()) &&
-                PortalHandler.loadAllGates(event.getWorld())) {
+                PortalHandler.loadAllPortals(event.getWorld())) {
             Stargate.managedWorlds.add(event.getWorld().getName());
         }
     }
@@ -38,7 +38,7 @@ public class WorldEventListener implements Listener {
         World world = event.getWorld();
         if (Stargate.managedWorlds.contains(world.getName())) {
             Stargate.managedWorlds.remove(world.getName());
-            PortalHandler.clearGates(world);
+            PortalHandler.clearPortals(world);
         }
     }
 }

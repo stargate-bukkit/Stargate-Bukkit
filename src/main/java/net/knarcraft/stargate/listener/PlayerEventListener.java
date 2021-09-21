@@ -56,7 +56,7 @@ public class PlayerEventListener implements Listener {
             return;
         }
 
-        Portal portal = PortalHandler.getBungeeGate(destination);
+        Portal portal = PortalHandler.getBungeePortal(destination);
         if (portal == null) {
             Stargate.debug("PlayerJoin", "Error fetching destination portal: " + destination);
             return;
