@@ -428,6 +428,7 @@ public class Stargate extends JavaPlugin {
         migrationFields.add(new TwoTuple<>("signColor", "gates.cosmetic.signColor"));
         migrationFields.add(new TwoTuple<>("debug", "debugging.debug"));
         migrationFields.add(new TwoTuple<>("permdebug", "debugging.permissionDebug"));
+        migrationFields.add(new TwoTuple<>("useiconomy", "economy.useEconomy"));
         migrationFields.add(new TwoTuple<>("useeconomy", "economy.useEconomy"));
         migrationFields.add(new TwoTuple<>("createcost", "economy.createCost"));
         migrationFields.add(new TwoTuple<>("destroycost", "economy.destroyCost"));
@@ -435,12 +436,17 @@ public class Stargate extends JavaPlugin {
         migrationFields.add(new TwoTuple<>("toowner", "economy.toOwner"));
         migrationFields.add(new TwoTuple<>("chargefreedestination", "economy.chargeFreeDestination"));
         migrationFields.add(new TwoTuple<>("freegatesgreen", "economy.freeGatesGreen"));
+        migrationFields.add(new TwoTuple<>("CheckUpdates", ""));
 
         for (TwoTuple<String, String> migration : migrationFields) {
-            if (newConfig.contains(migration.getFirstValue())) {
-                Object oldValue = newConfig.get(migration.getFirstValue());
-                newConfig.set(migration.getSecondValue(), oldValue);
-                newConfig.set(migration.getFirstValue(), null);
+            String oldPath = migration.getFirstValue();
+            if (newConfig.contains(oldPath)) {
+                String newPath = migration.getSecondValue();
+                Object oldValue = newConfig.get(oldPath);
+                if (!newPath.trim().isEmpty()) {
+                    newConfig.set(newPath, oldValue);
+                }
+                newConfig.set(oldPath, null);
             }
         }
     }
