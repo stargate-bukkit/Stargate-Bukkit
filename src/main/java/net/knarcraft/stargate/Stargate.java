@@ -3,6 +3,7 @@ package net.knarcraft.stargate;
 import net.knarcraft.stargate.command.CommandStarGate;
 import net.knarcraft.stargate.command.StarGateTabCompleter;
 import net.knarcraft.stargate.container.BlockChangeRequest;
+import net.knarcraft.stargate.container.TwoTuple;
 import net.knarcraft.stargate.listener.BlockEventListener;
 import net.knarcraft.stargate.listener.BungeeCordListener;
 import net.knarcraft.stargate.listener.EntityEventListener;
@@ -32,9 +33,12 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.plugin.messaging.Messenger;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -68,6 +72,7 @@ public class Stargate extends JavaPlugin {
     private static boolean destroyExplosion = false;
     //Temp workaround for snowmen, don't check gate entrance
     public static boolean ignoreEntrance = false;
+    private String dataFolderPath;
 
     public static ChatColor signColor;
     // Used for debug
@@ -298,7 +303,7 @@ public class Stargate extends JavaPlugin {
         Stargate.stargate = this;
 
         // Set portalFile and gateFolder to the plugin folder as defaults.
-        String dataFolderPath = getDataFolder().getPath().replaceAll("\\\\", "/");
+        dataFolderPath = getDataFolder().getPath().replaceAll("\\\\", "/");
         portalFolder = dataFolderPath + "/portals/";
         gateFolder = dataFolderPath + "/gates/";
         String languageFolder = dataFolderPath + "/lang/";
@@ -365,6 +370,11 @@ public class Stargate extends JavaPlugin {
     public void loadConfig() {
         this.reloadConfig();
         newConfig = this.getConfig();
+
+        if (newConfig.getString("lang") != null) {
+            migrateConfig(newConfig);
+        }
+
         // Copy default values if required
         newConfig.options().copyDefaults(true);
 
@@ -386,6 +396,53 @@ public class Stargate extends JavaPlugin {
         loadEconomyConfig();
 
         this.saveConfig();
+    }
+
+    /**
+     * Changes all configuration values from the old name to the new name
+     * @param newConfig <p>The config to read from and write to</p>
+     */
+    private void migrateConfig(FileConfiguration newConfig) {
+        try {
+            newConfig.save(dataFolderPath + "/config.old");
+        } catch (IOException e) {
+            Stargate.debug("Stargate::migrateConfig", "Unable to save old backup and do migration");
+            e.printStackTrace();
+            return;
+        }
+
+        List<TwoTuple<String, String>> migrationFields = new ArrayList<>();
+        migrationFields.add(new TwoTuple<>("lang", "language"));
+        migrationFields.add(new TwoTuple<>("portal-folder", "folders.portalFolder"));
+        migrationFields.add(new TwoTuple<>("gate-folder", "folders.gateFolder"));
+        migrationFields.add(new TwoTuple<>("default-gate-network", "gates.defaultGateNetwork"));
+        migrationFields.add(new TwoTuple<>("destroyexplosion", "gates.integrity.destroyedByExplosion"));
+        migrationFields.add(new TwoTuple<>("maxgates", "gates.maxGatesEachNetwork"));
+        migrationFields.add(new TwoTuple<>("destMemory", "gates.cosmetic.rememberDestination"));
+        migrationFields.add(new TwoTuple<>("ignoreEntrance", "gates.integrity.ignoreEntrance"));
+        migrationFields.add(new TwoTuple<>("handleVehicles", "gates.functionality.handleVehicles"));
+        migrationFields.add(new TwoTuple<>("sortLists", "gates.cosmetic.sortNetworkDestinations"));
+        migrationFields.add(new TwoTuple<>("protectEntrance", "gates.integrity.protectEntrance"));
+        migrationFields.add(new TwoTuple<>("enableBungee", "gates.functionality.enableBungee"));
+        migrationFields.add(new TwoTuple<>("verifyPortals", "gates.integrity.verifyPortals"));
+        migrationFields.add(new TwoTuple<>("signColor", "gates.cosmetic.signColor"));
+        migrationFields.add(new TwoTuple<>("debug", "debugging.debug"));
+        migrationFields.add(new TwoTuple<>("permdebug", "debugging.permissionDebug"));
+        migrationFields.add(new TwoTuple<>("useeconomy", "economy.useEconomy"));
+        migrationFields.add(new TwoTuple<>("createcost", "economy.createCost"));
+        migrationFields.add(new TwoTuple<>("destroycost", "economy.destroyCost"));
+        migrationFields.add(new TwoTuple<>("usecost", "economy.useCost"));
+        migrationFields.add(new TwoTuple<>("toowner", "economy.toOwner"));
+        migrationFields.add(new TwoTuple<>("chargefreedestination", "economy.chargeFreeDestination"));
+        migrationFields.add(new TwoTuple<>("freegatesgreen", "economy.freeGatesGreen"));
+
+        for (TwoTuple<String, String> migration : migrationFields) {
+            if (newConfig.contains(migration.getFirstValue())) {
+                Object oldValue = newConfig.get(migration.getFirstValue());
+                newConfig.set(migration.getSecondValue(), oldValue);
+                newConfig.set(migration.getFirstValue(), null);
+            }
+        }
     }
 
     /**
