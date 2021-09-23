@@ -216,7 +216,7 @@ public class LanguageLoader {
             strings = FileHelper.readKeyValuePairs(bufferedReader);
         } catch (Exception e) {
             if (Stargate.debuggingEnabled) {
-                Stargate.logger.info("Unable to load chosen language");
+                Stargate.logger.info("[stargate] Unable to load language " + lang);
             }
             return null;
         }
