@@ -3,7 +3,6 @@ package net.knarcraft.stargate;
 import net.knarcraft.stargate.command.CommandStarGate;
 import net.knarcraft.stargate.command.StarGateTabCompleter;
 import net.knarcraft.stargate.container.BlockChangeRequest;
-import net.knarcraft.stargate.container.TwoTuple;
 import net.knarcraft.stargate.listener.BlockEventListener;
 import net.knarcraft.stargate.listener.BungeeCordListener;
 import net.knarcraft.stargate.listener.EntityEventListener;
@@ -18,6 +17,7 @@ import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.thread.BlockChangeThread;
 import net.knarcraft.stargate.thread.StarGateThread;
 import net.knarcraft.stargate.utility.EconomyHandler;
+import net.knarcraft.stargate.utility.FileHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -34,11 +34,9 @@ import org.bukkit.plugin.messaging.Messenger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -400,6 +398,7 @@ public class Stargate extends JavaPlugin {
 
     /**
      * Changes all configuration values from the old name to the new name
+     *
      * @param newConfig <p>The config to read from and write to</p>
      */
     private void migrateConfig(FileConfiguration newConfig) {
@@ -411,42 +410,25 @@ public class Stargate extends JavaPlugin {
             return;
         }
 
-        List<TwoTuple<String, String>> migrationFields = new ArrayList<>();
-        migrationFields.add(new TwoTuple<>("lang", "language"));
-        migrationFields.add(new TwoTuple<>("portal-folder", "folders.portalFolder"));
-        migrationFields.add(new TwoTuple<>("gate-folder", "folders.gateFolder"));
-        migrationFields.add(new TwoTuple<>("default-gate-network", "gates.defaultGateNetwork"));
-        migrationFields.add(new TwoTuple<>("destroyexplosion", "gates.integrity.destroyedByExplosion"));
-        migrationFields.add(new TwoTuple<>("maxgates", "gates.maxGatesEachNetwork"));
-        migrationFields.add(new TwoTuple<>("destMemory", "gates.cosmetic.rememberDestination"));
-        migrationFields.add(new TwoTuple<>("ignoreEntrance", "gates.integrity.ignoreEntrance"));
-        migrationFields.add(new TwoTuple<>("handleVehicles", "gates.functionality.handleVehicles"));
-        migrationFields.add(new TwoTuple<>("sortLists", "gates.cosmetic.sortNetworkDestinations"));
-        migrationFields.add(new TwoTuple<>("protectEntrance", "gates.integrity.protectEntrance"));
-        migrationFields.add(new TwoTuple<>("enableBungee", "gates.functionality.enableBungee"));
-        migrationFields.add(new TwoTuple<>("verifyPortals", "gates.integrity.verifyPortals"));
-        migrationFields.add(new TwoTuple<>("signColor", "gates.cosmetic.signColor"));
-        migrationFields.add(new TwoTuple<>("debug", "debugging.debug"));
-        migrationFields.add(new TwoTuple<>("permdebug", "debugging.permissionDebug"));
-        migrationFields.add(new TwoTuple<>("useiconomy", "economy.useEconomy"));
-        migrationFields.add(new TwoTuple<>("useeconomy", "economy.useEconomy"));
-        migrationFields.add(new TwoTuple<>("createcost", "economy.createCost"));
-        migrationFields.add(new TwoTuple<>("destroycost", "economy.destroyCost"));
-        migrationFields.add(new TwoTuple<>("usecost", "economy.useCost"));
-        migrationFields.add(new TwoTuple<>("toowner", "economy.toOwner"));
-        migrationFields.add(new TwoTuple<>("chargefreedestination", "economy.chargeFreeDestination"));
-        migrationFields.add(new TwoTuple<>("freegatesgreen", "economy.freeGatesGreen"));
-        migrationFields.add(new TwoTuple<>("CheckUpdates", ""));
+        Map<String, String> migrationFields;
+        try {
+            migrationFields = FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(
+                    FileHelper.getInputStreamForInternalFile("/config-migrations.txt")));
+        } catch (IOException e) {
+            Stargate.debug("Stargate::migrateConfig", "Unable to load config migration file");
+            e.printStackTrace();
+            return;
+        }
 
-        for (TwoTuple<String, String> migration : migrationFields) {
-            String oldPath = migration.getFirstValue();
-            if (newConfig.contains(oldPath)) {
-                String newPath = migration.getSecondValue();
-                Object oldValue = newConfig.get(oldPath);
+        //Replace old config names with the new ones
+        for (String key : migrationFields.keySet()) {
+            if (newConfig.contains(key)) {
+                String newPath = migrationFields.get(key);
+                Object oldValue = newConfig.get(key);
                 if (!newPath.trim().isEmpty()) {
                     newConfig.set(newPath, oldValue);
                 }
-                newConfig.set(oldPath, null);
+                newConfig.set(key, null);
             }
         }
     }

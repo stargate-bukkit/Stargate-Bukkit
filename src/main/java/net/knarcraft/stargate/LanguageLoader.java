@@ -1,20 +1,13 @@
 package net.knarcraft.stargate;
 
-import org.bukkit.ChatColor;
+import net.knarcraft.stargate.utility.FileHelper;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,8 +41,8 @@ public class LanguageLoader {
         updateLanguage(chosenLanguage);
 
         loadedStringTranslations = load(chosenLanguage);
-        // We have a default hashMap used for when new text is added.
-        InputStream inputStream = getClass().getResourceAsStream("/lang/en.txt");
+        //Load english as backup language in case the chosen language is missing newly added text strings
+        InputStream inputStream = FileHelper.getInputStreamForInternalFile("/lang/en.txt");
         if (inputStream != null) {
             loadedBackupStrings = load("en", inputStream);
         } else {
@@ -103,8 +96,6 @@ public class LanguageLoader {
      */
     private void updateLanguage(String language) {
         // Load the current language file
-        List<String> keyList = new ArrayList<>();
-        List<String> valueList = new ArrayList<>();
 
         Map<String, String> currentLanguageValues = load(language);
 
@@ -118,46 +109,10 @@ public class LanguageLoader {
             return;
         }
 
-        boolean updated = false;
-        FileOutputStream fileOutputStream = null;
         try {
-            if (readChangedLanguageStrings(inputStream, keyList, valueList, currentLanguageValues)) {
-                updated = true;
-            }
-
-            // Save file
-            fileOutputStream = new FileOutputStream(languageFolder + language + ".txt");
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
-            BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
-
-            // Output normal Language data
-            for (int i = 0; i < keyList.size(); i++) {
-                bufferedWriter.write(keyList.get(i) + valueList.get(i));
-                bufferedWriter.newLine();
-            }
-            bufferedWriter.newLine();
-            // Output any custom language strings the user had
-            if (currentLanguageValues != null) {
-                for (String key : currentLanguageValues.keySet()) {
-                    bufferedWriter.write(key + "=" + currentLanguageValues.get(key));
-                    bufferedWriter.newLine();
-                }
-            }
-
-            bufferedWriter.close();
+            readChangedLanguageStrings(inputStream, language, currentLanguageValues);
         } catch (IOException ex) {
             ex.printStackTrace();
-        } finally {
-            if (fileOutputStream != null) {
-                try {
-                    fileOutputStream.close();
-                } catch (Exception e) {
-                    //Ignored
-                }
-            }
-        }
-        if (updated) {
-            Stargate.logger.info("[stargate] Your language file (" + language + ".txt) has been updated");
         }
     }
 
@@ -165,51 +120,70 @@ public class LanguageLoader {
      * Reads language strings
      *
      * @param inputStream           <p>The input stream to read from</p>
-     * @param keyList               <p>The key list to add keys to</p>
-     * @param valueList             <p>The value list to add values to</p>
+     * @param language              <p>The selected language</p>
      * @param currentLanguageValues <p>The current values of the loaded/processed language</p>
-     * @return <p>True if at least one line was updated</p>
      * @throws IOException <p>if unable to read a language file</p>
      */
-    private boolean readChangedLanguageStrings(InputStream inputStream, List<String> keyList, List<String> valueList,
-                                               Map<String, String> currentLanguageValues) throws IOException {
-        boolean updated = false;
-        // Input stuff
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+    private void readChangedLanguageStrings(InputStream inputStream, String language, Map<String,
+            String> currentLanguageValues) throws IOException {
 
-        String line = bufferedReader.readLine();
-        boolean firstLine = true;
-        while (line != null) {
-            // Strip UTF BOM
-            if (firstLine) {
-                line = removeUTF8BOM(line);
-                firstLine = false;
-            }
-            // Split at first "="
-            int equalSignIndex = line.indexOf('=');
-            if (equalSignIndex == -1) {
-                keyList.add("");
-                valueList.add("");
-                line = bufferedReader.readLine();
-                continue;
-            }
-            String key = line.substring(0, equalSignIndex);
-            String value = line.substring(equalSignIndex);
+        //Get language values
+        BufferedReader bufferedReader = FileHelper.getBufferedReaderFromInputStream(inputStream);
+        Map<String, String> internalLanguageValues = FileHelper.readKeyValuePairs(bufferedReader);
 
-            if (currentLanguageValues == null || currentLanguageValues.get(key) == null) {
-                keyList.add(key);
-                valueList.add(value);
-                updated = true;
-            } else {
-                keyList.add(key);
-                valueList.add("=" + currentLanguageValues.get(key).replace('\u00A7', '&'));
-                currentLanguageValues.remove(key);
-            }
-            line = bufferedReader.readLine();
+        //If currentLanguageValues is null; the chosen language is invalid, use the internal strings instead
+        if (currentLanguageValues == null) {
+            return;
         }
-        bufferedReader.close();
-        return updated;
+
+        //If a key is not found in the language file, add the one in the internal file. Must update the external file
+        if (!internalLanguageValues.keySet().equals(currentLanguageValues.keySet())) {
+            Map<String, String> newLanguageValues = new HashMap<>();
+            boolean updateNecessary = false;
+            for (String key : internalLanguageValues.keySet()) {
+                if (currentLanguageValues.get(key) == null) {
+                    newLanguageValues.put(key, internalLanguageValues.get(key));
+                    //Found at least one value in the internal file not in the external file. Need to update
+                    updateNecessary = true;
+                } else {
+                    newLanguageValues.put(key, currentLanguageValues.get(key));
+                    currentLanguageValues.remove(key);
+                }
+            }
+            //Update the file itself
+            if (updateNecessary) {
+                updateLanguageFile(language, newLanguageValues, currentLanguageValues);
+                Stargate.logger.info("[stargate] Your language file (" + language + ".txt) has been updated");
+            }
+        }
+    }
+
+    /**
+     * Updates the language file for a given language
+     *
+     * @param language              <p>The language to update</p>
+     * @param languageStrings       <p>The updated language strings</p>
+     * @param customLanguageStrings <p>Any custom language strings not recognized</p>
+     * @throws IOException <p>If unable to write to the language file</p>
+     */
+    private void updateLanguageFile(String language, Map<String, String> languageStrings,
+                                    Map<String, String> customLanguageStrings) throws IOException {
+        BufferedWriter bufferedWriter = FileHelper.getBufferedWriterFromString(languageFolder + language + ".txt");
+
+        //Output normal Language data
+        for (String key : languageStrings.keySet()) {
+            bufferedWriter.write(key + "=" + languageStrings.get(key));
+            bufferedWriter.newLine();
+        }
+        bufferedWriter.newLine();
+        //Output any custom language strings the user had
+        if (customLanguageStrings != null) {
+            for (String key : customLanguageStrings.keySet()) {
+                bufferedWriter.write(key + "=" + customLanguageStrings.get(key));
+                bufferedWriter.newLine();
+            }
+        }
+        bufferedWriter.close();
     }
 
     /**
@@ -230,62 +204,22 @@ public class LanguageLoader {
      * @return <p>A mapping between loaded string indexes and the strings to display</p>
      */
     private Map<String, String> load(String lang, InputStream inputStream) {
-        Map<String, String> strings = new HashMap<>();
-        FileInputStream fileInputStream = null;
-        InputStreamReader inputStreamReader;
+        Map<String, String> strings;
+        BufferedReader bufferedReader;
         try {
             if (inputStream == null) {
-                fileInputStream = new FileInputStream(languageFolder + lang + ".txt");
-                inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+                bufferedReader = FileHelper.getBufferedReaderFromString(languageFolder + lang + ".txt");
             } else {
-                inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                bufferedReader = FileHelper.getBufferedReaderFromInputStream(inputStream);
             }
-            readLanguageFile(inputStreamReader, strings);
+            strings = FileHelper.readKeyValuePairs(bufferedReader);
         } catch (Exception e) {
             if (Stargate.debuggingEnabled) {
                 Stargate.logger.info("Unable to load chosen language");
             }
             return null;
-        } finally {
-            if (fileInputStream != null) {
-                try {
-                    fileInputStream.close();
-                } catch (IOException e) {
-                    //Ignored
-                }
-            }
         }
         return strings;
-    }
-
-    /**
-     * Reads a language file given its input stream
-     *
-     * @param inputStreamReader <p>The input stream reader to read from</p>
-     * @param strings           <p>The loaded string pairs</p>
-     * @throws IOException <p>If unable to read the file</p>
-     */
-    private void readLanguageFile(InputStreamReader inputStreamReader, Map<String, String> strings) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-        String line = bufferedReader.readLine();
-        boolean firstLine = true;
-        while (line != null) {
-            // Strip UTF BOM
-            if (firstLine) {
-                line = removeUTF8BOM(line);
-                firstLine = false;
-            }
-            // Split at first "="
-            int equalSignIndex = line.indexOf('=');
-            if (equalSignIndex == -1) {
-                line = bufferedReader.readLine();
-                continue;
-            }
-            String key = line.substring(0, equalSignIndex);
-            String val = ChatColor.translateAlternateColorCodes('&', line.substring(equalSignIndex + 1));
-            strings.put(key, val);
-            line = bufferedReader.readLine();
-        }
     }
 
     /**
@@ -301,20 +235,6 @@ public class LanguageLoader {
         for (String key : keys) {
             Stargate.debug("LanguageLoader::Debug::loadedBackupStrings", key + " => " + loadedBackupStrings.get(key));
         }
-    }
-
-    /**
-     * Removes the UTF-8 Byte Order Mark if present
-     *
-     * @param string <p>The string to remove the BOM from</p>
-     * @return <p>A string guaranteed without a BOM</p>
-     */
-    private String removeUTF8BOM(String string) {
-        String UTF8_BOM = "\uFEFF";
-        if (string.startsWith(UTF8_BOM)) {
-            string = string.substring(1);
-        }
-        return string;
     }
 
 }
