@@ -126,13 +126,14 @@ public class LanguageLoader {
      */
     private void readChangedLanguageStrings(InputStream inputStream, String language, Map<String,
             String> currentLanguageValues) throws IOException {
-
         //Get language values
         BufferedReader bufferedReader = FileHelper.getBufferedReaderFromInputStream(inputStream);
         Map<String, String> internalLanguageValues = FileHelper.readKeyValuePairs(bufferedReader);
 
-        //If currentLanguageValues is null; the chosen language is invalid, use the internal strings instead
+        //If currentLanguageValues is null; the chosen language has not been used before
         if (currentLanguageValues == null) {
+            updateLanguageFile(language, internalLanguageValues, null);
+            Stargate.logger.info("[stargate] Language (" + language + ") has been loaded");
             return;
         }
 
