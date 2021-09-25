@@ -257,7 +257,7 @@ public class PortalHandler {
         //Get necessary information from the gate's sign
         BlockLocation parent = new BlockLocation(player.getWorld(), idParent.getX(), idParent.getY(), idParent.getZ());
         BlockLocation topLeft = null;
-        String name = filterName(event.getLine(0));
+        String portalName = filterName(event.getLine(0));
         String destinationName = filterName(event.getLine(1));
         String network = filterName(event.getLine(2));
         String options = filterName(event.getLine(3)).toLowerCase();
@@ -396,12 +396,12 @@ public class PortalHandler {
         }
 
         Portal portal;
-        portal = new Portal(topLeft, modX, modZ, yaw, id, null, destinationName, name, false, network,
+        portal = new Portal(topLeft, modX, modZ, yaw, id, null, destinationName, portalName, false, network,
                 gate, player.getUniqueId(), player.getName(), portalOptions);
 
         int cost = EconomyHandler.getCreateCost(player, gate);
 
-        // Call StargateCreateEvent
+        //Call StargateCreateEvent to let other plugins cancel or overwrite denial
         StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, event.getLines(), deny, denyMsg, cost);
         Stargate.server.getPluginManager().callEvent(stargateCreateEvent);
         if (stargateCreateEvent.isCancelled()) {
@@ -414,42 +414,9 @@ public class PortalHandler {
 
         cost = stargateCreateEvent.getCost();
 
-        // Name & Network can be changed in the event, so do these checks here.
-        if (portal.getName().length() < 1 || portal.getName().length() > 11) {
-            Stargate.debug("createPortal", "Name length error");
-            Stargate.sendErrorMessage(player, Stargate.getString("createNameLength"));
+        //Check if the new portal is valid
+        if (!checkIfNewPortalIsValid(portal, player, cost, portalName)) {
             return null;
-        }
-
-        //Don't do network checks for bungee portals
-        if (portal.isBungee()) {
-            if (bungeePortals.get(portal.getName().toLowerCase()) != null) {
-                Stargate.debug("createPortal::Bungee", "Gate Exists");
-                Stargate.sendErrorMessage(player, Stargate.getString("createExists"));
-                return null;
-            }
-        } else {
-            if (getByName(portal.getName(), portal.getNetwork()) != null) {
-                Stargate.debug("createPortal", "Name Error");
-                Stargate.sendErrorMessage(player, Stargate.getString("createExists"));
-                return null;
-            }
-
-            //Check if there are too many gates in this network
-            List<String> netList = allPortalNetworks.get(portal.getNetwork().toLowerCase());
-            if (Stargate.maxGatesEachNetwork > 0 && netList != null && netList.size() >= Stargate.maxGatesEachNetwork) {
-                Stargate.sendErrorMessage(player, Stargate.getString("createFull"));
-                return null;
-            }
-        }
-
-        if (cost > 0) {
-            if (!EconomyHandler.chargePlayerIfNecessary(player, cost)) {
-                EconomyHelper.sendInsufficientFundsMessage(name, player, cost);
-                Stargate.debug("createPortal", "Insufficient Funds");
-                return null;
-            }
-            EconomyHelper.sendDeductMessage(name, player, cost);
         }
 
         //No button on an always-open portal.
@@ -469,6 +436,56 @@ public class PortalHandler {
         saveAllPortals(portal.getWorld());
 
         return portal;
+    }
+
+    /**
+     * Checks whether the newly created, but unregistered portal is valid
+     * @param portal <p>The portal to validate</p>
+     * @param player <p>The player creating the portal</p>
+     * @param cost <p>The cost of creating the portal</p>
+     * @param portalName <p>The name of the newly created portal</p>
+     * @return <p>True if the portal is completely valid</p>
+     */
+    private static boolean checkIfNewPortalIsValid(Portal portal, Player player, int cost, String portalName) {
+        // Name & Network can be changed in the event, so do these checks here.
+        if (portal.getName().length() < 1 || portal.getName().length() > 11) {
+            Stargate.debug("createPortal", "Name length error");
+            Stargate.sendErrorMessage(player, Stargate.getString("createNameLength"));
+            return false;
+        }
+
+        //Don't do network checks for bungee portals
+        if (portal.isBungee()) {
+            if (bungeePortals.get(portal.getName().toLowerCase()) != null) {
+                Stargate.debug("createPortal::Bungee", "Gate name duplicate");
+                Stargate.sendErrorMessage(player, Stargate.getString("createExists"));
+                return false;
+            }
+        } else {
+            if (getByName(portal.getName(), portal.getNetwork()) != null) {
+                Stargate.debug("createPortal", "Gate name duplicate");
+                Stargate.sendErrorMessage(player, Stargate.getString("createExists"));
+                return false;
+            }
+
+            //Check if there are too many gates in this network
+            List<String> networkList = allPortalNetworks.get(portal.getNetwork().toLowerCase());
+            if (Stargate.maxGatesEachNetwork > 0 && networkList != null && networkList.size() >= Stargate.maxGatesEachNetwork) {
+                Stargate.sendErrorMessage(player, Stargate.getString("createFull"));
+                return false;
+            }
+        }
+
+        if (cost > 0) {
+            if (!EconomyHandler.chargePlayerIfNecessary(player, cost)) {
+                EconomyHelper.sendInsufficientFundsMessage(portalName, player, cost);
+                Stargate.debug("createPortal", "Insufficient Funds");
+                return false;
+            } else {
+                EconomyHelper.sendDeductMessage(portalName, player, cost);
+            }
+        }
+        return true;
     }
 
     /**
