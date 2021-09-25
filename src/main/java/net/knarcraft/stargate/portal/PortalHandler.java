@@ -395,25 +395,24 @@ public class PortalHandler {
             }
         }
 
-        BlockLocation button = null;
         Portal portal;
-        portal = new Portal(topLeft, modX, modZ, yaw, id, button, destinationName, name, false, network,
+        portal = new Portal(topLeft, modX, modZ, yaw, id, null, destinationName, name, false, network,
                 gate, player.getUniqueId(), player.getName(), portalOptions);
 
         int cost = EconomyHandler.getCreateCost(player, gate);
 
         // Call StargateCreateEvent
-        StargateCreateEvent cEvent = new StargateCreateEvent(player, portal, event.getLines(), deny, denyMsg, cost);
-        Stargate.server.getPluginManager().callEvent(cEvent);
-        if (cEvent.isCancelled()) {
+        StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, event.getLines(), deny, denyMsg, cost);
+        Stargate.server.getPluginManager().callEvent(stargateCreateEvent);
+        if (stargateCreateEvent.isCancelled()) {
             return null;
         }
-        if (cEvent.getDeny()) {
-            Stargate.sendErrorMessage(player, cEvent.getDenyReason());
+        if (stargateCreateEvent.getDeny()) {
+            Stargate.sendErrorMessage(player, stargateCreateEvent.getDenyReason());
             return null;
         }
 
-        cost = cEvent.getCost();
+        cost = stargateCreateEvent.getCost();
 
         // Name & Network can be changed in the event, so do these checks here.
         if (portal.getName().length() < 1 || portal.getName().length() > 11) {
@@ -455,47 +454,88 @@ public class PortalHandler {
 
         //No button on an always-open portal.
         if (!portalOptions.get(PortalOption.ALWAYS_ON)) {
-            button = topLeft.modRelative(buttonVector.getRight(), buttonVector.getDepth(), buttonVector.getDistance() + 1, modX, 1, modZ);
-            Directional buttonData = (Directional) Bukkit.createBlockData(gate.getPortalButton());
-            buttonData.setFacing(buttonFacing);
-            button.getBlock().setBlockData(buttonData);
-            portal.setButton(button);
+            generatePortalButton(portal, topLeft, buttonVector, buttonFacing);
         }
 
+        //Register the new portal
         registerPortal(portal);
-        portal.drawSign();
-        //Open an always on portal
-        if (portal.isRandom() || portal.isBungee()) {
-            portal.open(true);
-        } else if (portal.isAlwaysOn()) {
-            Portal dest = getByName(destinationName, portal.getNetwork());
-            if (dest != null) {
-                portal.open(true);
-                dest.drawSign();
-            }
-            // Set the inside of the gate to its closed material
-        } else {
-            for (BlockLocation inside : portal.getEntrances()) {
-                inside.setType(portal.getGate().getPortalClosedBlock());
-            }
-        }
+        updateNewPortal(portal, destinationName);
 
-        //Don't do network stuff for bungee portals
+        //Update portals pointing at this one if it's not a bungee portal
         if (!portal.isBungee()) {
-            //Open any always on portal pointing at this portal
-            for (String originName : allPortalNetworks.get(portal.getNetwork().toLowerCase())) {
-                Portal origin = getByName(originName, portal.getNetwork());
-                if (origin == null) continue;
-                if (!origin.getDestinationName().equalsIgnoreCase(portal.getName())) continue;
-                if (!origin.isVerified()) continue;
-                if (origin.isFixed()) origin.drawSign();
-                if (origin.isAlwaysOn()) origin.open(true);
-            }
+            updatePortalsPointingAtNewPortal(portal);
         }
 
         saveAllPortals(portal.getWorld());
 
         return portal;
+    }
+
+    /**
+     * Generates a button for a portal
+     *
+     * @param portal       <p>The portal to generate a button for</p>
+     * @param topLeft      <p>The top-left block of the portal</p>
+     * @param buttonVector <p>A relative vector pointing at the button</p>
+     * @param buttonFacing <p>The direction the button should be facing</p>
+     */
+    private static void generatePortalButton(Portal portal, BlockLocation topLeft, RelativeBlockVector buttonVector,
+                                             BlockFace buttonFacing) {
+        BlockLocation button = topLeft.modRelative(buttonVector.getRight(), buttonVector.getDepth(),
+                buttonVector.getDistance() + 1, portal.getModX(), 1, portal.getModZ());
+        Directional buttonData = (Directional) Bukkit.createBlockData(portal.getGate().getPortalButton());
+        buttonData.setFacing(buttonFacing);
+        button.getBlock().setBlockData(buttonData);
+        portal.setButton(button);
+    }
+
+    /**
+     * Updates the open state of the newly created portal
+     *
+     * @param portal          <p>The portal newly created</p>
+     * @param destinationName <p>The name of the destination portal</p>
+     */
+    private static void updateNewPortal(Portal portal, String destinationName) {
+        portal.drawSign();
+        //Open an always on portal
+        if (portal.isRandom() || portal.isBungee()) {
+            portal.open(true);
+        } else if (portal.isAlwaysOn()) {
+            Portal destinationPortal = getByName(destinationName, portal.getNetwork());
+            if (destinationPortal != null) {
+                portal.open(true);
+                destinationPortal.drawSign();
+            }
+        } else {
+            //Update the block type for the portal's opening to the closed block
+            for (BlockLocation entrance : portal.getEntrances()) {
+                entrance.setType(portal.getGate().getPortalClosedBlock());
+            }
+        }
+    }
+
+    /**
+     * Updates the sign and open state of portals pointing at the newly created portal
+     *
+     * @param portal <p>The newly created portal</p>
+     */
+    private static void updatePortalsPointingAtNewPortal(Portal portal) {
+        for (String originName : allPortalNetworks.get(portal.getNetwork().toLowerCase())) {
+            Portal origin = getByName(originName, portal.getNetwork());
+            if (origin == null ||
+                    !origin.getDestinationName().equalsIgnoreCase(portal.getName()) ||
+                    !origin.isVerified()) {
+                continue;
+            }
+            //Update sign of fixed gates pointing at this gate
+            if (origin.isFixed()) {
+                origin.drawSign();
+            }
+            //Open any always on portal pointing at this portal
+            if (origin.isAlwaysOn()) {
+                origin.open(true);
+            }
+        }
     }
 
     /**

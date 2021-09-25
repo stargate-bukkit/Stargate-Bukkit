@@ -22,7 +22,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
-import org.bukkit.block.data.Powerable;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Boat;
@@ -42,7 +41,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * This class represents a portal in space which points to one or several other portals
+ * This class represents a portal in space which points to one or several portals
  */
 public class Portal {
 
@@ -569,7 +568,8 @@ public class Portal {
             Portal end = getDestination();
 
             if (end != null && end.isOpen()) {
-                end.deactivate(); // Clear it's destination first.
+                //Clear its destination first
+                end.deactivate();
                 end.close(false);
             }
         }
