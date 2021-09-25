@@ -614,25 +614,6 @@ public class Portal {
     }
 
     /**
-     * Gets whether at least one of this portal's control blocks are powered
-     *
-     * @return <p>True if at least one control block is powered</p>
-     */
-    public boolean isPowered() {
-        RelativeBlockVector[] controls = gate.getLayout().getControls();
-
-        for (RelativeBlockVector vector : controls) {
-            BlockData data = getBlockAt(vector).getBlock().getBlockData();
-
-            if (data instanceof Powerable && ((Powerable) data).isPowered()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Teleports a player to this portal
      *
      * @param player <p>The player to teleport</p>
