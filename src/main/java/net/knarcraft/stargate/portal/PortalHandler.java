@@ -239,24 +239,21 @@ public class PortalHandler {
      * @return <p>The created portal</p>
      */
     public static Portal createPortal(SignChangeEvent event, Player player) {
-        BlockLocation id = new BlockLocation(event.getBlock());
-        Block idParent = id.getParent();
-        if (idParent == null) {
+        BlockLocation signLocation = new BlockLocation(event.getBlock());
+        Block idParent = signLocation.getParent();
+
+        //Return early if the sign is not placed on a block, or the block is not a control block
+        if (idParent == null || GateHandler.getGatesByControlBlock(idParent).length == 0) {
             return null;
         }
 
-        if (GateHandler.getGatesByControlBlock(idParent).length == 0) {
-            return null;
-        }
-
+        //The control block is already part of another portal
         if (getByBlock(idParent) != null) {
             Stargate.debug("createPortal", "idParent belongs to existing stargate");
             return null;
         }
 
         //Get necessary information from the gate's sign
-        BlockLocation parent = new BlockLocation(player.getWorld(), idParent.getX(), idParent.getY(), idParent.getZ());
-        BlockLocation topLeft = null;
         String portalName = filterName(event.getLine(0));
         String destinationName = filterName(event.getLine(1));
         String network = filterName(event.getLine(2));
@@ -266,88 +263,48 @@ public class PortalHandler {
         Map<PortalOption, Boolean> portalOptions = getPortalOptions(player, destinationName, options);
 
         //Get the yaw
-        float yaw = DirectionHelper.getYawFromLocationDifference(idParent.getLocation(), id.getLocation());
+        float yaw = DirectionHelper.getYawFromLocationDifference(idParent.getLocation(), signLocation.getLocation());
 
         //Get the direction the button should be facing
         BlockFace buttonFacing = DirectionHelper.getBlockFaceFromYaw(yaw);
 
         //Get the x and z modifiers
         Vector direction = DirectionHelper.getDirectionVectorFromYaw(yaw);
+        //TODO: Figure out how modX and modZ really works and simplify it
         int modX = -direction.getBlockZ();
         int modZ = direction.getBlockX();
 
-        //Get all gates with the used type of control blocks
-        Gate[] possibleGates = GateHandler.getGatesByControlBlock(idParent);
-        Gate gate = null;
-        RelativeBlockVector buttonVector = null;
-        RelativeBlockVector signVector = null;
+        PortalLocation portalLocation = new PortalLocation();
+        portalLocation.setButtonFacing(buttonFacing).setYaw(yaw).setModX(modX).setModZ(modZ).setSignLocation(signLocation);
 
-        //Try to find a matching gate configuration
-        for (Gate possibleGate : possibleGates) {
-            //Get gate controls
-            RelativeBlockVector[] vectors = possibleGate.getLayout().getControls();
-
-            for (RelativeBlockVector controlVector : vectors) {
-                //Assuming the top-left location is pointing to the gate's top-left location, check if it's a match
-                BlockLocation possibleTopLocation = parent.modRelative(-controlVector.getRight(),
-                        -controlVector.getDepth(), -controlVector.getDistance(), modX, 1, modZ);
-                if (possibleGate.matches(possibleTopLocation, modX, modZ, true)) {
-                    gate = possibleGate;
-                    topLeft = possibleTopLocation;
-                    signVector = controlVector;
-                    break;
-                }
-            }
-        }
-
-        //Find the button position if a match was found
-        if (gate != null) {
-            RelativeBlockVector[] vectors = gate.getLayout().getControls();
-            for (RelativeBlockVector controlVector : vectors) {
-                if (!controlVector.equals(signVector)) {
-                    buttonVector = controlVector;
-                    break;
-                }
-            }
-        }
-
-        if ((gate == null) || (buttonVector == null)) {
+        //Try and find a gate matching the new portal
+        Gate gate = findMatchingGate(portalLocation, player);
+        if ((gate == null) || (portalLocation.getButtonVector() == null)) {
             Stargate.debug("createPortal", "Could not find matching gate layout");
             return null;
         }
 
-        //If the player is trying to create a Bungee portal without permissions, drop out here
-        if (options.indexOf(PortalOption.BUNGEE.getCharacterRepresentation()) != -1) {
-            if (!PermissionHelper.hasPermission(player, "stargate.admin.bungee")) {
-                Stargate.sendErrorMessage(player, Stargate.getString("bungeeDeny"));
-                return null;
-            }
-        }
-        if (portalOptions.get(PortalOption.BUNGEE)) {
-            if (!Stargate.enableBungee) {
-                Stargate.sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
-                return null;
-            } else if (destinationName.isEmpty() || network.isEmpty()) {
-                Stargate.sendErrorMessage(player, Stargate.getString("bungeeEmpty"));
-                return null;
-            }
+        //If the portal is a bungee portal and invalid, abort here
+        if (!isValidBungeePortal(portalOptions, player, destinationName, network)) {
+            return null;
         }
 
-        // Debug
+        //Debug
         StringBuilder builder = new StringBuilder();
         for (PortalOption option : portalOptions.keySet()) {
             builder.append(option.getCharacterRepresentation()).append(" = ").append(portalOptions.get(option)).append(" ");
         }
         Stargate.debug("createPortal", builder.toString());
 
+        //Use default network if a proper alternative is not set
         if (!portalOptions.get(PortalOption.BUNGEE) && (network.length() < 1 || network.length() > 11)) {
             network = Stargate.getDefaultNetwork();
         }
 
         boolean deny = false;
-        String denyMsg = "";
+        String denyMessage = "";
 
-        // Check if the player can create portals on this network
+        //Check if the player can create portals on this network
         if (!portalOptions.get(PortalOption.BUNGEE) && !PermissionHelper.canCreateNetworkGate(player, network)) {
             Stargate.debug("createPortal", "Player doesn't have create permissions on network. Trying personal");
             if (PermissionHelper.canCreatePersonalGate(player)) {
@@ -358,18 +315,18 @@ public class PortalHandler {
             } else {
                 Stargate.debug("createPortal", "Player does not have access to network");
                 deny = true;
-                denyMsg = Stargate.getString("createNetDeny");
+                denyMessage = Stargate.getString("createNetDeny");
                 //return null;
             }
         }
 
-        // Check if the player can create this gate layout
+        //Check if the player can create this gate layout
         String gateName = gate.getFilename();
         gateName = gateName.substring(0, gateName.indexOf('.'));
         if (!deny && !PermissionHelper.canCreateGate(player, gateName)) {
             Stargate.debug("createPortal", "Player does not have access to gate layout");
             deny = true;
-            denyMsg = Stargate.getString("createGateDeny");
+            denyMessage = Stargate.getString("createGateDeny");
         }
 
         //Check if the user can create portals to this world.
@@ -380,48 +337,159 @@ public class PortalHandler {
                 if (PermissionHelper.cannotAccessWorld(player, world)) {
                     Stargate.debug("canCreateNetworkGate", "Player does not have access to destination world");
                     deny = true;
-                    denyMsg = Stargate.getString("createWorldDeny");
+                    denyMessage = Stargate.getString("createWorldDeny");
                 }
             }
         }
 
-        // Bleh, gotta check to make sure none of this gate belongs to another gate. Boo slow.
-        for (RelativeBlockVector vector : gate.getLayout().getBorder()) {
-            BlockLocation blockLocation = topLeft.modRelative(vector.getRight(), vector.getDepth(), vector.getDistance(), modX, 1, modZ);
-            if (getByBlock(blockLocation.getBlock()) != null) {
-                Stargate.debug("createPortal", "Gate conflicts with existing gate");
-                Stargate.sendErrorMessage(player, Stargate.getString("createConflict"));
-                return null;
+        //Check if a conflict exists
+        if (conflictsWithExistingPortal(gate, portalLocation.getTopLeft(), modX, modZ, player)) {
+            return null;
+        }
+
+        return createAndValidateNewPortal(portalLocation, destinationName, portalName, network, gate,
+                player, portalOptions, denyMessage, event.getLines(), deny);
+    }
+
+    /**
+     * Checks if the new portal is a valid bungee portal
+     * @param portalOptions <p>The enabled portal options</p>
+     * @param player <p>The player trying to create the new portal</p>
+     * @param destinationName <p>The name of the portal's destination</p>
+     * @param network <p>The name of the portal's network</p>
+     * @return <p>False if the portal is an invalid bungee portal. True otherwise</p>
+     */
+    private static boolean isValidBungeePortal(Map<PortalOption, Boolean> portalOptions, Player player,
+                                               String destinationName, String network) {
+        if (portalOptions.get(PortalOption.BUNGEE)) {
+            if (!PermissionHelper.hasPermission(player, "stargate.admin.bungee")) {
+                Stargate.sendErrorMessage(player, Stargate.getString("bungeeDeny"));
+                return false;
+            } else if (!Stargate.enableBungee) {
+                Stargate.sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
+                return false;
+            } else if (destinationName.isEmpty() || network.isEmpty()) {
+                Stargate.sendErrorMessage(player, Stargate.getString("bungeeEmpty"));
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Tries to find a gate matching the portal the user is trying to create
+     *
+     * @param portalLocation <p>The location data for the new portal</p>
+     * @param player         <p>The player trying to create the new portal</p>
+     * @return <p>The matching gate type, or null if no such gate could be found</p>
+     */
+    private static Gate findMatchingGate(PortalLocation portalLocation, Player player) {
+        Block signParent = portalLocation.getSignLocation().getParent();
+        BlockLocation parent = new BlockLocation(player.getWorld(), signParent.getX(), signParent.getY(),
+                signParent.getZ());
+
+        //Get all gates with the used type of control blocks
+        Gate[] possibleGates = GateHandler.getGatesByControlBlock(signParent);
+        int modX = portalLocation.getModX();
+        int modZ = portalLocation.getModZ();
+        Gate gate = null;
+
+        for (Gate possibleGate : possibleGates) {
+            //Get gate controls
+            RelativeBlockVector[] vectors = possibleGate.getLayout().getControls();
+
+            portalLocation.setButtonVector(null);
+            for (RelativeBlockVector controlVector : vectors) {
+                //Assuming the top-left location is pointing to the gate's top-left location, check if it's a match
+                BlockLocation possibleTopLocation = parent.modRelative(-controlVector.getRight(),
+                        -controlVector.getDepth(), -controlVector.getDistance(), modX, 1, modZ);
+                if (possibleGate.matches(possibleTopLocation, modX, modZ, true)) {
+                    gate = possibleGate;
+                    portalLocation.setTopLeft(possibleTopLocation);
+                } else {
+                    portalLocation.setButtonVector(controlVector);
+                }
             }
         }
 
-        Portal portal;
-        portal = new Portal(topLeft, modX, modZ, yaw, id, null, destinationName, portalName, false, network,
-                gate, player.getUniqueId(), player.getName(), portalOptions);
+        return gate;
+    }
 
-        int cost = EconomyHandler.getCreateCost(player, gate);
+    /**
+     * Checks whether the new portal conflicts with an existing portal
+     *
+     * @param gate    <p>The gate type of the new portal</p>
+     * @param topLeft <p>The top-left block of the new portal</p>
+     * @param modX    <p>The x-modifier for the new portal</p>
+     * @param modZ    <p>The new z-modifier for the new portal</p>
+     * @param player  <p>The player creating the new portal</p>
+     * @return <p>True if a conflict was found. False otherwise</p>
+     */
+    private static boolean conflictsWithExistingPortal(Gate gate, BlockLocation topLeft, int modX, int modZ,
+                                                       Player player) {
+        //TODO: Make a quicker check. Could just check for control block conflicts if all code is changed to account for
+        //      getting several hits at a single location when checking for the existence of a portal. May make
+        //      everything slower overall? Would make for cooler gates though.
+        for (RelativeBlockVector borderVector : gate.getLayout().getBorder()) {
+            BlockLocation borderBlockLocation = topLeft.modRelative(borderVector.getRight(), borderVector.getDepth(),
+                    borderVector.getDistance(), modX, 1, modZ);
+            if (getByBlock(borderBlockLocation.getBlock()) != null) {
+                Stargate.debug("createPortal", "Gate conflicts with existing gate");
+                Stargate.sendErrorMessage(player, Stargate.getString("createConflict"));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Creates and validates a new portal
+     *
+     * @param destinationName <p>The name of the portal's destination</p>
+     * @param portalName      <p>The name of the new portal</p>
+     * @param network         <p>The name of the new portal's network</p>
+     * @param gate            <p>The gate type used in the physical construction of the new portal</p>
+     * @param player          <p>The player creating the new portal</p>
+     * @param portalOptions   <p>A map of enabled and disabled portal options</p>
+     * @param denyMessage     <p>The deny message to display if the portal creation was denied</p>
+     * @param lines           <p>All the lines of the sign which initiated the portal creation</p>
+     * @param deny            <p>Whether to deny the creation of the new portal</p>
+     * @return <p>A new portal, or null if the input cases the creation to be denied</p>
+     */
+    private static Portal createAndValidateNewPortal(PortalLocation portalLocation, String destinationName,
+                                                     String portalName, String network, Gate gate, Player player,
+                                                     Map<PortalOption, Boolean> portalOptions, String denyMessage,
+                                                     String[] lines, boolean deny) {
+        Portal portal = new Portal(portalLocation, null, destinationName, portalName,
+                false, network, gate, player.getUniqueId(), player.getName(), portalOptions);
+
+        int createCost = EconomyHandler.getCreateCost(player, gate);
 
         //Call StargateCreateEvent to let other plugins cancel or overwrite denial
-        StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, event.getLines(), deny, denyMsg, cost);
+        StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, deny,
+                denyMessage, createCost);
         Stargate.server.getPluginManager().callEvent(stargateCreateEvent);
         if (stargateCreateEvent.isCancelled()) {
             return null;
         }
+
+        //Tell the user why it was denied from creating the portal
         if (stargateCreateEvent.getDeny()) {
             Stargate.sendErrorMessage(player, stargateCreateEvent.getDenyReason());
             return null;
         }
 
-        cost = stargateCreateEvent.getCost();
+        createCost = stargateCreateEvent.getCost();
 
         //Check if the new portal is valid
-        if (!checkIfNewPortalIsValid(portal, player, cost, portalName)) {
+        if (!checkIfNewPortalIsValid(portal, player, createCost, portalName)) {
             return null;
         }
 
-        //No button on an always-open portal.
+        //Add button if the portal is not always on
         if (!portalOptions.get(PortalOption.ALWAYS_ON)) {
-            generatePortalButton(portal, topLeft, buttonVector, buttonFacing);
+            generatePortalButton(portal, portalLocation.getTopLeft(), portalLocation.getButtonVector(),
+                    portalLocation.getButtonFacing());
         }
 
         //Register the new portal
@@ -440,9 +508,10 @@ public class PortalHandler {
 
     /**
      * Checks whether the newly created, but unregistered portal is valid
-     * @param portal <p>The portal to validate</p>
-     * @param player <p>The player creating the portal</p>
-     * @param cost <p>The cost of creating the portal</p>
+     *
+     * @param portal     <p>The portal to validate</p>
+     * @param player     <p>The player creating the portal</p>
+     * @param cost       <p>The cost of creating the portal</p>
      * @param portalName <p>The name of the newly created portal</p>
      * @return <p>True if the portal is completely valid</p>
      */
@@ -884,12 +953,13 @@ public class PortalHandler {
     private static void loadPortal(String[] portalData, World world, int lineIndex) {
         //Load min. required portal data
         String name = portalData[0];
-        BlockLocation sign = new BlockLocation(world, portalData[1]);
+        PortalLocation portalLocation = new PortalLocation();
+        portalLocation.setSignLocation(new BlockLocation(world, portalData[1]));
         BlockLocation button = (portalData[2].length() > 0) ? new BlockLocation(world, portalData[2]) : null;
-        int modX = Integer.parseInt(portalData[3]);
-        int modZ = Integer.parseInt(portalData[4]);
-        float yaw = Float.parseFloat(portalData[5]);
-        BlockLocation topLeft = new BlockLocation(world, portalData[6]);
+        portalLocation.setModX(Integer.parseInt(portalData[3]));
+        portalLocation.setModZ(Integer.parseInt(portalData[4]));
+        portalLocation.setYaw(Float.parseFloat(portalData[5]));
+        portalLocation.setTopLeft(new BlockLocation(world, portalData[6]));
         Gate gate = GateHandler.getGateByName(portalData[7]);
         if (gate == null) {
             Stargate.logger.info(Stargate.getString("prefix") + "Gate layout on line " + lineIndex +
@@ -923,7 +993,7 @@ public class PortalHandler {
         }
 
         //Creates the new portal
-        Portal portal = new Portal(topLeft, modX, modZ, yaw, sign, button, destination, name, false,
+        Portal portal = new Portal(portalLocation, button, destination, name, false,
                 network, gate, ownerUUID, ownerName, getPortalOptions(portalData));
 
         registerPortal(portal);

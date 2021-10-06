@@ -82,11 +82,7 @@ public class Portal {
     /**
      * Instantiates a new portal
      *
-     * @param topLeft     <p>The top-left block of the portal. This is used to decide the positions of the rest of the portal</p>
-     * @param modX        <p></p>
-     * @param modZ        <p></p>
-     * @param yaw         <p></p>
-     * @param id          <p>The location of the portal's id block, which is the sign which activated the portal</p>
+     * @param portalLocation <p>Object containing locations of all relevant blocks</p>
      * @param button      <p>The location of the portal's open button</p>
      * @param destination <p>The destination defined on the sign's destination line</p>
      * @param name        <p>The name of the portal defined on the sign's first line</p>
@@ -97,15 +93,15 @@ public class Portal {
      * @param ownerName   <p>The name of the gate's owner</p>
      * @param options     <p>A map containing all possible portal options</p>
      */
-    Portal(BlockLocation topLeft, int modX, int modZ, float yaw, BlockLocation id, BlockLocation button,
+    Portal(PortalLocation portalLocation, BlockLocation button,
            String destination, String name, boolean verified, String network, Gate gate, UUID ownerUUID,
            String ownerName, Map<PortalOption, Boolean> options) {
-        this.topLeft = topLeft;
-        this.modX = modX;
-        this.modZ = modZ;
-        this.yaw = yaw;
+        this.topLeft = portalLocation.getTopLeft();
+        this.modX = portalLocation.getModX();
+        this.modZ = portalLocation.getModZ();
+        this.yaw = portalLocation.getYaw();
         this.rotationAxis = yaw == 0.0F || yaw == 180.0F ? Axis.X : Axis.Z;
-        this.id = id;
+        this.id = portalLocation.getSignLocation();
         this.destination = destination;
         this.button = button;
         this.verified = verified;
