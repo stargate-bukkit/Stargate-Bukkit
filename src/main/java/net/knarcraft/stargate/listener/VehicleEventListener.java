@@ -44,7 +44,7 @@ public class VehicleEventListener implements Listener {
         }
 
         //Return if the portal cannot be teleported through
-        if (entrancePortal == null || !entrancePortal.isOpen() || entrancePortal.isBungee()) {
+        if (entrancePortal == null || !entrancePortal.isOpen() || entrancePortal.getOptions().isBungee()) {
             return;
         }
 
@@ -69,7 +69,7 @@ public class VehicleEventListener implements Listener {
                 Stargate.logger.warning(Stargate.getString("prefox") + "Unable to find portal destination");
                 return;
             }
-            Stargate.debug("vehicleTeleport", destinationPortal.getWorld() + " " + destinationPortal.getId());
+            Stargate.debug("vehicleTeleport", destinationPortal.getWorld() + " " + destinationPortal.getSignLocation());
             destinationPortal.teleport(vehicle, entrancePortal);
         }
     }

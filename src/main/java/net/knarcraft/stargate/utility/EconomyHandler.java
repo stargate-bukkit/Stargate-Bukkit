@@ -190,11 +190,11 @@ public final class EconomyHandler {
      */
     public static int getUseCost(Player player, Portal source, Portal destination) {
         //No payment required
-        if (!EconomyHandler.useEconomy() || source.isFree()) {
+        if (!EconomyHandler.useEconomy() || source.getOptions().isFree()) {
             return 0;
         }
         //Not charging for free destinations
-        if (destination != null && !EconomyHandler.chargeFreeDestination && destination.isFree()) {
+        if (destination != null && !EconomyHandler.chargeFreeDestination && destination.getOptions().isFree()) {
             return 0;
         }
         //Cost is 0 if the player owns this gate and funds go to the owner

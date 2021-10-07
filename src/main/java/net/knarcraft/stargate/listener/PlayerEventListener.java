@@ -155,7 +155,7 @@ public class PlayerEventListener implements Listener {
         }
 
         //Decide if the user should be teleported to another bungee server
-        if (entrancePortal.isBungee()) {
+        if (entrancePortal.getOptions().isBungee()) {
             if (bungeeTeleport(player, entrancePortal, event)) {
                 Stargate.sendSuccessMessage(player, Stargate.getString("teleportMsg"));
             }
@@ -368,7 +368,7 @@ public class PlayerEventListener implements Listener {
         }
 
         //No destination
-        if (!entrancePortal.isBungee() && destination == null) {
+        if (!entrancePortal.getOptions().isBungee() && destination == null) {
             return false;
         }
 

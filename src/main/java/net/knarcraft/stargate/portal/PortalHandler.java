@@ -73,11 +73,11 @@ public class PortalHandler {
                 continue;
             }
             //Check if destination is a random portal
-            if (portal.isRandom()) {
+            if (portal.getOptions().isRandom()) {
                 continue;
             }
             //Check if destination is always open (Don't show if so)
-            if (portal.isAlwaysOn() && !portal.isShown()) {
+            if (portal.getOptions().isAlwaysOn() && !portal.getOptions().isShown()) {
                 continue;
             }
             //Check if destination is this portal
@@ -125,8 +125,8 @@ public class PortalHandler {
         }
 
         //Remove registered info about the lookup controls and blocks
-        lookupBlocks.remove(portal.getId());
-        lookupControls.remove(portal.getId());
+        lookupBlocks.remove(portal.getSignLocation());
+        lookupControls.remove(portal.getSignLocation());
         if (portal.getButton() != null) {
             lookupBlocks.remove(portal.getButton());
             lookupControls.remove(portal.getButton());
@@ -142,7 +142,7 @@ public class PortalHandler {
             allPortals.remove(portal);
         }
 
-        if (portal.isBungee()) {
+        if (portal.getOptions().isBungee()) {
             //Remove the bungee listing
             bungeePortals.remove(portalName);
         } else {
@@ -161,15 +161,15 @@ public class PortalHandler {
                     origin.drawSign();
                 }
                 //Close portal without destination
-                if (origin.isAlwaysOn()) {
+                if (origin.getOptions().isAlwaysOn()) {
                     origin.close(true);
                 }
             }
         }
 
         //Clear sign data
-        if (portal.getId().getBlock().getBlockData() instanceof WallSign) {
-            Sign sign = (Sign) portal.getId().getBlock().getState();
+        if (portal.getSignLocation().getBlock().getBlockData() instanceof WallSign) {
+            Sign sign = (Sign) portal.getSignLocation().getBlock().getState();
             sign.setLine(0, portal.getName());
             sign.setLine(1, "");
             sign.setLine(2, "");
@@ -186,13 +186,13 @@ public class PortalHandler {
      * @param portal <p>The portal to register</p>
      */
     private static void registerPortal(Portal portal) {
-        portal.setFixed(portal.getDestinationName().length() > 0 || portal.isRandom() || portal.isBungee());
+        portal.setFixed(portal.getDestinationName().length() > 0 || portal.getOptions().isRandom() || portal.getOptions().isBungee());
 
         String portalName = portal.getName().toLowerCase();
         String networkName = portal.getNetwork().toLowerCase();
 
         //Bungee portals are stored in their own list
-        if (portal.isBungee()) {
+        if (portal.getOptions().isBungee()) {
             bungeePortals.put(portalName, portal);
         } else {
             //Check if network exists in the lookup list. If not, register the new network
@@ -216,8 +216,8 @@ public class PortalHandler {
             lookupBlocks.put(block, portal);
         }
         //Register the sign and button to the lookup lists
-        lookupBlocks.put(portal.getId(), portal);
-        lookupControls.put(portal.getId(), portal);
+        lookupBlocks.put(portal.getSignLocation(), portal);
+        lookupControls.put(portal.getSignLocation(), portal);
         if (portal.getButton() != null) {
             lookupBlocks.put(portal.getButton(), portal);
             lookupControls.put(portal.getButton(), portal);
@@ -353,10 +353,11 @@ public class PortalHandler {
 
     /**
      * Checks if the new portal is a valid bungee portal
-     * @param portalOptions <p>The enabled portal options</p>
-     * @param player <p>The player trying to create the new portal</p>
+     *
+     * @param portalOptions   <p>The enabled portal options</p>
+     * @param player          <p>The player trying to create the new portal</p>
      * @param destinationName <p>The name of the portal's destination</p>
-     * @param network <p>The name of the portal's network</p>
+     * @param network         <p>The name of the portal's network</p>
      * @return <p>False if the portal is an invalid bungee portal. True otherwise</p>
      */
     private static boolean isValidBungeePortal(Map<PortalOption, Boolean> portalOptions, Player player,
@@ -497,7 +498,7 @@ public class PortalHandler {
         updateNewPortal(portal, destinationName);
 
         //Update portals pointing at this one if it's not a bungee portal
-        if (!portal.isBungee()) {
+        if (!portal.getOptions().isBungee()) {
             updatePortalsPointingAtNewPortal(portal);
         }
 
@@ -524,7 +525,7 @@ public class PortalHandler {
         }
 
         //Don't do network checks for bungee portals
-        if (portal.isBungee()) {
+        if (portal.getOptions().isBungee()) {
             if (bungeePortals.get(portal.getName().toLowerCase()) != null) {
                 Stargate.debug("createPortal::Bungee", "Gate name duplicate");
                 Stargate.sendErrorMessage(player, Stargate.getString("createExists"));
@@ -584,9 +585,9 @@ public class PortalHandler {
     private static void updateNewPortal(Portal portal, String destinationName) {
         portal.drawSign();
         //Open an always on portal
-        if (portal.isRandom() || portal.isBungee()) {
+        if (portal.getOptions().isRandom() || portal.getOptions().isBungee()) {
             portal.open(true);
-        } else if (portal.isAlwaysOn()) {
+        } else if (portal.getOptions().isAlwaysOn()) {
             Portal destinationPortal = getByName(destinationName, portal.getNetwork());
             if (destinationPortal != null) {
                 portal.open(true);
@@ -618,7 +619,7 @@ public class PortalHandler {
                 origin.drawSign();
             }
             //Open any always on portal pointing at this portal
-            if (origin.isAlwaysOn()) {
+            if (origin.getOptions().isAlwaysOn()) {
                 origin.open(true);
             }
         }
@@ -792,7 +793,7 @@ public class PortalHandler {
                 BlockLocation button = portal.getButton();
 
                 builder.append(portal.getName()).append(':');
-                builder.append(portal.getId().toString()).append(':');
+                builder.append(portal.getSignLocation().toString()).append(':');
                 builder.append((button != null) ? button.toString() : "").append(':');
                 builder.append(portal.getModX()).append(':');
                 builder.append(portal.getModZ()).append(':');
@@ -808,16 +809,16 @@ public class PortalHandler {
                     builder.append(portal.getOwnerName());
                 }
                 builder.append(':');
-                builder.append(portal.isHidden()).append(':');
-                builder.append(portal.isAlwaysOn()).append(':');
-                builder.append(portal.isPrivate()).append(':');
+                builder.append(portal.getOptions().isHidden()).append(':');
+                builder.append(portal.getOptions().isAlwaysOn()).append(':');
+                builder.append(portal.getOptions().isPrivate()).append(':');
                 builder.append(portal.getWorld().getName()).append(':');
-                builder.append(portal.isFree()).append(':');
-                builder.append(portal.isBackwards()).append(':');
-                builder.append(portal.isShown()).append(':');
-                builder.append(portal.isNoNetwork()).append(':');
-                builder.append(portal.isRandom()).append(':');
-                builder.append(portal.isBungee());
+                builder.append(portal.getOptions().isFree()).append(':');
+                builder.append(portal.getOptions().isBackwards()).append(':');
+                builder.append(portal.getOptions().isShown()).append(':');
+                builder.append(portal.getOptions().isNoNetwork()).append(':');
+                builder.append(portal.getOptions().isRandom()).append(':');
+                builder.append(portal.getOptions().isBungee());
 
                 bw.append(builder.toString());
                 bw.newLine();
@@ -1038,8 +1039,8 @@ public class PortalHandler {
             portalCount++;
 
             //Open the gate if it's set as always open or if it's a bungee gate
-            if (portal.isFixed() && (Stargate.enableBungee && portal.isBungee() || portal.getDestination() != null &&
-                    portal.isAlwaysOn())) {
+            if (portal.isFixed() && (Stargate.enableBungee && portal.getOptions().isBungee() ||
+                    portal.getDestination() != null && portal.getOptions().isAlwaysOn())) {
                 portal.open(true);
                 openCount++;
             }

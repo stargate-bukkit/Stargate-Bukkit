@@ -25,7 +25,7 @@ public final class SignHelper {
             //Default sign text
             drawInactiveSign(sign, portal);
         } else {
-            if (portal.isBungee()) {
+            if (portal.getOptions().isBungee()) {
                 //Bungee sign
                 drawBungeeSign(sign, portal);
             } else if (portal.isFixed()) {
@@ -126,7 +126,7 @@ public final class SignHelper {
     private static void drawInactiveSign(Sign sign, Portal portal) {
         Stargate.setLine(sign, 1, Stargate.getString("signRightClick"));
         Stargate.setLine(sign, 2, Stargate.getString("signToUse"));
-        if (!portal.isNoNetwork()) {
+        if (!portal.getOptions().isNoNetwork()) {
             Stargate.setLine(sign, 3, "(" + portal.getNetwork() + ")");
         } else {
             Stargate.setLine(sign, 3, "");
@@ -139,18 +139,18 @@ public final class SignHelper {
      * @param sign <p>The sign to draw on</p>
      */
     private static void drawFixedSign(Sign sign, Portal portal) {
-        if (portal.isRandom()) {
+        if (portal.getOptions().isRandom()) {
             Stargate.setLine(sign, 1, "> " + Stargate.getString("signRandom") + " <");
         } else {
             Stargate.setLine(sign, 1, ">" + portal.getDestinationName() + "<");
         }
-        if (portal.isNoNetwork()) {
+        if (portal.getOptions().isNoNetwork()) {
             Stargate.setLine(sign, 2, "");
         } else {
             Stargate.setLine(sign, 2, "(" + portal.getNetwork() + ")");
         }
         Portal destination = PortalHandler.getByName(portal.getDestinationName(), portal.getNetwork());
-        if (destination == null && !portal.isRandom()) {
+        if (destination == null && !portal.getOptions().isRandom()) {
             Stargate.setLine(sign, 3, Stargate.getString("signDisconnected"));
         } else {
             Stargate.setLine(sign, 3, "");

@@ -46,17 +46,10 @@ import java.util.logging.Level;
 public class Portal {
 
     // Gate location block info
-    private final BlockLocation topLeft;
-    private final int modX;
-    private final int modZ;
-    private final float yaw;
-    //The rotation axis is the axis along which the gate is placed. It's the cross axis of the button's axis
-    private final Axis rotationAxis;
+    private final PortalLocation location;
 
     // Block references
-    private final BlockLocation id;
     private final Gate gate;
-    private final World world;
     private BlockLocation button;
     private BlockLocation[] frame;
     private BlockLocation[] entrances;
@@ -69,8 +62,7 @@ public class Portal {
     private final String ownerName;
     private UUID ownerUUID;
     private boolean verified;
-    private boolean fixed;
-    private final Map<PortalOption, Boolean> options;
+    private final PortalOptions options;
 
     // In-use information
     private Player player;
@@ -83,25 +75,20 @@ public class Portal {
      * Instantiates a new portal
      *
      * @param portalLocation <p>Object containing locations of all relevant blocks</p>
-     * @param button      <p>The location of the portal's open button</p>
-     * @param destination <p>The destination defined on the sign's destination line</p>
-     * @param name        <p>The name of the portal defined on the sign's first line</p>
-     * @param verified    <p>Whether the portal's gate has been verified to match its template</p>
-     * @param network     <p>The network the portal belongs to, defined on the sign's network line</p>
-     * @param gate        <p>The gate template this portal uses</p>
-     * @param ownerUUID   <p>The UUID of the gate's owner</p>
-     * @param ownerName   <p>The name of the gate's owner</p>
-     * @param options     <p>A map containing all possible portal options</p>
+     * @param button         <p>The location of the portal's open button</p>
+     * @param destination    <p>The destination defined on the sign's destination line</p>
+     * @param name           <p>The name of the portal defined on the sign's first line</p>
+     * @param verified       <p>Whether the portal's gate has been verified to match its template</p>
+     * @param network        <p>The network the portal belongs to, defined on the sign's network line</p>
+     * @param gate           <p>The gate template this portal uses</p>
+     * @param ownerUUID      <p>The UUID of the gate's owner</p>
+     * @param ownerName      <p>The name of the gate's owner</p>
+     * @param options        <p>A map containing all possible portal options</p>
      */
     Portal(PortalLocation portalLocation, BlockLocation button,
            String destination, String name, boolean verified, String network, Gate gate, UUID ownerUUID,
            String ownerName, Map<PortalOption, Boolean> options) {
-        this.topLeft = portalLocation.getTopLeft();
-        this.modX = portalLocation.getModX();
-        this.modZ = portalLocation.getModZ();
-        this.yaw = portalLocation.getYaw();
-        this.rotationAxis = yaw == 0.0F || yaw == 180.0F ? Axis.X : Axis.Z;
-        this.id = portalLocation.getSignLocation();
+        this.location = portalLocation;
         this.destination = destination;
         this.button = button;
         this.verified = verified;
@@ -110,23 +97,20 @@ public class Portal {
         this.gate = gate;
         this.ownerUUID = ownerUUID;
         this.ownerName = ownerName;
-        this.options = options;
-        this.world = topLeft.getWorld();
-        this.fixed = destination.length() > 0 || this.isRandom() || this.isBungee();
-
-        if (this.isAlwaysOn() && !this.isFixed()) {
-            this.options.put(PortalOption.ALWAYS_ON, false);
-            Stargate.debug("Portal", "Can not create a non-fixed always-on gate. Setting AlwaysOn = false");
-        }
-
-        if (this.isRandom() && !this.isAlwaysOn()) {
-            this.options.put(PortalOption.ALWAYS_ON, true);
-            Stargate.debug("Portal", "Gate marked as random, set to always-on");
-        }
+        this.options = new PortalOptions(options, destination.length() > 0);
 
         if (verified) {
             this.drawSign();
         }
+    }
+
+    /**
+     * Gets the portal options for this portal
+     *
+     * @return <p>This portal's portal options</p>
+     */
+    public PortalOptions getOptions() {
+        return this.options;
     }
 
     /**
@@ -135,99 +119,7 @@ public class Portal {
      * @return <p>Whether this portal is open</p>
      */
     public boolean isOpen() {
-        return isOpen || isAlwaysOn();
-    }
-
-    /**
-     * Gets whether this portal is always on
-     *
-     * @return <p>Whether this portal is always on</p>
-     */
-    public boolean isAlwaysOn() {
-        return this.options.get(PortalOption.ALWAYS_ON);
-    }
-
-    /**
-     * Gets whether this portal is hidden
-     *
-     * @return <p>Whether this portal is hidden</p>
-     */
-    public boolean isHidden() {
-        return this.options.get(PortalOption.HIDDEN);
-    }
-
-    /**
-     * Gets whether this portal is private
-     *
-     * @return <p>Whether this portal is private</p>
-     */
-    public boolean isPrivate() {
-        return this.options.get(PortalOption.PRIVATE);
-    }
-
-    /**
-     * Gets whether this portal is free
-     *
-     * @return <p>Whether this portal is free</p>
-     */
-    public boolean isFree() {
-        return this.options.get(PortalOption.FREE);
-    }
-
-    /**
-     * Gets whether this portal is backwards
-     *
-     * <p>A backwards portal is one where players exit through the back.</p>
-     *
-     * @return <p>Whether this portal is backwards</p>
-     */
-    public boolean isBackwards() {
-        return this.options.get(PortalOption.BACKWARDS);
-    }
-
-    /**
-     * Gets whether this portal is shown on the network even if it's always on
-     *
-     * @return <p>Whether portal gate is shown</p>
-     */
-    public boolean isShown() {
-        return this.options.get(PortalOption.SHOW);
-    }
-
-    /**
-     * Gets whether this portal shows no network
-     *
-     * @return <p>Whether this portal shows no network/p>
-     */
-    public boolean isNoNetwork() {
-        return this.options.get(PortalOption.NO_NETWORK);
-    }
-
-    /**
-     * Gets whether this portal goes to a random location on the network
-     *
-     * @return <p>Whether this portal goes to a random location</p>
-     */
-    public boolean isRandom() {
-        return this.options.get(PortalOption.RANDOM);
-    }
-
-    /**
-     * Gets whether this portal is a bungee portal
-     *
-     * @return <p>Whether this portal is a bungee portal</p>
-     */
-    public boolean isBungee() {
-        return this.options.get(PortalOption.BUNGEE);
-    }
-
-    /**
-     * Gets the rotation of the portal in degrees
-     *
-     * @return <p>The rotation of the portal</p>
-     */
-    public float getRotation() {
-        return yaw;
+        return isOpen || options.isAlwaysOn();
     }
 
     /**
@@ -301,7 +193,7 @@ public class Portal {
      * @return <p>The destination portal the player should teleport to</p>
      */
     public Portal getDestination(Player player) {
-        if (isRandom()) {
+        if (options.isRandom()) {
             destinations = PortalHandler.getDestinations(this, player, getNetwork());
             if (destinations.size() == 0) {
                 return null;
@@ -427,21 +319,12 @@ public class Portal {
     }
 
     /**
-     * Gets the location of this portal's sign
-     *
-     * @return <p>The location of this portal's sign</p>
-     */
-    public BlockLocation getSign() {
-        return id;
-    }
-
-    /**
      * Gets the world this portal belongs to
      *
      * @return <p>The world this portal belongs to</p>
      */
     public World getWorld() {
-        return world;
+        return location.getWorld();
     }
 
     /**
@@ -488,7 +371,7 @@ public class Portal {
 
         //Change the opening blocks to the correct type
         Material openType = gate.getPortalOpenBlock();
-        Axis axis = (openType.createBlockData() instanceof Orientable) ? rotationAxis : null;
+        Axis axis = (openType.createBlockData() instanceof Orientable) ? location.getRotationAxis() : null;
         for (BlockLocation inside : getEntrances()) {
             Stargate.blockChangeRequestQueue.add(new BlockChangeRequest(inside, openType, axis));
         }
@@ -510,12 +393,12 @@ public class Portal {
         Stargate.activePortalsQueue.remove(this);
 
         //Open remote portal
-        if (!isAlwaysOn()) {
+        if (!options.isAlwaysOn()) {
             player = openFor;
 
             Portal destination = getDestination();
             // Only open destination if it's not-fixed or points at this portal
-            if (!isRandom() && destination != null && (!destination.isFixed() ||
+            if (!options.isRandom() && destination != null && (!destination.isFixed() ||
                     destination.getDestinationName().equalsIgnoreCase(getName())) && !destination.isOpen()) {
                 destination.open(openFor, false);
                 destination.setDestination(this);
@@ -537,7 +420,7 @@ public class Portal {
         if (event.isCancelled()) return;
         force = event.getForce();
 
-        if (isAlwaysOn() && !force) return; // Only close always-open if forced
+        if (options.isAlwaysOn() && !force) return; // Only close always-open if forced
 
         // Close this gate, then the dest gate.
         Material closedType = gate.getPortalClosedBlock();
@@ -560,7 +443,7 @@ public class Portal {
         Stargate.activePortalsQueue.remove(this);
 
         //Close remote portal
-        if (!isAlwaysOn()) {
+        if (!options.isAlwaysOn()) {
             Portal end = getDestination();
 
             if (end != null && end.isOpen()) {
@@ -581,7 +464,7 @@ public class Portal {
         if (!isOpen) {
             return false;
         }
-        if (isAlwaysOn() || this.player == null) {
+        if (options.isAlwaysOn() || this.player == null) {
             return true;
         }
         return player != null && player.getName().equalsIgnoreCase(this.player.getName());
@@ -595,7 +478,7 @@ public class Portal {
      * @return <p>True if this portal points to a fixed exit portal</p>
      */
     public boolean isFixed() {
-        return fixed;
+        return options.isFixed();
     }
 
     /**
@@ -606,7 +489,7 @@ public class Portal {
      * @param fixed <p>True if this portal points to a fixed exit portal</p>
      */
     public void setFixed(boolean fixed) {
-        this.fixed = fixed;
+        options.setFixed(fixed);
     }
 
     /**
@@ -655,10 +538,10 @@ public class Portal {
      */
     private void adjustRotation(Location exit, Portal origin) {
         int adjust = 0;
-        if (isBackwards() != origin.isBackwards()) {
+        if (options.isBackwards() != origin.options.isBackwards()) {
             adjust = 180;
         }
-        float newYaw = (this.getRotation() + adjust) % 360;
+        float newYaw = (this.getYaw() + adjust) % 360;
         Stargate.debug("Portal::adjustRotation", "Setting exit yaw to " + newYaw);
         exit.setYaw(newYaw);
     }
@@ -679,7 +562,7 @@ public class Portal {
         vehicle.setVelocity(new Vector());
 
         //Get new velocity
-        Vector newVelocityDirection = DirectionHelper.getDirectionVectorFromYaw(this.getRotation());
+        Vector newVelocityDirection = DirectionHelper.getDirectionVectorFromYaw(this.getYaw());
         Vector newVelocity = newVelocityDirection.multiply(velocity);
         adjustRotation(exit, origin);
 
@@ -769,9 +652,9 @@ public class Portal {
         RelativeBlockVector relativeExit = gate.getLayout().getExit();
         if (relativeExit != null) {
             BlockLocation exit = getBlockAt(relativeExit);
-            int back = (isBackwards()) ? -1 : 1;
+            int back = (options.isBackwards()) ? -1 : 1;
             exitLocation = exit.modRelativeLoc(0D, 0D, 1, traveller.getYaw(),
-                    traveller.getPitch(), modX * back, 1, modZ * back);
+                    traveller.getPitch(), getModX() * back, 1, getModZ() * back);
 
             if (entity != null) {
                 double entitySize = EntityHelper.getEntityMaxSize(entity);
@@ -810,20 +693,22 @@ public class Portal {
         if (openingWidth > 1) {
             newOffset -= 0.5;
         }
-        exitLocation = DirectionHelper.adjustLocation(exitLocation, newOffset, 0, 0, modX, modZ);
+        exitLocation = DirectionHelper.adjustLocation(exitLocation, newOffset, 0, 0, getModX(), getModZ());
 
         //Move large entities further from the portal, especially if this portal will teleport them at once
         double entitySize = EntityHelper.getEntityMaxSize(entity);
         int entityBoxSize = EntityHelper.getEntityMaxSizeInt(entity);
         if (entitySize > 1) {
-            if (isAlwaysOn()) {
-                exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0, (entityBoxSize / 2D), modX, modZ);
+            if (options.isAlwaysOn()) {
+                exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0, (entityBoxSize / 2D),
+                        getModX(), getModZ());
             } else {
-                exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0, (entitySize / 2D) - 1, modX, modZ);
+                exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0,
+                        (entitySize / 2D) - 1, getModX(), getModZ());
             }
         }
         if (entity instanceof AbstractHorse) {
-            exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0, 1, modX, modZ);
+            exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0, 1, getModX(), getModZ());
         }
 
         return exitLocation;
@@ -886,8 +771,9 @@ public class Portal {
 
             //Get the chunk in front of the gate corner
             Location cornerLocation = getBlockAt(vector).getLocation();
-            int blockOffset = this.isBackwards() ? -5 : 5;
-            Location fiveBlocksForward = DirectionHelper.adjustLocation(cornerLocation, 0, 0, blockOffset, modX, modZ);
+            int blockOffset = options.isBackwards() ? -5 : 5;
+            Location fiveBlocksForward = DirectionHelper.adjustLocation(cornerLocation, 0, 0, blockOffset,
+                    getModX(), getModZ());
             Chunk forwardChunk = fiveBlocksForward.getChunk();
 
             //Load the chunks
@@ -914,8 +800,8 @@ public class Portal {
      *
      * @return <p>The identity location of the portal</p>
      */
-    public BlockLocation getId() {
-        return this.id;
+    public BlockLocation getSignLocation() {
+        return this.location.getSignLocation();
     }
 
     /**
@@ -924,7 +810,7 @@ public class Portal {
      * @return <p>The x modifier used by this portal</p>
      */
     public int getModX() {
-        return this.modX;
+        return this.location.getModX();
     }
 
     /**
@@ -933,7 +819,7 @@ public class Portal {
      * @return <p>The z modifier used by this portal</p>
      */
     public int getModZ() {
-        return this.modZ;
+        return this.location.getModZ();
     }
 
     /**
@@ -942,7 +828,7 @@ public class Portal {
      * @return <p>The rotation of this portal</p>
      */
     public float getYaw() {
-        return this.yaw;
+        return this.location.getYaw();
     }
 
     /**
@@ -951,7 +837,7 @@ public class Portal {
      * @return <p>The location of the top-left portal block</p>
      */
     public BlockLocation getTopLeft() {
-        return this.topLeft;
+        return this.location.getTopLeft();
     }
 
     /**
@@ -991,7 +877,7 @@ public class Portal {
         if (!Stargate.verifyPortals) {
             return true;
         }
-        return gate.matches(topLeft, modX, modZ);
+        return gate.matches(getTopLeft(), getModX(), getModZ());
     }
 
     /**
@@ -1122,10 +1008,11 @@ public class Portal {
      * Draws the sign on this portal
      */
     public final void drawSign() {
-        BlockState state = id.getBlock().getState();
+        BlockState state = getSignLocation().getBlock().getState();
         if (!(state instanceof Sign)) {
             Stargate.logger.warning(Stargate.getString("prefix") + "Sign block is not a Sign object");
-            Stargate.debug("Portal::drawSign", "Block: " + id.getBlock().getType() + " @ " + id.getBlock().getLocation());
+            Stargate.debug("Portal::drawSign", "Block: " + getSignLocation().getBlock().getType() + " @ "
+                    + getSignLocation().getBlock().getLocation());
             return;
         }
 
@@ -1140,7 +1027,7 @@ public class Portal {
      * @return <p>The block at the given relative position</p>
      */
     public BlockLocation getBlockAt(RelativeBlockVector vector) {
-        return DirectionHelper.getBlockAt(topLeft, vector, modX, modZ);
+        return DirectionHelper.getBlockAt(getTopLeft(), vector, getModX(), getModZ());
     }
 
     /**
@@ -1174,7 +1061,8 @@ public class Portal {
 
     @Override
     public String toString() {
-        return String.format("Portal [id=%s, network=%s name=%s, type=%s]", id, network, name, gate.getFilename());
+        return String.format("Portal [id=%s, network=%s name=%s, type=%s]", getSignLocation(), network, name,
+                gate.getFilename());
     }
 
     @Override

@@ -2,6 +2,8 @@ package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
+import org.bukkit.Axis;
+import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 
 /**
@@ -55,6 +57,7 @@ public class PortalLocation {
 
     /**
      * Gets the location of the portal's sign
+     *
      * @return <p>The location of the portal's sign</p>
      */
     public BlockLocation getSignLocation() {
@@ -63,6 +66,7 @@ public class PortalLocation {
 
     /**
      * The relative block vector pointing to the portal's button
+     *
      * @return <p>The relative location of the portal's button</p>
      */
     public RelativeBlockVector getButtonVector() {
@@ -71,10 +75,30 @@ public class PortalLocation {
 
     /**
      * Gets the block face determining the button's direction
+     *
      * @return <p>The button's block face</p>
      */
     public BlockFace getButtonFacing() {
         return buttonFacing;
+    }
+
+    /**
+     * Gets the rotation axis, which is the axis along which the gate is placed
+     * <p>The portal's rotation axis is the cross axis of the button's axis</p>
+     *
+     * @return <p>The portal's rotation axis</p>
+     */
+    public Axis getRotationAxis() {
+        return getYaw() == 0.0F || getYaw() == 180.0F ? Axis.X : Axis.Z;
+    }
+
+    /**
+     * Gets the world this portal resides in
+     *
+     * @return <p>The world this portal resides in</p>
+     */
+    public World getWorld() {
+        return topLeft.getWorld();
     }
 
     /**
@@ -128,6 +152,7 @@ public class PortalLocation {
 
     /**
      * Sets the location of the portal's sign
+     *
      * @param signLocation <p>The new sign location</p>
      * @return <p>The portal location Object</p>
      */
@@ -138,6 +163,7 @@ public class PortalLocation {
 
     /**
      * Sets the relative location of the portal's button
+     *
      * @param buttonVector <p>The new relative button location</p>
      * @return <p>The portal location Object</p>
      */
@@ -148,6 +174,7 @@ public class PortalLocation {
 
     /**
      * Sets the block face for the direction the portal button is facing
+     *
      * @param buttonFacing <p>The new block face of the portal's button</p>
      * @return <p>The portal location Object</p>
      */

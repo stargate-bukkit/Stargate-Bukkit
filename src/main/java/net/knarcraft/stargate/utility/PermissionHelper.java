@@ -25,12 +25,12 @@ public final class PermissionHelper {
         Portal destination = portal.getDestination();
 
         //Always-open gate -- Do nothing
-        if (portal.isAlwaysOn()) {
+        if (portal.getOptions().isAlwaysOn()) {
             return;
         }
 
         //Random gate -- Do nothing
-        if (portal.isRandom()) {
+        if (portal.getOptions().isRandom()) {
             return;
         }
 
@@ -56,13 +56,13 @@ public final class PermissionHelper {
         }
 
         //Check if the player can use the private gate
-        if (portal.isPrivate() && !PermissionHelper.canPrivate(player, portal)) {
+        if (portal.getOptions().isPrivate() && !PermissionHelper.canPrivate(player, portal)) {
             Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
             return;
         }
 
         //Destination blocked
-        if ((destination.isOpen()) && (!destination.isAlwaysOn())) {
+        if ((destination.isOpen()) && (!destination.getOptions().isAlwaysOn())) {
             Stargate.sendErrorMessage(player, Stargate.getString("blockMsg"));
             return;
         }
@@ -98,13 +98,13 @@ public final class PermissionHelper {
     public static boolean cannotAccessPortal(Player player, Portal entrancePortal, Portal destination) {
         boolean deny = false;
         // Check if player has access to this server for Bungee gates
-        if (entrancePortal.isBungee() && !PermissionHelper.canAccessServer(player, entrancePortal.getNetwork())) {
+        if (entrancePortal.getOptions().isBungee() && !PermissionHelper.canAccessServer(player, entrancePortal.getNetwork())) {
             Stargate.debug("cannotAccessPortal", "Cannot access server");
             deny = true;
         } else if (PermissionHelper.cannotAccessNetwork(player, entrancePortal.getNetwork())) {
             Stargate.debug("cannotAccessPortal", "Cannot access network");
             deny = true;
-        } else if (!entrancePortal.isBungee() && PermissionHelper.cannotAccessWorld(player, destination.getWorld().getName())) {
+        } else if (!entrancePortal.getOptions().isBungee() && PermissionHelper.cannotAccessWorld(player, destination.getWorld().getName())) {
             Stargate.debug("cannotAccessPortal", "Cannot access world");
             deny = true;
         }
@@ -219,7 +219,7 @@ public final class PermissionHelper {
      */
     public static boolean isFree(Player player, Portal src, Portal dest) {
         // This gate is free
-        if (src.isFree()) {
+        if (src.getOptions().isFree()) {
             return true;
         }
         // Player gets free use
@@ -227,7 +227,7 @@ public final class PermissionHelper {
             return true;
         }
         // Don't charge for free destination gates
-        return dest != null && !EconomyHandler.chargeFreeDestination && dest.isFree();
+        return dest != null && !EconomyHandler.chargeFreeDestination && dest.getOptions().isFree();
     }
 
     /**
@@ -241,7 +241,7 @@ public final class PermissionHelper {
      */
     public static boolean canSeePortal(Player player, Portal portal) {
         // The gate is not hidden
-        if (!portal.isHidden()) {
+        if (!portal.getOptions().isHidden()) {
             return true;
         }
         // The player is an admin with the ability to see hidden gates
