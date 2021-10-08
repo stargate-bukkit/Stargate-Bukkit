@@ -14,6 +14,8 @@ public class RelativeBlockVector {
     private final int depth;
     private final int distance;
 
+    public enum Property {RIGHT, DEPTH, DISTANCE}
+
     /**
      * Instantiates a new relative block vector
      *
@@ -25,6 +27,35 @@ public class RelativeBlockVector {
         this.right = right;
         this.depth = depth;
         this.distance = distance;
+    }
+
+    /**
+     * Adds a value to one of the properties of this relative block vector
+     *
+     * @param propertyToAddTo <p>The property to change</p>
+     * @param valueToAdd      <p>The value to add to the property</p>
+     * @return <p>A new relative block vector with the property altered</p>
+     */
+    public RelativeBlockVector addToVector(Property propertyToAddTo, int valueToAdd) {
+        switch (propertyToAddTo) {
+            case RIGHT:
+                return new RelativeBlockVector(this.right + valueToAdd, this.depth, this.distance);
+            case DEPTH:
+                return new RelativeBlockVector(this.right, this.depth + valueToAdd, this.distance);
+            case DISTANCE:
+                return new RelativeBlockVector(this.right, this.depth, this.distance + valueToAdd);
+            default:
+                throw new IllegalArgumentException("Invalid relative block vector property given");
+        }
+    }
+
+    /**
+     * Gets a relative block vector which is this inverted (pointing in the opposite direction)
+     *
+     * @return <p>This vector, but inverted</p>
+     */
+    public RelativeBlockVector invert() {
+        return new RelativeBlockVector(-this.right, -this.depth, -this.distance);
     }
 
     /**

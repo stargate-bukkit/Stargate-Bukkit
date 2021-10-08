@@ -9,11 +9,10 @@ import org.bukkit.block.BlockFace;
 /**
  * Keeps track of location related data for a portal
  */
+@SuppressWarnings("UnusedReturnValue")
 public class PortalLocation {
 
     private BlockLocation topLeft;
-    private int modX;
-    private int modZ;
     private float yaw;
     private BlockLocation signLocation;
     private RelativeBlockVector buttonVector;
@@ -26,24 +25,6 @@ public class PortalLocation {
      */
     public BlockLocation getTopLeft() {
         return topLeft;
-    }
-
-    /**
-     * Gets the x-modifier for the portal
-     *
-     * @return <p>The x-modifier for the portal</p>
-     */
-    public int getModX() {
-        return modX;
-    }
-
-    /**
-     * Gets the z-modifier for the portal
-     *
-     * @return <p>The z-modifier for the portal</p>
-     */
-    public int getModZ() {
-        return modZ;
     }
 
     /**
@@ -112,28 +93,6 @@ public class PortalLocation {
      */
     public PortalLocation setTopLeft(BlockLocation topLeft) {
         this.topLeft = topLeft;
-        return this;
-    }
-
-    /**
-     * Sets the portal's x-modifier
-     *
-     * @param modX <p>The portal's new x-modifier</p>
-     * @return <p>The portal location Object</p>
-     */
-    public PortalLocation setModX(int modX) {
-        this.modX = modX;
-        return this;
-    }
-
-    /**
-     * Sets the portal's z-modifier
-     *
-     * @param modZ <p>The portal's new z-modifier</p>
-     * @return <p>The portal location Object</p>
-     */
-    public PortalLocation setModZ(int modZ) {
-        this.modZ = modZ;
         return this;
     }
 

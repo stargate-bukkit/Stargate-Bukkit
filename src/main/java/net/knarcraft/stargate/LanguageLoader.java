@@ -229,12 +229,16 @@ public class LanguageLoader {
     public void debug() {
         Set<String> keys = loadedStringTranslations.keySet();
         for (String key : keys) {
-            Stargate.debug("LanguageLoader::Debug::loadedStringTranslations", key + " => " + loadedStringTranslations.get(key));
+            Stargate.debug("LanguageLoader::Debug::loadedStringTranslations", key + " => " +
+                    loadedStringTranslations.get(key));
         }
-        if (loadedBackupStrings == null) return;
+        if (loadedBackupStrings == null) {
+            return;
+        }
         keys = loadedBackupStrings.keySet();
         for (String key : keys) {
-            Stargate.debug("LanguageLoader::Debug::loadedBackupStrings", key + " => " + loadedBackupStrings.get(key));
+            Stargate.debug("LanguageLoader::Debug::loadedBackupStrings", key + " => " +
+                    loadedBackupStrings.get(key));
         }
     }
 

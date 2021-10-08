@@ -39,7 +39,7 @@ public final class EconomyHelper {
             return false;
         }
 
-        //Send the deduct message to the player
+        //Send the deduct-message to the player
         sendDeductMessage(entrancePortal.getName(), player, cost);
 
         if (entrancePortal.getGate().getToOwner()) {

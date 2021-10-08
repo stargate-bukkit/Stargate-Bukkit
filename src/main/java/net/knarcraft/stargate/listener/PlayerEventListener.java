@@ -244,7 +244,7 @@ public class PlayerEventListener implements Listener {
     }
 
     /**
-     * This method handles right clicking of a sign or button belonging to a stargate
+     * This method handles right-clicking of a sign or button belonging to a stargate
      *
      * @param event  <p>The event triggering the right-click</p>
      * @param player <p>The player doing the right-click</p>

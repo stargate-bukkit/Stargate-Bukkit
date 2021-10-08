@@ -62,73 +62,53 @@ public class BlockLocation extends Location {
      * @param z <p>The z position relative to this block's position</p>
      * @return <p>A new block location</p>
      */
-    public BlockLocation makeRelative(int x, int y, int z) {
+    public BlockLocation makeRelativeBlockLocation(int x, int y, int z) {
         return (BlockLocation) this.clone().add(x, y, z);
     }
 
     /**
      * Makes a location relative to the block location
      *
-     * @param x    <p>The x position relative to this block's position</p>
-     * @param y    <p>The y position relative to this block's position</p>
-     * @param z    <p>The z position relative to this block's position</p>
-     * @param yaw  <p>The yaw of the location</p>
-     * @param rotY <p>The y rotation of the location</p>
+     * @param x   <p>The x position relative to this block's position</p>
+     * @param y   <p>The y position relative to this block's position</p>
+     * @param z   <p>The z position relative to this block's position</p>
+     * @param yaw <p>The yaw of the location</p>
      * @return <p>A new location</p>
      */
-    public Location makeRelativeLoc(double x, double y, double z, float yaw, float rotY) {
+    public Location makeRelativeLocation(double x, double y, double z, float yaw) {
         Location newLocation = this.clone();
         newLocation.setYaw(yaw);
-        newLocation.setPitch(rotY);
+        newLocation.setPitch(0);
         return newLocation.add(x, y, z);
     }
 
     /**
      * Gets a location relative to this block location
      *
-     * @param vector <p>The relative block vector describing the relative location</p>
-     * @param yaw    <p>The yaw pointing in the distance direction</p>
+     * @param relativeVector <p>The relative block vector describing the relative location</p>
+     * @param yaw            <p>The yaw pointing in the distance direction</p>
      * @return <p>A location relative to this location</p>
      */
-    public BlockLocation getRelativeLocation(RelativeBlockVector vector, double yaw) {
-        Vector combined = DirectionHelper.getCoordinateVectorFromRelativeVector(vector.getRight(), vector.getDepth(),
-                vector.getDistance(), yaw);
-        return makeRelative(combined.getBlockX(), combined.getBlockY(), combined.getBlockZ());
-    }
-
-    /**
-     * Makes a block location relative to the current origin according to given parameters
-     *
-     * <p>See {@link RelativeBlockVector} to understand better. modX or modZ should always be 0 while the other is 1
-     * or -1.</p>
-     *
-     * @param right    <p>The amount of right steps from the top-left origin</p>
-     * @param depth    <p>The amount of downward steps from the top-left origin</p>
-     * @param distance <p>The distance outward from the top-left origin</p>
-     * @param modX     <p>X modifier. If modX = -1, X will increase as right increases</p>
-     * @param modY     <p>Y modifier. modY = 1 for Y decreasing as depth increases</p>
-     * @param modZ     <p>Z modifier. If modZ = 1, X will increase as distance increases</p>
-     * @return A new location relative to this block location
-     */
-    public BlockLocation modRelative(int right, int depth, int distance, int modX, int modY, int modZ) {
-        return makeRelative(-right * modX + distance * modZ, -depth * modY, -right * modZ + -distance * modX);
+    public BlockLocation getRelativeLocation(RelativeBlockVector relativeVector, double yaw) {
+        Vector realVector = DirectionHelper.getCoordinateVectorFromRelativeVector(relativeVector.getRight(),
+                relativeVector.getDepth(), relativeVector.getDistance(), yaw);
+        return makeRelativeBlockLocation(realVector.getBlockX(), realVector.getBlockY(), realVector.getBlockZ());
     }
 
     /**
      * Makes a location relative to the current location according to given parameters
      *
-     * @param right    <p></p>
-     * @param depth    <p>The y position relative to the current position</p>
-     * @param distance <p>The distance away from the previous location to the new location</p>
-     * @param yaw      <p>The yaw of the location</p>
-     * @param rotY     <p>Unused</p>
-     * @param modX     <p>x modifier. Defines movement along the x-axis. 0 for no movement</p>
-     * @param modY     <p>Unused</p>
-     * @param modZ     <p>z modifier. Defines movement along the z-axis. 0 for no movement</p>
+     * @param right     <p>The amount of blocks to go right when looking the opposite direction from the yaw</p>
+     * @param depth     <p>The amount of blocks to go downwards when looking the opposite direction from the yaw</p>
+     * @param distance  <p>The amount of blocks to go outwards when looking the opposite direction from the yaw</p>
+     * @param portalYaw <p>The yaw when looking out from the portal</p>
+     * @param yaw       <p>The yaw of the travelling entity</p>
      * @return A new location relative to this block location
      */
-    public Location modRelativeLoc(double right, double depth, double distance, float yaw, float rotY, int modX, int modY, int modZ) {
-        return makeRelativeLoc(0.5 + -right * modX + distance * modZ, depth, 0.5 + -right * modZ + -distance * modX, yaw, 0);
+    public Location getRelativeLocation(double right, double depth, double distance, float portalYaw, float yaw) {
+        Vector realVector = DirectionHelper.getCoordinateVectorFromRelativeVector(right, depth, distance, portalYaw);
+        return makeRelativeLocation(0.5 + realVector.getBlockX(), realVector.getBlockY(),
+                0.5 + realVector.getBlockZ(), yaw);
     }
 
     /**
@@ -193,7 +173,7 @@ public class BlockLocation extends Location {
         } else {
             return;
         }
-        parent = this.makeRelative(offsetX, offsetY, offsetZ);
+        parent = this.makeRelativeBlockLocation(offsetX, offsetY, offsetZ);
     }
 
     @Override

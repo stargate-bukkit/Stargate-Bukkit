@@ -78,30 +78,24 @@ public class Portal {
      * @param button         <p>The location of the portal's open button</p>
      * @param destination    <p>The destination defined on the sign's destination line</p>
      * @param name           <p>The name of the portal defined on the sign's first line</p>
-     * @param verified       <p>Whether the portal's gate has been verified to match its template</p>
      * @param network        <p>The network the portal belongs to, defined on the sign's network line</p>
      * @param gate           <p>The gate template this portal uses</p>
      * @param ownerUUID      <p>The UUID of the gate's owner</p>
      * @param ownerName      <p>The name of the gate's owner</p>
      * @param options        <p>A map containing all possible portal options</p>
      */
-    Portal(PortalLocation portalLocation, BlockLocation button,
-           String destination, String name, boolean verified, String network, Gate gate, UUID ownerUUID,
-           String ownerName, Map<PortalOption, Boolean> options) {
+    Portal(PortalLocation portalLocation, BlockLocation button, String destination, String name, String network,
+           Gate gate, UUID ownerUUID, String ownerName, Map<PortalOption, Boolean> options) {
         this.location = portalLocation;
         this.destination = destination;
         this.button = button;
-        this.verified = verified;
+        this.verified = false;
         this.network = network;
         this.name = name;
         this.gate = gate;
         this.ownerUUID = ownerUUID;
         this.ownerName = ownerName;
         this.options = new PortalOptions(options, destination.length() > 0);
-
-        if (verified) {
-            this.drawSign();
-        }
     }
 
     /**
@@ -145,6 +139,7 @@ public class Portal {
      *
      * @param network <p>The new network for this gate</p>
      */
+    @SuppressWarnings("unused")
     public void setNetwork(String network) {
         this.network = network;
     }
@@ -172,6 +167,7 @@ public class Portal {
      *
      * @param name <p>The new name of this portal</p>
      */
+    @SuppressWarnings("unused")
     public void setName(String name) {
         this.name = filterName(name);
         drawSign();
@@ -275,6 +271,7 @@ public class Portal {
      *
      * @param owner <p>The new UUID of this portal's owner</p>
      */
+    @SuppressWarnings("unused")
     public void setOwner(UUID owner) {
         this.ownerUUID = owner;
     }
@@ -348,24 +345,22 @@ public class Portal {
      * Open this portal
      *
      * @param force <p>Whether to force this portal open, even if it's already open for some player</p>
-     * @return <p>True if the portal was opened</p>
      */
-    public boolean open(boolean force) {
-        return open(null, force);
+    public void open(boolean force) {
+        open(null, force);
     }
 
     /**
      * Open this portal
      *
      * @param force <p>Whether to force this portal open, even if it's already open for some player</p>
-     * @return <p>True if the portal was opened</p>
      */
-    public boolean open(Player openFor, boolean force) {
+    public void open(Player openFor, boolean force) {
         //Call the StargateOpenEvent
         StargateOpenEvent event = new StargateOpenEvent(openFor, this, force);
         Stargate.server.getPluginManager().callEvent(event);
         if (event.isCancelled() || (isOpen() && !event.getForce())) {
-            return false;
+            return;
         }
 
         //Change the opening blocks to the correct type
@@ -376,7 +371,6 @@ public class Portal {
         }
 
         updatePortalOpenState(openFor);
-        return true;
     }
 
     /**
@@ -401,7 +395,9 @@ public class Portal {
                     destination.getDestinationName().equalsIgnoreCase(getName())) && !destination.isOpen()) {
                 destination.open(openFor, false);
                 destination.setDestination(this);
-                if (destination.isVerified()) destination.drawSign();
+                if (destination.isVerified()) {
+                    destination.drawSign();
+                }
             }
         }
     }
@@ -636,9 +632,11 @@ public class Portal {
         RelativeBlockVector relativeExit = gate.getLayout().getExit();
         if (relativeExit != null) {
             BlockLocation exit = getBlockAt(relativeExit);
-            int back = (options.isBackwards()) ? -1 : 1;
-            exitLocation = exit.modRelativeLoc(0D, 0D, 1, traveller.getYaw(),
-                    traveller.getPitch(), getModX() * back, 1, getModZ() * back);
+            float yaw = traveller.getYaw();
+            if (options.isBackwards()) {
+                yaw += 180;
+            }
+            exitLocation = exit.getRelativeLocation(0D, 0D, 1, this.getYaw(), yaw);
 
             if (entity != null) {
                 double entitySize = EntityHelper.getEntityMaxSize(entity);
@@ -792,24 +790,6 @@ public class Portal {
     }
 
     /**
-     * Gets the x modifier used by this portal
-     *
-     * @return <p>The x modifier used by this portal</p>
-     */
-    public int getModX() {
-        return this.location.getModX();
-    }
-
-    /**
-     * Gets the z modifier used by this portal
-     *
-     * @return <p>The z modifier used by this portal</p>
-     */
-    public int getModZ() {
-        return this.location.getModZ();
-    }
-
-    /**
      * Gets the rotation of this portal
      *
      * @return <p>The rotation of this portal</p>
@@ -864,7 +844,7 @@ public class Portal {
         if (!Stargate.verifyPortals) {
             return true;
         }
-        return gate.matches(getTopLeft(), getModX(), getModZ());
+        return gate.matches(getTopLeft(), getYaw());
     }
 
     /**
@@ -1014,7 +994,7 @@ public class Portal {
      * @return <p>The block at the given relative position</p>
      */
     public BlockLocation getBlockAt(RelativeBlockVector vector) {
-        return DirectionHelper.getBlockAt(getTopLeft(), vector, getModX(), getModZ());
+        return DirectionHelper.getBlockAt(getTopLeft(), vector, getYaw());
     }
 
     /**

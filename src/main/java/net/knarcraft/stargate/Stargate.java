@@ -322,6 +322,9 @@ public class Stargate extends JavaPlugin {
 
         // It is important to load languages here, as they are used during reloadGates()
         languageLoader = new LanguageLoader(languageFolder, Stargate.languageName);
+        if (debuggingEnabled) {
+            languageLoader.debug();
+        }
 
         this.createMissingFolders();
         this.loadGates();

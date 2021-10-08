@@ -20,7 +20,6 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.util.Vector;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -245,6 +244,7 @@ public class PortalHandler {
 
         //Return early if the sign is not placed on a block, or the block is not a control block
         if (idParent == null || GateHandler.getGatesByControlBlock(idParent).length == 0) {
+            Stargate.debug("createPortal", "Control block not registered");
             return null;
         }
 
@@ -269,14 +269,10 @@ public class PortalHandler {
         //Get the direction the button should be facing
         BlockFace buttonFacing = DirectionHelper.getBlockFaceFromYaw(yaw);
 
-        //Get the x and z modifiers
-        Vector direction = DirectionHelper.getDirectionVectorFromYaw(yaw);
-        //TODO: Figure out how modX and modZ really works and simplify it
-        int modX = -direction.getBlockZ();
-        int modZ = direction.getBlockX();
-
         PortalLocation portalLocation = new PortalLocation();
-        portalLocation.setButtonFacing(buttonFacing).setYaw(yaw).setModX(modX).setModZ(modZ).setSignLocation(signLocation);
+        portalLocation.setButtonFacing(buttonFacing).setYaw(yaw).setSignLocation(signLocation);
+
+        Stargate.debug("createPortal", "Finished getting all portal info");
 
         //Try and find a gate matching the new portal
         Gate gate = findMatchingGate(portalLocation, player);
@@ -287,6 +283,7 @@ public class PortalHandler {
 
         //If the portal is a bungee portal and invalid, abort here
         if (!isValidBungeePortal(portalOptions, player, destinationName, network)) {
+            Stargate.debug("createPortal", "Portal is an invalid bungee portal");
             return null;
         }
 
@@ -344,7 +341,7 @@ public class PortalHandler {
         }
 
         //Check if a conflict exists
-        if (conflictsWithExistingPortal(gate, portalLocation.getTopLeft(), modX, modZ, player)) {
+        if (conflictsWithExistingPortal(gate, portalLocation.getTopLeft(), yaw, player)) {
             return null;
         }
 
@@ -392,8 +389,7 @@ public class PortalHandler {
 
         //Get all gates with the used type of control blocks
         Gate[] possibleGates = GateHandler.getGatesByControlBlock(signParent);
-        int modX = portalLocation.getModX();
-        int modZ = portalLocation.getModZ();
+        double yaw = portalLocation.getYaw();
         Gate gate = null;
 
         for (Gate possibleGate : possibleGates) {
@@ -403,9 +399,8 @@ public class PortalHandler {
             portalLocation.setButtonVector(null);
             for (RelativeBlockVector controlVector : vectors) {
                 //Assuming the top-left location is pointing to the gate's top-left location, check if it's a match
-                BlockLocation possibleTopLocation = parent.modRelative(-controlVector.getRight(),
-                        -controlVector.getDepth(), -controlVector.getDistance(), modX, 1, modZ);
-                if (possibleGate.matches(possibleTopLocation, modX, modZ, true)) {
+                BlockLocation possibleTopLocation = parent.getRelativeLocation(controlVector.invert(), yaw);
+                if (possibleGate.matches(possibleTopLocation, portalLocation.getYaw(), true)) {
                     gate = possibleGate;
                     portalLocation.setTopLeft(possibleTopLocation);
                 } else {
@@ -422,19 +417,16 @@ public class PortalHandler {
      *
      * @param gate    <p>The gate type of the new portal</p>
      * @param topLeft <p>The top-left block of the new portal</p>
-     * @param modX    <p>The x-modifier for the new portal</p>
-     * @param modZ    <p>The new z-modifier for the new portal</p>
+     * @param yaw     <p>The yaw when looking directly outwards from the portal</p>
      * @param player  <p>The player creating the new portal</p>
      * @return <p>True if a conflict was found. False otherwise</p>
      */
-    private static boolean conflictsWithExistingPortal(Gate gate, BlockLocation topLeft, int modX, int modZ,
-                                                       Player player) {
+    private static boolean conflictsWithExistingPortal(Gate gate, BlockLocation topLeft, double yaw, Player player) {
         //TODO: Make a quicker check. Could just check for control block conflicts if all code is changed to account for
         //      getting several hits at a single location when checking for the existence of a portal. May make
         //      everything slower overall? Would make for cooler gates though.
         for (RelativeBlockVector borderVector : gate.getLayout().getBorder()) {
-            BlockLocation borderBlockLocation = topLeft.modRelative(borderVector.getRight(), borderVector.getDepth(),
-                    borderVector.getDistance(), modX, 1, modZ);
+            BlockLocation borderBlockLocation = topLeft.getRelativeLocation(borderVector, yaw);
             if (getByBlock(borderBlockLocation.getBlock()) != null) {
                 Stargate.debug("createPortal", "Gate conflicts with existing gate");
                 Stargate.sendErrorMessage(player, Stargate.getString("createConflict"));
@@ -463,7 +455,7 @@ public class PortalHandler {
                                                      Map<PortalOption, Boolean> portalOptions, String denyMessage,
                                                      String[] lines, boolean deny) {
         Portal portal = new Portal(portalLocation, null, destinationName, portalName,
-                false, network, gate, player.getUniqueId(), player.getName(), portalOptions);
+                network, gate, player.getUniqueId(), player.getName(), portalOptions);
 
         int createCost = EconomyHandler.getCreateCost(player, gate);
 
@@ -569,8 +561,10 @@ public class PortalHandler {
      */
     private static void generatePortalButton(Portal portal, BlockLocation topLeft, RelativeBlockVector buttonVector,
                                              BlockFace buttonFacing) {
-        BlockLocation button = topLeft.modRelative(buttonVector.getRight(), buttonVector.getDepth(),
-                buttonVector.getDistance() + 1, portal.getModX(), 1, portal.getModZ());
+        //Go one block outwards to find the button's location rather than the control block's location
+        BlockLocation button = topLeft.getRelativeLocation(buttonVector.addToVector(
+                RelativeBlockVector.Property.DISTANCE, 1), portal.getYaw());
+
         Directional buttonData = (Directional) Bukkit.createBlockData(portal.getGate().getPortalButton());
         buttonData.setFacing(buttonFacing);
         button.getBlock().setBlockData(buttonData);
@@ -724,15 +718,15 @@ public class PortalHandler {
         adjacentPositions.add(centerLocation);
 
         for (int index = 1; index <= range; index++) {
-            adjacentPositions.add(centerLocation.makeRelative(index, 0, 0));
-            adjacentPositions.add(centerLocation.makeRelative(-index, 0, 0));
-            adjacentPositions.add(centerLocation.makeRelative(0, 0, index));
-            adjacentPositions.add(centerLocation.makeRelative(0, 0, -index));
+            adjacentPositions.add(centerLocation.makeRelativeBlockLocation(index, 0, 0));
+            adjacentPositions.add(centerLocation.makeRelativeBlockLocation(-index, 0, 0));
+            adjacentPositions.add(centerLocation.makeRelativeBlockLocation(0, 0, index));
+            adjacentPositions.add(centerLocation.makeRelativeBlockLocation(0, 0, -index));
             if (index < range) {
-                adjacentPositions.add(centerLocation.makeRelative(index, 0, index));
-                adjacentPositions.add(centerLocation.makeRelative(-index, 0, -index));
-                adjacentPositions.add(centerLocation.makeRelative(index, 0, -index));
-                adjacentPositions.add(centerLocation.makeRelative(-index, 0, index));
+                adjacentPositions.add(centerLocation.makeRelativeBlockLocation(index, 0, index));
+                adjacentPositions.add(centerLocation.makeRelativeBlockLocation(-index, 0, -index));
+                adjacentPositions.add(centerLocation.makeRelativeBlockLocation(index, 0, -index));
+                adjacentPositions.add(centerLocation.makeRelativeBlockLocation(-index, 0, index));
             }
         }
 
@@ -796,8 +790,8 @@ public class PortalHandler {
                 builder.append(portal.getName()).append(':');
                 builder.append(portal.getSignLocation().toString()).append(':');
                 builder.append((button != null) ? button.toString() : "").append(':');
-                builder.append(portal.getModX()).append(':');
-                builder.append(portal.getModZ()).append(':');
+                builder.append(0).append(':');
+                builder.append(0).append(':');
                 builder.append(portal.getYaw()).append(':');
                 builder.append(portal.getTopLeft().toString()).append(':');
                 builder.append(portal.getGate().getFilename()).append(':');
@@ -958,8 +952,6 @@ public class PortalHandler {
         PortalLocation portalLocation = new PortalLocation();
         portalLocation.setSignLocation(new BlockLocation(world, portalData[1]));
         BlockLocation button = (portalData[2].length() > 0) ? new BlockLocation(world, portalData[2]) : null;
-        portalLocation.setModX(Integer.parseInt(portalData[3]));
-        portalLocation.setModZ(Integer.parseInt(portalData[4]));
         portalLocation.setYaw(Float.parseFloat(portalData[5]));
         portalLocation.setTopLeft(new BlockLocation(world, portalData[6]));
         Gate gate = GateHandler.getGateByName(portalData[7]);
@@ -995,7 +987,7 @@ public class PortalHandler {
         }
 
         //Creates the new portal
-        Portal portal = new Portal(portalLocation, button, destination, name, false,
+        Portal portal = new Portal(portalLocation, button, destination, name,
                 network, gate, ownerUUID, ownerName, getPortalOptions(portalData));
 
         registerPortal(portal);

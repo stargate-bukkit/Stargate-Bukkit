@@ -378,7 +378,7 @@ public class GateHandler {
         }
 
         if (files == null || files.length == 0) {
-            //The gates folder was not found. Assume this is the first run
+            //The gates-folder was not found. Assume this is the first run
             if (directory.mkdir()) {
                 populateDefaults(gateFolder);
             }

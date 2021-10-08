@@ -125,7 +125,7 @@ public final class BungeeHelper {
             Stargate.bungeeQueue.put(playerName.toLowerCase(), destination);
         } else {
             Portal destinationPortal = PortalHandler.getBungeePortal(destination);
-            // Specified an invalid gate. For now we'll just let them connect at their current location
+            // Specified an invalid gate. For now, we'll just let them connect at their current location
             if (destinationPortal == null) {
                 Stargate.logger.info(Stargate.getString("prefix") + "Bungee gate " + destination + " does not exist");
                 return;

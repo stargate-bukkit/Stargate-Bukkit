@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * This event should be called whenever a player opens a stargate
  */
+@SuppressWarnings({"unused"})
 public class StargateOpenEvent extends StargatePlayerEvent {
 
     private static final HandlerList handlers = new HandlerList();

@@ -15,7 +15,7 @@ import org.bukkit.event.world.WorldUnloadEvent;
 public class WorldEventListener implements Listener {
 
     /**
-     * This listener listens for the loading of a world and loads all all gates from the world if not already loaded
+     * This listener listens for the loading of a world and loads all gates from the world if not already loaded
      *
      * @param event <p>The triggered world load event</p>
      */

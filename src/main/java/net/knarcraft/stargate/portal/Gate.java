@@ -26,8 +26,8 @@ public class Gate {
     private final Map<Character, Material> types;
 
     //Gate materials
-    private Material portalOpenBlock;
-    private Material portalClosedBlock;
+    private final Material portalOpenBlock;
+    private final Material portalClosedBlock;
     private final Material portalButton;
 
     // Economy information
@@ -75,15 +75,6 @@ public class Gate {
     }
 
     /**
-     * Gets the material types each layout character represents
-     *
-     * @return <p>The material types each layout character represents</p>
-     */
-    public Map<Character, Material> getTypes() {
-        return types;
-    }
-
-    /**
      * Gets the material type used for this gate's control blocks
      *
      * @return <p>The material type used for control blocks</p>
@@ -111,30 +102,12 @@ public class Gate {
     }
 
     /**
-     * Sets the block to use for the opening when a portal using this gate is open
-     *
-     * @param type <p>The block type to use for the opening when open</p>
-     */
-    public void setPortalOpenBlock(Material type) {
-        portalOpenBlock = type;
-    }
-
-    /**
      * Gets the block type to use for the opening when a portal using this gate is closed
      *
      * @return <p>The block type to use for the opening when closed</p>
      */
     public Material getPortalClosedBlock() {
         return portalClosedBlock;
-    }
-
-    /**
-     * Sets the block type to use for the opening when a portal using this gate is closed
-     *
-     * @param type <p>The block type to use for the opening when closed</p>
-     */
-    public void setPortalClosedBlock(Material type) {
-        portalClosedBlock = type;
     }
 
     /**
@@ -186,36 +159,33 @@ public class Gate {
      * Checks whether a portal's gate matches this gate type
      *
      * @param topLeft <p>The top-left block of the portal's gate</p>
-     * @param modX    <p>The x modifier used</p>
-     * @param modZ    <p>The z modifier used</p>
+     * @param yaw     <p>The yaw when looking directly outwards</p>
      * @return <p>True if this gate matches the portal</p>
      */
-    public boolean matches(BlockLocation topLeft, int modX, int modZ) {
-        return matches(topLeft, modX, modZ, false);
+    public boolean matches(BlockLocation topLeft, double yaw) {
+        return matches(topLeft, yaw, false);
     }
 
     /**
      * Checks whether a portal's gate matches this gate type
      *
      * @param topLeft  <p>The top-left block of the portal's gate</p>
-     * @param modX     <p>The x modifier used</p>
-     * @param modZ     <p>The z modifier used</p>
+     * @param yaw      <p>The yaw when looking directly outwards</p>
      * @param onCreate <p>Whether this is used in the context of creating a new gate</p>
      * @return <p>True if this gate matches the portal</p>
      */
-    public boolean matches(BlockLocation topLeft, int modX, int modZ, boolean onCreate) {
-        return verifyGateEntrancesMatch(topLeft, modX, modZ, onCreate) && verifyGateBorderMatches(topLeft, modX, modZ);
+    public boolean matches(BlockLocation topLeft, double yaw, boolean onCreate) {
+        return verifyGateEntrancesMatch(topLeft, yaw, onCreate) && verifyGateBorderMatches(topLeft, yaw);
     }
 
     /**
      * Verifies that all border blocks of a portal gate matches this gate type
      *
      * @param topLeft <p>The top-left block of the portal</p>
-     * @param modX    <p>The x modifier used</p>
-     * @param modZ    <p>The z modifier used</p>
+     * @param yaw     <p>The yaw when looking directly outwards</p>
      * @return <p>True if all border blocks of the gate match the layout</p>
      */
-    private boolean verifyGateBorderMatches(BlockLocation topLeft, int modX, int modZ) {
+    private boolean verifyGateBorderMatches(BlockLocation topLeft, double yaw) {
         Map<Character, Material> portalTypes = new HashMap<>(types);
         for (RelativeBlockVector borderVector : layout.getBorder()) {
             int rowIndex = borderVector.getRight();
@@ -223,7 +193,7 @@ public class Gate {
             Character key = layout.getLayout()[lineIndex][rowIndex];
 
             Material materialInLayout = portalTypes.get(key);
-            Material materialAtLocation = getBlockAt(topLeft, borderVector, modX, modZ).getType();
+            Material materialAtLocation = getBlockAt(topLeft, borderVector, yaw).getType();
             if (materialInLayout == null) {
                 portalTypes.put(key, materialAtLocation);
             } else if (materialAtLocation != materialInLayout) {
@@ -239,19 +209,20 @@ public class Gate {
      * Verifies that all entrances of a portal gate matches this gate type
      *
      * @param topLeft  <p>The top-left block of this portal</p>
-     * @param modX     <p>The x modifier used</p>
-     * @param modZ     <p>The z modifier used</p>
+     * @param yaw      <p>The yaw when looking directly outwards</p>
      * @param onCreate <p>Whether this is used in the context of creating a new gate</p>
      * @return <p>Whether this is used in the context of creating a new gate</p>
      */
-    private boolean verifyGateEntrancesMatch(BlockLocation topLeft, int modX, int modZ, boolean onCreate) {
+    private boolean verifyGateEntrancesMatch(BlockLocation topLeft, double yaw, boolean onCreate) {
         if (Stargate.ignoreEntrance) {
             return true;
         }
+        Stargate.debug("verifyGateEntrancesMatch", String.valueOf(topLeft));
         for (RelativeBlockVector entranceVector : layout.getEntrances()) {
-            Material type = getBlockAt(topLeft, entranceVector, modX, modZ).getType();
+            Stargate.debug("verifyGateEntrancesMatch", String.valueOf(entranceVector));
+            Material type = getBlockAt(topLeft, entranceVector, yaw).getType();
 
-            // Ignore entrance if it's air and we're creating a new gate
+            //Ignore entrance if it's air, and we're creating a new gate
             if (onCreate && type == Material.AIR) {
                 continue;
             }
@@ -270,8 +241,8 @@ public class Gate {
      * @param vector <p>The relative block vector</p>
      * @return <p>The block at the given relative position</p>
      */
-    private BlockLocation getBlockAt(BlockLocation topLeft, RelativeBlockVector vector, int modX, int modZ) {
-        return DirectionHelper.getBlockAt(topLeft, vector, modX, modZ);
+    private BlockLocation getBlockAt(BlockLocation topLeft, RelativeBlockVector vector, double yaw) {
+        return DirectionHelper.getBlockAt(topLeft, vector, yaw);
     }
 
     /**
@@ -371,6 +342,7 @@ public class Gate {
      * @param value          <p>The value of the config key</p>
      * @throws IOException <p>If unable to write to the buffered writer</p>
      */
+    @SuppressWarnings("SameParameterValue")
     private void writeConfig(BufferedWriter bufferedWriter, String key, boolean value) throws IOException {
         writeConfig(bufferedWriter, "%s=%b", key, value);
     }

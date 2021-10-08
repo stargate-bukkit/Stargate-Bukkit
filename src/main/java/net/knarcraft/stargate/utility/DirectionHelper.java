@@ -7,7 +7,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 
 /**
- * This class helps with direction-dependent (modX, modZ) calculations
+ * This class helps with direction-dependent calculations
  */
 public final class DirectionHelper {
 
@@ -81,7 +81,7 @@ public final class DirectionHelper {
         } else if (yaw == 270) {
             return new Vector(1, 0, 0);
         } else {
-            throw new IllegalArgumentException("Invalid yaw given");
+            throw new IllegalArgumentException(String.format("Invalid yaw %f given", yaw));
         }
     }
 
@@ -95,16 +95,6 @@ public final class DirectionHelper {
      */
     public static BlockLocation getBlockAt(BlockLocation topLeft, RelativeBlockVector vector, double yaw) {
         return topLeft.getRelativeLocation(vector, yaw);
-    }
-
-    /**
-     * Gets the block at a relative block vector location
-     *
-     * @param vector <p>The relative block vector</p>
-     * @return <p>The block at the given relative position</p>
-     */
-    public static BlockLocation getBlockAt(BlockLocation topLeft, RelativeBlockVector vector, int modX, int modZ) {
-        return topLeft.modRelative(vector.getRight(), vector.getDepth(), vector.getDistance(), modX, 1, modZ);
     }
 
     /**

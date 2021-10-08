@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 /**
  * An abstract event describing any stargate event where a player is involved
  */
+@SuppressWarnings("unused")
 public abstract class StargatePlayerEvent extends StargateEvent {
 
     private final Player player;

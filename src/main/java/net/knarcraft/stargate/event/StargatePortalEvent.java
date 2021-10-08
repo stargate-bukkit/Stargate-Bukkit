@@ -41,9 +41,9 @@ public class StargatePortalEvent extends StargatePlayerEvent {
     }
 
     /**
-     * Return the destination gate
+     * Return the destination portal
      *
-     * @return destination gate
+     * @return <p>The destination portal</p>
      */
     public Portal getDestination() {
         return destination;
@@ -52,14 +52,14 @@ public class StargatePortalEvent extends StargatePlayerEvent {
     /**
      * Return the location of the players exit point
      *
-     * @return org.bukkit.Location Location of the exit point
+     * @return <p>Location of the exit point</p>
      */
     public Location getExit() {
         return exit;
     }
 
     /**
-     * Set the location of the players exit point
+     * Set the location of the player's exit point
      */
     public void setExit(Location loc) {
         this.exit = loc;
