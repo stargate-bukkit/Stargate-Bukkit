@@ -60,13 +60,13 @@ public class VehicleEventListener implements Listener {
      */
     private static void teleportVehicle(List<Entity> passengers, Portal entrancePortal, Vehicle vehicle) {
         if (!passengers.isEmpty() && passengers.get(0) instanceof Player) {
-            Stargate.logger.info(Stargate.getString("prefox") + "Found passenger vehicle");
+            Stargate.logger.info(Stargate.getString("prefix") + "Found passenger vehicle");
             teleportPlayerAndVehicle(entrancePortal, vehicle, passengers);
         } else {
-            Stargate.logger.info(Stargate.getString("prefox") + "Found empty vehicle");
+            Stargate.logger.info(Stargate.getString("prefix") + "Found empty vehicle");
             Portal destinationPortal = entrancePortal.getDestination();
             if (destinationPortal == null) {
-                Stargate.logger.warning(Stargate.getString("prefox") + "Unable to find portal destination");
+                Stargate.logger.warning(Stargate.getString("prefix") + "Unable to find portal destination");
                 return;
             }
             Stargate.debug("vehicleTeleport", destinationPortal.getWorld() + " " + destinationPortal.getSignLocation());

@@ -403,7 +403,7 @@ bungeeSign=Teleport to
 #### \[Version 0.7.9.2]
 
 - Remove my custom sign class. Stupid Bukkit team.
-- Will work with CB 1.4.5 builds, but now will break randomly due to Bukkit screwup
+- Will work with CB 1.4.5 builds, but now will break randomly due to Bukkit screw-up
 - Update MetricsLite to R6
 
 #### \[Version 0.7.9.1]
@@ -472,7 +472,7 @@ bungeeSign=Teleport to
 
 #### \[Version 0.7.6.6]
 
-- Check move/portal/interact/signchange events for cancellation
+- Check move/portal/interact/sign-change events for cancellation
 
 #### \[Version 0.7.6.5]
 
@@ -651,7 +651,7 @@ bungeeSign=Teleport to
 
 #### \[Version 0.6.5]
 
-- Moved printed message config to a seperate file
+- Moved printed message config to a separate file
 - Added permdebug option
 - Hopefully fix path issues some people were having
 - Fixed iConomy creation cost
@@ -702,12 +702,12 @@ bungeeSign=Teleport to
 
 - Updated the teleport method
 - Remove always-open gates from lists
-- Hopefully stop Stargate and Nether interference
+- Hopefully stop Stargate and Nether interferenceF
 
 #### \[Version 0.4.9]
 
 - Left-click to scroll signs up
-- Show "(Not Connected)" on fixed-gates with a non-existant destination
+- Show "(Not Connected)" on fixed-gates with a non-existent destination
 - Added "maxgates" option
 - Removed debug message
 - Started work on disabling damage for lava gates, too much work to finish with the current implementation of
@@ -816,7 +816,7 @@ bungeeSign=Teleport to
 
 #### \[Version 0.25]
 
-- Fixed a bug with worlds in subfolders
+- Fixed a bug with worlds in sub-folders
 - Fixed gates being destroyed with explosions
 - Added stargate.destroy.owner
 
@@ -844,7 +844,7 @@ bungeeSign=Teleport to
 
 #### \[Version 0.19]
 
-- Set button facing on new gates, fixes weirdass button glitch
+- Set button facing on new gates, fixes weird-ass button glitch
 - Beginning of very buggy multi-world support
 
 #### \[Version 0.18]

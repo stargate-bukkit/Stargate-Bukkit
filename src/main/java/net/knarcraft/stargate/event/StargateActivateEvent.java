@@ -27,7 +27,7 @@ public class StargateActivateEvent extends StargatePlayerEvent {
      * @param destination  <p>The chosen destination to activate</p>
      */
     public StargateActivateEvent(Portal portal, Player player, List<String> destinations, String destination) {
-        super("StargatActivateEvent", portal, player);
+        super("StargateActivateEvent", portal, player);
 
         this.destinations = destinations;
         this.destination = destination;
