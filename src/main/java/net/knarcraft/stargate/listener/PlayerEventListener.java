@@ -118,7 +118,7 @@ public class PlayerEventListener implements Listener {
                     horse.setOwner(player);
                 }
             }
-            destination.teleport((Vehicle) playerVehicle, entrancePortal);
+            destination.teleport((Vehicle) playerVehicle);
         } else {
             destination.teleport(player, entrancePortal, event);
         }

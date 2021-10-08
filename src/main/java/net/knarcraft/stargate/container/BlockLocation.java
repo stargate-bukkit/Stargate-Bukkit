@@ -102,13 +102,12 @@ public class BlockLocation extends Location {
      * @param depth     <p>The amount of blocks to go downwards when looking the opposite direction from the yaw</p>
      * @param distance  <p>The amount of blocks to go outwards when looking the opposite direction from the yaw</p>
      * @param portalYaw <p>The yaw when looking out from the portal</p>
-     * @param yaw       <p>The yaw of the travelling entity</p>
      * @return A new location relative to this block location
      */
-    public Location getRelativeLocation(double right, double depth, double distance, float portalYaw, float yaw) {
+    public Location getRelativeLocation(double right, double depth, double distance, float portalYaw) {
         Vector realVector = DirectionHelper.getCoordinateVectorFromRelativeVector(right, depth, distance, portalYaw);
         return makeRelativeLocation(0.5 + realVector.getBlockX(), realVector.getBlockY(),
-                0.5 + realVector.getBlockZ(), yaw);
+                0.5 + realVector.getBlockZ(), portalYaw);
     }
 
     /**

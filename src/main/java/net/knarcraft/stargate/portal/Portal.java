@@ -484,7 +484,7 @@ public class Portal {
         Location exit = getExit(player, traveller);
 
         //Rotate the player to face out from the portal
-        adjustRotation(exit, origin);
+        adjustRotation(exit);
 
         //Call the StargatePortalEvent to allow plugins to change destination
         if (!origin.equals(this)) {
@@ -514,11 +514,10 @@ public class Portal {
      * Adjusts the rotation of the player to face out from the portal
      *
      * @param exit   <p>The location the player will exit from</p>
-     * @param origin <p>The portal the player entered from</p>
      */
-    private void adjustRotation(Location exit, Portal origin) {
+    private void adjustRotation(Location exit) {
         int adjust = 0;
-        if (options.isBackwards() != origin.options.isBackwards()) {
+        if (options.isBackwards()) {
             adjust = 180;
         }
         float newYaw = (this.getYaw() + adjust) % 360;
@@ -530,9 +529,8 @@ public class Portal {
      * Teleports a vehicle to this portal
      *
      * @param vehicle <p>The vehicle to teleport</p>
-     * @param origin  <p>The portal the vehicle entered</p>
      */
-    public void teleport(final Vehicle vehicle, Portal origin) {
+    public void teleport(final Vehicle vehicle) {
         Location traveller = vehicle.getLocation();
         Location exit = getExit(vehicle, traveller);
 
@@ -544,7 +542,7 @@ public class Portal {
         //Get new velocity
         Vector newVelocityDirection = DirectionHelper.getDirectionVectorFromYaw(this.getYaw());
         Vector newVelocity = newVelocityDirection.multiply(velocity);
-        adjustRotation(exit, origin);
+        adjustRotation(exit);
 
         List<Entity> passengers = vehicle.getPassengers();
 
@@ -632,11 +630,11 @@ public class Portal {
         RelativeBlockVector relativeExit = gate.getLayout().getExit();
         if (relativeExit != null) {
             BlockLocation exit = getBlockAt(relativeExit);
-            float yaw = traveller.getYaw();
+            float portalYaw = this.getYaw();
             if (options.isBackwards()) {
-                yaw += 180;
+                portalYaw += 180;
             }
-            exitLocation = exit.getRelativeLocation(0D, 0D, 1, this.getYaw(), yaw);
+            exitLocation = exit.getRelativeLocation(0D, 0D, 1, portalYaw);
 
             if (entity != null) {
                 double entitySize = EntityHelper.getEntityMaxSize(entity);
