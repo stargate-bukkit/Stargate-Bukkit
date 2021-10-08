@@ -111,7 +111,7 @@ The options are the single letter, not the word. So to make a private hidden gat
 #### Fixed gates:
 
 - Fixed gates go to only one set destination.
-- Fixed gates can be linked to other fixed gates, or normal gates. A normal gate cannot open a portal to a fixed gate
+- Fixed gates can be linked to other fixed gates, or normal gates. A normal gate cannot open a portal to a fixed gate,
   however.
 - To create a fixed gate, specify a destination on the second line of the stargate sign.
 - Set the 4th line of the stargate sign to "A" to enable an always-open fixed gate.
@@ -125,8 +125,8 @@ The options are the single letter, not the word. So to make a private hidden gat
 
 ## Using a gate:
 
-- Right click the sign to choose a destination.
-- Right click the button to open up a portal.
+- Right-click the sign to choose a destination.
+- Right-click the button to open up a portal.
 - Step through.
 
 ## Economy Support:
@@ -147,7 +147,7 @@ toowner=true
 
 You can create as many gate formats as you want, the gate layouts are stored in `plugins/Stargate/gates/`.  
 The .gate file must be laid out a specific way, the first lines will be config information, and after a blank line you
-will lay out the gate format. Here is the default nether.gate file:
+will lay out the gate format. Here is the default nethergate.gate file:
 
 ```
 portal-open=NETHER_PORTAL
@@ -263,11 +263,11 @@ permdebug: Whether to show massive permission debug output
 
 # Message Customization
 
-It is possible to customize all of the messages Stargate displays, including the [Stargate] prefix. You can find the
+It is possible to customize all the messages Stargate displays, including the [Stargate] prefix. You can find the
 strings in plugins/Stargate/lang/chosenLanguage.txt.
 
-If a string is removed, or left blank, it will default to the default english string. There are some special cases when
-it comes to messages. When you see %variableName%, you need to keep this part in your string, as it will be replaced
+If a string is removed, or left blank, it will default to the default english string. There are some special cases 
+regarding messages. When you see %variableName%, you need to keep this part in your string, as it will be replaced
 with relevant values.
 
 The full list of strings is as follows:
@@ -315,10 +315,9 @@ bungeeSign=Teleport to
 #### \[Version 0.9.0.0] (WIP) EpicKnarvik97 fork
 
 - Changes entire path structure to a more modern and maven-compliant one
-- Changes package structure to net.knarcaft.stargate.*
+- Changes package structure to net.knarcraft.stargate.*
 - Moves language files into the resources folder
 - Fixes some bugs caused by language files not being read as UTF-8
-- Makes Blox into BlockLocation which now extends Location
 - Adds JavaDoc to a lot of the code
 - Adds Norwegian translation for both Norwegian languages
 - Adds missing dependency information to plugin.yml
@@ -328,9 +327,17 @@ bungeeSign=Teleport to
 - Adds underwater portals
 - Makes it easier to add more default gates
 - Adds a new default gate which can be used underwater
-- Adds more items usable as buttons (corals, chest, shulker box), which allows underwater portals
+- Adds more items usable as buttons (corals, chest, shulker-box), which allows underwater portals
 - Splits a lot of the code into smaller objects
 - Moves duplicated code into helper classes
+- Re-implements vehicle teleportation
+- Makes boat teleportation work as expected
+- Makes it possible to teleport a player riding a pig or a horse
+- Makes both nether portals and end gateways work properly without causing mayhem
+- Replaces the modX and modZ stuff with yaw calculation to make it easier to understand
+- Comments all the code
+- Extracts portal options and portal-related locations to try and reduce size
+- Rewrites tons of code to make it more readable and manageable
 
 #### \[Version 0.8.0.3] PseudoKnight fork
 
@@ -349,7 +356,7 @@ bungeeSign=Teleport to
 
 #### \[Version 0.8.0.0] PseudoKnight fork
 
-- Update for 1.13/1.14 compatibility. This changes gate layouts to use new material names instead of numeric ids. You
+- Update for 1.13/1.14 compatibility. This update changes gate layouts to use new material names instead of numeric ids. You
   need to update your gate layout configs.
 - Adds "verifyPortals" config option, which sets whether an old stargate's blocks are verified when loaded.
 - Adds UUID support. (falls back to player names)
@@ -428,11 +435,11 @@ bungeeSign=Teleport to
 
 #### \[Version 0.7.7.5]
 
-- Resolve issue of right clicking introduced in 1.3.1/2
+- Resolve issue of right-clicking introduced in 1.3.1/2
 
 #### \[Version 0.7.7.4]
 
-- Removed try/catch, it was still segfaulting.
+- Removed try/catch, it was still segfault-ing.
 - Built against 1.3.1
 
 #### \[Version 0.7.7.3]
@@ -470,11 +477,11 @@ bungeeSign=Teleport to
 #### \[Version 0.7.6.5]
 
 - Resolve issue with buttons on glass gates falling off
-- /sg reload can now be used ingame (stargate.admin.reload permission)
+- /sg reload can now be used in-game (stargate.admin.reload permission)
 
 #### \[Version 0.7.6.4]
 
-- Move blockBreak to HIGHEST priority, this resolves issues with region protection plugins
+- Move blockBreak to the HIGHEST priority, this resolves issues with region protection plugins
 
 #### \[Version 0.7.6.3]
 
@@ -562,7 +569,7 @@ bungeeSign=Teleport to
 
 #### \[Version 0.7.4.3]
 
-- Implement StargateAccessEvent, used for bypassing permission checks/denying access to gates.
+- Implement StargateAccessEvent, used for bypassing permission checks/denying gate access.
 
 #### \[Version 0.7.4.2]
 
@@ -603,7 +610,7 @@ bungeeSign=Teleport to
 
 #### \[Version 0.7.2]
 
-- Make it so you can still destroy gates in Survival mode
+- Make it so that you can still destroy gates in Survival mode
 
 #### \[Version 0.7.1]
 
@@ -775,7 +782,7 @@ bungeeSign=Teleport to
 
 #### \[Version 0.3.2]
 
-- Updated to latest RB
+- Updated to the latest RB
 - Implemented proper vehicle handling
 - Added iConomy to vehicle handling
 - Can now set cost to go to creator on use
@@ -791,8 +798,8 @@ bungeeSign=Teleport to
 
 #### \[Version 0.29]
 
-- Added iConomy support. Currently only works with iConomy 4.4 until Niji fixes 4.5
-- Thanks @Jonbas for the base iConomy implementation
+- Added iConomy support. It currently only works with iConomy 4.4 until Niji fixes 4.5
+- Thanks, @Jonbas, for the base iConomy implementation
 
 #### \[Version 0.28]
 
@@ -896,8 +903,8 @@ bungeeSign=Teleport to
 #### \[Version 0.08]
 
 - Gates can now consist of any material.
-- You can left or right click the button to open a gate
-- Gates are now initialized on sign placement, not more right clicking!
+- You can left-click or right-click the button to open a gate
+- Gates are now initialized on sign placement, not more right-clicking!
 
 #### \[Version 0.07]
 
