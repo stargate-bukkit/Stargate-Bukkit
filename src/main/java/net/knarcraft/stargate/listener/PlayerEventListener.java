@@ -217,7 +217,7 @@ public class PlayerEventListener implements Listener {
         }
 
         //Cycle portal destination
-        if ((!portal.isOpen()) && (!portal.isFixed())) {
+        if ((!portal.isOpen()) && (!portal.getOptions().isFixed())) {
             if (leftClick) {
                 portal.cycleDestination(player, -1);
             } else {

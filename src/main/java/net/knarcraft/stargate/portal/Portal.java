@@ -314,7 +314,6 @@ public class Portal {
         if (frame == null) {
             frame = relativeBlockVectorsToBlockLocations(gate.getLayout().getBorder());
         }
-
         return frame;
     }
 
@@ -398,7 +397,7 @@ public class Portal {
 
             Portal destination = getDestination();
             // Only open destination if it's not-fixed or points at this portal
-            if (!options.isRandom() && destination != null && (!destination.isFixed() ||
+            if (!options.isRandom() && destination != null && (!destination.options.isFixed() ||
                     destination.getDestinationName().equalsIgnoreCase(getName())) && !destination.isOpen()) {
                 destination.open(openFor, false);
                 destination.setDestination(this);
@@ -413,16 +412,23 @@ public class Portal {
      * @param force <p>Whether to force this portal closed, even if it's set as always on</p>
      */
     public void close(boolean force) {
-        if (!isOpen) return;
-        // Call the StargateCloseEvent
+        if (!isOpen) {
+            return;
+        }
+        //Call the StargateCloseEvent
         StargateCloseEvent event = new StargateCloseEvent(this, force);
         Stargate.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return;
+        if (event.isCancelled()) {
+            return;
+        }
         force = event.getForce();
 
-        if (options.isAlwaysOn() && !force) return; // Only close always-open if forced
+        //Only close always-open if forced to
+        if (options.isAlwaysOn() && !force) {
+            return;
+        }
 
-        // Close this gate, then the dest gate.
+        //Close this gate, then the dest gate.
         Material closedType = gate.getPortalClosedBlock();
         for (BlockLocation inside : getEntrances()) {
             Stargate.blockChangeRequestQueue.add(new BlockChangeRequest(inside, closedType, null));
@@ -468,28 +474,6 @@ public class Portal {
             return true;
         }
         return player != null && player.getName().equalsIgnoreCase(this.player.getName());
-    }
-
-    /**
-     * Gets whether this portal points to a fixed exit portal
-     *
-     * <p>A portal where portals can be chosen from a network is not fixed.</p>
-     *
-     * @return <p>True if this portal points to a fixed exit portal</p>
-     */
-    public boolean isFixed() {
-        return options.isFixed();
-    }
-
-    /**
-     * Sets whether this portal points to a fixed exit portal
-     *
-     * <p>A portal where portals can be chosen from a network is not fixed.</p>
-     *
-     * @param fixed <p>True if this portal points to a fixed exit portal</p>
-     */
-    public void setFixed(boolean fixed) {
-        options.setFixed(fixed);
     }
 
     /**
@@ -693,22 +677,25 @@ public class Portal {
         if (openingWidth > 1) {
             newOffset -= 0.5;
         }
-        exitLocation = DirectionHelper.adjustLocation(exitLocation, newOffset, 0, 0, getModX(), getModZ());
+        exitLocation = DirectionHelper.moveLocation(exitLocation, newOffset, 0, 0, getYaw());
 
         //Move large entities further from the portal, especially if this portal will teleport them at once
         double entitySize = EntityHelper.getEntityMaxSize(entity);
         int entityBoxSize = EntityHelper.getEntityMaxSizeInt(entity);
         if (entitySize > 1) {
             if (options.isAlwaysOn()) {
-                exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0, (entityBoxSize / 2D),
-                        getModX(), getModZ());
+                exitLocation = DirectionHelper.moveLocation(exitLocation, 0, 0, (entityBoxSize / 2D),
+                        getYaw());
             } else {
-                exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0,
-                        (entitySize / 2D) - 1, getModX(), getModZ());
+                exitLocation = DirectionHelper.moveLocation(exitLocation, 0, 0,
+                        (entitySize / 2D) - 1, getYaw());
             }
         }
+
+        //If a horse has a player riding it, the player will spawn inside the roof of a standard portal unless it's
+        //moved one block out.
         if (entity instanceof AbstractHorse) {
-            exitLocation = DirectionHelper.adjustLocation(exitLocation, 0, 0, 1, getModX(), getModZ());
+            exitLocation = DirectionHelper.moveLocation(exitLocation, 0, 0, 1, getYaw());
         }
 
         return exitLocation;
@@ -772,8 +759,8 @@ public class Portal {
             //Get the chunk in front of the gate corner
             Location cornerLocation = getBlockAt(vector).getLocation();
             int blockOffset = options.isBackwards() ? -5 : 5;
-            Location fiveBlocksForward = DirectionHelper.adjustLocation(cornerLocation, 0, 0, blockOffset,
-                    getModX(), getModZ());
+            Location fiveBlocksForward = DirectionHelper.moveLocation(cornerLocation, 0, 0, blockOffset,
+                    getYaw());
             Chunk forwardChunk = fiveBlocksForward.getChunk();
 
             //Load the chunks
@@ -923,7 +910,7 @@ public class Portal {
         }
 
         Stargate.activePortalsQueue.remove(this);
-        if (isFixed()) {
+        if (options.isFixed()) {
             return;
         }
         destinations.clear();
@@ -938,7 +925,7 @@ public class Portal {
      * @return <p>Whether this portal is active</p>
      */
     public boolean isActive() {
-        return isFixed() || (destinations.size() > 0);
+        return options.isFixed() || (destinations.size() > 0);
     }
 
     /**

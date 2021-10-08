@@ -86,6 +86,18 @@ public final class DirectionHelper {
     }
 
     /**
+     * Gets a block location relative to another
+     *
+     * @param topLeft <p>The block location to start at (Usually the top-left block of a portal)</p>
+     * @param vector  <p>The relative vector describing the relative location</p>
+     * @param yaw     <p>The yaw pointing outwards from the portal</p>
+     * @return <p>A block location relative to the given location</p>
+     */
+    public static BlockLocation getBlockAt(BlockLocation topLeft, RelativeBlockVector vector, double yaw) {
+        return topLeft.getRelativeLocation(vector, yaw);
+    }
+
+    /**
      * Gets the block at a relative block vector location
      *
      * @param vector <p>The relative block vector</p>
@@ -96,19 +108,39 @@ public final class DirectionHelper {
     }
 
     /**
-     * Adds a relative block vector to a location, accounting for direction
+     * Moves a location relatively
      *
-     * @param location <p>The location to adjust</p>
-     * @param right    <p>The amount of blocks to the right to adjust</p>
-     * @param depth    <p>The amount of blocks upward to adjust</p>
-     * @param distance <p>The distance outward to adjust</p>
-     * @param modX     <p>The x modifier to use</p>
-     * @param modZ     <p>The z modifier to use</p>
-     * @return <p>The altered location</p>
+     * @param location <p>The location to move</p>
+     * @param right    <p>The amount to go right (When looking at the front of a portal)</p>
+     * @param depth    <p>The amount to go downward (When looking at the front of a portal)</p>
+     * @param distance <p>The amount to go outward (When looking a the front of a portal)</p>
+     * @param yaw      <p>The yaw when looking directly outwards from a portal</p>
+     * @return <p>A location relative to the given location</p>
      */
-    public static Location adjustLocation(Location location, double right, double depth, double distance, int modX,
-                                          int modZ) {
-        return location.add(-right * modX + distance * modZ, depth, -right * modZ + -distance * modX);
+    public static Location moveLocation(Location location, double right, double depth, double distance, double yaw) {
+        return location.add(getCoordinateVectorFromRelativeVector(right, depth, distance, yaw));
+    }
+
+    /**
+     * Gets a vector in Minecraft's normal X,Y,Z-space from a relative block vector
+     *
+     * @param right    <p>The amount of right steps from the top-left origin</p>
+     * @param depth    <p>The amount of downward steps from the top-left origin</p>
+     * @param distance <p>The distance outward from the top-left origin</p>
+     * @param yaw      <p>The yaw when looking directly outwards from a portal</p>
+     * @return <p>A normal vector</p>
+     */
+    public static Vector getCoordinateVectorFromRelativeVector(double right, double depth, double distance, double yaw) {
+        Vector distanceVector = DirectionHelper.getDirectionVectorFromYaw(yaw);
+        distanceVector.multiply(distance);
+
+        Vector rightVector = DirectionHelper.getDirectionVectorFromYaw(yaw - 90);
+        rightVector.multiply(right);
+
+        Vector depthVector = new Vector(0, -1, 0);
+        depthVector.multiply(depth);
+
+        return distanceVector.add(rightVector).add(depthVector);
     }
 
     /**

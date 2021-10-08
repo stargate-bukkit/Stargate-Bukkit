@@ -50,7 +50,7 @@ public final class PermissionHelper {
         }
 
         //Gate that someone else is using -- Deny access
-        if ((!portal.isFixed()) && portal.isActive() && (portal.getActivePlayer() != player)) {
+        if ((!portal.getOptions().isFixed()) && portal.isActive() && (portal.getActivePlayer() != player)) {
             Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
             return;
         }

@@ -85,7 +85,7 @@ public class PortalHandler {
                 continue;
             }
             //Check if destination is a fixed portal not pointing to this portal
-            if (portal.isFixed() && !portal.getDestinationName().equalsIgnoreCase(entrancePortal.getName())) {
+            if (portal.getOptions().isFixed() && !portal.getDestinationName().equalsIgnoreCase(entrancePortal.getName())) {
                 continue;
             }
             //Allow random use by non-players (Minecarts)
@@ -157,7 +157,7 @@ public class PortalHandler {
                     continue;
                 }
                 //Update the portal's sign
-                if (origin.isFixed()) {
+                if (origin.getOptions().isFixed()) {
                     origin.drawSign();
                 }
                 //Close portal without destination
@@ -186,7 +186,8 @@ public class PortalHandler {
      * @param portal <p>The portal to register</p>
      */
     private static void registerPortal(Portal portal) {
-        portal.setFixed(portal.getDestinationName().length() > 0 || portal.getOptions().isRandom() || portal.getOptions().isBungee());
+        portal.getOptions().setFixed(portal.getDestinationName().length() > 0 || portal.getOptions().isRandom() ||
+                portal.getOptions().isBungee());
 
         String portalName = portal.getName().toLowerCase();
         String networkName = portal.getNetwork().toLowerCase();
@@ -615,7 +616,7 @@ public class PortalHandler {
                 continue;
             }
             //Update sign of fixed gates pointing at this gate
-            if (origin.isFixed()) {
+            if (origin.getOptions().isFixed()) {
                 origin.drawSign();
             }
             //Open any always on portal pointing at this portal
@@ -800,7 +801,7 @@ public class PortalHandler {
                 builder.append(portal.getYaw()).append(':');
                 builder.append(portal.getTopLeft().toString()).append(':');
                 builder.append(portal.getGate().getFilename()).append(':');
-                builder.append(portal.isFixed() ? portal.getDestinationName() : "").append(':');
+                builder.append(portal.getOptions().isFixed() ? portal.getDestinationName() : "").append(':');
                 builder.append(portal.getNetwork()).append(':');
                 UUID owner = portal.getOwnerUUID();
                 if (owner != null) {
@@ -1039,7 +1040,7 @@ public class PortalHandler {
             portalCount++;
 
             //Open the gate if it's set as always open or if it's a bungee gate
-            if (portal.isFixed() && (Stargate.enableBungee && portal.getOptions().isBungee() ||
+            if (portal.getOptions().isFixed() && (Stargate.enableBungee && portal.getOptions().isBungee() ||
                     portal.getDestination() != null && portal.getOptions().isAlwaysOn())) {
                 portal.open(true);
                 openCount++;

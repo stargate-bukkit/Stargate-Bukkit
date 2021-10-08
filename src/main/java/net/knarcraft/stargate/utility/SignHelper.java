@@ -28,7 +28,7 @@ public final class SignHelper {
             if (portal.getOptions().isBungee()) {
                 //Bungee sign
                 drawBungeeSign(sign, portal);
-            } else if (portal.isFixed()) {
+            } else if (portal.getOptions().isFixed()) {
                 //Sign pointing at one other portal
                 drawFixedSign(sign, portal);
             } else {

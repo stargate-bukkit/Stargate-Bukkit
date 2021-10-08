@@ -1,5 +1,6 @@
 package net.knarcraft.stargate.container;
 
+import net.knarcraft.stargate.utility.DirectionHelper;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -8,6 +9,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Sign;
 import org.bukkit.block.data.type.WallSign;
+import org.bukkit.util.Vector;
 
 /**
  * This class represents a block location
@@ -79,6 +81,19 @@ public class BlockLocation extends Location {
         newLocation.setYaw(yaw);
         newLocation.setPitch(rotY);
         return newLocation.add(x, y, z);
+    }
+
+    /**
+     * Gets a location relative to this block location
+     *
+     * @param vector <p>The relative block vector describing the relative location</p>
+     * @param yaw    <p>The yaw pointing in the distance direction</p>
+     * @return <p>A location relative to this location</p>
+     */
+    public BlockLocation getRelativeLocation(RelativeBlockVector vector, double yaw) {
+        Vector combined = DirectionHelper.getCoordinateVectorFromRelativeVector(vector.getRight(), vector.getDepth(),
+                vector.getDistance(), yaw);
+        return makeRelative(combined.getBlockX(), combined.getBlockY(), combined.getBlockZ());
     }
 
     /**
