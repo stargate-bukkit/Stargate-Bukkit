@@ -137,10 +137,12 @@ while the per-gate costs re defined in the .gate files. To define a certain cost
 .gate file:
 
 ```
-usecost=5
-destroycost=5
-createcost=5
-toowner=true
+economy:
+  useEconomy: true
+  createCost: 5
+  destroyCost: 5
+  useCost: 5
+  toOwner: true
 ```
 
 # Custom Gate Layout
@@ -231,34 +233,44 @@ There is a default gate type for underwater gates. There are no real restriction
 normal buttons cannot be used since they'd fall off. Using wall coral fans work much better, though `CHEST` and
 `SHULKER_BOX` works too.
 
-Using `AIR` for a closed underwater gate looks weird, so `WATER` might be better.
+Using `AIR` for a closed underwater gate looks weird, so `WATER` might be better. If using `AIR` for the closed gate,
+you need to make sure it actually contains air when creating it.
+For partially submerged portals, like ones used for boat teleportation, you need to keep water away
+from the portal entrance/opening until it's been created.
 
 # Configuration
 
 ```
-default-gate-network - The default gate network
-portal-folder - The folder your portal databases are saved in
-gate-folder - The folder containing your .gate files
-destroyexplosion - Whether to destroy a stargate with explosions, or stop an explosion if it contains a gates controls.
-useeconomy - Whether or not to use Economy
-createcost - The cost to create a stargate
-destroycost - The cost to destroy a stargate (Can be negative for a "refund"
-usecost - The cost to use a stargate
-chargefreedestination - Enable to allow free travel from any gate to a free gate
-freegatesgreen - Enable to make gates that won't cost the player money show up as green
-toowner - Whether the money from gate-use goes to the owner or nobody
-maxgates - If non-zero, will define the maximum amount of gates allowed on any network.
-chosenLanguage - The language to use (Included languages: en, de)
-destMemory - Whether to set the first destination as the last used destination for all gates
-ignoreEntrance - Set this option to true to not check the entrance of a gate on startup. This is a workaround for snowmen breaking gates.
-handleVehicles - Whether or not to handle vehicles going through gates. Set to false to disallow vehicles (Manned or not) going through gates.
-sortLists - If true, network lists will be sorted alphabetically.
-protectEntrance - If true, will protect from users breaking gate entrance blocks (This is more resource intensive than the usual check, and should only be enabled for servers that use solid open/close blocks)
-signColor: This allows you to specify the color of the gate signs. Valid colors:
-verifyPortals: Whether or not all the non-sign blocks are checked to match the gate layout when an old stargate is loaded at startup.
-
-debug: Whether to show massive debug output
-permdebug: Whether to show massive permission debug output
+language - The language to use (Included languages: en, de, es, fr, hu, it, nb-no, nl, nn-no, pt-br, ru)
+folders:
+  portalFolder - The folder your portal databases are saved in
+  gateFolder - The folder containing your .gate files
+gates:
+  maxGatesEachNetwork - If non-zero, will define the maximum amount of gates allowed on any network.
+  defaultGateNetwork - The default gate network
+  cosmetic:
+    rememberDestination - Whether to set the first destination as the last used destination for all gates
+    sortNetworkDestinations - If true, network lists will be sorted alphabetically.
+    signColor - This allows you to specify the color of the gate signs.
+  integrity:
+    destroyedByExplosion - Whether to destroy a stargate with explosions, or stop an explosion if it contains a gates controls.
+    verifyPortals - Whether or not all the non-sign blocks are checked to match the gate layout when an old stargate is loaded at startup.
+    protectEntrance - If true, will protect from users breaking gate entrance blocks (This is more resource intensive than the usual check, and should only be enabled for servers that use solid open/close blocks)
+    ignoreEntranceSet this option to true to not check the entrance of a gate on startup. This is a workaround for snowmen breaking gates.
+  functionality:
+    enableBungee - Enable this for BungeeCord support. This allows portals across Bungee servers.
+    handleVehicles - Whether or not to handle vehicles going through gates. Set to false to disallow vehicles (Manned or not) going through gates.
+economy:
+  useEconomy - Whether or not to use Economy
+  createCost - The cost to create a stargate
+  destroyCost - The cost to destroy a stargate (Can be negative for a "refund"
+  useCost - The cost to use a stargate
+  toOwner - Whether the money from gate-use goes to the owner or nobody
+  chargeFreeDestination - Enable to allow free travel from any gate to a free gate
+  freeGatesGreen - Enable to make gates that won't cost the player money show up as green
+debugging:
+  debug - Whether to show massive debug output
+  permissionDebug - Whether to show massive permission debug output
 ```
 
 # Message Customization
