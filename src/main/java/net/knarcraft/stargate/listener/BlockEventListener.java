@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowman;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,6 +22,7 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
 import java.util.List;
@@ -30,6 +32,26 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 public class BlockEventListener implements Listener {
+
+    /**
+     * Detects snowmen ruining portals
+     *
+     * @param event <p>The triggered event</p>
+     */
+    @EventHandler
+    public void onBlockFormedByEntity(EntityBlockFormEvent event) {
+        if (event.isCancelled() || (!Stargate.protectEntrance && !Stargate.verifyPortals)) {
+            return;
+        }
+        //We are only interested in snowman events
+        if (!(event.getEntity() instanceof Snowman)) {
+            return;
+        }
+        //Cancel the event if a snowman is trying to place snow in the portal's entrance
+        if (PortalHandler.getByEntrance(event.getBlock()) != null) {
+            event.setCancelled(true);
+        }
+    }
 
     /**
      * Detects sign changes to detect if the user is creating a new gate
@@ -66,7 +88,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.isCancelled()) {
+        if (event.isCancelled() || !Stargate.protectEntrance) {
             return;
         }
         Block block = event.getBlock();
@@ -74,7 +96,7 @@ public class BlockEventListener implements Listener {
 
         //Decide if a portal is broken
         Portal portal = PortalHandler.getByBlock(block);
-        if (portal == null && Stargate.protectEntrance) {
+        if (portal == null) {
             portal = PortalHandler.getByEntrance(block);
         }
         if (portal == null) {

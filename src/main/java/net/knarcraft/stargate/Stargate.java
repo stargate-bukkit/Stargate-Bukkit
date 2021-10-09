@@ -68,8 +68,6 @@ public class Stargate extends JavaPlugin {
     public static boolean enableBungee = true;
     public static boolean verifyPortals = true;
     private static boolean destroyExplosion = false;
-    //Temp workaround for snowmen, don't check gate entrance
-    public static boolean ignoreEntrance = false;
     private String dataFolderPath;
 
     public static ChatColor signColor;
@@ -453,7 +451,6 @@ public class Stargate extends JavaPlugin {
         //Integrity
         protectEntrance = newConfig.getBoolean("gates.integrity.protectEntrance");
         verifyPortals = newConfig.getBoolean("gates.integrity.verifyPortals");
-        ignoreEntrance = newConfig.getBoolean("gates.integrity.ignoreEntrance");
         destroyExplosion = newConfig.getBoolean("gates.integrity.destroyedByExplosion");
 
         //Cosmetic

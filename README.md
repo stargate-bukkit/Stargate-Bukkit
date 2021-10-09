@@ -255,7 +255,6 @@ gates:
     destroyedByExplosion - Whether to destroy a stargate with explosions, or stop an explosion if it contains a gates controls.
     verifyPortals - Whether or not all the non-sign blocks are checked to match the gate layout when an old stargate is loaded at startup.
     protectEntrance - If true, will protect from users breaking gate entrance blocks (This is more resource intensive than the usual check, and should only be enabled for servers that use solid open/close blocks)
-    ignoreEntranceSet this option to true to not check the entrance of a gate on startup. This is a workaround for snowmen breaking gates.
   functionality:
     enableBungee - Enable this for BungeeCord support. This allows portals across Bungee servers.
     handleVehicles - Whether or not to handle vehicles going through gates. Set to false to disallow vehicles (Manned or not) going through gates.
@@ -349,6 +348,7 @@ bungeeSign=Teleport to
 - Comments all the code
 - Extracts portal options and portal-related locations to try and reduce size
 - Rewrites tons of code to make it more readable and manageable
+- Implements proper snowman snow blocking, and removes the "temporary" ignoreEntrances option
 
 #### \[Version 0.8.0.3] PseudoKnight fork
 

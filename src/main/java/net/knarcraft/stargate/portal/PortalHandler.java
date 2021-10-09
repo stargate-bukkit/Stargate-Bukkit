@@ -52,6 +52,12 @@ public class PortalHandler {
 
     }
 
+    /**
+     * Gets names of all portals within a network
+     *
+     * @param network <p>The network to get portals from</p>
+     * @return <p>A list of portal names</p>
+     */
     public static List<String> getNetwork(String network) {
         return allPortalNetworks.get(network.toLowerCase());
     }

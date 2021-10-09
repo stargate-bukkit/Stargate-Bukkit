@@ -8,7 +8,6 @@
 # maxGatesEachNetwork - The maximum number of gates allowed on a network - 0 for unlimited
 # language - The language file to load for messages
 # rememberDestination - Whether to remember the cursor location between uses
-# ignoreEntrance - Ignore the entrance blocks of a gate when checking. Used to work around snowmen
 # handleVehicles - Whether to allow vehicles through gates
 # sortNetworkDestinations - Whether to sort network lists alphabetically
 # protectEntrance - Whether to protect gate entrance material (More resource intensive. Only enable if using destroyable open/closed material)
@@ -45,7 +44,6 @@ gates:
     destroyedByExplosion: false
     verifyPortals: false
     protectEntrance: false
-    ignoreEntrance: false
   functionality:
     enableBungee: false
     handleVehicles: true

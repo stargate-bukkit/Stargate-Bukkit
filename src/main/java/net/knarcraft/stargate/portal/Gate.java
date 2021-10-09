@@ -214,16 +214,13 @@ public class Gate {
      * @return <p>Whether this is used in the context of creating a new gate</p>
      */
     private boolean verifyGateEntrancesMatch(BlockLocation topLeft, double yaw, boolean onCreate) {
-        if (Stargate.ignoreEntrance) {
-            return true;
-        }
         Stargate.debug("verifyGateEntrancesMatch", String.valueOf(topLeft));
         for (RelativeBlockVector entranceVector : layout.getEntrances()) {
             Stargate.debug("verifyGateEntrancesMatch", String.valueOf(entranceVector));
             Material type = getBlockAt(topLeft, entranceVector, yaw).getType();
 
-            //Ignore entrance if it's air, and we're creating a new gate
-            if (onCreate && type == Material.AIR) {
+            //Ignore entrance if it's air or water, and we're creating a new gate
+            if (onCreate && (type == Material.AIR || type == Material.WATER)) {
                 continue;
             }
 
