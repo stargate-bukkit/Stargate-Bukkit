@@ -112,8 +112,7 @@ public class PlayerEventListener implements Listener {
         if (playerVehicle != null && !(playerVehicle instanceof Boat) && !(playerVehicle instanceof RideableMinecart)) {
 
             //Make sure the horse can be sat on
-            if (playerVehicle instanceof AbstractHorse) {
-                AbstractHorse horse = ((AbstractHorse) playerVehicle);
+            if (playerVehicle instanceof AbstractHorse horse) {
                 //Make sure the horse is properly tamed
                 if (!horse.isTamed()) {
                     horse.setTamed(true);

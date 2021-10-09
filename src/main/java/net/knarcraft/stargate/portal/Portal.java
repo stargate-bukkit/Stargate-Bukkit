@@ -980,14 +980,13 @@ public class Portal {
      */
     public final void drawSign() {
         BlockState state = getSignLocation().getBlock().getState();
-        if (!(state instanceof Sign)) {
+        if (!(state instanceof Sign sign)) {
             Stargate.logger.warning(Stargate.getString("prefix") + "Sign block is not a Sign object");
             Stargate.debug("Portal::drawSign", "Block: " + getSignLocation().getBlock().getType() + " @ "
                     + getSignLocation().getBlock().getLocation());
             return;
         }
 
-        Sign sign = (Sign) state;
         SignHelper.drawSign(sign, this);
     }
 
