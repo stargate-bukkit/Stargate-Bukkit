@@ -114,7 +114,9 @@ public class PlayerEventListener implements Listener {
             //Make sure the horse can be sat on
             if (playerVehicle instanceof AbstractHorse) {
                 AbstractHorse horse = ((AbstractHorse) playerVehicle);
+                //Make sure the horse is properly tamed
                 if (!horse.isTamed()) {
+                    horse.setTamed(true);
                     horse.setOwner(player);
                 }
             }
