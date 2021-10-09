@@ -513,7 +513,7 @@ public class Portal {
     /**
      * Adjusts the rotation of the player to face out from the portal
      *
-     * @param exit   <p>The location the player will exit from</p>
+     * @param exit <p>The location the player will exit from</p>
      */
     private void adjustRotation(Location exit) {
         int adjust = 0;

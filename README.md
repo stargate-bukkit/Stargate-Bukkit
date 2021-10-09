@@ -234,9 +234,8 @@ normal buttons cannot be used since they'd fall off. Using wall coral fans work 
 `SHULKER_BOX` works too.
 
 Using `AIR` for a closed underwater gate looks weird, so `WATER` might be better. If using `AIR` for the closed gate,
-you need to make sure it actually contains air when creating it.
-For partially submerged portals, like ones used for boat teleportation, you need to keep water away
-from the portal entrance/opening until it's been created.
+you need to make sure it actually contains air when creating it. For partially submerged portals, like ones used for
+boat teleportation, you need to keep water away from the portal entrance/opening until it's been created.
 
 # Configuration
 
@@ -278,9 +277,9 @@ debugging:
 It is possible to customize all the messages Stargate displays, including the [Stargate] prefix. You can find the
 strings in plugins/Stargate/lang/chosenLanguage.txt.
 
-If a string is removed, or left blank, it will default to the default english string. There are some special cases 
-regarding messages. When you see %variableName%, you need to keep this part in your string, as it will be replaced
-with relevant values.
+If a string is removed, or left blank, it will default to the default english string. There are some special cases
+regarding messages. When you see %variableName%, you need to keep this part in your string, as it will be replaced with
+relevant values.
 
 The full list of strings is as follows:
 
@@ -368,8 +367,8 @@ bungeeSign=Teleport to
 
 #### \[Version 0.8.0.0] PseudoKnight fork
 
-- Update for 1.13/1.14 compatibility. This update changes gate layouts to use new material names instead of numeric ids. You
-  need to update your gate layout configs.
+- Update for 1.13/1.14 compatibility. This update changes gate layouts to use new material names instead of numeric ids.
+  You need to update your gate layout configs.
 - Adds "verifyPortals" config option, which sets whether an old stargate's blocks are verified when loaded.
 - Adds UUID support. (falls back to player names)
 

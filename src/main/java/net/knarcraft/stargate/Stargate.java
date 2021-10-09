@@ -73,11 +73,11 @@ public class Stargate extends JavaPlugin {
     private String dataFolderPath;
 
     public static ChatColor signColor;
-    // Used for debug
+    //Used for debug
     public static boolean debuggingEnabled = false;
     public static boolean permissionDebuggingEnabled = false;
 
-    // HashMap of player names for Bungee support
+    //HashMap of player names for Bungee support
     public static final Map<String, String> bungeeQueue = new HashMap<>();
     //World names that contain stargates
     public static final HashSet<String> managedWorlds = new HashSet<>();
@@ -189,7 +189,9 @@ public class Stargate extends JavaPlugin {
      * @param error   <p>Whether the message sent is an error</p>
      */
     private static void sendMessage(CommandSender player, String message, boolean error) {
-        if (message.isEmpty()) return;
+        if (message.isEmpty()) {
+            return;
+        }
         //Replace color codes with green? What's the deal with the dollar sign?
         message = message.replaceAll("(&([a-f0-9]))", "\u00A7$2");
         if (error) {
@@ -330,7 +332,7 @@ public class Stargate extends JavaPlugin {
         this.loadGates();
         this.loadAllPortals();
 
-        // Check to see if Economy is loaded yet.
+        //Check to see if Economy is loaded yet.
         setupVaultEconomy();
 
         //Run necessary threads

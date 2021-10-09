@@ -30,7 +30,7 @@ public class Gate {
     private final Material portalClosedBlock;
     private final Material portalButton;
 
-    // Economy information
+    //Economy information
     private final int useCost;
     private final int createCost;
     private final int destroyCost;

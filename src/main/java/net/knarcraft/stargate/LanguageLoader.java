@@ -16,7 +16,6 @@ import java.util.Set;
  */
 public class LanguageLoader {
 
-    // Variables
     private final String languageFolder;
     private final Map<String, String> loadedBackupStrings;
     private String chosenLanguage;

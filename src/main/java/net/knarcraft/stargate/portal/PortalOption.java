@@ -1,5 +1,8 @@
 package net.knarcraft.stargate.portal;
 
+/**
+ * Each enum value represents one option a portal can have/use
+ */
 public enum PortalOption {
 
     /**

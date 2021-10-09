@@ -13,10 +13,10 @@ public class StarGateThread implements Runnable {
     @Override
     public void run() {
         long time = System.currentTimeMillis() / 1000;
-        // Close open portals
+        //Close open portals
         for (Iterator<Portal> iterator = Stargate.openPortalsQueue.iterator(); iterator.hasNext(); ) {
             Portal portal = iterator.next();
-            // Skip always open and non-open gates
+            //Skip always open and non-open gates
             if (portal.getOptions().isAlwaysOn() || !portal.isOpen()) {
                 continue;
             }
@@ -25,7 +25,7 @@ public class StarGateThread implements Runnable {
                 iterator.remove();
             }
         }
-        // Deactivate active portals
+        //Deactivate active portals
         for (Iterator<Portal> iterator = Stargate.activePortalsQueue.iterator(); iterator.hasNext(); ) {
             Portal portal = iterator.next();
             if (!portal.isActive()) {
