@@ -499,13 +499,14 @@ public class Portal {
             exit = stargatePortalEvent.getExit();
         }
 
+        //Load chunks to make sure not to teleport to the void
         loadChunks();
 
-        // If no event is passed in, assume it's a teleport, and act as such
+        //If no event is passed in, assume it's a teleport, and act as such
         if (event == null) {
             player.teleport(exit);
         } else {
-            // The new method to teleport in a move event is set the "to" field.
+            //The new method to teleport in a move event is set the "to" field.
             event.setTo(exit);
         }
     }
@@ -546,13 +547,15 @@ public class Portal {
 
         List<Entity> passengers = vehicle.getPassengers();
 
+        //Load chunks to make sure not to teleport to the void
         loadChunks();
 
         if (!passengers.isEmpty()) {
             if (vehicle instanceof RideableMinecart || vehicle instanceof Boat) {
                 World vehicleWorld = exit.getWorld();
                 if (vehicleWorld == null) {
-                    Stargate.logger.warning(Stargate.getString("prefix") + "Unable to get the world to teleport the vehicle to");
+                    Stargate.logger.warning(Stargate.getString("prefix") +
+                            "Unable to get the world to teleport the vehicle to");
                     return;
                 }
                 putPassengersInNewVehicle(vehicle, passengers, vehicleWorld, exit, newVelocity);
@@ -593,7 +596,7 @@ public class Portal {
         Vehicle newVehicle = vehicleWorld.spawn(exit, vehicle.getClass());
         vehicle.eject();
         vehicle.remove();
-        vehicle.setRotation(exit.getYaw(), exit.getPitch());
+        newVehicle.setRotation(exit.getYaw(), exit.getPitch());
         handleVehiclePassengers(passengers, newVehicle);
         Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate,
                 () -> newVehicle.setVelocity(newVelocity), 1);
@@ -643,7 +646,8 @@ public class Portal {
                 }
             }
         } else {
-            Stargate.logger.log(Level.WARNING, Stargate.getString("prefix") + "Missing destination point in .gate file " + gate.getFilename());
+            Stargate.logger.log(Level.WARNING, Stargate.getString("prefix") +
+                    "Missing destination point in .gate file " + gate.getFilename());
         }
 
         return adjustExitLocation(traveller, exitLocation);
@@ -734,13 +738,15 @@ public class Portal {
                 Stargate.debug("adjustExitLocation", "Added half a block to get above a slab");
                 exitLocation.add(0, 0.5, 0);
             } else if (blockData.getMaterial() == Material.WATER) {
+                //If there's water outside, go one up to allow for boat teleportation
                 exitLocation.add(0, 1, 0);
             }
 
             exitLocation.setPitch(traveller.getPitch());
             return exitLocation;
         } else {
-            Stargate.logger.log(Level.WARNING, Stargate.getString("prefix") + "Unable to generate exit location");
+            Stargate.logger.log(Level.WARNING, Stargate.getString("prefix") +
+                    "Unable to generate exit location");
         }
         return traveller;
     }
