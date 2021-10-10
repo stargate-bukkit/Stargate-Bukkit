@@ -82,9 +82,11 @@ public final class SignHelper {
         if (freeGatesGreen) {
             Portal destination = PortalHandler.getByName(portal.getDestinationName(), portal.getNetwork());
             boolean green = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
-            Stargate.setLine(sign, signLineIndex, (green ? ChatColor.DARK_GREEN : "") + ">" + portal.getDestinationName() + "<");
+            Stargate.setLine(sign, signLineIndex, (green ? ChatColor.DARK_GREEN : "") + ">" +
+                    portal.getDestinationName() + (green ? ChatColor.DARK_GREEN : "") + "<");
         } else {
-            Stargate.setLine(sign, signLineIndex, " >" + portal.getDestinationName() + "< ");
+            Stargate.setLine(sign, signLineIndex, ChatColor.BLACK + " >" + portal.getDestinationName() +
+                    ChatColor.BLACK + "< ");
         }
     }
 
