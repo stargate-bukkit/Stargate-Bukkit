@@ -14,11 +14,10 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.AbstractHorse;
-import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
-import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -112,7 +111,7 @@ public class PlayerEventListener implements Listener {
         if (playerVehicle != null && !Stargate.handleVehicles) {
             return;
         }
-        if (playerVehicle != null && !(playerVehicle instanceof Boat) && !(playerVehicle instanceof RideableMinecart)) {
+        if (playerVehicle instanceof LivingEntity) {
             //Make sure the horse can be sat on
             if (playerVehicle instanceof AbstractHorse horse) {
                 //Make sure the horse is properly tamed
