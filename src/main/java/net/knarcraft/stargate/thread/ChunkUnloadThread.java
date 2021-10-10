@@ -18,17 +18,12 @@ public class ChunkUnloadThread implements Runnable {
 
         //Peek at the first element to check if the chunk should be unloaded
         ChunkUnloadRequest firstElement = unloadQueue.peek();
-        if (firstElement != null) {
-            Stargate.debug("ChunkUnloadThread", "Found chunk unload request: " + firstElement);
-            Stargate.debug("ChunkUnloadThread", "Current time: " + systemNanoTime);
-        }
         //Repeat until all un-loadable chunks have been processed
         while (firstElement != null && firstElement.getUnloadNanoTime() < systemNanoTime) {
             unloadQueue.remove();
             Chunk chunkToUnload = firstElement.getChunkToUnload();
             //Allow the chunk to be unloaded
             chunkToUnload.removePluginChunkTicket(Stargate.stargate);
-            Stargate.debug("ChunkUnloadThread", "Unloaded chunk " + chunkToUnload);
             firstElement = unloadQueue.peek();
         }
     }

@@ -778,7 +778,6 @@ public class Portal {
             chunk.addPluginChunkTicket(Stargate.stargate);
             //Allow the chunk to unload after 3 seconds
             Stargate.addChunkUnloadRequest(new ChunkUnloadRequest(chunk, 3000L));
-            Stargate.debug("loadChunks", "Added chunk unloading request for chunk " + chunk);
         }
     }
 
