@@ -501,6 +501,8 @@ public class Portal {
 
         //Load chunks to make sure not to teleport to the void
         loadChunks();
+        Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate,
+                this::unloadChunks, 4000);
 
         //If no event is passed in, assume it's a teleport, and act as such
         if (event == null) {
@@ -549,6 +551,8 @@ public class Portal {
 
         //Load chunks to make sure not to teleport to the void
         loadChunks();
+        Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate,
+                this::unloadChunks, 4000);
 
         if (!passengers.isEmpty()) {
             if (vehicle instanceof RideableMinecart || vehicle instanceof Boat) {
@@ -579,7 +583,7 @@ public class Portal {
     private void teleportLivingVehicle(Vehicle vehicle, Location exit, List<Entity> passengers) {
         vehicle.eject();
         vehicle.teleport(exit);
-        handleVehiclePassengers(passengers, vehicle);
+        handleVehiclePassengers(passengers, vehicle, 6);
     }
 
     /**
@@ -597,7 +601,7 @@ public class Portal {
         vehicle.eject();
         vehicle.remove();
         newVehicle.setRotation(exit.getYaw(), exit.getPitch());
-        handleVehiclePassengers(passengers, newVehicle);
+        handleVehiclePassengers(passengers, newVehicle, 1);
         Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate,
                 () -> newVehicle.setVelocity(newVelocity), 1);
     }
@@ -607,8 +611,9 @@ public class Portal {
      *
      * @param passengers    <p>The passengers to handle</p>
      * @param targetVehicle <p>The vehicle the passengers should be put into</p>
+     * @param delay         <p>The amount of milliseconds to wait before adding the vehicle passengers</p>
      */
-    private void handleVehiclePassengers(List<Entity> passengers, Vehicle targetVehicle) {
+    private void handleVehiclePassengers(List<Entity> passengers, Vehicle targetVehicle, long delay) {
         for (Entity passenger : passengers) {
             passenger.eject();
             //TODO: Fix random java.lang.IllegalStateException: Removing entity while ticking!
@@ -616,7 +621,11 @@ public class Portal {
                 Stargate.debug("handleVehiclePassengers", "Failed to teleport passenger");
             }
             Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate,
-                    () -> targetVehicle.addPassenger(passenger), 6);
+                    () -> {
+                        if (!targetVehicle.addPassenger(passenger)) {
+                            Stargate.debug("handleVehiclePassengers", "Failed to add passenger");
+                        }
+                    }, delay);
         }
     }
 
@@ -752,36 +761,47 @@ public class Portal {
     }
 
     /**
-     * Loads the chunks at the portal's corners
+     * Unloads the chunks outside the portal's entrance
      */
-    public void loadChunks() {
-        for (RelativeBlockVector vector : gate.getLayout().getCorners()) {
-            Chunk chunk = getBlockAt(vector).getChunk();
-
-            //Get the chunk in front of the gate corner
-            Location cornerLocation = getBlockAt(vector).getLocation();
-            int blockOffset = options.isBackwards() ? -5 : 5;
-            Location fiveBlocksForward = DirectionHelper.moveLocation(cornerLocation, 0, 0, blockOffset,
-                    getYaw());
-            Chunk forwardChunk = fiveBlocksForward.getChunk();
-
-            //Load the chunks
-            loadOneChunk(chunk);
-            loadOneChunk(forwardChunk);
+    private void unloadChunks() {
+        for (Chunk chunk : getChunksToLoad()) {
+            chunk.removePluginChunkTicket(Stargate.stargate);
         }
     }
 
     /**
-     * Loads one chunk
-     *
-     * @param chunk <p>The chunk to load</p>
+     * Loads the chunks outside the portal's entrance
      */
-    private void loadOneChunk(Chunk chunk) {
-        if (!getWorld().isChunkLoaded(chunk)) {
-            if (!chunk.load()) {
-                Stargate.debug("loadChunks", "Failed to load chunk " + chunk);
+    private void loadChunks() {
+        for (Chunk chunk : getChunksToLoad()) {
+            chunk.addPluginChunkTicket(Stargate.stargate);
+        }
+    }
+
+    /**
+     * Gets all relevant chunks near this portal's entrance which need to be loaded before teleportation
+     *
+     * @return <p>A list of chunks to load</p>
+     */
+    private List<Chunk> getChunksToLoad() {
+        List<Chunk> chunksToLoad = new ArrayList<>();
+        for (RelativeBlockVector vector : gate.getLayout().getEntrances()) {
+            BlockLocation entranceLocation = getBlockAt(vector);
+            Chunk chunk = entranceLocation.getChunk();
+            if (!chunksToLoad.contains(chunk)) {
+                chunksToLoad.add(chunk);
+            }
+
+            //Get the chunk in front of the gate corner
+            int blockOffset = options.isBackwards() ? -5 : 5;
+            Location fiveBlocksForward = DirectionHelper.moveLocation(entranceLocation, 0, 0, blockOffset,
+                    getYaw());
+            Chunk forwardChunk = fiveBlocksForward.getChunk();
+            if (!chunksToLoad.contains(forwardChunk)) {
+                chunksToLoad.add(forwardChunk);
             }
         }
+        return chunksToLoad;
     }
 
     /**
