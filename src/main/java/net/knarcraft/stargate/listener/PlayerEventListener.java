@@ -109,11 +109,10 @@ public class PlayerEventListener implements Listener {
 
         //Teleport the vehicle to the player
         Entity playerVehicle = player.getVehicle();
+        if (playerVehicle != null && !Stargate.handleVehicles) {
+            return;
+        }
         if (playerVehicle != null && !(playerVehicle instanceof Boat) && !(playerVehicle instanceof RideableMinecart)) {
-            if (!Stargate.handleVehicles) {
-                return;
-            }
-
             //Make sure the horse can be sat on
             if (playerVehicle instanceof AbstractHorse horse) {
                 //Make sure the horse is properly tamed
