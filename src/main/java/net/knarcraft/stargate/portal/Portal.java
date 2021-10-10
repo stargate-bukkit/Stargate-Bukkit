@@ -583,7 +583,7 @@ public class Portal {
     private void teleportLivingVehicle(Vehicle vehicle, Location exit, List<Entity> passengers) {
         vehicle.eject();
         vehicle.teleport(exit);
-        handleVehiclePassengers(passengers, vehicle, 6);
+        handleVehiclePassengers(passengers, vehicle, 2);
     }
 
     /**
@@ -616,15 +616,26 @@ public class Portal {
     private void handleVehiclePassengers(List<Entity> passengers, Vehicle targetVehicle, long delay) {
         for (Entity passenger : passengers) {
             passenger.eject();
-            if (!passenger.teleport(targetVehicle.getLocation())) {
-                Stargate.debug("handleVehiclePassengers", "Failed to teleport passenger");
-            }
             Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate,
-                    () -> {
-                        if (!targetVehicle.addPassenger(passenger)) {
-                            Stargate.debug("handleVehiclePassengers", "Failed to add passenger");
-                        }
-                    }, delay);
+                    () -> teleportAndAddPassenger(targetVehicle, passenger), delay);
+        }
+    }
+
+    /**
+     * Teleports and adds a passenger to a vehicle
+     *
+     * <p>Teleportation of living vehicles is really buggy if you wait between the teleportation and passenger adding,
+     * but there needs to be a delay between teleporting the vehicle and teleporting and adding the passenger.</p>
+     *
+     * @param targetVehicle <p>The vehicle to add the passenger to</p>
+     * @param passenger <p>The passenger to teleport and add</p>
+     */
+    private void teleportAndAddPassenger(Vehicle targetVehicle, Entity passenger) {
+        if (!passenger.teleport(targetVehicle.getLocation())) {
+            Stargate.debug("handleVehiclePassengers", "Failed to teleport passenger");
+        }
+        if (!targetVehicle.addPassenger(passenger)) {
+            Stargate.debug("handleVehiclePassengers", "Failed to add passenger");
         }
     }
 
