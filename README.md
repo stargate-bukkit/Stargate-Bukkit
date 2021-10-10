@@ -7,6 +7,8 @@ can share a network or be split into clusters; they can be hidden on a network o
 - Vault economy support -- can add costs for create, destroy and use.
 - Multiple custom gate configurations
 - Message customization
+- Teleport across worlds or servers (BungeeCord supported)
+- Vehicle teleportation -- teleport minecarts, boats, horses, pigs and striders
 
 ## Background
 
@@ -341,14 +343,17 @@ bungeeSign=Teleport to
 - Splits a lot of the code into smaller objects
 - Moves duplicated code into helper classes
 - Re-implements vehicle teleportation
-- Makes boat teleportation work as expected
-- Makes it possible to teleport a player riding a pig or a horse
+- Makes boat teleportation work as expected, including being able to teleport with two passengers. This allows players
+  to use boats to transport creatures through portals and to other areas, or even worlds
+- Makes it possible to teleport a player riding a living entity (a pig, a horse, a donkey, a zombie horse, a skeleton
+  horse or a strider). It does not work for entities the player cannot control, such as llamas.
 - Makes both nether portals and end gateways work properly without causing mayhem
 - Replaces the modX and modZ stuff with yaw calculation to make it easier to understand
 - Comments all the code
 - Extracts portal options and portal-related locations to try and reduce size
 - Rewrites tons of code to make it more readable and manageable
 - Implements proper snowman snow blocking, and removes the "temporary" ignoreEntrances option
+- Adds a default gate using end stone bricks and end gateway for more default diversity
 
 #### \[Version 0.8.0.3] PseudoKnight fork
 
