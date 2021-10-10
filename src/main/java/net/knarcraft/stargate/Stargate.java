@@ -3,6 +3,7 @@ package net.knarcraft.stargate;
 import net.knarcraft.stargate.command.CommandStarGate;
 import net.knarcraft.stargate.command.StarGateTabCompleter;
 import net.knarcraft.stargate.container.BlockChangeRequest;
+import net.knarcraft.stargate.container.ChunkUnloadRequest;
 import net.knarcraft.stargate.listener.BlockEventListener;
 import net.knarcraft.stargate.listener.BungeeCordListener;
 import net.knarcraft.stargate.listener.EntityEventListener;
@@ -15,6 +16,7 @@ import net.knarcraft.stargate.portal.GateHandler;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.thread.BlockChangeThread;
+import net.knarcraft.stargate.thread.ChunkUnloadThread;
 import net.knarcraft.stargate.thread.StarGateThread;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.FileHelper;
@@ -31,6 +33,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.plugin.messaging.Messenger;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +41,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -50,6 +54,7 @@ public class Stargate extends JavaPlugin {
     public static final Queue<BlockChangeRequest> blockChangeRequestQueue = new LinkedList<>();
     public static final ConcurrentLinkedQueue<Portal> openPortalsQueue = new ConcurrentLinkedQueue<>();
     public static final ConcurrentLinkedQueue<Portal> activePortalsQueue = new ConcurrentLinkedQueue<>();
+    public static final Queue<ChunkUnloadRequest> chunkUnloadQueue = new PriorityQueue<>();
 
     //Amount of seconds before deactivating/closing portals
     private static final int activeTime = 10;
@@ -334,8 +339,10 @@ public class Stargate extends JavaPlugin {
         setupVaultEconomy();
 
         //Run necessary threads
-        getServer().getScheduler().runTaskTimer(this, new StarGateThread(), 0L, 100L);
-        getServer().getScheduler().runTaskTimer(this, new BlockChangeThread(), 0L, 1L);
+        BukkitScheduler scheduler = getServer().getScheduler();
+        scheduler.runTaskTimer(this, new StarGateThread(), 0L, 100L);
+        scheduler.runTaskTimer(this, new BlockChangeThread(), 0L, 1L);
+        scheduler.runTaskTimer(this, new ChunkUnloadThread(), 0L, 100L);
 
         this.registerCommands();
     }
@@ -613,6 +620,25 @@ public class Stargate extends JavaPlugin {
             messenger.unregisterIncomingPluginChannel(this, bungeeChannel);
             messenger.unregisterOutgoingPluginChannel(this, bungeeChannel);
         }
+    }
+
+    /**
+     * Gets the chunk unload queue containing chunks to unload
+     *
+     * @return <p>The chunk unload queue</p>
+     */
+    public static Queue<ChunkUnloadRequest> getChunkUnloadQueue() {
+        return chunkUnloadQueue;
+    }
+
+    /**
+     * Adds a new chunk unload request to the chunk unload queue
+     *
+     * @param request <p>The new chunk unload request to add</p>
+     */
+    public static void addChunkUnloadRequest(ChunkUnloadRequest request) {
+        chunkUnloadQueue.removeIf((item) -> item.getChunkToUnload().equals(request.getChunkToUnload()));
+        chunkUnloadQueue.add(request);
     }
 
 }

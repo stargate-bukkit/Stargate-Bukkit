@@ -3,6 +3,7 @@ package net.knarcraft.stargate.portal;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.container.BlockLocation;
+import net.knarcraft.stargate.container.ChunkUnloadRequest;
 import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.event.StargateActivateEvent;
 import net.knarcraft.stargate.event.StargateCloseEvent;
@@ -501,8 +502,6 @@ public class Portal {
 
         //Load chunks to make sure not to teleport to the void
         loadChunks();
-        Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate,
-                this::unloadChunks, 4000);
 
         //If no event is passed in, assume it's a teleport, and act as such
         if (event == null) {
@@ -551,8 +550,6 @@ public class Portal {
 
         //Load chunks to make sure not to teleport to the void
         loadChunks();
-        Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate,
-                this::unloadChunks, 4000);
 
         if (!passengers.isEmpty()) {
             if (vehicle instanceof RideableMinecart || vehicle instanceof Boat) {
@@ -628,7 +625,7 @@ public class Portal {
      * but there needs to be a delay between teleporting the vehicle and teleporting and adding the passenger.</p>
      *
      * @param targetVehicle <p>The vehicle to add the passenger to</p>
-     * @param passenger <p>The passenger to teleport and add</p>
+     * @param passenger     <p>The passenger to teleport and add</p>
      */
     private void teleportAndAddPassenger(Vehicle targetVehicle, Entity passenger) {
         if (!passenger.teleport(targetVehicle.getLocation())) {
@@ -771,20 +768,14 @@ public class Portal {
     }
 
     /**
-     * Unloads the chunks outside the portal's entrance
-     */
-    private void unloadChunks() {
-        for (Chunk chunk : getChunksToLoad()) {
-            chunk.removePluginChunkTicket(Stargate.stargate);
-        }
-    }
-
-    /**
      * Loads the chunks outside the portal's entrance
      */
     private void loadChunks() {
         for (Chunk chunk : getChunksToLoad()) {
             chunk.addPluginChunkTicket(Stargate.stargate);
+            //Allow the chunk to unload after 3 seconds
+            Stargate.addChunkUnloadRequest(new ChunkUnloadRequest(chunk, 3000L));
+            Stargate.debug("loadChunks", "Added chunk unloading request for chunk " + chunk);
         }
     }
 
