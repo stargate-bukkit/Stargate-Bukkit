@@ -400,6 +400,7 @@ public class GateHandler {
     private static void populateDefaults(String gateFolder) {
         loadGateFromJar("nethergate.gate", gateFolder);
         loadGateFromJar("watergate.gate", gateFolder);
+        loadGateFromJar("endgate.gate", gateFolder);
     }
 
     /**
