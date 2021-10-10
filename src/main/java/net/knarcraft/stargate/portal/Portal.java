@@ -25,11 +25,10 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.entity.AbstractHorse;
-import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
-import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
@@ -552,7 +551,7 @@ public class Portal {
         loadChunks();
 
         if (!passengers.isEmpty()) {
-            if (vehicle instanceof RideableMinecart || vehicle instanceof Boat) {
+            if (!(vehicle instanceof LivingEntity)) {
                 World vehicleWorld = exit.getWorld();
                 if (vehicleWorld == null) {
                     Stargate.logger.warning(Stargate.getString("prefix") +
@@ -584,7 +583,11 @@ public class Portal {
     }
 
     /**
-     * Creates a new vehicle equal to the player's previous vehicle and
+     * Creates a new vehicle equal to the player's previous vehicle and puts any passengers inside
+     *
+     * <p>While it is possible to teleport boats and minecarts using the same methods as "teleportLivingVehicle", this
+     * method works better with CraftBook with minecart options enabled. Using normal teleportation, CraftBook destroys
+     * the minecart once the player is ejected, causing the minecart to disappear and the player to teleport without it.</p>
      *
      * @param vehicle      <p>The player's old vehicle</p>
      * @param passengers   <p>A list of all passengers in the vehicle</p>
