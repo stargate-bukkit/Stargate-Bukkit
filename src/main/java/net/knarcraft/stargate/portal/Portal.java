@@ -616,7 +616,6 @@ public class Portal {
     private void handleVehiclePassengers(List<Entity> passengers, Vehicle targetVehicle, long delay) {
         for (Entity passenger : passengers) {
             passenger.eject();
-            //TODO: Fix random java.lang.IllegalStateException: Removing entity while ticking!
             if (!passenger.teleport(targetVehicle.getLocation())) {
                 Stargate.debug("handleVehiclePassengers", "Failed to teleport passenger");
             }
