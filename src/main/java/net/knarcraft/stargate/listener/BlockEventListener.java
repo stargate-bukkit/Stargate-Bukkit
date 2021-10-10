@@ -88,7 +88,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.isCancelled() || !Stargate.protectEntrance) {
+        if (event.isCancelled()) {
             return;
         }
         Block block = event.getBlock();
@@ -96,7 +96,7 @@ public class BlockEventListener implements Listener {
 
         //Decide if a portal is broken
         Portal portal = PortalHandler.getByBlock(block);
-        if (portal == null) {
+        if (portal == null && Stargate.protectEntrance) {
             portal = PortalHandler.getByEntrance(block);
         }
         if (portal == null) {
@@ -104,11 +104,11 @@ public class BlockEventListener implements Listener {
         }
 
         boolean deny = false;
-        String denyMsg = "";
+        String denyMessage = "";
 
         //Decide if the user can destroy the portal
         if (!PermissionHelper.canDestroyPortal(player, portal)) {
-            denyMsg = Stargate.getString("denyMsg");
+            denyMessage = Stargate.getString("denyMsg");
             deny = true;
             Stargate.logger.info(Stargate.getString("prefix") + player.getName() + " tried to destroy gate");
         }
@@ -116,7 +116,7 @@ public class BlockEventListener implements Listener {
         int cost = EconomyHandler.getDestroyCost(player, portal.getGate());
 
         //Create and call a StarGateDestroyEvent
-        StargateDestroyEvent destroyEvent = new StargateDestroyEvent(portal, player, deny, denyMsg, cost);
+        StargateDestroyEvent destroyEvent = new StargateDestroyEvent(portal, player, deny, denyMessage, cost);
         Stargate.server.getPluginManager().callEvent(destroyEvent);
         if (destroyEvent.isCancelled()) {
             event.setCancelled(true);
