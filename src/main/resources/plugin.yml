@@ -5,7 +5,7 @@ description: Stargate mod for Bukkit
 author: EpicKnarvik97
 authors: [ Drakia, PseudoKnight, EpicKnarvik97 ]
 website: https://knarcraft.net
-api-version: 1.16
+api-version: 1.17
 softdepend: [ Vault ]
 commands:
   stargate:

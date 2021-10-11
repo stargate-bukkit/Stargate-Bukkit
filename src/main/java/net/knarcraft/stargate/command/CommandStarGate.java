@@ -37,7 +37,8 @@ public class CommandStarGate implements CommandExecutor {
             }
             return false;
         } else {
-            commandSender.sendMessage(ChatColor.GOLD + "Stargate version " + ChatColor.GREEN + Stargate.getPluginVersion());
+            commandSender.sendMessage(ChatColor.GOLD + "Stargate version " +
+                    ChatColor.GREEN + Stargate.getPluginVersion());
             return true;
         }
     }

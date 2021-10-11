@@ -14,7 +14,7 @@ can share a network or be split into clusters; they can be hidden on a network o
 
 This was originally TheDgtl's Bukkit port of the Stargate plugin for hMod by Dinnerbone. This is a fork
 of [PseudoKnight's fork](https://github.com/PseudoKnight/Stargate-Bukkit). This fork's main purpose is to create a clean
-version of Stargate compliant with Spigot 1.16, even if it means changing the entire project's previous structure.
+version of Stargate compliant with Spigot 1.17, even if it means changing the entire project's previous structure.
 
 # Permissions
 
@@ -324,7 +324,7 @@ bungeeSign=Teleport to
 
 # Changes
 
-#### \[Version 0.9.0.0] (WIP) EpicKnarvik97 fork
+#### \[Version 0.9.0.0] EpicKnarvik97 fork
 
 - Changes entire path structure to a more modern and maven-compliant one
 - Changes package structure to net.knarcraft.stargate.*
