@@ -10,6 +10,7 @@ import net.knarcraft.stargate.listener.EntityEventListener;
 import net.knarcraft.stargate.listener.PlayerEventListener;
 import net.knarcraft.stargate.listener.PluginEventListener;
 import net.knarcraft.stargate.listener.PortalEventListener;
+import net.knarcraft.stargate.listener.TeleportEventListener;
 import net.knarcraft.stargate.listener.VehicleEventListener;
 import net.knarcraft.stargate.listener.WorldEventListener;
 import net.knarcraft.stargate.portal.GateHandler;
@@ -359,6 +360,7 @@ public class Stargate extends JavaPlugin {
         pluginManager.registerEvents(new PortalEventListener(), this);
         pluginManager.registerEvents(new WorldEventListener(), this);
         pluginManager.registerEvents(new PluginEventListener(this), this);
+        pluginManager.registerEvents(new TeleportEventListener(), this);
     }
 
     /**

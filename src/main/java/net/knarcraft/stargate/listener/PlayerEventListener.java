@@ -10,7 +10,6 @@ import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.GameMode;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.AbstractHorse;
@@ -25,9 +24,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-
-import java.util.Objects;
 
 /**
  * This listener listens to any player-related events related to stargates
@@ -61,27 +57,6 @@ public class PlayerEventListener implements Listener {
             return;
         }
         portal.teleport(player, portal, null);
-    }
-
-    /**
-     * This event handler handles some special teleportation events
-     *
-     * <p>This event cancels nether portal and end gateway teleportation if the user teleported from a stargate
-     * entrance. This prevents the user from just teleporting to the nether with the default portal design.
-     * Additionally, this event teleports any vehicles not detected by the VehicleMove event together with the player.</p>
-     *
-     * @param event <p>The event to check and possibly cancel</p>
-     */
-    @EventHandler
-    public void onPlayerTeleport(PlayerTeleportEvent event) {
-        // cancel portal and end gateway teleportation if it's from a stargate entrance
-        PlayerTeleportEvent.TeleportCause cause = event.getCause();
-        if (!event.isCancelled() && (cause == PlayerTeleportEvent.TeleportCause.NETHER_PORTAL
-                || cause == PlayerTeleportEvent.TeleportCause.END_GATEWAY && World.Environment.THE_END ==
-                Objects.requireNonNull(event.getFrom().getWorld()).getEnvironment())
-                && PortalHandler.getByAdjacentEntrance(event.getFrom()) != null) {
-            event.setCancelled(true);
-        }
     }
 
     /**

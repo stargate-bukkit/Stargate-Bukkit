@@ -646,7 +646,7 @@ public class Portal {
      * @param traveller <p>The location of the entity travelling</p>
      * @return <p>The location the entity should be teleported to.</p>
      */
-    private Location getExit(Entity entity, Location traveller) {
+    public Location getExit(Entity entity, Location traveller) {
         Location exitLocation = null;
         // Check if the gate has an exit block
         RelativeBlockVector relativeExit = gate.getLayout().getExit();
