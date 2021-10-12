@@ -170,7 +170,7 @@ X*.X
 The keys `portal-open` and `portal-closed` are used to define the material in the gate when it is open or closed. The
 material for `portal-closed` can be most things, including solid blocks. Some materials may act weirdly though. The
 material for `portal-open` can be any block the player can partially enter, even things like `GLOW_LICHEN`.
-`NETHER_PORTAL` and `END_GATEWAY` work, but `END_PORTAL` does not.
+`NETHER_PORTAL`, `END_GATEWAY` and `END_PORTAL` all work.
 
 The key `button` is used to define the type of button that is generated for this gate. It can be a button (of any type),
 a type of wall coral (dead or alive), a type of shulker box or a chest.
@@ -354,6 +354,7 @@ bungeeSign=Teleport to
 - Rewrites tons of code to make it more readable and manageable
 - Implements proper snowman snow blocking, and removes the "temporary" ignoreEntrances option
 - Adds a default gate using end stone bricks and end gateway for more default diversity
+- Makes portals using end portal blocks work as expected
 
 #### \[Version 0.8.0.3] PseudoKnight fork
 
