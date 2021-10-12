@@ -5,6 +5,7 @@ import net.knarcraft.stargate.event.StargateAccessEvent;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalOption;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 /**
  * Helper class for deciding which actions a player is allowed to perform
@@ -366,6 +367,49 @@ public final class PermissionHelper {
         }
         //Check for personal gate
         return portal.isOwner(player) && hasPermission(player, "stargate.destroy.personal");
+    }
+
+    /**
+     * Decide of the player can teleport through a portal
+     *
+     * @param entrancePortal <p>The portal the player is entering from</p>
+     * @param destination    <p>The destination of the portal the player is inside</p>
+     * @param player         <p>The player wanting to teleport</p>
+     * @param event          <p>The move event causing the teleportation</p>
+     * @return <p>True if the player cannot teleport. False otherwise</p>
+     */
+    public static boolean playerCannotTeleport(Portal entrancePortal, Portal destination, Player player, PlayerMoveEvent event) {
+        // No portal or not open
+        if (entrancePortal == null || !entrancePortal.isOpen()) {
+            return true;
+        }
+
+        // Not open for this player
+        if (!entrancePortal.isOpenFor(player)) {
+            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
+            entrancePortal.teleport(player, entrancePortal, event);
+            return true;
+        }
+
+        //No destination
+        if (!entrancePortal.getOptions().isBungee() && destination == null) {
+            return true;
+        }
+
+        //Player cannot access portal
+        if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destination)) {
+            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
+            entrancePortal.teleport(player, entrancePortal, event);
+            entrancePortal.close(false);
+            return true;
+        }
+
+        //Player cannot pay for teleportation
+        int cost = EconomyHandler.getUseCost(player, entrancePortal, destination);
+        if (cost > 0) {
+            return !EconomyHelper.payTeleportFee(entrancePortal, player, cost);
+        }
+        return false;
     }
 
 }

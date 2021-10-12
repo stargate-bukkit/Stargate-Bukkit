@@ -5,8 +5,6 @@ import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.utility.BungeeHelper;
-import net.knarcraft.stargate.utility.EconomyHandler;
-import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.GameMode;
@@ -127,7 +125,7 @@ public class PlayerEventListener implements Listener {
         Portal destination = entrancePortal.getDestination(player);
 
         //Decide if the anything stops the player from teleport
-        if (!playerCanTeleport(entrancePortal, destination, player, event)) {
+        if (PermissionHelper.playerCannotTeleport(entrancePortal, destination, player, event)) {
             return false;
         }
 
@@ -319,49 +317,6 @@ public class PlayerEventListener implements Listener {
         // Close portal if required (Should never be)
         Stargate.debug("bungeeTeleport", "Teleported player to another server");
         entrancePortal.close(false);
-        return true;
-    }
-
-    /**
-     * Decide of the player can teleport through a portal
-     *
-     * @param entrancePortal <p>The portal the player is entering from</p>
-     * @param destination    <p>The destination of the portal the player is inside</p>
-     * @param player         <p>The player wanting to teleport</p>
-     * @param event          <p>The move event causing the teleportation</p>
-     * @return <p>True if the player can teleport. False otherwise</p>
-     */
-    private boolean playerCanTeleport(Portal entrancePortal, Portal destination, Player player, PlayerMoveEvent event) {
-        // No portal or not open
-        if (entrancePortal == null || !entrancePortal.isOpen()) {
-            return false;
-        }
-
-        // Not open for this player
-        if (!entrancePortal.isOpenFor(player)) {
-            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
-            entrancePortal.teleport(player, entrancePortal, event);
-            return false;
-        }
-
-        //No destination
-        if (!entrancePortal.getOptions().isBungee() && destination == null) {
-            return false;
-        }
-
-        //Player cannot access portal
-        if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destination)) {
-            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
-            entrancePortal.teleport(player, entrancePortal, event);
-            entrancePortal.close(false);
-            return false;
-        }
-
-        //Player cannot pay for teleportation
-        int cost = EconomyHandler.getUseCost(player, entrancePortal, destination);
-        if (cost > 0) {
-            return EconomyHelper.payTeleportFee(entrancePortal, player, cost);
-        }
         return true;
     }
 

@@ -1,8 +1,9 @@
 package net.knarcraft.stargate.listener;
 
-import net.knarcraft.stargate.container.TwoTuple;
+import net.knarcraft.stargate.container.FromTheEndTeleportation;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
+import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -23,7 +24,7 @@ import java.util.List;
  */
 public class PortalEventListener implements Listener {
 
-    private static final List<TwoTuple<Player, Portal>> playersFromTheEnd = new ArrayList<>();
+    private static final List<FromTheEndTeleportation> playersFromTheEnd = new ArrayList<>();
 
     /**
      * Listen for and abort vanilla portal creation caused by stargate creation
@@ -55,12 +56,18 @@ public class PortalEventListener implements Listener {
         World world = location.getWorld();
         Entity entity = event.getEntity();
         //Block normal portal teleportation if teleporting from a stargate
-        if (entity instanceof Player && location.getBlock().getType() == Material.END_PORTAL && world != null &&
+        if (entity instanceof Player player && location.getBlock().getType() == Material.END_PORTAL && world != null &&
                 world.getEnvironment() == World.Environment.THE_END) {
             Portal portal = PortalHandler.getByAdjacentEntrance(location);
-            if (portal != null) {
-                playersFromTheEnd.add(new TwoTuple<>((Player) entity, portal.getDestination()));
+
+            //Remove any old player teleportations in case weird things happen
+            playersFromTheEnd.removeIf((teleportation -> teleportation.getPlayer() == player));
+            //Decide if the anything stops the player from teleporting
+            if (PermissionHelper.playerCannotTeleport(portal, portal.getDestination(), player, null)) {
+                //Teleport the player back to the portal they came in, just in case
+                playersFromTheEnd.add(new FromTheEndTeleportation(player, portal));
             }
+            playersFromTheEnd.add(new FromTheEndTeleportation(player, portal.getDestination()));
         }
     }
 
@@ -72,14 +79,10 @@ public class PortalEventListener implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         Player respawningPlayer = event.getPlayer();
-        playersFromTheEnd.forEach((tuple) -> {
+        playersFromTheEnd.forEach((teleportation) -> {
             //Check if player is actually teleporting from the end
-            if (tuple.getFirstValue() == respawningPlayer) {
-                Portal exitPortal = tuple.getSecondValue();
-                //Need to make sure the player is allowed to exit from the portal
-                if (!exitPortal.isOpenFor(respawningPlayer)) {
-                    return;
-                }
+            if (teleportation.getPlayer() == respawningPlayer) {
+                Portal exitPortal = teleportation.getExit();
                 //Overwrite respawn location to respawn in front of the portal
                 event.setRespawnLocation(exitPortal.getExit(respawningPlayer, respawningPlayer.getLocation()));
                 //Properly close the portal to prevent it from staying in a locked state until it times out
