@@ -750,14 +750,15 @@ public class Portal {
      */
     private Location adjustExitLocation(Location traveller, Location exitLocation) {
         if (exitLocation != null) {
-            //Prevent traveller from spawning inside a slab
             BlockData blockData = getWorld().getBlockAt(exitLocation).getBlockData();
             if ((blockData instanceof Bisected && ((Bisected) blockData).getHalf() == Bisected.Half.BOTTOM) ||
                     (blockData instanceof Slab) && ((Slab) blockData).getType() == Slab.Type.BOTTOM) {
-                Stargate.debug("adjustExitLocation", "Added half a block to get above a slab");
-                exitLocation.add(0, 0.5, 0);
+                //Prevent traveller from spawning inside a slab
+                Stargate.debug("adjustExitLocation", "Added a block to get above a slab");
+                exitLocation.add(0, 1, 0);
             } else if (blockData.getMaterial() == Material.WATER) {
                 //If there's water outside, go one up to allow for boat teleportation
+                Stargate.debug("adjustExitLocation", "Added a block to get above a block of water");
                 exitLocation.add(0, 1, 0);
             }
 
