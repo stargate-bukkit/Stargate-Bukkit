@@ -397,7 +397,7 @@ public class GateHandler {
      *
      * @param gateFolder <p>The folder containing gate config files</p>
      */
-    private static void populateDefaults(String gateFolder) {
+    public static void populateDefaults(String gateFolder) {
         loadGateFromJar("nethergate.gate", gateFolder);
         loadGateFromJar("watergate.gate", gateFolder);
         loadGateFromJar("endgate.gate", gateFolder);

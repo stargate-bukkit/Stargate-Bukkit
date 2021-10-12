@@ -381,8 +381,12 @@ public class Stargate extends JavaPlugin {
         this.reloadConfig();
         newConfig = this.getConfig();
 
-        if (newConfig.getString("lang") != null) {
+        boolean isMigrating = false;
+        if (newConfig.getString("lang") != null ||
+                newConfig.getString("gates.integrity.ignoreEntrance") != null ||
+                newConfig.getString("ignoreEntrance") != null) {
             migrateConfig(newConfig);
+            isMigrating = true;
         }
 
         // Copy default values if required
@@ -398,6 +402,11 @@ public class Stargate extends JavaPlugin {
         //Debug
         debuggingEnabled = newConfig.getBoolean("debugging.debug");
         permissionDebuggingEnabled = newConfig.getBoolean("debugging.permissionDebug");
+
+        //If users have an outdated config, assume they also need to update their default gates
+        if (isMigrating) {
+            GateHandler.populateDefaults(gateFolder);
+        }
 
         //Gates
         loadGateConfig();
