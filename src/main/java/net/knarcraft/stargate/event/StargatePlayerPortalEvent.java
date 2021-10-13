@@ -8,36 +8,29 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * This event should be called whenever a player teleports through a stargate
+ *
+ * <p>This event can be used to overwrite the location the player is teleported to.</p>
  */
 @SuppressWarnings("unused")
-public class StargatePortalEvent extends StargatePlayerEvent {
+public class StargatePlayerPortalEvent extends StargatePlayerEvent {
 
     private static final HandlerList handlers = new HandlerList();
     private final Portal destination;
     private Location exit;
 
     /**
-     * Instantiates a new stargate portal event
+     * Instantiates a new stargate player portal event
      *
      * @param player      <p>The player teleporting</p>
      * @param portal      <p>The portal the player entered from</p>
      * @param destination <p>The destination the player should exit from</p>
      * @param exit        <p>The exit location of the destination portal the user will be teleported to</p>
      */
-    public StargatePortalEvent(Player player, Portal portal, Portal destination, Location exit) {
-        super("StargatePortalEvent", portal, player);
+    public StargatePlayerPortalEvent(Player player, Portal portal, Portal destination, Location exit) {
+        super(portal, player);
 
         this.destination = destination;
         this.exit = exit;
-    }
-
-    /**
-     * Gets a handler-list containing all event handlers
-     *
-     * @return <p>A handler-list with all event handlers</p>
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     /**
@@ -61,8 +54,17 @@ public class StargatePortalEvent extends StargatePlayerEvent {
     /**
      * Set the location of the player's exit point
      */
-    public void setExit(Location loc) {
-        this.exit = loc;
+    public void setExit(Location location) {
+        this.exit = location;
+    }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     @Override

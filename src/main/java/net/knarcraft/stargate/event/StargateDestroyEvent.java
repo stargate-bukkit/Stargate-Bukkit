@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * This event represents an event where a star gate is destroyed or attempted to be destroyed
+ *
+ * <p>This event can be used to deny or change the cost of a stargate destruction.</p>
  */
 @SuppressWarnings("unused")
 public class StargateDestroyEvent extends StargatePlayerEvent {
@@ -19,26 +21,17 @@ public class StargateDestroyEvent extends StargatePlayerEvent {
     /**
      * Instantiates a new Stargate Destroy Event
      *
-     * @param portal  <p>The portal destroyed</p>
+     * @param portal  <p>The destroyed portal</p>
      * @param player  <p>The player destroying the portal</p>
      * @param deny    <p>Whether the event should be denied (cancelled)</p>
      * @param denyMsg <p>The message to display if the event is denied</p>
      * @param cost    <p>The cost of destroying the portal</p>
      */
     public StargateDestroyEvent(Portal portal, Player player, boolean deny, String denyMsg, int cost) {
-        super("StargateDestroyEvent", portal, player);
+        super(portal, player);
         this.deny = deny;
         this.denyReason = denyMsg;
         this.cost = cost;
-    }
-
-    /**
-     * Gets a handler-list containing all event handlers
-     *
-     * @return <p>A handler-list with all event handlers</p>
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     /**
@@ -93,6 +86,15 @@ public class StargateDestroyEvent extends StargatePlayerEvent {
      */
     public void setCost(int cost) {
         this.cost = cost;
+    }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     @NotNull

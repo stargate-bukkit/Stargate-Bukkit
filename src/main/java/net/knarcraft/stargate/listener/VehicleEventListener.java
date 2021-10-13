@@ -70,7 +70,7 @@ public class VehicleEventListener implements Listener {
                 return;
             }
             Stargate.debug("vehicleTeleport", destinationPortal.getWorld() + " " + destinationPortal.getSignLocation());
-            destinationPortal.teleport(vehicle);
+            destinationPortal.teleport(vehicle, entrancePortal);
         }
     }
 
@@ -109,7 +109,7 @@ public class VehicleEventListener implements Listener {
         }
 
         Stargate.sendSuccessMessage(player, Stargate.getString("teleportMsg"));
-        destinationPortal.teleport(vehicle);
+        destinationPortal.teleport(vehicle, entrancePortal);
         entrancePortal.close(false);
     }
 

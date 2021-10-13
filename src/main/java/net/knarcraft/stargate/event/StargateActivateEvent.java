@@ -9,7 +9,9 @@ import java.util.List;
 
 /**
  * This event should be called whenever a player activates a stargate
- * <p>Activation of a stargate happens when a player right-clicks the sign of a stargate.</p>
+ *
+ * <p>Activation of a stargate happens when a player right-clicks the sign of a stargate.
+ * This event can be used to overwrite the selected destination, and all destinations the player can see.</p>
  */
 @SuppressWarnings("unused")
 public class StargateActivateEvent extends StargatePlayerEvent {
@@ -24,22 +26,13 @@ public class StargateActivateEvent extends StargatePlayerEvent {
      * @param portal       <p>The activated portal</p>
      * @param player       <p>The player activating the portal</p>
      * @param destinations <p>The destinations available to the player using the portal</p>
-     * @param destination  <p>The chosen destination to activate</p>
+     * @param destination  <p>The currently selected destination</p>
      */
     public StargateActivateEvent(Portal portal, Player player, List<String> destinations, String destination) {
-        super("StargateActivateEvent", portal, player);
+        super(portal, player);
 
         this.destinations = destinations;
         this.destination = destination;
-    }
-
-    /**
-     * Gets a handler-list containing all event handlers
-     *
-     * @return <p>A handler-list with all event handlers</p>
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     /**
@@ -61,21 +54,30 @@ public class StargateActivateEvent extends StargatePlayerEvent {
     }
 
     /**
-     * Gets the chosen destination to activate
+     * Gets the selected destination
      *
-     * @return <p>The chosen destination to activate</p>
+     * @return <p>The selected destination</p>
      */
     public String getDestination() {
         return destination;
     }
 
     /**
-     * Sets (changes) the chosen destination to activate
+     * Sets (changes) the selected destination
      *
-     * @param destination <p>The new destination to activate</p>
+     * @param destination <p>The new selected destination</p>
      */
     public void setDestination(String destination) {
         this.destination = destination;
+    }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     @Override

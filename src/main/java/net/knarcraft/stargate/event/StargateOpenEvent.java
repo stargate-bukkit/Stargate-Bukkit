@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * This event should be called whenever a player opens a stargate
+ *
+ * <p>This event can be used to overwrite whether the stargate should be forced to open, even if it's already open.</p>
  */
 @SuppressWarnings({"unused"})
 public class StargateOpenEvent extends StargatePlayerEvent {
@@ -18,22 +20,13 @@ public class StargateOpenEvent extends StargatePlayerEvent {
      * Instantiates a new stargate open event
      *
      * @param player <p>The player opening the stargate</p>
-     * @param portal <p>The portal opened</p>
+     * @param portal <p>The opened portal</p>
      * @param force  <p>Whether to force the portal open</p>
      */
     public StargateOpenEvent(Player player, Portal portal, boolean force) {
-        super("StargateOpenEvent", portal, player);
+        super(portal, player);
 
         this.force = force;
-    }
-
-    /**
-     * Gets a handler-list containing all event handlers
-     *
-     * @return <p>A handler-list with all event handlers</p>
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     /**
@@ -52,6 +45,15 @@ public class StargateOpenEvent extends StargatePlayerEvent {
      */
     public void setForce(boolean force) {
         this.force = force;
+    }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     @Override

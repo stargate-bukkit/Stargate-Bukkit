@@ -6,7 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * This event should be called whenever a stargate is deactivated
- * <p>A deactivation is usually caused by no activity for a set amount of time.</p>
+ *
+ * <p>A deactivation is usually caused by no activity for a set amount of time.
+ * This event can only be used to listen for de-activation events.</p>
  */
 @SuppressWarnings("unused")
 public class StargateDeactivateEvent extends StargateEvent {
@@ -19,7 +21,7 @@ public class StargateDeactivateEvent extends StargateEvent {
      * @param portal <p>The portal which was deactivated</p>
      */
     public StargateDeactivateEvent(Portal portal) {
-        super("StargateDeactivateEvent", portal);
+        super(portal);
     }
 
     /**

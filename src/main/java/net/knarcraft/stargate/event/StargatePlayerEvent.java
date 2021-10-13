@@ -14,11 +14,10 @@ public abstract class StargatePlayerEvent extends StargateEvent {
     /**
      * Instantiates a new stargate player event
      *
-     * @param event  <p>UNUSED</p>
      * @param portal <p>The portal involved in this stargate event</p>
      */
-    StargatePlayerEvent(String event, Portal portal, Player player) {
-        super(event, portal);
+    StargatePlayerEvent(Portal portal, Player player) {
+        super(portal);
         this.player = player;
     }
 

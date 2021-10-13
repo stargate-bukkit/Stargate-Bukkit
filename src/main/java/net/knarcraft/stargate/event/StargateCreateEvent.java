@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * This event should be called whenever a stargate is created
+ *
+ * <p>This event can be used to deny or change the cost of a stargate creation.</p>
  */
 @SuppressWarnings("unused")
 public class StargateCreateEvent extends StargatePlayerEvent {
@@ -28,20 +30,11 @@ public class StargateCreateEvent extends StargatePlayerEvent {
      * @param cost       <p>The cost of creating the new star gate</p>
      */
     public StargateCreateEvent(Player player, Portal portal, String[] lines, boolean deny, String denyReason, int cost) {
-        super("StargateCreateEvent", portal, player);
+        super(portal, player);
         this.lines = lines;
         this.deny = deny;
         this.denyReason = denyReason;
         this.cost = cost;
-    }
-
-    /**
-     * Gets a handler-list containing all event handlers
-     *
-     * @return <p>A handler-list with all event handlers</p>
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     /**
@@ -107,6 +100,15 @@ public class StargateCreateEvent extends StargatePlayerEvent {
      */
     public void setCost(int cost) {
         this.cost = cost;
+    }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     @NotNull

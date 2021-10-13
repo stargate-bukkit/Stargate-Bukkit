@@ -8,8 +8,9 @@ import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.event.StargateActivateEvent;
 import net.knarcraft.stargate.event.StargateCloseEvent;
 import net.knarcraft.stargate.event.StargateDeactivateEvent;
+import net.knarcraft.stargate.event.StargateEntityPortalEvent;
 import net.knarcraft.stargate.event.StargateOpenEvent;
-import net.knarcraft.stargate.event.StargatePortalEvent;
+import net.knarcraft.stargate.event.StargatePlayerPortalEvent;
 import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.EntityHelper;
 import net.knarcraft.stargate.utility.SignHelper;
@@ -486,17 +487,18 @@ public class Portal {
         //Rotate the player to face out from the portal
         adjustRotation(exit);
 
-        //Call the StargatePortalEvent to allow plugins to change destination
+        //Call the StargatePlayerPortalEvent to allow plugins to change destination
         if (!origin.equals(this)) {
-            StargatePortalEvent stargatePortalEvent = new StargatePortalEvent(player, origin, this, exit);
-            Stargate.server.getPluginManager().callEvent(stargatePortalEvent);
+            StargatePlayerPortalEvent stargatePlayerPortalEvent = new StargatePlayerPortalEvent(player, origin,
+                    this, exit);
+            Stargate.server.getPluginManager().callEvent(stargatePlayerPortalEvent);
             //Teleport is cancelled. Teleport the player back to where it came from
-            if (stargatePortalEvent.isCancelled()) {
+            if (stargatePlayerPortalEvent.isCancelled()) {
                 origin.teleport(player, origin, event);
                 return;
             }
             //Update exit if needed
-            exit = stargatePortalEvent.getExit();
+            exit = stargatePlayerPortalEvent.getExit();
         }
 
         //Load chunks to make sure not to teleport to the void
@@ -530,8 +532,9 @@ public class Portal {
      * Teleports a vehicle to this portal
      *
      * @param vehicle <p>The vehicle to teleport</p>
+     * @param origin  <p>The portal the vehicle teleports from</p>
      */
-    public void teleport(final Vehicle vehicle) {
+    public void teleport(final Vehicle vehicle, Portal origin) {
         Location traveller = vehicle.getLocation();
         Location exit = getExit(vehicle, traveller);
 
@@ -546,6 +549,20 @@ public class Portal {
         adjustRotation(exit);
 
         List<Entity> passengers = vehicle.getPassengers();
+
+        //Call the StargateEntityPortalEvent to allow plugins to change destination
+        if (!origin.equals(this)) {
+            StargateEntityPortalEvent stargateEntityPortalEvent = new StargateEntityPortalEvent(vehicle, origin,
+                    this, exit);
+            Stargate.server.getPluginManager().callEvent(stargateEntityPortalEvent);
+            //Teleport is cancelled. Teleport the entity back to where it came from
+            if (stargateEntityPortalEvent.isCancelled()) {
+                origin.teleport(vehicle, origin);
+                return;
+            }
+            //Update exit if needed
+            exit = stargateEntityPortalEvent.getExit();
+        }
 
         //Load chunks to make sure not to teleport to the void
         loadChunks();

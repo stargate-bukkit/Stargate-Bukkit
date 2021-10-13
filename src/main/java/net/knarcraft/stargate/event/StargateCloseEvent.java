@@ -6,6 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * This event should be called whenever a stargate is closed
+ *
+ * <p>This event can be used to overwrite whether the stargate should be forced to close, even if it's set as
+ * always-on.</p>
  */
 @SuppressWarnings("unused")
 public class StargateCloseEvent extends StargateEvent {
@@ -20,18 +23,9 @@ public class StargateCloseEvent extends StargateEvent {
      * @param force  <p>Whether to force the gate to close, even if set as always-on</p>
      */
     public StargateCloseEvent(Portal portal, boolean force) {
-        super("StargateCloseEvent", portal);
+        super(portal);
 
         this.force = force;
-    }
-
-    /**
-     * Gets a handler-list containing all event handlers
-     *
-     * @return <p>A handler-list with all event handlers</p>
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     /**
@@ -50,6 +44,15 @@ public class StargateCloseEvent extends StargateEvent {
      */
     public void setForce(boolean force) {
         this.force = force;
+    }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     @NotNull
