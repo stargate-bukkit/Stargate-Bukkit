@@ -5,6 +5,10 @@ import org.bukkit.entity.Player;
 
 /**
  * This class represents a player teleporting from the end to the over-world using an artificial end portal
+ *
+ * <p>This is necessary because a player entering an end portal in the end is a special case. Instead of being
+ * teleported, the player is respawned. Because of this, the teleportation needs to be saved and later used to hijack
+ * the position of where the player is to respawn.</p>
  */
 public class FromTheEndTeleportation {
 

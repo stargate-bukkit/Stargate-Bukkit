@@ -4,7 +4,7 @@ import org.bukkit.Chunk;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Requests the unloading of a chunk which has been previously loaded by the Stargate plugin
+ * Represents a requests for the unloading of a chunk which has been previously loaded by the Stargate plugin
  */
 public class ChunkUnloadRequest implements Comparable<ChunkUnloadRequest> {
 
@@ -33,7 +33,7 @@ public class ChunkUnloadRequest implements Comparable<ChunkUnloadRequest> {
     }
 
     /**
-     * Gets the time system nano time denoting at which time the unload request should be executed
+     * Gets the system nano time denoting at which time the unload request should be executed
      *
      * @return <p>The system nano time denoting when the chunk is to be unloaded</p>
      */
@@ -48,6 +48,7 @@ public class ChunkUnloadRequest implements Comparable<ChunkUnloadRequest> {
 
     @Override
     public int compareTo(@NotNull ChunkUnloadRequest otherRequest) {
+        //Prioritize requests based on time until unload
         return unloadNanoTime.compareTo(otherRequest.unloadNanoTime);
     }
 

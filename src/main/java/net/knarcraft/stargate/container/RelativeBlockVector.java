@@ -32,8 +32,8 @@ public class RelativeBlockVector {
     /**
      * Adds a value to one of the properties of this relative block vector
      *
-     * @param propertyToAddTo <p>The property to change</p>
-     * @param valueToAdd      <p>The value to add to the property</p>
+     * @param propertyToAddTo <p>The property to add to</p>
+     * @param valueToAdd      <p>The value to add to the property (negative to move in the opposite direction)</p>
      * @return <p>A new relative block vector with the property altered</p>
      */
     public RelativeBlockVector addToVector(Property propertyToAddTo, int valueToAdd) {
@@ -61,7 +61,7 @@ public class RelativeBlockVector {
     /**
      * Gets the distance to the right relative to the origin
      *
-     * @return The distance to the right relative to the origin
+     * @return <p>The distance to the right relative to the origin</p>
      */
     public int getRight() {
         return right;
@@ -70,7 +70,7 @@ public class RelativeBlockVector {
     /**
      * Gets the distance downward relative to the origin
      *
-     * @return The distance downward relative to the origin
+     * @return <p>The distance downward relative to the origin</p>
      */
     public int getDepth() {
         return depth;
@@ -79,7 +79,7 @@ public class RelativeBlockVector {
     /**
      * Gets the distance outward relative to the origin
      *
-     * @return The distance outward relative to the origin
+     * @return <p>The distance outward relative to the origin</p>
      */
     public int getDistance() {
         return distance;
