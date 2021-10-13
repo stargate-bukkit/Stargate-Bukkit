@@ -27,7 +27,7 @@ public class PortalEventListener implements Listener {
     private static final List<FromTheEndTeleportation> playersFromTheEnd = new ArrayList<>();
 
     /**
-     * Listen for and abort vanilla portal creation caused by stargate creation
+     * Listens for and aborts vanilla portal creation caused by stargate creation
      *
      * @param event <p>The triggered event</p>
      */
@@ -55,7 +55,7 @@ public class PortalEventListener implements Listener {
         Location location = event.getLocation();
         World world = location.getWorld();
         Entity entity = event.getEntity();
-        //Block normal portal teleportation if teleporting from a stargate
+        //Hijack normal portal teleportation if teleporting from a stargate
         if (entity instanceof Player player && location.getBlock().getType() == Material.END_PORTAL && world != null &&
                 world.getEnvironment() == World.Environment.THE_END) {
             Portal portal = PortalHandler.getByAdjacentEntrance(location);
@@ -79,16 +79,18 @@ public class PortalEventListener implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         Player respawningPlayer = event.getPlayer();
-        playersFromTheEnd.forEach((teleportation) -> {
-            //Check if player is actually teleporting from the end
-            if (teleportation.getPlayer() == respawningPlayer) {
-                Portal exitPortal = teleportation.getExit();
-                //Overwrite respawn location to respawn in front of the portal
-                event.setRespawnLocation(exitPortal.getExit(respawningPlayer, respawningPlayer.getLocation()));
-                //Properly close the portal to prevent it from staying in a locked state until it times out
-                exitPortal.close(false);
-            }
-        });
+        int playerIndex = playersFromTheEnd.indexOf(new FromTheEndTeleportation(respawningPlayer, null));
+        if (playerIndex == -1) {
+            return;
+        }
+        FromTheEndTeleportation teleportation = playersFromTheEnd.get(playerIndex);
+        playersFromTheEnd.remove(playerIndex);
+
+        Portal exitPortal = teleportation.getExit();
+        //Overwrite respawn location to respawn in front of the portal
+        event.setRespawnLocation(exitPortal.getExit(respawningPlayer, respawningPlayer.getLocation()));
+        //Properly close the portal to prevent it from staying in a locked state until it times out
+        exitPortal.close(false);
     }
 
 }

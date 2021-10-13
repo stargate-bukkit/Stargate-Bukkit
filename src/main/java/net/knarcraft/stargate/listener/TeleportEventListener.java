@@ -14,9 +14,9 @@ public class TeleportEventListener implements Listener {
     /**
      * This event handler handles some special teleportation events
      *
-     * <p>This event cancels nether portal and end gateway teleportation if the user teleported from a stargate
-     * entrance. This prevents the user from just teleporting to the nether with the default portal design.
-     * Additionally, this event teleports any vehicles not detected by the VehicleMove event together with the player.</p>
+     * <p>This event cancels nether portal, end gateway and end portal teleportation if the user teleported from a
+     * stargate entrance. This prevents the user from just teleporting to the nether or the end with portals using
+     * the special teleportation blocks.</p>
      *
      * @param event <p>The event to check and possibly cancel</p>
      */

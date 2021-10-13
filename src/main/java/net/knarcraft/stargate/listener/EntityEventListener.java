@@ -30,6 +30,7 @@ public class EntityEventListener implements Listener {
         }
 
         Entity entity = event.getEntity();
+        //Cancel normal portal event is near a stargate
         if (PortalHandler.getByAdjacentEntrance(event.getFrom(), EntityHelper.getEntityMaxSizeInt(entity)) != null) {
             event.setCancelled(true);
         }

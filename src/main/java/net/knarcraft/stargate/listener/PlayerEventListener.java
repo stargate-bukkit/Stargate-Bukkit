@@ -44,6 +44,7 @@ public class PlayerEventListener implements Listener {
         }
 
         Player player = event.getPlayer();
+        //Check if the player is waiting to be teleported to a stargate
         String destination = Stargate.bungeeQueue.remove(player.getName().toLowerCase());
         if (destination == null) {
             return;
@@ -54,6 +55,7 @@ public class PlayerEventListener implements Listener {
             Stargate.debug("PlayerJoin", "Error fetching destination portal: " + destination);
             return;
         }
+        //Teleport the player to the stargate
         portal.teleport(player, portal, null);
     }
 
@@ -85,13 +87,10 @@ public class PlayerEventListener implements Listener {
             return;
         }
         if (playerVehicle instanceof LivingEntity) {
-            //Make sure the horse can be sat on
-            if (playerVehicle instanceof AbstractHorse horse) {
-                //Make sure the horse is properly tamed
-                if (!horse.isTamed()) {
-                    horse.setTamed(true);
-                    horse.setOwner(player);
-                }
+            //Make sure any horses are properly tamed
+            if (playerVehicle instanceof AbstractHorse horse && !horse.isTamed()) {
+                horse.setTamed(true);
+                horse.setOwner(player);
             }
             destination.teleport((Vehicle) playerVehicle, entrancePortal);
         } else {
@@ -110,7 +109,8 @@ public class PlayerEventListener implements Listener {
      * @param toLocation   <p>The location the player is moving to</p>
      * @return <p>True if the event is relevant</p>
      */
-    private boolean isRelevantMoveEvent(PlayerMoveEvent event, Player player, BlockLocation fromLocation, BlockLocation toLocation) {
+    private boolean isRelevantMoveEvent(PlayerMoveEvent event, Player player, BlockLocation fromLocation,
+                                        BlockLocation toLocation) {
         //Check to see if the player moved to another block
         if (fromLocation.equals(toLocation)) {
             return false;

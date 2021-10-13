@@ -69,7 +69,8 @@ public class VehicleEventListener implements Listener {
                 Stargate.logger.warning(Stargate.getString("prefix") + "Unable to find portal destination");
                 return;
             }
-            Stargate.debug("vehicleTeleport", destinationPortal.getWorld() + " " + destinationPortal.getSignLocation());
+            Stargate.debug("vehicleTeleport", destinationPortal.getWorld() + " " +
+                    destinationPortal.getSignLocation());
             destinationPortal.teleport(vehicle, entrancePortal);
         }
     }

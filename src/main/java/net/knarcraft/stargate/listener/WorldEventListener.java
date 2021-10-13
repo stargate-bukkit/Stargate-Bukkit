@@ -36,8 +36,9 @@ public class WorldEventListener implements Listener {
     public void onWorldUnload(WorldUnloadEvent event) {
         Stargate.debug("onWorldUnload", "Reloading all Stargates");
         World world = event.getWorld();
-        if (Stargate.managedWorlds.contains(world.getName())) {
-            Stargate.managedWorlds.remove(world.getName());
+        String worldName = world.getName();
+        if (Stargate.managedWorlds.contains(worldName)) {
+            Stargate.managedWorlds.remove(worldName);
             PortalHandler.clearPortals(world);
         }
     }

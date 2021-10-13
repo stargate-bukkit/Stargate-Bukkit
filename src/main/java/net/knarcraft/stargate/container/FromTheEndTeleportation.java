@@ -44,4 +44,17 @@ public class FromTheEndTeleportation {
         return this.exitPortal;
     }
 
+    @Override
+    public int hashCode() {
+        return teleportingPlayer.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof FromTheEndTeleportation otherTeleportation)) {
+            return false;
+        }
+        return teleportingPlayer.equals(otherTeleportation.teleportingPlayer);
+    }
+
 }

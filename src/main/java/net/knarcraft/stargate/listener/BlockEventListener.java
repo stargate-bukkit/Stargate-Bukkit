@@ -36,6 +36,9 @@ public class BlockEventListener implements Listener {
     /**
      * Detects snowmen ruining portals
      *
+     * <p>If entrance protection or portal verification is enabled, the snowman will be prevented from placing snow in
+     * the portal entrance.</p>
+     *
      * @param event <p>The triggered event</p>
      */
     @EventHandler
@@ -71,7 +74,7 @@ public class BlockEventListener implements Listener {
         }
 
         final Portal portal = PortalHandler.createPortal(event, player);
-        // Not creating a gate, just placing a sign
+        //Not creating a gate, just placing a sign
         if (portal == null) {
             return;
         }

@@ -1,6 +1,5 @@
 package net.knarcraft.stargate.listener;
 
-import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.utility.BungeeHelper;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -16,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class BungeeCordListener implements PluginMessageListener {
 
     /**
-     * Receive a plugin message
+     * Receives plugin messages
      *
      * @param channel <p>The channel the message was received on</p>
      * @param unused  <p>Unused.</p>
@@ -24,16 +23,18 @@ public class BungeeCordListener implements PluginMessageListener {
      */
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {
-        //Ignore plugin messages if bungee support is not enabled or some other plugin message is received
-        if (!Stargate.enableBungee || !channel.equals("BungeeCord")) {
+        //Ignore plugin messages if some other plugin message is received
+        if (!channel.equals("BungeeCord")) {
             return;
         }
 
+        //Try to read the plugin message
         String receivedMessage = BungeeHelper.readPluginMessage(message);
         if (receivedMessage == null) {
             return;
         }
 
+        //Use the message to initiate teleportation
         BungeeHelper.handleTeleportMessage(receivedMessage);
     }
 
