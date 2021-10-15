@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class StargateEntityPortalEvent extends StargateEvent {
 
     private static final HandlerList handlers = new HandlerList();
-    Entity travellingEntity;
+    final Entity travellingEntity;
     private final Portal destination;
     private Location exit;
 

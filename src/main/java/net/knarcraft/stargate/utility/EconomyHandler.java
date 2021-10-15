@@ -32,7 +32,7 @@ public final class EconomyHandler {
      *
      * @return <p>The gate use cost</p>
      */
-    public static int getUseCost() {
+    public static int getDefaultUseCost() {
         return useCost;
     }
 
@@ -43,7 +43,7 @@ public final class EconomyHandler {
      *
      * @param useCost <p>The gate use cost</p>
      */
-    public static void setUseCost(int useCost) {
+    public static void setDefaultUseCost(int useCost) {
         if (useCost < 0) {
             throw new IllegalArgumentException("Using a gate cannot cost a negative amount");
         }
@@ -66,7 +66,7 @@ public final class EconomyHandler {
      *
      * @param createCost <p>The gate creation cost</p>
      */
-    public static void setCreateCost(int createCost) {
+    public static void setDefaultCreateCost(int createCost) {
         EconomyHandler.createCost = createCost;
     }
 
@@ -84,7 +84,7 @@ public final class EconomyHandler {
      *
      * @param destroyCost <p>The gate destruction cost</p>
      */
-    public static void setDestroyCost(int destroyCost) {
+    public static void setDefaultDestroyCost(int destroyCost) {
         EconomyHandler.destroyCost = destroyCost;
     }
 
@@ -99,7 +99,7 @@ public final class EconomyHandler {
         if (skipPayment(cost)) {
             return true;
         }
-        // Charge player
+        //Charge player
         return EconomyHandler.chargePlayer(player, cost);
     }
 
@@ -115,7 +115,7 @@ public final class EconomyHandler {
         if (skipPayment(cost)) {
             return true;
         }
-        // Charge player
+        //Charge player
         return EconomyHandler.chargePlayer(player, target, cost);
     }
 
@@ -143,7 +143,7 @@ public final class EconomyHandler {
         if (!economyEnabled) {
             return false;
         }
-        // Check for Vault
+        //Check if vault is loaded
         Plugin vault = pluginManager.getPlugin("Vault");
         if (vault != null && vault.isEnabled()) {
             RegisteredServiceProvider<Economy> economyProvider = Stargate.server.getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
@@ -188,7 +188,7 @@ public final class EconomyHandler {
      * @param destination <p>The destination portal</p>
      * @return <p>The cost of using the portal</p>
      */
-    public static int getUseCost(Player player, Portal source, Portal destination) {
+    public static int getDefaultUseCost(Player player, Portal source, Portal destination) {
         //No payment required
         if (!EconomyHandler.useEconomy() || source.getOptions().isFree()) {
             return 0;

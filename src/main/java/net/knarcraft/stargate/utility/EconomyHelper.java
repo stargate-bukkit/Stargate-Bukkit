@@ -19,9 +19,9 @@ public final class EconomyHelper {
      * @param entrancePortal <p>The portal the player is entering</p>
      * @param player         <p>The player wishing to teleport</p>
      * @param cost           <p>The cost of teleportation</p>
-     * @return <p>True if payment was successful</p>
+     * @return <p>False if payment was successful. True if the payment was unsuccessful</p>
      */
-    public static boolean payTeleportFee(Portal entrancePortal, Player player, int cost) {
+    public static boolean cannotPayTeleportFee(Portal entrancePortal, Player player, int cost) {
         boolean success;
 
         //Try to charge the player
@@ -36,7 +36,7 @@ public final class EconomyHelper {
         if (!success) {
             sendInsufficientFundsMessage(entrancePortal.getName(), player, cost);
             entrancePortal.close(false);
-            return false;
+            return true;
         }
 
         //Send the deduct-message to the player
@@ -55,7 +55,7 @@ public final class EconomyHelper {
                 sendObtainMessage(entrancePortal.getName(), gateOwner, cost);
             }
         }
-        return true;
+        return false;
     }
 
     /**

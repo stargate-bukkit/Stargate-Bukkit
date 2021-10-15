@@ -405,9 +405,9 @@ public final class PermissionHelper {
         }
 
         //Player cannot pay for teleportation
-        int cost = EconomyHandler.getUseCost(player, entrancePortal, destination);
+        int cost = EconomyHandler.getDefaultUseCost(player, entrancePortal, destination);
         if (cost > 0) {
-            return !EconomyHelper.payTeleportFee(entrancePortal, player, cost);
+            return EconomyHelper.cannotPayTeleportFee(entrancePortal, player, cost);
         }
         return false;
     }

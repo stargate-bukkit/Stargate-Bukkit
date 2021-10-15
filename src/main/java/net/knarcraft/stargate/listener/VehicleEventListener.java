@@ -102,9 +102,9 @@ public class VehicleEventListener implements Listener {
         }
 
         //Transfer payment if necessary
-        int cost = EconomyHandler.getUseCost(player, entrancePortal, destinationPortal);
+        int cost = EconomyHandler.getDefaultUseCost(player, entrancePortal, destinationPortal);
         if (cost > 0) {
-            if (!EconomyHelper.payTeleportFee(entrancePortal, player, cost)) {
+            if (EconomyHelper.cannotPayTeleportFee(entrancePortal, player, cost)) {
                 return;
             }
         }
