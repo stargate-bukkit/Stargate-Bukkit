@@ -34,18 +34,6 @@ public class GateLayout {
     }
 
     /**
-     * Gets two of the corners of the gate layout creating the smallest box the gate can be contained within
-     *
-     * @return <p>Two of the gate's corners</p>
-     */
-    public RelativeBlockVector[] getCorners() {
-        return new RelativeBlockVector[]{
-                new RelativeBlockVector(0, 0, 0),
-                new RelativeBlockVector(layout[0].length - 1, layout.length - 1, 1)
-        };
-    }
-
-    /**
      * Gets the character array describing this layout
      *
      * @return <p>The character array describing this layout</p>
