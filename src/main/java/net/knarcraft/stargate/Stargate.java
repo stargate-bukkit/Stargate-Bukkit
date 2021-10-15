@@ -405,7 +405,7 @@ public class Stargate extends JavaPlugin {
 
         //If users have an outdated config, assume they also need to update their default gates
         if (isMigrating) {
-            GateHandler.populateDefaults(gateFolder);
+            GateHandler.writeDefaultGatesToFolder(gateFolder);
         }
 
         //Gates
