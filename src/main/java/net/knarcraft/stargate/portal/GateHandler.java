@@ -117,24 +117,24 @@ public class GateHandler {
      */
     private static Gate loadGate(String fileName, String parentFolder, Scanner scanner) {
         List<List<Character>> design = new ArrayList<>();
-        Map<Character, Material> types = new HashMap<>();
+        Map<Character, Material> characterMaterialMap = new HashMap<>();
         Map<String, String> config = new HashMap<>();
         Set<Material> frameTypes = new HashSet<>();
 
         //Initialize types map
-        types.put(ENTRANCE, Material.AIR);
-        types.put(EXIT, Material.AIR);
-        types.put(ANYTHING, Material.AIR);
+        characterMaterialMap.put(ENTRANCE, Material.AIR);
+        characterMaterialMap.put(EXIT, Material.AIR);
+        characterMaterialMap.put(ANYTHING, Material.AIR);
 
         //Read the file into appropriate lists and maps
-        int cols = readGateFile(scanner, types, fileName, design, frameTypes, config);
+        int cols = readGateFile(scanner, characterMaterialMap, fileName, design, frameTypes, config);
         if (cols < 0) {
             return null;
         }
         Character[][] layout = generateLayoutMatrix(design, cols);
 
         //Create and validate the new gate
-        Gate gate = createGate(config, fileName, layout, types);
+        Gate gate = createGate(config, fileName, layout, characterMaterialMap);
         if (gate == null) {
             return null;
         }
@@ -146,23 +146,25 @@ public class GateHandler {
     /**
      * Creates a new gate
      *
-     * @param config   <p>The config map to get configuration values from</p>
-     * @param fileName <p>The name of the saved gate config file</p>
-     * @param layout   <p>The layout matrix of the new gate</p>
-     * @param types    <p>The mapping for used gate material types</p>
+     * @param config               <p>The config map to get configuration values from</p>
+     * @param fileName             <p>The name of the saved gate config file</p>
+     * @param layout               <p>The layout matrix of the new gate</p>
+     * @param characterMaterialMap <p>The mapping for used gate material types</p>
      * @return <p>A new gate or null if the config is invalid</p>
      */
     private static Gate createGate(Map<String, String> config, String fileName, Character[][] layout,
-                                   Map<Character, Material> types) {
+                                   Map<Character, Material> characterMaterialMap) {
         Material portalOpenBlock = readConfig(config, fileName, "portal-open", defaultPortalBlockOpen);
         Material portalClosedBlock = readConfig(config, fileName, "portal-closed", defaultPortalBlockClosed);
         Material portalButton = readConfig(config, fileName, "button", defaultButton);
         int useCost = readConfig(config, fileName, "usecost");
         int createCost = readConfig(config, fileName, "createcost");
         int destroyCost = readConfig(config, fileName, "destroycost");
-        boolean toOwner = (config.containsKey("toowner") ? Boolean.parseBoolean(config.get("toowner")) : EconomyHandler.toOwner);
+        boolean toOwner = (config.containsKey("toowner") ? Boolean.parseBoolean(config.get("toowner")) :
+                EconomyHandler.toOwner);
 
-        Gate gate = new Gate(fileName, new GateLayout(layout), types, portalOpenBlock, portalClosedBlock, portalButton, useCost,
+        Gate gate = new Gate(fileName, new GateLayout(layout), characterMaterialMap, portalOpenBlock, portalClosedBlock,
+                portalButton, useCost,
                 createCost, destroyCost, toOwner);
 
         if (!validateGate(gate, fileName)) {
@@ -223,15 +225,15 @@ public class GateHandler {
     /**
      * Reads the gate file
      *
-     * @param scanner    <p>The scanner to read from</p>
-     * @param types      <p>The map of characters to store valid symbols in</p>
-     * @param fileName   <p>The filename of the loaded gate config file</p>
-     * @param design     <p>The list to store the loaded design to</p>
-     * @param frameTypes <p>The set of gate frame types to store to</p>
-     * @param config     <p>The map of config values to store to</p>
+     * @param scanner              <p>The scanner to read from</p>
+     * @param characterMaterialMap <p>The map of characters to store valid symbols in</p>
+     * @param fileName             <p>The filename of the loaded gate config file</p>
+     * @param design               <p>The list to store the loaded design to</p>
+     * @param frameTypes           <p>The set of gate frame types to store to</p>
+     * @param config               <p>The map of config values to store to</p>
      * @return <p>The column count/width of the loaded gate</p>
      */
-    private static int readGateFile(Scanner scanner, Map<Character, Material> types, String fileName,
+    private static int readGateFile(Scanner scanner, Map<Character, Material> characterMaterialMap, String fileName,
                                     List<List<Character>> design, Set<Material> frameTypes, Map<String, String> config) {
         boolean designing = false;
         int cols = 0;
@@ -240,13 +242,13 @@ public class GateHandler {
                 String line = scanner.nextLine();
 
                 if (designing) {
-                    cols = readGateDesignLine(line, cols, types, fileName, design);
+                    cols = readGateDesignLine(line, cols, characterMaterialMap, fileName, design);
                     if (cols < 0) {
                         return -1;
                     }
                 } else {
                     if (!line.isEmpty() && !line.startsWith("#")) {
-                        readGateConfigValue(line, types, frameTypes, config);
+                        readGateConfigValue(line, characterMaterialMap, frameTypes, config);
                     } else if ((line.isEmpty()) || (!line.contains("=") && !line.startsWith("#"))) {
                         designing = true;
                     }
@@ -268,13 +270,13 @@ public class GateHandler {
      *
      * @param line     <p>The line to read</p>
      * @param cols     <p>The current max columns value of the design</p>
-     * @param types    <p>The map of characters to check for valid symbols</p>
+     * @param characterMaterialMap    <p>The map of characters to check for valid symbols</p>
      * @param fileName <p>The filename of the loaded gate config file</p>
      * @param design   <p>The list to store the loaded design to</p>
      * @return <p>The new max columns value of the design</p>
      */
-    private static int readGateDesignLine(String line, int cols, Map<Character, Material> types, String fileName,
-                                          List<List<Character>> design) {
+    private static int readGateDesignLine(String line, int cols, Map<Character, Material> characterMaterialMap,
+                                          String fileName, List<List<Character>> design) {
         List<Character> row = new ArrayList<>();
 
         if (line.length() > cols) {
@@ -282,8 +284,9 @@ public class GateHandler {
         }
 
         for (Character symbol : line.toCharArray()) {
-            if ((symbol.equals('?')) || (!types.containsKey(symbol))) {
-                Stargate.logger.log(Level.SEVERE, "Could not load Gate " + fileName + " - Unknown symbol '" + symbol + "' in diagram");
+            if ((symbol.equals('?')) || (!characterMaterialMap.containsKey(symbol))) {
+                Stargate.logger.log(Level.SEVERE, "Could not load Gate " + fileName + " - Unknown symbol '" +
+                        symbol + "' in diagram");
                 return -1;
             }
             row.add(symbol);
@@ -297,13 +300,13 @@ public class GateHandler {
      * Reads one config value from the gate layout file
      *
      * @param line       <p>The line to read</p>
-     * @param types      <p>The map of characters to materials to store to</p>
+     * @param characterMaterialMap      <p>The map of characters to materials to store to</p>
      * @param frameTypes <p>The set of gate frame types to store to</p>
      * @param config     <p>The map of config values to store to</p>
      * @throws Exception <p>If an invalid material is encountered</p>
      */
-    private static void readGateConfigValue(String line, Map<Character, Material> types, Set<Material> frameTypes,
-                                            Map<String, String> config) throws Exception {
+    private static void readGateConfigValue(String line, Map<Character, Material> characterMaterialMap,
+                                            Set<Material> frameTypes, Map<String, String> config) throws Exception {
         String[] split = line.split("=");
         String key = split[0].trim();
         String value = split[1].trim();
@@ -314,7 +317,7 @@ public class GateHandler {
             if (id == null) {
                 throw new Exception("Invalid material in line: " + line);
             }
-            types.put(symbol, id);
+            characterMaterialMap.put(symbol, id);
             frameTypes.add(id);
         } else {
             config.put(key, value);
@@ -334,7 +337,8 @@ public class GateHandler {
             try {
                 return Integer.parseInt(config.get(key));
             } catch (NumberFormatException ex) {
-                Stargate.logger.log(Level.WARNING, String.format("%s reading %s: %s is not numeric", ex.getClass().getName(), fileName, key));
+                Stargate.logger.log(Level.WARNING, String.format("%s reading %s: %s is not numeric",
+                        ex.getClass().getName(), fileName, key));
             }
         }
 

@@ -55,7 +55,7 @@ public class Stargate extends JavaPlugin {
     public static final Queue<BlockChangeRequest> blockChangeRequestQueue = new LinkedList<>();
     public static final ConcurrentLinkedQueue<Portal> openPortalsQueue = new ConcurrentLinkedQueue<>();
     public static final ConcurrentLinkedQueue<Portal> activePortalsQueue = new ConcurrentLinkedQueue<>();
-    public static final Queue<ChunkUnloadRequest> chunkUnloadQueue = new PriorityQueue<>();
+    private static final Queue<ChunkUnloadRequest> chunkUnloadQueue = new PriorityQueue<>();
 
     //Amount of seconds before deactivating/closing portals
     private static final int activeTime = 10;
@@ -482,9 +482,9 @@ public class Stargate extends JavaPlugin {
      */
     private void loadEconomyConfig() {
         EconomyHandler.economyEnabled = newConfig.getBoolean("economy.useEconomy");
-        EconomyHandler.setCreateCost(newConfig.getInt("economy.createCost"));
-        EconomyHandler.setDestroyCost(newConfig.getInt("economy.destroyCost"));
-        EconomyHandler.setUseCost(newConfig.getInt("economy.useCost"));
+        EconomyHandler.setDefaultCreateCost(newConfig.getInt("economy.createCost"));
+        EconomyHandler.setDefaultDestroyCost(newConfig.getInt("economy.destroyCost"));
+        EconomyHandler.setDefaultUseCost(newConfig.getInt("economy.useCost"));
         EconomyHandler.toOwner = newConfig.getBoolean("economy.toOwner");
         EconomyHandler.chargeFreeDestination = newConfig.getBoolean("economy.chargeFreeDestination");
         EconomyHandler.freeGatesGreen = newConfig.getBoolean("economy.freeGatesGreen");
