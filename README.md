@@ -157,6 +157,10 @@ will lay out the gate format. Here is the default nethergate.gate file:
 portal-open=NETHER_PORTAL
 portal-closed=AIR
 button=STONE_BUTTON
+usecost=0
+createcost=0
+destroycost=0
+toowner=false
 X=OBSIDIAN
 -=OBSIDIAN
 
@@ -172,8 +176,15 @@ material for `portal-closed` can be most things, including solid blocks. Some ma
 material for `portal-open` can be any block the player can partially enter, even things like `GLOW_LICHEN`.
 `NETHER_PORTAL`, `END_GATEWAY` and `END_PORTAL` all work.
 
+The `usecost`, `createcost` and `destroycost` keys can be used to set an economy price for gates of this type, different
+from the cost defined in the config. With economy enabled, all gates without these values set will use the values from
+the config. If you want to have different costs for different portals, you must create different gate types and set
+different costs for each one. The `toowner` key can be used to set whether funds withdrawn for using portals with this
+gate type should go to the portal's owner.
+
 The key `button` is used to define the type of button that is generated for this gate. It can be a button (of any type),
 a type of wall coral (dead or alive), a type of shulker box or a chest.
+
 `X` and `-` are used to define block types for the layout (Any single-character can be used, such as `#`).  
 In the gate format, you can see we use `X` to show where obsidian must be, `-` where the controls (Button/sign) are.  
 You will also notice a `*` in the gate layout, this is the "exit point" of the gate, the block at which the player will
