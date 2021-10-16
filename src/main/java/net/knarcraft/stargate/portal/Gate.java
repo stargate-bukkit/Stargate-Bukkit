@@ -265,7 +265,7 @@ public class Gate {
             bufferedWriter.newLine();
 
             //Save the gate layout
-            layout.save(bufferedWriter);
+            layout.saveLayout(bufferedWriter);
 
             bufferedWriter.close();
         } catch (IOException ex) {
