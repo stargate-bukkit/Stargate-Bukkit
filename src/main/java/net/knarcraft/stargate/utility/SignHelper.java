@@ -19,7 +19,8 @@ public final class SignHelper {
         for (int index = 0; index <= 3; index++) {
             sign.setLine(index, "");
         }
-        Stargate.setLine(sign, 0, "-" + portal.getName() + "-");
+        Stargate.setLine(sign, 0, ChatColor.WHITE + "-" + ChatColor.BLACK + portal.getName() +
+                ChatColor.WHITE + "-");
 
         if (!portal.isActive()) {
             //Default sign text
