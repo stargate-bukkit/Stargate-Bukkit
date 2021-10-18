@@ -3,7 +3,7 @@ package net.knarcraft.stargate.listener;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
-import net.knarcraft.stargate.portal.PortalTeleporter;
+import net.knarcraft.stargate.portal.VehicleTeleporter;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.EntityHelper;
@@ -75,7 +75,7 @@ public class VehicleEventListener implements Listener {
             }
             Stargate.debug("vehicleTeleport", destinationPortal.getWorld() + " " +
                     destinationPortal.getSignLocation());
-            new PortalTeleporter(destinationPortal).teleport(vehicle, entrancePortal);
+            new VehicleTeleporter(destinationPortal, vehicle).teleport(entrancePortal);
         }
     }
 
@@ -118,7 +118,7 @@ public class VehicleEventListener implements Listener {
         }
 
         Stargate.sendSuccessMessage(player, Stargate.getString("teleportMsg"));
-        new PortalTeleporter(destinationPortal).teleport(vehicle, entrancePortal);
+        new VehicleTeleporter(destinationPortal, vehicle).teleport(entrancePortal);
         entrancePortal.close(false);
     }
 

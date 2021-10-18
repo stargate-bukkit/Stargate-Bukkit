@@ -1,9 +1,9 @@
 package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.container.FromTheEndTeleportation;
+import net.knarcraft.stargate.portal.PlayerTeleporter;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
-import net.knarcraft.stargate.portal.PortalTeleporter;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -89,7 +89,7 @@ public class PortalEventListener implements Listener {
 
         Portal exitPortal = teleportation.getExit();
         //Overwrite respawn location to respawn in front of the portal
-        event.setRespawnLocation(new PortalTeleporter(exitPortal).getExit(respawningPlayer,
+        event.setRespawnLocation(new PlayerTeleporter(exitPortal, respawningPlayer).getExit(respawningPlayer,
                 respawningPlayer.getLocation()));
         //Properly close the portal to prevent it from staying in a locked state until it times out
         exitPortal.close(false);

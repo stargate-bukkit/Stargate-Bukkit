@@ -2,9 +2,9 @@ package net.knarcraft.stargate.utility;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargateAccessEvent;
+import net.knarcraft.stargate.portal.PlayerTeleporter;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalOption;
-import net.knarcraft.stargate.portal.PortalTeleporter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -390,7 +390,7 @@ public final class PermissionHelper {
         // Not open for this player
         if (!entrancePortal.isOpenFor(player)) {
             Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
-            new PortalTeleporter(entrancePortal).teleport(player, entrancePortal, event);
+            new PlayerTeleporter(entrancePortal, player).teleport(entrancePortal, event);
             return true;
         }
 
@@ -402,7 +402,7 @@ public final class PermissionHelper {
         //Player cannot access portal
         if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destination)) {
             Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
-            new PortalTeleporter(entrancePortal).teleport(player, entrancePortal, event);
+            new PlayerTeleporter(entrancePortal, player).teleport(entrancePortal, event);
             entrancePortal.close(false);
             return true;
         }

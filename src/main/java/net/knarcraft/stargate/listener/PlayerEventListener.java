@@ -2,9 +2,10 @@ package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
+import net.knarcraft.stargate.portal.PlayerTeleporter;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
-import net.knarcraft.stargate.portal.PortalTeleporter;
+import net.knarcraft.stargate.portal.VehicleTeleporter;
 import net.knarcraft.stargate.utility.BungeeHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
@@ -57,7 +58,7 @@ public class PlayerEventListener implements Listener {
             return;
         }
         //Teleport the player to the stargate
-        new PortalTeleporter(portal).teleport(player, portal, null);
+        new PlayerTeleporter(portal, player).teleport(portal, null);
     }
 
     /**
@@ -93,9 +94,9 @@ public class PlayerEventListener implements Listener {
                 horse.setTamed(true);
                 horse.setOwner(player);
             }
-            new PortalTeleporter(destination).teleport((Vehicle) playerVehicle, entrancePortal);
+            new VehicleTeleporter(destination, (Vehicle) playerVehicle).teleport(entrancePortal);
         } else {
-            new PortalTeleporter(destination).teleport(player, entrancePortal, event);
+            new PlayerTeleporter(destination, player).teleport(entrancePortal, event);
         }
         Stargate.sendSuccessMessage(player, Stargate.getString("teleportMsg"));
         entrancePortal.close(false);
@@ -306,7 +307,7 @@ public class PlayerEventListener implements Listener {
         }
 
         //Teleport the player back to this gate, for sanity's sake
-        new PortalTeleporter(entrancePortal).teleport(player, entrancePortal, event);
+        new PlayerTeleporter(entrancePortal, player).teleport(entrancePortal, event);
 
         //Send the SGBungee packet first, it will be queued by BC if required
         if (!BungeeHelper.sendTeleportationMessage(player, entrancePortal)) {

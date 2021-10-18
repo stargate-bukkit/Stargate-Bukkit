@@ -107,7 +107,7 @@ public final class EconomyHandler {
      * Checks whether the given player can afford the given fee
      *
      * @param player <p>The player to check</p>
-     * @param cost <p>The fee to pay</p>
+     * @param cost   <p>The fee to pay</p>
      * @return <p>True if the player can afford to pay the fee</p>
      */
     public static boolean canAffordFee(Player player, int cost) {
