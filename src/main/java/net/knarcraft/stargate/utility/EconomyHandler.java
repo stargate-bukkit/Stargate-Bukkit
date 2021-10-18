@@ -104,6 +104,17 @@ public final class EconomyHandler {
     }
 
     /**
+     * Checks whether the given player can afford the given fee
+     *
+     * @param player <p>The player to check</p>
+     * @param cost <p>The fee to pay</p>
+     * @return <p>True if the player can afford to pay the fee</p>
+     */
+    public static boolean canAffordFee(Player player, int cost) {
+        return economy.getBalance(player) > cost;
+    }
+
+    /**
      * Charges the player for an action, if required
      *
      * @param player <p>The player to take money from</p>
@@ -188,7 +199,7 @@ public final class EconomyHandler {
      * @param destination <p>The destination portal</p>
      * @return <p>The cost of using the portal</p>
      */
-    public static int getDefaultUseCost(Player player, Portal source, Portal destination) {
+    public static int getUseCost(Player player, Portal source, Portal destination) {
         //No payment required
         if (!EconomyHandler.useEconomy() || source.getOptions().isFree()) {
             return 0;
