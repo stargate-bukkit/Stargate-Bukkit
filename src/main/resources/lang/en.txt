@@ -28,6 +28,7 @@ signRightClick=Right click
 signToUse=to use gate
 signRandom=Random
 signDisconnected=Disconnected
+signInvalidGate=Invalid gate
 
 bungeeDisabled=BungeeCord support is disabled.
 bungeeDeny=You do not have permission to create BungeeCord gates.

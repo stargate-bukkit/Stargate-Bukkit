@@ -937,6 +937,11 @@ public class PortalHandler {
             Stargate.logger.info(String.format("%s{%s} Loaded %d stargates with %d set as always-on",
                     Stargate.getString("prefix"), world.getName(), portalCounts.getSecondValue(),
                     portalCounts.getFirstValue()));
+
+            //Re-draw the signs in case a bug in the config prevented the portal from loading and has been fixed since
+            for (Portal portal : allPortals) {
+                portal.drawSign();
+            }
             return true;
         } catch (Exception e) {
             Stargate.logger.log(Level.SEVERE, "Exception while reading stargates from " + database.getName() + ": " + lineIndex);
@@ -962,6 +967,11 @@ public class PortalHandler {
         portalLocation.setTopLeft(new BlockLocation(world, portalData[6]));
         Gate gate = GateHandler.getGateByName(portalData[7]);
         if (gate == null) {
+            //Mark the sign as invalid to reduce some player confusion
+            Sign sign = (Sign) portalLocation.getSignLocation().getBlock().getState();
+            Stargate.setLine(sign, 3, Stargate.getString("signInvalidGate"));
+            sign.update();
+
             Stargate.logger.info(Stargate.getString("prefix") + "Gate layout on line " + lineIndex +
                     " does not exist [" + portalData[7] + "]");
             return;
