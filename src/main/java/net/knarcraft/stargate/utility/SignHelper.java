@@ -4,12 +4,30 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import org.bukkit.ChatColor;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 
 /**
  * This class helps to draw the sign on a portal as it's a bit too complicated to be contained within the portal class
  */
 public final class SignHelper {
+
+    /**
+     * Draws this portal's sign
+     */
+    public static void drawSign(Portal portal) {
+        Block signBlock = portal.getSignLocation().getBlock();
+        BlockState state = signBlock.getState();
+        if (!(state instanceof Sign sign)) {
+            Stargate.logger.warning(Stargate.getString("prefix") + "Sign block is not a Sign object");
+            Stargate.debug("Portal::drawSign", "Block: " + signBlock.getType() + " @ " +
+                    signBlock.getLocation());
+            return;
+        }
+
+        SignHelper.drawSign(sign, portal);
+    }
 
     /**
      * Draws the sign on this portal

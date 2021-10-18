@@ -9,6 +9,7 @@ import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
+import net.knarcraft.stargate.utility.SignHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -163,7 +164,7 @@ public class PortalHandler {
                 }
                 //Update the portal's sign
                 if (origin.getOptions().isFixed()) {
-                    origin.drawSign();
+                    SignHelper.drawSign(origin);
                 }
                 //Close portal without destination
                 if (origin.getOptions().isAlwaysOn()) {
@@ -584,7 +585,7 @@ public class PortalHandler {
      * @param destinationName <p>The name of the destination portal</p>
      */
     private static void updateNewPortal(Portal portal, String destinationName) {
-        portal.drawSign();
+        SignHelper.drawSign(portal);
         //Open an always on portal
         if (portal.getOptions().isRandom() || portal.getOptions().isBungee()) {
             portal.open(true);
@@ -592,7 +593,7 @@ public class PortalHandler {
             Portal destinationPortal = getByName(destinationName, portal.getNetwork());
             if (destinationPortal != null) {
                 portal.open(true);
-                destinationPortal.drawSign();
+                SignHelper.drawSign(destinationPortal);
             }
         } else {
             //Update the block type for the portal's opening to the closed block
@@ -617,7 +618,7 @@ public class PortalHandler {
             }
             //Update sign of fixed gates pointing at this gate
             if (origin.getOptions().isFixed()) {
-                origin.drawSign();
+                SignHelper.drawSign(origin);
             }
             //Open any always on portal pointing at this portal
             if (origin.getOptions().isAlwaysOn()) {
@@ -940,7 +941,7 @@ public class PortalHandler {
 
             //Re-draw the signs in case a bug in the config prevented the portal from loading and has been fixed since
             for (Portal portal : allPortals) {
-                portal.drawSign();
+                SignHelper.drawSign(portal);
             }
             return true;
         } catch (Exception e) {

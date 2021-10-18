@@ -8,12 +8,9 @@ import net.knarcraft.stargate.event.StargateActivateEvent;
 import net.knarcraft.stargate.event.StargateCloseEvent;
 import net.knarcraft.stargate.event.StargateDeactivateEvent;
 import net.knarcraft.stargate.event.StargateOpenEvent;
-import net.knarcraft.stargate.utility.SignHelper;
 import org.bukkit.Axis;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.entity.Player;
 
@@ -23,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+
+import static net.knarcraft.stargate.utility.SignHelper.drawSign;
 
 /**
  * This class represents a portal in space which points to one or several portals
@@ -154,7 +153,7 @@ public class Portal {
     @SuppressWarnings("unused")
     public void setName(String name) {
         this.name = filterName(name);
-        drawSign();
+        drawSign(this);
     }
 
     /**
@@ -374,13 +373,13 @@ public class Portal {
             player = openFor;
 
             Portal destination = getDestination();
-            // Only open destination if it's not-fixed or points at this portal
+            //Only open destination if it's not-fixed or points at this portal
             if (!options.isRandom() && destination != null && (!destination.options.isFixed() ||
                     destination.getDestinationName().equalsIgnoreCase(getName())) && !destination.isOpen()) {
                 destination.open(openFor, false);
                 destination.setDestination(this);
                 if (destination.isVerified()) {
-                    destination.drawSign();
+                    drawSign(destination);
                 }
             }
         }
@@ -551,7 +550,7 @@ public class Portal {
         }
         destination = event.getDestination();
         destinations = event.getDestinations();
-        drawSign();
+        drawSign(this);
         return true;
     }
 
@@ -572,7 +571,7 @@ public class Portal {
         destinations.clear();
         destination = "";
         activePlayer = null;
-        drawSign();
+        drawSign(this);
     }
 
     /**
@@ -624,7 +623,7 @@ public class Portal {
             cycleDestination(direction);
         }
         openTime = System.currentTimeMillis() / 1000;
-        drawSign();
+        drawSign(this);
     }
 
     /**
@@ -636,7 +635,7 @@ public class Portal {
         int index = destinations.indexOf(destination);
         index += direction;
 
-        //Wrap around
+        //Wrap around if the last destination has been reached
         if (index >= destinations.size()) {
             index = 0;
         } else if (index < 0) {
@@ -645,21 +644,6 @@ public class Portal {
         //Store selected destination
         destination = destinations.get(index);
         lastDestination = destination;
-    }
-
-    /**
-     * Draws this portal's sign
-     */
-    public final void drawSign() {
-        BlockState state = getSignLocation().getBlock().getState();
-        if (!(state instanceof Sign sign)) {
-            Stargate.logger.warning(Stargate.getString("prefix") + "Sign block is not a Sign object");
-            Stargate.debug("Portal::drawSign", "Block: " + getSignLocation().getBlock().getType() + " @ "
-                    + getSignLocation().getBlock().getLocation());
-            return;
-        }
-
-        SignHelper.drawSign(sign, this);
     }
 
     /**
