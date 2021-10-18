@@ -107,7 +107,9 @@ public class GateLayout {
      */
     public void saveLayout(BufferedWriter bufferedWriter) throws IOException {
         for (Character[] line : this.layout) {
-            bufferedWriter.append(Arrays.toString(line));
+            for (Character character : line) {
+                bufferedWriter.append(character);
+            }
             bufferedWriter.newLine();
         }
     }
