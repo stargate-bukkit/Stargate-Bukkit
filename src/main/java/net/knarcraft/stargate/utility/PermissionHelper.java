@@ -4,6 +4,7 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargateAccessEvent;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalOption;
+import net.knarcraft.stargate.portal.PortalTeleporter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -99,13 +100,15 @@ public final class PermissionHelper {
     public static boolean cannotAccessPortal(Player player, Portal entrancePortal, Portal destination) {
         boolean deny = false;
         // Check if player has access to this server for Bungee gates
-        if (entrancePortal.getOptions().isBungee() && !PermissionHelper.canAccessServer(player, entrancePortal.getNetwork())) {
+        if (entrancePortal.getOptions().isBungee() && !PermissionHelper.canAccessServer(player,
+                entrancePortal.getNetwork())) {
             Stargate.debug("cannotAccessPortal", "Cannot access server");
             deny = true;
         } else if (PermissionHelper.cannotAccessNetwork(player, entrancePortal.getNetwork())) {
             Stargate.debug("cannotAccessPortal", "Cannot access network");
             deny = true;
-        } else if (!entrancePortal.getOptions().isBungee() && PermissionHelper.cannotAccessWorld(player, destination.getWorld().getName())) {
+        } else if (!entrancePortal.getOptions().isBungee() && PermissionHelper.cannotAccessWorld(player,
+                destination.getWorld().getName())) {
             Stargate.debug("cannotAccessPortal", "Cannot access world");
             deny = true;
         }
@@ -387,7 +390,7 @@ public final class PermissionHelper {
         // Not open for this player
         if (!entrancePortal.isOpenFor(player)) {
             Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
-            entrancePortal.teleport(player, entrancePortal, event);
+            new PortalTeleporter(entrancePortal).teleport(player, entrancePortal, event);
             return true;
         }
 
@@ -399,13 +402,13 @@ public final class PermissionHelper {
         //Player cannot access portal
         if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destination)) {
             Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
-            entrancePortal.teleport(player, entrancePortal, event);
+            new PortalTeleporter(entrancePortal).teleport(player, entrancePortal, event);
             entrancePortal.close(false);
             return true;
         }
 
         //Player cannot pay for teleportation
-        int cost = EconomyHandler.getDefaultUseCost(player, entrancePortal, destination);
+        int cost = EconomyHandler.getUseCost(player, entrancePortal, destination);
         if (cost > 0) {
             return EconomyHelper.cannotPayTeleportFee(entrancePortal, player, cost);
         }

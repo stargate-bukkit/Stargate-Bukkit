@@ -3,6 +3,7 @@ package net.knarcraft.stargate.utility;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
+import net.knarcraft.stargate.portal.PortalTeleporter;
 import org.bukkit.entity.Player;
 
 import java.io.ByteArrayInputStream;
@@ -130,7 +131,7 @@ public final class BungeeHelper {
                 Stargate.logger.info(Stargate.getString("prefix") + "Bungee gate " + destination + " does not exist");
                 return;
             }
-            destinationPortal.teleport(player, destinationPortal, null);
+            new PortalTeleporter(destinationPortal).teleport(player, destinationPortal, null);
         }
     }
 

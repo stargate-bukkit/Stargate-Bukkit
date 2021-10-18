@@ -4,6 +4,7 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
+import net.knarcraft.stargate.portal.PortalTeleporter;
 import net.knarcraft.stargate.utility.BungeeHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
@@ -56,7 +57,7 @@ public class PlayerEventListener implements Listener {
             return;
         }
         //Teleport the player to the stargate
-        portal.teleport(player, portal, null);
+        new PortalTeleporter(portal).teleport(player, portal, null);
     }
 
     /**
@@ -92,9 +93,9 @@ public class PlayerEventListener implements Listener {
                 horse.setTamed(true);
                 horse.setOwner(player);
             }
-            destination.teleport((Vehicle) playerVehicle, entrancePortal);
+            new PortalTeleporter(destination).teleport((Vehicle) playerVehicle, entrancePortal);
         } else {
-            destination.teleport(player, entrancePortal, event);
+            new PortalTeleporter(destination).teleport(player, entrancePortal, event);
         }
         Stargate.sendSuccessMessage(player, Stargate.getString("teleportMsg"));
         entrancePortal.close(false);
@@ -123,6 +124,11 @@ public class PlayerEventListener implements Listener {
         }
 
         Portal destination = entrancePortal.getDestination(player);
+
+        //Catch always open portals without a valid destination to prevent the user for being teleported and denied
+        if (destination == null) {
+            return false;
+        }
 
         //Decide if the anything stops the player from teleport
         if (PermissionHelper.playerCannotTeleport(entrancePortal, destination, player, event)) {
@@ -300,7 +306,7 @@ public class PlayerEventListener implements Listener {
         }
 
         //Teleport the player back to this gate, for sanity's sake
-        entrancePortal.teleport(player, entrancePortal, event);
+        new PortalTeleporter(entrancePortal).teleport(player, entrancePortal, event);
 
         //Send the SGBungee packet first, it will be queued by BC if required
         if (!BungeeHelper.sendTeleportationMessage(player, entrancePortal)) {
