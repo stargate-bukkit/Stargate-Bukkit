@@ -8,7 +8,6 @@ import net.knarcraft.stargate.event.StargateActivateEvent;
 import net.knarcraft.stargate.event.StargateCloseEvent;
 import net.knarcraft.stargate.event.StargateDeactivateEvent;
 import net.knarcraft.stargate.event.StargateOpenEvent;
-import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.SignHelper;
 import org.bukkit.Axis;
 import org.bukkit.Material;
@@ -670,7 +669,7 @@ public class Portal {
      * @return <p>The block at the given relative position</p>
      */
     public BlockLocation getBlockAt(RelativeBlockVector vector) {
-        return DirectionHelper.getBlockAt(getTopLeft(), vector, getYaw());
+        return getTopLeft().getRelativeLocation(vector, getYaw());
     }
 
     /**

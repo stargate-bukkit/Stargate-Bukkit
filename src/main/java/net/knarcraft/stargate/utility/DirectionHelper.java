@@ -1,7 +1,5 @@
 package net.knarcraft.stargate.utility;
 
-import net.knarcraft.stargate.container.BlockLocation;
-import net.knarcraft.stargate.container.RelativeBlockVector;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
@@ -83,18 +81,6 @@ public final class DirectionHelper {
         } else {
             throw new IllegalArgumentException(String.format("Invalid yaw %f given", yaw));
         }
-    }
-
-    /**
-     * Gets a block location relative to another
-     *
-     * @param topLeft <p>The block location to start at (Usually the top-left block of a portal)</p>
-     * @param vector  <p>The relative vector describing the relative location</p>
-     * @param yaw     <p>The yaw pointing outwards from the portal</p>
-     * @return <p>A block location relative to the given location</p>
-     */
-    public static BlockLocation getBlockAt(BlockLocation topLeft, RelativeBlockVector vector, double yaw) {
-        return topLeft.getRelativeLocation(vector, yaw);
     }
 
     /**

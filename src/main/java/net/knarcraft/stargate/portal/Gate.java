@@ -3,7 +3,6 @@ package net.knarcraft.stargate.portal;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
-import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import org.bukkit.Material;
 
@@ -195,7 +194,8 @@ public class Gate {
             Character key = layout.getLayout()[lineIndex][rowIndex];
 
             Material materialInLayout = characterMaterialMap.get(key);
-            Material materialAtLocation = DirectionHelper.getBlockAt(topLeft, borderVector, yaw).getType();
+            Material materialAtLocation = topLeft.getRelativeLocation(borderVector, yaw).getType();
+
             if (materialInLayout == null) {
                 /* This generally should not happen with proper checking, but just in case a material character is not
                  * recognized, but still allowed in previous checks, verify the gate as long as all such instances of
@@ -225,7 +225,7 @@ public class Gate {
         Stargate.debug("verifyGateEntrancesMatch", String.valueOf(topLeft));
         for (RelativeBlockVector entranceVector : layout.getEntrances()) {
             Stargate.debug("verifyGateEntrancesMatch", String.valueOf(entranceVector));
-            Material type = DirectionHelper.getBlockAt(topLeft, entranceVector, yaw).getType();
+            Material type = topLeft.getRelativeLocation(entranceVector, yaw).getType();
 
             //Ignore entrance if it's air or water, and we're creating a new gate
             if (onCreate && (type == Material.AIR || type == Material.WATER)) {
