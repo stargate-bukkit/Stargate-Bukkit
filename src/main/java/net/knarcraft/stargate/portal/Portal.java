@@ -21,8 +21,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import static net.knarcraft.stargate.utility.SignHelper.drawSign;
-
 /**
  * This class represents a portal in space which points to one or several portals
  */
@@ -30,6 +28,7 @@ public class Portal {
 
     // Gate location block info
     private final PortalLocation location;
+    private final PortalSignDrawer signDrawer;
 
     // Block references
     private final Gate gate;
@@ -79,6 +78,14 @@ public class Portal {
         this.ownerUUID = ownerUUID;
         this.ownerName = ownerName;
         this.options = new PortalOptions(options, destination.length() > 0);
+        this.signDrawer = new PortalSignDrawer(this);
+    }
+
+    /**
+     * Re-draws the sign on this portal
+     */
+    public void drawSign() {
+        this.signDrawer.drawSign();
     }
 
     /**
@@ -153,7 +160,7 @@ public class Portal {
     @SuppressWarnings("unused")
     public void setName(String name) {
         this.name = filterName(name);
-        drawSign(this);
+        this.drawSign();
     }
 
     /**
@@ -379,7 +386,7 @@ public class Portal {
                 destination.open(openFor, false);
                 destination.setDestination(this);
                 if (destination.isVerified()) {
-                    drawSign(destination);
+                    destination.drawSign();
                 }
             }
         }
@@ -550,7 +557,7 @@ public class Portal {
         }
         destination = event.getDestination();
         destinations = event.getDestinations();
-        drawSign(this);
+        this.drawSign();
         return true;
     }
 
@@ -571,7 +578,7 @@ public class Portal {
         destinations.clear();
         destination = "";
         activePlayer = null;
-        drawSign(this);
+        this.drawSign();
     }
 
     /**
@@ -623,7 +630,7 @@ public class Portal {
             cycleDestination(direction);
         }
         openTime = System.currentTimeMillis() / 1000;
-        drawSign(this);
+        this.drawSign();
     }
 
     /**

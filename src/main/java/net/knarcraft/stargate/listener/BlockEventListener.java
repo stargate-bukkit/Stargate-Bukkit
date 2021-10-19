@@ -8,7 +8,6 @@ import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
-import net.knarcraft.stargate.utility.SignHelper;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
@@ -82,7 +81,7 @@ public class BlockEventListener implements Listener {
 
         Stargate.sendSuccessMessage(player, Stargate.getString("createMsg"));
         Stargate.debug("onSignChange", "Initialized stargate: " + portal.getName());
-        Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, () -> SignHelper.drawSign(portal), 1);
+        Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, portal::drawSign, 1);
     }
 
     /**
