@@ -130,15 +130,15 @@ public class Portal {
     }
 
     /**
-     * Gets the time this portal opened
+     * Gets the time this portal was activated/opened
      *
      * <p>The time is given in the equivalent of a Unix timestamp. It's used to decide when a portal times out and
      * automatically closes.</p>
      *
-     * @return <p>The time this portal opened</p>
+     * @return <p>The time this portal was activated/opened</p>
      */
-    public long getOpenTime() {
-        return portalOpener.getOpenTime();
+    public long getActivatedTime() {
+        return portalOpener.getActivatedTime();
     }
 
     /**

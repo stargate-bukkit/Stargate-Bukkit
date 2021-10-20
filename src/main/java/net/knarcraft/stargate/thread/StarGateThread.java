@@ -20,7 +20,7 @@ public class StarGateThread implements Runnable {
             if (portal.getOptions().isAlwaysOn() || !portal.isOpen()) {
                 continue;
             }
-            if (time > portal.getOpenTime() + Stargate.getOpenTime()) {
+            if (time > portal.getActivatedTime() + Stargate.getOpenTime()) {
                 portal.getPortalOpener().closePortal(false);
                 iterator.remove();
             }
@@ -31,7 +31,7 @@ public class StarGateThread implements Runnable {
             if (!portal.getPortalActivator().isActive()) {
                 continue;
             }
-            if (time > portal.getOpenTime() + Stargate.getActiveTime()) {
+            if (time > portal.getActivatedTime() + Stargate.getActiveTime()) {
                 portal.getPortalActivator().deactivate();
                 iterator.remove();
             }

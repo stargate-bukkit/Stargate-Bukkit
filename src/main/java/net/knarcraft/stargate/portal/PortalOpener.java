@@ -17,7 +17,7 @@ public class PortalOpener {
 
     private boolean isOpen = false;
     private final Portal portal;
-    private long openTime;
+    private long activatedTime;
     private Player player;
     private final PortalActivator portalActivator;
 
@@ -44,10 +44,10 @@ public class PortalOpener {
     /**
      * Sets the time when this portal was activated
      *
-     * @param openTime <p>Unix timestamp when portal was activated</p>
+     * @param activatedTime <p>Unix timestamp when portal was activated</p>
      */
-    public void setOpenTime(long openTime) {
-        this.openTime = openTime;
+    public void setActivatedTime(long activatedTime) {
+        this.activatedTime = activatedTime;
     }
 
     /**
@@ -99,7 +99,7 @@ public class PortalOpener {
     private void updatePortalOpenState(Player openFor) {
         //Update the open state of this portal
         isOpen = true;
-        openTime = System.currentTimeMillis() / 1000;
+        activatedTime = System.currentTimeMillis() / 1000;
         Stargate.openPortalsQueue.add(portal);
         Stargate.activePortalsQueue.remove(portal);
         PortalOptions options = portal.getOptions();
@@ -196,8 +196,8 @@ public class PortalOpener {
      *
      * @return <p>The time this portal activator's portal opened</p>
      */
-    public long getOpenTime() {
-        return openTime;
+    public long getActivatedTime() {
+        return activatedTime;
     }
 
 }
