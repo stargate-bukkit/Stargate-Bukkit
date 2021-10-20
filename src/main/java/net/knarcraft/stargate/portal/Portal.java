@@ -50,7 +50,7 @@ public class Portal {
         this.signDrawer = new PortalSignDrawer(this);
         this.portalOpener = new PortalOpener(this, destination);
         this.structure = new PortalStructure(this, gate, button);
-        this.portalActivator = portalOpener.getPortalOpener();
+        this.portalActivator = portalOpener.getPortalActivator();
     }
 
     /**
@@ -167,7 +167,7 @@ public class Portal {
      * @return <p>The name of this portal's destination portal</p>
      */
     public String getDestinationName() {
-        return portalOpener.getPortalOpener().getDestinationName();
+        return portalOpener.getPortalActivator().getDestinationName();
     }
 
     /**
