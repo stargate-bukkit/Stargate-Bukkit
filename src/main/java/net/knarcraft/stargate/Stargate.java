@@ -513,7 +513,7 @@ public class Stargate extends JavaPlugin {
     public void closeAllPortals() {
         // Close all gates prior to reloading
         for (Portal openPortal : openPortalsQueue) {
-            openPortal.close(true);
+            openPortal.getPortalOpener().closePortal(true);
         }
     }
 
@@ -563,7 +563,7 @@ public class Stargate extends JavaPlugin {
     public void reload(CommandSender sender) {
         // Deactivate portals
         for (Portal activePortal : activePortalsQueue) {
-            activePortal.deactivate();
+            activePortal.getPortalActivator().deactivate();
         }
         // Close portals
         closeAllPortals();

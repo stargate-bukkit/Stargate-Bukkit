@@ -24,7 +24,7 @@ public final class PermissionHelper {
      * @param portal <p>The portal to open</p>
      */
     public static void openPortal(Player player, Portal portal) {
-        Portal destination = portal.getDestination();
+        Portal destination = portal.getPortalActivator().getDestination();
 
         //Always-open gate -- Do nothing
         if (portal.getOptions().isAlwaysOn()) {
@@ -46,13 +46,14 @@ public final class PermissionHelper {
         if (portal.isOpen()) {
             // Close if this player opened the gate
             if (portal.getActivePlayer() == player) {
-                portal.close(false);
+                portal.getPortalOpener().closePortal(false);
             }
             return;
         }
 
         //Gate that someone else is using -- Deny access
-        if ((!portal.getOptions().isFixed()) && portal.isActive() && (portal.getActivePlayer() != player)) {
+        if ((!portal.getOptions().isFixed()) && portal.getPortalActivator().isActive() &&
+                (portal.getActivePlayer() != player)) {
             Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
             return;
         }
@@ -70,7 +71,7 @@ public final class PermissionHelper {
         }
 
         //Open gate
-        portal.open(player, false);
+        portal.getPortalOpener().openPortal(player, false);
     }
 
     /**
@@ -388,7 +389,7 @@ public final class PermissionHelper {
         }
 
         // Not open for this player
-        if (!entrancePortal.isOpenFor(player)) {
+        if (!entrancePortal.getPortalOpener().isOpenFor(player)) {
             Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
             new PlayerTeleporter(entrancePortal, player).teleport(entrancePortal, event);
             return true;
@@ -403,7 +404,7 @@ public final class PermissionHelper {
         if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destination)) {
             Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
             new PlayerTeleporter(entrancePortal, player).teleport(entrancePortal, event);
-            entrancePortal.close(false);
+            entrancePortal.getPortalOpener().closePortal(false);
             return true;
         }
 

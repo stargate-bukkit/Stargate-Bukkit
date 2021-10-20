@@ -64,11 +64,11 @@ public class PortalEventListener implements Listener {
             //Remove any old player teleportations in case weird things happen
             playersFromTheEnd.removeIf((teleportation -> teleportation.getPlayer() == player));
             //Decide if the anything stops the player from teleporting
-            if (PermissionHelper.playerCannotTeleport(portal, portal.getDestination(), player, null)) {
+            if (PermissionHelper.playerCannotTeleport(portal, portal.getPortalActivator().getDestination(), player, null)) {
                 //Teleport the player back to the portal they came in, just in case
                 playersFromTheEnd.add(new FromTheEndTeleportation(player, portal));
             }
-            playersFromTheEnd.add(new FromTheEndTeleportation(player, portal.getDestination()));
+            playersFromTheEnd.add(new FromTheEndTeleportation(player, portal.getPortalActivator().getDestination()));
         }
     }
 
@@ -92,7 +92,7 @@ public class PortalEventListener implements Listener {
         event.setRespawnLocation(new PlayerTeleporter(exitPortal, respawningPlayer).getExit(respawningPlayer,
                 respawningPlayer.getLocation()));
         //Properly close the portal to prevent it from staying in a locked state until it times out
-        exitPortal.close(false);
+        exitPortal.getPortalOpener().closePortal(false);
     }
 
 }

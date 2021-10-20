@@ -35,7 +35,7 @@ public final class EconomyHelper {
         // Insufficient Funds
         if (!success) {
             sendInsufficientFundsMessage(entrancePortal.getName(), player, cost);
-            entrancePortal.close(false);
+            entrancePortal.getPortalOpener().closePortal(false);
             return true;
         }
 

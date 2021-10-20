@@ -1,24 +1,11 @@
 package net.knarcraft.stargate.portal;
 
-import net.knarcraft.stargate.Stargate;
-import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
-import net.knarcraft.stargate.event.StargateActivateEvent;
-import net.knarcraft.stargate.event.StargateCloseEvent;
-import net.knarcraft.stargate.event.StargateDeactivateEvent;
-import net.knarcraft.stargate.event.StargateOpenEvent;
-import org.bukkit.Axis;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.data.Orientable;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -26,59 +13,77 @@ import java.util.UUID;
  */
 public class Portal {
 
-    // Gate location block info
+    // Gate information
+    private final String name;
+    private final String network;
+    private final String ownerName;
+    private final UUID ownerUUID;
+
+    private final PortalOptions options;
+    private final PortalOpener portalOpener;
     private final PortalLocation location;
     private final PortalSignDrawer signDrawer;
-
-    // Block references
-    private final Gate gate;
-    private BlockLocation button;
-    private BlockLocation[] frame;
-    private BlockLocation[] entrances;
-
-    // Gate information
-    private String name;
-    private String destination;
-    private String lastDestination = "";
-    private String network;
-    private final String ownerName;
-    private UUID ownerUUID;
-    private boolean verified;
-    private final PortalOptions options;
-
-    // In-use information
-    private Player player;
-    private Player activePlayer;
-    private List<String> destinations = new ArrayList<>();
-    private boolean isOpen = false;
-    private long openTime;
+    private final PortalStructure structure;
+    private final PortalActivator portalActivator;
 
     /**
      * Instantiates a new portal
      *
      * @param portalLocation <p>Object containing locations of all relevant blocks</p>
      * @param button         <p>The location of the portal's open button</p>
-     * @param destination    <p>The destination defined on the sign's destination line</p>
+     * @param destination    <p>The destination defined on the sign's destination line. "" for non-fixed gates</p>
      * @param name           <p>The name of the portal defined on the sign's first line</p>
-     * @param network        <p>The network the portal belongs to, defined on the sign's network line</p>
-     * @param gate           <p>The gate template this portal uses</p>
+     * @param network        <p>The network the portal belongs to, defined on the sign's third</p>
+     * @param gate           <p>The gate type to use for this portal</p>
      * @param ownerUUID      <p>The UUID of the gate's owner</p>
      * @param ownerName      <p>The name of the gate's owner</p>
-     * @param options        <p>A map containing all possible portal options</p>
+     * @param options        <p>A map containing all possible portal options, with true for the ones enabled</p>
      */
-    Portal(PortalLocation portalLocation, BlockLocation button, String destination, String name, String network,
-           Gate gate, UUID ownerUUID, String ownerName, Map<PortalOption, Boolean> options) {
+    public Portal(PortalLocation portalLocation, BlockLocation button, String destination, String name, String network,
+                  Gate gate, UUID ownerUUID, String ownerName, Map<PortalOption, Boolean> options) {
         this.location = portalLocation;
-        this.destination = destination;
-        this.button = button;
-        this.verified = false;
         this.network = network;
         this.name = name;
-        this.gate = gate;
         this.ownerUUID = ownerUUID;
         this.ownerName = ownerName;
         this.options = new PortalOptions(options, destination.length() > 0);
         this.signDrawer = new PortalSignDrawer(this);
+        this.portalOpener = new PortalOpener(this, destination);
+        this.structure = new PortalStructure(this, gate, button);
+        this.portalActivator = portalOpener.getPortalOpener();
+    }
+
+    /**
+     * Gets the location data for this portal
+     *
+     * @return <p>This portal's location data</p>
+     */
+    public PortalLocation getLocation() {
+        return this.location;
+    }
+
+    /**
+     * Gets the structure of this portal
+     *
+     * <p>The structure contains information about the portal's gate, button and real locations of frames and
+     * entrances. The structure is also responsible for verifying built StarGates to make sure they match the gate.</p>
+     *
+     * @return <p>This portal's structure</p>
+     */
+    public PortalStructure getStructure() {
+        return this.structure;
+    }
+
+    /**
+     * Gets this portal's activator
+     *
+     * <p>The activator is responsible for activating/de-activating the portal and contains information about
+     * available destinations and which player activated the portal.</p>
+     *
+     * @return <p>This portal's activator</p>
+     */
+    public PortalActivator getPortalActivator() {
+        return this.portalActivator;
     }
 
     /**
@@ -103,7 +108,7 @@ public class Portal {
      * @return <p>Whether this portal is open</p>
      */
     public boolean isOpen() {
-        return isOpen || options.isAlwaysOn();
+        return portalOpener.isOpen();
     }
 
     /**
@@ -112,35 +117,28 @@ public class Portal {
      * @return <p>The player currently using this portal</p>
      */
     public Player getActivePlayer() {
-        return activePlayer;
+        return portalActivator.getActivePlayer();
     }
 
     /**
-     * Gets the network this gate belongs to
+     * Gets the network this portal belongs to
      *
-     * @return <p>The network this gate belongs to</p>
+     * @return <p>The network this portal belongs to</p>
      */
     public String getNetwork() {
         return network;
     }
 
     /**
-     * Sets the network this gate belongs to
-     *
-     * @param network <p>The new network for this gate</p>
-     */
-    @SuppressWarnings("unused")
-    public void setNetwork(String network) {
-        this.network = network;
-    }
-
-    /**
      * Gets the time this portal opened
+     *
+     * <p>The time is given in the equivalent of a Unix timestamp. It's used to decide when a portal times out and
+     * automatically closes.</p>
      *
      * @return <p>The time this portal opened</p>
      */
     public long getOpenTime() {
-        return openTime;
+        return portalOpener.getOpenTime();
     }
 
     /**
@@ -153,93 +151,38 @@ public class Portal {
     }
 
     /**
-     * Sets the name of this portal
+     * Gets the portal opener used by this portal
      *
-     * @param name <p>The new name of this portal</p>
+     * <p>The portal opener is responsible for opening and closing this portal.</p>
+     *
+     * @return <p>This portal's portal opener</p>
      */
-    @SuppressWarnings("unused")
-    public void setName(String name) {
-        this.name = filterName(name);
-        this.drawSign();
+    public PortalOpener getPortalOpener() {
+        return portalOpener;
     }
 
     /**
-     * Gets the destinations of this portal
+     * Gets the name of this portal's destination portal
      *
-     * @return <p>The destinations of this portal</p>
-     */
-    public List<String> getDestinations() {
-        return new ArrayList<>(this.destinations);
-    }
-
-    /**
-     * Gets the portal destination given a player
-     *
-     * @param player <p>Used for random gates to determine which destinations are available</p>
-     * @return <p>The destination portal the player should teleport to</p>
-     */
-    public Portal getDestination(Player player) {
-        if (options.isRandom()) {
-            destinations = PortalHandler.getDestinations(this, player, getNetwork());
-            if (destinations.size() == 0) {
-                return null;
-            }
-            String destination = destinations.get((new Random()).nextInt(destinations.size()));
-            destinations.clear();
-            return PortalHandler.getByName(destination, getNetwork());
-        }
-        return PortalHandler.getByName(destination, getNetwork());
-    }
-
-    /**
-     * Gets the portal destination
-     *
-     * <p>If this portal is random, a player should be given to get correct destinations.</p>
-     *
-     * @return <p>The portal destination</p>
-     */
-    public Portal getDestination() {
-        return getDestination(null);
-    }
-
-    /**
-     * Sets the destination of this portal
-     *
-     * @param destination <p>The new destination of this portal</p>
-     */
-    public void setDestination(Portal destination) {
-        setDestination(destination.getName());
-    }
-
-    /**
-     * Sets the destination of this portal
-     *
-     * @param destination <p>The new destination of this portal</p>
-     */
-    public void setDestination(String destination) {
-        this.destination = destination;
-    }
-
-    /**
-     * Gets the name of the destination of this portal
-     *
-     * @return <p>The name of this portal's destination</p>
+     * @return <p>The name of this portal's destination portal</p>
      */
     public String getDestinationName() {
-        return destination;
+        return portalOpener.getPortalOpener().getDestinationName();
     }
 
     /**
-     * Gets the gate used by this portal
+     * Gets the gate type used by this portal
      *
-     * @return <p>The gate used by this portal</p>
+     * @return <p>The gate type used by this portal</p>
      */
     public Gate getGate() {
-        return gate;
+        return structure.getGate();
     }
 
     /**
      * Gets the name of this portal's owner
+     *
+     * <p>The owner is the player which created the portal.</p>
      *
      * @return <p>The name of this portal's owner</p>
      */
@@ -250,20 +193,12 @@ public class Portal {
     /**
      * Gets the UUID of this portal's owner
      *
+     * <p>The owner is the player which created the portal.</p>
+     *
      * @return <p>The UUID of this portal's owner</p>
      */
     public UUID getOwnerUUID() {
         return ownerUUID;
-    }
-
-    /**
-     * Sets the UUId of this portal's owner
-     *
-     * @param owner <p>The new UUID of this portal's owner</p>
-     */
-    @SuppressWarnings("unused")
-    public void setOwner(UUID owner) {
-        this.ownerUUID = owner;
     }
 
     /**
@@ -281,30 +216,6 @@ public class Portal {
     }
 
     /**
-     * Gets the locations of this portal's entrances
-     *
-     * @return <p>The locations of this portal's entrances</p>
-     */
-    public BlockLocation[] getEntrances() {
-        if (entrances == null) {
-            entrances = relativeBlockVectorsToBlockLocations(gate.getLayout().getEntrances());
-        }
-        return entrances;
-    }
-
-    /**
-     * Gets the locations of this portal's frame
-     *
-     * @return <p>The locations of this portal's frame</p>
-     */
-    public BlockLocation[] getFrame() {
-        if (frame == null) {
-            frame = relativeBlockVectorsToBlockLocations(gate.getLayout().getBorder());
-        }
-        return frame;
-    }
-
-    /**
      * Gets the world this portal belongs to
      *
      * @return <p>The world this portal belongs to</p>
@@ -314,167 +225,21 @@ public class Portal {
     }
 
     /**
-     * Gets the location of this portal's button
+     * Gets the location of this portal's sign
      *
-     * @return <p>The location of this portal's button</p>
-     */
-    public BlockLocation getButton() {
-        return button;
-    }
-
-    /**
-     * Sets the location of this portal's button
-     *
-     * @param button <p>The location of this portal's button</p>
-     */
-    public void setButton(BlockLocation button) {
-        this.button = button;
-    }
-
-    /**
-     * Open this portal
-     *
-     * @param force <p>Whether to force this portal open, even if it's already open for some player</p>
-     */
-    public void open(boolean force) {
-        open(null, force);
-    }
-
-    /**
-     * Open this portal
-     *
-     * @param force <p>Whether to force this portal open, even if it's already open for some player</p>
-     */
-    public void open(Player openFor, boolean force) {
-        //Call the StargateOpenEvent
-        StargateOpenEvent event = new StargateOpenEvent(openFor, this, force);
-        Stargate.server.getPluginManager().callEvent(event);
-        if (event.isCancelled() || (isOpen() && !event.getForce())) {
-            return;
-        }
-
-        //Change the opening blocks to the correct type
-        Material openType = gate.getPortalOpenBlock();
-        Axis axis = (openType.createBlockData() instanceof Orientable) ? location.getRotationAxis() : null;
-        for (BlockLocation inside : getEntrances()) {
-            Stargate.blockChangeRequestQueue.add(new BlockChangeRequest(inside, openType, axis));
-        }
-
-        updatePortalOpenState(openFor);
-    }
-
-    /**
-     * Updates this portal to be recognized as open and opens its destination portal
-     *
-     * @param openFor <p>The player to open this portal for</p>
-     */
-    private void updatePortalOpenState(Player openFor) {
-        //Update the open state of this portal
-        isOpen = true;
-        openTime = System.currentTimeMillis() / 1000;
-        Stargate.openPortalsQueue.add(this);
-        Stargate.activePortalsQueue.remove(this);
-
-        //Open remote portal
-        if (!options.isAlwaysOn()) {
-            player = openFor;
-
-            Portal destination = getDestination();
-            //Only open destination if it's not-fixed or points at this portal
-            if (!options.isRandom() && destination != null && (!destination.options.isFixed() ||
-                    destination.getDestinationName().equalsIgnoreCase(getName())) && !destination.isOpen()) {
-                destination.open(openFor, false);
-                destination.setDestination(this);
-                if (destination.isVerified()) {
-                    destination.drawSign();
-                }
-            }
-        }
-    }
-
-    /**
-     * Closes this portal
-     *
-     * @param force <p>Whether to force this portal closed, even if it's set as always on</p>
-     */
-    public void close(boolean force) {
-        if (!isOpen) {
-            return;
-        }
-        //Call the StargateCloseEvent
-        StargateCloseEvent event = new StargateCloseEvent(this, force);
-        Stargate.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            return;
-        }
-        force = event.getForce();
-
-        //Only close always-open if forced to
-        if (options.isAlwaysOn() && !force) {
-            return;
-        }
-
-        //Close this gate, then the dest gate.
-        Material closedType = gate.getPortalClosedBlock();
-        for (BlockLocation inside : getEntrances()) {
-            Stargate.blockChangeRequestQueue.add(new BlockChangeRequest(inside, closedType, null));
-        }
-
-        updatePortalClosedState();
-        deactivate();
-    }
-
-    /**
-     * Updates this portal to be recognized as closed and closes its destination portal
-     */
-    private void updatePortalClosedState() {
-        //Update the closed state of this portal
-        player = null;
-        isOpen = false;
-        Stargate.openPortalsQueue.remove(this);
-        Stargate.activePortalsQueue.remove(this);
-
-        //Close remote portal
-        if (!options.isAlwaysOn()) {
-            Portal end = getDestination();
-
-            if (end != null && end.isOpen()) {
-                //Clear its destination first
-                end.deactivate();
-                end.close(false);
-            }
-        }
-    }
-
-    /**
-     * Gets whether this portal is open for the given player
-     *
-     * @param player <p>The player to check portal state for</p>
-     * @return <p>True if this portal is open to the given player</p>
-     */
-    public boolean isOpenFor(Player player) {
-        if (!isOpen) {
-            return false;
-        }
-        if (options.isAlwaysOn() || this.player == null) {
-            return true;
-        }
-        return player != null && player.getName().equalsIgnoreCase(this.player.getName());
-    }
-
-    /**
-     * Gets the identity (sign) location of the portal
-     *
-     * @return <p>The identity location of the portal</p>
+     * @return <p>The location of this portal's sign</p>
      */
     public BlockLocation getSignLocation() {
         return this.location.getSignLocation();
     }
 
     /**
-     * Gets the rotation of this portal
+     * Gets the rotation (yaw) of this portal
      *
-     * @return <p>The rotation of this portal</p>
+     * <p>The yaw is used to calculate all kinds of directions. See DirectionHelper to see how the yaw is used to
+     * calculate to/from other direction types.</p>
+     *
+     * @return <p>The rotation (yaw) of this portal</p>
      */
     public float getYaw() {
         return this.location.getYaw();
@@ -490,213 +255,19 @@ public class Portal {
     }
 
     /**
-     * Verifies that all control blocks in this portal follows its gate template
+     * Gets the block at the given location relative to this portal's top-left block
      *
-     * @return <p>True if all control blocks were verified</p>
-     */
-    public boolean isVerified() {
-        verified = true;
-        if (!Stargate.verifyPortals) {
-            return true;
-        }
-        for (RelativeBlockVector control : gate.getLayout().getControls()) {
-            verified = verified && getBlockAt(control).getBlock().getType().equals(gate.getControlBlock());
-        }
-        return verified;
-    }
-
-    /**
-     * Gets the result of the last portal verification
-     *
-     * @return <p>True if this portal was verified</p>
-     */
-    public boolean wasVerified() {
-        if (!Stargate.verifyPortals) {
-            return true;
-        }
-        return verified;
-    }
-
-    /**
-     * Checks if all blocks in a gate matches the gate template
-     *
-     * @return <p>True if all blocks match the gate template</p>
-     */
-    public boolean checkIntegrity() {
-        if (!Stargate.verifyPortals) {
-            return true;
-        }
-        return gate.matches(getTopLeft(), getYaw());
-    }
-
-    /**
-     * Activates this portal for the given player
-     *
-     * @param player <p>The player to activate the portal for</p>
-     * @return <p>True if the portal was activated</p>
-     */
-    private boolean activate(Player player) {
-        destinations.clear();
-        destination = "";
-        Stargate.activePortalsQueue.add(this);
-        activePlayer = player;
-        String network = getNetwork();
-        destinations = PortalHandler.getDestinations(this, player, network);
-        if (Stargate.sortNetworkDestinations) {
-            Collections.sort(destinations);
-        }
-        if (Stargate.rememberDestination && !lastDestination.isEmpty() && destinations.contains(lastDestination)) {
-            destination = lastDestination;
-        }
-
-        StargateActivateEvent event = new StargateActivateEvent(this, player, destinations, destination);
-        Stargate.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            Stargate.activePortalsQueue.remove(this);
-            return false;
-        }
-        destination = event.getDestination();
-        destinations = event.getDestinations();
-        this.drawSign();
-        return true;
-    }
-
-    /**
-     * Deactivates this portal
-     */
-    public void deactivate() {
-        StargateDeactivateEvent event = new StargateDeactivateEvent(this);
-        Stargate.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            return;
-        }
-
-        Stargate.activePortalsQueue.remove(this);
-        if (options.isFixed()) {
-            return;
-        }
-        destinations.clear();
-        destination = "";
-        activePlayer = null;
-        this.drawSign();
-    }
-
-    /**
-     * Gets whether this portal is active
-     *
-     * @return <p>Whether this portal is active</p>
-     */
-    public boolean isActive() {
-        return options.isFixed() || (destinations.size() > 0);
-    }
-
-    /**
-     * Cycles destination for a network gate forwards
-     *
-     * @param player <p>The player to cycle the gate for</p>
-     */
-    public void cycleDestination(Player player) {
-        cycleDestination(player, 1);
-    }
-
-    /**
-     * Cycles destination for a network gate
-     *
-     * @param player    <p>The player cycling destinations</p>
-     * @param direction <p>The direction of the cycle (+1 for next, -1 for previous)</p>
-     */
-    public void cycleDestination(Player player, int direction) {
-        if (direction != 1 && direction != -1) {
-            throw new IllegalArgumentException("The destination direction must be 1 or -1.");
-        }
-
-        boolean activate = false;
-        if (!isActive() || getActivePlayer() != player) {
-            //If the stargate activate event is cancelled, return
-            if (!activate(player)) {
-                return;
-            }
-            Stargate.debug("cycleDestination", "Network Size: " + PortalHandler.getNetwork(network).size());
-            Stargate.debug("cycleDestination", "Player has access to: " + destinations.size());
-            activate = true;
-        }
-
-        if (destinations.size() == 0) {
-            Stargate.sendErrorMessage(player, Stargate.getString("destEmpty"));
-            return;
-        }
-
-        if (!Stargate.rememberDestination || !activate || lastDestination.isEmpty()) {
-            cycleDestination(direction);
-        }
-        openTime = System.currentTimeMillis() / 1000;
-        this.drawSign();
-    }
-
-    /**
-     * Performs the actual destination cycling with no input checks
-     *
-     * @param direction <p>The direction of the cycle (+1 for next, -1 for previous)</p>
-     */
-    private void cycleDestination(int direction) {
-        int index = destinations.indexOf(destination);
-        index += direction;
-
-        //Wrap around if the last destination has been reached
-        if (index >= destinations.size()) {
-            index = 0;
-        } else if (index < 0) {
-            index = destinations.size() - 1;
-        }
-        //Store selected destination
-        destination = destinations.get(index);
-        lastDestination = destination;
-    }
-
-    /**
-     * Gets the block at the given location relative to this portal's location
-     *
-     * @param vector <p>The relative block vector</p>
+     * @param vector <p>The relative block vector explaining the position of the block</p>
      * @return <p>The block at the given relative position</p>
      */
     public BlockLocation getBlockAt(RelativeBlockVector vector) {
         return getTopLeft().getRelativeLocation(vector, getYaw());
     }
 
-    /**
-     * Removes the special characters |, : and # from a portal name
-     *
-     * @param input <p>The name to filter</p>
-     * @return <p>The filtered name</p>
-     */
-    private static String filterName(String input) {
-        if (input == null) {
-            return "";
-        }
-        return input.replaceAll("[|:#]", "").trim();
-    }
-
-    /**
-     * Gets a list of block locations from a list of relative block vectors
-     *
-     * <p>The block locations will be calculated by using this portal's top-left block as the origin for the relative
-     * vectors..</p>
-     *
-     * @param vectors <p>The relative block vectors to convert</p>
-     * @return <p>A list of block locations</p>
-     */
-    private BlockLocation[] relativeBlockVectorsToBlockLocations(RelativeBlockVector[] vectors) {
-        BlockLocation[] locations = new BlockLocation[vectors.length];
-        for (int i = 0; i < vectors.length; i++) {
-            locations[i] = getBlockAt(vectors[i]);
-        }
-        return locations;
-    }
-
     @Override
     public String toString() {
         return String.format("Portal [id=%s, network=%s name=%s, type=%s]", getSignLocation(), network, name,
-                gate.getFilename());
+                structure.getGate().getFilename());
     }
 
     @Override

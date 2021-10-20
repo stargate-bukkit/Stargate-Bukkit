@@ -119,26 +119,28 @@ public class PortalHandler {
      */
     public static void unregisterPortal(Portal portal, boolean removeAll) {
         Stargate.debug("Unregister", "Unregistering gate " + portal.getName());
-        portal.close(true);
+        portal.getPortalOpener().closePortal(true);
 
         String portalName = portal.getName().toLowerCase();
         String networkName = portal.getNetwork().toLowerCase();
 
         //Remove portal from lookup blocks
-        for (BlockLocation block : portal.getFrame()) {
+        for (BlockLocation block : portal.getStructure().getFrame()) {
             lookupBlocks.remove(block);
         }
 
         //Remove registered info about the lookup controls and blocks
         lookupBlocks.remove(portal.getSignLocation());
         lookupControls.remove(portal.getSignLocation());
-        if (portal.getButton() != null) {
-            lookupBlocks.remove(portal.getButton());
-            lookupControls.remove(portal.getButton());
+
+        BlockLocation button = portal.getStructure().getButton();
+        if (button != null) {
+            lookupBlocks.remove(button);
+            lookupControls.remove(button);
         }
 
         //Remove entrances
-        for (BlockLocation entrance : portal.getEntrances()) {
+        for (BlockLocation entrance : portal.getStructure().getEntrances()) {
             lookupEntrances.remove(entrance);
         }
 
@@ -158,7 +160,8 @@ public class PortalHandler {
             //Update all portals in the same network with this portal as its destination
             for (String originName : allPortalNetworks.get(networkName)) {
                 Portal origin = getByName(originName, portal.getNetwork());
-                if (origin == null || !origin.getDestinationName().equalsIgnoreCase(portalName) || !origin.isVerified()) {
+                if (origin == null || !origin.getDestinationName().equalsIgnoreCase(portalName) ||
+                        !origin.getStructure().isVerified()) {
                     continue;
                 }
                 //Update the portal's sign
@@ -167,7 +170,7 @@ public class PortalHandler {
                 }
                 //Close portal without destination
                 if (origin.getOptions().isAlwaysOn()) {
-                    origin.close(true);
+                    origin.getPortalOpener().closePortal(true);
                 }
             }
         }
@@ -218,19 +221,21 @@ public class PortalHandler {
         }
 
         //Register all frame blocks to the lookup list
-        for (BlockLocation block : portal.getFrame()) {
+        for (BlockLocation block : portal.getStructure().getFrame()) {
             lookupBlocks.put(block, portal);
         }
         //Register the sign and button to the lookup lists
         lookupBlocks.put(portal.getSignLocation(), portal);
         lookupControls.put(portal.getSignLocation(), portal);
-        if (portal.getButton() != null) {
-            lookupBlocks.put(portal.getButton(), portal);
-            lookupControls.put(portal.getButton(), portal);
+
+        BlockLocation button = portal.getStructure().getButton();
+        if (button != null) {
+            lookupBlocks.put(button, portal);
+            lookupControls.put(button, portal);
         }
 
         //Register entrances to the lookup list
-        for (BlockLocation entrance : portal.getEntrances()) {
+        for (BlockLocation entrance : portal.getStructure().getEntrances()) {
             lookupEntrances.put(entrance, portal);
         }
 
@@ -574,7 +579,7 @@ public class PortalHandler {
         Directional buttonData = (Directional) Bukkit.createBlockData(portal.getGate().getPortalButton());
         buttonData.setFacing(buttonFacing);
         button.getBlock().setBlockData(buttonData);
-        portal.setButton(button);
+        portal.getStructure().setButton(button);
     }
 
     /**
@@ -587,16 +592,16 @@ public class PortalHandler {
         portal.drawSign();
         //Open an always on portal
         if (portal.getOptions().isRandom() || portal.getOptions().isBungee()) {
-            portal.open(true);
+            portal.getPortalOpener().openPortal(true);
         } else if (portal.getOptions().isAlwaysOn()) {
             Portal destinationPortal = getByName(destinationName, portal.getNetwork());
             if (destinationPortal != null) {
-                portal.open(true);
+                portal.getPortalOpener().openPortal(true);
                 destinationPortal.drawSign();
             }
         } else {
             //Update the block type for the portal's opening to the closed block
-            for (BlockLocation entrance : portal.getEntrances()) {
+            for (BlockLocation entrance : portal.getStructure().getEntrances()) {
                 entrance.setType(portal.getGate().getPortalClosedBlock());
             }
         }
@@ -612,7 +617,7 @@ public class PortalHandler {
             Portal origin = getByName(originName, portal.getNetwork());
             if (origin == null ||
                     !origin.getDestinationName().equalsIgnoreCase(portal.getName()) ||
-                    !origin.isVerified()) {
+                    !origin.getStructure().isVerified()) {
                 continue;
             }
             //Update sign of fixed gates pointing at this gate
@@ -621,7 +626,7 @@ public class PortalHandler {
             }
             //Open any always on portal pointing at this portal
             if (origin.getOptions().isAlwaysOn()) {
-                origin.open(true);
+                origin.getPortalOpener().openPortal(true);
             }
         }
     }
@@ -791,7 +796,7 @@ public class PortalHandler {
                 String wName = portal.getWorld().getName();
                 if (!wName.equalsIgnoreCase(world.getName())) continue;
                 StringBuilder builder = new StringBuilder();
-                BlockLocation button = portal.getButton();
+                BlockLocation button = portal.getStructure().getButton();
 
                 builder.append(portal.getName()).append(':');
                 builder.append(portal.getSignLocation().toString()).append(':');
@@ -1007,7 +1012,7 @@ public class PortalHandler {
                 network, gate, ownerUUID, ownerName, getPortalOptions(portalData));
 
         registerPortal(portal);
-        portal.close(true);
+        portal.getPortalOpener().closePortal(true);
     }
 
     /**
@@ -1040,7 +1045,8 @@ public class PortalHandler {
             }
 
             // Verify portal integrity/register portal
-            if (!portal.wasVerified() && (!portal.isVerified() || !portal.checkIntegrity())) {
+            PortalStructure structure = portal.getStructure();
+            if (!structure.wasVerified() && (!structure.isVerified() || !structure.checkIntegrity())) {
                 destroyInvalidPortal(portal);
                 iterator.remove();
                 continue;
@@ -1049,8 +1055,8 @@ public class PortalHandler {
 
             //Open the gate if it's set as always open or if it's a bungee gate
             if (portal.getOptions().isFixed() && (Stargate.enableBungee && portal.getOptions().isBungee() ||
-                    portal.getDestination() != null && portal.getOptions().isAlwaysOn())) {
-                portal.open(true);
+                    portal.getPortalActivator().getDestination() != null && portal.getOptions().isAlwaysOn())) {
+                portal.getPortalOpener().openPortal(true);
                 openCount++;
             }
         }
@@ -1080,7 +1086,7 @@ public class PortalHandler {
         Stargate.logger.info("Closing all stargates.");
         for (Portal portal : allPortals) {
             if (portal != null) {
-                portal.close(true);
+                portal.getPortalOpener().closePortal(true);
             }
         }
     }

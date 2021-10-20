@@ -68,7 +68,7 @@ public class VehicleEventListener implements Listener {
             teleportPlayerAndVehicle(entrancePortal, vehicle, passengers);
         } else {
             Stargate.debug(route, prefix + "Found empty vehicle");
-            Portal destinationPortal = entrancePortal.getDestination();
+            Portal destinationPortal = entrancePortal.getPortalActivator().getDestination();
             if (destinationPortal == null) {
                 Stargate.debug(route, prefix + "Unable to find portal destination");
                 return;
@@ -90,13 +90,13 @@ public class VehicleEventListener implements Listener {
         Player player = (Player) passengers.get(0);
         //On the assumption that a non-player cannot sit in the driver's seat and since some portals can only be open
         // to one player at a time, we only need to check if the portal is open to the driver.
-        if (!entrancePortal.isOpenFor(player)) {
+        if (!entrancePortal.getPortalOpener().isOpenFor(player)) {
             Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
             return;
         }
 
         //If no destination exists, the teleportation cannot happen
-        Portal destinationPortal = entrancePortal.getDestination(player);
+        Portal destinationPortal = entrancePortal.getPortalActivator().getDestination(player);
         if (destinationPortal == null) {
             return;
         }
@@ -119,7 +119,7 @@ public class VehicleEventListener implements Listener {
 
         Stargate.sendSuccessMessage(player, Stargate.getString("teleportMsg"));
         new VehicleTeleporter(destinationPortal, vehicle).teleport(entrancePortal);
-        entrancePortal.close(false);
+        entrancePortal.getPortalOpener().closePortal(false);
     }
 
     /**
@@ -152,7 +152,7 @@ public class VehicleEventListener implements Listener {
         //Make sure the user can access the portal
         if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destinationPortal)) {
             Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
-            entrancePortal.close(false);
+            entrancePortal.getPortalOpener().closePortal(false);
             return false;
         }
 

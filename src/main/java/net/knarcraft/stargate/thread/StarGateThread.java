@@ -21,18 +21,18 @@ public class StarGateThread implements Runnable {
                 continue;
             }
             if (time > portal.getOpenTime() + Stargate.getOpenTime()) {
-                portal.close(false);
+                portal.getPortalOpener().closePortal(false);
                 iterator.remove();
             }
         }
         //Deactivate active portals
         for (Iterator<Portal> iterator = Stargate.activePortalsQueue.iterator(); iterator.hasNext(); ) {
             Portal portal = iterator.next();
-            if (!portal.isActive()) {
+            if (!portal.getPortalActivator().isActive()) {
                 continue;
             }
             if (time > portal.getOpenTime() + Stargate.getActiveTime()) {
-                portal.deactivate();
+                portal.getPortalActivator().deactivate();
                 iterator.remove();
             }
         }

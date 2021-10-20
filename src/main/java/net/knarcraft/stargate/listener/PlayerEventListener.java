@@ -4,6 +4,7 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.portal.PlayerTeleporter;
 import net.knarcraft.stargate.portal.Portal;
+import net.knarcraft.stargate.portal.PortalActivator;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.VehicleTeleporter;
 import net.knarcraft.stargate.utility.BungeeHelper;
@@ -81,7 +82,7 @@ public class PlayerEventListener implements Listener {
             return;
         }
         Portal entrancePortal = PortalHandler.getByEntrance(toLocation);
-        Portal destination = entrancePortal.getDestination(player);
+        Portal destination = entrancePortal.getPortalActivator().getDestination(player);
 
         //Teleport the vehicle to the player
         Entity playerVehicle = player.getVehicle();
@@ -99,7 +100,7 @@ public class PlayerEventListener implements Listener {
             new PlayerTeleporter(destination, player).teleport(entrancePortal, event);
         }
         Stargate.sendSuccessMessage(player, Stargate.getString("teleportMsg"));
-        entrancePortal.close(false);
+        entrancePortal.getPortalOpener().closePortal(false);
     }
 
     /**
@@ -124,7 +125,7 @@ public class PlayerEventListener implements Listener {
             return false;
         }
 
-        Portal destination = entrancePortal.getDestination(player);
+        Portal destination = entrancePortal.getPortalActivator().getDestination(player);
 
         //Catch always open portals without a valid destination to prevent the user for being teleported and denied
         if (destination == null) {
@@ -200,10 +201,11 @@ public class PlayerEventListener implements Listener {
 
         //Cycle portal destination
         if ((!portal.isOpen()) && (!portal.getOptions().isFixed())) {
+            PortalActivator destinations = portal.getPortalActivator();
             if (leftClick) {
-                portal.cycleDestination(player, -1);
+                destinations.cycleDestination(player, -1);
             } else {
-                portal.cycleDestination(player);
+                destinations.cycleDestination(player);
             }
         }
     }
@@ -260,7 +262,7 @@ public class PlayerEventListener implements Listener {
             }
 
             PermissionHelper.openPortal(player, portal);
-            if (portal.isOpenFor(player)) {
+            if (portal.getPortalOpener().isOpenFor(player)) {
                 event.setUseInteractedBlock(Event.Result.ALLOW);
             }
         }
@@ -302,7 +304,7 @@ public class PlayerEventListener implements Listener {
         //Check if bungee is actually enabled
         if (!Stargate.enableBungee) {
             Stargate.sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
-            entrancePortal.close(false);
+            entrancePortal.getPortalOpener().closePortal(false);
             return false;
         }
 
@@ -323,7 +325,7 @@ public class PlayerEventListener implements Listener {
 
         // Close portal if required (Should never be)
         Stargate.debug("bungeeTeleport", "Teleported player to another server");
-        entrancePortal.close(false);
+        entrancePortal.getPortalOpener().closePortal(false);
         return true;
     }
 

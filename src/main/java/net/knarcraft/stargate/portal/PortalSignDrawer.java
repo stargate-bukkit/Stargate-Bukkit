@@ -53,7 +53,7 @@ public class PortalSignDrawer {
         Stargate.setLine(sign, 0, ChatColor.WHITE + "-" + Stargate.signColor + portal.getName() +
                 ChatColor.WHITE + "-");
 
-        if (!portal.isActive()) {
+        if (!portal.getPortalActivator().isActive()) {
             //Default sign text
             drawInactiveSign(sign);
         } else {
@@ -78,9 +78,10 @@ public class PortalSignDrawer {
      * @param sign <p>The sign to re-draw</p>
      */
     private void drawNetworkSign(Sign sign) {
-        int maxIndex = portal.getDestinations().size() - 1;
+        PortalActivator destinations = portal.getPortalActivator();
+        int maxIndex = destinations.getDestinations().size() - 1;
         int signLineIndex = 0;
-        int destinationIndex = portal.getDestinations().indexOf(portal.getDestinationName());
+        int destinationIndex = destinations.getDestinations().indexOf(portal.getDestinationName());
         boolean freeGatesGreen = EconomyHandler.useEconomy() && EconomyHandler.freeGatesGreen;
 
         //Last, and not only entry. Draw the entry two back
@@ -131,12 +132,15 @@ public class PortalSignDrawer {
      * @param destinationIndex <p>The index of the destination to draw</p>
      */
     private void drawNetworkSignLine(boolean freeGatesGreen, Sign sign, int signLineIndex, int destinationIndex) {
+        PortalActivator destinations = portal.getPortalActivator();
         if (freeGatesGreen) {
-            Portal destination = PortalHandler.getByName(portal.getDestinations().get(destinationIndex), portal.getNetwork());
+            Portal destination = PortalHandler.getByName(destinations.getDestinations().get(destinationIndex),
+                    portal.getNetwork());
             boolean green = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
-            Stargate.setLine(sign, signLineIndex, (green ? ChatColor.DARK_GREEN : "") + portal.getDestinations().get(destinationIndex));
+            Stargate.setLine(sign, signLineIndex, (green ? ChatColor.DARK_GREEN : "") +
+                    destinations.getDestinations().get(destinationIndex));
         } else {
-            Stargate.setLine(sign, signLineIndex, portal.getDestinations().get(destinationIndex));
+            Stargate.setLine(sign, signLineIndex, destinations.getDestinations().get(destinationIndex));
         }
     }
 
