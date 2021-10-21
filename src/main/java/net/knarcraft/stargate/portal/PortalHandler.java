@@ -11,7 +11,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 
 import java.io.BufferedWriter;
@@ -30,14 +29,6 @@ import java.util.logging.Level;
  * Keeps track of all loaded portals, and handles portal creation
  */
 public class PortalHandler {
-    // Static variables used to store portal lists
-    private static final Map<BlockLocation, Portal> lookupBlocks = new HashMap<>();
-    private static final Map<BlockLocation, Portal> lookupEntrances = new HashMap<>();
-    private static final Map<BlockLocation, Portal> lookupControls = new HashMap<>();
-    private static final List<Portal> allPortals = new ArrayList<>();
-    private static final Map<String, List<String>> allPortalNetworks = new HashMap<>();
-    private static final Map<String, Map<String, Portal>> portalLookupByNetwork = new HashMap<>();
-    private static final Map<String, Portal> bungeePortals = new HashMap<>();
 
     private PortalHandler() {
 
@@ -49,7 +40,7 @@ public class PortalHandler {
      * @return <p>A copy of all portal networks</p>
      */
     public static Map<String, List<String>> getAllPortalNetworks() {
-        return new HashMap<>(allPortalNetworks);
+        return PortalRegistry.getAllPortalNetworks();
     }
 
     /**
@@ -58,7 +49,7 @@ public class PortalHandler {
      * @return <p>A copy of all bungee portals</p>
      */
     public static Map<String, Portal> getBungeePortals() {
-        return new HashMap<>(bungeePortals);
+        return PortalRegistry.getBungeePortals();
     }
 
     /**
@@ -68,7 +59,7 @@ public class PortalHandler {
      * @return <p>A list of portal names</p>
      */
     public static List<String> getNetwork(String network) {
-        return allPortalNetworks.get(network.toLowerCase());
+        return PortalRegistry.getNetwork(network);
     }
 
     /**
@@ -81,7 +72,7 @@ public class PortalHandler {
      */
     public static List<String> getDestinations(Portal entrancePortal, Player player, String network) {
         List<String> destinations = new ArrayList<>();
-        for (String destination : allPortalNetworks.get(network.toLowerCase())) {
+        for (String destination : PortalRegistry.getAllPortalNetworks().get(network.toLowerCase())) {
             Portal portal = getByName(destination, network);
             if (portal == null) {
                 continue;
@@ -127,74 +118,7 @@ public class PortalHandler {
      * @param removeAll <p>Whether to remove the portal from the list of all portals</p>
      */
     public static void unregisterPortal(Portal portal, boolean removeAll) {
-        Stargate.debug("Unregister", "Unregistering gate " + portal.getName());
-        portal.getPortalOpener().closePortal(true);
-
-        String portalName = portal.getName().toLowerCase();
-        String networkName = portal.getNetwork().toLowerCase();
-
-        //Remove portal from lookup blocks
-        for (BlockLocation block : portal.getStructure().getFrame()) {
-            lookupBlocks.remove(block);
-        }
-
-        //Remove registered info about the lookup controls and blocks
-        lookupBlocks.remove(portal.getSignLocation());
-        lookupControls.remove(portal.getSignLocation());
-
-        BlockLocation button = portal.getStructure().getButton();
-        if (button != null) {
-            lookupBlocks.remove(button);
-            lookupControls.remove(button);
-        }
-
-        //Remove entrances
-        for (BlockLocation entrance : portal.getStructure().getEntrances()) {
-            lookupEntrances.remove(entrance);
-        }
-
-        //Remove the portal from the list of all portals
-        if (removeAll) {
-            allPortals.remove(portal);
-        }
-
-        if (portal.getOptions().isBungee()) {
-            //Remove the bungee listing
-            bungeePortals.remove(portalName);
-        } else {
-            //Remove from network lists
-            portalLookupByNetwork.get(networkName).remove(portalName);
-            allPortalNetworks.get(networkName).remove(portalName);
-
-            //Update all portals in the same network with this portal as its destination
-            for (String originName : allPortalNetworks.get(networkName)) {
-                Portal origin = getByName(originName, portal.getNetwork());
-                if (origin == null || !origin.getDestinationName().equalsIgnoreCase(portalName) ||
-                        !origin.getStructure().isVerified()) {
-                    continue;
-                }
-                //Update the portal's sign
-                if (origin.getOptions().isFixed()) {
-                    origin.drawSign();
-                }
-                //Close portal without destination
-                if (origin.getOptions().isAlwaysOn()) {
-                    origin.getPortalOpener().closePortal(true);
-                }
-            }
-        }
-
-        //Clear sign data
-        if (portal.getSignLocation().getBlock().getBlockData() instanceof WallSign) {
-            Sign sign = (Sign) portal.getSignLocation().getBlock().getState();
-            sign.setLine(0, portal.getName());
-            sign.setLine(1, "");
-            sign.setLine(2, "");
-            sign.setLine(3, "");
-            sign.update();
-        }
-
-        saveAllPortals(portal.getWorld());
+        PortalRegistry.unregisterPortal(portal, removeAll);
     }
 
     /**
@@ -203,52 +127,7 @@ public class PortalHandler {
      * @param portal <p>The portal to register</p>
      */
     static void registerPortal(Portal portal) {
-        portal.getOptions().setFixed(portal.getDestinationName().length() > 0 || portal.getOptions().isRandom() ||
-                portal.getOptions().isBungee());
-
-        String portalName = portal.getName().toLowerCase();
-        String networkName = portal.getNetwork().toLowerCase();
-
-        //Bungee portals are stored in their own list
-        if (portal.getOptions().isBungee()) {
-            bungeePortals.put(portalName, portal);
-        } else {
-            //Check if network exists in the lookup list. If not, register the new network
-            if (!portalLookupByNetwork.containsKey(networkName)) {
-                Stargate.debug("register", "Network " + portal.getNetwork() + " not in lookupNamesNet, adding");
-                portalLookupByNetwork.put(networkName, new HashMap<>());
-            }
-            //Check if this network exists in the network list. If not, register the network
-            if (!allPortalNetworks.containsKey(networkName)) {
-                Stargate.debug("register", "Network " + portal.getNetwork() + " not in allPortalsNet, adding");
-                allPortalNetworks.put(networkName, new ArrayList<>());
-            }
-
-            //Register the portal
-            portalLookupByNetwork.get(networkName).put(portalName, portal);
-            allPortalNetworks.get(networkName).add(portalName);
-        }
-
-        //Register all frame blocks to the lookup list
-        for (BlockLocation block : portal.getStructure().getFrame()) {
-            lookupBlocks.put(block, portal);
-        }
-        //Register the sign and button to the lookup lists
-        lookupBlocks.put(portal.getSignLocation(), portal);
-        lookupControls.put(portal.getSignLocation(), portal);
-
-        BlockLocation button = portal.getStructure().getButton();
-        if (button != null) {
-            lookupBlocks.put(button, portal);
-            lookupControls.put(button, portal);
-        }
-
-        //Register entrances to the lookup list
-        for (BlockLocation entrance : portal.getStructure().getEntrances()) {
-            lookupEntrances.put(entrance, portal);
-        }
-
-        allPortals.add(portal);
+        PortalRegistry.registerPortal(portal);
     }
 
     /**
@@ -344,7 +223,7 @@ public class PortalHandler {
      * @param portal <p>The newly created portal</p>
      */
     static void updatePortalsPointingAtNewPortal(Portal portal) {
-        for (String originName : allPortalNetworks.get(portal.getNetwork().toLowerCase())) {
+        for (String originName : PortalRegistry.getAllPortalNetworks().get(portal.getNetwork().toLowerCase())) {
             Portal origin = getByName(originName, portal.getNetwork());
             if (origin == null ||
                     !origin.getDestinationName().equalsIgnoreCase(portal.getName()) ||
@@ -409,10 +288,11 @@ public class PortalHandler {
      * @return <p>The portal with the given name or null</p>
      */
     public static Portal getByName(String name, String network) {
-        if (!portalLookupByNetwork.containsKey(network.toLowerCase())) {
+        Map<String, Map<String, Portal>> lookupMap = PortalRegistry.getPortalLookupByNetwork();
+        if (!lookupMap.containsKey(network.toLowerCase())) {
             return null;
         }
-        return portalLookupByNetwork.get(network.toLowerCase()).get(name.toLowerCase());
+        return lookupMap.get(network.toLowerCase()).get(name.toLowerCase());
 
     }
 
@@ -423,8 +303,8 @@ public class PortalHandler {
      * @return <p>The portal at the given location</p>
      */
     public static Portal getByEntrance(Location location) {
-        return lookupEntrances.get(new BlockLocation(location.getWorld(), location.getBlockX(), location.getBlockY(),
-                location.getBlockZ()));
+        return PortalRegistry.getLookupEntrances().get(new BlockLocation(location.getWorld(), location.getBlockX(),
+                location.getBlockY(), location.getBlockZ()));
     }
 
     /**
@@ -434,7 +314,7 @@ public class PortalHandler {
      * @return <p>The portal at the given block's location</p>
      */
     public static Portal getByEntrance(Block block) {
-        return lookupEntrances.get(new BlockLocation(block));
+        return PortalRegistry.getLookupEntrances().get(new BlockLocation(block));
     }
 
     /**
@@ -473,7 +353,7 @@ public class PortalHandler {
         }
 
         for (BlockLocation adjacentPosition : adjacentPositions) {
-            Portal portal = lookupEntrances.get(adjacentPosition);
+            Portal portal = PortalRegistry.getLookupEntrances().get(adjacentPosition);
             if (portal != null) {
                 return portal;
             }
@@ -488,7 +368,7 @@ public class PortalHandler {
      * @return <p>The portal with the given control block</p>
      */
     public static Portal getByControl(Block block) {
-        return lookupControls.get(new BlockLocation(block));
+        return PortalRegistry.getLookupControls().get(new BlockLocation(block));
     }
 
     /**
@@ -498,7 +378,7 @@ public class PortalHandler {
      * @return <p>The portal corresponding to the block</p>
      */
     public static Portal getByBlock(Block block) {
-        return lookupBlocks.get(new BlockLocation(block));
+        return PortalRegistry.getLookupBlocks().get(new BlockLocation(block));
     }
 
     /**
@@ -508,7 +388,7 @@ public class PortalHandler {
      * @return <p>A bungee portal</p>
      */
     public static Portal getBungeePortal(String name) {
-        return bungeePortals.get(name.toLowerCase());
+        return PortalRegistry.getBungeePortals().get(name.toLowerCase());
     }
 
     /**
@@ -523,7 +403,7 @@ public class PortalHandler {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(loc, false));
 
-            for (Portal portal : allPortals) {
+            for (Portal portal : PortalRegistry.getAllPortals()) {
                 String wName = portal.getWorld().getName();
                 if (!wName.equalsIgnoreCase(world.getName())) continue;
                 StringBuilder builder = new StringBuilder();
@@ -565,56 +445,6 @@ public class PortalHandler {
         } catch (Exception e) {
             Stargate.logger.log(Level.SEVERE, "Exception while writing stargates to " + loc + ": " + e);
         }
-    }
-
-    /**
-     * Clears all loaded portals and portal data from all worlds
-     */
-    public static void clearPortals() {
-        lookupBlocks.clear();
-        portalLookupByNetwork.clear();
-        lookupEntrances.clear();
-        lookupControls.clear();
-        allPortals.clear();
-        allPortalNetworks.clear();
-    }
-
-    /**
-     * Clears all portals loaded in a given world
-     *
-     * @param world <p>The world containing the portals to clear</p>
-     */
-    public static void clearPortals(World world) {
-        //This is necessary
-        List<Portal> portalsToRemove = new ArrayList<>();
-        allPortals.forEach((portal) -> {
-            if (portal.getWorld().equals(world)) {
-                portalsToRemove.add(portal);
-            }
-        });
-
-        clearPortals(portalsToRemove);
-    }
-
-    /**
-     * Clears a given list of portals from all relevant variables
-     *
-     * @param portalsToRemove <p>A list of portals to remove</p>
-     */
-    private static void clearPortals(List<Portal> portalsToRemove) {
-        List<String> portalNames = new ArrayList<>();
-        portalsToRemove.forEach((portal) -> portalNames.add(portal.getName()));
-        lookupBlocks.keySet().removeIf((key) -> portalsToRemove.contains(lookupBlocks.get(key)));
-        portalLookupByNetwork.keySet().forEach((network) -> portalLookupByNetwork.get(network).keySet().removeIf((key) ->
-                portalsToRemove.contains(portalLookupByNetwork.get(network).get(key))));
-        //Remove any networks with no portals
-        portalLookupByNetwork.keySet().removeIf((key) -> portalLookupByNetwork.get(key).isEmpty());
-        lookupEntrances.keySet().removeIf((key) -> portalsToRemove.contains(lookupEntrances.get(key)));
-        lookupControls.keySet().removeIf((key) -> portalsToRemove.contains(lookupControls.get(key)));
-        allPortals.removeIf(portalsToRemove::contains);
-        allPortalNetworks.keySet().forEach((network) -> allPortalNetworks.get(network).removeIf(portalNames::contains));
-        //Remove any networks with no portals
-        allPortalNetworks.keySet().removeIf((network) -> allPortalNetworks.get(network).isEmpty());
     }
 
     /**
@@ -675,7 +505,7 @@ public class PortalHandler {
                     portalCounts.getFirstValue()));
 
             //Re-draw the signs in case a bug in the config prevented the portal from loading and has been fixed since
-            for (Portal portal : allPortals) {
+            for (Portal portal : PortalRegistry.getAllPortals()) {
                 portal.drawSign();
             }
             return true;
@@ -769,7 +599,7 @@ public class PortalHandler {
     private static TwoTuple<Integer, Integer> openAlwaysOpenPortals() {
         int portalCount = 0;
         int openCount = 0;
-        for (Iterator<Portal> iterator = allPortals.iterator(); iterator.hasNext(); ) {
+        for (Iterator<Portal> iterator = PortalRegistry.getAllPortals().iterator(); iterator.hasNext(); ) {
             Portal portal = iterator.next();
             if (portal == null) {
                 continue;
@@ -815,7 +645,7 @@ public class PortalHandler {
      */
     public static void closeAllPortals() {
         Stargate.logger.info("Closing all stargates.");
-        for (Portal portal : allPortals) {
+        for (Portal portal : PortalRegistry.getAllPortals()) {
             if (portal != null) {
                 portal.getPortalOpener().closePortal(true);
             }

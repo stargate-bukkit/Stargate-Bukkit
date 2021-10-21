@@ -2,6 +2,7 @@ package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.PortalHandler;
+import net.knarcraft.stargate.portal.PortalRegistry;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -39,7 +40,7 @@ public class WorldEventListener implements Listener {
         String worldName = world.getName();
         if (Stargate.managedWorlds.contains(worldName)) {
             Stargate.managedWorlds.remove(worldName);
-            PortalHandler.clearPortals(world);
+            PortalRegistry.clearPortals(world);
         }
     }
 }

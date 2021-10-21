@@ -16,6 +16,7 @@ import net.knarcraft.stargate.listener.WorldEventListener;
 import net.knarcraft.stargate.portal.GateHandler;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
+import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.thread.BlockChangeThread;
 import net.knarcraft.stargate.thread.ChunkUnloadThread;
 import net.knarcraft.stargate.thread.StarGateThread;
@@ -292,7 +293,7 @@ public class Stargate extends JavaPlugin {
     @Override
     public void onDisable() {
         PortalHandler.closeAllPortals();
-        PortalHandler.clearPortals();
+        PortalRegistry.clearPortals();
         managedWorlds.clear();
         getServer().getScheduler().cancelTasks(this);
     }
@@ -571,7 +572,7 @@ public class Stargate extends JavaPlugin {
         activePortalsQueue.clear();
         openPortalsQueue.clear();
         managedWorlds.clear();
-        PortalHandler.clearPortals();
+        PortalRegistry.clearPortals();
         GateHandler.clearGates();
 
         // Store the old Bungee enabled value
