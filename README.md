@@ -85,9 +85,9 @@ This is the default gate configuration. See the Custom Gate Layout section on ho
 
 ### Sign Layout:
 
-- Line 1: Gate Name (Max 12 characters)
-- Line 2: Destination Name \[Optional] (Max 12 characters, used for fixed-gates only)
-- Line 3: Network name \[Optional] (Max 12 characters)
+- Line 1: Gate Name (Max 11 characters)
+- Line 2: Destination Name \[Optional] (Max 11 characters, used for fixed-gates only)
+- Line 3: Network name \[Optional] (Max 11 characters)
 - Line 4: Options \[Optional] :
     - 'A' for always-on fixed gate
     - 'H' for hidden networked gate
