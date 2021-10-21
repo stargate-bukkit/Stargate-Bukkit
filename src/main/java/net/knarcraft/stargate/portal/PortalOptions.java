@@ -5,7 +5,7 @@ import net.knarcraft.stargate.Stargate;
 import java.util.Map;
 
 /**
- * Keeps track of all options for a given portal
+ * Keeps track of all options for one portal
  */
 public class PortalOptions {
 
@@ -37,10 +37,11 @@ public class PortalOptions {
     /**
      * Gets whether this portal is fixed
      *
-     * <p>A fixed portal has only one destination which never changes. A fixed portal has a fixed destination, is a
-     * random portal or is a bungee portal. A fixed portal is always open.</p>
+     * <p>A fixed portal is a portal for which the player cannot choose destination. A portal with a set destination, a
+     * random portal and bungee portals are fixed. While the player has no choice regarding destinations, a fixed gate
+     * may still need to be activated if not set to always on.</p>
      *
-     * @return <p>Whether this gate is fixed</p>
+     * @return <p>Whether this portal is fixed</p>
      */
     public boolean isFixed() {
         return this.isFixed;
@@ -58,6 +59,9 @@ public class PortalOptions {
     /**
      * Gets whether this portal is always on
      *
+     * <p>An always on portal is always open for everyone, and always uses the open-block. It never needs to be
+     * activated or opened manually.</p>
+     *
      * @return <p>Whether this portal is always on</p>
      */
     public boolean isAlwaysOn() {
@@ -66,6 +70,10 @@ public class PortalOptions {
 
     /**
      * Gets whether this portal is hidden
+     *
+     * <p>A hidden portal will be hidden on a network for everyone but admins and the portal owner. In other words,
+     * when selecting a destination using a portal's sign, hidden gates will only be available in the list for the
+     * owner and players with the appropriate permission.</p>
      *
      * @return <p>Whether this portal is hidden</p>
      */
@@ -76,6 +84,9 @@ public class PortalOptions {
     /**
      * Gets whether this portal is private
      *
+     * <p>A private portal can only be opened by the owner and players with the appropriate permission. A private gate
+     * is not hidden unless the hidden option is also enabled.</p>
+     *
      * @return <p>Whether this portal is private</p>
      */
     public boolean isPrivate() {
@@ -84,6 +95,9 @@ public class PortalOptions {
 
     /**
      * Gets whether this portal is free
+     *
+     * <p>A free portal is exempt from any fees which would normally occur from using the portal. It does nothing if
+     * economy is disabled.</p>
      *
      * @return <p>Whether this portal is free</p>
      */
@@ -94,7 +108,8 @@ public class PortalOptions {
     /**
      * Gets whether this portal is backwards
      *
-     * <p>A backwards portal is one where players exit through the back.</p>
+     * <p>A backwards portal is one where players exit through the back. It's important to note that the exit is
+     * mirrored, not rotated, when exiting backwards.</p>
      *
      * @return <p>Whether this portal is backwards</p>
      */
@@ -105,6 +120,9 @@ public class PortalOptions {
     /**
      * Gets whether this portal is shown on the network even if it's always on
      *
+     * <p>Normally, always-on portals are not selectable on a network, but enabling this option allows the portal to be
+     * shown.</p>
+     *
      * @return <p>Whether portal gate is shown</p>
      */
     public boolean isShown() {
@@ -113,6 +131,10 @@ public class PortalOptions {
 
     /**
      * Gets whether this portal shows no network
+     *
+     * <p>Enabling the no network option allows the portal's network to be hidden for whatever reason. If allowing
+     * normal players to create portals, this can be used to prevent random users from connecting gates to
+     * "protected networks".</p>
      *
      * @return <p>Whether this portal shows no network/p>
      */
@@ -123,6 +145,8 @@ public class PortalOptions {
     /**
      * Gets whether this portal goes to a random location on the network
      *
+     * <p>A random portal is always on and will teleport to a random destination within the same network.</p>
+     *
      * @return <p>Whether this portal goes to a random location</p>
      */
     public boolean isRandom() {
@@ -131,6 +155,9 @@ public class PortalOptions {
 
     /**
      * Gets whether this portal is a bungee portal
+     *
+     * <p>A bungee portal is able to teleport to a portal on another server. It works differently from other portals as
+     * it does not have a network, but instead the network line specifies the same of the server it connects to.</p>
      *
      * @return <p>Whether this portal is a bungee portal</p>
      */
