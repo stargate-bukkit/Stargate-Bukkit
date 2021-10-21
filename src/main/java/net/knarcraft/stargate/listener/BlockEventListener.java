@@ -3,6 +3,7 @@ package net.knarcraft.stargate.listener;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargateDestroyEvent;
 import net.knarcraft.stargate.portal.Portal;
+import net.knarcraft.stargate.portal.PortalCreator;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
@@ -73,7 +74,7 @@ public class BlockEventListener implements Listener {
             return;
         }
 
-        final Portal portal = PortalHandler.createPortal(event, player);
+        final Portal portal = new PortalCreator(event, player).createPortal();
         //Not creating a gate, just placing a sign
         if (portal == null) {
             return;
