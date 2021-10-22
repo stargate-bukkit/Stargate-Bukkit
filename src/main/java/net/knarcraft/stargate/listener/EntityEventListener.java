@@ -3,6 +3,7 @@ package net.knarcraft.stargate.listener;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
+import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.utility.EntityHelper;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -55,7 +56,7 @@ public class EntityEventListener implements Listener {
                 continue;
             }
             if (Stargate.destroyedByExplosion()) {
-                PortalHandler.unregisterPortal(portal, true);
+                PortalRegistry.unregisterPortal(portal, true);
             } else {
                 event.setCancelled(true);
                 break;

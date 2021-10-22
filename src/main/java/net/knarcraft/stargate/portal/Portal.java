@@ -6,18 +6,15 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * This class represents a portal in space which points to one or several portals
  */
 public class Portal {
 
-    // Gate information
     private final String name;
     private final String network;
-    private final String ownerName;
-    private final UUID ownerUUID;
+    private final PortalOwner portalOwner;
 
     private final PortalOptions options;
     private final PortalOpener portalOpener;
@@ -35,17 +32,15 @@ public class Portal {
      * @param name           <p>The name of the portal defined on the sign's first line</p>
      * @param network        <p>The network the portal belongs to, defined on the sign's third</p>
      * @param gate           <p>The gate type to use for this portal</p>
-     * @param ownerUUID      <p>The UUID of the gate's owner</p>
-     * @param ownerName      <p>The name of the gate's owner</p>
+     * @param portalOwner    <p>The portal's owner</p>
      * @param options        <p>A map containing all possible portal options, with true for the ones enabled</p>
      */
     public Portal(PortalLocation portalLocation, BlockLocation button, String destination, String name, String network,
-                  Gate gate, UUID ownerUUID, String ownerName, Map<PortalOption, Boolean> options) {
+                  Gate gate, PortalOwner portalOwner, Map<PortalOption, Boolean> options) {
         this.location = portalLocation;
         this.network = network;
         this.name = name;
-        this.ownerUUID = ownerUUID;
-        this.ownerName = ownerName;
+        this.portalOwner = portalOwner;
         this.options = new PortalOptions(options, destination.length() > 0);
         this.signDrawer = new PortalSignDrawer(this);
         this.portalOpener = new PortalOpener(this, destination);
@@ -180,25 +175,14 @@ public class Portal {
     }
 
     /**
-     * Gets the name of this portal's owner
+     * Gets this portal's owner
      *
      * <p>The owner is the player which created the portal.</p>
      *
-     * @return <p>The name of this portal's owner</p>
+     * @return <p>This portal's owner</p>
      */
-    public String getOwnerName() {
-        return ownerName;
-    }
-
-    /**
-     * Gets the UUID of this portal's owner
-     *
-     * <p>The owner is the player which created the portal.</p>
-     *
-     * @return <p>The UUID of this portal's owner</p>
-     */
-    public UUID getOwnerUUID() {
-        return ownerUUID;
+    public PortalOwner getOwner() {
+        return portalOwner;
     }
 
     /**
@@ -208,10 +192,10 @@ public class Portal {
      * @return <p>True if the player is the owner of this portal</p>
      */
     public boolean isOwner(Player player) {
-        if (this.ownerUUID != null) {
-            return player.getUniqueId().compareTo(this.ownerUUID) == 0;
+        if (this.portalOwner.getUUID() != null) {
+            return player.getUniqueId().compareTo(this.portalOwner.getUUID()) == 0;
         } else {
-            return player.getName().equalsIgnoreCase(this.ownerName);
+            return player.getName().equalsIgnoreCase(this.portalOwner.getName());
         }
     }
 

@@ -3,7 +3,6 @@ package net.knarcraft.stargate.portal;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
-import net.knarcraft.stargate.container.TwoTuple;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -11,7 +10,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -99,16 +97,6 @@ public class PortalHandler {
             }
         }
         return destinations;
-    }
-
-    /**
-     * Un-registers the given portal
-     *
-     * @param portal    <p>The portal to un-register</p>
-     * @param removeAll <p>Whether to remove the portal from the list of all portals</p>
-     */
-    public static void unregisterPortal(Portal portal, boolean removeAll) {
-        PortalRegistry.unregisterPortal(portal, removeAll);
     }
 
     /**
@@ -397,51 +385,59 @@ public class PortalHandler {
     }
 
     /**
-     * Opens all always open portals
+     * Opens all always-on portals
      *
-     * @return <p>A TwoTuple where the first value is the number of always open portals and the second value is the total number of portals</p>
+     * @return <p>The number of always open portals enabled</p>
      */
-    public static TwoTuple<Integer, Integer> openAlwaysOpenPortals() {
-        int portalCount = 0;
-        int openCount = 0;
-        for (Iterator<Portal> iterator = PortalRegistry.getAllPortals().iterator(); iterator.hasNext(); ) {
-            Portal portal = iterator.next();
-            if (portal == null) {
-                continue;
-            }
+    public static int openAlwaysOpenPortals() {
+        int alwaysOpenCount = 0;
 
-            // Verify portal integrity/register portal
-            PortalStructure structure = portal.getStructure();
-            if (!structure.wasVerified() && (!structure.isVerified() || !structure.checkIntegrity())) {
-                destroyInvalidPortal(portal);
-                iterator.remove();
-                continue;
-            }
-            portalCount++;
-
+        for (Portal portal : PortalRegistry.getAllPortals()) {
             //Open the gate if it's set as always open or if it's a bungee gate
             if (portal.getOptions().isFixed() && (Stargate.enableBungee && portal.getOptions().isBungee() ||
                     portal.getPortalActivator().getDestination() != null && portal.getOptions().isAlwaysOn())) {
                 portal.getPortalOpener().openPortal(true);
-                openCount++;
+                alwaysOpenCount++;
             }
         }
-        return new TwoTuple<>(openCount, portalCount);
+        return alwaysOpenCount;
     }
 
     /**
-     * Destroys a portal which has failed its integrity test
+     * Tries to verify all portals and un-registers non-verifiable portals
+     */
+    public static void verifyAllPortals() {
+        List<Portal> invalidPortals = new ArrayList<>();
+        for (Portal portal : PortalRegistry.getAllPortals()) {
+            //Try and verify the portal. Invalidate it if it cannot be validated
+            PortalStructure structure = portal.getStructure();
+            if (!structure.wasVerified() && (!structure.isVerified() || !structure.checkIntegrity())) {
+                invalidPortals.add(portal);
+            }
+        }
+
+        //Un-register any invalid portals found
+        for (Portal portal : invalidPortals) {
+            unregisterInvalidPortal(portal);
+        }
+    }
+
+    /**
+     * Un-registers a portal which has failed its integrity tests
      *
      * @param portal <p>The portal of the star portal</p>
      */
-    private static void destroyInvalidPortal(Portal portal) {
-        // DEBUG
+    private static void unregisterInvalidPortal(Portal portal) {
+        //Show debug information
         for (RelativeBlockVector control : portal.getGate().getLayout().getControls()) {
-            if (!portal.getBlockAt(control).getBlock().getType().equals(portal.getGate().getControlBlock())) {
-                Stargate.debug("loadAllPortals", "Control Block Type == " + portal.getBlockAt(control).getBlock().getType().name());
+            Block block = portal.getBlockAt(control).getBlock();
+            //Log control blocks not matching the gate layout
+            if (!block.getType().equals(portal.getGate().getControlBlock())) {
+                Stargate.debug("PortalHandler::destroyInvalidPortal", "Control Block Type == " +
+                        block.getType().name());
             }
         }
-        PortalHandler.unregisterPortal(portal, false);
+        PortalRegistry.unregisterPortal(portal, false);
         Stargate.logger.info(Stargate.getString("prefix") + "Destroying stargate at " + portal);
     }
 

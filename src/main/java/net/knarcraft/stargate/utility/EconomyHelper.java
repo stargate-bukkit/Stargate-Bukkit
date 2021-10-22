@@ -2,7 +2,10 @@ package net.knarcraft.stargate.utility;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.Portal;
+import net.knarcraft.stargate.portal.PortalOwner;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 /**
  * The economy helper class has helper functions for player payment
@@ -24,15 +27,15 @@ public final class EconomyHelper {
     public static boolean cannotPayTeleportFee(Portal entrancePortal, Player player, int cost) {
         boolean success;
 
-        //Try to charge the player
+        //Try to charge the player. Paying the portal owner is only possible if a UUID is available
         if (entrancePortal.getGate().getToOwner()) {
-            success = entrancePortal.getOwnerUUID() != null && EconomyHandler.chargePlayerIfNecessary(player,
-                    entrancePortal.getOwnerUUID(), cost);
+            UUID ownerUUID = entrancePortal.getOwner().getUUID();
+            success = ownerUUID != null && EconomyHandler.chargePlayerIfNecessary(player, ownerUUID, cost);
         } else {
             success = EconomyHandler.chargePlayerIfNecessary(player, cost);
         }
 
-        // Insufficient Funds
+        //Send the insufficient funds message
         if (!success) {
             sendInsufficientFundsMessage(entrancePortal.getName(), player, cost);
             entrancePortal.getPortalOpener().closePortal(false);
@@ -43,16 +46,17 @@ public final class EconomyHelper {
         sendDeductMessage(entrancePortal.getName(), player, cost);
 
         if (entrancePortal.getGate().getToOwner()) {
-            Player gateOwner;
-            if (entrancePortal.getOwnerUUID() != null) {
-                gateOwner = Stargate.server.getPlayer(entrancePortal.getOwnerUUID());
+            PortalOwner owner = entrancePortal.getOwner();
+            Player portalOwner;
+            if (owner.getUUID() != null) {
+                portalOwner = Stargate.server.getPlayer(owner.getUUID());
             } else {
-                gateOwner = Stargate.server.getPlayer(entrancePortal.getOwnerName());
+                portalOwner = Stargate.server.getPlayer(owner.getName());
             }
 
             //Notify the gate owner of received payment
-            if (gateOwner != null) {
-                sendObtainMessage(entrancePortal.getName(), gateOwner, cost);
+            if (portalOwner != null) {
+                sendObtainMessage(entrancePortal.getName(), portalOwner, cost);
             }
         }
         return false;

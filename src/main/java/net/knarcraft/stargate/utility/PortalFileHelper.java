@@ -2,16 +2,14 @@ package net.knarcraft.stargate.utility;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
-import net.knarcraft.stargate.container.TwoTuple;
 import net.knarcraft.stargate.portal.Gate;
 import net.knarcraft.stargate.portal.GateHandler;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.PortalLocation;
 import net.knarcraft.stargate.portal.PortalOptions;
+import net.knarcraft.stargate.portal.PortalOwner;
 import net.knarcraft.stargate.portal.PortalRegistry;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 
@@ -20,7 +18,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
-import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -90,12 +87,7 @@ public final class PortalFileHelper {
         builder.append(portal.getNetwork()).append(':');
 
         //Name is saved as a fallback if the UUID is unavailable
-        UUID owner = portal.getOwnerUUID();
-        if (owner != null) {
-            builder.append(portal.getOwnerUUID().toString());
-        } else {
-            builder.append(portal.getOwnerName());
-        }
+        builder.append(portal.getOwner().getIdentifier());
 
         //Save all the portal options
         savePortalOptions(portal, builder);
@@ -209,12 +201,13 @@ public final class PortalFileHelper {
      */
     private static void doPostLoadTasks(World world) {
         //Open any always-on portals. Do this here as it should be more efficient than in the loop.
-        TwoTuple<Integer, Integer> portalCounts = PortalHandler.openAlwaysOpenPortals();
+        PortalHandler.verifyAllPortals();
+        int portalCount = PortalRegistry.getAllPortals().size();
+        int openCount = PortalHandler.openAlwaysOpenPortals();
 
         //Print info about loaded stargates so that admins can see if all stargates loaded
         Stargate.logger.info(String.format("%s{%s} Loaded %d stargates with %d set as always-on",
-                Stargate.getString("prefix"), world.getName(), portalCounts.getSecondValue(),
-                portalCounts.getFirstValue()));
+                Stargate.getString("prefix"), world.getName(), portalCount, openCount));
 
         //Re-draw the signs in case a bug in the config prevented the portal from loading and has been fixed since
         for (Portal portal : PortalRegistry.getAllPortals()) {
@@ -257,43 +250,16 @@ public final class PortalFileHelper {
         String network = (portalData.length > 9 && !portalData[9].isEmpty()) ? portalData[9] : Stargate.getDefaultNetwork();
         String ownerString = (portalData.length > 10) ? portalData[10] : "";
 
-        //Try to get owner as UUID
-        TwoTuple<UUID, String> nameAndUUID = getPortalOwnerUUIDAndName(ownerString);
+        //Get the owner from the owner string
+        PortalOwner owner = new PortalOwner(ownerString);
 
         //Create the new portal
-        Portal portal = new Portal(portalLocation, button, destination, name, network, gate,
-                nameAndUUID.getFirstValue(), nameAndUUID.getSecondValue(), PortalHandler.getPortalOptions(portalData));
+        Portal portal = new Portal(portalLocation, button, destination, name, network, gate, owner,
+                PortalHandler.getPortalOptions(portalData));
 
         //Register the portal, and close it in case it wasn't properly closed when the server stopped
         PortalHandler.registerPortal(portal);
         portal.getPortalOpener().closePortal(true);
-    }
-
-    /**
-     * Gets the portal UUID and name from the saved owner string
-     *
-     * @param ownerString <p>The saved owner string. Should be a UUID, or a player name if legacy</p>
-     * @return <p>A two-tuple containing the UUID and owner name. The UUID might be null if the ownerString was not a UUID</p>
-     */
-    private static TwoTuple<UUID, String> getPortalOwnerUUIDAndName(String ownerString) {
-        UUID ownerUUID = null;
-        String ownerName;
-        if (ownerString.length() > 16) {
-            //If more than 16 characters, the string cannot be a username, so it's probably a UUID
-            try {
-                ownerUUID = UUID.fromString(ownerString);
-                OfflinePlayer offlineOwner = Bukkit.getServer().getOfflinePlayer(ownerUUID);
-                ownerName = offlineOwner.getName();
-            } catch (IllegalArgumentException ex) {
-                //Invalid as UUID and username, so just keep it as owner name and hope the server owner fixes it
-                ownerName = ownerString;
-                Stargate.debug("loadAllPortals", "Invalid stargate owner string: " + ownerString);
-            }
-        } else {
-            //Old username from the pre-UUID times. Just keep it as the owner name
-            ownerName = ownerString;
-        }
-        return new TwoTuple<>(ownerUUID, ownerName);
     }
 
     /**

@@ -5,6 +5,7 @@ import net.knarcraft.stargate.event.StargateDestroyEvent;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalCreator;
 import net.knarcraft.stargate.portal.PortalHandler;
+import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
@@ -139,7 +140,7 @@ public class BlockEventListener implements Listener {
             return;
         }
 
-        PortalHandler.unregisterPortal(portal, true);
+        PortalRegistry.unregisterPortal(portal, true);
         Stargate.sendSuccessMessage(player, Stargate.getString("destroyMsg"));
     }
 

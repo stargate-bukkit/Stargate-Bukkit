@@ -152,8 +152,9 @@ public class PortalCreator {
             return null;
         }
 
-        this.portal = new Portal(portalLocation, null, destinationName, portalName,
-                network, gate, player.getUniqueId(), player.getName(), portalOptions);
+        PortalOwner owner = new PortalOwner(player);
+        this.portal = new Portal(portalLocation, null, destinationName, portalName, network, gate, owner,
+                portalOptions);
         return validatePortal(denyMessage, event.getLines(), deny);
     }
 
