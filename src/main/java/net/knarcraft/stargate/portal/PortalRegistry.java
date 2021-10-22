@@ -2,6 +2,7 @@ package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
+import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.type.WallSign;
@@ -228,7 +229,7 @@ public class PortalRegistry {
             sign.update();
         }
 
-        PortalHandler.saveAllPortals(portal.getWorld());
+        PortalFileHelper.saveAllPortals(portal.getWorld());
     }
 
     /**

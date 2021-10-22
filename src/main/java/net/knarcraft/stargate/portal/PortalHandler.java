@@ -5,25 +5,15 @@ import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.container.TwoTuple;
 import net.knarcraft.stargate.utility.PermissionHelper;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.UUID;
-import java.util.logging.Level;
 
 /**
  * Keeps track of all loaded portals, and handles portal creation
@@ -126,7 +116,7 @@ public class PortalHandler {
      *
      * @param portal <p>The portal to register</p>
      */
-    static void registerPortal(Portal portal) {
+    public static void registerPortal(Portal portal) {
         PortalRegistry.registerPortal(portal);
     }
 
@@ -392,197 +382,12 @@ public class PortalHandler {
     }
 
     /**
-     * Saves all portals for the given world
-     *
-     * @param world <p>The world to save portals for</p>
-     */
-    public static void saveAllPortals(World world) {
-        Stargate.managedWorlds.add(world.getName());
-        String loc = Stargate.getSaveLocation() + "/" + world.getName() + ".db";
-
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(loc, false));
-
-            for (Portal portal : PortalRegistry.getAllPortals()) {
-                String wName = portal.getWorld().getName();
-                if (!wName.equalsIgnoreCase(world.getName())) continue;
-                StringBuilder builder = new StringBuilder();
-                BlockLocation button = portal.getStructure().getButton();
-
-                builder.append(portal.getName()).append(':');
-                builder.append(portal.getSignLocation().toString()).append(':');
-                builder.append((button != null) ? button.toString() : "").append(':');
-                builder.append(0).append(':');
-                builder.append(0).append(':');
-                builder.append(portal.getYaw()).append(':');
-                builder.append(portal.getTopLeft().toString()).append(':');
-                builder.append(portal.getGate().getFilename()).append(':');
-                builder.append(portal.getOptions().isFixed() ? portal.getDestinationName() : "").append(':');
-                builder.append(portal.getNetwork()).append(':');
-                UUID owner = portal.getOwnerUUID();
-                if (owner != null) {
-                    builder.append(portal.getOwnerUUID().toString());
-                } else {
-                    builder.append(portal.getOwnerName());
-                }
-                builder.append(':');
-                builder.append(portal.getOptions().isHidden()).append(':');
-                builder.append(portal.getOptions().isAlwaysOn()).append(':');
-                builder.append(portal.getOptions().isPrivate()).append(':');
-                builder.append(portal.getWorld().getName()).append(':');
-                builder.append(portal.getOptions().isFree()).append(':');
-                builder.append(portal.getOptions().isBackwards()).append(':');
-                builder.append(portal.getOptions().isShown()).append(':');
-                builder.append(portal.getOptions().isNoNetwork()).append(':');
-                builder.append(portal.getOptions().isRandom()).append(':');
-                builder.append(portal.getOptions().isBungee());
-
-                bw.append(builder.toString());
-                bw.newLine();
-            }
-
-            bw.close();
-        } catch (Exception e) {
-            Stargate.logger.log(Level.SEVERE, "Exception while writing stargates to " + loc + ": " + e);
-        }
-    }
-
-    /**
-     * Loads all portals for the given world
-     *
-     * @param world <p>The world to load portals for</p>
-     * @return <p>True if portals could be loaded</p>
-     */
-    public static boolean loadAllPortals(World world) {
-        String location = Stargate.getSaveLocation();
-
-        File database = new File(location, world.getName() + ".db");
-
-        if (database.exists()) {
-            return loadPortals(world, database);
-        } else {
-            Stargate.logger.info(Stargate.getString("prefix") + "{" + world.getName() + "} No stargates for world ");
-        }
-        return false;
-    }
-
-    /**
-     * Loads all the given portals
-     *
-     * @param world    <p>The world to load portals for</p>
-     * @param database <p>The database file containing the portals</p>
-     * @return <p>True if the portals were loaded successfully</p>
-     */
-    private static boolean loadPortals(World world, File database) {
-        int lineIndex = 0;
-        try {
-            Scanner scanner = new Scanner(database);
-            while (scanner.hasNextLine()) {
-                lineIndex++;
-                String line = scanner.nextLine().trim();
-
-                //Ignore empty and comment lines
-                if (line.startsWith("#") || line.isEmpty()) {
-                    continue;
-                }
-
-                //Check if the min. required portal data is present
-                String[] portalData = line.split(":");
-                if (portalData.length < 8) {
-                    Stargate.logger.info(Stargate.getString("prefix") + "Invalid line - " + lineIndex);
-                    continue;
-                }
-
-                loadPortal(portalData, world, lineIndex);
-            }
-            scanner.close();
-
-            // Open any always-on gates. Do this here as it should be more efficient than in the loop.
-            TwoTuple<Integer, Integer> portalCounts = openAlwaysOpenPortals();
-
-            Stargate.logger.info(String.format("%s{%s} Loaded %d stargates with %d set as always-on",
-                    Stargate.getString("prefix"), world.getName(), portalCounts.getSecondValue(),
-                    portalCounts.getFirstValue()));
-
-            //Re-draw the signs in case a bug in the config prevented the portal from loading and has been fixed since
-            for (Portal portal : PortalRegistry.getAllPortals()) {
-                portal.drawSign();
-            }
-            return true;
-        } catch (Exception e) {
-            Stargate.logger.log(Level.SEVERE, "Exception while reading stargates from " + database.getName() + ": " + lineIndex);
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    /**
-     * Loads one portal from a data array
-     *
-     * @param portalData <p>The array describing the portal</p>
-     * @param world      <p>The world to create the portal in</p>
-     * @param lineIndex  <p>The line index to report in case the user needs to fix an error</p>
-     */
-    private static void loadPortal(String[] portalData, World world, int lineIndex) {
-        //Load min. required portal data
-        String name = portalData[0];
-        PortalLocation portalLocation = new PortalLocation();
-        portalLocation.setSignLocation(new BlockLocation(world, portalData[1]));
-        BlockLocation button = (portalData[2].length() > 0) ? new BlockLocation(world, portalData[2]) : null;
-        portalLocation.setYaw(Float.parseFloat(portalData[5]));
-        portalLocation.setTopLeft(new BlockLocation(world, portalData[6]));
-        Gate gate = GateHandler.getGateByName(portalData[7]);
-        if (gate == null) {
-            //Mark the sign as invalid to reduce some player confusion
-            Sign sign = (Sign) portalLocation.getSignLocation().getBlock().getState();
-            Stargate.setLine(sign, 3, Stargate.getString("signInvalidGate"));
-            sign.update();
-
-            Stargate.logger.info(Stargate.getString("prefix") + "Gate layout on line " + lineIndex +
-                    " does not exist [" + portalData[7] + "]");
-            return;
-        }
-
-        //Load extra portal data
-        String destination = (portalData.length > 8) ? portalData[8] : "";
-        String network = (portalData.length > 9) ? portalData[9] : Stargate.getDefaultNetwork();
-        if (network.isEmpty()) {
-            network = Stargate.getDefaultNetwork();
-        }
-        String ownerString = (portalData.length > 10) ? portalData[10] : "";
-
-        // Attempt to get owner as UUID
-        UUID ownerUUID = null;
-        String ownerName;
-        if (ownerString.length() > 16) {
-            try {
-                ownerUUID = UUID.fromString(ownerString);
-                OfflinePlayer offlineOwner = Bukkit.getServer().getOfflinePlayer(ownerUUID);
-                ownerName = offlineOwner.getName();
-            } catch (IllegalArgumentException ex) {
-                // neither name nor UUID, so keep it as-is
-                ownerName = ownerString;
-                Stargate.debug("loadAllPortals", "Invalid stargate owner string: " + ownerString);
-            }
-        } else {
-            ownerName = ownerString;
-        }
-
-        //Creates the new portal
-        Portal portal = new Portal(portalLocation, button, destination, name,
-                network, gate, ownerUUID, ownerName, getPortalOptions(portalData));
-
-        registerPortal(portal);
-        portal.getPortalOpener().closePortal(true);
-    }
-
-    /**
      * Gets all portal options stored in the portal data
      *
      * @param portalData <p>The string list containing all information about a portal</p>
      * @return <p>A map between portal options and booleans</p>
      */
-    private static Map<PortalOption, Boolean> getPortalOptions(String[] portalData) {
+    public static Map<PortalOption, Boolean> getPortalOptions(String[] portalData) {
         Map<PortalOption, Boolean> portalOptions = new HashMap<>();
         for (PortalOption option : PortalOption.values()) {
             int saveIndex = option.getSaveIndex();
@@ -596,7 +401,7 @@ public class PortalHandler {
      *
      * @return <p>A TwoTuple where the first value is the number of always open portals and the second value is the total number of portals</p>
      */
-    private static TwoTuple<Integer, Integer> openAlwaysOpenPortals() {
+    public static TwoTuple<Integer, Integer> openAlwaysOpenPortals() {
         int portalCount = 0;
         int openCount = 0;
         for (Iterator<Portal> iterator = PortalRegistry.getAllPortals().iterator(); iterator.hasNext(); ) {

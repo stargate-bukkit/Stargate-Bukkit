@@ -1,8 +1,8 @@
 package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
-import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.PortalRegistry;
+import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,7 +23,7 @@ public class WorldEventListener implements Listener {
     @EventHandler
     public void onWorldLoad(WorldLoadEvent event) {
         if (!Stargate.managedWorlds.contains(event.getWorld().getName()) &&
-                PortalHandler.loadAllPortals(event.getWorld())) {
+                PortalFileHelper.loadAllPortals(event.getWorld())) {
             Stargate.managedWorlds.add(event.getWorld().getName());
         }
     }

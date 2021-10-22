@@ -22,6 +22,7 @@ import net.knarcraft.stargate.thread.ChunkUnloadThread;
 import net.knarcraft.stargate.thread.StarGateThread;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.FileHelper;
+import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -532,7 +533,7 @@ public class Stargate extends JavaPlugin {
     public void loadAllPortals() {
         for (World world : getServer().getWorlds()) {
             if (!managedWorlds.contains(world.getName())) {
-                PortalHandler.loadAllPortals(world);
+                PortalFileHelper.loadAllPortals(world);
                 managedWorlds.add(world.getName());
             }
         }

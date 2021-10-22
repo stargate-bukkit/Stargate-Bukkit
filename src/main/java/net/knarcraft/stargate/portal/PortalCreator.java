@@ -8,6 +8,7 @@ import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
+import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -209,7 +210,7 @@ public class PortalCreator {
             PortalHandler.updatePortalsPointingAtNewPortal(portal);
         }
 
-        PortalHandler.saveAllPortals(portal.getWorld());
+        PortalFileHelper.saveAllPortals(portal.getWorld());
 
         return portal;
     }
