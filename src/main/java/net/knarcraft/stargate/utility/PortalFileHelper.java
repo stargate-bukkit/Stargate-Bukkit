@@ -211,10 +211,6 @@ public final class PortalFileHelper {
 
         //Re-draw the signs in case a bug in the config prevented the portal from loading and has been fixed since
         for (Portal portal : PortalRegistry.getAllPortals()) {
-            String worldName = portal.getWorld().getName();
-            if (!worldName.equalsIgnoreCase(world.getName())) {
-                continue;
-            }
             portal.drawSign();
         }
     }
