@@ -12,17 +12,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CommandReload implements CommandExecutor {
 
-    private final Stargate plugin;
-
-    /**
-     * Instantiates the reload command
-     *
-     * @param plugin <p>A reference to the calling plugin object</p>
-     */
-    public CommandReload(Stargate plugin) {
-        this.plugin = plugin;
-    }
-
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
                              @NotNull String[] args) {
@@ -32,7 +21,7 @@ public class CommandReload implements CommandExecutor {
                 return true;
             }
         }
-        plugin.reload(commandSender);
+        Stargate.getStargateConfig().reload(commandSender);
         return true;
     }
 

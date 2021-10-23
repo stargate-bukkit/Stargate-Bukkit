@@ -55,7 +55,7 @@ public class EntityEventListener implements Listener {
             if (portal == null) {
                 continue;
             }
-            if (Stargate.destroyedByExplosion()) {
+            if (Stargate.getGateConfig().destroyedByExplosion()) {
                 PortalRegistry.unregisterPortal(portal, true);
             } else {
                 event.setCancelled(true);

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * The portal registry keeps track of all registered portals and all their lookup blocks
@@ -263,7 +264,13 @@ public class PortalRegistry {
 
             //Register the portal
             portalLookupByNetwork.get(networkName).put(portalName, portal);
-            allPortalNetworks.get(networkName).add(portalName);
+
+            if (!allPortalNetworks.get(networkName).contains(portalName)) {
+                allPortalNetworks.get(networkName).add(portalName);
+            } else {
+                Stargate.getConsoleLogger().log(Level.SEVERE, "Portal " + portal + " was registered twice. Check " +
+                        "your portal database for duplicates.");
+            }
         }
 
         //Register all frame blocks to the lookup list

@@ -34,7 +34,7 @@ public final class LanguageLoader {
 
         File tmp = new File(languageFolder, chosenLanguage + ".txt");
         if (!tmp.exists()) {
-            if (tmp.getParentFile().mkdirs() && Stargate.debuggingEnabled) {
+            if (tmp.getParentFile().mkdirs() && Stargate.getStargateConfig().isDebuggingEnabled()) {
                 Stargate.getConsoleLogger().info("[stargate] Created language folder");
             }
         }
@@ -104,7 +104,7 @@ public final class LanguageLoader {
         if (inputStream == null) {
             Stargate.getConsoleLogger().info("[stargate] The language " + language + " is not available. Falling " +
                     "back to english, You can add a custom language by creating a new text file in the lang directory.");
-            if (Stargate.debuggingEnabled) {
+            if (Stargate.getStargateConfig().isDebuggingEnabled()) {
                 Stargate.getConsoleLogger().info("[stargate] Unable to load /lang/" + language + ".txt");
             }
             return;
@@ -217,7 +217,7 @@ public final class LanguageLoader {
             }
             strings = FileHelper.readKeyValuePairs(bufferedReader);
         } catch (Exception e) {
-            if (Stargate.debuggingEnabled) {
+            if (Stargate.getStargateConfig().isDebuggingEnabled()) {
                 Stargate.getConsoleLogger().info("[stargate] Unable to load language " + lang);
             }
             return null;
@@ -226,7 +226,7 @@ public final class LanguageLoader {
     }
 
     /**
-     * Prints debug output to the console for checking of loading language strings/translations
+     * Prints debug output to the console for checking loaded language strings/translations
      */
     public void debug() {
         Set<String> keys = loadedStringTranslations.keySet();

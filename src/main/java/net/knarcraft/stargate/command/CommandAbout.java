@@ -22,7 +22,7 @@ public class CommandAbout implements CommandExecutor {
                 "Drakia" + textColor + ", and revived by " + highlightColor + "EpicKnarvik97");
         commandSender.sendMessage(textColor + "Go to " + highlightColor +
                 "https://git.knarcraft.net/EpicKnarvik97/Stargate " + textColor + "for the official repository");
-        String author = Stargate.languageLoader.getString("author");
+        String author = Stargate.getStargateConfig().getLanguageLoader().getString("author");
         if (!author.isEmpty())
             commandSender.sendMessage(textColor + "Language created by " + highlightColor + author);
         return true;

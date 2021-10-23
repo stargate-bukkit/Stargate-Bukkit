@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.StargateConfig;
 import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.World;
@@ -22,9 +23,10 @@ public class WorldEventListener implements Listener {
      */
     @EventHandler
     public void onWorldLoad(WorldLoadEvent event) {
-        if (!Stargate.managedWorlds.contains(event.getWorld().getName()) &&
+        StargateConfig config = Stargate.getStargateConfig();
+        if (!config.getManagedWorlds().contains(event.getWorld().getName()) &&
                 PortalFileHelper.loadAllPortals(event.getWorld())) {
-            Stargate.managedWorlds.add(event.getWorld().getName());
+            config.addManagedWorld(event.getWorld().getName());
         }
     }
 
@@ -38,8 +40,9 @@ public class WorldEventListener implements Listener {
         Stargate.debug("onWorldUnload", "Reloading all Stargates");
         World world = event.getWorld();
         String worldName = world.getName();
-        if (Stargate.managedWorlds.contains(worldName)) {
-            Stargate.managedWorlds.remove(worldName);
+        StargateConfig config = Stargate.getStargateConfig();
+        if (config.getManagedWorlds().contains(worldName)) {
+            config.removeManagedWorld(worldName);
             PortalRegistry.clearPortals(world);
         }
     }

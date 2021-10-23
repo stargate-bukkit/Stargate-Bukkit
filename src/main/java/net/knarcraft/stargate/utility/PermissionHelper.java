@@ -126,7 +126,7 @@ public final class PermissionHelper {
      * @return <p>True if the player has the permission</p>
      */
     public static boolean hasPermission(Player player, String perm) {
-        if (Stargate.permissionDebuggingEnabled) {
+        if (Stargate.getStargateConfig().isPermissionDebuggingEnabled()) {
             Stargate.debug("hasPerm::SuperPerm(" + player.getName() + ")", perm + " => " + player.hasPermission(perm));
         }
         return player.hasPermission(perm);
@@ -144,12 +144,12 @@ public final class PermissionHelper {
      */
     public static boolean hasPermDeep(Player player, String permission) {
         if (!player.isPermissionSet(permission)) {
-            if (Stargate.permissionDebuggingEnabled) {
+            if (Stargate.getStargateConfig().isPermissionDebuggingEnabled()) {
                 Stargate.debug("hasPermDeep::SuperPerm", permission + " => true");
             }
             return true;
         }
-        if (Stargate.permissionDebuggingEnabled) {
+        if (Stargate.getStargateConfig().isPermissionDebuggingEnabled()) {
             Stargate.debug("hasPermDeep::SuperPerms", permission + " => " + player.hasPermission(permission));
         }
         return player.hasPermission(permission);

@@ -15,17 +15,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CommandStarGate implements CommandExecutor {
 
-    private final Stargate plugin;
-
-    /**
-     * Instantiates the stargate command
-     *
-     * @param plugin <p>A reference to the calling plugin object</p>
-     */
-    public CommandStarGate(Stargate plugin) {
-        this.plugin = plugin;
-    }
-
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
                              @NotNull String[] args) {
@@ -33,7 +22,7 @@ public class CommandStarGate implements CommandExecutor {
             if (args[0].equalsIgnoreCase("about")) {
                 return new CommandAbout().onCommand(commandSender, command, s, args);
             } else if (args[0].equalsIgnoreCase("reload")) {
-                return new CommandReload(plugin).onCommand(commandSender, command, s, args);
+                return new CommandReload().onCommand(commandSender, command, s, args);
             }
             return false;
         } else {

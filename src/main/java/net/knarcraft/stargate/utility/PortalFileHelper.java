@@ -10,6 +10,7 @@ import net.knarcraft.stargate.portal.PortalLocation;
 import net.knarcraft.stargate.portal.PortalOptions;
 import net.knarcraft.stargate.portal.PortalOwner;
 import net.knarcraft.stargate.portal.PortalRegistry;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 
@@ -35,8 +36,8 @@ public final class PortalFileHelper {
      * @param world <p>The world to save portals for</p>
      */
     public static void saveAllPortals(World world) {
-        Stargate.managedWorlds.add(world.getName());
-        String saveFileLocation = Stargate.getSaveLocation() + "/" + world.getName() + ".db";
+        Stargate.getStargateConfig().addManagedWorld(world.getName());
+        String saveFileLocation = Stargate.getPortalFolder() + "/" + world.getName() + ".db";
 
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(saveFileLocation, false));
@@ -125,7 +126,7 @@ public final class PortalFileHelper {
      * @return <p>True if portals could be loaded</p>
      */
     public static boolean loadAllPortals(World world) {
-        String location = Stargate.getSaveLocation();
+        String location = Stargate.getPortalFolder();
 
         File database = new File(location, world.getName() + ".db");
 
@@ -268,7 +269,7 @@ public final class PortalFileHelper {
      */
     private static void markPortalWithInvalidGate(PortalLocation portalLocation, String gateName, int lineIndex) {
         Sign sign = (Sign) portalLocation.getSignLocation().getBlock().getState();
-        Stargate.setLine(sign, 3, Stargate.getString("signInvalidGate"));
+        sign.setLine(3, ChatColor.DARK_RED + Stargate.getString("signInvalidGate"));
         sign.update();
 
         Stargate.getConsoleLogger().info(Stargate.getString("prefix") + "Gate layout on line " + lineIndex +
