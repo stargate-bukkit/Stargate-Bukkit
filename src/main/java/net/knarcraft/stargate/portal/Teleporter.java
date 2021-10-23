@@ -80,7 +80,7 @@ public abstract class Teleporter {
                 }
             }
         } else {
-            Stargate.logger.log(Level.WARNING, Stargate.getString("prefix") +
+            Stargate.getConsoleLogger().log(Level.WARNING, Stargate.getString("prefix") +
                     "Missing destination point in .gate file " + portal.getGate().getFilename());
         }
 
@@ -180,7 +180,7 @@ public abstract class Teleporter {
             exitLocation.setPitch(traveller.getPitch());
             return exitLocation;
         } else {
-            Stargate.logger.log(Level.WARNING, Stargate.getString("prefix") +
+            Stargate.getConsoleLogger().log(Level.WARNING, Stargate.getString("prefix") +
                     "Unable to generate exit location");
         }
         return traveller;

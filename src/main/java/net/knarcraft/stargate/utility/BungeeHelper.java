@@ -66,7 +66,7 @@ public final class BungeeHelper {
             dataOutputStream.writeBytes(message);
             player.sendPluginMessage(Stargate.stargate, bungeeChannel, byteArrayOutputStream.toByteArray());
         } catch (IOException ex) {
-            Stargate.logger.severe(Stargate.getString("prefix") + "Error sending BungeeCord teleport packet");
+            Stargate.getConsoleLogger().severe(Stargate.getString("prefix") + "Error sending BungeeCord teleport packet");
             ex.printStackTrace();
             return false;
         }
@@ -90,7 +90,8 @@ public final class BungeeHelper {
             player.sendPluginMessage(Stargate.stargate, bungeeChannel, byteArrayOutputStream.toByteArray());
             byteArrayOutputStream.reset();
         } catch (IOException ex) {
-            Stargate.logger.severe(Stargate.getString("prefix") + "Error sending BungeeCord connect packet");
+            Stargate.getConsoleLogger().severe(Stargate.getString("prefix") +
+                    "Error sending BungeeCord connect packet");
             ex.printStackTrace();
             return false;
         }
@@ -117,7 +118,8 @@ public final class BungeeHelper {
             data = new byte[dataLength];
             dataInputStream.readFully(data);
         } catch (IOException ex) {
-            Stargate.logger.severe(Stargate.getString("prefix") + "Error receiving BungeeCord message");
+            Stargate.getConsoleLogger().severe(Stargate.getString("prefix") +
+                    "Error receiving BungeeCord message");
             ex.printStackTrace();
             return null;
         }
@@ -145,7 +147,8 @@ public final class BungeeHelper {
             Portal destinationPortal = PortalHandler.getBungeePortal(destination);
             // Specified an invalid gate. For now, we'll just let them connect at their current location
             if (destinationPortal == null) {
-                Stargate.logger.info(Stargate.getString("prefix") + "Bungee gate " + destination + " does not exist");
+                Stargate.getConsoleLogger().info(Stargate.getString("prefix") + "Bungee gate " +
+                        destination + " does not exist");
                 return;
             }
             new PlayerTeleporter(destinationPortal, player).teleport(destinationPortal, null);

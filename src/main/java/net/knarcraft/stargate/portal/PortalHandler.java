@@ -88,7 +88,7 @@ public class PortalHandler {
             }
             //Check if this player can access the dest world
             if (PermissionHelper.cannotAccessWorld(player, portal.getWorld().getName())) {
-                Stargate.logger.info("cannot access world");
+                Stargate.getConsoleLogger().info("cannot access world");
                 continue;
             }
             //Visible to this player.
@@ -439,14 +439,14 @@ public class PortalHandler {
             }
         }
         PortalRegistry.unregisterPortal(portal, false);
-        Stargate.logger.info(Stargate.getString("prefix") + "Destroying stargate at " + portal);
+        Stargate.getConsoleLogger().info(Stargate.getString("prefix") + "Destroying stargate at " + portal);
     }
 
     /**
      * Closes all portals
      */
     public static void closeAllPortals() {
-        Stargate.logger.info("Closing all stargates.");
+        Stargate.getConsoleLogger().info("Closing all stargates.");
         for (Portal portal : PortalRegistry.getAllPortals()) {
             if (portal != null) {
                 portal.getPortalOpener().closePortal(true);

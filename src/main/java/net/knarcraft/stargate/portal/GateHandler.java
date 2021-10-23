@@ -106,7 +106,7 @@ public class GateHandler {
         try (Scanner scanner = new Scanner(file)) {
             return loadGate(file.getName(), file.getParent(), scanner);
         } catch (Exception ex) {
-            Stargate.logger.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - " + ex.getMessage());
+            Stargate.getConsoleLogger().log(Level.SEVERE, "Could not load Gate " + file.getName() + " - " + ex.getMessage());
             return null;
         }
     }
@@ -190,13 +190,13 @@ public class GateHandler {
      */
     private static boolean validateGate(Gate gate, String fileName) {
         if (gate.getLayout().getControls().length != 2) {
-            Stargate.logger.log(Level.SEVERE, "Could not load Gate " + fileName +
+            Stargate.getConsoleLogger().log(Level.SEVERE, "Could not load Gate " + fileName +
                     " - Gates must have exactly 2 control points.");
             return false;
         }
 
         if (!MaterialHelper.isButtonCompatible(gate.getPortalButton())) {
-            Stargate.logger.log(Level.SEVERE, "Could not load Gate " + fileName +
+            Stargate.getConsoleLogger().log(Level.SEVERE, "Could not load Gate " + fileName +
                     " - Gate button must be a type of button.");
             return false;
         }

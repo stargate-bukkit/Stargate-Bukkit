@@ -161,7 +161,7 @@ public final class StargateGateConfig {
             } catch (IllegalArgumentException | NullPointerException ignored) {
             }
         }
-        Stargate.logger.warning(getString("prefix") +
+        Stargate.getConsoleLogger().warning(getString("prefix") +
                 "You have specified an invalid color in your config.yml. Defaulting to BLACK");
         this.signColor = ChatColor.BLACK;
     }

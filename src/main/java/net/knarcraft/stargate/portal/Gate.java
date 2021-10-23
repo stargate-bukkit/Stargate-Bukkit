@@ -268,7 +268,7 @@ public class Gate {
 
             bufferedWriter.close();
         } catch (IOException ex) {
-            Stargate.logger.log(Level.SEVERE, "Could not save Gate " + filename + " - " + ex.getMessage());
+            Stargate.getConsoleLogger().log(Level.SEVERE, "Could not save Gate " + filename + " - " + ex.getMessage());
         }
     }
 

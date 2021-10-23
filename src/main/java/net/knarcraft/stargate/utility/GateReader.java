@@ -55,7 +55,7 @@ public final class GateReader {
                 }
             }
         } catch (Exception ex) {
-            Stargate.logger.log(Level.SEVERE, "Could not load Gate " + fileName + " - " + ex.getMessage());
+            Stargate.getConsoleLogger().log(Level.SEVERE, "Could not load Gate " + fileName + " - " + ex.getMessage());
             return -1;
         } finally {
             if (scanner != null) {
@@ -90,8 +90,8 @@ public final class GateReader {
         for (Character symbol : line.toCharArray()) {
             //Refuse read gate designs with unknown characters
             if (symbol.equals('?') || (!characterMaterialMap.containsKey(symbol))) {
-                Stargate.logger.log(Level.SEVERE, "Could not load Gate " + fileName + " - Unknown symbol '" +
-                        symbol + "' in diagram");
+                Stargate.getConsoleLogger().log(Level.SEVERE, "Could not load Gate " + fileName +
+                        " - Unknown symbol '" + symbol + "' in diagram");
                 return -1;
             }
             //Add the read character to the row
@@ -148,7 +148,7 @@ public final class GateReader {
             try {
                 return Integer.parseInt(config.get(key));
             } catch (NumberFormatException ex) {
-                Stargate.logger.log(Level.WARNING, String.format("%s reading %s: %s is not numeric",
+                Stargate.getConsoleLogger().log(Level.WARNING, String.format("%s reading %s: %s is not numeric",
                         ex.getClass().getName(), fileName, key));
             }
         }
@@ -172,8 +172,8 @@ public final class GateReader {
             if (material != null) {
                 return material;
             } else {
-                Stargate.logger.log(Level.WARNING, String.format("Error reading %s: %s is not a material", fileName,
-                        key));
+                Stargate.getConsoleLogger().log(Level.WARNING, String.format("Error reading %s: %s is not a material",
+                        fileName, key));
             }
         }
         return defaultMaterial;

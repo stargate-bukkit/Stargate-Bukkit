@@ -35,7 +35,7 @@ public final class LanguageLoader {
         File tmp = new File(languageFolder, chosenLanguage + ".txt");
         if (!tmp.exists()) {
             if (tmp.getParentFile().mkdirs() && Stargate.debuggingEnabled) {
-                Stargate.logger.info("[stargate] Created language folder");
+                Stargate.getConsoleLogger().info("[stargate] Created language folder");
             }
         }
         updateLanguage(chosenLanguage);
@@ -47,7 +47,8 @@ public final class LanguageLoader {
             loadedBackupStrings = load("en", inputStream);
         } else {
             loadedBackupStrings = null;
-            Stargate.logger.severe("[stargate] Error loading backup language. There may be missing text in-game");
+            Stargate.getConsoleLogger().severe("[stargate] Error loading backup language. There may be missing " +
+                    "text in-game");
         }
     }
 
@@ -101,10 +102,10 @@ public final class LanguageLoader {
 
         InputStream inputStream = getClass().getResourceAsStream("/lang/" + language + ".txt");
         if (inputStream == null) {
-            Stargate.logger.info("[stargate] The language " + language + " is not available. Falling back to " +
-                    "english, You can add a custom language by creating a new text file in the lang directory.");
+            Stargate.getConsoleLogger().info("[stargate] The language " + language + " is not available. Falling " +
+                    "back to english, You can add a custom language by creating a new text file in the lang directory.");
             if (Stargate.debuggingEnabled) {
-                Stargate.logger.info("[stargate] Unable to load /lang/" + language + ".txt");
+                Stargate.getConsoleLogger().info("[stargate] Unable to load /lang/" + language + ".txt");
             }
             return;
         }
@@ -133,7 +134,7 @@ public final class LanguageLoader {
         //If currentLanguageValues is null; the chosen language has not been used before
         if (currentLanguageValues == null) {
             updateLanguageFile(language, internalLanguageValues, null);
-            Stargate.logger.info("[stargate] Language (" + language + ") has been loaded");
+            Stargate.getConsoleLogger().info("[stargate] Language (" + language + ") has been loaded");
             return;
         }
 
@@ -154,7 +155,8 @@ public final class LanguageLoader {
             //Update the file itself
             if (updateNecessary) {
                 updateLanguageFile(language, newLanguageValues, currentLanguageValues);
-                Stargate.logger.info("[stargate] Your language file (" + language + ".txt) has been updated");
+                Stargate.getConsoleLogger().info("[stargate] Your language file (" + language +
+                        ".txt) has been updated");
             }
         }
     }
@@ -216,7 +218,7 @@ public final class LanguageLoader {
             strings = FileHelper.readKeyValuePairs(bufferedReader);
         } catch (Exception e) {
             if (Stargate.debuggingEnabled) {
-                Stargate.logger.info("[stargate] Unable to load language " + lang);
+                Stargate.getConsoleLogger().info("[stargate] Unable to load language " + lang);
             }
             return null;
         }

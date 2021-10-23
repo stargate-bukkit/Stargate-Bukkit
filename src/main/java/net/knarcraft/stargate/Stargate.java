@@ -64,7 +64,7 @@ public class Stargate extends JavaPlugin {
     private static final int activeTime = 10;
     private static final int openTime = 10;
 
-    public static Logger logger;
+    private static Logger logger;
     public static Server server;
     public static Stargate stargate;
     public static LanguageLoader languageLoader;
@@ -170,6 +170,15 @@ public class Stargate extends JavaPlugin {
      */
     public static int getActiveTime() {
         return activeTime;
+    }
+
+    /**
+     * Gets the logger used for logging to the console
+     *
+     * @return <p>The logger</p>
+     */
+    public static Logger getConsoleLogger() {
+        return logger;
     }
 
     /**
