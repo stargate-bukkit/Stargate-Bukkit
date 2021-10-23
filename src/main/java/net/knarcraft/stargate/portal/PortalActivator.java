@@ -140,12 +140,13 @@ public class PortalActivator {
         destinations = PortalHandler.getDestinations(portal, player, network);
 
         //Sort destinations if enabled
-        if (Stargate.sortNetworkDestinations) {
+        if (Stargate.getGateConfig().sortNetworkDestinations()) {
             Collections.sort(destinations);
         }
 
         //Select last used destination if remember destination is enabled
-        if (Stargate.rememberDestination && !lastDestination.isEmpty() && destinations.contains(lastDestination)) {
+        if (Stargate.getGateConfig().rememberDestination() && !lastDestination.isEmpty() &&
+                destinations.contains(lastDestination)) {
             destination = lastDestination;
         }
 
@@ -254,7 +255,7 @@ public class PortalActivator {
         }
 
         //Cycle if destination remembering is disabled, if the portal was already active, or it has no last destination
-        if (!Stargate.rememberDestination || !activate || lastDestination.isEmpty()) {
+        if (!Stargate.getGateConfig().rememberDestination() || !activate || lastDestination.isEmpty()) {
             cycleDestination(direction);
         }
 

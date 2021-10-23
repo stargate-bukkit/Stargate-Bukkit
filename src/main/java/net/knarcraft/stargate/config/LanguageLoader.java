@@ -1,5 +1,6 @@
-package net.knarcraft.stargate;
+package net.knarcraft.stargate.config;
 
+import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.utility.FileHelper;
 
 import java.io.BufferedReader;
@@ -14,7 +15,7 @@ import java.util.Set;
 /**
  * This class is responsible for loading all strings which are translated into several languages
  */
-public class LanguageLoader {
+public final class LanguageLoader {
 
     private final String languageFolder;
     private final Map<String, String> loadedBackupStrings;

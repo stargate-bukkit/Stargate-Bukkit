@@ -4,7 +4,6 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.VehicleTeleporter;
-import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.EntityHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
@@ -30,7 +29,7 @@ public class VehicleEventListener implements Listener {
      */
     @EventHandler
     public void onVehicleMove(VehicleMoveEvent event) {
-        if (!Stargate.handleVehicles) {
+        if (!Stargate.getGateConfig().handleVehicles()) {
             return;
         }
         List<Entity> passengers = event.getVehicle().getPassengers();
@@ -110,7 +109,7 @@ public class VehicleEventListener implements Listener {
 
         //To prevent the case where the first passenger pays and then the second passenger is denied, this has to be
         // run after it has been confirmed that all passengers are able to pay
-        int cost = EconomyHandler.getUseCost(player, entrancePortal, destinationPortal);
+        int cost = Stargate.getEconomyConfig().getUseCost(player, entrancePortal, destinationPortal);
         if (cost > 0) {
             if (!takePlayerPayment(passengers, entrancePortal, cost)) {
                 return;
@@ -157,8 +156,8 @@ public class VehicleEventListener implements Listener {
         }
 
         //Transfer payment if necessary
-        int cost = EconomyHandler.getUseCost(player, entrancePortal, destinationPortal);
-        return cost <= 0 || EconomyHandler.canAffordFee(player, cost);
+        int cost = Stargate.getEconomyConfig().getUseCost(player, entrancePortal, destinationPortal);
+        return cost <= 0 || Stargate.getEconomyConfig().canAffordFee(player, cost);
     }
 
 }

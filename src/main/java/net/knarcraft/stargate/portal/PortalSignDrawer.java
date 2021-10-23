@@ -1,7 +1,6 @@
 package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.Stargate;
-import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -50,8 +49,8 @@ public class PortalSignDrawer {
         for (int index = 0; index <= 3; index++) {
             sign.setLine(index, "");
         }
-        Stargate.setLine(sign, 0, ChatColor.WHITE + "-" + Stargate.signColor + portal.getName() +
-                ChatColor.WHITE + "-");
+        Stargate.setLine(sign, 0, ChatColor.WHITE + "-" + Stargate.getGateConfig().getSignColor() +
+                portal.getName() + ChatColor.WHITE + "-");
 
         if (!portal.getPortalActivator().isActive()) {
             //Default sign text
@@ -82,7 +81,8 @@ public class PortalSignDrawer {
         int maxIndex = destinations.getDestinations().size() - 1;
         int signLineIndex = 0;
         int destinationIndex = destinations.getDestinations().indexOf(portal.getDestinationName());
-        boolean freeGatesGreen = EconomyHandler.useEconomy() && EconomyHandler.freeGatesGreen;
+        boolean freeGatesGreen = Stargate.getEconomyConfig().useEconomy() &&
+                Stargate.getEconomyConfig().drawFreePortalsGreen();
 
         //Last, and not only entry. Draw the entry two back
         if ((destinationIndex == maxIndex) && (maxIndex > 1)) {
@@ -118,8 +118,8 @@ public class PortalSignDrawer {
             Stargate.setLine(sign, signLineIndex, (green ? ChatColor.DARK_GREEN : "") + ">" +
                     portal.getDestinationName() + (green ? ChatColor.DARK_GREEN : "") + "<");
         } else {
-            Stargate.setLine(sign, signLineIndex, Stargate.signColor + " >" + portal.getDestinationName() +
-                    Stargate.signColor + "< ");
+            Stargate.setLine(sign, signLineIndex, Stargate.getGateConfig().getSignColor() + " >" +
+                    portal.getDestinationName() + Stargate.getGateConfig().getSignColor() + "< ");
         }
     }
 

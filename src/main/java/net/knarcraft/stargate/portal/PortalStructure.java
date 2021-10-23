@@ -67,7 +67,7 @@ public class PortalStructure {
      */
     public boolean isVerified() {
         boolean verified = true;
-        if (!Stargate.verifyPortals) {
+        if (!Stargate.getGateConfig().verifyPortals()) {
             return true;
         }
         for (RelativeBlockVector control : gate.getLayout().getControls()) {
@@ -83,7 +83,7 @@ public class PortalStructure {
      * @return <p>True if this portal was verified</p>
      */
     public boolean wasVerified() {
-        if (!Stargate.verifyPortals) {
+        if (!Stargate.getGateConfig().verifyPortals()) {
             return true;
         }
         return verified;
@@ -95,10 +95,11 @@ public class PortalStructure {
      * @return <p>True if all blocks match the gate template</p>
      */
     public boolean checkIntegrity() {
-        if (!Stargate.verifyPortals) {
+        if (Stargate.getGateConfig().verifyPortals()) {
+            return gate.matches(portal.getTopLeft(), portal.getYaw());
+        } else {
             return true;
         }
-        return gate.matches(portal.getTopLeft(), portal.getYaw());
     }
 
     /**

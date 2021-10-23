@@ -1,7 +1,6 @@
 package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.Stargate;
-import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.GateReader;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import org.bukkit.Material;
@@ -170,7 +169,7 @@ public class GateHandler {
         int createCost = GateReader.readGateConfig(config, fileName, "createcost");
         int destroyCost = GateReader.readGateConfig(config, fileName, "destroycost");
         boolean toOwner = (config.containsKey("toowner") ? Boolean.parseBoolean(config.get("toowner")) :
-                EconomyHandler.toOwner);
+                Stargate.getEconomyConfig().sendPaymentToOwner());
 
         //Create the new gate
         Gate gate = new Gate(fileName, new GateLayout(layout), characterMaterialMap, portalOpenBlock, portalClosedBlock,

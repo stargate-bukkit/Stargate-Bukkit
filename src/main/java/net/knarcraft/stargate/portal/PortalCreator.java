@@ -5,7 +5,6 @@ import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.event.StargateCreateEvent;
 import net.knarcraft.stargate.utility.DirectionHelper;
-import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import net.knarcraft.stargate.utility.PortalFileHelper;
@@ -173,7 +172,7 @@ public class PortalCreator {
         String portalName = portal.getName();
         String destinationName = portal.getDestinationName();
 
-        int createCost = EconomyHandler.getCreateCost(player, gate);
+        int createCost = Stargate.getEconomyConfig().getCreateCost(player, gate);
 
         //Call StargateCreateEvent to let other plugins cancel or overwrite denial
         StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, deny,
@@ -247,14 +246,15 @@ public class PortalCreator {
 
             //Check if there are too many gates in this network
             List<String> networkList = PortalHandler.getAllPortalNetworks().get(portal.getNetwork().toLowerCase());
-            if (Stargate.maxGatesEachNetwork > 0 && networkList != null && networkList.size() >= Stargate.maxGatesEachNetwork) {
+            int maxGates = Stargate.getGateConfig().maxGatesEachNetwork();
+            if (maxGates > 0 && networkList != null && networkList.size() >= maxGates) {
                 Stargate.sendErrorMessage(player, Stargate.getString("createFull"));
                 return false;
             }
         }
 
         if (cost > 0) {
-            if (!EconomyHandler.chargePlayerIfNecessary(player, cost)) {
+            if (!Stargate.getEconomyConfig().chargePlayerIfNecessary(player, cost)) {
                 EconomyHelper.sendInsufficientFundsMessage(portalName, player, cost);
                 Stargate.debug("createPortal", "Insufficient Funds");
                 return false;

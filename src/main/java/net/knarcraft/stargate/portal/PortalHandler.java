@@ -123,7 +123,7 @@ public class PortalHandler {
             if (!PermissionHelper.hasPermission(player, "stargate.admin.bungee")) {
                 Stargate.sendErrorMessage(player, Stargate.getString("bungeeDeny"));
                 return false;
-            } else if (!Stargate.enableBungee) {
+            } else if (!Stargate.getGateConfig().enableBungee()) {
                 Stargate.sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
                 return false;
             } else if (destinationName.isEmpty() || network.isEmpty()) {
@@ -394,8 +394,9 @@ public class PortalHandler {
 
         for (Portal portal : PortalRegistry.getAllPortals()) {
             //Open the gate if it's set as always open or if it's a bungee gate
-            if (portal.getOptions().isFixed() && (Stargate.enableBungee && portal.getOptions().isBungee() ||
-                    portal.getPortalActivator().getDestination() != null && portal.getOptions().isAlwaysOn())) {
+            if (portal.getOptions().isFixed() && (Stargate.getGateConfig().enableBungee() &&
+                    portal.getOptions().isBungee() || portal.getPortalActivator().getDestination() != null &&
+                    portal.getOptions().isAlwaysOn())) {
                 portal.getPortalOpener().openPortal(true);
                 alwaysOpenCount++;
             }

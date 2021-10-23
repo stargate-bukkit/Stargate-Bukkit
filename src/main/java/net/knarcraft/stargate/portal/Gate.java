@@ -3,7 +3,6 @@ package net.knarcraft.stargate.portal;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
-import net.knarcraft.stargate.utility.EconomyHandler;
 import org.bukkit.Material;
 
 import java.io.BufferedWriter;
@@ -122,7 +121,7 @@ public class Gate {
      * @return <p>The cost of using a portal with this gate</p>
      */
     public int getUseCost() {
-        return useCost < 0 ? EconomyHandler.getDefaultUseCost() : useCost;
+        return useCost < 0 ? Stargate.getEconomyConfig().getDefaultUseCost() : useCost;
     }
 
     /**
@@ -131,7 +130,7 @@ public class Gate {
      * @return <p>The cost of creating a portal with this gate</p>
      */
     public Integer getCreateCost() {
-        return createCost < 0 ? EconomyHandler.getDefaultCreateCost() : createCost;
+        return createCost < 0 ? Stargate.getEconomyConfig().getDefaultCreateCost() : createCost;
     }
 
     /**
@@ -140,7 +139,7 @@ public class Gate {
      * @return <p>The cost of destroying a portal with this gate</p>
      */
     public Integer getDestroyCost() {
-        return destroyCost < 0 ? EconomyHandler.getDefaultDestroyCost() : destroyCost;
+        return destroyCost < 0 ? Stargate.getEconomyConfig().getDefaultDestroyCost() : destroyCost;
     }
 
     /**

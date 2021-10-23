@@ -6,7 +6,6 @@ import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalCreator;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.PortalRegistry;
-import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
@@ -45,7 +44,8 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler
     public void onBlockFormedByEntity(EntityBlockFormEvent event) {
-        if (event.isCancelled() || (!Stargate.protectEntrance && !Stargate.verifyPortals)) {
+        if (event.isCancelled() || (!Stargate.getGateConfig().protectEntrance() &&
+                !Stargate.getGateConfig().verifyPortals())) {
             return;
         }
         //We are only interested in snowman events
@@ -101,7 +101,7 @@ public class BlockEventListener implements Listener {
 
         //Decide if a portal is broken
         Portal portal = PortalHandler.getByBlock(block);
-        if (portal == null && Stargate.protectEntrance) {
+        if (portal == null && Stargate.getGateConfig().protectEntrance()) {
             portal = PortalHandler.getByEntrance(block);
         }
         if (portal == null) {
@@ -118,7 +118,7 @@ public class BlockEventListener implements Listener {
             Stargate.logger.info(Stargate.getString("prefix") + player.getName() + " tried to destroy gate");
         }
 
-        int cost = EconomyHandler.getDestroyCost(player, portal.getGate());
+        int cost = Stargate.getEconomyConfig().getDestroyCost(player, portal.getGate());
 
         //Create and call a StarGateDestroyEvent
         StargateDestroyEvent destroyEvent = new StargateDestroyEvent(portal, player, deny, denyMessage, cost);
@@ -159,7 +159,7 @@ public class BlockEventListener implements Listener {
         if (cost != 0) {
             String portalName = portal.getName();
             //Cannot pay
-            if (!EconomyHandler.chargePlayerIfNecessary(player, cost)) {
+            if (!Stargate.getEconomyConfig().chargePlayerIfNecessary(player, cost)) {
                 Stargate.debug("onBlockBreak", "Insufficient Funds");
                 EconomyHelper.sendInsufficientFundsMessage(portalName, player, cost);
                 event.setCancelled(true);

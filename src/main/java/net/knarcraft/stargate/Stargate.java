@@ -2,6 +2,9 @@ package net.knarcraft.stargate;
 
 import net.knarcraft.stargate.command.CommandStarGate;
 import net.knarcraft.stargate.command.StarGateTabCompleter;
+import net.knarcraft.stargate.config.EconomyConfig;
+import net.knarcraft.stargate.config.LanguageLoader;
+import net.knarcraft.stargate.config.StargateGateConfig;
 import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.container.ChunkUnloadRequest;
 import net.knarcraft.stargate.listener.BlockEventListener;
@@ -20,7 +23,6 @@ import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.thread.BlockChangeThread;
 import net.knarcraft.stargate.thread.ChunkUnloadThread;
 import net.knarcraft.stargate.thread.StarGateThread;
-import net.knarcraft.stargate.utility.EconomyHandler;
 import net.knarcraft.stargate.utility.FileHelper;
 import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.Bukkit;
@@ -68,17 +70,10 @@ public class Stargate extends JavaPlugin {
     public static Stargate stargate;
     public static LanguageLoader languageLoader;
 
-    public static int maxGatesEachNetwork = 0;
-    public static boolean rememberDestination = false;
-    public static boolean handleVehicles = true;
-    public static boolean sortNetworkDestinations = false;
-    public static boolean protectEntrance = false;
-    public static boolean enableBungee = true;
-    public static boolean verifyPortals = true;
-    private static boolean destroyExplosion = false;
     private String dataFolderPath;
+    private static StargateGateConfig stargateGateConfig;
+    private static EconomyConfig economyConfig;
 
-    public static ChatColor signColor;
     //Used for debug
     public static boolean debuggingEnabled = false;
     public static boolean permissionDebuggingEnabled = false;
@@ -92,7 +87,6 @@ public class Stargate extends JavaPlugin {
     private static String portalFolder;
     private static String gateFolder;
 
-    private static String defaultGateNetwork = "central";
     private static String languageName = "en";
 
     private FileConfiguration newConfig;
@@ -118,6 +112,24 @@ public class Stargate extends JavaPlugin {
     }
 
     /**
+     * Gets the object containing gate configuration values
+     *
+     * @return <p>The object containing gate configuration values</p>
+     */
+    public static StargateGateConfig getGateConfig() {
+        return stargateGateConfig;
+    }
+
+    /**
+     * Gets the object containing economy config values
+     *
+     * @return <p>The object containing economy config values</p>
+     */
+    public static EconomyConfig getEconomyConfig() {
+        return economyConfig;
+    }
+
+    /**
      * Gets the version of this plugin
      *
      * @return <p>This plugin's version</p>
@@ -132,7 +144,7 @@ public class Stargate extends JavaPlugin {
      * @return <p>True if portals should be destroyed</p>
      */
     public static boolean destroyedByExplosion() {
-        return destroyExplosion;
+        return stargateGateConfig.destroyedByExplosion();
     }
 
     /**
@@ -215,7 +227,7 @@ public class Stargate extends JavaPlugin {
      * @param text  <p>The new text on the sign</p>
      */
     public static void setLine(Sign sign, int index, String text) {
-        sign.setLine(index, Stargate.signColor + text);
+        sign.setLine(index, stargateGateConfig.getSignColor() + text);
     }
 
     /**
@@ -246,7 +258,7 @@ public class Stargate extends JavaPlugin {
      * @return <p>The default network</p>
      */
     public static String getDefaultNetwork() {
-        return defaultGateNetwork;
+        return stargateGateConfig.getDefaultPortalNetwork();
     }
 
     /**
@@ -324,7 +336,7 @@ public class Stargate extends JavaPlugin {
         this.loadConfig();
 
         //Enable the required channels for Bungee support
-        if (enableBungee) {
+        if (stargateGateConfig.enableBungee()) {
             startStopBungeeListener(true);
         }
 
@@ -411,10 +423,10 @@ public class Stargate extends JavaPlugin {
         }
 
         //Gates
-        loadGateConfig();
+        stargateGateConfig = new StargateGateConfig(newConfig);
 
         //Economy
-        loadEconomyConfig();
+        economyConfig = new EconomyConfig(newConfig);
 
         this.saveConfig();
     }
@@ -454,59 +466,6 @@ public class Stargate extends JavaPlugin {
                 newConfig.set(key, null);
             }
         }
-    }
-
-    /**
-     * Loads all config values related to gates
-     */
-    private void loadGateConfig() {
-        String defaultNetwork = newConfig.getString("gates.defaultGateNetwork");
-        defaultGateNetwork = defaultNetwork != null ? defaultNetwork.trim() : null;
-        maxGatesEachNetwork = newConfig.getInt("gates.maxGatesEachNetwork");
-
-        //Functionality
-        handleVehicles = newConfig.getBoolean("gates.functionality.handleVehicles");
-        enableBungee = newConfig.getBoolean("gates.functionality.enableBungee");
-
-        //Integrity
-        protectEntrance = newConfig.getBoolean("gates.integrity.protectEntrance");
-        verifyPortals = newConfig.getBoolean("gates.integrity.verifyPortals");
-        destroyExplosion = newConfig.getBoolean("gates.integrity.destroyedByExplosion");
-
-        //Cosmetic
-        sortNetworkDestinations = newConfig.getBoolean("gates.cosmetic.sortNetworkDestinations");
-        rememberDestination = newConfig.getBoolean("gates.cosmetic.rememberDestination");
-        loadSignColor(newConfig.getString("gates.cosmetic.signColor"));
-    }
-
-    /**
-     * Loads all config values related to economy
-     */
-    private void loadEconomyConfig() {
-        EconomyHandler.economyEnabled = newConfig.getBoolean("economy.useEconomy");
-        EconomyHandler.setDefaultCreateCost(newConfig.getInt("economy.createCost"));
-        EconomyHandler.setDefaultDestroyCost(newConfig.getInt("economy.destroyCost"));
-        EconomyHandler.setDefaultUseCost(newConfig.getInt("economy.useCost"));
-        EconomyHandler.toOwner = newConfig.getBoolean("economy.toOwner");
-        EconomyHandler.chargeFreeDestination = newConfig.getBoolean("economy.chargeFreeDestination");
-        EconomyHandler.freeGatesGreen = newConfig.getBoolean("economy.freeGatesGreen");
-    }
-
-    /**
-     * Loads the correct sign color given a sign color string
-     *
-     * @param signColor <p>A string representing a sign color</p>
-     */
-    private void loadSignColor(String signColor) {
-        if (signColor != null) {
-            try {
-                Stargate.signColor = ChatColor.valueOf(signColor.toUpperCase());
-                return;
-            } catch (IllegalArgumentException | NullPointerException ignored) {
-            }
-        }
-        logger.warning(getString("prefix") + "You have specified an invalid color in your config.yml. Defaulting to BLACK");
-        Stargate.signColor = ChatColor.BLACK;
     }
 
     /**
@@ -577,7 +536,7 @@ public class Stargate extends JavaPlugin {
         GateHandler.clearGates();
 
         // Store the old Bungee enabled value
-        boolean oldEnableBungee = enableBungee;
+        boolean oldEnableBungee = stargateGateConfig.enableBungee();
         // Reload data
         loadConfig();
         loadGates();
@@ -589,8 +548,8 @@ public class Stargate extends JavaPlugin {
         reloadEconomy();
 
         //Enable or disable the required channels for Bungee support
-        if (oldEnableBungee != enableBungee) {
-            startStopBungeeListener(enableBungee);
+        if (oldEnableBungee != stargateGateConfig.enableBungee()) {
+            startStopBungeeListener(stargateGateConfig.enableBungee());
         }
 
         sendErrorMessage(sender, "stargate reloaded");
@@ -600,11 +559,11 @@ public class Stargate extends JavaPlugin {
      * Reloads economy by enabling or disabling it as necessary
      */
     private void reloadEconomy() {
-        if (EconomyHandler.economyEnabled && EconomyHandler.economy == null) {
+        EconomyConfig economyConfig = Stargate.getEconomyConfig();
+        if (economyConfig.isEconomyEnabled() && economyConfig.getEconomy() == null) {
             setupVaultEconomy();
-        } else if (!EconomyHandler.economyEnabled) {
-            EconomyHandler.vault = null;
-            EconomyHandler.economy = null;
+        } else if (!economyConfig.isEconomyEnabled()) {
+            economyConfig.disableEconomy();
         }
     }
 
@@ -612,8 +571,9 @@ public class Stargate extends JavaPlugin {
      * Loads economy from Vault
      */
     private void setupVaultEconomy() {
-        if (EconomyHandler.setupEconomy(pluginManager) && EconomyHandler.economy != null) {
-            String vaultVersion = EconomyHandler.vault.getDescription().getVersion();
+        EconomyConfig economyConfig = Stargate.getEconomyConfig();
+        if (economyConfig.setupEconomy(pluginManager) && economyConfig.getEconomy() != null) {
+            String vaultVersion = economyConfig.getVault().getDescription().getVersion();
             logger.info(Stargate.getString("prefix") + Stargate.replaceVars(
                     Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
         }

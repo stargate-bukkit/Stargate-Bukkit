@@ -277,7 +277,7 @@ economy:
   destroyCost - The cost to destroy a stargate (Can be negative for a "refund"
   useCost - The cost to use a stargate
   toOwner - Whether the money from gate-use goes to the owner or nobody
-  chargeFreeDestination - Enable to allow free travel from any gate to a free gate
+  chargeFreeDestination - Enable to make players pay for teleportation even if the destination is free
   freeGatesGreen - Enable to make gates that won't cost the player money show up as green
 debugging:
   debug - Whether to show massive debug output

@@ -30,9 +30,9 @@ public final class EconomyHelper {
         //Try to charge the player. Paying the portal owner is only possible if a UUID is available
         if (entrancePortal.getGate().getToOwner()) {
             UUID ownerUUID = entrancePortal.getOwner().getUUID();
-            success = ownerUUID != null && EconomyHandler.chargePlayerIfNecessary(player, ownerUUID, cost);
+            success = ownerUUID != null && Stargate.getEconomyConfig().chargePlayerIfNecessary(player, ownerUUID, cost);
         } else {
-            success = EconomyHandler.chargePlayerIfNecessary(player, cost);
+            success = Stargate.getEconomyConfig().chargePlayerIfNecessary(player, cost);
         }
 
         //Send the insufficient funds message
@@ -124,7 +124,7 @@ public final class EconomyHelper {
      */
     private static String replaceVars(String message, String portalName, int cost) {
         return Stargate.replaceVars(message, new String[]{"%cost%", "%portal%"},
-                new String[]{EconomyHandler.format(cost), portalName});
+                new String[]{Stargate.getEconomyConfig().format(cost), portalName});
     }
 
 }

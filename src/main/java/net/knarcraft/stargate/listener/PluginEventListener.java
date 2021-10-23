@@ -1,7 +1,6 @@
 package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
-import net.knarcraft.stargate.utility.EconomyHandler;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -33,8 +32,8 @@ public class PluginEventListener implements Listener {
      */
     @EventHandler
     public void onPluginEnable(PluginEnableEvent ignored) {
-        if (EconomyHandler.setupEconomy(stargate.getServer().getPluginManager())) {
-            String vaultVersion = EconomyHandler.vault.getDescription().getVersion();
+        if (Stargate.getEconomyConfig().setupEconomy(stargate.getServer().getPluginManager())) {
+            String vaultVersion = Stargate.getEconomyConfig().getVault().getDescription().getVersion();
             stargate.getLogger().info(Stargate.getString("prefix") +
                     Stargate.replaceVars(Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
         }
@@ -47,7 +46,7 @@ public class PluginEventListener implements Listener {
      */
     @EventHandler
     public void onPluginDisable(PluginDisableEvent event) {
-        if (event.getPlugin().equals(EconomyHandler.vault)) {
+        if (event.getPlugin().equals(Stargate.getEconomyConfig().getVault())) {
             stargate.getLogger().info(Stargate.getString("prefix") + "Vault plugin lost.");
         }
     }

@@ -42,7 +42,7 @@ public class PlayerEventListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!Stargate.enableBungee) {
+        if (!Stargate.getGateConfig().enableBungee()) {
             return;
         }
 
@@ -84,19 +84,34 @@ public class PlayerEventListener implements Listener {
         Portal entrancePortal = PortalHandler.getByEntrance(toLocation);
         Portal destination = entrancePortal.getPortalActivator().getDestination(player);
 
-        //Teleport the vehicle to the player
         Entity playerVehicle = player.getVehicle();
-        if (playerVehicle != null && !Stargate.handleVehicles) {
-            return;
+        //If the player is in a vehicle, but vehicle handling is disabled, just ignore the player
+        if (playerVehicle == null || Stargate.getGateConfig().handleVehicles()) {
+            teleportPlayer(playerVehicle, player, entrancePortal, destination, event);
         }
+    }
+
+    /**
+     * Teleports a player, also teleports the player's vehicle if it's a living entity
+     *
+     * @param playerVehicle  <p>The vehicle the player is currently sitting in</p>
+     * @param player         <p>The player which moved</p>
+     * @param entrancePortal <p>The entrance the player entered</p>
+     * @param destination    <p>The destination of the entrance portal</p>
+     * @param event          <p>The move event causing the teleportation to trigger</p>
+     */
+    private void teleportPlayer(Entity playerVehicle, Player player, Portal entrancePortal, Portal destination,
+                                PlayerMoveEvent event) {
         if (playerVehicle instanceof LivingEntity) {
             //Make sure any horses are properly tamed
             if (playerVehicle instanceof AbstractHorse horse && !horse.isTamed()) {
                 horse.setTamed(true);
                 horse.setOwner(player);
             }
+            //Teleport the player's vehicle
             new VehicleTeleporter(destination, (Vehicle) playerVehicle).teleport(entrancePortal);
         } else {
+            //Just teleport the player like normal
             new PlayerTeleporter(destination, player).teleport(entrancePortal, event);
         }
         Stargate.sendSuccessMessage(player, Stargate.getString("teleportMsg"));
@@ -302,7 +317,7 @@ public class PlayerEventListener implements Listener {
      */
     private boolean bungeeTeleport(Player player, Portal entrancePortal, PlayerMoveEvent event) {
         //Check if bungee is actually enabled
-        if (!Stargate.enableBungee) {
+        if (!Stargate.getGateConfig().enableBungee()) {
             Stargate.sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
             entrancePortal.getPortalOpener().closePortal(false);
             return false;
