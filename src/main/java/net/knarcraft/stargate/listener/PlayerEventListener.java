@@ -143,7 +143,7 @@ public class PlayerEventListener implements Listener {
         Portal destination = entrancePortal.getPortalActivator().getDestination(player);
 
         //Catch always open portals without a valid destination to prevent the user for being teleported and denied
-        if (destination == null) {
+        if (!entrancePortal.getOptions().isBungee() && destination == null) {
             return false;
         }
 
