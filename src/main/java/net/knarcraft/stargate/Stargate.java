@@ -60,10 +60,6 @@ public class Stargate extends JavaPlugin {
     public static final ConcurrentLinkedQueue<Portal> activePortalsQueue = new ConcurrentLinkedQueue<>();
     private static final Queue<ChunkUnloadRequest> chunkUnloadQueue = new PriorityQueue<>();
 
-    //Amount of seconds before deactivating/closing portals
-    private static final int activeTime = 10;
-    private static final int openTime = 10;
-
     private static Logger logger;
     public static Server server;
     public static Stargate stargate;
@@ -152,24 +148,6 @@ public class Stargate extends JavaPlugin {
      */
     public static boolean destroyedByExplosion() {
         return stargateGateConfig.destroyedByExplosion();
-    }
-
-    /**
-     * Gets the amount of seconds a portal should be open before automatically closing
-     *
-     * @return <p>The open time of a gate</p>
-     */
-    public static int getOpenTime() {
-        return openTime;
-    }
-
-    /**
-     * Gets the amount of seconds a portal should be active before automatically deactivating
-     *
-     * @return <p>The active time of a gate</p>
-     */
-    public static int getActiveTime() {
-        return activeTime;
     }
 
     /**

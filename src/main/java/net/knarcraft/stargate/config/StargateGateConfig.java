@@ -21,6 +21,8 @@ public final class StargateGateConfig {
     private boolean destroyExplosion = false;
     private ChatColor signColor;
     private String defaultGateNetwork = "central";
+    private static final int activeTime = 10;
+    private static final int openTime = 10;
 
     /**
      * Instantiates a new stargate config
@@ -29,6 +31,24 @@ public final class StargateGateConfig {
      */
     public StargateGateConfig(FileConfiguration newConfig) {
         loadGateConfig(newConfig);
+    }
+
+    /**
+     * Gets the amount of seconds a portal should be open before automatically closing
+     *
+     * @return <p>The open time of a gate</p>
+     */
+    public int getOpenTime() {
+        return openTime;
+    }
+
+    /**
+     * Gets the amount of seconds a portal should be active before automatically deactivating
+     *
+     * @return <p>The active time of a gate</p>
+     */
+    public int getActiveTime() {
+        return activeTime;
     }
 
     /**
