@@ -42,7 +42,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -78,8 +77,6 @@ public class Stargate extends JavaPlugin {
     public static boolean debuggingEnabled = false;
     public static boolean permissionDebuggingEnabled = false;
 
-    //HashMap of player names for Bungee support
-    public static final Map<String, String> bungeeQueue = new HashMap<>();
     //World names that contain stargates
     public static final HashSet<String> managedWorlds = new HashSet<>();
 

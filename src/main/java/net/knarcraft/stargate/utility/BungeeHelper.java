@@ -11,6 +11,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class contains helpful functions to help with sending and receiving BungeeCord plugin messages
@@ -20,9 +22,24 @@ public final class BungeeHelper {
     private final static String bungeeSubChannel = "SGBungee";
     private final static String bungeeChannel = "BungeeCord";
     private final static String teleportMessageDelimiter = "#@#";
+    private final static Map<String, String> bungeeQueue = new HashMap<>();
 
     private BungeeHelper() {
 
+    }
+
+    /**
+     * Removes a player from the queue of players teleporting through BungeeCord
+     *
+     * <p>Whenever a BungeeCord teleportation message is received and the player is not currently connected to this
+     * server, it'll be added to this queue. Once the player joins this server, the player should be removed from the
+     * queue and teleported to the destination.</p>
+     *
+     * @param playerName <p>The name of the player to remove</p>
+     * @return <p>The name of the destination portal the player should be teleported to</p>
+     */
+    public static String removeFromQueue(String playerName) {
+        return bungeeQueue.remove(playerName.toLowerCase());
     }
 
     /**
@@ -123,7 +140,7 @@ public final class BungeeHelper {
         // Check if the player is online, if so, teleport, otherwise, queue
         Player player = Stargate.server.getPlayer(playerName);
         if (player == null) {
-            Stargate.bungeeQueue.put(playerName.toLowerCase(), destination);
+            bungeeQueue.put(playerName.toLowerCase(), destination);
         } else {
             Portal destinationPortal = PortalHandler.getBungeePortal(destination);
             // Specified an invalid gate. For now, we'll just let them connect at their current location
