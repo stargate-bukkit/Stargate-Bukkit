@@ -196,7 +196,7 @@ public class PortalCreator {
         }
 
         //Add button if the portal is not always on
-        if (!portalOptions.isAlwaysOn()) {
+        if (!portalOptions.isAlwaysOn() && !portalOptions.isBungee()) {
             generatePortalButton(portalLocation.getTopLeft(), portalLocation.getButtonVector(),
                     portalLocation.getButtonFacing());
         }
