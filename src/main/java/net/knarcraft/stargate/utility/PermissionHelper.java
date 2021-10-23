@@ -38,7 +38,7 @@ public final class PermissionHelper {
 
         //Invalid destination
         if ((destination == null) || (destination == portal)) {
-            Stargate.sendErrorMessage(player, Stargate.getString("invalidMsg"));
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("invalidMsg"));
             return;
         }
 
@@ -54,19 +54,19 @@ public final class PermissionHelper {
         //Gate that someone else is using -- Deny access
         if ((!portal.getOptions().isFixed()) && portal.getPortalActivator().isActive() &&
                 (portal.getActivePlayer() != player)) {
-            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
             return;
         }
 
         //Check if the player can use the private gate
         if (portal.getOptions().isPrivate() && !PermissionHelper.canPrivate(player, portal)) {
-            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
             return;
         }
 
         //Destination blocked
         if ((destination.isOpen()) && (!destination.getOptions().isAlwaysOn())) {
-            Stargate.sendErrorMessage(player, Stargate.getString("blockMsg"));
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("blockMsg"));
             return;
         }
 
@@ -390,7 +390,7 @@ public final class PermissionHelper {
 
         // Not open for this player
         if (!entrancePortal.getPortalOpener().isOpenFor(player)) {
-            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
             new PlayerTeleporter(entrancePortal, player).teleport(entrancePortal, event);
             return true;
         }
@@ -402,7 +402,7 @@ public final class PermissionHelper {
 
         //Player cannot access portal
         if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destination)) {
-            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
             new PlayerTeleporter(entrancePortal, player).teleport(entrancePortal, event);
             entrancePortal.getPortalOpener().closePortal(false);
             return true;

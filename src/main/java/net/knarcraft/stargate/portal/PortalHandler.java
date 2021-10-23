@@ -121,13 +121,13 @@ public class PortalHandler {
                                        String destinationName, String network) {
         if (portalOptions.get(PortalOption.BUNGEE)) {
             if (!PermissionHelper.hasPermission(player, "stargate.admin.bungee")) {
-                Stargate.sendErrorMessage(player, Stargate.getString("bungeeDeny"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("bungeeDeny"));
                 return false;
             } else if (!Stargate.getGateConfig().enableBungee()) {
-                Stargate.sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
                 return false;
             } else if (destinationName.isEmpty() || network.isEmpty()) {
-                Stargate.sendErrorMessage(player, Stargate.getString("bungeeEmpty"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("bungeeEmpty"));
                 return false;
             }
         }
@@ -188,7 +188,7 @@ public class PortalHandler {
             BlockLocation borderBlockLocation = topLeft.getRelativeLocation(borderVector, yaw);
             if (getByBlock(borderBlockLocation.getBlock()) != null) {
                 Stargate.debug("createPortal", "Gate conflicts with existing gate");
-                Stargate.sendErrorMessage(player, Stargate.getString("createConflict"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createConflict"));
                 return true;
             }
         }

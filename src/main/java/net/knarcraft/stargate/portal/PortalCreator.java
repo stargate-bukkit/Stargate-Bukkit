@@ -116,7 +116,7 @@ public class PortalCreator {
                     network = network.substring(0, 11);
                 }
                 Stargate.debug("createPortal", "Creating personal portal");
-                Stargate.sendErrorMessage(player, Stargate.getString("createPersonal"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createPersonal"));
             } else {
                 Stargate.debug("createPortal", "Player does not have access to network");
                 deny = true;
@@ -184,7 +184,7 @@ public class PortalCreator {
 
         //Tell the user why it was denied from creating the portal
         if (stargateCreateEvent.getDeny()) {
-            Stargate.sendErrorMessage(player, stargateCreateEvent.getDenyReason());
+            Stargate.getMessageSender().sendErrorMessage(player, stargateCreateEvent.getDenyReason());
             return null;
         }
 
@@ -226,7 +226,7 @@ public class PortalCreator {
         // Name & Network can be changed in the event, so do these checks here.
         if (portal.getName().length() < 1 || portal.getName().length() > 11) {
             Stargate.debug("createPortal", "Name length error");
-            Stargate.sendErrorMessage(player, Stargate.getString("createNameLength"));
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createNameLength"));
             return false;
         }
 
@@ -234,13 +234,13 @@ public class PortalCreator {
         if (portal.getOptions().isBungee()) {
             if (PortalHandler.getBungeePortals().get(portal.getName().toLowerCase()) != null) {
                 Stargate.debug("createPortal::Bungee", "Gate name duplicate");
-                Stargate.sendErrorMessage(player, Stargate.getString("createExists"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createExists"));
                 return false;
             }
         } else {
             if (PortalHandler.getByName(portal.getName(), portal.getNetwork()) != null) {
                 Stargate.debug("createPortal", "Gate name duplicate");
-                Stargate.sendErrorMessage(player, Stargate.getString("createExists"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createExists"));
                 return false;
             }
 
@@ -248,7 +248,7 @@ public class PortalCreator {
             List<String> networkList = PortalHandler.getAllPortalNetworks().get(portal.getNetwork().toLowerCase());
             int maxGates = Stargate.getGateConfig().maxGatesEachNetwork();
             if (maxGates > 0 && networkList != null && networkList.size() >= maxGates) {
-                Stargate.sendErrorMessage(player, Stargate.getString("createFull"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createFull"));
                 return false;
             }
         }

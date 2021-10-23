@@ -72,7 +72,7 @@ public final class EconomyHelper {
     public static void sendObtainMessage(String portalName, Player portalOwner, int earnings) {
         String obtainedMsg = Stargate.getString("ecoObtain");
         obtainedMsg = replaceVars(obtainedMsg, portalName, earnings);
-        Stargate.sendSuccessMessage(portalOwner, obtainedMsg);
+        Stargate.getMessageSender().sendSuccessMessage(portalOwner, obtainedMsg);
     }
 
     /**
@@ -85,7 +85,7 @@ public final class EconomyHelper {
     public static void sendDeductMessage(String portalName, Player player, int cost) {
         String deductMsg = Stargate.getString("ecoDeduct");
         deductMsg = replaceVars(deductMsg, portalName, cost);
-        Stargate.sendSuccessMessage(player, deductMsg);
+        Stargate.getMessageSender().sendSuccessMessage(player, deductMsg);
     }
 
     /**
@@ -98,7 +98,7 @@ public final class EconomyHelper {
     public static void sendInsufficientFundsMessage(String portalName, Player player, int cost) {
         String inFundMsg = Stargate.getString("ecoInFunds");
         inFundMsg = replaceVars(inFundMsg, portalName, cost);
-        Stargate.sendErrorMessage(player, inFundMsg);
+        Stargate.getMessageSender().sendErrorMessage(player, inFundMsg);
     }
 
     /**
@@ -111,7 +111,7 @@ public final class EconomyHelper {
     public static void sendRefundMessage(String portalName, Player player, int cost) {
         String refundMsg = Stargate.getString("ecoRefund");
         refundMsg = replaceVars(refundMsg, portalName, -cost);
-        Stargate.sendSuccessMessage(player, refundMsg);
+        Stargate.getMessageSender().sendSuccessMessage(player, refundMsg);
     }
 
     /**

@@ -4,6 +4,7 @@ import net.knarcraft.stargate.command.CommandStarGate;
 import net.knarcraft.stargate.command.StarGateTabCompleter;
 import net.knarcraft.stargate.config.EconomyConfig;
 import net.knarcraft.stargate.config.LanguageLoader;
+import net.knarcraft.stargate.config.MessageSender;
 import net.knarcraft.stargate.config.StargateGateConfig;
 import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.container.ChunkUnloadRequest;
@@ -26,7 +27,6 @@ import net.knarcraft.stargate.thread.StarGateThread;
 import net.knarcraft.stargate.utility.FileHelper;
 import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
@@ -88,6 +88,7 @@ public class Stargate extends JavaPlugin {
 
     private FileConfiguration newConfig;
     private PluginManager pluginManager;
+    private static MessageSender messageSender;
 
     /**
      * Empty constructor necessary for Spigot
@@ -106,6 +107,15 @@ public class Stargate extends JavaPlugin {
      */
     protected Stargate(JavaPluginLoader loader, PluginDescriptionFile descriptionFile, File dataFolder, File file) {
         super(loader, descriptionFile, dataFolder, file);
+    }
+
+    /**
+     * Gets the sender for sending messages to players
+     *
+     * @return <p>The sender for sending messages to players</p>
+     */
+    public static MessageSender getMessageSender() {
+        return messageSender;
     }
 
     /**
@@ -173,46 +183,6 @@ public class Stargate extends JavaPlugin {
             logger.info("[stargate::" + route + "] " + message);
         } else {
             logger.log(Level.FINEST, "[stargate::" + route + "] " + message);
-        }
-    }
-
-    /**
-     * Sends an error message to a player
-     *
-     * @param player  <p>The player to send the message to</p>
-     * @param message <p>The message to send</p>
-     */
-    public static void sendErrorMessage(CommandSender player, String message) {
-        sendMessage(player, message, true);
-    }
-
-    /**
-     * Sends a success message to a player
-     *
-     * @param player  <p>The player to send the message to</p>
-     * @param message <p>The message to send</p>
-     */
-    public static void sendSuccessMessage(CommandSender player, String message) {
-        sendMessage(player, message, false);
-    }
-
-    /**
-     * Sends a message to a player
-     *
-     * @param player  <p>The player to send the message to</p>
-     * @param message <p>The message to send</p>
-     * @param error   <p>Whether the message sent is an error</p>
-     */
-    private static void sendMessage(CommandSender player, String message, boolean error) {
-        if (message.isEmpty()) {
-            return;
-        }
-        //Replace color codes with green? What's the deal with the dollar sign?
-        message = message.replaceAll("(&([a-f0-9]))", "\u00A7$2");
-        if (error) {
-            player.sendMessage(ChatColor.RED + Stargate.getString("prefix") + ChatColor.WHITE + message);
-        } else {
-            player.sendMessage(ChatColor.GREEN + Stargate.getString("prefix") + ChatColor.WHITE + message);
         }
     }
 
@@ -339,6 +309,7 @@ public class Stargate extends JavaPlugin {
 
         // It is important to load languages here, as they are used during reloadGates()
         languageLoader = new LanguageLoader(languageFolder, Stargate.languageName);
+        messageSender = new MessageSender(languageLoader);
         if (debuggingEnabled) {
             languageLoader.debug();
         }
@@ -549,7 +520,7 @@ public class Stargate extends JavaPlugin {
             startStopBungeeListener(stargateGateConfig.enableBungee());
         }
 
-        sendErrorMessage(sender, "stargate reloaded");
+        messageSender.sendErrorMessage(sender, "stargate reloaded");
     }
 
     /**

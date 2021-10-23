@@ -114,7 +114,7 @@ public class PlayerEventListener implements Listener {
             //Just teleport the player like normal
             new PlayerTeleporter(destination, player).teleport(entrancePortal, event);
         }
-        Stargate.sendSuccessMessage(player, Stargate.getString("teleportMsg"));
+        Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("teleportMsg"));
         entrancePortal.getPortalOpener().closePortal(false);
     }
 
@@ -155,7 +155,7 @@ public class PlayerEventListener implements Listener {
         //Decide if the user should be teleported to another bungee server
         if (entrancePortal.getOptions().isBungee()) {
             if (bungeeTeleport(player, entrancePortal, event)) {
-                Stargate.sendSuccessMessage(player, Stargate.getString("teleportMsg"));
+                Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("teleportMsg"));
             }
             return false;
         }
@@ -236,7 +236,7 @@ public class PlayerEventListener implements Listener {
         boolean deny = PermissionHelper.cannotAccessNetwork(player, portal.getNetwork());
 
         if (PermissionHelper.cannotAccessPortal(player, portal, deny)) {
-            Stargate.sendErrorMessage(player, Stargate.getString("denyMsg"));
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
             return true;
         }
         return false;
@@ -318,7 +318,7 @@ public class PlayerEventListener implements Listener {
     private boolean bungeeTeleport(Player player, Portal entrancePortal, PlayerMoveEvent event) {
         //Check if bungee is actually enabled
         if (!Stargate.getGateConfig().enableBungee()) {
-            Stargate.sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
             entrancePortal.getPortalOpener().closePortal(false);
             return false;
         }

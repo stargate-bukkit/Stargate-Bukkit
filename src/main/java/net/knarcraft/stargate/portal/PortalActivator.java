@@ -250,7 +250,7 @@ public class PortalActivator {
 
         //If no destinations are available, just tell the player and quit
         if (destinations.size() == 0) {
-            Stargate.sendErrorMessage(player, Stargate.getString("destEmpty"));
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("destEmpty"));
             return;
         }
 
