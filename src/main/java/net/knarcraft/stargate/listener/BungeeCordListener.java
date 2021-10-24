@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
  * This listener teleports a user if a valid message is received from BungeeCord
  *
  * <p>Specifically, if a string starts with SGBungee encoded to be readable by readUTF followed by
- * PlayerName#@#DestinationPortal is received on the BungeeCord channel, this listener will teleport the player to the
- * destination portal.</p>
+ * [PlayerUUID]delimiter[DestinationPortal] is received on the BungeeCord channel, this listener will teleport the
+ * player to the destination portal.</p>
  */
 public class BungeeCordListener implements PluginMessageListener {
 
@@ -24,7 +24,7 @@ public class BungeeCordListener implements PluginMessageListener {
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {
         //Ignore plugin messages if some other plugin message is received
-        if (!channel.equals("BungeeCord")) {
+        if (!channel.equals(BungeeHelper.getBungeeChannel())) {
             return;
         }
 

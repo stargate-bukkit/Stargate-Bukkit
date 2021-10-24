@@ -110,7 +110,7 @@ public class PortalCreator {
         //Check if the player can create portals on this network. If not, create a personal portal
         if (!portalOptions.get(PortalOption.BUNGEE) && !PermissionHelper.canCreateNetworkGate(player, network)) {
             Stargate.debug("createPortal", "Player doesn't have create permissions on network. Trying personal");
-            if (PermissionHelper.canCreatePersonalGate(player)) {
+            if (PermissionHelper.canCreatePersonalPortal(player)) {
                 network = player.getName();
                 if (network.length() > 11) {
                     network = network.substring(0, 11);
@@ -127,7 +127,7 @@ public class PortalCreator {
         //Check if the player can create this gate layout
         String gateName = gate.getFilename();
         gateName = gateName.substring(0, gateName.indexOf('.'));
-        if (!deny && !PermissionHelper.canCreateGate(player, gateName)) {
+        if (!deny && !PermissionHelper.canCreatePortal(player, gateName)) {
             Stargate.debug("createPortal", "Player does not have access to gate layout");
             deny = true;
             denyMessage = Stargate.getString("createGateDeny");

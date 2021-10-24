@@ -59,7 +59,7 @@ public final class PermissionHelper {
         }
 
         //Check if the player can use the private gate
-        if (portal.getOptions().isPrivate() && !PermissionHelper.canPrivate(player, portal)) {
+        if (portal.getOptions().isPrivate() && !PermissionHelper.canUsePrivatePortal(player, portal)) {
             Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
             return;
         }
@@ -121,15 +121,16 @@ public final class PermissionHelper {
      *
      * <p>This is the same as player.hasPermission(), but this function allows for printing permission debugging info.</p>
      *
-     * @param player <p>The player to check</p>
-     * @param perm   <p>The permission to check</p>
+     * @param player     <p>The player to check</p>
+     * @param permission <p>The permission to check</p>
      * @return <p>True if the player has the permission</p>
      */
-    public static boolean hasPermission(Player player, String perm) {
+    public static boolean hasPermission(Player player, String permission) {
         if (Stargate.getStargateConfig().isPermissionDebuggingEnabled()) {
-            Stargate.debug("hasPerm::SuperPerm(" + player.getName() + ")", perm + " => " + player.hasPermission(perm));
+            Stargate.debug("hasPerm::SuperPerm(" + player.getName() + ")", permission + " => " +
+                    player.hasPermission(permission));
         }
-        return player.hasPermission(perm);
+        return player.hasPermission(permission);
     }
 
     /**
@@ -264,7 +265,7 @@ public final class PermissionHelper {
      * @param portal <p>The private portal used</p>
      * @return <p>True if the player is allowed to use the portal</p>
      */
-    public static boolean canPrivate(Player player, Portal portal) {
+    public static boolean canUsePrivatePortal(Player player, Portal portal) {
         //Check if the player is the owner of the gate
         if (portal.isOwner(player)) {
             return true;
@@ -308,7 +309,6 @@ public final class PermissionHelper {
         }
         //Check for this specific network
         return hasPermission(player, "stargate.create.network." + network);
-
     }
 
     /**
@@ -317,7 +317,7 @@ public final class PermissionHelper {
      * @param player <p>The player trying to create the new gate</p>
      * @return <p>True if the player is allowed</p>
      */
-    public static boolean canCreatePersonalGate(Player player) {
+    public static boolean canCreatePersonalPortal(Player player) {
         //Check for general create
         if (hasPermission(player, "stargate.create")) {
             return true;
@@ -333,7 +333,7 @@ public final class PermissionHelper {
      * @param gate   <p>The gate type of the new portal</p>
      * @return <p>True if the player is allowed to create a portal with the given gate layout</p>
      */
-    public static boolean canCreateGate(Player player, String gate) {
+    public static boolean canCreatePortal(Player player, String gate) {
         //Check for general create
         if (hasPermission(player, "stargate.create")) {
             return true;
