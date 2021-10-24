@@ -189,7 +189,7 @@ public class Gate {
         Map<Character, Material> characterMaterialMap = new HashMap<>(this.characterMaterialMap);
         for (RelativeBlockVector borderVector : layout.getBorder()) {
             int rowIndex = borderVector.getRight();
-            int lineIndex = borderVector.getDepth();
+            int lineIndex = borderVector.getDown();
             Character key = layout.getLayout()[lineIndex][rowIndex];
 
             Material materialInLayout = characterMaterialMap.get(key);

@@ -27,22 +27,22 @@ public class BlockLocationTest {
 
         RelativeBlockVector relativeBlockVector = new RelativeBlockVector(2, 1, 3);
         BlockLocation relativeLocation1 = startLocation.getRelativeLocation(relativeBlockVector, 0);
-        //With yaw = 0, going right goes in the x direction, and distance goes in the z direction, while y is decremented
+        //With yaw = 0, going right goes in the x direction, and out goes in the z direction, while y is decremented
         BlockLocation targetLocation1 = new BlockLocation(world, 9, 2, 9);
         Assertions.assertEquals(targetLocation1, relativeLocation1);
 
         BlockLocation relativeLocation2 = startLocation.getRelativeLocation(relativeBlockVector, 90);
-        //With yaw = 90, going right goes in the z direction, and distance goes in the -x direction, while y is decremented
+        //With yaw = 90, going right goes in the z direction, and out goes in the -x direction, while y is decremented
         BlockLocation targetLocation2 = new BlockLocation(world, 4, 2, 8);
         Assertions.assertEquals(targetLocation2, relativeLocation2);
 
         BlockLocation relativeLocation3 = startLocation.getRelativeLocation(relativeBlockVector, 180);
-        //With yaw = 180, going right goes in the -x direction, and distance goes in the -z direction, while y is decremented
+        //With yaw = 180, going right goes in the -x direction, and out goes in the -z direction, while y is decremented
         BlockLocation targetLocation3 = new BlockLocation(world, 5, 2, 3);
         Assertions.assertEquals(targetLocation3, relativeLocation3);
 
         BlockLocation relativeLocation4 = startLocation.getRelativeLocation(relativeBlockVector, 270);
-        //With yaw = 270, going right goes in the -z direction, and distance goes in the x direction, while y is decremented
+        //With yaw = 270, going right goes in the -z direction, and out goes in the x direction, while y is decremented
         BlockLocation targetLocation4 = new BlockLocation(world, 10, 2, 4);
         Assertions.assertEquals(targetLocation4, relativeLocation4);
     }

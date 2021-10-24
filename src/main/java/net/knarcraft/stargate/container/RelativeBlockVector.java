@@ -5,28 +5,33 @@ package net.knarcraft.stargate.container;
  *
  * <p>A relative block vector stores a vector relative to some origin. The origin in this plugin is usually the
  * top-left block of a gate (top-left when looking at the side with the sign). The right is therefore the distance
- * from the top-left corner towards the top-right corner. Depth is the distance from the top-left corner to the
- * bottom-left corner. Distance is the distance outward from the gate.</p>
+ * from the top-left corner towards the top-right corner. Down is the distance from the top-left corner towards the
+ * bottom-left corner. Out is the distance outward from the gate.</p>
  */
 public class RelativeBlockVector {
 
     private final int right;
-    private final int depth;
-    private final int distance;
+    private final int down;
+    private final int out;
 
-    public enum Property {RIGHT, DEPTH, DISTANCE}
+    public enum Property {RIGHT, DOWN, OUT}
 
     /**
      * Instantiates a new relative block vector
      *
-     * @param right    <p>The distance to the right relative to the origin</p>
-     * @param depth    <p>The distance downward relative to the origin</p>
-     * @param distance <p>The distance outward relative to the origin</p>
+     * <p>Relative block vectors start from a top-left corner. A yaw is used to orient a relative block vector in the
+     * "real world".
+     * In terms of a gate layout, the origin is 0,0. Right is towards the end of the line. Down is to the
+     * next line. Out is towards the observer.</p>
+     *
+     * @param right <p>The distance rightward relative to the origin</p>
+     * @param down  <p>The distance downward relative to the origin</p>
+     * @param out   <p>The distance outward relative to the origin</p>
      */
-    public RelativeBlockVector(int right, int depth, int distance) {
+    public RelativeBlockVector(int right, int down, int out) {
         this.right = right;
-        this.depth = depth;
-        this.distance = distance;
+        this.down = down;
+        this.out = out;
     }
 
     /**
@@ -39,11 +44,11 @@ public class RelativeBlockVector {
     public RelativeBlockVector addToVector(Property propertyToAddTo, int valueToAdd) {
         switch (propertyToAddTo) {
             case RIGHT:
-                return new RelativeBlockVector(this.right + valueToAdd, this.depth, this.distance);
-            case DEPTH:
-                return new RelativeBlockVector(this.right, this.depth + valueToAdd, this.distance);
-            case DISTANCE:
-                return new RelativeBlockVector(this.right, this.depth, this.distance + valueToAdd);
+                return new RelativeBlockVector(this.right + valueToAdd, this.down, this.out);
+            case DOWN:
+                return new RelativeBlockVector(this.right, this.down + valueToAdd, this.out);
+            case OUT:
+                return new RelativeBlockVector(this.right, this.down, this.out + valueToAdd);
             default:
                 throw new IllegalArgumentException("Invalid relative block vector property given");
         }
@@ -55,7 +60,7 @@ public class RelativeBlockVector {
      * @return <p>This vector, but inverted</p>
      */
     public RelativeBlockVector invert() {
-        return new RelativeBlockVector(-this.right, -this.depth, -this.distance);
+        return new RelativeBlockVector(-this.right, -this.down, -this.out);
     }
 
     /**
@@ -72,8 +77,8 @@ public class RelativeBlockVector {
      *
      * @return <p>The distance downward relative to the origin</p>
      */
-    public int getDepth() {
-        return depth;
+    public int getDown() {
+        return down;
     }
 
     /**
@@ -81,13 +86,13 @@ public class RelativeBlockVector {
      *
      * @return <p>The distance outward relative to the origin</p>
      */
-    public int getDistance() {
-        return distance;
+    public int getOut() {
+        return out;
     }
 
     @Override
     public String toString() {
-        return String.format("(right = %d, depth = %d, distance = %d)", right, depth, distance);
+        return String.format("(right = %d, down = %d, out = %d)", right, down, out);
     }
 
     @Override
@@ -99,8 +104,8 @@ public class RelativeBlockVector {
             return false;
         }
         RelativeBlockVector otherVector = (RelativeBlockVector) other;
-        return this.right == otherVector.right && this.depth == otherVector.depth &&
-                this.distance == otherVector.distance;
+        return this.right == otherVector.right && this.down == otherVector.down &&
+                this.out == otherVector.out;
     }
 
 }

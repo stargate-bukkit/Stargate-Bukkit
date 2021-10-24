@@ -12,8 +12,8 @@ public class RelativeBlockVectorTest {
     public void getTest() {
         RelativeBlockVector relativeBlockVector = new RelativeBlockVector(56, 44, 23);
         assertEquals(56, relativeBlockVector.getRight());
-        assertEquals(44, relativeBlockVector.getDepth());
-        assertEquals(23, relativeBlockVector.getDistance());
+        assertEquals(44, relativeBlockVector.getDown());
+        assertEquals(23, relativeBlockVector.getOut());
     }
 
     @Test

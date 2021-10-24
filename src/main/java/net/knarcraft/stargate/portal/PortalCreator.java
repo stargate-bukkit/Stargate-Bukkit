@@ -276,7 +276,7 @@ public class PortalCreator {
                                       BlockFace buttonFacing) {
         //Go one block outwards to find the button's location rather than the control block's location
         BlockLocation button = topLeft.getRelativeLocation(buttonVector.addToVector(
-                RelativeBlockVector.Property.DISTANCE, 1), portal.getYaw());
+                RelativeBlockVector.Property.OUT, 1), portal.getYaw());
 
         Directional buttonData = (Directional) Bukkit.createBlockData(portal.getGate().getPortalButton());
         buttonData.setFacing(buttonFacing);

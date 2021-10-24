@@ -8,21 +8,21 @@ public class RelativeBlockVectorTest {
     @Test
     public void addToVectorTest() {
         int right = 5;
-        int depth = 5;
-        int distance = 3;
+        int down = 5;
+        int out = 3;
 
-        RelativeBlockVector relativeBlockVector = new RelativeBlockVector(right, depth, distance);
+        RelativeBlockVector relativeBlockVector = new RelativeBlockVector(right, down, out);
 
         for (int i = 0; i < 1000; i++) {
             int randomValue = getRandomNumber();
             RelativeBlockVector newVector = relativeBlockVector.addToVector(RelativeBlockVector.Property.RIGHT, randomValue);
-            Assertions.assertEquals(new RelativeBlockVector(right + randomValue, depth, distance), newVector);
+            Assertions.assertEquals(new RelativeBlockVector(right + randomValue, down, out), newVector);
 
-            newVector = relativeBlockVector.addToVector(RelativeBlockVector.Property.DISTANCE, randomValue);
-            Assertions.assertEquals(new RelativeBlockVector(right, depth, distance + randomValue), newVector);
+            newVector = relativeBlockVector.addToVector(RelativeBlockVector.Property.OUT, randomValue);
+            Assertions.assertEquals(new RelativeBlockVector(right, down, out + randomValue), newVector);
 
-            newVector = relativeBlockVector.addToVector(RelativeBlockVector.Property.DEPTH, randomValue);
-            Assertions.assertEquals(new RelativeBlockVector(right, depth + randomValue, distance), newVector);
+            newVector = relativeBlockVector.addToVector(RelativeBlockVector.Property.DOWN, randomValue);
+            Assertions.assertEquals(new RelativeBlockVector(right, down + randomValue, out), newVector);
         }
     }
 

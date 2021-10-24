@@ -146,7 +146,7 @@ public abstract class Teleporter {
         RelativeBlockVector openingEdge = relativeExit;
         do {
             RelativeBlockVector possibleOpening = new RelativeBlockVector(openingEdge.getRight() + direction,
-                    openingEdge.getDepth(), openingEdge.getDistance());
+                    openingEdge.getDown(), openingEdge.getOut());
             if (portal.getGate().getLayout().getExits().contains(possibleOpening)) {
                 openingEdge = possibleOpening;
             } else {

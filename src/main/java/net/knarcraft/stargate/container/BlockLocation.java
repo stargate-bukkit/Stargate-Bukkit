@@ -86,29 +86,29 @@ public class BlockLocation extends Location {
      * Gets a location relative to this block location
      *
      * @param relativeVector <p>The relative block vector describing the relative location</p>
-     * @param yaw            <p>The yaw pointing outwards from a portal (in the relative vector's distance direction)</p>
+     * @param yaw            <p>The yaw pointing outwards from a portal (in the relative vector's out direction)</p>
      * @return <p>A location relative to this location</p>
      */
     public BlockLocation getRelativeLocation(RelativeBlockVector relativeVector, double yaw) {
         Vector realVector = DirectionHelper.getCoordinateVectorFromRelativeVector(relativeVector.getRight(),
-                relativeVector.getDepth(), relativeVector.getDistance(), yaw);
+                relativeVector.getDown(), relativeVector.getOut(), yaw);
         return makeRelativeBlockLocation(realVector.getBlockX(), realVector.getBlockY(), realVector.getBlockZ());
     }
 
     /**
      * Makes a location relative to the current location according to given parameters
      *
-     * <p>The distance goes in the direction of the yaw. Right goes in the direction of (yaw - 90) degrees.
+     * <p>Out goes in the direction of the yaw. Right goes in the direction of (yaw - 90) degrees.
      * Depth goes downwards following the -y direction.</p>
      *
      * @param right     <p>The amount of blocks to go right when looking towards a portal</p>
-     * @param depth     <p>The amount of blocks to go downwards when looking towards a portal</p>
-     * @param distance  <p>The amount of blocks to go outwards when looking towards a portal</p>
+     * @param down      <p>The amount of blocks to go downwards when looking towards a portal</p>
+     * @param out       <p>The amount of blocks to go outwards when looking towards a portal</p>
      * @param portalYaw <p>The yaw when looking out from the portal</p>
      * @return A new location relative to this block location
      */
-    public Location getRelativeLocation(double right, double depth, double distance, float portalYaw) {
-        Vector realVector = DirectionHelper.getCoordinateVectorFromRelativeVector(right, depth, distance, portalYaw);
+    public Location getRelativeLocation(double right, double down, double out, float portalYaw) {
+        Vector realVector = DirectionHelper.getCoordinateVectorFromRelativeVector(right, down, out, portalYaw);
         return makeRelativeLocation(0.5 + realVector.getBlockX(), realVector.getBlockY(),
                 0.5 + realVector.getBlockZ(), portalYaw);
     }
