@@ -73,12 +73,15 @@ stargate.admin -- Op
 
 ## Building a gate:
 
-This is the default gate configuration. See the Custom Gate Layout section on how to change this.
+There are currently three default gate configurations. They all use the same structure as a standard nether portal. One
+gate is using obsidian blocks, one is using end bricks and the last uses sea lanterns. Only the sea lantern one can be
+used underwater. You must put a sign on one of the blocks in the middle of the layout to activate the portal (see next
+section). See the Custom Gate Layout section to learn how to add custom gates.
 
 ```
     OO 
-   O  O - These are Obsidian blocks. You need 10.
-   O  O - Place a sign on either of these two blocks of Obsidian.
+   O  O - These are Obsidian blocks, End bricks or Sea Lanterns. You need 10.
+   O  O - Place a sign on either of these two middle blocks.
    O  O
     OO
 ```
