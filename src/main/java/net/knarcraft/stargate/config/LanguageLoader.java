@@ -25,30 +25,27 @@ public final class LanguageLoader {
     /**
      * Instantiates a new language loader
      *
+     * <p>This will only load the backup language. Set the chosen language and reload afterwards.</p>
+     *
      * @param languageFolder <p>The folder containing the language files</p>
-     * @param chosenLanguage <p>The chosen plugin language</p>
      */
-    public LanguageLoader(String languageFolder, String chosenLanguage) {
-        this.chosenLanguage = chosenLanguage;
+    public LanguageLoader(String languageFolder) {
         this.languageFolder = languageFolder;
-
-        File tmp = new File(languageFolder, chosenLanguage + ".txt");
-        if (!tmp.exists()) {
-            if (tmp.getParentFile().mkdirs() && Stargate.getStargateConfig().isDebuggingEnabled()) {
-                Stargate.getConsoleLogger().info("[stargate] Created language folder");
+        File testFile = new File(languageFolder, "en.txt");
+        if (!testFile.exists()) {
+            if (testFile.getParentFile().mkdirs()) {
+                Stargate.debug("LanguageLoader", "Created language folder");
             }
         }
-        updateLanguage(chosenLanguage);
 
-        loadedStringTranslations = load(chosenLanguage);
         //Load english as backup language in case the chosen language is missing newly added text strings
         InputStream inputStream = FileHelper.getInputStreamForInternalFile("/lang/en.txt");
         if (inputStream != null) {
             loadedBackupStrings = load("en", inputStream);
         } else {
             loadedBackupStrings = null;
-            Stargate.getConsoleLogger().severe("[stargate] Error loading backup language. There may be missing " +
-                    "text in-game");
+            Stargate.getConsoleLogger().severe("[stargate] Error loading backup language. " +
+                    "There may be missing text in-game");
         }
     }
 
@@ -56,7 +53,7 @@ public final class LanguageLoader {
      * Reloads languages from the files on disk
      */
     public void reload() {
-        // This extracts/updates the language as needed
+        //Extracts/Updates the language as needed
         updateLanguage(chosenLanguage);
         loadedStringTranslations = load(chosenLanguage);
     }
@@ -72,7 +69,21 @@ public final class LanguageLoader {
         if (loadedStringTranslations != null) {
             value = loadedStringTranslations.get(name);
         }
-        if (value == null && loadedBackupStrings != null) {
+        if (value == null) {
+            value = getBackupString(name);
+        }
+        return value;
+    }
+
+    /**
+     * Gets the string to display given its name/key
+     *
+     * @param name <p>The name/key of the string to display</p>
+     * @return <p>The string in the backup language (English)</p>
+     */
+    public String getBackupString(String name) {
+        String value = null;
+        if (loadedBackupStrings != null) {
             value = loadedBackupStrings.get(name);
         }
         if (value == null) {
@@ -96,17 +107,13 @@ public final class LanguageLoader {
      * @param language <p>The language to update</p>
      */
     private void updateLanguage(String language) {
-        // Load the current language file
-
         Map<String, String> currentLanguageValues = load(language);
 
         InputStream inputStream = getClass().getResourceAsStream("/lang/" + language + ".txt");
         if (inputStream == null) {
-            Stargate.getConsoleLogger().info("[stargate] The language " + language + " is not available. Falling " +
-                    "back to english, You can add a custom language by creating a new text file in the lang directory.");
-            if (Stargate.getStargateConfig().isDebuggingEnabled()) {
-                Stargate.getConsoleLogger().info("[stargate] Unable to load /lang/" + language + ".txt");
-            }
+            Stargate.logInfo(String.format("The language %s is not available. Falling back to english, You can add a " +
+                    "custom language by creating a new text file in the lang directory.", language));
+            Stargate.debug("LanguageLoader::updateLanguage", String.format("Unable to load /lang/%s.txt", language));
             return;
         }
 
@@ -134,7 +141,7 @@ public final class LanguageLoader {
         //If currentLanguageValues is null; the chosen language has not been used before
         if (currentLanguageValues == null) {
             updateLanguageFile(language, internalLanguageValues, null);
-            Stargate.getConsoleLogger().info("[stargate] Language (" + language + ") has been loaded");
+            Stargate.logInfo(String.format("Language (%s) has been loaded", language));
             return;
         }
 
@@ -155,8 +162,7 @@ public final class LanguageLoader {
             //Update the file itself
             if (updateNecessary) {
                 updateLanguageFile(language, newLanguageValues, currentLanguageValues);
-                Stargate.getConsoleLogger().info("[stargate] Your language file (" + language +
-                        ".txt) has been updated");
+                Stargate.logInfo(String.format("Your language file (%s.txt) has been updated", language));
             }
         }
     }
@@ -218,7 +224,7 @@ public final class LanguageLoader {
             strings = FileHelper.readKeyValuePairs(bufferedReader);
         } catch (Exception e) {
             if (Stargate.getStargateConfig().isDebuggingEnabled()) {
-                Stargate.getConsoleLogger().info("[stargate] Unable to load language " + lang);
+                Stargate.getConsoleLogger().info("[Stargate] Unable to load language " + lang);
             }
             return null;
         }
@@ -229,15 +235,17 @@ public final class LanguageLoader {
      * Prints debug output to the console for checking loaded language strings/translations
      */
     public void debug() {
-        Set<String> keys = loadedStringTranslations.keySet();
-        for (String key : keys) {
-            Stargate.debug("LanguageLoader::Debug::loadedStringTranslations", key + " => " +
-                    loadedStringTranslations.get(key));
+        if (loadedStringTranslations != null) {
+            Set<String> keys = loadedStringTranslations.keySet();
+            for (String key : keys) {
+                Stargate.debug("LanguageLoader::Debug::loadedStringTranslations", key + " => " +
+                        loadedStringTranslations.get(key));
+            }
         }
         if (loadedBackupStrings == null) {
             return;
         }
-        keys = loadedBackupStrings.keySet();
+        Set<String> keys = loadedBackupStrings.keySet();
         for (String key : keys) {
             Stargate.debug("LanguageLoader::Debug::loadedBackupStrings", key + " => " +
                     loadedBackupStrings.get(key));

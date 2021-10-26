@@ -120,10 +120,47 @@ public class Stargate extends JavaPlugin {
      */
     public static void debug(String route, String message) {
         if (Stargate.stargateConfig.isDebuggingEnabled()) {
-            logger.info("[stargate::" + route + "] " + message);
+            logger.info("[Stargate::" + route + "] " + message);
         } else {
-            logger.log(Level.FINEST, "[stargate::" + route + "] " + message);
+            logger.log(Level.FINEST, "[Stargate::" + route + "] " + message);
         }
+    }
+
+    /**
+     * Logs an info message to the console
+     *
+     * @param message <p>The message to log</p>
+     */
+    public static void logInfo(String message) {
+        logger.info(Stargate.getBackupString("prefix") + message);
+    }
+
+    /**
+     * Logs a severe error message to the console
+     *
+     * @param message <p>The message to log</p>
+     */
+    public static void logSevere(String message) {
+        log(Level.SEVERE, message);
+    }
+
+    /**
+     * Logs a warning message to the console
+     *
+     * @param message <p>The message to log</p>
+     */
+    public static void logWarning(String message) {
+        log(Level.WARNING, message);
+    }
+
+    /**
+     * Logs a message to the console
+     *
+     * @param severity <p>The severity of the event triggering the message</p>
+     * @param message  <p>The message to log</p>
+     */
+    private static void log(Level severity, String message) {
+        logger.log(severity, Stargate.getBackupString("prefix") + message);
     }
 
     /**
@@ -167,6 +204,18 @@ public class Stargate extends JavaPlugin {
      */
     public static String getString(String name) {
         return stargateConfig.getLanguageLoader().getString(name);
+    }
+
+    /**
+     * Gets a backup string given its string key
+     *
+     * <p>The name/key is the string before the equals sign in the language files</p>
+     *
+     * @param name <p>The name/key of the string to get</p>
+     * @return <p>The full string in the backup language (English)</p>
+     */
+    public static String getBackupString(String name) {
+        return stargateConfig.getLanguageLoader().getBackupString(name);
     }
 
     /**

@@ -138,8 +138,7 @@ public class VehicleTeleporter extends Teleporter {
                                            Vector newVelocity) {
         World vehicleWorld = exit.getWorld();
         if (vehicleWorld == null) {
-            Stargate.getConsoleLogger().warning(Stargate.getString("prefix") +
-                    "Unable to get the world to teleport the vehicle to");
+            Stargate.logWarning("Unable to get the world to teleport the vehicle to");
             return;
         }
         //Spawn a new vehicle

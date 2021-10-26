@@ -4,8 +4,6 @@ import net.knarcraft.stargate.Stargate;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import static net.knarcraft.stargate.Stargate.getString;
-
 /**
  * The Stargate gate config keeps track of all global config values related to gates
  */
@@ -181,8 +179,7 @@ public final class StargateGateConfig {
             } catch (IllegalArgumentException | NullPointerException ignored) {
             }
         }
-        Stargate.getConsoleLogger().warning(getString("prefix") +
-                "You have specified an invalid color in your config.yml. Defaulting to BLACK");
+        Stargate.logWarning("You have specified an invalid color in your config.yml. Defaulting to BLACK");
         this.signColor = ChatColor.BLACK;
     }
 

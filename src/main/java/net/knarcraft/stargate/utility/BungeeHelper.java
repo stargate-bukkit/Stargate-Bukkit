@@ -80,8 +80,7 @@ public final class BungeeHelper {
             //Send the plugin message
             player.sendPluginMessage(Stargate.stargate, bungeeChannel, byteArrayOutputStream.toByteArray());
         } catch (IOException ex) {
-            Stargate.getConsoleLogger().severe(Stargate.getString("prefix") + "Error sending BungeeCord " +
-                    "teleport packet");
+            Stargate.logSevere("Error sending BungeeCord teleport packet");
             ex.printStackTrace();
             return false;
         }
@@ -107,8 +106,7 @@ public final class BungeeHelper {
             //Send the plugin message
             player.sendPluginMessage(Stargate.stargate, bungeeChannel, byteArrayOutputStream.toByteArray());
         } catch (IOException ex) {
-            Stargate.getConsoleLogger().severe(Stargate.getString("prefix") +
-                    "Error sending BungeeCord connect packet");
+            Stargate.logSevere("Error sending BungeeCord connect packet");
             ex.printStackTrace();
             return false;
         }
@@ -122,7 +120,6 @@ public final class BungeeHelper {
      * @return <p>The message contained in the byte array, or null on failure</p>
      */
     public static String readPluginMessage(byte[] message) {
-        // Get data from message
         byte[] data;
         try {
             DataInputStream dataInputStream = new DataInputStream(new ByteArrayInputStream(message));
@@ -139,8 +136,7 @@ public final class BungeeHelper {
             //Read the message to the prepared array
             dataInputStream.readFully(data);
         } catch (IOException ex) {
-            Stargate.getConsoleLogger().severe(Stargate.getString("prefix") +
-                    "Error receiving BungeeCord message");
+            Stargate.logSevere("Error receiving BungeeCord message");
             ex.printStackTrace();
             return null;
         }
@@ -166,8 +162,7 @@ public final class BungeeHelper {
             Portal destinationPortal = PortalHandler.getBungeePortal(destination);
             //If teleporting to an invalid portal, let the server decide where the player arrives
             if (destinationPortal == null) {
-                Stargate.getConsoleLogger().info(Stargate.getString("prefix") + "Bungee gate " +
-                        destination + " does not exist");
+                Stargate.logInfo(String.format("Bungee portal %s does not exist", destination));
                 return;
             }
             new PlayerTeleporter(destinationPortal, player).teleport(destinationPortal, null);

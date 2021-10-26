@@ -6,6 +6,7 @@ invalidMsg=Ugyldig Destinasjon
 blockMsg=Destinasjon Blokkert
 destEmpty=Destinasjonslisten Er Tom
 denyMsg=Tilgang Avslått
+reloaded=Stjerneport Ble Lastet Inn På Nytt
 
 ecoDeduct=Fratrekk %cost%
 ecoRefund=Refundert %cost%

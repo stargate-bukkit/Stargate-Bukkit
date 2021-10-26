@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
-import java.util.logging.Level;
 
 /**
  * Helper class for saving and loading portal save files
@@ -54,8 +53,7 @@ public final class PortalFileHelper {
 
             bufferedWriter.close();
         } catch (Exception e) {
-            Stargate.getConsoleLogger().log(Level.SEVERE, "Exception while writing stargates to " +
-                    saveFileLocation + ": " + e);
+            Stargate.logSevere(String.format("Exception while writing stargates to %s: %s", saveFileLocation, e));
         }
     }
 
@@ -133,8 +131,7 @@ public final class PortalFileHelper {
         if (database.exists()) {
             return loadPortals(world, database);
         } else {
-            Stargate.getConsoleLogger().info(Stargate.getString("prefix") + "{" + world.getName() +
-                    "} No stargates for world ");
+            Stargate.logInfo(String.format("{%s} No stargates for world ", world.getName()));
         }
         return false;
     }
@@ -160,8 +157,8 @@ public final class PortalFileHelper {
             doPostLoadTasks(world);
             return true;
         } catch (Exception e) {
-            Stargate.getConsoleLogger().log(Level.SEVERE, "Exception while reading stargates from " +
-                    database.getName() + ": " + lineIndex);
+            Stargate.logSevere(String.format("Exception while reading stargates from %s: %d", database.getName(),
+                    lineIndex));
             e.printStackTrace();
         }
         return false;
@@ -185,7 +182,7 @@ public final class PortalFileHelper {
         //Check if the min. required portal data is present
         String[] portalData = line.split(":");
         if (portalData.length < 8) {
-            Stargate.getConsoleLogger().info(Stargate.getString("prefix") + "Invalid line - " + lineIndex);
+            Stargate.logInfo(String.format("Invalid line - %s", lineIndex));
             return;
         }
 
@@ -208,8 +205,8 @@ public final class PortalFileHelper {
         int openCount = PortalHandler.openAlwaysOpenPortals();
 
         //Print info about loaded stargates so that admins can see if all stargates loaded
-        Stargate.getConsoleLogger().info(String.format("%s{%s} Loaded %d stargates with %d set as always-on",
-                Stargate.getString("prefix"), world.getName(), portalCount, openCount));
+        Stargate.logInfo(String.format("{%s} Loaded %d stargates with %d set as always-on", world.getName(),
+                portalCount, openCount));
 
         //Re-draw the signs in case a bug in the config prevented the portal from loading and has been fixed since
         for (Portal portal : PortalRegistry.getAllPortals()) {
@@ -272,8 +269,7 @@ public final class PortalFileHelper {
         sign.setLine(3, ChatColor.DARK_RED + Stargate.getString("signInvalidGate"));
         sign.update();
 
-        Stargate.getConsoleLogger().info(Stargate.getString("prefix") + "Gate layout on line " + lineIndex +
-                " does not exist [" + gateName + "]");
+        Stargate.logInfo(String.format("Gate layout on line %d does not exist [%s]", lineIndex, gateName));
     }
 
 }

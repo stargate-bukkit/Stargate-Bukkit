@@ -242,12 +242,10 @@ public final class EconomyConfig {
                 this.vault = vault;
                 return true;
             } else {
-                Stargate.getConsoleLogger().info(Stargate.getString("prefix") +
-                        Stargate.getString("ecoLoadError"));
+                Stargate.logInfo(Stargate.getString("ecoLoadError"));
             }
         } else {
-            Stargate.getConsoleLogger().info(Stargate.getString("prefix") +
-                    Stargate.getString("vaultLoadError"));
+            Stargate.logInfo(Stargate.getString("vaultLoadError"));
         }
         economyEnabled = false;
         return false;

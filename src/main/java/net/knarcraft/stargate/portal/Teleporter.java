@@ -18,7 +18,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * The portal teleporter takes care of common teleportation logic
@@ -80,8 +79,8 @@ public abstract class Teleporter {
                 }
             }
         } else {
-            Stargate.getConsoleLogger().log(Level.WARNING, Stargate.getString("prefix") +
-                    "Missing destination point in .gate file " + portal.getGate().getFilename());
+            Stargate.logWarning(String.format("Missing destination point in .gate file %s",
+                    portal.getGate().getFilename()));
         }
 
         return adjustExitLocation(traveller, exitLocation);
@@ -180,8 +179,7 @@ public abstract class Teleporter {
             exitLocation.setPitch(traveller.getPitch());
             return exitLocation;
         } else {
-            Stargate.getConsoleLogger().log(Level.WARNING, Stargate.getString("prefix") +
-                    "Unable to generate exit location");
+            Stargate.logWarning("Unable to generate exit location");
         }
         return traveller;
     }

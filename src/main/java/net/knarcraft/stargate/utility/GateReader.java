@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.logging.Level;
 
 /**
  * Helper class for reading gate files
@@ -54,8 +53,8 @@ public final class GateReader {
                     }
                 }
             }
-        } catch (Exception ex) {
-            Stargate.getConsoleLogger().log(Level.SEVERE, "Could not load Gate " + fileName + " - " + ex.getMessage());
+        } catch (Exception exception) {
+            Stargate.logSevere(String.format("Could not load Gate %s - %s", fileName, exception.getMessage()));
             return -1;
         } finally {
             if (scanner != null) {
@@ -90,8 +89,8 @@ public final class GateReader {
         for (Character symbol : line.toCharArray()) {
             //Refuse read gate designs with unknown characters
             if (symbol.equals('?') || (!characterMaterialMap.containsKey(symbol))) {
-                Stargate.getConsoleLogger().log(Level.SEVERE, "Could not load Gate " + fileName +
-                        " - Unknown symbol '" + symbol + "' in diagram");
+                Stargate.logSevere(String.format("Could not load Gate %s - Unknown symbol '%s' in diagram", fileName,
+                        symbol));
                 return -1;
             }
             //Add the read character to the row
@@ -148,8 +147,8 @@ public final class GateReader {
             try {
                 return Integer.parseInt(config.get(key));
             } catch (NumberFormatException ex) {
-                Stargate.getConsoleLogger().log(Level.WARNING, String.format("%s reading %s: %s is not numeric",
-                        ex.getClass().getName(), fileName, key));
+                Stargate.logWarning(String.format("%s reading %s: %s is not numeric", ex.getClass().getName(),
+                        fileName, key));
             }
         }
 
@@ -172,8 +171,7 @@ public final class GateReader {
             if (material != null) {
                 return material;
             } else {
-                Stargate.getConsoleLogger().log(Level.WARNING, String.format("Error reading %s: %s is not a material",
-                        fileName, key));
+                Stargate.logWarning(String.format("Error reading %s: %s is not a material", fileName, key));
             }
         }
         return defaultMaterial;

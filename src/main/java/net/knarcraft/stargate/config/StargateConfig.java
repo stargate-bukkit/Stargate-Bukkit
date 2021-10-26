@@ -32,11 +32,10 @@ public final class StargateConfig {
 
     private StargateGateConfig stargateGateConfig;
     private MessageSender messageSender;
-    public LanguageLoader languageLoader;
+    public final LanguageLoader languageLoader;
     private EconomyConfig economyConfig;
     private final Logger logger;
 
-    private final String languageFolder;
     private final String dataFolderPath;
     private String gateFolder;
     private String portalFolder;
@@ -56,7 +55,7 @@ public final class StargateConfig {
         dataFolderPath = Stargate.stargate.getDataFolder().getPath().replaceAll("\\\\", "/");
         portalFolder = dataFolderPath + "/portals/";
         gateFolder = dataFolderPath + "/gates/";
-        languageFolder = dataFolderPath + "/lang/";
+        languageLoader = new LanguageLoader(dataFolderPath + "/lang/");
 
         this.loadConfig();
 
@@ -70,8 +69,10 @@ public final class StargateConfig {
      * Finish the config setup by loading languages, gates and portals, and loading economy if vault is loaded
      */
     public void finishSetup() {
-        //Load the translated strings before they're used by loadGates
-        languageLoader = new LanguageLoader(languageFolder, languageName);
+        //Set the chosen language and reload the language loader
+        languageLoader.setChosenLanguage(languageName);
+        languageLoader.reload();
+
         messageSender = new MessageSender(languageLoader);
         if (debuggingEnabled) {
             languageLoader.debug();
@@ -132,7 +133,7 @@ public final class StargateConfig {
             startStopBungeeListener(stargateGateConfig.enableBungee());
         }
 
-        messageSender.sendErrorMessage(sender, "stargate reloaded");
+        messageSender.sendErrorMessage(sender, languageLoader.getString("reloaded"));
     }
 
     /**
@@ -309,7 +310,7 @@ public final class StargateConfig {
      */
     public void loadGates() {
         GateHandler.loadGates(gateFolder);
-        logger.info(Stargate.getString("prefix") + "Loaded " + GateHandler.getGateCount() + " gate layouts");
+        Stargate.logInfo(String.format("Loaded %s gate layouts", GateHandler.getGateCount()));
     }
 
     /**
@@ -358,8 +359,7 @@ public final class StargateConfig {
         EconomyConfig economyConfig = getEconomyConfig();
         if (economyConfig.setupEconomy(Stargate.getPluginManager()) && economyConfig.getEconomy() != null) {
             String vaultVersion = economyConfig.getVault().getDescription().getVersion();
-            logger.info(Stargate.getString("prefix") + Stargate.replaceVars(
-                    Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
+            Stargate.logInfo(Stargate.replaceVars(Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
         }
     }
 

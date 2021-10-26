@@ -28,9 +28,13 @@ public final class EconomyHelper {
         boolean success;
 
         //Try to charge the player. Paying the portal owner is only possible if a UUID is available
-        if (entrancePortal.getGate().getToOwner()) {
-            UUID ownerUUID = entrancePortal.getOwner().getUUID();
-            success = ownerUUID != null && Stargate.getEconomyConfig().chargePlayerIfNecessary(player, ownerUUID, cost);
+        UUID ownerUUID = entrancePortal.getOwner().getUUID();
+        if (ownerUUID == null) {
+            Stargate.logWarning(String.format("The owner of the portal %s does not have a UUID and payment to owner " +
+                    "was therefore not possible. Make the owner re-create the portal to fix this.", entrancePortal));
+        }
+        if (entrancePortal.getGate().getToOwner() && ownerUUID != null) {
+            success = Stargate.getEconomyConfig().chargePlayerIfNecessary(player, ownerUUID, cost);
         } else {
             success = Stargate.getEconomyConfig().chargePlayerIfNecessary(player, cost);
         }

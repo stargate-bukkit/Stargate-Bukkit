@@ -30,10 +30,9 @@ public class PortalSignDrawer {
         Block signBlock = portal.getSignLocation().getBlock();
         BlockState state = signBlock.getState();
         if (!(state instanceof Sign sign)) {
-            Stargate.getConsoleLogger().warning(Stargate.getString("prefix") +
-                    "Sign block is not a Sign object");
-            Stargate.debug("Portal::drawSign", "Block: " + signBlock.getType() + " @ " +
-                    signBlock.getLocation());
+            Stargate.logWarning("Sign block is not a Sign object");
+            Stargate.debug("Portal::drawSign", String.format("Block: %s @ %s", signBlock.getType(),
+                    signBlock.getLocation()));
             return;
         }
 

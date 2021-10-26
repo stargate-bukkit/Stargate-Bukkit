@@ -1,11 +1,12 @@
 author=EpicKnarvik97
-prefix=[Stjerneport]
+prefix=[Stjerneport] 
 teleportMsg=Teleporterte
 destroyMsg=Port Øydelagd
 invalidMsg=Ugyldig Destinasjon
 blockMsg=Destinasjon Blokkert
 destEmpty=Destinasjonslista Er Tom
 denyMsg=Tilgang Avslått
+reloaded=Stjerneport Vart Lasta Inn På Nytt
 
 ecoDeduct=Fråtrekk %cost%
 ecoRefund=Refundert %cost%

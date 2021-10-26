@@ -10,7 +10,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * A gate describes the physical structure of a stargate
@@ -268,7 +267,7 @@ public class Gate {
 
             bufferedWriter.close();
         } catch (IOException ex) {
-            Stargate.getConsoleLogger().log(Level.SEVERE, "Could not save Gate " + filename + " - " + ex.getMessage());
+            Stargate.logSevere(String.format("Could not save Gate %s - %s", filename, ex.getMessage()));
         }
     }
 

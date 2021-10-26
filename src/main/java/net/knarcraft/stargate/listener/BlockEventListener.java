@@ -115,8 +115,7 @@ public class BlockEventListener implements Listener {
         if (!PermissionHelper.canDestroyPortal(player, portal)) {
             denyMessage = Stargate.getString("denyMsg");
             deny = true;
-            Stargate.getConsoleLogger().info(Stargate.getString("prefix") + player.getName() +
-                    " tried to destroy gate");
+            Stargate.logInfo(String.format("%s tried to destroy gate", player.getName()));
         }
 
         int cost = Stargate.getEconomyConfig().getDestroyCost(player, portal.getGate());

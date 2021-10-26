@@ -5,6 +5,7 @@ invalidMsg=Invalid Destination
 blockMsg=Destination Blocked
 destEmpty=Destination List Empty
 denyMsg=Access Denied
+reloaded=Stargate Reloaded
 
 ecoDeduct=Deducted %cost%
 ecoRefund=Refunded %cost%
