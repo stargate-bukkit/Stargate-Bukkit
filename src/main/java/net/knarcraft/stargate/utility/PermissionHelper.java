@@ -26,12 +26,12 @@ public final class PermissionHelper {
     public static void openPortal(Player player, Portal portal) {
         Portal destination = portal.getPortalActivator().getDestination();
 
-        //Always-open gate -- Do nothing
+        //Always-open portal -- Do nothing
         if (portal.getOptions().isAlwaysOn()) {
             return;
         }
 
-        //Random gate -- Do nothing
+        //Random portal -- Do nothing
         if (portal.getOptions().isRandom()) {
             return;
         }
@@ -42,16 +42,16 @@ public final class PermissionHelper {
             return;
         }
 
-        //Gate is already open
+        //Portal is already open
         if (portal.isOpen()) {
-            // Close if this player opened the gate
+            //Close if this player opened the portal
             if (portal.getActivePlayer() == player) {
                 portal.getPortalOpener().closePortal(false);
             }
             return;
         }
 
-        //Gate that someone else is using -- Deny access
+        //Portal is used by another player -- Deny access
         if ((!portal.getOptions().isFixed()) && portal.getPortalActivator().isActive() &&
                 (portal.getActivePlayer() != player)) {
             Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));

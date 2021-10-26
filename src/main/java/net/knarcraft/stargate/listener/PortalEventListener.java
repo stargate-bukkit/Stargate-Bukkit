@@ -60,6 +60,9 @@ public class PortalEventListener implements Listener {
         if (entity instanceof Player player && location.getBlock().getType() == Material.END_PORTAL && world != null &&
                 world.getEnvironment() == World.Environment.THE_END) {
             Portal portal = PortalHandler.getByAdjacentEntrance(location);
+            if (portal == null) {
+                return;
+            }
 
             //Remove any old player teleportations in case weird things happen
             playersFromTheEnd.removeIf((teleportation -> teleportation.getPlayer() == player));

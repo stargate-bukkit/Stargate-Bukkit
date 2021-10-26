@@ -146,7 +146,7 @@ public class PortalOpener {
      */
     public void closePortal(boolean force) {
         //No need to close a portal which is already closed
-        if (!isOpen) {
+        if (!isOpen()) {
             return;
         }
 

@@ -34,4 +34,4 @@ signDisconnected=Kopla frå
 bungeeDisabled=BungeeCord støtte er slått av.
 bungeeDeny=Du har ikkje løyve til å opprette BungeeCord portar.
 bungeeEmpty=BungeeCord portar treng bade ein destinasjon og eit nettverk.
-bungeeSign=Teleportar til
+bungeeSign=Teleporter til

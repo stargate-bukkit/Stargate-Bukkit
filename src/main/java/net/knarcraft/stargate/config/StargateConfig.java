@@ -1,10 +1,13 @@
 package net.knarcraft.stargate.config;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.listener.BungeeCordListener;
 import net.knarcraft.stargate.portal.GateHandler;
 import net.knarcraft.stargate.portal.Portal;
+import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.PortalRegistry;
+import net.knarcraft.stargate.thread.BlockChangeThread;
 import net.knarcraft.stargate.utility.FileHelper;
 import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.Bukkit;
@@ -121,7 +124,15 @@ public final class StargateConfig {
     public void reload(CommandSender sender) {
         //Unload all saved data
         unload();
-
+        
+        //Perform all block change requests to prevent mismatch if a gate's open-material changes. Changing the 
+        // closed-material still requires a restart.
+        BlockChangeRequest firstElement = Stargate.blockChangeRequestQueue.peek();
+        while (firstElement != null) {
+            BlockChangeThread.pollQueue();
+            firstElement = Stargate.blockChangeRequestQueue.peek();
+        }
+            
         //Store the old enable bungee state in case it changes
         boolean oldEnableBungee = stargateGateConfig.enableBungee();
 
@@ -145,7 +156,9 @@ public final class StargateConfig {
             activePortal.getPortalActivator().deactivate();
         }
         //Force all portals to close
-        closeAllPortals();
+        closeAllOpenPortals();
+        PortalHandler.closeAllPortals();
+        
         //Clear queues and lists
         activePortalsQueue.clear();
         openPortalsQueue.clear();
@@ -247,9 +260,9 @@ public final class StargateConfig {
     /**
      * Forces all open portals to close
      */
-    public void closeAllPortals() {
+    public void closeAllOpenPortals() {
         for (Portal openPortal : openPortalsQueue) {
-            openPortal.getPortalOpener().closePortal(true);
+            openPortal.getPortalOpener().closePortal(false);
         }
     }
 
