@@ -19,6 +19,7 @@ public final class MaterialHelper {
      * @return <p>True if the material is a wall coral</p>
      */
     public static boolean isWallCoral(Material material) {
+        //Unfortunately, there is no tag for dead wall corals, so they need to be checked manually
         return Tag.WALL_CORALS.isTagged(material) ||
                 material.equals(Material.DEAD_BRAIN_CORAL_WALL_FAN) ||
                 material.equals(Material.DEAD_BUBBLE_CORAL_WALL_FAN) ||
@@ -35,7 +36,7 @@ public final class MaterialHelper {
      */
     public static boolean isButtonCompatible(Material material) {
         return Tag.BUTTONS.isTagged(material) || isWallCoral(material) || Tag.SHULKER_BOXES.isTagged(material) ||
-                material == Material.CHEST;
+                material == Material.CHEST || material == Material.TRAPPED_CHEST || material == Material.ENDER_CHEST;
     }
 
 }
