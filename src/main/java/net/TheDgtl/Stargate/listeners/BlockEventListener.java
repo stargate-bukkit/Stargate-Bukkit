@@ -97,7 +97,7 @@ public class BlockEventListener implements Listener {
 		
 		if(network.endsWith("]") && network.startsWith("[")) {
 			network = network.substring(1, network.length()-1);
-			flags.add(PortalFlag.BUNGEE);
+			flags.add(PortalFlag.FANCY_INTERSERVER);
 		}
 		
 		if (!permMngr.canCreateInNetwork(network)) {
@@ -108,7 +108,7 @@ public class BlockEventListener implements Listener {
 			isPersonal = true;
 		}
 		try {
-			Stargate.factory.createNetwork(network, flags.contains(PortalFlag.BUNGEE), isPersonal);
+			Stargate.factory.createNetwork(network, flags.contains(PortalFlag.FANCY_INTERSERVER), isPersonal);
 		} catch (NameError e1) {
 			LangMsg msg= e1.getMsg();
 			if(msg != null) {
@@ -116,7 +116,7 @@ public class BlockEventListener implements Listener {
 				return;
 			}
 		}
-		Network selectedNet = Stargate.factory.getNetwork(network, flags.contains(PortalFlag.BUNGEE), isPersonal);
+		Network selectedNet = Stargate.factory.getNetwork(network, flags.contains(PortalFlag.FANCY_INTERSERVER), isPersonal);
 
 		try {
 			IPortal portal = Portal.createPortalFromSign(selectedNet, lines, block, flags);

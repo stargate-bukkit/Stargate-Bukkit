@@ -273,6 +273,8 @@ public abstract class Portal implements IPortal {
 	
 	public static IPortal createPortalFromSign(Network net, String[] lines, Block block, EnumSet<PortalFlag> flags)
 			throws NameError, NoFormatFound, GateConflict {
+		if(flags.contains(PortalFlag.BUNGEE))
+			return new BungeePortal(net,lines[0],lines[1],lines[2],block,flags);
 		if (flags.contains(PortalFlag.RANDOM))
 			return new RandomPortal(net, lines[0], block, flags);
 		if ((lines[1] == null) || lines[1].isBlank())
