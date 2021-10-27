@@ -115,4 +115,11 @@ public class StargateAPI {
 	public void forceConnect(IPortal target, IPortal destination) {
 		target.setOverrideDesti(destination);
 	}
+
+
+	public class InterFacePortal{
+		private IPortal portal;
+	}
+	
+	
 }
