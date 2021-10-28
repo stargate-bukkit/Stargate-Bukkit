@@ -19,12 +19,14 @@ version of Stargate compliant with Spigot 1.17, even if it means changing the en
 # Permissions
 
 ```
-stargate.use -- Allow use of all gates linking to any world in any network (Override ALL network/world permissions. Set to false to use network/world specific permissions)  
-  stargate.world -- Allow use of gates linking to any world  
-    stargate.world.{world} -- Allow use of gates with a destination in {world}. Set to false to disallow use.  
-  stargate.network -- Allow use of gates on all networks  
-    stargate.network.{network} -- Allow use of all gates in {network}. Set to false to disallow use.  
-
+stargate.use -- Allow use of all Stargates linking to any world in any network (Override ALL network/world permissions. Set to false to use network/world specific permissions)  
+  stargate.world -- Allow use of Stargates linking to any world  
+    stargate.world.{world} -- Allow use of Stargates with a destination in {world}. Set to false to disallow use.  
+  stargate.network -- Allow use of Stargates on all networks  
+    stargate.network.{network} -- Allow use of all Stargates in {network}. Set to false to disallow use.
+  stargate.server -- Allow use of Stargates going to all servers
+    stargate.server.{server} -- Allow usee of all Stargates going to {server}. Set to false to disallow use.
+    
 stargate.option -- Allow use of all options
   stargate.option.hidden -- Allow use of 'H'idden
   stargate.option.alwayson -- Allow use of 'A'lways-On
@@ -33,21 +35,21 @@ stargate.option -- Allow use of all options
   stargate.option.backwards -- Allow use of 'B'ackwards
   stargate.option.show -- Allow use of 'S'how
   stargate.option.nonetwork -- Allow use of 'N'oNetwork
-  stargate.option.random -- Allow use of 'Random' gates
+  stargate.option.random -- Allow use of 'Random' stargates
   
-stargate.create -- Allow creating gates on any network (Override all create permissions)
-  stargate.create.personal -- Allow creating gates on network {playername}
-  stargate.create.network -- Allow creating gates on any network
-    stargate.create.network.{networkname} -- Allow creating gates on network {networkname}. Set to false to disallow creation on {networkname}
-  stargate.create.gate -- Allow creation of any gate layout
-    stargate.create.gate.{gatefile} -- Allow creation of only {gatefile} gates
+stargate.create -- Allow creating Stargates on any network (Override all create permissions)
+  stargate.create.personal -- Allow creating Stargates on network {playername}
+  stargate.create.network -- Allow creating Stargates on any network
+    stargate.create.network.{networkname} -- Allow creating Stargates on network {networkname}. Set to false to disallow creation on {networkname}
+  stargate.create.gate -- Allow creation using any gate layout
+    stargate.create.gate.{gatefile} -- Allow creation using only {gatefile} gates
 
-stargate.destroy -- Allow destruction gates on any network (Orderride all destroy permissions)
-  stargate.destroy.personal -- Allow destruction of gates owned by user only
-  stargate.destroy.network -- Allow destruction of gates on any network
-    stargate.destroy.network.{networkname} -- Allow destruction of gates on network {networkname}. Set to false to disallow destruction of {networkname}
+stargate.destroy -- Allow destruction of Stargates on any network (Orderride all destroy permissions)
+  stargate.destroy.personal -- Allow destruction of Stargates owned by the player only
+  stargate.destroy.network -- Allow destruction of Stargates on any network
+    stargate.destroy.network.{networkname} -- Allow destruction of Stargates on network {networkname}. Set to false to disallow destruction of {networkname}
 
-stargate.free -- Allow free use/creation/destruction of gates
+stargate.free -- Allow free use/creation/destruction of Stargates
   stargate.free.use -- Allow free use of Stargates
   stargate.free.create -- Allow free creation of Stargates
   stargate.free.destroy -- Allow free destruction of Stargates
@@ -55,7 +57,8 @@ stargate.free -- Allow free use/creation/destruction of gates
 stargate.admin -- Allow all admin features (Hidden/Private only so far)
   stargate.admin.private -- Allow use of Private gates not owned by user
   stargate.admin.hidden -- Allow access to Hidden gates not ownerd by user
-  stargate.admin.reload -- Allow use of /sg reload
+  stargate.admin.bungee -- Allow the creation of BungeeCord stargates (U option)
+  stargate.admin.reload -- Allow use of the reload command
 ```
 
 ## Default Permissions
@@ -369,6 +372,10 @@ bungeeSign=Teleport to
 - Implements proper snowman snow blocking, and removes the "temporary" ignoreEntrances option
 - Adds a default gate using end stone bricks and end gateway for more default diversity
 - Makes portals using end portal blocks work as expected
+- Adds missing permissions to the readme
+- Adds missing permissions to plugin.yml and simplifies permission checks by specifying default values for child
+  permissions
+- Renames stargate.reload to stargate.admin.reload to maintain consistency
 
 #### \[Version 0.8.0.3] PseudoKnight fork
 

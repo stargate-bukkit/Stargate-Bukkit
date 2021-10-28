@@ -15,17 +15,23 @@ commands:
     usage: /<command> <reload/about> - Used to see stargate info or reload the plugin
 permissions:
   stargate.*:
-    description: Wildcard permission. Same as stargate.admin
-    default: op
+    description: Wildcard permission which gives all Stargate permissions
+    default: false
     children:
       stargate.admin: true
+      stargate.use: true
+      stargate.create: true
+      stargate.destroy: true
+      stargate.free: true
+      stargate.option: true
+      stargate.server: true
   stargate.reload:
     description: Allows reloading the plugin
     default: false
   stargate.use:
     description: Allow use of all stargates linking to any world in any network
     default: true
-    children: 
+    children:
       stargate.world: true
       stargate.network: true
       stargate.server: true
@@ -36,9 +42,9 @@ permissions:
     description: Allows use of stargates in any network
     default: false
   stargate.create:
-    description: Allow creating gates on any network
+    description: Allow creating stargates on any network using any gate type
     default: op
-    children: 
+    children:
       stargate.create.personal: true
       stargate.create.network: true
       stargate.create.gate: true
@@ -66,7 +72,7 @@ permissions:
   stargate.free:
     description: Allow free use/creation/destruction of stargates
     default: op
-    children: 
+    children:
       stargate.free.use: true
       stargate.free.create: true
       stargate.free.destroy: true
@@ -128,17 +134,10 @@ permissions:
     description: Allows the creation of a BungeeCord stargate going to any server
     default: false
   stargate.admin:
-    description: Allow all features and admin commands
+    description: Allow all admin features and commands (Hidden/Private bypass, BungeeCord, Reload)
     default: op
     children:
-      stargate.use: true
-      stargate.create: true
-      stargate.destroy: true
-      stargate.free: true
-      stargate.option: true
-      stargate.admin: true
-      stargate.reload: true
+      stargate.admin.reload: true
       stargate.admin.hidden: true
       stargate.admin.private: true
       stargate.admin.bungee: true
-      stargate.server: true
