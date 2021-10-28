@@ -15,7 +15,120 @@ commands:
     usage: /<command> <reload/about> - Used to see stargate info or reload the plugin
 permissions:
   stargate.*:
-    description: Wildcard permission
+    description: Wildcard permission. Same as stargate.admin
+    default: op
+    children:
+      stargate.admin: true
+  stargate.reload:
+    description: Allows reloading the plugin
+    default: false
+  stargate.use:
+    description: Allow use of all stargates linking to any world in any network
+    default: true
+    children: 
+      stargate.world: true
+      stargate.network: true
+      stargate.server: true
+  stargate.world:
+    description: Allow use of stargates in any world
+    default: false
+  stargate.network:
+    description: Allows use of stargates in any network
+    default: false
+  stargate.create:
+    description: Allow creating gates on any network
+    default: op
+    children: 
+      stargate.create.personal: true
+      stargate.create.network: true
+      stargate.create.gate: true
+  stargate.create.personal:
+    description: Allows the creation of a personal stargate if a player is missing permission for the given network
+    default: false
+  stargate.create.network:
+    description: Allows the creation of a stargate on any network
+    default: false
+  stargate.create.gate:
+    description: Allows the creation of a stargate using any gate type
+    default: false
+  stargate.destroy:
+    description: Allows the destruction of all stargates
+    default: op
+    children:
+      stargate.destroy.network: true
+      stargate.destroy.personal: true
+  stargate.destroy.network:
+    description: Allows the destruction of stargates on any network
+    default: false
+  stargate.destroy.personal:
+    description: Allows the destruction of any personal stargates the player has created
+    default: false
+  stargate.free:
+    description: Allow free use/creation/destruction of stargates
+    default: op
+    children: 
+      stargate.free.use: true
+      stargate.free.create: true
+      stargate.free.destroy: true
+  stargate.free.use:
+    description: Allows free usage of all stargates
+    default: false
+  stargate.free.create:
+    description: Allows creating stargates for free
+    default: false
+  stargate.free.destroy:
+    description: Allows destroying stargates for free
+    default: false
+  stargate.option:
+    description: Allows use of all options
+    default: op
+    children:
+      stargate.option.hidden: true
+      stargate.option.alwayson: true
+      stargate.option.private: true
+      stargate.option.free: true
+      stargate.option.backwards: true
+      stargate.option.show: true
+      stargate.option.nonetwork: true
+      stargate.option.random: true
+  stargate.option.hidden:
+    description: Allows the creation of a hidden stargate
+    default: false
+  stargate.option.alwayson:
+    description: Allows the creation of an always open stargate
+    default: false
+  stargate.option.private:
+    description: Allows the creation of a private stargate
+    default: false
+  stargate.option.free:
+    description: Allows the creation of a stargate which is free regardless of any set prices
+    default: false
+  stargate.option.backwards:
+    description: Allows the creation of a stargate where players will exit through the back
+    default: false
+  stargate.option.show:
+    description: Allows the creation of a stargate which is shown on the network, even if always on
+    default: false
+  stargate.option.nonetwork:
+    description: Allows the creation of a stargate with a hidden network name
+    default: false
+  stargate.option.random:
+    description: Allows the creation of a stargate with a random destination
+    default: false
+  stargate.admin.hidden:
+    description: Allows this player to see all hidden stargates
+    default: false
+  stargate.admin.private:
+    description: Allows this player to use all private stargates
+    default: false
+  stargate.admin.bungee:
+    description: Allows the creation and destruction of a stargate between BungeeCord servers
+    default: false
+  stargate.server:
+    description: Allows the creation of a BungeeCord stargate going to any server
+    default: false
+  stargate.admin:
+    description: Allow all features and admin commands
     default: op
     children:
       stargate.use: true
@@ -25,26 +138,7 @@ permissions:
       stargate.option: true
       stargate.admin: true
       stargate.reload: true
-  stargate.reload:
-    description: Allows reloading the plugin
-    default: false
-  stargate.use:
-    description: Allow use of all gates linking to any world in any network
-    default: true
-  stargate.create:
-    description: Allow creating gates on any network
-    default: op
-  stargate.destroy:
-    description: Allow destruction gates on any network
-    default: op
-  stargate.free:
-    description: Allow free use/creation/destruction of gates
-    default: op
-  stargate.option:
-    description: Allow use of all options
-    default: op
-  stargate.admin:
-    description: Allow all admin features (Hidden/Private only so far)
-    default: op
-    children:
-      stargate.reload: true
+      stargate.admin.hidden: true
+      stargate.admin.private: true
+      stargate.admin.bungee: true
+      stargate.server: true

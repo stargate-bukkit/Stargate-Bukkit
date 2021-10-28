@@ -6,6 +6,7 @@ import be.seeseemelk.mockbukkit.WorldMock;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.RelativeBlockVector;
 import org.bukkit.Material;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +26,11 @@ public class GateLayoutTest {
         server.addWorld(new WorldMock(Material.DIRT, 5));
         MockBukkit.load(Stargate.class);
         layout = GateHandler.getGateByName("nethergate.gate").getLayout();
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        MockBukkit.unmock();
     }
 
     @Test

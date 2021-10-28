@@ -119,7 +119,7 @@ public class Stargate extends JavaPlugin {
      * @param message <p>A message describing what happened</p>
      */
     public static void debug(String route, String message) {
-        if (Stargate.stargateConfig.isDebuggingEnabled()) {
+        if (stargateConfig == null || stargateConfig.isDebuggingEnabled()) {
             logger.info("[Stargate::" + route + "] " + message);
         } else {
             logger.log(Level.FINEST, "[Stargate::" + route + "] " + message);
@@ -132,7 +132,7 @@ public class Stargate extends JavaPlugin {
      * @param message <p>The message to log</p>
      */
     public static void logInfo(String message) {
-        logger.info(Stargate.getBackupString("prefix") + message);
+        logger.info(getBackupString("prefix") + message);
     }
 
     /**
@@ -160,7 +160,7 @@ public class Stargate extends JavaPlugin {
      * @param message  <p>The message to log</p>
      */
     private static void log(Level severity, String message) {
-        logger.log(severity, Stargate.getBackupString("prefix") + message);
+        logger.log(severity, getBackupString("prefix") + message);
     }
 
     /**
@@ -280,8 +280,8 @@ public class Stargate extends JavaPlugin {
         pluginManager = getServer().getPluginManager();
         FileConfiguration newConfig = this.getConfig();
         logger = Logger.getLogger("Minecraft");
-        Stargate.server = getServer();
-        Stargate.stargate = this;
+        server = getServer();
+        stargate = this;
 
         stargateConfig = new StargateConfig(logger);
         stargateConfig.finishSetup();

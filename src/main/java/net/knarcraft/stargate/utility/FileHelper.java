@@ -25,10 +25,13 @@ public final class FileHelper {
     }
 
     /**
-     * Gets a buffered reader from a string pointing to a file
+     * Gets an input stream from a string pointing to an internal file
+     * 
+     * <p>This is used for getting an input stream for reading a file contained within the compiled .jar file. The file
+     * should be in the resources directory, and the file path should start with a forward slash ("/") character.</p>
      *
      * @param file <p>The file to read</p>
-     * @return <p>A buffered reader reading the file</p>
+     * @return <p>An input stream for the file</p>
      */
     public static InputStream getInputStreamForInternalFile(String file) {
         return FileHelper.class.getResourceAsStream(file);
@@ -47,10 +50,10 @@ public final class FileHelper {
     }
 
     /**
-     * Gets a buffered reader from an input stream
+     * Gets a buffered reader given an input stream
      *
      * @param inputStream <p>The input stream to read</p>
-     * @return <p>A buffered reader reading the stream</p>
+     * @return <p>A buffered reader reading the input stream</p>
      */
     public static BufferedReader getBufferedReaderFromInputStream(InputStream inputStream) {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
@@ -71,20 +74,19 @@ public final class FileHelper {
     }
 
     /**
-     * Reads key value pairs from an input stream
+     * Reads key/value pairs from an input stream
      *
      * @param bufferedReader <p>The buffered reader to read</p>
      * @return <p>A map containing the read pairs</p>
      * @throws IOException <p>If unable to read from the stream</p>
      */
     public static Map<String, String> readKeyValuePairs(BufferedReader bufferedReader) throws IOException {
-
         Map<String, String> readPairs = new HashMap<>();
 
         String line = bufferedReader.readLine();
         boolean firstLine = true;
         while (line != null) {
-            // Strip UTF BOM
+            //Strip UTF BOM from the first line
             if (firstLine) {
                 line = removeUTF8BOM(line);
                 firstLine = false;

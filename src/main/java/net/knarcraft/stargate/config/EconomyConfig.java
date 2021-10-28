@@ -292,8 +292,7 @@ public final class EconomyConfig {
             return 0;
         }
         //Player gets free gate use
-        if (PermissionHelper.hasPermission(player, "stargate.free") ||
-                PermissionHelper.hasPermission(player, "stargate.free.use")) {
+        if (PermissionHelper.hasPermission(player, "stargate.free.use")) {
             return 0;
         }
 
@@ -353,8 +352,7 @@ public final class EconomyConfig {
      * @return <p></p>
      */
     private boolean isFree(Player player, String permissionNode) {
-        return !useEconomy() || PermissionHelper.hasPermission(player, "stargate.free") ||
-                PermissionHelper.hasPermission(player, "stargate.free." + permissionNode);
+        return !useEconomy() || PermissionHelper.hasPermission(player, "stargate.free." + permissionNode);
     }
 
     /**

@@ -235,7 +235,7 @@ public class PlayerEventListener implements Listener {
     private boolean cannotAccessPortal(Player player, Portal portal) {
         boolean deny = PermissionHelper.cannotAccessNetwork(player, portal.getNetwork());
 
-        if (PermissionHelper.cannotAccessPortal(player, portal, deny)) {
+        if (PermissionHelper.portalAccessDenied(player, portal, deny)) {
             Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
             return true;
         }
@@ -255,7 +255,6 @@ public class PlayerEventListener implements Listener {
             return;
         }
 
-        // Implement right-click to toggle a stargate, gets around spawn protection problem.
         if (MaterialHelper.isButtonCompatible(block.getType())) {
             //Prevent a double click caused by a Spigot bug
             if (clickIsBug(event, block)) {
@@ -267,7 +266,7 @@ public class PlayerEventListener implements Listener {
                 return;
             }
 
-            // Cancel item use
+            //Prevent the held item from being placed
             event.setUseItemInHand(Event.Result.DENY);
             event.setUseInteractedBlock(Event.Result.DENY);
 

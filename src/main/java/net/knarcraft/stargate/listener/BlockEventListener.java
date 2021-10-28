@@ -185,7 +185,6 @@ public class BlockEventListener implements Listener {
         Block block = event.getBlock();
         Portal portal = null;
 
-        // Handle keeping portal material and buttons around
         if (block.getType() == Material.NETHER_PORTAL) {
             portal = PortalHandler.getByEntrance(block);
         } else if (MaterialHelper.isButtonCompatible(block.getType())) {

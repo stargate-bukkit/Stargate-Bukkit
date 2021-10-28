@@ -2,6 +2,7 @@ package net.knarcraft.stargate.utility;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import org.bukkit.Material;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,11 @@ public class MaterialHelperTest {
     @BeforeAll
     public static void setUp() {
         MockBukkit.mock();
+    }
+    
+    @AfterAll
+    public static void tearDown() {
+        MockBukkit.unmock();
     }
     
     @Test
