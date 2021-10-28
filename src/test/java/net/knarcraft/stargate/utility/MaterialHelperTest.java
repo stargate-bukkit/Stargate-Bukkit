@@ -13,12 +13,12 @@ public class MaterialHelperTest {
     public static void setUp() {
         MockBukkit.mock();
     }
-    
+
     @AfterAll
     public static void tearDown() {
         MockBukkit.unmock();
     }
-    
+
     @Test
     public void isWallCoralTest() {
         Assertions.assertTrue(MaterialHelper.isWallCoral(Material.DEAD_BRAIN_CORAL_WALL_FAN));
@@ -31,12 +31,12 @@ public class MaterialHelperTest {
         Assertions.assertTrue(MaterialHelper.isWallCoral(Material.HORN_CORAL_WALL_FAN));
         Assertions.assertTrue(MaterialHelper.isWallCoral(Material.DEAD_TUBE_CORAL_WALL_FAN));
         Assertions.assertTrue(MaterialHelper.isWallCoral(Material.TUBE_CORAL_WALL_FAN));
-        
+
         Assertions.assertFalse(MaterialHelper.isWallCoral(Material.DEAD_TUBE_CORAL));
         Assertions.assertFalse(MaterialHelper.isWallCoral(Material.TUBE_CORAL));
         Assertions.assertFalse(MaterialHelper.isWallCoral(Material.TUBE_CORAL_BLOCK));
     }
-    
+
     @Test
     public void isButtonCompatibleTest() {
         Assertions.assertTrue(MaterialHelper.isButtonCompatible(Material.DEAD_BRAIN_CORAL_WALL_FAN));
@@ -82,9 +82,9 @@ public class MaterialHelperTest {
         Assertions.assertTrue(MaterialHelper.isButtonCompatible(Material.CHEST));
         Assertions.assertTrue(MaterialHelper.isButtonCompatible(Material.ENDER_CHEST));
         Assertions.assertTrue(MaterialHelper.isButtonCompatible(Material.TRAPPED_CHEST));
-        
+
         //Chek something random to make sure isButtonCompatible is not just "return true;"
         Assertions.assertFalse(MaterialHelper.isButtonCompatible(Material.OAK_LOG));
     }
-    
+
 }

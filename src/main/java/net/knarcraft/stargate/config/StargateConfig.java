@@ -124,7 +124,7 @@ public final class StargateConfig {
     public void reload(CommandSender sender) {
         //Unload all saved data
         unload();
-        
+
         //Perform all block change requests to prevent mismatch if a gate's open-material changes. Changing the 
         // closed-material still requires a restart.
         BlockChangeRequest firstElement = Stargate.blockChangeRequestQueue.peek();
@@ -132,7 +132,7 @@ public final class StargateConfig {
             BlockChangeThread.pollQueue();
             firstElement = Stargate.blockChangeRequestQueue.peek();
         }
-            
+
         //Store the old enable bungee state in case it changes
         boolean oldEnableBungee = stargateGateConfig.enableBungee();
 
@@ -158,7 +158,7 @@ public final class StargateConfig {
         //Force all portals to close
         closeAllOpenPortals();
         PortalHandler.closeAllPortals();
-        
+
         //Clear queues and lists
         activePortalsQueue.clear();
         openPortalsQueue.clear();

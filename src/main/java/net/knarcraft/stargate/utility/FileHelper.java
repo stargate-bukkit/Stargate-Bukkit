@@ -26,7 +26,7 @@ public final class FileHelper {
 
     /**
      * Gets an input stream from a string pointing to an internal file
-     * 
+     *
      * <p>This is used for getting an input stream for reading a file contained within the compiled .jar file. The file
      * should be in the resources directory, and the file path should start with a forward slash ("/") character.</p>
      *

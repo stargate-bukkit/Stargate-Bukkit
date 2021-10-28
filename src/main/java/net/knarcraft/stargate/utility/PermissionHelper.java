@@ -47,7 +47,7 @@ public final class PermissionHelper {
         }
 
         //Deny access if another player has activated the portal, and it's still in use
-        if (!portal.getOptions().isFixed() && portal.getPortalActivator().isActive() && 
+        if (!portal.getOptions().isFixed() && portal.getPortalActivator().isActive() &&
                 portal.getActivePlayer() != player) {
             Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
             return;
@@ -95,7 +95,7 @@ public final class PermissionHelper {
      */
     public static boolean cannotAccessPortal(Player player, Portal entrancePortal, Portal destination) {
         boolean deny = false;
-        
+
         if (entrancePortal.getOptions().isBungee()) {
             if (!PermissionHelper.canAccessServer(player, entrancePortal.getNetwork())) {
                 //If the portal is a bungee portal, and the player cannot access the server, deny
@@ -135,7 +135,7 @@ public final class PermissionHelper {
     /**
      * Check if a player has been given a permission implicitly
      *
-     * <p>This should be run if a player has a parent permission to check for the child permission. It is assumed the 
+     * <p>This should be run if a player has a parent permission to check for the child permission. It is assumed the
      * player has the child permission unless it's explicitly set to false.</p>
      *
      * @param player     <p>The player to check</p>
@@ -150,7 +150,7 @@ public final class PermissionHelper {
             return true;
         }
         if (Stargate.getStargateConfig().isPermissionDebuggingEnabled()) {
-            Stargate.debug("hasPermissionImplicit::Permission", permission + " => " + 
+            Stargate.debug("hasPermissionImplicit::Permission", permission + " => " +
                     player.hasPermission(permission));
         }
         return player.hasPermission(permission);
@@ -338,12 +338,12 @@ public final class PermissionHelper {
      */
     public static boolean canDestroyPortal(Player player, Portal portal) {
         String network = portal.getNetwork();
-        
+
         //Use a special check for bungee portals
         if (portal.getOptions().isBungee()) {
             return hasPermission(player, "stargate.admin.bungee");
         }
-        
+
         //Check if the player is allowed to destroy on all networks
         if (hasPermission(player, "stargate.destroy.network")) {
             //Check if the network has been explicitly denied
