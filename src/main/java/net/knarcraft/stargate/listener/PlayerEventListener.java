@@ -331,15 +331,13 @@ public class PlayerEventListener implements Listener {
             return false;
         }
 
-        // Connect player to new server
+        //Send the connect-message to make the player change server
         if (!BungeeHelper.changeServer(player, entrancePortal)) {
             Stargate.debug("bungeeTeleport", "Unable to change server");
             return false;
         }
 
-        // Close portal if required (Should never be)
         Stargate.debug("bungeeTeleport", "Teleported player to another server");
-        entrancePortal.getPortalOpener().closePortal(false);
         return true;
     }
 
