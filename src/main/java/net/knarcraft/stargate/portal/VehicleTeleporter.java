@@ -88,7 +88,8 @@ public class VehicleTeleporter extends Teleporter {
         } else {
             //Teleport an empty vehicle
             teleportingVehicle.teleport(exit);
-            scheduler.scheduleSyncDelayedTask(Stargate.stargate, () -> teleportingVehicle.setVelocity(newVelocity), 1);
+            scheduler.scheduleSyncDelayedTask(Stargate.getInstance(),
+                    () -> teleportingVehicle.setVelocity(newVelocity), 1);
         }
     }
 
@@ -102,7 +103,7 @@ public class VehicleTeleporter extends Teleporter {
     private Location triggerEntityPortalEvent(Portal origin, Location exit) {
         StargateEntityPortalEvent stargateEntityPortalEvent = new StargateEntityPortalEvent(teleportingVehicle, origin,
                 portal, exit);
-        Stargate.server.getPluginManager().callEvent(stargateEntityPortalEvent);
+        Stargate.getInstance().getServer().getPluginManager().callEvent(stargateEntityPortalEvent);
         //Teleport is cancelled. Teleport the entity back to where it came from just for sanity's sake
         if (stargateEntityPortalEvent.isCancelled()) {
             new VehicleTeleporter(origin, teleportingVehicle).teleport(origin);
@@ -149,7 +150,7 @@ public class VehicleTeleporter extends Teleporter {
         //Set rotation, add passengers and restore velocity
         newVehicle.setRotation(exit.getYaw(), exit.getPitch());
         handleVehiclePassengers(passengers, newVehicle, 1);
-        scheduler.scheduleSyncDelayedTask(Stargate.stargate, () -> newVehicle.setVelocity(newVelocity), 1);
+        scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> newVehicle.setVelocity(newVelocity), 1);
     }
 
     /**
@@ -162,7 +163,8 @@ public class VehicleTeleporter extends Teleporter {
     private void handleVehiclePassengers(List<Entity> passengers, Vehicle vehicle, long delay) {
         for (Entity passenger : passengers) {
             passenger.eject();
-            scheduler.scheduleSyncDelayedTask(Stargate.stargate, () -> teleportAndAddPassenger(vehicle, passenger), delay);
+            scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> teleportAndAddPassenger(vehicle, passenger),
+                    delay);
         }
     }
 

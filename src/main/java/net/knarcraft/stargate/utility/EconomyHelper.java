@@ -53,9 +53,9 @@ public final class EconomyHelper {
             PortalOwner owner = entrancePortal.getOwner();
             Player portalOwner;
             if (owner.getUUID() != null) {
-                portalOwner = Stargate.server.getPlayer(owner.getUUID());
+                portalOwner = Stargate.getInstance().getServer().getPlayer(owner.getUUID());
             } else {
-                portalOwner = Stargate.server.getPlayer(owner.getName());
+                portalOwner = Stargate.getInstance().getServer().getPlayer(owner.getName());
             }
 
             //Notify the gate owner of received payment

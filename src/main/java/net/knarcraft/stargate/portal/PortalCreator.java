@@ -177,7 +177,7 @@ public class PortalCreator {
         //Call StargateCreateEvent to let other plugins cancel or overwrite denial
         StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, deny,
                 denyMessage, createCost);
-        Stargate.server.getPluginManager().callEvent(stargateCreateEvent);
+        Stargate.getInstance().getServer().getPluginManager().callEvent(stargateCreateEvent);
         if (stargateCreateEvent.isCancelled()) {
             return null;
         }

@@ -48,8 +48,7 @@ public class Stargate extends JavaPlugin {
     private static final Queue<ChunkUnloadRequest> chunkUnloadQueue = new PriorityQueue<>();
 
     private static Logger logger;
-    public static Server server;
-    public static Stargate stargate;
+    private static Stargate stargate;
 
     private static String pluginVersion;
 
@@ -73,6 +72,15 @@ public class Stargate extends JavaPlugin {
      */
     protected Stargate(JavaPluginLoader loader, PluginDescriptionFile descriptionFile, File dataFolder, File file) {
         super(loader, descriptionFile, dataFolder, file);
+    }
+
+    /**
+     * Gets an instance of this plugin
+     *
+     * @return <p>An instance of this plugin, or null if not instantiated</p>
+     */
+    public static Stargate getInstance() {
+        return stargate;
     }
 
     /**
@@ -299,7 +307,7 @@ public class Stargate extends JavaPlugin {
         pluginManager = getServer().getPluginManager();
         FileConfiguration newConfig = this.getConfig();
         logger = Logger.getLogger("Minecraft");
-        server = getServer();
+        Server server = getServer();
         stargate = this;
 
         stargateConfig = new StargateConfig(logger);

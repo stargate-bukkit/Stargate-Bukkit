@@ -81,7 +81,7 @@ public final class PermissionHelper {
      */
     public static boolean portalAccessDenied(Player player, Portal portal, boolean deny) {
         StargateAccessEvent event = new StargateAccessEvent(player, portal, deny);
-        Stargate.server.getPluginManager().callEvent(event);
+        Stargate.getInstance().getServer().getPluginManager().callEvent(event);
         return event.getDeny();
     }
 

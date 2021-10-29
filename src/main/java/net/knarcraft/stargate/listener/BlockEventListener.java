@@ -83,7 +83,8 @@ public class BlockEventListener implements Listener {
 
         Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("createMsg"));
         Stargate.debug("onSignChange", "Initialized stargate: " + portal.getName());
-        Stargate.server.getScheduler().scheduleSyncDelayedTask(Stargate.stargate, portal::drawSign, 1);
+        Stargate.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(),
+                portal::drawSign, 1);
     }
 
     /**
@@ -122,7 +123,7 @@ public class BlockEventListener implements Listener {
 
         //Create and call a StarGateDestroyEvent
         StargateDestroyEvent destroyEvent = new StargateDestroyEvent(portal, player, deny, denyMessage, cost);
-        Stargate.server.getPluginManager().callEvent(destroyEvent);
+        Stargate.getInstance().getServer().getPluginManager().callEvent(destroyEvent);
         if (destroyEvent.isCancelled()) {
             event.setCancelled(true);
             return;

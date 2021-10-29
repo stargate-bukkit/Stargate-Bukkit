@@ -23,7 +23,7 @@ public class ChunkUnloadThread implements Runnable {
             unloadQueue.remove();
             Chunk chunkToUnload = firstElement.getChunkToUnload();
             //Allow the chunk to be unloaded
-            chunkToUnload.removePluginChunkTicket(Stargate.stargate);
+            chunkToUnload.removePluginChunkTicket(Stargate.getInstance());
             firstElement = unloadQueue.peek();
         }
     }

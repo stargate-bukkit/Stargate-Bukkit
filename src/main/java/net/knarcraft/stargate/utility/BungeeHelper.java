@@ -78,7 +78,7 @@ public final class BungeeHelper {
             //Write the actual message
             dataOutputStream.writeBytes(message);
             //Send the plugin message
-            player.sendPluginMessage(Stargate.stargate, bungeeChannel, byteArrayOutputStream.toByteArray());
+            player.sendPluginMessage(Stargate.getInstance(), bungeeChannel, byteArrayOutputStream.toByteArray());
         } catch (IOException ex) {
             Stargate.logSevere("Error sending BungeeCord teleport packet");
             ex.printStackTrace();
@@ -104,7 +104,7 @@ public final class BungeeHelper {
             dataOutputStream.writeUTF(entrancePortal.getNetwork());
 
             //Send the plugin message
-            player.sendPluginMessage(Stargate.stargate, bungeeChannel, byteArrayOutputStream.toByteArray());
+            player.sendPluginMessage(Stargate.getInstance(), bungeeChannel, byteArrayOutputStream.toByteArray());
         } catch (IOException ex) {
             Stargate.logSevere("Error sending BungeeCord connect packet");
             ex.printStackTrace();
@@ -155,7 +155,7 @@ public final class BungeeHelper {
         String destination = messageParts[1];
 
         //Check if the player is online, if so, teleport, otherwise, queue
-        Player player = Stargate.server.getPlayer(playerUUID);
+        Player player = Stargate.getInstance().getServer().getPlayer(playerUUID);
         if (player == null) {
             bungeeQueue.put(playerUUID, destination);
         } else {

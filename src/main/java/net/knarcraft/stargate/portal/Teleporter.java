@@ -34,7 +34,7 @@ public abstract class Teleporter {
      */
     public Teleporter(Portal portal) {
         this.portal = portal;
-        this.scheduler = Stargate.server.getScheduler();
+        this.scheduler = Stargate.getInstance().getServer().getScheduler();
     }
 
 
@@ -207,7 +207,7 @@ public abstract class Teleporter {
      */
     protected void loadChunks() {
         for (Chunk chunk : getChunksToLoad()) {
-            chunk.addPluginChunkTicket(Stargate.stargate);
+            chunk.addPluginChunkTicket(Stargate.getInstance());
             //Allow the chunk to unload after 3 seconds
             Stargate.addChunkUnloadRequest(new ChunkUnloadRequest(chunk, 3000L));
         }

@@ -67,7 +67,7 @@ public class PlayerTeleporter extends Teleporter {
      */
     private Location triggerPlayerPortalEvent(Portal origin, Location exit, PlayerMoveEvent event) {
         StargatePlayerPortalEvent stargatePlayerPortalEvent = new StargatePlayerPortalEvent(player, origin, portal, exit);
-        Stargate.server.getPluginManager().callEvent(stargatePlayerPortalEvent);
+        Stargate.getInstance().getServer().getPluginManager().callEvent(stargatePlayerPortalEvent);
         //Teleport is cancelled. Teleport the player back to where it came from
         if (stargatePlayerPortalEvent.isCancelled()) {
             new PlayerTeleporter(origin, player).teleport(origin, event);

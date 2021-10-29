@@ -164,7 +164,7 @@ public class PortalActivator {
      */
     private boolean triggerStargateActivationEvent(Player player) {
         StargateActivateEvent event = new StargateActivateEvent(portal, player, destinations, destination);
-        Stargate.server.getPluginManager().callEvent(event);
+        Stargate.getInstance().getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             Stargate.getStargateConfig().getActivePortalsQueue().remove(portal);
             return false;
@@ -183,7 +183,7 @@ public class PortalActivator {
     public void deactivate() {
         //Trigger a stargate deactivate event to allow other plugins to cancel the event
         StargateDeactivateEvent event = new StargateDeactivateEvent(portal);
-        Stargate.server.getPluginManager().callEvent(event);
+        Stargate.getInstance().getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
         }

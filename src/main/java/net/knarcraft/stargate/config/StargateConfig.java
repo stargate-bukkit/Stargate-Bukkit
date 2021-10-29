@@ -56,7 +56,7 @@ public final class StargateConfig {
     public StargateConfig(Logger logger) {
         this.logger = logger;
 
-        dataFolderPath = Stargate.stargate.getDataFolder().getPath().replaceAll("\\\\", "/");
+        dataFolderPath = Stargate.getInstance().getDataFolder().getPath().replaceAll("\\\\", "/");
         portalFolder = dataFolderPath + "/portals/";
         gateFolder = dataFolderPath + "/gates/";
         languageLoader = new LanguageLoader(dataFolderPath + "/lang/");
@@ -260,11 +260,11 @@ public final class StargateConfig {
         String bungeeChannel = "BungeeCord";
 
         if (start) {
-            messenger.registerOutgoingPluginChannel(Stargate.stargate, bungeeChannel);
-            messenger.registerIncomingPluginChannel(Stargate.stargate, bungeeChannel, new BungeeCordListener());
+            messenger.registerOutgoingPluginChannel(Stargate.getInstance(), bungeeChannel);
+            messenger.registerIncomingPluginChannel(Stargate.getInstance(), bungeeChannel, new BungeeCordListener());
         } else {
-            messenger.unregisterIncomingPluginChannel(Stargate.stargate, bungeeChannel);
-            messenger.unregisterOutgoingPluginChannel(Stargate.stargate, bungeeChannel);
+            messenger.unregisterIncomingPluginChannel(Stargate.getInstance(), bungeeChannel);
+            messenger.unregisterOutgoingPluginChannel(Stargate.getInstance(), bungeeChannel);
         }
     }
 
@@ -293,8 +293,8 @@ public final class StargateConfig {
      * Loads all config values
      */
     public void loadConfig() {
-        Stargate.stargate.reloadConfig();
-        FileConfiguration newConfig = Stargate.stargate.getConfig();
+        Stargate.getInstance().reloadConfig();
+        FileConfiguration newConfig = Stargate.getInstance().getConfig();
 
         boolean isMigrating = false;
         if (newConfig.getString("lang") != null ||
@@ -329,7 +329,7 @@ public final class StargateConfig {
         //Load all economy config values
         economyConfig = new EconomyConfig(newConfig);
 
-        Stargate.stargate.saveConfig();
+        Stargate.getInstance().saveConfig();
     }
 
     /**
@@ -403,7 +403,7 @@ public final class StargateConfig {
      * Loads all portals in all un-managed worlds
      */
     public void loadAllPortals() {
-        for (World world : Stargate.stargate.getServer().getWorlds()) {
+        for (World world : Stargate.getInstance().getServer().getWorlds()) {
             if (!managedWorlds.contains(world.getName())) {
                 PortalFileHelper.loadAllPortals(world);
                 managedWorlds.add(world.getName());
@@ -421,7 +421,8 @@ public final class StargateConfig {
                 logger.severe("Unable to create portal directory");
             }
         }
-        File newFile = new File(portalFolder, Stargate.stargate.getServer().getWorlds().get(0).getName() + ".db");
+        File newFile = new File(portalFolder, Stargate.getInstance().getServer().getWorlds().get(0).getName() +
+                ".db");
         if (!newFile.exists() && !newFile.getParentFile().exists()) {
             if (!newFile.getParentFile().mkdirs()) {
                 logger.severe("Unable to create portal database folder: " + newFile.getParentFile().getPath());

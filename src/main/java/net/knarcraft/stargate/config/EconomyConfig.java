@@ -235,7 +235,7 @@ public final class EconomyConfig {
         //Check if vault is loaded
         Plugin vault = pluginManager.getPlugin("Vault");
         if (vault != null && vault.isEnabled()) {
-            ServicesManager servicesManager = Stargate.server.getServicesManager();
+            ServicesManager servicesManager = Stargate.getInstance().getServer().getServicesManager();
             RegisteredServiceProvider<Economy> economyProvider = servicesManager.getRegistration(Economy.class);
             if (economyProvider != null) {
                 economy = economyProvider.getProvider();

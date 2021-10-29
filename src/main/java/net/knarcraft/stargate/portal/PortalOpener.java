@@ -76,7 +76,7 @@ public class PortalOpener {
     public void openPortal(Player openFor, boolean force) {
         //Call the StargateOpenEvent to allow the opening to be cancelled
         StargateOpenEvent event = new StargateOpenEvent(openFor, portal, force);
-        Stargate.server.getPluginManager().callEvent(event);
+        Stargate.getInstance().getServer().getPluginManager().callEvent(event);
         if (event.isCancelled() || (isOpen() && !event.getForce())) {
             return;
         }
@@ -152,7 +152,7 @@ public class PortalOpener {
 
         //Call the StargateCloseEvent to allow other plugins to cancel the closing, or change whether to force it closed
         StargateCloseEvent event = new StargateCloseEvent(portal, force);
-        Stargate.server.getPluginManager().callEvent(event);
+        Stargate.getInstance().getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
         }
