@@ -53,6 +53,8 @@ public class StargatePlayerPortalEvent extends StargatePlayerEvent {
 
     /**
      * Set the location of the player's exit point
+     *
+     * @param location <p>The new location of the player's exit point</p>
      */
     public void setExit(Location location) {
         this.exit = location;

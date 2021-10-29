@@ -14,7 +14,23 @@ public class RelativeBlockVector {
     private final int down;
     private final int out;
 
-    public enum Property {RIGHT, DOWN, OUT}
+    /**
+     * A specifier for one of the relative block vector's three properties
+     */
+    public enum Property {
+        /**
+         * Specifies the relative block vector's right property
+         */
+        RIGHT,
+        /**
+         * Specifies the relative block vector's down property
+         */
+        DOWN,
+        /**
+         * Specifies the relative block vector's out property
+         */
+        OUT
+    }
 
     /**
      * Instantiates a new relative block vector

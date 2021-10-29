@@ -71,7 +71,8 @@ public class PortalOpener {
     /**
      * Open this portal opener's portal
      *
-     * @param force <p>Whether to force the portal open, even if it's already open for some player</p>
+     * @param openFor <p>The player to open the portal for</p>
+     * @param force   <p>Whether to force the portal open, even if it's already open for some player</p>
      */
     public void openPortal(Player openFor, boolean force) {
         //Call the StargateOpenEvent to allow the opening to be cancelled

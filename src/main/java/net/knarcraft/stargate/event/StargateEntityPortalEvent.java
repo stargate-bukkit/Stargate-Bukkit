@@ -64,6 +64,8 @@ public class StargateEntityPortalEvent extends StargateEvent {
 
     /**
      * Set the location of the entity's exit point
+     *
+     * @param location <p>The new location of the entity's exit point</p>
      */
     public void setExit(Location location) {
         this.exit = location;

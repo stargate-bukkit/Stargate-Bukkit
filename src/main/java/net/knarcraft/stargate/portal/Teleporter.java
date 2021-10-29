@@ -24,7 +24,13 @@ import java.util.List;
  */
 public abstract class Teleporter {
 
+    /**
+     * The portal the entity is teleporting to
+     */
     protected final Portal portal;
+    /**
+     * The scheduler to use for delaying tasks
+     */
     protected final BukkitScheduler scheduler;
 
     /**
