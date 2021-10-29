@@ -223,28 +223,29 @@ public class PortalCreator {
      * @return <p>True if the portal is completely valid</p>
      */
     private boolean checkIfNewPortalIsValid(int cost, String portalName) {
-        // Name & Network can be changed in the event, so do these checks here.
+        //Check if the portal name can fit on the sign with padding (>name<)
         if (portal.getName().length() < 1 || portal.getName().length() > 11) {
             Stargate.debug("createPortal", "Name length error");
             Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createNameLength"));
             return false;
         }
 
-        //Don't do network checks for bungee portals
         if (portal.getOptions().isBungee()) {
+            //Check if the bungee portal's name has been duplicated
             if (PortalHandler.getBungeePortals().get(portal.getName().toLowerCase()) != null) {
                 Stargate.debug("createPortal::Bungee", "Gate name duplicate");
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createExists"));
                 return false;
             }
         } else {
+            //Check if the portal name has been duplicated on the network
             if (PortalHandler.getByName(portal.getName(), portal.getNetwork()) != null) {
                 Stargate.debug("createPortal", "Gate name duplicate");
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createExists"));
                 return false;
             }
 
-            //Check if there are too many gates in this network
+            //Check if the number of portals in the network has been surpassed
             List<String> networkList = PortalHandler.getAllPortalNetworks().get(portal.getNetwork().toLowerCase());
             int maxGates = Stargate.getGateConfig().maxGatesEachNetwork();
             if (maxGates > 0 && networkList != null && networkList.size() >= maxGates) {
@@ -254,6 +255,7 @@ public class PortalCreator {
         }
 
         if (cost > 0) {
+            //Deduct the required fee from the player
             if (!Stargate.getEconomyConfig().chargePlayerIfNecessary(player, cost)) {
                 EconomyHelper.sendInsufficientFundsMessage(portalName, player, cost);
                 Stargate.debug("createPortal", "Insufficient Funds");

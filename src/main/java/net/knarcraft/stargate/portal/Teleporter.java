@@ -62,10 +62,11 @@ public abstract class Teleporter {
      */
     public Location getExit(Entity entity, Location traveller) {
         Location exitLocation = null;
-        // Check if the gate has an exit block
         RelativeBlockVector relativeExit = portal.getGate().getLayout().getExit();
         if (relativeExit != null) {
             BlockLocation exit = portal.getBlockAt(relativeExit);
+
+            //Move one block out to prevent exiting inside the portal
             float portalYaw = portal.getYaw();
             if (portal.getOptions().isBackwards()) {
                 portalYaw += 180;
@@ -74,6 +75,7 @@ public abstract class Teleporter {
 
             if (entity != null) {
                 double entitySize = EntityHelper.getEntityMaxSize(entity);
+                //Prevent exit suffocation for players riding horses or similar
                 if (entitySize > 1) {
                     exitLocation = preventExitSuffocation(relativeExit, exitLocation, entity);
                 }
@@ -83,6 +85,7 @@ public abstract class Teleporter {
                     portal.getGate().getFilename()));
         }
 
+        //Adjust pitch and height
         return adjustExitLocation(traveller, exitLocation);
     }
 
@@ -112,25 +115,34 @@ public abstract class Teleporter {
         }
         exitLocation = DirectionHelper.moveLocation(exitLocation, newOffset, 0, 0, portal.getYaw());
 
-        //Move large entities further from the portal, especially if this teleporter's portal will teleport them at once
+        //Move large entities further from the portal
+        return moveExitLocationOutwards(exitLocation, entity);
+    }
+
+    /**
+     * Moves the exit location out from the portal to prevent the entity from entering a teleportation loop
+     *
+     * @param exitLocation <p>The current exit location to adjust</p>
+     * @param entity       <p>The entity to adjust the exit location for</p>
+     * @return <p>The adjusted exit location</p>
+     */
+    private Location moveExitLocationOutwards(Location exitLocation, Entity entity) {
         double entitySize = EntityHelper.getEntityMaxSize(entity);
         int entityBoxSize = EntityHelper.getEntityMaxSizeInt(entity);
         if (entitySize > 1) {
+            double entityOffset;
             if (portal.getOptions().isAlwaysOn()) {
-                exitLocation = DirectionHelper.moveLocation(exitLocation, 0, 0, (entityBoxSize / 2D),
-                        portal.getYaw());
+                entityOffset = entityBoxSize / 2D;
             } else {
-                exitLocation = DirectionHelper.moveLocation(exitLocation, 0, 0,
-                        (entitySize / 2D) - 1, portal.getYaw());
+                entityOffset = (entitySize / 2D) - 1;
             }
+            //If a horse has a player riding it, the player will spawn inside the roof of a standard portal unless it's 
+            // moved one block out.
+            if (entity instanceof AbstractHorse) {
+                entityOffset += 1;
+            }
+            exitLocation = DirectionHelper.moveLocation(exitLocation, 0, 0, entityOffset, portal.getYaw());
         }
-
-        //If a horse has a player riding it, the player will spawn inside the roof of a standard portal unless it's
-        //moved one block out.
-        if (entity instanceof AbstractHorse) {
-            exitLocation = DirectionHelper.moveLocation(exitLocation, 0, 0, 1, portal.getYaw());
-        }
-
         return exitLocation;
     }
 
@@ -143,6 +155,7 @@ public abstract class Teleporter {
      */
     private RelativeBlockVector getPortalExitEdge(RelativeBlockVector relativeExit, int direction) {
         RelativeBlockVector openingEdge = relativeExit;
+
         do {
             RelativeBlockVector possibleOpening = new RelativeBlockVector(openingEdge.getRight() + direction,
                     openingEdge.getDown(), openingEdge.getOut());
@@ -152,11 +165,16 @@ public abstract class Teleporter {
                 break;
             }
         } while (true);
+
         return openingEdge;
     }
 
     /**
-     * Adjusts an exit location with rotation and slab height incrementation
+     * Adjusts an exit location by setting pitch and adjusting height
+     *
+     * <p>If the exit location is a slab or water, the exit location will be changed to arrive one block above. The
+     * slab check is necessary to prevent the player from clipping through the slab and spawning beneath it. The water
+     * check is necessary when teleporting boats to prevent it from becoming a submarine.</p>
      *
      * @param traveller    <p>The location of the travelling entity</p>
      * @param exitLocation <p>The exit location generated</p>
@@ -180,8 +198,8 @@ public abstract class Teleporter {
             return exitLocation;
         } else {
             Stargate.logWarning("Unable to generate exit location");
+            return traveller;
         }
-        return traveller;
     }
 
     /**

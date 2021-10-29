@@ -267,8 +267,8 @@ public class PortalRegistry {
             if (!allPortalNetworks.get(networkName).contains(portalName)) {
                 allPortalNetworks.get(networkName).add(portalName);
             } else {
-                Stargate.logSevere(String.format("Portal %s was registered twice. Check your portal database for " +
-                        "duplicates.", portal));
+                Stargate.logSevere(String.format("Portal %s on network %s was registered twice. Check your portal " +
+                        "database for duplicates.", portal.getName(), portal.getNetwork()));
             }
         }
 
