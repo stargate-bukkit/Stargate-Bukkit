@@ -8,7 +8,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * This event should be called whenever a player attempts to access a stargate
  *
- * <p>This event can be used to override whether the player should be allowed to access the stargate.</p>
+ * <p>This event is triggered whenever a player enters or activates a stargate. This event can be used to override 
+ * whether the player should be allowed to access the stargate.</p>
  */
 @SuppressWarnings("unused")
 public class StargateAccessEvent extends StargatePlayerEvent {

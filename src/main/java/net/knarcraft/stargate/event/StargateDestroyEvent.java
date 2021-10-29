@@ -6,7 +6,7 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This event represents an event where a star gate is destroyed or attempted to be destroyed
+ * This event should be called whenever a stargate is destroyed
  *
  * <p>This event can be used to deny or change the cost of a stargate destruction.</p>
  */
