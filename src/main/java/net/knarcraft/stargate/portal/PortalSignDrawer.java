@@ -13,6 +13,9 @@ import org.bukkit.block.Sign;
 public class PortalSignDrawer {
 
     private final Portal portal;
+    private final static ChatColor highlightColor = ChatColor.WHITE;
+    private final static ChatColor errorColor = ChatColor.DARK_RED;
+    private final static ChatColor freeColor = ChatColor.DARK_GREEN;
 
     /**
      * Instantiates a new portal sign drawer
@@ -49,8 +52,8 @@ public class PortalSignDrawer {
         for (int index = 0; index <= 3; index++) {
             sign.setLine(index, "");
         }
-        setLine(sign, 0, ChatColor.WHITE + "-" + Stargate.getGateConfig().getSignColor() +
-                portal.getName() + ChatColor.WHITE + "-");
+        setLine(sign, 0, highlightColor + "-" + Stargate.getGateConfig().getSignColor() +
+                portal.getName() + highlightColor + "-");
 
         if (!portal.getPortalActivator().isActive()) {
             //Default sign text
@@ -115,11 +118,11 @@ public class PortalSignDrawer {
         if (freeGatesGreen) {
             Portal destination = PortalHandler.getByName(portal.getDestinationName(), portal.getNetwork());
             boolean green = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
-            setLine(sign, signLineIndex, (green ? ChatColor.DARK_GREEN : "") + ">" +
-                    portal.getDestinationName() + (green ? ChatColor.DARK_GREEN : "") + "<");
+            setLine(sign, signLineIndex, (green ? freeColor : "") + ">" +
+                    portal.getDestinationName() + (green ? freeColor : "") + "<");
         } else {
-            setLine(sign, signLineIndex, Stargate.getGateConfig().getSignColor() + " >" +
-                    portal.getDestinationName() + Stargate.getGateConfig().getSignColor() + "< ");
+            setLine(sign, signLineIndex, highlightColor + ">" + Stargate.getGateConfig().getSignColor() +
+                    portal.getDestinationName() + highlightColor + "<");
         }
     }
 
@@ -148,7 +151,7 @@ public class PortalSignDrawer {
             Portal destination = PortalHandler.getByName(destinations.getDestinations().get(destinationIndex),
                     portal.getNetwork());
             boolean green = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
-            setLine(sign, signLineIndex, (green ? ChatColor.DARK_GREEN : "") +
+            setLine(sign, signLineIndex, (green ? freeColor : "") +
                     destinations.getDestinations().get(destinationIndex));
         } else {
             setLine(sign, signLineIndex, destinations.getDestinations().get(destinationIndex));
@@ -199,10 +202,25 @@ public class PortalSignDrawer {
         }
         Portal destination = PortalHandler.getByName(portal.getDestinationName(), portal.getNetwork());
         if (destination == null && !portal.getOptions().isRandom()) {
-            setLine(sign, 3, Stargate.getString("signDisconnected"));
+            setLine(sign, 3, errorColor + Stargate.getString("signDisconnected"));
         } else {
             setLine(sign, 3, "");
         }
+    }
+
+    /**
+     * Marks a portal with an invalid gate by changing its sign and writing to the console
+     *
+     * @param portalLocation <p>The location of the portal with an invalid gate</p>
+     * @param gateName       <p>The name of the invalid gate type</p>
+     * @param lineIndex      <p>The index of the line the invalid portal was found at</p>
+     */
+    public static void markPortalWithInvalidGate(PortalLocation portalLocation, String gateName, int lineIndex) {
+        Sign sign = (Sign) portalLocation.getSignLocation().getBlock().getState();
+        sign.setLine(3, errorColor + Stargate.getString("signInvalidGate"));
+        sign.update();
+
+        Stargate.logInfo(String.format("Gate layout on line %d does not exist [%s]", lineIndex, gateName));
     }
 
 }

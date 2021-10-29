@@ -309,6 +309,7 @@ invalidMsg=Invalid Destination
 blockMsg=Destination Blocked
 destEmpty=Destination List Empty
 denyMsg=Access Denied
+reloaded=Stargate Reloaded
 
 ecoDeduct=Deducted %cost%
 ecoRefund=Refunded %cost%
@@ -332,6 +333,7 @@ signRightClick=Right click
 signToUse=to use gate
 signRandom=Random
 signDisconnected=Disconnected
+signInvalidGate=Invalid gate
 
 bungeeDisabled=BungeeCord support is disabled.
 bungeeDeny=You do not have permission to create BungeeCord gates.
@@ -376,6 +378,13 @@ bungeeSign=Teleport to
 - Adds missing permissions to plugin.yml and simplifies permission checks by specifying default values for child
   permissions
 - Renames stargate.reload to stargate.admin.reload to maintain consistency
+- Marks stargates which cannot be loaded because of the gate layout not having been loaded
+- Uses white for the "-" characters on the side of each stargate name when drawing signs to increase readability
+- Uses white to mark the selected destination when cycling through stargate destinations
+- Uses dark red to mark portals which are inactive (missing destination or invalid gate type)
+- Re-draws signs on startup in case they change
+- Fixes some bugs preventing changing the portal-open block on the fly
+- Adds a translate-able string for when the plugin has been reloaded
 
 #### \[Version 0.8.0.3] PseudoKnight fork
 

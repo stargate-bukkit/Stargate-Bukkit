@@ -10,15 +10,15 @@ import net.knarcraft.stargate.portal.PortalLocation;
 import net.knarcraft.stargate.portal.PortalOptions;
 import net.knarcraft.stargate.portal.PortalOwner;
 import net.knarcraft.stargate.portal.PortalRegistry;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
-import org.bukkit.block.Sign;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+
+import static net.knarcraft.stargate.portal.PortalSignDrawer.markPortalWithInvalidGate;
 
 /**
  * Helper class for saving and loading portal save files
@@ -255,21 +255,6 @@ public final class PortalFileHelper {
         //Register the portal, and close it in case it wasn't properly closed when the server stopped
         PortalHandler.registerPortal(portal);
         portal.getPortalOpener().closePortal(true);
-    }
-
-    /**
-     * Marks a portal with an invalid gate by changing its sign and writing to the console
-     *
-     * @param portalLocation <p>The location of the portal with an invalid gate</p>
-     * @param gateName       <p>The name of the invalid gate type</p>
-     * @param lineIndex      <p>The index of the line the invalid portal was found at</p>
-     */
-    private static void markPortalWithInvalidGate(PortalLocation portalLocation, String gateName, int lineIndex) {
-        Sign sign = (Sign) portalLocation.getSignLocation().getBlock().getState();
-        sign.setLine(3, ChatColor.DARK_RED + Stargate.getString("signInvalidGate"));
-        sign.update();
-
-        Stargate.logInfo(String.format("Gate layout on line %d does not exist [%s]", lineIndex, gateName));
     }
 
 }
