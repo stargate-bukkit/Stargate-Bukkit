@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
@@ -29,13 +30,13 @@ import java.util.logging.Logger;
  */
 public final class StargateConfig {
 
-    public final ConcurrentLinkedQueue<Portal> activePortalsQueue = new ConcurrentLinkedQueue<>();
-    public final ConcurrentLinkedQueue<Portal> openPortalsQueue = new ConcurrentLinkedQueue<>();
+    private final Queue<Portal> activePortalsQueue = new ConcurrentLinkedQueue<>();
+    private final Queue<Portal> openPortalsQueue = new ConcurrentLinkedQueue<>();
     private final HashSet<String> managedWorlds = new HashSet<>();
 
     private StargateGateConfig stargateGateConfig;
     private MessageSender messageSender;
-    public final LanguageLoader languageLoader;
+    private final LanguageLoader languageLoader;
     private EconomyConfig economyConfig;
     private final Logger logger;
 
@@ -90,6 +91,28 @@ public final class StargateConfig {
     }
 
     /**
+     * Gets the queue of open portals
+     *
+     * <p>The open portals queue is used to close open portals after some time has passed</p>
+     *
+     * @return <p>The open portals queue</p>
+     */
+    public Queue<Portal> getOpenPortalsQueue() {
+        return openPortalsQueue;
+    }
+
+    /**
+     * Gets the queue of active portals
+     *
+     * <p>The active portals queue is used to de-activate portals after some time has passed</p>
+     *
+     * @return <p>The active portals queue</p>
+     */
+    public Queue<Portal> getActivePortalsQueue() {
+        return activePortalsQueue;
+    }
+
+    /**
      * Gets whether debugging is enabled
      *
      * @return <p>Whether debugging is enabled</p>
@@ -127,10 +150,10 @@ public final class StargateConfig {
 
         //Perform all block change requests to prevent mismatch if a gate's open-material changes. Changing the 
         // closed-material still requires a restart.
-        BlockChangeRequest firstElement = Stargate.blockChangeRequestQueue.peek();
+        BlockChangeRequest firstElement = Stargate.getBlockChangeRequestQueue().peek();
         while (firstElement != null) {
             BlockChangeThread.pollQueue();
-            firstElement = Stargate.blockChangeRequestQueue.peek();
+            firstElement = Stargate.getBlockChangeRequestQueue().peek();
         }
 
         //Store the old enable bungee state in case it changes

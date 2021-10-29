@@ -131,7 +131,7 @@ public class PortalActivator {
         this.destinations.clear();
 
         //Adds the active gate to the active queue to allow it to be remotely deactivated
-        Stargate.activePortalsQueue.add(portal);
+        Stargate.getStargateConfig().getActivePortalsQueue().add(portal);
 
         //Set the given player as the active player
         activePlayer = player;
@@ -166,7 +166,7 @@ public class PortalActivator {
         StargateActivateEvent event = new StargateActivateEvent(portal, player, destinations, destination);
         Stargate.server.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
-            Stargate.activePortalsQueue.remove(portal);
+            Stargate.getStargateConfig().getActivePortalsQueue().remove(portal);
             return false;
         }
 
@@ -189,7 +189,7 @@ public class PortalActivator {
         }
 
         //Un-mark the portal as activated
-        Stargate.activePortalsQueue.remove(portal);
+        Stargate.getStargateConfig().getActivePortalsQueue().remove(portal);
 
         //For a fixed gate, the destinations and the sign never really change, but at the same time, fixed gates are
         // never really activated, so in theory, this check should be redundant.
@@ -261,7 +261,7 @@ public class PortalActivator {
 
         //Update the activated time to allow it to be deactivated after a timeout, and re-draw the sign to show the
         // selected destination
-        opener.setActivatedTime(System.currentTimeMillis() / 1000);
+        opener.setTriggeredTime(System.currentTimeMillis() / 1000);
         portal.drawSign();
     }
 

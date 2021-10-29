@@ -30,7 +30,7 @@ public class BlockChangeThread implements Runnable {
      */
     public static void pollQueue() {
         //Abort if there's no work to be done
-        BlockChangeRequest blockChangeRequest = Stargate.blockChangeRequestQueue.poll();
+        BlockChangeRequest blockChangeRequest = Stargate.getBlockChangeRequestQueue().poll();
         if (blockChangeRequest == null) {
             return;
         }

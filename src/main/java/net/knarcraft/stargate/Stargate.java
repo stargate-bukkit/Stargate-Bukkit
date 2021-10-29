@@ -16,7 +16,6 @@ import net.knarcraft.stargate.listener.PortalEventListener;
 import net.knarcraft.stargate.listener.TeleportEventListener;
 import net.knarcraft.stargate.listener.VehicleEventListener;
 import net.knarcraft.stargate.listener.WorldEventListener;
-import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.thread.BlockChangeThread;
@@ -35,17 +34,17 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The main class of the Stargate plugin
+ */
 @SuppressWarnings("unused")
 public class Stargate extends JavaPlugin {
 
     //Used for changing gate open/closed material.
-    public static final Queue<BlockChangeRequest> blockChangeRequestQueue = new LinkedList<>();
-    public static final ConcurrentLinkedQueue<Portal> openPortalsQueue = new ConcurrentLinkedQueue<>();
-    public static final ConcurrentLinkedQueue<Portal> activePortalsQueue = new ConcurrentLinkedQueue<>();
+    private static final Queue<BlockChangeRequest> blockChangeRequestQueue = new LinkedList<>();
     private static final Queue<ChunkUnloadRequest> chunkUnloadQueue = new PriorityQueue<>();
 
     private static Logger logger;
@@ -74,6 +73,26 @@ public class Stargate extends JavaPlugin {
      */
     protected Stargate(JavaPluginLoader loader, PluginDescriptionFile descriptionFile, File dataFolder, File file) {
         super(loader, descriptionFile, dataFolder, file);
+    }
+
+    /**
+     * Adds a block change request to the request queue
+     *
+     * @param request <p>The request to add</p>
+     */
+    public static void addBlockChangeRequest(BlockChangeRequest request) {
+        if (request != null) {
+            blockChangeRequestQueue.add(request);
+        }
+    }
+
+    /**
+     * Gets the queue containing block change requests
+     *
+     * @return <p>A block change request queue</p>
+     */
+    public static Queue<BlockChangeRequest> getBlockChangeRequestQueue() {
+        return blockChangeRequestQueue;
     }
 
     /**

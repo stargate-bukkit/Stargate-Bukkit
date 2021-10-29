@@ -17,7 +17,7 @@ public class PortalOpener {
 
     private boolean isOpen = false;
     private final Portal portal;
-    private long activatedTime;
+    private long triggeredTime;
     private Player player;
     private final PortalActivator portalActivator;
 
@@ -42,12 +42,12 @@ public class PortalOpener {
     }
 
     /**
-     * Sets the time when this portal was activated/opened
+     * Sets the time when this portal was triggered (activated/opened)
      *
-     * @param activatedTime <p>Unix timestamp when portal was activated/opened</p>
+     * @param triggeredTime <p>Unix timestamp when portal was triggered</p>
      */
-    public void setActivatedTime(long activatedTime) {
-        this.activatedTime = activatedTime;
+    public void setTriggeredTime(long triggeredTime) {
+        this.triggeredTime = triggeredTime;
     }
 
     /**
@@ -88,7 +88,7 @@ public class PortalOpener {
 
         //Change the entrance blocks to the correct type
         for (BlockLocation inside : portal.getStructure().getEntrances()) {
-            Stargate.blockChangeRequestQueue.add(new BlockChangeRequest(inside, openType, axis));
+            Stargate.addBlockChangeRequest(new BlockChangeRequest(inside, openType, axis));
         }
 
         //Update the portal state to make is actually open
@@ -103,11 +103,11 @@ public class PortalOpener {
     private void updatePortalOpenState(Player openFor) {
         //Update the open state of this portal
         isOpen = true;
-        activatedTime = System.currentTimeMillis() / 1000;
+        triggeredTime = System.currentTimeMillis() / 1000;
 
         //Change state from active to open
-        Stargate.openPortalsQueue.add(portal);
-        Stargate.activePortalsQueue.remove(portal);
+        Stargate.getStargateConfig().getOpenPortalsQueue().add(portal);
+        Stargate.getStargateConfig().getActivePortalsQueue().remove(portal);
 
         PortalOptions options = portal.getOptions();
 
@@ -165,7 +165,7 @@ public class PortalOpener {
         //Close the portal by requesting the opening blocks to change
         Material closedType = portal.getGate().getPortalClosedBlock();
         for (BlockLocation entrance : portal.getStructure().getEntrances()) {
-            Stargate.blockChangeRequestQueue.add(new BlockChangeRequest(entrance, closedType, null));
+            Stargate.addBlockChangeRequest(new BlockChangeRequest(entrance, closedType, null));
         }
 
         //Update the portal state to make it actually closed
@@ -184,8 +184,8 @@ public class PortalOpener {
         isOpen = false;
 
         //Un-mark the portal as active and open
-        Stargate.openPortalsQueue.remove(portal);
-        Stargate.activePortalsQueue.remove(portal);
+        Stargate.getStargateConfig().getOpenPortalsQueue().remove(portal);
+        Stargate.getStargateConfig().getActivePortalsQueue().remove(portal);
 
         //Close the destination portal if not always open
         if (!portal.getOptions().isAlwaysOn()) {
@@ -219,12 +219,12 @@ public class PortalOpener {
     }
 
     /**
-     * Gets the time this portal opener's portal was activated/opened
+     * Gets the time this portal opener's portal was triggered (activated/opened)
      *
-     * @return <p>The time this portal opener's portal was activated/opened</p>
+     * @return <p>The time this portal opener's portal was triggered</p>
      */
-    public long getActivatedTime() {
-        return activatedTime;
+    public long getTriggeredTime() {
+        return triggeredTime;
     }
 
 }
