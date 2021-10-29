@@ -5,16 +5,34 @@ can share a network or be split into clusters; they can be hidden on a network o
 
 - Player permissions -- let players build their own networks.
 - Vault economy support -- can add costs for create, destroy and use.
-- Multiple custom gate configurations
+- Ability to create custom gate configurations. Three different default gate configurations are available.
 - Message customization
+- Multiple built-in languages (de, en, es, fr, hu, it, nb-no, nl, nn-no, pt-br, ru)
 - Teleport across worlds or servers (BungeeCord supported)
 - Vehicle teleportation -- teleport minecarts, boats, horses, pigs and striders
+- Underwater portals -- portals can be placed underwater as long as a waterproof button is used
+- API available -- using the API, a lot of behavior can be changed
+- Button customization -- a large amount of materials usable as buttons (buttons, wall corals, shulkers, chests)
 
 ## Background
 
 This was originally TheDgtl's Bukkit port of the Stargate plugin for hMod by Dinnerbone. This is a fork
 of [PseudoKnight's fork](https://github.com/PseudoKnight/Stargate-Bukkit). This fork's main purpose is to create a clean
 version of Stargate compliant with Spigot 1.17, even if it means changing the entire project's previous structure.
+
+## Migration
+
+This plugin should be compatible with configurations from the Stargate plugin all the way back. The nethergate.gate 
+file, the endgate.gate file and the watergate.gate file will be overwritten if they exist. Take a backup of the files 
+and overwrite the files after the first startup if you want to keep your custom gates.
+
+If you have legacy gate files using the old numeric material ids, you need to change them to the new format manually. 
+Use F3 + H to see material ids. Use them exactly as written after "minecraft:".
+The configuration will be updated to a more easily readable format, but the old configuration will be saved in case you 
+want to change back right away.
+
+Permissions have had a few changes, so you should check the permissions section for any differences since you set up 
+permissions.
 
 # Permissions
 
