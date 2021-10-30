@@ -155,22 +155,6 @@ The options are the single letter, not the word. So to make a private hidden gat
 - Right-click the button to open up a portal.
 - Step through.
 
-## Economy Support:
-
-The latest version of Stargate has support for Vault. Gate creation, destruction and use can all have different costs
-associated with them. You can also define per-gate layout costs. The default cost is assigned in the config.yml file,
-while the per-gate costs re defined in the .gate files. To define a certain cost to a gate just add these lines to your
-.gate file:
-
-```
-economy:
-  useEconomy: true
-  createCost: 5
-  destroyCost: 5
-  useCost: 5
-  toOwner: true
-```
-
 # Custom Gate Layout
 
 You can create as many gate formats as you want, the gate layouts are stored in `plugins/Stargate/gates/`.  
@@ -276,6 +260,20 @@ Using `AIR` for a closed underwater gate looks weird, so `WATER` might be better
 you need to make sure it actually contains air when creating it. For partially submerged portals, like ones used for
 boat teleportation, you need to keep water away from the portal entrance/opening until it's been created.
 
+## Economy Support:
+
+The latest version of Stargate has support for Vault. Gate creation, destruction and use can all have different costs
+associated with them. You can also define per-gate layout costs. The default cost is assigned in the config.yml file,
+while the per-gate costs re defined in the .gate files. To define a certain cost to a gate just add these lines to your
+.gate file:
+
+```
+  createCost: 5 -- Will cost 5 currency to create
+  destroyCost: 5 -- Will clost 5 currency to destroy (negative to get back the spent money)
+  useCost: 5 -- Will cost 5 currency to use the stargate
+  toOwner: true -- Will send any fees to the gate's owner
+```
+
 # Configuration
 
 ```
@@ -298,7 +296,7 @@ gates:
     enableBungee - Enable this for BungeeCord support. This allows portals across Bungee servers.
     handleVehicles - Whether or not to handle vehicles going through gates. Set to false to disallow vehicles (Manned or not) going through gates.
 economy:
-  useEconomy - Whether or not to use Economy
+  useEconomy - Whether or not to enable Economy using Vault (must have the Vault plugin)
   createCost - The cost to create a stargate
   destroyCost - The cost to destroy a stargate (Can be negative for a "refund"
   useCost - The cost to use a stargate
