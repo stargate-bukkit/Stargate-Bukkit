@@ -108,7 +108,7 @@ public class BlockEventListener implements Listener {
 			isPersonal = true;
 		}
 		try {
-			Stargate.factory.createNetwork(network, flags.contains(PortalFlag.FANCY_INTERSERVER), isPersonal);
+			Stargate.factory.createNetwork(network, flags.contains(PortalFlag.FANCY_INTERSERVER));
 		} catch (NameError e1) {
 			LangMsg msg= e1.getMsg();
 			if(msg != null) {
@@ -116,7 +116,7 @@ public class BlockEventListener implements Listener {
 				return;
 			}
 		}
-		Network selectedNet = Stargate.factory.getNetwork(network, flags.contains(PortalFlag.FANCY_INTERSERVER), isPersonal);
+		Network selectedNet = Stargate.factory.getNetwork(network, flags.contains(PortalFlag.FANCY_INTERSERVER));
 
 		try {
 			IPortal portal = Portal.createPortalFromSign(selectedNet, lines, block, flags);

@@ -41,7 +41,13 @@ public class Gate {
 	 * operation for this
 	 */
 	VectorOperation converter; 
+	/**
+	 * WARNING: Don't modify this ever, always use .copy()
+	 */
 	Location topLeft;
+	/**
+	 * WARNING: Don't modify this ever, always use .copy()
+	 */
 	BlockVector signPos;
 	private BlockFace facing;
 	private boolean isOpen = false;
@@ -161,7 +167,6 @@ public class Gate {
 	}
 	
 	private BlockFace getButtonFacing(Material buttonMat, Directional signDirection) {
-		//TODO The oposite facing will be selected for watergates (i think)
 		return signDirection.getFacing();
 	}
 	

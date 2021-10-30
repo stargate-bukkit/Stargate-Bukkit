@@ -20,12 +20,15 @@ import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 
 
 public class InterserverNetwork extends Network{
-	public InterserverNetwork(String netName, Database database) throws NameError {
-		super(netName, database);
+	private Database interserverDatabase;
+
+	public InterserverNetwork(String netName, Database database, Database interserverDatabase,SQLQuerryMaker sqlMaker) throws NameError {
+		super(netName, database, sqlMaker);
+		this.interserverDatabase = interserverDatabase;
 	}
 	
-	public InterserverNetwork(String netName, Database database, List<IPortal> portals) throws NameError {
-		super(netName, database);
+	public InterserverNetwork(String netName, Database database,SQLQuerryMaker sqlMaker, List<IPortal> portals) throws NameError {
+		super(netName, database, sqlMaker);
 		for(IPortal portal : portals)
 			addPortal(portal,false);
 	}
@@ -50,21 +53,15 @@ public class InterserverNetwork extends Network{
 	}
 	
 	@Override
-	protected PreparedStatement compileAddStatement(Connection conn, IPortal portal) throws SQLException{
-		PreparedStatement statement = conn.prepareStatement(
-				"INSERT INTO portals (network,name,world,x,y,z,flags,server)"
-				+ " VALUES(?,?,?,?,?,?,?,?);");
-		statement.setString(1, this.name);
-		statement.setString(2, portal.getName());
-		
-		Location loc = portal.getSignPos();
-		statement.setString(3, loc.getWorld().getName());
-		statement.setInt(4, loc.getBlockX());
-		statement.setInt(5, loc.getBlockY());
-		statement.setInt(6, loc.getBlockZ());
-		statement.setString(7, portal.getAllFlagsString());
-		statement.setString(8, Stargate.serverName);
-		return statement;
+	protected void savePortal(IPortal portal) {
+		boolean isInterServer;
+		/*
+		 * Save one local partition of every bungee gate on this server
+		 * Also save it to the interserver database, so that it can be
+		 * seen on other servers TODO rethink this
+		 */
+		super.savePortal(database, portal, (isInterServer=false));
+		super.savePortal(interserverDatabase, portal, (isInterServer=true));
 	}
 	
 	@Override

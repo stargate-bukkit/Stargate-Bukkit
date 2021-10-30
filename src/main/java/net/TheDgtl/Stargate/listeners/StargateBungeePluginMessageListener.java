@@ -79,7 +79,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 			String portalName = json.get("portalName").getAsString();
 			String network = json.get("network").getAsString();
 			boolean isPersonalNet = json.get("isPrivate").getAsBoolean();
-			Stargate.addToQueue(playerName, portalName, network, isPersonalNet);
+			Stargate.addToQueue(playerName, portalName, network);
 			break;
 		case PLUGIN_ENABLE:
 			break;

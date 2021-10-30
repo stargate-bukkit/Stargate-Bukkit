@@ -178,8 +178,8 @@ public class Stargate extends JavaPlugin {
 		return instance.getConfig().get(setting.getKey());
 	}
 	
-	public static void addToQueue(String playerName, String portalName, String netName, boolean isPersonal) {
-    	Network net = factory.getNetwork(netName, true, isPersonal);
+	public static void addToQueue(String playerName, String portalName, String netName) {
+    	Network net = factory.getNetwork(netName, true);
     	if(net == null) {
     		//do some error thing
     	}

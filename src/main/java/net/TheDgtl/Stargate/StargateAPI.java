@@ -60,8 +60,8 @@ public class StargateAPI {
 	 * @param portalName name of the portal
 	 * @return The portal found / otherwise null
 	 */
-	public IPortal getPortal(String netName, String portalName, boolean isBungee, boolean isPersonal){
-		Network net = Stargate.factory.getNetwork(netName, isBungee, isPersonal);
+	public IPortal getPortal(String netName, String portalName, boolean isBungee){
+		Network net = Stargate.factory.getNetwork(netName, isBungee);
 		if(net == null)
 			return null;
 		
@@ -82,8 +82,8 @@ public class StargateAPI {
 	 * @param networkName
 	 * @return The network found / otherwise null
 	 */
-	public Network getNetwork(String networkName, boolean isBungee, boolean isPersonal) {
-		return Stargate.factory.getNetwork(networkName, isBungee, isPersonal);
+	public Network getNetwork(String networkName, boolean isBungee) {
+		return Stargate.factory.getNetwork(networkName, isBungee);
 	}
 	
 	/**

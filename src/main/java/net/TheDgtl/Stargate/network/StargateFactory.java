@@ -30,14 +30,16 @@ public class StargateFactory {
 	
 
 	private final HashMap<String, Network> networkList = new HashMap<>();
-	private final HashMap<String, Network> privateNetworkList = new HashMap<>();
 	private final HashMap<String,InterserverNetwork> bungeeNetList = new HashMap<>(); 
-	private final HashMap<String,InterserverNetwork> privateBungeeNetList = new HashMap<>(); 
 	
-	private final HashMap<byte[], HashMap<String,? extends Network>> test = new HashMap<>();
+	String bungeeDataBaseName = "bungeePortals";
+	String tableName = "portals";
 	
 	private final Database database;
 	private final Database bungeeDatabase;
+	
+	private SQLQuerryMaker bungeeSqlMaker;
+	private SQLQuerryMaker localSqlMaker;
 	
 	public StargateFactory(Stargate stargate) throws SQLException {
 		String databaseName = (String)Stargate.getSetting(Setting.DATABASE_NAME);
@@ -59,39 +61,59 @@ public class StargateFactory {
 		} else {
 			bungeeDatabase = null;
 		}
+		this.bungeeSqlMaker = new SQLQuerryMaker(bungeeDataBaseName);
+		this.localSqlMaker = new SQLQuerryMaker(tableName);
+		
 		createTables();
 		
-		loadAllPortals();
+		loadAllPortals(database,tableName);
+		loadAllPortals(database,bungeeDataBaseName);
 	}
 	
-	private void createTables() throws SQLException {
-		Connection conn = database.getConnection();
-		PreparedStatement statement = conn.prepareStatement(
-				"CREATE TABLE IF NOT EXISTS portals("
+	private String getCreateStatement(String databaseName, boolean isInterserver) {
+		return "CREATE TABLE IF NOT EXISTS "+ databaseName +" ("
 				+ " network VARCHAR, name VARCHAR, desti VARCHAR, world VARCHAR,"
 				+ " x INTEGER, y INTEGER, z INTEGER, flags VARCHAR,"
-				+ " UNIQUE(network,name) );");
+				+ (isInterserver ? " server VARCHAR," : "")
+				+ " UNIQUE(network,name) );";
+	}
+	
+	private void runStatement(Database database, PreparedStatement statement) throws SQLException{
+		Connection conn = database.getConnection();
 		statement.execute();
 		statement.close();
-		conn.close();
+	}
+	
+	
+	private void createTables() throws SQLException {
+		boolean isInterServer;
+		Connection conn1 = database.getConnection();
+		PreparedStatement localPortalsStatement = localSqlMaker.compileCreateStatement(conn1,(isInterServer = false));
+		runStatement(database,localPortalsStatement);
+		conn1.close();
+		
 		if(!(boolean)Stargate.getSetting(Setting.USING_BUNGEE)) {
 			return;
 		}
-		Connection bungeeConn = bungeeDatabase.getConnection();
-		PreparedStatement bungeeStatement = bungeeConn.prepareStatement(
-				"CREATE TABLE IF NOT EXISTS portals("
-				+ " network VARCHAR, name VARCHAR, desti VARCHAR, world VARCHAR,"
-				+ " x INTEGER, y INTEGER, z INTEGER, flags VARCHAR,"
-				+ " server VARCHAR, UNIQUE(network,name) );");
-		bungeeStatement.execute();
-		bungeeStatement.close();
-		bungeeConn.close();
+		Connection conn2 = database.getConnection();
+		PreparedStatement localInterserverPortalsStatement = localSqlMaker.compileCreateStatement(conn2,(isInterServer = false));
+		runStatement(database,localInterserverPortalsStatement);
+		conn2.close();
+		
+		Connection conn3 = bungeeDatabase.getConnection();
+		PreparedStatement interserverPortalsStatement = localSqlMaker.compileCreateStatement(conn3,(isInterServer = true));
+		runStatement(bungeeDatabase,interserverPortalsStatement);
+		conn3.close();
 	}
 	
-	public void loadAllPortals() throws SQLException {
+	public void loadAllPortals(Database database, String databaseName) throws SQLException {
+		loadAllPortals(database,databaseName,false);
+	}
+	
+	public void loadAllPortals(Database database, String databaseName, boolean areVirtual) throws SQLException {
 		Connection connection = database.getConnection();
 		PreparedStatement statement = connection.prepareStatement(
-				"SELECT * FROM portals");
+				"SELECT * FROM " + databaseName);
 		
 		ResultSet set = statement.executeQuery();
 		while(set.next()) {
@@ -107,13 +129,19 @@ public class StargateFactory {
 			EnumSet<PortalFlag> flags = PortalFlag.parseFlags(flagsMsg);
 			
 			boolean isBungee = flags.contains(PortalFlag.BUNGEE);
-			boolean isPersonal = flags.contains(PortalFlag.PERSONAL_NETWORK);
 			
 			try {
-				createNetwork(netName, isBungee, isPersonal);
+				createNetwork(netName, isBungee);
 			} catch (NameError e) {}
-			Network net = getNetwork(netName, isBungee, isPersonal);
+			Network net = getNetwork(netName, isBungee);
 			
+		
+			if(areVirtual) {
+				String server = set.getString(9);
+				IPortal virtualPortal = new VirtualPortal(server,name,(InterserverNetwork) net,flags);
+				net.addPortal(virtualPortal, false);
+				return;
+			}
 			
 			World world = Bukkit.getWorld(worldName);
 			Block block = world.getBlockAt(x, y, z);
@@ -122,59 +150,48 @@ public class StargateFactory {
 			try {
 				IPortal portal = Portal.createPortalFromSign(net, virtualSign, block, flags);
 				net.addPortal(portal, false);
-			} catch (NameError e) {
+			}  catch (GateConflict e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoFormatFound e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (GateConflict e) {
+			} catch (NameError e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			} 
 		}
 	}
 	
-	public void createNetwork(String netName, boolean isBungee, boolean isPersonal) throws NameError {
-		if (netExists(netName, isBungee, isPersonal))
+	public void createNetwork(String netName, boolean isBungee) throws NameError {
+		if (netExists(netName, isBungee))
 			throw new NameError(null);
 		if (isBungee) {
-			InterserverNetwork net = new InterserverNetwork(netName, bungeeDatabase);
+			InterserverNetwork net = new InterserverNetwork(netName, database, bungeeDatabase, bungeeSqlMaker);
 			HashMap<String, InterserverNetwork> map;
-			if (isPersonal)
-				map = privateBungeeNetList;
-			else
-				map = bungeeNetList;
+			map = bungeeNetList;
 			map.put(netName, net);
 			return;
 		}
-		Network net = new Network(netName,database);
+		Network net = new Network(netName,database,localSqlMaker);
 		HashMap<String, Network> map;
-		if (isPersonal)
-			map = privateNetworkList;
 		map = networkList;
 		map.put(netName, net);
 	}
 	
-	public boolean netExists(String netName, boolean isBungee, boolean isPersonal) {
-		return (getNetwork(netName,isBungee,isPersonal) != null);
+	public boolean netExists(String netName, boolean isBungee) {
+		return (getNetwork(netName,isBungee) != null);
 	}
 	
- 	public Network getNetwork(String name, boolean isBungee, boolean isPersonal) {
-		return getNetMap(isBungee,isPersonal).get(name);
+ 	public Network getNetwork(String name, boolean isBungee) {
+		return getNetMap(isBungee).get(name);
 	}
 	
-	private HashMap<String, ? extends Network> getNetMap(boolean isBungee, boolean isPersonal){
+	private HashMap<String, ? extends Network> getNetMap(boolean isBungee){
 		if (isBungee) {
-			if (isPersonal)
-				return privateBungeeNetList;
-			else
-				return bungeeNetList;
+			return bungeeNetList;
 		} else {
-			if (isPersonal)
-				return privateNetworkList;
-			else
-				return networkList;
+			return networkList;
 		}
 	}
 	
@@ -223,11 +240,10 @@ public class StargateFactory {
 
 		if (isVirtual) {
 			try {
-				createNetwork(netName,true,flags.contains(PortalFlag.PERSONAL_NETWORK));
-			} catch(NameError e) {
-				
-			}
-			InterserverNetwork network=  (InterserverNetwork) getNetwork(netName, true, flags.contains(PortalFlag.PERSONAL_NETWORK));
+				createNetwork(netName,true);
+			} catch(NameError e) {}
+			
+			InterserverNetwork network=  (InterserverNetwork) getNetwork(netName, true);
 			return new VirtualPortal(server, portalName,network, flags);
 		}
 		return null; // TODO Not implemented yet

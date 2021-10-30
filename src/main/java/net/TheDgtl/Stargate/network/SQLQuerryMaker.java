@@ -1,0 +1,60 @@
+package net.TheDgtl.Stargate.network;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.bukkit.Location;
+
+import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.network.portal.IPortal;
+
+public class SQLQuerryMaker {
+	private String tableName;
+
+
+
+	public SQLQuerryMaker(String tableName) {
+		this.tableName = tableName;
+	}
+	
+	public PreparedStatement compileCreateStatement(Connection conn, boolean isInterserver) throws SQLException {
+		String statementMsg = "CREATE TABLE IF NOT EXISTS "+ tableName +" ("
+				+ " network VARCHAR, name VARCHAR, desti VARCHAR, world VARCHAR,"
+				+ " x INTEGER, y INTEGER, z INTEGER, flags VARCHAR,"
+				+ (isInterserver ? " server VARCHAR," : "")
+				+ " UNIQUE(network,name) );";
+		
+		return conn.prepareStatement(statementMsg);
+	}
+	
+	public PreparedStatement compileAddStatement(Connection conn, IPortal portal, boolean isInterserver) throws SQLException {
+		PreparedStatement statement = conn.prepareStatement(
+				"INSERT INTO " +tableName+ " (network,name,world,x,y,z,flags)"
+				+ " VALUES(?,?,?,?,?,?,?"+(isInterserver?",?":"")+");");
+		statement.setString(1, portal.getNetwork().getName());
+		statement.setString(2, portal.getName());
+		
+		Location loc = portal.getSignPos();
+		statement.setString(3, loc.getWorld().getName());
+		statement.setInt(4, loc.getBlockX());
+		statement.setInt(5, loc.getBlockY());
+		statement.setInt(6, loc.getBlockZ());
+		statement.setString(7, portal.getAllFlagsString());
+		
+		if(isInterserver) {
+			statement.setString(8, Stargate.serverName);
+		}
+		
+		return statement;
+	}
+	
+	public PreparedStatement compileRemoveStatement(Connection conn, IPortal portal) throws SQLException {
+		PreparedStatement output = conn.prepareStatement(
+				"DELETE FROM " + tableName
+				+ " WHERE name = ? AND network = ?");
+		output.setString(1, portal.getName());
+		output.setString(2, portal.getNetwork().getName());
+		return output;
+	}
+}

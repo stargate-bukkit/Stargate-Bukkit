@@ -26,17 +26,19 @@ import net.TheDgtl.Stargate.network.portal.SGLocation;
 
 public class Network {
 	protected HashMap<String, IPortal> portalList;
-	private Database database;
+	protected Database database;
 	protected String name;
+	protected SQLQuerryMaker sqlMaker;
 	
 
 	final static EnumMap<GateStructureType, HashMap<SGLocation, IPortal>> portalFromPartsMap = new EnumMap<>(GateStructureType.class);
 	
-	public Network(String name, Database database) throws NameError {
+	public Network(String name, Database database, SQLQuerryMaker sqlMaker) throws NameError {
 		if (name.isBlank() || (name.length() == Stargate.MAX_TEXT_LENGTH))
 			throw new NameError(LangMsg.NAME_LENGTH_FAULT);
 		this.name = name;
 		this.database = database;
+		this.sqlMaker = sqlMaker;
 		portalList = new HashMap<>();
 	}
 	
@@ -69,55 +71,41 @@ public class Network {
 		}
 	}
 	
-	protected PreparedStatement compileRemoveStatement(Connection conn, IPortal portal) throws SQLException {
-		PreparedStatement output = conn.prepareStatement(
-				"DELETE FROM portals"
-				+ " WHERE name = ? AND network = ?");
-		output.setString(1, portal.getName());
-		output.setString(2, this.name);
-		return output;
-	}
-	
-	protected PreparedStatement compileAddStatement(Connection conn, IPortal portal) throws SQLException {
-		PreparedStatement output = conn.prepareStatement(
-				"INSERT INTO portals (network,name,world,x,y,z,flags)"
-				+ " VALUES(?,?,?,?,?,?,?);");
-		output.setString(1, this.name);
-		output.setString(2, portal.getName());
-		
-		Location loc = portal.getSignPos();
-		output.setString(3, loc.getWorld().getName());
-		output.setInt(4, loc.getBlockX());
-		output.setInt(5, loc.getBlockY());
-		output.setInt(6, loc.getBlockZ());
-		output.setString(7, portal.getAllFlagsString());
-		return output;
-	}
-	
 	public void removePortal(IPortal portal) {
 		try {
-			Connection connection = database.getConnection();
-			PreparedStatement statement = compileRemoveStatement(connection, portal);
+			Connection conn = database.getConnection();
+			PreparedStatement statement = sqlMaker.compileRemoveStatement(conn, portal);
 			statement.execute();
 			statement.close();
+			conn.close();
 			portalList.remove(portal.getName());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
+	protected void savePortal(Database database, IPortal portal, boolean isInterServer) {
+		try {
+			Connection conn = database.getConnection();
+			PreparedStatement statement = sqlMaker.compileAddStatement(conn, portal, isInterServer);
+			statement.execute();
+			statement.close();
+			conn.close();
+			updatePortals();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return;
+		}
+	}
+	
+	protected void savePortal(IPortal portal) {
+		boolean isInterServer;
+		savePortal(database, portal, (isInterServer = false));
+	}
+	
 	public void addPortal(IPortal portal, boolean saveToDatabase) {
 		if(saveToDatabase) {
-			try {
-				Connection connection = database.getConnection();
-				PreparedStatement statement = compileAddStatement(connection, portal);
-				statement.execute();
-				statement.close();
-				updatePortals();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return;
-			}
+			savePortal(portal);
 		}
 		portalList.put(portal.getName(), portal);
 	}
