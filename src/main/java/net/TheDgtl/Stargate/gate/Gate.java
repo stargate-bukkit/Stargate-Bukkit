@@ -83,6 +83,7 @@ public class Gate {
 
 	/**
 	 * Checks if format matches independent of controlBlock
+	 * TODO: symmetric formats will be checked twice, make a way to determine if a format is symmetric to avoid this
 	 * @param loc
 	 * @return
 	 * @throws GateConflict 
@@ -293,7 +294,7 @@ public class Gate {
 				irisNormal = Axis.Z;
 				break;
 			case NORTH:
-				rotation = 3*Math.PI/2;
+				rotation = -Math.PI/2;
 				irisNormal = Axis.X;
 				break;
 			default:
@@ -305,7 +306,7 @@ public class Gate {
 
 		/**
 		 * Inverse operation of doInverse; A vector operation that rotates around origo
-		 * and flips z axis
+		 * and flips z axis. Does not permute input vector
 		 * 
 		 * @param vector
 		 * @return vector
@@ -320,7 +321,7 @@ public class Gate {
 
 		/**
 		 * Inverse operation of doOperation; A vector operation that rotates around
-		 * origo and flips z axis
+		 * origo and flips z axis. Does not permute input vector
 		 * 
 		 * @param vector
 		 * @return vector

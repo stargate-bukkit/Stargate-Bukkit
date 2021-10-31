@@ -23,9 +23,11 @@ public abstract class GateStructure {
 	public boolean isValidState(Gate.VectorOperation converter, Location topleft) {
 		List<BlockVector> partsPos = getPartsPos();
 		for (BlockVector partPos : partsPos) {
-			Location partLoc = topleft.clone().add(converter.doInverse(partPos));
+			BlockVector inverse = converter.doInverse(partPos);
+			Location partLoc = topleft.clone().add(inverse);
 			Stargate.log(Level.FINEST,
-					"Checking location " + partLoc.getBlockX() + "," + partLoc.getBlockY() + "," + partLoc.getBlockZ());
+					"Checking location (" + partLoc.getBlockX() + "," + partLoc.getBlockY() + "," + partLoc.getBlockZ()
+					+") relative pos[" + inverse.getBlockX() + "," + inverse.getBlockY() + "," + inverse.getBlockZ() + "]");
 			Block block = partLoc.getBlock();
 			if (!isValidBlock(partPos, block.getType())) {
 				return false;

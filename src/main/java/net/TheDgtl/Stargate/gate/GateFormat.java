@@ -49,7 +49,7 @@ public class GateFormat {
 		for (GateStructureType structKey : portalParts.keySet()) {
 			Stargate.log(Level.FINER, "---Validating " + structKey);
 			if (!(portalParts.get(structKey).isValidState(converter, loc))) {
-				Stargate.log(Level.INFO, structKey + "returned negative");
+				Stargate.log(Level.INFO, structKey + " returned negative");
 				return false;
 			}
 		}

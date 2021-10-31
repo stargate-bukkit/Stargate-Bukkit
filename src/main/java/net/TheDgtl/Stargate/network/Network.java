@@ -55,11 +55,6 @@ public class Network {
 			portalFromPartsMap.put(type, new HashMap<SGLocation, IPortal>());
 		}
 		portalFromPartsMap.get(type).putAll(locationsMap);
-
-		for (SGLocation loc : locationsMap.keySet()) {
-			Stargate.log(Level.FINEST, "Registering portal " + locationsMap.get(loc).getName() + " with structType "
-					+ type + " at location " + loc.toString());
-		}
 	}
 
 	public void unRegisterLocation(GateStructureType type, SGLocation loc) {
