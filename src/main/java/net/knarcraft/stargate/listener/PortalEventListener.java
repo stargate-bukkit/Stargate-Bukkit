@@ -1,5 +1,6 @@
 package net.knarcraft.stargate.listener;
 
+import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.FromTheEndTeleportation;
 import net.knarcraft.stargate.portal.PlayerTeleporter;
 import net.knarcraft.stargate.portal.Portal;
@@ -8,7 +9,6 @@ import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,11 +37,14 @@ public class PortalEventListener implements Listener {
         if (event.isCancelled()) {
             return;
         }
-        //Cancel nether portal creation when the portal is a StarGate portal
-        for (BlockState block : event.getBlocks()) {
-            if (PortalHandler.getByBlock(block.getBlock()) != null) {
+        //Unnecessary nether portal creation is only triggered by nether pairing
+        if (event.getReason() == PortalCreateEvent.CreateReason.NETHER_PAIR) {
+            //If an entity is standing in a Stargate entrance, it can be assumed that the creation is a mistake
+            Entity entity = event.getEntity();
+            if (entity != null && PortalHandler.getByAdjacentEntrance(entity.getLocation()) != null) {
+                Stargate.debug("PortalEventListener::onPortalCreation",
+                        "Cancelled nether portal create event");
                 event.setCancelled(true);
-                return;
             }
         }
     }

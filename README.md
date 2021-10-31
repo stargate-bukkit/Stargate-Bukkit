@@ -367,6 +367,10 @@ bungeeSign=Teleport to
 
 # Changes
 
+#### \[Version 0.9.0.2] EpicKnarvik97 fork
+
+- Fixes a bug causing Stargates using NETHER_PORTAL blocks to generate nether portals in the nether.
+
 #### \[Version 0.9.0.1] EpicKnarvik97 fork
 
 - Adds the highlightSignColor option and renames the signColor option to mainSignColor
