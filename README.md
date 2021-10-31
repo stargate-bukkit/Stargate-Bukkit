@@ -292,7 +292,8 @@ gates:
   cosmetic:
     rememberDestination - Whether to set the first destination as the last used destination for all gates
     sortNetworkDestinations - If true, network lists will be sorted alphabetically.
-    signColor - This allows you to specify the color of the gate signs.
+    mainSignColor - This allows you to specify the color of the gate signs.
+    highlightSignColor - This allows you to specify the color of the sign markings.
   integrity:
     destroyedByExplosion - Whether to destroy a stargate with explosions, or stop an explosion if it contains a gates controls.
     verifyPortals - Whether or not all the non-sign blocks are checked to match the gate layout when an old stargate is loaded at startup.
@@ -365,6 +366,13 @@ bungeeSign=Teleport to
 ```
 
 # Changes
+
+#### \[Version 0.9.0.1] EpicKnarvik97 fork
+
+- Adds the highlightSignColor option and renames the signColor option to mainSignColor
+- Fixes some inconsistencies in sign coloring by using the highlight color for all markings
+- Fixes the order in which configs are loaded to prevent an exception
+- Adds migrations for the config change
 
 #### \[Version 0.9.0.0] EpicKnarvik97 fork
 
