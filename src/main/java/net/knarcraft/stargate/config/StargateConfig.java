@@ -60,19 +60,19 @@ public final class StargateConfig {
         portalFolder = dataFolderPath + "/portals/";
         gateFolder = dataFolderPath + "/gates/";
         languageLoader = new LanguageLoader(dataFolderPath + "/lang/");
-
-        this.loadConfig();
-
-        //Enable the required channels for Bungee support
-        if (stargateGateConfig.enableBungee()) {
-            startStopBungeeListener(true);
-        }
     }
 
     /**
      * Finish the config setup by loading languages, gates and portals, and loading economy if vault is loaded
      */
     public void finishSetup() {
+        this.loadConfig();
+
+        //Enable the required channels for Bungee support
+        if (stargateGateConfig.enableBungee()) {
+            startStopBungeeListener(true);
+        }
+
         //Set the chosen language and reload the language loader
         languageLoader.setChosenLanguage(languageName);
         languageLoader.reload();
