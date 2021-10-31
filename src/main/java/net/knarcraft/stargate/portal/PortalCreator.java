@@ -147,7 +147,7 @@ public class PortalCreator {
         }
 
         //Check if a conflict exists
-        if (PortalHandler.conflictsWithExistingPortal(gate, portalLocation.getTopLeft(), yaw, player)) {
+        if (conflictsWithExistingPortal(gate, portalLocation.getTopLeft(), yaw, player)) {
             return null;
         }
 
@@ -310,6 +310,27 @@ public class PortalCreator {
                 entrance.setType(portal.getGate().getPortalClosedBlock());
             }
         }
+    }
+
+    /**
+     * Checks whether the new portal conflicts with an existing portal
+     *
+     * @param gate    <p>The gate type of the new portal</p>
+     * @param topLeft <p>The top-left block of the new portal</p>
+     * @param yaw     <p>The yaw when looking directly outwards from the portal</p>
+     * @param player  <p>The player creating the new portal</p>
+     * @return <p>True if a conflict was found. False otherwise</p>
+     */
+    private static boolean conflictsWithExistingPortal(Gate gate, BlockLocation topLeft, double yaw, Player player) {
+        for (RelativeBlockVector borderVector : gate.getLayout().getBorder()) {
+            BlockLocation borderBlockLocation = topLeft.getRelativeLocation(borderVector, yaw);
+            if (PortalHandler.getByBlock(borderBlockLocation.getBlock()) != null) {
+                Stargate.debug("createPortal", "Gate conflicts with existing gate");
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createConflict"));
+                return true;
+            }
+        }
+        return false;
     }
 
 }

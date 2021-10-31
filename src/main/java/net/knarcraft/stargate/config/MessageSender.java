@@ -50,9 +50,7 @@ public final class MessageSender {
         if (message.isEmpty()) {
             return;
         }
-        //Replace color codes with green? What's the deal with the dollar sign?
-        //TODO: Figure out what this is actually supposed to do and do it in a better way
-        message = message.replaceAll("(&([a-f0-9]))", "\u00A7$2");
+        message = ChatColor.translateAlternateColorCodes('&', message);
         if (error) {
             sender.sendMessage(ChatColor.RED + languageLoader.getString("prefix") + ChatColor.WHITE + message);
         } else {

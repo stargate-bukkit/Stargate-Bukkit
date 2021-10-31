@@ -191,7 +191,7 @@ public class PortalSignDrawer {
      */
     private void drawFixedSign(Sign sign) {
         if (portal.getOptions().isRandom()) {
-            setLine(sign, 1, "> " + Stargate.getString("signRandom") + " <");
+            setLine(sign, 1, ">" + Stargate.getString("signRandom") + "<");
         } else {
             setLine(sign, 1, ">" + portal.getDestinationName() + "<");
         }

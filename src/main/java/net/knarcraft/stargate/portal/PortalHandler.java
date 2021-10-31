@@ -86,11 +86,11 @@ public class PortalHandler {
                 destinations.add(portal.getName());
                 continue;
             }
-            //Check if this player can access the dest world
+            //Check if this player can access the destination world
             if (PermissionHelper.cannotAccessWorld(player, portal.getWorld().getName())) {
                 continue;
             }
-            //Visible to this player.
+            //The portal is visible to the player
             if (PermissionHelper.canSeePortal(player, portal)) {
                 destinations.add(portal.getName());
             }
@@ -168,30 +168,6 @@ public class PortalHandler {
         }
 
         return gate;
-    }
-
-    /**
-     * Checks whether the new portal conflicts with an existing portal
-     *
-     * @param gate    <p>The gate type of the new portal</p>
-     * @param topLeft <p>The top-left block of the new portal</p>
-     * @param yaw     <p>The yaw when looking directly outwards from the portal</p>
-     * @param player  <p>The player creating the new portal</p>
-     * @return <p>True if a conflict was found. False otherwise</p>
-     */
-    static boolean conflictsWithExistingPortal(Gate gate, BlockLocation topLeft, double yaw, Player player) {
-        //TODO: Make a quicker check. Could just check for control block conflicts if all code is changed to account for
-        //      getting several hits at a single location when checking for the existence of a portal. May make
-        //      everything slower overall? Would make for cooler gates though.
-        for (RelativeBlockVector borderVector : gate.getLayout().getBorder()) {
-            BlockLocation borderBlockLocation = topLeft.getRelativeLocation(borderVector, yaw);
-            if (getByBlock(borderBlockLocation.getBlock()) != null) {
-                Stargate.debug("createPortal", "Gate conflicts with existing gate");
-                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createConflict"));
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

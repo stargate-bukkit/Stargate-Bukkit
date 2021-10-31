@@ -22,17 +22,22 @@ version of Stargate compliant with Spigot 1.17, even if it means changing the en
 
 ## Migration
 
-This plugin should be compatible with configurations from the Stargate plugin all the way back. The nethergate.gate 
-file, the endgate.gate file and the watergate.gate file will be overwritten if they exist. Take a backup of the files 
+This plugin should be compatible with configurations from the Stargate plugin all the way back. The nethergate.gate
+file, the endgate.gate file and the watergate.gate file will be overwritten if they exist. Take a backup of the files
 and overwrite the files after the first startup if you want to keep your custom gates.
 
-If you have legacy gate files using the old numeric material ids, you need to change them to the new format manually. 
-Use F3 + H to see material ids. Use them exactly as written after "minecraft:".
-The configuration will be updated to a more easily readable format, but the old configuration will be saved in case you 
-want to change back right away.
+If you have legacy gate files using the old numeric material ids, you need to change them to the new format manually.
+Use F3 + H to see material ids. Use them exactly as written after "minecraft:". The configuration will be updated to a
+more easily readable format, but the old configuration will be saved in case you want to change back right away.
 
-Permissions have had a few changes, so you should check the permissions section for any differences since you set up 
+Permissions have had a few changes, so you should check the permissions section for any differences since you set up
 permissions.
+
+Payment to owner using Economy, through Vault, is only possible if the portal owner in the portal database is defined by
+a UUID, and not a username. Right now, there is no automatic upgrade from usernames to UUID. You must either make the
+stargate owner re-create the stargate or edit the file in the portals folder in a text editor. There are various ways to
+find the UUID of players. You may look in the usercache.json file in the server directory or search for the username on
+various websites.
 
 # Permissions
 

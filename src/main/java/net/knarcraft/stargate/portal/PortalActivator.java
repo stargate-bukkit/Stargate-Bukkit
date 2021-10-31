@@ -191,9 +191,7 @@ public class PortalActivator {
         //Un-mark the portal as activated
         Stargate.getStargateConfig().getActivePortalsQueue().remove(portal);
 
-        //For a fixed gate, the destinations and the sign never really change, but at the same time, fixed gates are
-        // never really activated, so in theory, this check should be redundant.
-        //TODO: Decide if this check is really useless
+        //Fixed portals are active by definition, but should never be de-activated
         if (portal.getOptions().isFixed()) {
             return;
         }
