@@ -13,6 +13,7 @@ protectEntrance=gates.integrity.protectEntrance
 enableBungee=gates.functionality.enableBungee
 verifyPortals=gates.integrity.verifyPortals
 signColor=gates.cosmetic.signColor
+gates.cosmetic.signColor=gates.cosmetic.mainSignColor
 debug=debugging.debug
 permdebug=debugging.permissionDebug
 useiconomy=economy.useEconomy

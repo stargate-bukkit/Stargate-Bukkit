@@ -11,7 +11,8 @@
 # handleVehicles - Whether to allow vehicles through gates
 # sortNetworkDestinations - Whether to sort network lists alphabetically
 # protectEntrance - Whether to protect gate entrance material (More resource intensive. Only enable if using destroyable open/closed material)
-# signColor - The color used for drawing signs (Default: BLACK).
+# mainSignColor - The color used for drawing signs (Default: BLACK).
+# highlightSignColor - The color used for sign markings (Default: WHITE)
 # verifyPortals - Whether all the non-sign blocks are checked to match the gate layout when a stargate is loaded.
 # I------------I-------------I #
 # stargate economy options #
@@ -39,7 +40,8 @@ gates:
   cosmetic:
     rememberDestination: false
     sortNetworkDestinations: false
-    signColor: BLACK
+    mainSignColor: BLACK
+    highlightSignColor: WHITE
   integrity:
     destroyedByExplosion: false
     verifyPortals: false

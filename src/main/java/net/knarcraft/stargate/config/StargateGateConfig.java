@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.config;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.portal.PortalSignDrawer;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -17,7 +18,6 @@ public final class StargateGateConfig {
     private boolean enableBungee = true;
     private boolean verifyPortals = true;
     private boolean destroyExplosion = false;
-    private ChatColor signColor;
     private String defaultGateNetwork = "central";
     private static final int activeTime = 10;
     private static final int openTime = 10;
@@ -122,17 +122,6 @@ public final class StargateGateConfig {
     }
 
     /**
-     * Gets the color to use for drawing signs
-     *
-     * <p>Highlighting may use other colors. This is just the base color for portal names and such.</p>
-     *
-     * @return <p>The color to use for drawing signs</p>
-     */
-    public ChatColor getSignColor() {
-        return signColor;
-    }
-
-    /**
      * Gets the default portal network to use if no other network is given
      *
      * @return <p>The default portal network</p>
@@ -163,24 +152,26 @@ public final class StargateGateConfig {
         //Cosmetic
         sortNetworkDestinations = newConfig.getBoolean("gates.cosmetic.sortNetworkDestinations");
         rememberDestination = newConfig.getBoolean("gates.cosmetic.rememberDestination");
-        loadSignColor(newConfig.getString("gates.cosmetic.signColor"));
+        loadSignColor(newConfig.getString("gates.cosmetic.mainSignColor"),
+                newConfig.getString("gates.cosmetic.highlightSignColor"));
     }
 
     /**
      * Loads the correct sign color given a sign color string
      *
-     * @param signColor <p>A string representing a sign color</p>
+     * @param mainSignColor <p>A string representing the main sign color</p>
      */
-    private void loadSignColor(String signColor) {
-        if (signColor != null) {
+    private void loadSignColor(String mainSignColor, String highlightSignColor) {
+        if (mainSignColor != null) {
             try {
-                this.signColor = ChatColor.valueOf(signColor.toUpperCase());
+                PortalSignDrawer.setColors(ChatColor.valueOf(mainSignColor.toUpperCase()),
+                        ChatColor.valueOf(highlightSignColor.toUpperCase()));
                 return;
             } catch (IllegalArgumentException | NullPointerException ignored) {
             }
         }
-        Stargate.logWarning("You have specified an invalid color in your config.yml. Defaulting to BLACK");
-        this.signColor = ChatColor.BLACK;
+        Stargate.logWarning("You have specified an invalid color in your config.yml. Defaulting to BLACK and WHITE");
+        PortalSignDrawer.setColors(ChatColor.BLACK, ChatColor.WHITE);
     }
 
 }
