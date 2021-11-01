@@ -256,6 +256,11 @@ public abstract class Teleporter {
      * @param origin <p>The portal the player is teleporting from</p>
      */
     protected void teleportLeashedCreatures(Player player, Portal origin) {
+        //If this feature is disabled, just return
+        if (!Stargate.getGateConfig().handleLeashedCreatures()) {
+            return;
+        }
+
         //Find any nearby leashed entities to teleport with the player
         List<Creature> nearbyEntities = getLeashedCreatures(player);
         //Teleport all creatures leashed by the player to the portal the player is to exit from

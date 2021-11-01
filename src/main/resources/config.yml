@@ -9,6 +9,7 @@
 # language - The language file to load for messages
 # rememberDestination - Whether to remember the cursor location between uses
 # handleVehicles - Whether to allow vehicles through gates
+# handleLeashedCreatures - Whether to allow creatures lead by a player to teleport with the player
 # sortNetworkDestinations - Whether to sort network lists alphabetically
 # protectEntrance - Whether to protect gate entrance material (More resource intensive. Only enable if using destroyable open/closed material)
 # mainSignColor - The color used for drawing signs (Default: BLACK).
@@ -49,6 +50,7 @@ gates:
   functionality:
     enableBungee: false
     handleVehicles: true
+    handleLeashedCreatures: true
 economy:
   useEconomy: false
   createCost: 0

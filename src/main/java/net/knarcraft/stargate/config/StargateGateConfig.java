@@ -13,6 +13,7 @@ public final class StargateGateConfig {
     private int maxGatesEachNetwork = 0;
     private boolean rememberDestination = false;
     private boolean handleVehicles = true;
+    private boolean handleLeashedCreatures = true;
     private boolean sortNetworkDestinations = false;
     private boolean protectEntrance = false;
     private boolean enableBungee = true;
@@ -74,6 +75,15 @@ public final class StargateGateConfig {
      */
     public boolean handleVehicles() {
         return handleVehicles;
+    }
+
+    /**
+     * Gets whether leashed creatures should be teleported with a teleporting player
+     *
+     * @return <p>Whether leashed creatures should be handled</p>
+     */
+    public boolean handleLeashedCreatures() {
+        return handleLeashedCreatures;
     }
 
     /**
@@ -142,6 +152,7 @@ public final class StargateGateConfig {
 
         //Functionality
         handleVehicles = newConfig.getBoolean("gates.functionality.handleVehicles");
+        handleLeashedCreatures = newConfig.getBoolean("gates.functionality.handleLeashedCreatures");
         enableBungee = newConfig.getBoolean("gates.functionality.enableBungee");
 
         //Integrity
@@ -173,5 +184,4 @@ public final class StargateGateConfig {
         Stargate.logWarning("You have specified an invalid color in your config.yml. Defaulting to BLACK and WHITE");
         PortalSignDrawer.setColors(ChatColor.BLACK, ChatColor.WHITE);
     }
-
 }
