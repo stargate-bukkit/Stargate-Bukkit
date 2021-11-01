@@ -13,7 +13,9 @@ import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
@@ -245,6 +247,23 @@ public abstract class Teleporter {
             }
         }
         return chunksToLoad;
+    }
+
+    /**
+     * Teleports any creatures leashed by the player
+     *
+     * @param player <p>The player which is teleported</p>
+     * @param origin <p>The portal the player is teleporting from</p>
+     */
+    protected void teleportLeashedCreatures(Player player, Portal origin) {
+        //Find any nearby leashed entities to teleport with the player
+        List<Entity> nearbyEntities = player.getNearbyEntities(15, 15, 15);
+        for (Entity entity : nearbyEntities) {
+            //Teleport all creatures leashed by the player to the portal the player is to exit from
+            if (entity instanceof Creature creature && creature.isLeashed() && creature.getLeashHolder() == player) {
+                new EntityTeleporter(portal, creature).teleport(origin);
+            }
+        }
     }
 
 }
