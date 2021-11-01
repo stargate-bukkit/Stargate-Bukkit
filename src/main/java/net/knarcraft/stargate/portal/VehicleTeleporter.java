@@ -151,6 +151,7 @@ public class VehicleTeleporter extends EntityTeleporter {
             passenger.eject();
             scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
                 if (passenger instanceof Player player) {
+                    //Teleport any creatures leashed by the player in a 15-block range
                     teleportLeashedCreatures(player, origin);
                 }
                 teleportAndAddPassenger(vehicle, passenger);

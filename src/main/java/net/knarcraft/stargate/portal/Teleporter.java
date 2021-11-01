@@ -257,13 +257,34 @@ public abstract class Teleporter {
      */
     protected void teleportLeashedCreatures(Player player, Portal origin) {
         //Find any nearby leashed entities to teleport with the player
-        List<Entity> nearbyEntities = player.getNearbyEntities(15, 15, 15);
-        for (Entity entity : nearbyEntities) {
-            //Teleport all creatures leashed by the player to the portal the player is to exit from
-            if (entity instanceof Creature creature && creature.isLeashed() && creature.getLeashHolder() == player) {
+        List<Creature> nearbyEntities = getLeashedCreatures(player);
+        //Teleport all creatures leashed by the player to the portal the player is to exit from
+        for (Creature creature : nearbyEntities) {
+            creature.setLeashHolder(null);
+            scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
                 new EntityTeleporter(portal, creature).teleport(origin);
+                scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> creature.setLeashHolder(player), 3);
+            }, 2);
+        }
+    }
+
+    /**
+     * Gets all creatures leashed by a player within the given range
+     *
+     * @param player <p>The player to check</p>
+     * @return <p>A list of all creatures the player is holding in a leash (lead)</p>
+     */
+    protected List<Creature> getLeashedCreatures(Player player) {
+        List<Creature> leashedCreatures = new ArrayList<>();
+        //Find any nearby leashed entities to teleport with the player
+        List<Entity> nearbyEntities = player.getNearbyEntities(15, 15, 15);
+        //Teleport all creatures leashed by the player to the portal the player is to exit from
+        for (Entity entity : nearbyEntities) {
+            if (entity instanceof Creature creature && creature.isLeashed() && creature.getLeashHolder() == player) {
+                leashedCreatures.add(creature);
             }
         }
+        return leashedCreatures;
     }
 
 }
