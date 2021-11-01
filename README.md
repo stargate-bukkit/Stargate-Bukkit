@@ -367,6 +367,11 @@ bungeeSign=Teleport to
 
 # Changes
 
+#### \[Version 0.9.0.3] EpicKnarvik97 fork
+
+- Adds a missing error message when a player in a vehicle cannot pay the teleportation fee
+- Adds UUID migration to automatically update player names to UUID when possible
+
 #### \[Version 0.9.0.2] EpicKnarvik97 fork
 
 - Fixes a bug causing Stargates using NETHER_PORTAL blocks to generate nether portals in the nether.
