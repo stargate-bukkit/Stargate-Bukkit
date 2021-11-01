@@ -1,12 +1,12 @@
 package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.Stargate;
-import net.knarcraft.stargate.event.StargateEntityPortalEvent;
 import net.knarcraft.stargate.utility.DirectionHelper;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.util.Vector;
 
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * The portal teleporter takes care of the actual portal teleportation for any vehicles
  */
-public class VehicleTeleporter extends Teleporter {
+public class VehicleTeleporter extends EntityTeleporter {
 
     private final Vehicle teleportingVehicle;
 
@@ -26,7 +26,7 @@ public class VehicleTeleporter extends Teleporter {
      * @param teleportingVehicle <p>The teleporting vehicle</p>
      */
     public VehicleTeleporter(Portal portal, Vehicle teleportingVehicle) {
-        super(portal);
+        super(portal, teleportingVehicle);
         this.teleportingVehicle = teleportingVehicle;
     }
 
@@ -36,8 +36,9 @@ public class VehicleTeleporter extends Teleporter {
      * <p>It is assumed that if a vehicle contains any players, their permissions have already been validated before
      * calling this method.</p>
      *
-     * @param origin <p>The portal the vehicle teleports from</p>
+     * @param origin <p>The portal the vehicle is teleporting from</p>
      */
+    @Override
     public void teleport(Portal origin) {
         Location traveller = teleportingVehicle.getLocation();
         Location exit = getExit(teleportingVehicle, traveller);
@@ -63,7 +64,7 @@ public class VehicleTeleporter extends Teleporter {
         }
 
         //Teleport the vehicle
-        teleportVehicle(exit, newVelocity);
+        teleportVehicle(exit, newVelocity, origin);
     }
 
     /**
@@ -71,8 +72,9 @@ public class VehicleTeleporter extends Teleporter {
      *
      * @param exit        <p>The location the vehicle should be teleported to</p>
      * @param newVelocity <p>The velocity to give the vehicle right after teleportation</p>
+     * @param origin      <p>The portal the vehicle teleported from</p>
      */
-    private void teleportVehicle(Location exit, Vector newVelocity) {
+    private void teleportVehicle(Location exit, Vector newVelocity, Portal origin) {
         //Load chunks to make sure not to teleport to the void
         loadChunks();
 
@@ -80,10 +82,10 @@ public class VehicleTeleporter extends Teleporter {
         if (!passengers.isEmpty()) {
             if (!(teleportingVehicle instanceof LivingEntity)) {
                 //Teleport a normal vehicle with passengers (minecart or boat)
-                putPassengersInNewVehicle(passengers, exit, newVelocity);
+                putPassengersInNewVehicle(passengers, exit, newVelocity, origin);
             } else {
                 //Teleport a living vehicle with passengers (pig, horse, donkey, strider)
-                teleportLivingVehicle(exit, passengers);
+                teleportLivingVehicle(exit, passengers, origin);
             }
         } else {
             //Teleport an empty vehicle
@@ -94,34 +96,16 @@ public class VehicleTeleporter extends Teleporter {
     }
 
     /**
-     * Triggers the entity portal event to allow plugins to change the exit location
-     *
-     * @param origin <p>The origin portal teleported from</p>
-     * @param exit   <p>The exit location to teleport the vehicle to</p>
-     * @return <p>The location the vehicle should be teleported to, or null if the event was cancelled</p>
-     */
-    private Location triggerEntityPortalEvent(Portal origin, Location exit) {
-        StargateEntityPortalEvent stargateEntityPortalEvent = new StargateEntityPortalEvent(teleportingVehicle, origin,
-                portal, exit);
-        Stargate.getInstance().getServer().getPluginManager().callEvent(stargateEntityPortalEvent);
-        //Teleport is cancelled. Teleport the entity back to where it came from just for sanity's sake
-        if (stargateEntityPortalEvent.isCancelled()) {
-            new VehicleTeleporter(origin, teleportingVehicle).teleport(origin);
-            return null;
-        }
-        return stargateEntityPortalEvent.getExit();
-    }
-
-    /**
      * Teleport a vehicle which is not a minecart or a boat
      *
      * @param exit       <p>The location the vehicle will exit</p>
      * @param passengers <p>The passengers of the vehicle</p>
+     * @param origin     <p>The portal the vehicle teleported from</p>
      */
-    private void teleportLivingVehicle(Location exit, List<Entity> passengers) {
+    private void teleportLivingVehicle(Location exit, List<Entity> passengers, Portal origin) {
         teleportingVehicle.eject();
         teleportingVehicle.teleport(exit);
-        handleVehiclePassengers(passengers, teleportingVehicle, 2);
+        handleVehiclePassengers(passengers, teleportingVehicle, 2, origin);
     }
 
     /**
@@ -134,9 +118,10 @@ public class VehicleTeleporter extends Teleporter {
      * @param passengers  <p>A list of all passengers in the vehicle</p>
      * @param exit        <p>The exit location to spawn the new vehicle on</p>
      * @param newVelocity <p>The new velocity of the new vehicle</p>
+     * @param origin      <p>The portal the vehicle teleported from</p>
      */
     private void putPassengersInNewVehicle(List<Entity> passengers, Location exit,
-                                           Vector newVelocity) {
+                                           Vector newVelocity, Portal origin) {
         World vehicleWorld = exit.getWorld();
         if (vehicleWorld == null) {
             Stargate.logWarning("Unable to get the world to teleport the vehicle to");
@@ -149,7 +134,7 @@ public class VehicleTeleporter extends Teleporter {
         teleportingVehicle.remove();
         //Set rotation, add passengers and restore velocity
         newVehicle.setRotation(exit.getYaw(), exit.getPitch());
-        handleVehiclePassengers(passengers, newVehicle, 1);
+        handleVehiclePassengers(passengers, newVehicle, 1, origin);
         scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> newVehicle.setVelocity(newVelocity), 1);
     }
 
@@ -159,12 +144,17 @@ public class VehicleTeleporter extends Teleporter {
      * @param passengers <p>The passengers to handle</p>
      * @param vehicle    <p>The vehicle the passengers should be put into</p>
      * @param delay      <p>The amount of milliseconds to wait before adding the vehicle passengers</p>
+     * @param origin     <p>The portal the vehicle teleported from</p>
      */
-    private void handleVehiclePassengers(List<Entity> passengers, Vehicle vehicle, long delay) {
+    private void handleVehiclePassengers(List<Entity> passengers, Vehicle vehicle, long delay, Portal origin) {
         for (Entity passenger : passengers) {
             passenger.eject();
-            scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> teleportAndAddPassenger(vehicle, passenger),
-                    delay);
+            scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
+                if (passenger instanceof Player player) {
+                    teleportLeashedCreatures(player, origin);
+                }
+                teleportAndAddPassenger(vehicle, passenger);
+            }, delay);
         }
     }
 

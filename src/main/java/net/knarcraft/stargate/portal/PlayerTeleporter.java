@@ -48,6 +48,9 @@ public class PlayerTeleporter extends Teleporter {
         //Load chunks to make sure not to teleport to the void
         loadChunks();
 
+        //Teleport any creatures leashed by the player in a 10-block range
+        teleportLeashedCreatures(player, origin);
+
         //If no event is passed in, assume it's a teleport, and act as such
         if (event == null) {
             player.teleport(exit);
