@@ -10,6 +10,7 @@ can share a network or be split into clusters; they can be hidden on a network o
 - Multiple built-in languages (de, en, es, fr, hu, it, nb-no, nl, nn-no, pt-br, ru)
 - Teleport across worlds or servers (BungeeCord supported)
 - Vehicle teleportation -- teleport minecarts, boats, horses, pigs and striders
+- Leashed teleportation -- teleport any creature in a leash with the player
 - Underwater portals -- portals can be placed underwater as long as a waterproof button is used
 - API available -- using the API, a lot of behavior can be changed
 - Button customization -- a large amount of materials usable as buttons (buttons, wall corals, shulkers, chests)
