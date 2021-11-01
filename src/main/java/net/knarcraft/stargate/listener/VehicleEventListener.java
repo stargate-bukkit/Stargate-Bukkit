@@ -154,9 +154,13 @@ public class VehicleEventListener implements Listener {
             return false;
         }
 
-        //Transfer payment if necessary
+        //Check if the player is able to afford the teleport fee
         int cost = Stargate.getEconomyConfig().getUseCost(player, entrancePortal, destinationPortal);
-        return cost <= 0 || Stargate.getEconomyConfig().canAffordFee(player, cost);
+        boolean canAffordFee = cost <= 0 || Stargate.getEconomyConfig().canAffordFee(player, cost);
+        if (!canAffordFee) {
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("ecoInFunds"));
+        }
+        return canAffordFee;
     }
 
 }
