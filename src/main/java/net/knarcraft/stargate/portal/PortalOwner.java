@@ -44,6 +44,22 @@ public class PortalOwner {
     }
 
     /**
+     * Sets the unique id for a portal owner without one
+     *
+     * <p>This method is only meant to be used to set the unique id for an owner without one. If the owner already has
+     * an unique id, an exception will be thrown.</p>
+     *
+     * @param uniqueId <p>The new unique id for the portal owner</p>
+     */
+    public void setUUID(UUID uniqueId) {
+        if (ownerUUID == null) {
+            ownerUUID = uniqueId;
+        } else {
+            throw new IllegalArgumentException("An existing UUID cannot be overwritten.");
+        }
+    }
+
+    /**
      * Gets the name of this owner
      *
      * @return <p>The name of this owner</p>

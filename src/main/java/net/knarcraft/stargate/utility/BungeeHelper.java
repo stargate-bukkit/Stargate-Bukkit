@@ -5,6 +5,7 @@ import net.knarcraft.stargate.portal.PlayerTeleporter;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -167,6 +168,41 @@ public final class BungeeHelper {
             }
             new PlayerTeleporter(destinationPortal, player).teleport(destinationPortal, null);
         }
+    }
+
+    /**
+     * Teleports a player to a bungee gate
+     *
+     * @param player         <p>The player to teleport</p>
+     * @param entrancePortal <p>The gate the player is entering from</p>
+     * @param event          <p>The event causing the teleportation</p>
+     * @return <p>True if the teleportation was successful</p>
+     */
+    public static boolean bungeeTeleport(Player player, Portal entrancePortal, PlayerMoveEvent event) {
+        //Check if bungee is actually enabled
+        if (!Stargate.getGateConfig().enableBungee()) {
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
+            entrancePortal.getPortalOpener().closePortal(false);
+            return false;
+        }
+
+        //Teleport the player back to this gate, for sanity's sake
+        new PlayerTeleporter(entrancePortal, player).teleport(entrancePortal, event);
+
+        //Send the SGBungee packet first, it will be queued by BC if required
+        if (!BungeeHelper.sendTeleportationMessage(player, entrancePortal)) {
+            Stargate.debug("bungeeTeleport", "Unable to send teleportation message");
+            return false;
+        }
+
+        //Send the connect-message to make the player change server
+        if (!BungeeHelper.changeServer(player, entrancePortal)) {
+            Stargate.debug("bungeeTeleport", "Unable to change server");
+            return false;
+        }
+
+        Stargate.debug("bungeeTeleport", "Teleported player to another server");
+        return true;
     }
 
 }
