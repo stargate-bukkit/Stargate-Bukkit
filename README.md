@@ -301,6 +301,7 @@ gates:
   functionality:
     enableBungee - Enable this for BungeeCord support. This allows portals across Bungee servers.
     handleVehicles - Whether or not to handle vehicles going through gates. Set to false to disallow vehicles (Manned or not) going through gates.
+    handleLeashedCreatures - Whether or not to handle creatures leashed by a player going through gates. Set to false to disallow leashed creatures going through gates.
 economy:
   useEconomy - Whether or not to enable Economy using Vault (must have the Vault plugin)
   createCost - The cost to create a stargate
@@ -366,6 +367,12 @@ bungeeSign=Teleport to
 ```
 
 # Changes
+
+#### \[Version 0.9.0.4] EpicKnarvik97 fork
+
+- Adds teleportation of leashed creatures. By default, any creature connected to a player by a lead will be teleported
+  with the player through stargates, even if the player is in a vehicle. This behavior can be disabled in the config
+  file.
 
 #### \[Version 0.9.0.3] EpicKnarvik97 fork
 
