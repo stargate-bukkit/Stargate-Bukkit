@@ -26,8 +26,9 @@ public class EntityTeleporter extends Teleporter {
      * Teleports an entity to this teleporter's portal
      *
      * @param origin <p>The portal the entity is teleporting from</p>
+     * @return <p>True if the entity was teleported. False otherwise</p>
      */
-    public void teleport(Portal origin) {
+    public boolean teleport(Portal origin) {
         Location traveller = teleportingEntity.getLocation();
         Location exit = getExit(teleportingEntity, traveller);
 
@@ -38,7 +39,7 @@ public class EntityTeleporter extends Teleporter {
         if (!origin.equals(portal)) {
             exit = triggerEntityPortalEvent(origin, exit);
             if (exit == null) {
-                return;
+                return false;
             }
         }
 
@@ -46,6 +47,7 @@ public class EntityTeleporter extends Teleporter {
         loadChunks();
 
         teleportingEntity.teleport(exit);
+        return true;
     }
 
     /**

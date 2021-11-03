@@ -115,9 +115,12 @@ public class VehicleEventListener implements Listener {
             }
         }
 
-        Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("teleportMsg"));
-        new VehicleTeleporter(destinationPortal, vehicle).teleport(entrancePortal);
-        entrancePortal.getPortalOpener().closePortal(false);
+        //Teleport the vehicle and inform the user if the vehicle was teleported
+        boolean teleported = new VehicleTeleporter(destinationPortal, vehicle).teleport(entrancePortal);
+        if (teleported) {
+            Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("teleportMsg"));
+            entrancePortal.getPortalOpener().closePortal(false);
+        }
     }
 
     /**

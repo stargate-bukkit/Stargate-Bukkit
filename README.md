@@ -302,6 +302,9 @@ gates:
   functionality:
     enableBungee - Enable this for BungeeCord support. This allows portals across Bungee servers.
     handleVehicles - Whether or not to handle vehicles going through gates. Set to false to disallow vehicles (Manned or not) going through gates.
+    handleEmptyVehicles - Whether or not to handle empty vehicles going through gates (chest/hopper/tnt/furnace minecarts included).
+    handleCreatureTransportation - Whether or not to handle players that transport creatures by sending vehicles (minecarts, boats) through gates.
+    handleNonPlayerVehicles - Whether or not to handle vehicles with a passenger which is not a player going through gates (pigs, horses, villagers, creepers, etc.). handleCreatureTransportation must be enabled.
     handleLeashedCreatures - Whether or not to handle creatures leashed by a player going through gates. Set to false to disallow leashed creatures going through gates.
 economy:
   useEconomy - Whether or not to enable Economy using Vault (must have the Vault plugin)
@@ -368,6 +371,14 @@ bungeeSign=Teleport to
 ```
 
 # Changes
+
+#### \[Version 0.9.0.5] EpicKnarvik97 fork
+
+- Adds an option to stargate functionality to disable all teleportation of creatures
+- Adds an option to stargate functionality to disable all teleportation of empty minecarts
+- Adds an option to stargate functionality to disable teleportation of creatures if no player is present in the vehicle
+- Prevents a player in a vehicle from teleporting without the vehicle if vehicle teleportation is disabled
+- Prevents an infinite number of teleportation messages if vehicle teleportation is detected but denied
 
 #### \[Version 0.9.0.4] EpicKnarvik97 fork
 

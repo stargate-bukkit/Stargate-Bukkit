@@ -13,6 +13,9 @@ public final class StargateGateConfig {
     private int maxGatesEachNetwork = 0;
     private boolean rememberDestination = false;
     private boolean handleVehicles = true;
+    private boolean handleEmptyVehicles = true;
+    private boolean handleCreatureTransportation = true;
+    private boolean handleNonPlayerVehicles = true;
     private boolean handleLeashedCreatures = true;
     private boolean sortNetworkDestinations = false;
     private boolean protectEntrance = false;
@@ -75,6 +78,47 @@ public final class StargateGateConfig {
      */
     public boolean handleVehicles() {
         return handleVehicles;
+    }
+
+    /**
+     * Gets whether vehicles with no passengers should be handled
+     *
+     * <p>The handle vehicles option overrides this option if disabled. This option allows empty passenger
+     * minecarts/boats, but also chest/tnt/hopper/furnace minecarts to teleport through stargates.</p>
+     *
+     * @return <p>Whether vehicles without passengers should be handled</p>
+     */
+    public boolean handleEmptyVehicles() {
+        return handleEmptyVehicles;
+    }
+
+    /**
+     * Gets whether vehicles containing creatures should be handled
+     *
+     * <p>The handle vehicles option overrides this option if disabled. This option allows creatures (pigs, pandas,
+     * zombies, etc.) to teleport through stargates if in a vehicle.</p>
+     *
+     * @return <p>Whether vehicles with creatures should be handled</p>
+     */
+    public boolean handleCreatureTransportation() {
+        return handleCreatureTransportation;
+    }
+
+    /**
+     * Gets whether vehicles containing a creature, but not a player should be handled
+     *
+     * <p>The handle vehicles option, and the handle creature transportation option, override this option if disabled.
+     * This option allows creatures (pigs, pandas, zombies, etc.) to teleport through stargates if in a vehicle, even
+     * if no player is in the vehicle.
+     * As it is not possible to check if a creature is allowed through a stargate, they will be able to go through
+     * regardless of whether the initiating player is allowed to enter the stargate. Enabling this is necessary to
+     * teleport creatures using minecarts, but only handleCreatureTransportation is required to teleport creatures
+     * using a boat manned by a player.</p>
+     *
+     * @return <p>Whether non-empty vehicles without a player should be handled</p>
+     */
+    public boolean handleNonPlayerVehicles() {
+        return handleNonPlayerVehicles;
     }
 
     /**
@@ -152,6 +196,9 @@ public final class StargateGateConfig {
 
         //Functionality
         handleVehicles = newConfig.getBoolean("gates.functionality.handleVehicles");
+        handleEmptyVehicles = newConfig.getBoolean("gates.functionality.handleEmptyVehicles");
+        handleCreatureTransportation = newConfig.getBoolean("gates.functionality.handleCreatureTransportation");
+        handleNonPlayerVehicles = newConfig.getBoolean("gates.functionality.handleNonPlayerVehicles");
         handleLeashedCreatures = newConfig.getBoolean("gates.functionality.handleLeashedCreatures");
         enableBungee = newConfig.getBoolean("gates.functionality.enableBungee");
 

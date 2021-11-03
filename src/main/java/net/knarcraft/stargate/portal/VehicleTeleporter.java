@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.StargateGateConfig;
 import net.knarcraft.stargate.utility.DirectionHelper;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -37,9 +38,10 @@ public class VehicleTeleporter extends EntityTeleporter {
      * calling this method.</p>
      *
      * @param origin <p>The portal the vehicle is teleporting from</p>
+     * @return <p>True if the vehicle was teleported. False otherwise</p>
      */
     @Override
-    public void teleport(Portal origin) {
+    public boolean teleport(Portal origin) {
         Location traveller = teleportingVehicle.getLocation();
         Location exit = getExit(teleportingVehicle, traveller);
 
@@ -59,12 +61,12 @@ public class VehicleTeleporter extends EntityTeleporter {
         if (!origin.equals(portal)) {
             exit = triggerEntityPortalEvent(origin, exit);
             if (exit == null) {
-                return;
+                return false;
             }
         }
 
         //Teleport the vehicle
-        teleportVehicle(exit, newVelocity, origin);
+        return teleportVehicle(exit, newVelocity, origin);
     }
 
     /**
@@ -73,13 +75,19 @@ public class VehicleTeleporter extends EntityTeleporter {
      * @param exit        <p>The location the vehicle should be teleported to</p>
      * @param newVelocity <p>The velocity to give the vehicle right after teleportation</p>
      * @param origin      <p>The portal the vehicle teleported from</p>
+     * @return <p>True if the vehicle was teleported. False otherwise</p>
      */
-    private void teleportVehicle(Location exit, Vector newVelocity, Portal origin) {
+    private boolean teleportVehicle(Location exit, Vector newVelocity, Portal origin) {
         //Load chunks to make sure not to teleport to the void
         loadChunks();
 
         List<Entity> passengers = teleportingVehicle.getPassengers();
         if (!passengers.isEmpty()) {
+            //Check if the passengers are allowed according to current config settings
+            if (!vehiclePassengersAllowed(passengers)) {
+                return false;
+            }
+
             if (!(teleportingVehicle instanceof LivingEntity)) {
                 //Teleport a normal vehicle with passengers (minecart or boat)
                 putPassengersInNewVehicle(passengers, exit, newVelocity, origin);
@@ -88,11 +96,62 @@ public class VehicleTeleporter extends EntityTeleporter {
                 teleportLivingVehicle(exit, passengers, origin);
             }
         } else {
+            //Check if teleportation of empty vehicles is enabled
+            if (!Stargate.getGateConfig().handleEmptyVehicles()) {
+                return false;
+            }
             //Teleport an empty vehicle
             teleportingVehicle.teleport(exit);
             scheduler.scheduleSyncDelayedTask(Stargate.getInstance(),
                     () -> teleportingVehicle.setVelocity(newVelocity), 1);
         }
+        return true;
+    }
+
+    /**
+     * Checks whether current config values allow the teleportation of the given passengers
+     *
+     * @param passengers <p>The passengers to teleport</p>
+     * @return <p>True if the passengers are allowed to teleport</p>
+     */
+    private boolean vehiclePassengersAllowed(List<Entity> passengers) {
+        StargateGateConfig config = Stargate.getGateConfig();
+        //Don't teleport if the vehicle contains a creature and creature transportation is disabled
+        if (containsNonPlayer(passengers) && !config.handleCreatureTransportation()) {
+            return false;
+        }
+        //Don't teleport if the player does not contain a player and non-player vehicles is disabled
+        return containsPlayer(passengers) || config.handleNonPlayerVehicles();
+    }
+
+    /**
+     * Checks whether a list of entities contains any non-players
+     *
+     * @param entities <p>The list of entities to check</p>
+     * @return <p>True if at least one entity is not a player</p>
+     */
+    private boolean containsNonPlayer(List<Entity> entities) {
+        for (Entity entity : entities) {
+            if (!(entity instanceof Player)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether a list of entities contains at least one player
+     *
+     * @param entities <p>The list of entities to check</p>
+     * @return <p>True if at least one player is present among the passengers</p>
+     */
+    private boolean containsPlayer(List<Entity> entities) {
+        for (Entity entity : entities) {
+            if (entity instanceof Player) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

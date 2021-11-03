@@ -90,7 +90,8 @@ public class PlayerEventListener implements Listener {
 
         Entity playerVehicle = player.getVehicle();
         //If the player is in a vehicle, but vehicle handling is disabled, just ignore the player
-        if (playerVehicle == null || Stargate.getGateConfig().handleVehicles()) {
+        if (playerVehicle == null || (playerVehicle instanceof LivingEntity &&
+                Stargate.getGateConfig().handleVehicles())) {
             teleportPlayer(playerVehicle, player, entrancePortal, destination, event);
         }
     }

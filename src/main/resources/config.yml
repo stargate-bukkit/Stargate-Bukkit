@@ -8,7 +8,10 @@
 # maxGatesEachNetwork - The maximum number of gates allowed on a network - 0 for unlimited
 # language - The language file to load for messages
 # rememberDestination - Whether to remember the cursor location between uses
-# handleVehicles - Whether to allow vehicles through gates
+# handleVehicles - Whether to allow vehicles through gates. This overrides other vehicle settings
+# handleEmptyVehicles - Whether to allow empty vehicles through gates (chest/hopper/tnt/furnace minecarts included)
+# handleCreatureTransportation - Whether to allow players to transport creatures by sending vehicles (minecarts, boats) through gates
+# handleNonPlayerVehicles - Whether to allow vehicles with a passenger which is not a player through gates. handleCreatureTransportation must be enabled
 # handleLeashedCreatures - Whether to allow creatures lead by a player to teleport with the player
 # sortNetworkDestinations - Whether to sort network lists alphabetically
 # protectEntrance - Whether to protect gate entrance material (More resource intensive. Only enable if using destroyable open/closed material)
@@ -50,6 +53,9 @@ gates:
   functionality:
     enableBungee: false
     handleVehicles: true
+    handleEmptyVehicles: true
+    handleCreatureTransportation: true
+    handleNonPlayerVehicles: true
     handleLeashedCreatures: true
 economy:
   useEconomy: false
