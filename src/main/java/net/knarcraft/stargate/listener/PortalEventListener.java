@@ -2,9 +2,9 @@ package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.FromTheEndTeleportation;
-import net.knarcraft.stargate.portal.PlayerTeleporter;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
+import net.knarcraft.stargate.portal.teleporter.PlayerTeleporter;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.Location;
 import org.bukkit.Material;

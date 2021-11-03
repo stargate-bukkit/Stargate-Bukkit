@@ -1,9 +1,10 @@
-package net.knarcraft.stargate.portal;
+package net.knarcraft.stargate.portal.teleporter;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.ChunkUnloadRequest;
 import net.knarcraft.stargate.container.RelativeBlockVector;
+import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.EntityHelper;
 import org.bukkit.Chunk;

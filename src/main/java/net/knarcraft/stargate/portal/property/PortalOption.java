@@ -1,4 +1,4 @@
-package net.knarcraft.stargate.portal;
+package net.knarcraft.stargate.portal.property;
 
 /**
  * Each enum value represents one option a portal can have/use

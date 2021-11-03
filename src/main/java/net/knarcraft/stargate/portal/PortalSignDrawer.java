@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.portal.property.PortalLocation;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;

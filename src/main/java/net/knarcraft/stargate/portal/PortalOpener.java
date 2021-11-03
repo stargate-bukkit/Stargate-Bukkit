@@ -5,6 +5,7 @@ import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.event.StargateCloseEvent;
 import net.knarcraft.stargate.event.StargateOpenEvent;
+import net.knarcraft.stargate.portal.property.PortalOptions;
 import org.bukkit.Axis;
 import org.bukkit.Material;
 import org.bukkit.block.data.Orientable;

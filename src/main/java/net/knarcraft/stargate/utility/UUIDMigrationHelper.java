@@ -3,8 +3,8 @@ package net.knarcraft.stargate.utility;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
-import net.knarcraft.stargate.portal.PortalOwner;
 import net.knarcraft.stargate.portal.PortalRegistry;
+import net.knarcraft.stargate.portal.property.PortalOwner;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 

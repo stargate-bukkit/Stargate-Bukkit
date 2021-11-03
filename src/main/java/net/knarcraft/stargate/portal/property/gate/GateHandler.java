@@ -1,4 +1,4 @@
-package net.knarcraft.stargate.portal;
+package net.knarcraft.stargate.portal.property.gate;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.utility.GateReader;

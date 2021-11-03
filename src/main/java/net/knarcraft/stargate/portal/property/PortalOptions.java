@@ -1,4 +1,4 @@
-package net.knarcraft.stargate.portal;
+package net.knarcraft.stargate.portal.property;
 
 import net.knarcraft.stargate.Stargate;
 

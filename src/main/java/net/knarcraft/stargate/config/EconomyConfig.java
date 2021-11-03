@@ -1,8 +1,8 @@
 package net.knarcraft.stargate.config;
 
 import net.knarcraft.stargate.Stargate;
-import net.knarcraft.stargate.portal.Gate;
 import net.knarcraft.stargate.portal.Portal;
+import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;

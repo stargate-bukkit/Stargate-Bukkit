@@ -1,7 +1,8 @@
-package net.knarcraft.stargate.portal;
+package net.knarcraft.stargate.portal.teleporter;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargateEntityPortalEvent;
+import net.knarcraft.stargate.portal.Portal;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 

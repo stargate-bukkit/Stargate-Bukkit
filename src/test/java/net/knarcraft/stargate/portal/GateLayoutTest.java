@@ -5,6 +5,8 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.RelativeBlockVector;
+import net.knarcraft.stargate.portal.property.gate.GateHandler;
+import net.knarcraft.stargate.portal.property.gate.GateLayout;
 import org.bukkit.Material;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

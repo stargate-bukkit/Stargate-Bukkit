@@ -2,11 +2,11 @@ package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
-import net.knarcraft.stargate.portal.PlayerTeleporter;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalActivator;
 import net.knarcraft.stargate.portal.PortalHandler;
-import net.knarcraft.stargate.portal.VehicleTeleporter;
+import net.knarcraft.stargate.portal.teleporter.PlayerTeleporter;
+import net.knarcraft.stargate.portal.teleporter.VehicleTeleporter;
 import net.knarcraft.stargate.utility.BungeeHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;

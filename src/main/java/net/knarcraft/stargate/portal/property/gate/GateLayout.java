@@ -1,4 +1,4 @@
-package net.knarcraft.stargate.portal;
+package net.knarcraft.stargate.portal.property.gate;
 
 import net.knarcraft.stargate.container.RelativeBlockVector;
 

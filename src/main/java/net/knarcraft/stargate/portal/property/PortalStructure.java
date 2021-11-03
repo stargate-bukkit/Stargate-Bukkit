@@ -1,8 +1,10 @@
-package net.knarcraft.stargate.portal;
+package net.knarcraft.stargate.portal.property;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
+import net.knarcraft.stargate.portal.Portal;
+import net.knarcraft.stargate.portal.property.gate.Gate;
 
 /**
  * The portal structure is responsible for the physical properties of a portal

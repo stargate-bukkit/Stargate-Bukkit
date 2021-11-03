@@ -2,9 +2,9 @@ package net.knarcraft.stargate.utility;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargateAccessEvent;
-import net.knarcraft.stargate.portal.PlayerTeleporter;
 import net.knarcraft.stargate.portal.Portal;
-import net.knarcraft.stargate.portal.PortalOption;
+import net.knarcraft.stargate.portal.property.PortalOption;
+import net.knarcraft.stargate.portal.teleporter.PlayerTeleporter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 

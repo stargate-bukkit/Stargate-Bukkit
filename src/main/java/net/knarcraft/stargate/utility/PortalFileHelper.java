@@ -2,14 +2,14 @@ package net.knarcraft.stargate.utility;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
-import net.knarcraft.stargate.portal.Gate;
-import net.knarcraft.stargate.portal.GateHandler;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
-import net.knarcraft.stargate.portal.PortalLocation;
-import net.knarcraft.stargate.portal.PortalOptions;
-import net.knarcraft.stargate.portal.PortalOwner;
 import net.knarcraft.stargate.portal.PortalRegistry;
+import net.knarcraft.stargate.portal.property.gate.Gate;
+import net.knarcraft.stargate.portal.property.gate.GateHandler;
+import net.knarcraft.stargate.portal.property.PortalLocation;
+import net.knarcraft.stargate.portal.property.PortalOptions;
+import net.knarcraft.stargate.portal.property.PortalOwner;
 import org.bukkit.World;
 
 import java.io.BufferedWriter;

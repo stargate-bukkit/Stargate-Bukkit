@@ -3,7 +3,7 @@ package net.knarcraft.stargate.listener;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
-import net.knarcraft.stargate.portal.VehicleTeleporter;
+import net.knarcraft.stargate.portal.teleporter.VehicleTeleporter;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.EntityHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
