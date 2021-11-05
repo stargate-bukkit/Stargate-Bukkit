@@ -30,8 +30,7 @@ public class StarGateThread implements Runnable {
 
         for (Portal portal : openPortalsQueue) {
             //Skip always open and non-open gates
-            if (portal.getOptions().isAlwaysOn() || portal.getOptions().isRandom() || portal.getOptions().isBungee() ||
-                    !portal.isOpen()) {
+            if (portal.getOptions().isAlwaysOn() || !portal.isOpen()) {
                 continue;
             }
             if (time > portal.getTriggeredTime() + Stargate.getGateConfig().getOpenTime()) {

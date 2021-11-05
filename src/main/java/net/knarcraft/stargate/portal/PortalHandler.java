@@ -3,13 +3,14 @@ package net.knarcraft.stargate.portal;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
-import net.knarcraft.stargate.portal.property.gate.Gate;
-import net.knarcraft.stargate.portal.property.gate.GateHandler;
 import net.knarcraft.stargate.portal.property.PortalLocation;
 import net.knarcraft.stargate.portal.property.PortalOption;
 import net.knarcraft.stargate.portal.property.PortalStructure;
+import net.knarcraft.stargate.portal.property.gate.Gate;
+import net.knarcraft.stargate.portal.property.gate.GateHandler;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -142,12 +143,12 @@ public class PortalHandler {
      * Tries to find a gate matching the portal the user is trying to create
      *
      * @param portalLocation <p>The location data for the new portal</p>
-     * @param player         <p>The player trying to create the new portal</p>
+     * @param world          <p>The world the player is located in</p>
      * @return <p>The matching gate type, or null if no such gate could be found</p>
      */
-    static Gate findMatchingGate(PortalLocation portalLocation, Player player) {
+    static Gate findMatchingGate(PortalLocation portalLocation, World world) {
         Block signParent = portalLocation.getSignLocation().getParent();
-        BlockLocation parent = new BlockLocation(player.getWorld(), signParent.getX(), signParent.getY(),
+        BlockLocation parent = new BlockLocation(world, signParent.getX(), signParent.getY(),
                 signParent.getZ());
 
         //Get all gates with the used type of control blocks

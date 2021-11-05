@@ -28,9 +28,9 @@ public class PortalOptions {
             Stargate.debug("Portal", "Can not create a non-fixed always-on gate. Setting AlwaysOn = false");
         }
 
-        if (this.isRandom() && !this.isAlwaysOn()) {
+        if ((this.isRandom() || this.isBungee()) && !this.isAlwaysOn()) {
             this.options.put(PortalOption.ALWAYS_ON, true);
-            Stargate.debug("Portal", "Gate marked as random, set to always-on");
+            Stargate.debug("Portal", "Gate marked as random or bungee, set to always-on");
         }
     }
 

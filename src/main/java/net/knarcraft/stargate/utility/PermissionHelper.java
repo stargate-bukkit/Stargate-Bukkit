@@ -27,7 +27,7 @@ public final class PermissionHelper {
         Portal destination = portal.getPortalActivator().getDestination();
 
         //For an always open portal, no action is necessary
-        if (portal.getOptions().isAlwaysOn() || portal.getOptions().isRandom() || portal.getOptions().isBungee()) {
+        if (portal.getOptions().isAlwaysOn()) {
             return;
         }
 

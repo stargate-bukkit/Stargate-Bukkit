@@ -2,12 +2,12 @@ package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
-import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.knarcraft.stargate.portal.property.PortalLocation;
 import net.knarcraft.stargate.portal.property.PortalOption;
 import net.knarcraft.stargate.portal.property.PortalOptions;
 import net.knarcraft.stargate.portal.property.PortalOwner;
 import net.knarcraft.stargate.portal.property.PortalStructure;
+import net.knarcraft.stargate.portal.property.gate.Gate;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
