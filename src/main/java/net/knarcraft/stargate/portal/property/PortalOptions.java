@@ -165,4 +165,16 @@ public class PortalOptions {
         return this.options.get(PortalOption.BUNGEE);
     }
 
+    /**
+     * Gets whether this portal is silent
+     *
+     * <p>A silent portal does not output anything to the chat when teleporting. This option is mainly useful to keep
+     * the immersion during teleportation (for role-playing servers or similar).</p>
+     *
+     * @return <p>Whether this portal is silent</p>
+     */
+    public boolean isSilent() {
+        return this.options.get(PortalOption.SILENT);
+    }
+
 }

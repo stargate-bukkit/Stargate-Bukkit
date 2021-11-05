@@ -181,7 +181,9 @@ public final class BungeeHelper {
     public static boolean bungeeTeleport(Player player, Portal entrancePortal, PlayerMoveEvent event) {
         //Check if bungee is actually enabled
         if (!Stargate.getGateConfig().enableBungee()) {
-            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
+            if (!entrancePortal.getOptions().isSilent()) {
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
+            }
             entrancePortal.getPortalOpener().closePortal(false);
             return false;
         }

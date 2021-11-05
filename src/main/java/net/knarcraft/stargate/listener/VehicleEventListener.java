@@ -89,7 +89,9 @@ public class VehicleEventListener implements Listener {
         //On the assumption that a non-player cannot sit in the driver's seat and since some portals can only be open
         // to one player at a time, we only need to check if the portal is open to the driver.
         if (!entrancePortal.getPortalOpener().isOpenFor(player)) {
-            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
+            if (!entrancePortal.getOptions().isSilent()) {
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
+            }
             return;
         }
 
@@ -118,7 +120,9 @@ public class VehicleEventListener implements Listener {
         //Teleport the vehicle and inform the user if the vehicle was teleported
         boolean teleported = new VehicleTeleporter(destinationPortal, vehicle).teleport(entrancePortal);
         if (teleported) {
-            Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("teleportMsg"));
+            if (!entrancePortal.getOptions().isSilent()) {
+                Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("teleportMsg"));
+            }
             entrancePortal.getPortalOpener().closePortal(false);
         }
     }
@@ -152,7 +156,9 @@ public class VehicleEventListener implements Listener {
     private static boolean playerCanTeleport(Player player, Portal entrancePortal, Portal destinationPortal) {
         //Make sure the user can access the portal
         if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destinationPortal)) {
-            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
+            if (!entrancePortal.getOptions().isSilent()) {
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
+            }
             entrancePortal.getPortalOpener().closePortal(false);
             return false;
         }
@@ -160,7 +166,7 @@ public class VehicleEventListener implements Listener {
         //Check if the player is able to afford the teleport fee
         int cost = Stargate.getEconomyConfig().getUseCost(player, entrancePortal, destinationPortal);
         boolean canAffordFee = cost <= 0 || Stargate.getEconomyConfig().canAffordFee(player, cost);
-        if (!canAffordFee) {
+        if (!canAffordFee && !entrancePortal.getOptions().isSilent()) {
             Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("ecoInFunds"));
         }
         return canAffordFee;

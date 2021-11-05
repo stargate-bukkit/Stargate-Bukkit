@@ -119,7 +119,9 @@ public class PlayerEventListener implements Listener {
             //Just teleport the player like normal
             new PlayerTeleporter(destination, player).teleport(entrancePortal, event);
         }
-        Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("teleportMsg"));
+        if (!entrancePortal.getOptions().isSilent()) {
+            Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("teleportMsg"));
+        }
         entrancePortal.getPortalOpener().closePortal(false);
     }
 
@@ -159,7 +161,7 @@ public class PlayerEventListener implements Listener {
 
         //Decide if the user should be teleported to another bungee server
         if (entrancePortal.getOptions().isBungee()) {
-            if (BungeeHelper.bungeeTeleport(player, entrancePortal, event)) {
+            if (BungeeHelper.bungeeTeleport(player, entrancePortal, event) && !entrancePortal.getOptions().isSilent()) {
                 Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("teleportMsg"));
             }
             return false;
@@ -241,7 +243,9 @@ public class PlayerEventListener implements Listener {
         boolean deny = PermissionHelper.cannotAccessNetwork(player, portal.getNetwork());
 
         if (PermissionHelper.portalAccessDenied(player, portal, deny)) {
-            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
+            if (!portal.getOptions().isSilent()) {
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
+            }
             return true;
         }
         return false;

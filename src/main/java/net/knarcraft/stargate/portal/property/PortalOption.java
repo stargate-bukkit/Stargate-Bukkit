@@ -48,7 +48,12 @@ public enum PortalOption {
     /**
      * This option allows a portal to teleport to another server connected through BungeeCord
      */
-    BUNGEE('u', "stargate.admin.bungee", 20);
+    BUNGEE('u', "stargate.admin.bungee", 20),
+
+    /**
+     * This option allows a portal which does not display a teleportation message, for better immersion
+     */
+    SILENT('i', "stargate.option.silent", 21);
 
     private final char characterRepresentation;
     private final String permissionString;

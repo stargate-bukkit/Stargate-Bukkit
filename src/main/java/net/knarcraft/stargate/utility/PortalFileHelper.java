@@ -121,7 +121,8 @@ public final class PortalFileHelper {
         builder.append(options.isShown()).append(':');
         builder.append(options.isNoNetwork()).append(':');
         builder.append(options.isRandom()).append(':');
-        builder.append(options.isBungee());
+        builder.append(options.isBungee()).append(':');
+        builder.append(options.isSilent());
     }
 
     /**
@@ -249,7 +250,8 @@ public final class PortalFileHelper {
 
         //Load extra portal data
         String destination = (portalData.length > 8) ? portalData[8] : "";
-        String network = (portalData.length > 9 && !portalData[9].isEmpty()) ? portalData[9] : Stargate.getDefaultNetwork();
+        String network = (portalData.length > 9 && !portalData[9].isEmpty()) ? portalData[9] : 
+                Stargate.getDefaultNetwork();
         String ownerString = (portalData.length > 10) ? portalData[10] : "";
 
         //Get the owner from the owner string

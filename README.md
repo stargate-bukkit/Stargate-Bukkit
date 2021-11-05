@@ -59,7 +59,8 @@ stargate.option -- Allow use of all options
   stargate.option.backwards -- Allow use of 'B'ackwards
   stargate.option.show -- Allow use of 'S'how
   stargate.option.nonetwork -- Allow use of 'N'oNetwork
-  stargate.option.random -- Allow use of 'Random' stargates
+  stargate.option.random -- Allow use of 'R'andom stargates
+  stargate.option.silent -- Allow use of S'i'lent stargates
   
 stargate.create -- Allow creating Stargates on any network (Override all create permissions)
   stargate.create.personal -- Allow creating Stargates on network {playername}
@@ -129,6 +130,7 @@ section). See the Custom Gate Layout section to learn how to add custom gates.
     - 'R' is for random gates. These follow standard permissions of gates, but have a random exit location every time a
       player enters.
     - 'U' is for a gate connecting to another through bungee
+    - 'I' is for a silent gate, which does not output anything to the chat while teleporting. Increases immersion
 
 The options are the single letter, not the word. So to make a private hidden gate, your 4th line would be 'PH'.
 
@@ -376,6 +378,7 @@ bungeeSign=Teleport to
 
 - Makes containers no longer open when used as buttons
 - Validates and updates stargate buttons when the plugin is loaded or reloaded
+- Adds an option to make a stargate silent (no text in chat when teleporting) for better immersion on RP servers
 
 #### \[Version 0.9.0.5] EpicKnarvik97 fork
 
