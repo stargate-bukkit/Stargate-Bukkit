@@ -372,6 +372,11 @@ bungeeSign=Teleport to
 
 # Changes
 
+#### \[Version 0.9.0.6] EpicKnarvik97 fork
+
+- Makes containers no longer open when used as buttons
+- Validates and updates stargate buttons when the plugin is loaded or reloaded
+
 #### \[Version 0.9.0.5] EpicKnarvik97 fork
 
 - Adds an option to stargate functionality to disable all teleportation of creatures
