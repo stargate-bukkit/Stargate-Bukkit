@@ -1,16 +1,23 @@
 package net.knarcraft.stargate.utility;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.container.BlockLocation;
+import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.PortalRegistry;
-import net.knarcraft.stargate.portal.property.gate.Gate;
-import net.knarcraft.stargate.portal.property.gate.GateHandler;
 import net.knarcraft.stargate.portal.property.PortalLocation;
 import net.knarcraft.stargate.portal.property.PortalOptions;
 import net.knarcraft.stargate.portal.property.PortalOwner;
+import net.knarcraft.stargate.portal.property.gate.Gate;
+import net.knarcraft.stargate.portal.property.gate.GateHandler;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -255,6 +262,78 @@ public final class PortalFileHelper {
         //Register the portal, and close it in case it wasn't properly closed when the server stopped
         PortalHandler.registerPortal(portal);
         portal.getPortalOpener().closePortal(true);
+
+        //Update the portal's button if it's the wrong material
+        updatePortalButton(portal);
+    }
+
+    /**
+     * Updates a portal's button if it does not match the correct material
+     *
+     * @param portal <p>The portal update the button of</p>
+     */
+    private static void updatePortalButton(Portal portal) {
+        setButtonVector(portal);
+        BlockLocation buttonLocation = getButtonLocation(portal);
+        BlockData buttonData = buttonLocation.getBlock().getBlockData();
+        if (portal.getOptions().isAlwaysOn()) {
+            //Clear button if not already air
+            if (buttonData.getMaterial() != Material.AIR) {
+                Stargate.addBlockChangeRequest(new BlockChangeRequest(buttonLocation, Material.AIR, null));
+            }
+        } else {
+            //Replace button if the material does not match
+            if (buttonData.getMaterial() != portal.getGate().getPortalButton()) {
+                generatePortalButton(portal, DirectionHelper.getBlockFaceFromYaw(portal.getYaw()));
+            }
+        }
+    }
+
+    /**
+     * Sets the button vector for the given portal
+     *
+     * <p>As the button vector isn't saved, it is null when the portal is loaded. This method allows it to be
+     * explicitly set when necessary.</p>
+     *
+     * @param portal <p>The portal to set button vector for</p>
+     */
+    private static void setButtonVector(Portal portal) {
+        for (RelativeBlockVector control : portal.getGate().getLayout().getControls()) {
+            BlockLocation controlLocation = portal.getLocation().getTopLeft().getRelativeLocation(control,
+                    portal.getYaw());
+            if (controlLocation != portal.getLocation().getSignLocation()) {
+                portal.getLocation().setButtonVector(control);
+            }
+        }
+    }
+
+    /**
+     * Generates a button for a portal
+     *
+     * @param portal       <p>The portal to generate button for</p>
+     * @param buttonFacing <p>The direction the button should be facing</p>
+     */
+    public static void generatePortalButton(Portal portal, BlockFace buttonFacing) {
+        //Go one block outwards to find the button's location rather than the control block's location
+        BlockLocation button = getButtonLocation(portal);
+
+        Directional buttonData = (Directional) Bukkit.createBlockData(portal.getGate().getPortalButton());
+        buttonData.setFacing(buttonFacing);
+        button.getBlock().setBlockData(buttonData);
+        portal.getStructure().setButton(button);
+    }
+
+    /**
+     * Gets the location of a portal's button
+     *
+     * @param portal <p>The portal to find the button for</p>
+     * @return <p>The location of the portal's button</p>
+     */
+    private static BlockLocation getButtonLocation(Portal portal) {
+        BlockLocation topLeft = portal.getTopLeft();
+        RelativeBlockVector buttonVector = portal.getLocation().getButtonVector();
+        return topLeft.getRelativeLocation(buttonVector.addToVector(RelativeBlockVector.Property.OUT, 1),
+                portal.getYaw());
     }
 
 }

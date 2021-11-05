@@ -4,20 +4,18 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.event.StargateCreateEvent;
-import net.knarcraft.stargate.portal.property.gate.Gate;
-import net.knarcraft.stargate.portal.property.gate.GateHandler;
 import net.knarcraft.stargate.portal.property.PortalLocation;
 import net.knarcraft.stargate.portal.property.PortalOption;
 import net.knarcraft.stargate.portal.property.PortalOptions;
 import net.knarcraft.stargate.portal.property.PortalOwner;
+import net.knarcraft.stargate.portal.property.gate.Gate;
+import net.knarcraft.stargate.portal.property.gate.GateHandler;
 import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import net.knarcraft.stargate.utility.PortalFileHelper;
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 
@@ -51,16 +49,16 @@ public class PortalCreator {
      */
     public Portal createPortal() {
         BlockLocation signLocation = new BlockLocation(event.getBlock());
-        Block idParent = signLocation.getParent();
+        Block signControlBlock = signLocation.getParent();
 
         //Return early if the sign is not placed on a block, or the block is not a control block
-        if (idParent == null || GateHandler.getGatesByControlBlock(idParent).length == 0) {
+        if (signControlBlock == null || GateHandler.getGatesByControlBlock(signControlBlock).length == 0) {
             Stargate.debug("createPortal", "Control block not registered");
             return null;
         }
 
         //The control block is already part of another portal
-        if (PortalHandler.getByBlock(idParent) != null) {
+        if (PortalHandler.getByBlock(signControlBlock) != null) {
             Stargate.debug("createPortal", "idParent belongs to existing stargate");
             return null;
         }
@@ -75,7 +73,8 @@ public class PortalCreator {
         Map<PortalOption, Boolean> portalOptions = PortalHandler.getPortalOptions(player, destinationName, options);
 
         //Get the yaw
-        float yaw = DirectionHelper.getYawFromLocationDifference(idParent.getLocation(), signLocation.getLocation());
+        float yaw = DirectionHelper.getYawFromLocationDifference(signControlBlock.getLocation(),
+                signLocation.getLocation());
 
         //Get the direction the button should be facing
         BlockFace buttonFacing = DirectionHelper.getBlockFaceFromYaw(yaw);
@@ -86,7 +85,7 @@ public class PortalCreator {
         Stargate.debug("createPortal", "Finished getting all portal info");
 
         //Try and find a gate matching the new portal
-        Gate gate = PortalHandler.findMatchingGate(portalLocation, player);
+        Gate gate = PortalHandler.findMatchingGate(portalLocation, player.getWorld());
         if ((gate == null) || (portalLocation.getButtonVector() == null)) {
             Stargate.debug("createPortal", "Could not find matching gate layout");
             return null;
@@ -202,9 +201,8 @@ public class PortalCreator {
         }
 
         //Add button if the portal is not always on
-        if (!portalOptions.isAlwaysOn() && !portalOptions.isBungee()) {
-            generatePortalButton(portalLocation.getTopLeft(), portalLocation.getButtonVector(),
-                    portalLocation.getButtonFacing());
+        if (!portalOptions.isAlwaysOn()) {
+            PortalFileHelper.generatePortalButton(portal, portalLocation.getButtonFacing());
         }
 
         //Register the new portal
@@ -271,25 +269,6 @@ public class PortalCreator {
             }
         }
         return true;
-    }
-
-    /**
-     * Generates a button for a portal
-     *
-     * @param topLeft      <p>The top-left block of the portal</p>
-     * @param buttonVector <p>A relative vector pointing at the button</p>
-     * @param buttonFacing <p>The direction the button should be facing</p>
-     */
-    private void generatePortalButton(BlockLocation topLeft, RelativeBlockVector buttonVector,
-                                      BlockFace buttonFacing) {
-        //Go one block outwards to find the button's location rather than the control block's location
-        BlockLocation button = topLeft.getRelativeLocation(buttonVector.addToVector(
-                RelativeBlockVector.Property.OUT, 1), portal.getYaw());
-
-        Directional buttonData = (Directional) Bukkit.createBlockData(portal.getGate().getPortalButton());
-        buttonData.setFacing(buttonFacing);
-        button.getBlock().setBlockData(buttonData);
-        portal.getStructure().setButton(button);
     }
 
     /**
