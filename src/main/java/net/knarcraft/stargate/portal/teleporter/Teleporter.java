@@ -269,7 +269,7 @@ public abstract class Teleporter {
             creature.setLeashHolder(null);
             scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
                 new EntityTeleporter(portal, creature).teleport(origin);
-                scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> creature.setLeashHolder(player), 3);
+                scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> creature.setLeashHolder(player), 6);
             }, 2);
         }
     }
