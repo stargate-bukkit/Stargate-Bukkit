@@ -29,14 +29,24 @@ public final class MaterialHelper {
     }
 
     /**
+     * Checks whether the given material is a container
+     * 
+     * @param material <p>The material to check</p>
+     * @return <p>True if the material is a container</p>
+     */
+    public static boolean isContainer(Material material) {
+        return Tag.SHULKER_BOXES.isTagged(material) || material == Material.CHEST || 
+                material == Material.TRAPPED_CHEST || material == Material.ENDER_CHEST;
+    }
+
+    /**
      * Checks whether the given material can be used as a button
      *
      * @param material <p>The material to check</p>
      * @return <p>True if the material can be used as a button</p>
      */
     public static boolean isButtonCompatible(Material material) {
-        return Tag.BUTTONS.isTagged(material) || isWallCoral(material) || Tag.SHULKER_BOXES.isTagged(material) ||
-                material == Material.CHEST || material == Material.TRAPPED_CHEST || material == Material.ENDER_CHEST;
+        return Tag.BUTTONS.isTagged(material) || isWallCoral(material) || isContainer(material);
     }
 
 }

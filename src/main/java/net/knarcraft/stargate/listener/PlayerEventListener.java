@@ -281,7 +281,7 @@ public class PlayerEventListener implements Listener {
             }
 
             PermissionHelper.openPortal(player, portal);
-            if (portal.getPortalOpener().isOpenFor(player)) {
+            if (portal.getPortalOpener().isOpenFor(player) && !MaterialHelper.isContainer(block.getType())) {
                 event.setUseInteractedBlock(Event.Result.ALLOW);
             }
         }
