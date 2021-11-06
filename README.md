@@ -379,6 +379,7 @@ bungeeSign=Teleport to
 - Makes containers no longer open when used as buttons
 - Validates and updates stargate buttons when the plugin is loaded or reloaded
 - Adds an option to make a stargate silent (no text in chat when teleporting) for better immersion on RP servers
+- Makes buttons update and/or remove themselves when their location or material changes
 
 #### \[Version 0.9.0.5] EpicKnarvik97 fork
 
