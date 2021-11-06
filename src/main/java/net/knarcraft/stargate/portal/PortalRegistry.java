@@ -37,6 +37,7 @@ public class PortalRegistry {
         lookupControls.clear();
         allPortals.clear();
         allPortalNetworks.clear();
+        bungeePortals.clear();
     }
 
     /**
