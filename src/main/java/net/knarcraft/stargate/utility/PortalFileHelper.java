@@ -261,12 +261,12 @@ public final class PortalFileHelper {
         Portal portal = new Portal(portalLocation, button, destination, name, network, gate, owner,
                 PortalHandler.getPortalOptions(portalData));
 
+        //Update the portal's button if it's the wrong material
+        updatePortalButton(portal);
+
         //Register the portal, and close it in case it wasn't properly closed when the server stopped
         PortalHandler.registerPortal(portal);
         portal.getPortalOpener().closePortal(true);
-
-        //Update the portal's button if it's the wrong material
-        updatePortalButton(portal);
     }
 
     /**
