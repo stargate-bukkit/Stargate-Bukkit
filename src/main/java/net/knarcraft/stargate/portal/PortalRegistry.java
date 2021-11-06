@@ -231,6 +231,7 @@ public class PortalRegistry {
         }
 
         PortalFileHelper.saveAllPortals(portal.getWorld());
+        portal.setRegistered(false);
     }
 
     /**
@@ -293,6 +294,7 @@ public class PortalRegistry {
         }
 
         allPortals.add(portal);
+        portal.setRegistered(true);
     }
 
 }

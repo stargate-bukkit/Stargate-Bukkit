@@ -218,7 +218,10 @@ public final class PortalFileHelper {
 
         //Re-draw the signs in case a bug in the config prevented the portal from loading and has been fixed since
         for (Portal portal : PortalRegistry.getAllPortals()) {
-            portal.drawSign();
+            if (portal.isRegistered()) {
+                portal.drawSign();
+                updatePortalButton(portal);
+            }
         }
     }
 
@@ -250,7 +253,7 @@ public final class PortalFileHelper {
 
         //Load extra portal data
         String destination = (portalData.length > 8) ? portalData[8] : "";
-        String network = (portalData.length > 9 && !portalData[9].isEmpty()) ? portalData[9] : 
+        String network = (portalData.length > 9 && !portalData[9].isEmpty()) ? portalData[9] :
                 Stargate.getDefaultNetwork();
         String ownerString = (portalData.length > 10) ? portalData[10] : "";
 
@@ -261,10 +264,8 @@ public final class PortalFileHelper {
         Portal portal = new Portal(portalLocation, button, destination, name, network, gate, owner,
                 PortalHandler.getPortalOptions(portalData));
 
-        //Update the portal's button if it's the wrong material
-        updatePortalButton(portal);
-
         //Register the portal, and close it in case it wasn't properly closed when the server stopped
+        setButtonVector(portal);
         PortalHandler.registerPortal(portal);
         portal.getPortalOpener().closePortal(true);
     }
@@ -275,7 +276,6 @@ public final class PortalFileHelper {
      * @param portal <p>The portal update the button of</p>
      */
     private static void updatePortalButton(Portal portal) {
-        setButtonVector(portal);
         BlockLocation buttonLocation = getButtonLocation(portal);
         BlockData buttonData = buttonLocation.getBlock().getBlockData();
         if (portal.getOptions().isAlwaysOn()) {
@@ -305,6 +305,9 @@ public final class PortalFileHelper {
                     portal.getYaw());
             if (controlLocation != portal.getLocation().getSignLocation()) {
                 portal.getLocation().setButtonVector(control);
+                BlockLocation buttonLocation = controlLocation.getRelativeLocation(
+                        new RelativeBlockVector(0, 0, 1), portal.getYaw());
+                portal.getStructure().setButton(buttonLocation);
             }
         }
     }

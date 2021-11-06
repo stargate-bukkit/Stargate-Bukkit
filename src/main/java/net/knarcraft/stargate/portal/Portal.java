@@ -21,6 +21,7 @@ public class Portal {
     private final String name;
     private final String network;
     private final PortalOwner portalOwner;
+    private boolean isRegistered;
 
     private final PortalOptions options;
     private final PortalOpener portalOpener;
@@ -52,6 +53,24 @@ public class Portal {
         this.portalOpener = new PortalOpener(this, destination);
         this.structure = new PortalStructure(this, gate, button);
         this.portalActivator = portalOpener.getPortalActivator();
+    }
+
+    /**
+     * Checks if this portal is registered
+     *
+     * @return <p>True if this portal is registered</p>
+     */
+    public boolean isRegistered() {
+        return isRegistered;
+    }
+
+    /**
+     * Sets whether this portal is registered
+     *
+     * @param isRegistered <p>True if this portal is registered</p>
+     */
+    public void setRegistered(boolean isRegistered) {
+        this.isRegistered = isRegistered;
     }
 
     /**
