@@ -155,14 +155,17 @@ public final class PortalFileHelper {
         int lineIndex = 0;
         try {
             Scanner scanner = new Scanner(database);
+            boolean needsToSaveDatabase = false;
             while (scanner.hasNextLine()) {
                 //Read the line and do whatever needs to be done
-                readPortalLine(scanner, ++lineIndex, world);
+                needsToSaveDatabase = readPortalLine(scanner, ++lineIndex, world) || needsToSaveDatabase;
             }
             scanner.close();
 
             //Do necessary tasks after all portals have loaded
-            doPostLoadTasks(world);
+            Stargate.debug("PortalFileHelper::loadPortals", String.format("Finished loading portals for %s. " +
+                    "Starting post loading tasks", world));
+            doPostLoadTasks(world, needsToSaveDatabase);
             return true;
         } catch (Exception e) {
             Stargate.logSevere(String.format("Exception while reading stargates from %s: %d", database.getName(),
@@ -178,24 +181,25 @@ public final class PortalFileHelper {
      * @param scanner   <p>The scanner to read</p>
      * @param lineIndex <p>The index of the read line</p>
      * @param world     <p>The world for which portals are currently being read</p>
+     * @return <p>True if the read portal has changed and the world's database needs to be saved</p>
      */
-    private static void readPortalLine(Scanner scanner, int lineIndex, World world) {
+    private static boolean readPortalLine(Scanner scanner, int lineIndex, World world) {
         String line = scanner.nextLine().trim();
 
         //Ignore empty and comment lines
         if (line.startsWith("#") || line.isEmpty()) {
-            return;
+            return false;
         }
 
         //Check if the min. required portal data is present
         String[] portalData = line.split(":");
         if (portalData.length < 8) {
             Stargate.logInfo(String.format("Invalid line - %s", lineIndex));
-            return;
+            return false;
         }
 
         //Load the portal defined in the current line
-        loadPortal(portalData, world, lineIndex);
+        return loadPortal(portalData, world, lineIndex);
     }
 
     /**
@@ -205,8 +209,9 @@ public final class PortalFileHelper {
      * portals.</p>
      *
      * @param world <p>The world portals have been loaded for</p>
+     * @param needsToSaveDatabase <p>Whether the portal database's file needs to be updated</p>
      */
-    private static void doPostLoadTasks(World world) {
+    private static void doPostLoadTasks(World world, boolean needsToSaveDatabase) {
         //Open any always-on portals. Do this here as it should be more efficient than in the loop.
         PortalHandler.verifyAllPortals();
         int portalCount = PortalRegistry.getAllPortals().size();
@@ -223,6 +228,11 @@ public final class PortalFileHelper {
                 updatePortalButton(portal);
             }
         }
+        //Save the portals to disk to update with any changes
+        Stargate.debug("PortalFileHelper::doPostLoadTasks", String.format("Saving database for world %s", world));
+        if (needsToSaveDatabase) {
+            saveAllPortals(world);
+        }
     }
 
     /**
@@ -231,8 +241,9 @@ public final class PortalFileHelper {
      * @param portalData <p>The array describing the portal</p>
      * @param world      <p>The world to create the portal in</p>
      * @param lineIndex  <p>The line index to report in case the user needs to fix an error</p>
+     * @return <p>True if the portal's data has changed and its database needs to be updated</p>
      */
-    private static void loadPortal(String[] portalData, World world, int lineIndex) {
+    private static boolean loadPortal(String[] portalData, World world, int lineIndex) {
         //Load min. required portal data
         String name = portalData[0];
         BlockLocation button = (portalData[2].length() > 0) ? new BlockLocation(world, portalData[2]) : null;
@@ -248,7 +259,7 @@ public final class PortalFileHelper {
         if (gate == null) {
             //Mark the sign as invalid to reduce some player confusion
             markPortalWithInvalidGate(portalLocation, portalData[7], lineIndex);
-            return;
+            return false;
         }
 
         //Load extra portal data
@@ -265,9 +276,10 @@ public final class PortalFileHelper {
                 PortalHandler.getPortalOptions(portalData));
 
         //Register the portal, and close it in case it wasn't properly closed when the server stopped
-        setButtonVector(portal);
+        boolean buttonLocationChanged = updateButtonVector(portal);
         PortalHandler.registerPortal(portal);
         portal.getPortalOpener().closePortal(true);
+        return buttonLocationChanged;
     }
 
     /**
@@ -292,24 +304,32 @@ public final class PortalFileHelper {
     }
 
     /**
-     * Sets the button vector for the given portal
+     * Updates the button vector for the given portal
      *
      * <p>As the button vector isn't saved, it is null when the portal is loaded. This method allows it to be
      * explicitly set when necessary.</p>
      *
-     * @param portal <p>The portal to set button vector for</p>
+     * @param portal <p>The portal to update the button vector for</p>
+     * @return <p>True if the calculated button location is not the same as the one in the portal file</p>
      */
-    private static void setButtonVector(Portal portal) {
+    private static boolean updateButtonVector(Portal portal) {
         for (RelativeBlockVector control : portal.getGate().getLayout().getControls()) {
             BlockLocation controlLocation = portal.getLocation().getTopLeft().getRelativeLocation(control,
                     portal.getYaw());
-            if (controlLocation != portal.getLocation().getSignLocation()) {
+            BlockLocation buttonLocation = controlLocation.getRelativeLocation(
+                    new RelativeBlockVector(0, 0, 1), portal.getYaw());
+            if (!buttonLocation.equals(portal.getLocation().getSignLocation())) {
                 portal.getLocation().setButtonVector(control);
-                BlockLocation buttonLocation = controlLocation.getRelativeLocation(
-                        new RelativeBlockVector(0, 0, 1), portal.getYaw());
-                portal.getStructure().setButton(buttonLocation);
+                
+                BlockLocation oldButtonLocation = portal.getStructure().getButton();
+                if (oldButtonLocation != null && !oldButtonLocation.equals(buttonLocation)) {
+                    Stargate.addBlockChangeRequest(new BlockChangeRequest(oldButtonLocation, Material.AIR, null));
+                    portal.getStructure().setButton(buttonLocation);
+                    return true;
+                }
             }
         }
+        return false;
     }
 
     /**
