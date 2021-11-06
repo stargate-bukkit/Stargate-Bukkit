@@ -22,6 +22,7 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.actions.BlockSetAction;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.InvalidStructure;
 import net.TheDgtl.Stargate.network.Network;
@@ -137,7 +138,7 @@ public class Gate {
 		for (int i = 0; i < 4; i++) {
 			sign.setLine(i, signLines[i]);
 		}
-		Stargate.syncTickPopulator.new BlockSetAction(sign, true);
+		new BlockSetAction(Stargate.syncTickPopulator, sign, true);
 		if(!isDrawButton)
 			return;
 		/*

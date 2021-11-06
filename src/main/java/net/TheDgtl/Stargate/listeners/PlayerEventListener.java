@@ -27,12 +27,12 @@ import org.bukkit.event.Event;
 import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.SyncronousPopulator;
+import net.TheDgtl.Stargate.actions.ConditionallRepeatedTask;
+import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.SGLocation;
-import net.TheDgtl.Stargate.SyncronousPopulator.ConditionallRepeatedTask;
 
 public class PlayerEventListener implements Listener {
 	private static boolean antiDoubleActivate = true;
@@ -82,8 +82,10 @@ public class PlayerEventListener implements Listener {
 		if (!(boolean) Stargate.getSetting(Setting.USING_BUNGEE))
 			return;
 
-		if(!Stargate.knowsServerName)
+		if(!Stargate.knowsServerName) {
 			getBungeeServerName();
+			
+		}
 
 		Player player = event.getPlayer();
 		IPortal destination = Stargate.pullFromQueue(player.getName());
@@ -100,7 +102,7 @@ public class PlayerEventListener implements Listener {
 	 * @return
 	 */
 	private void getBungeeServerName() {
-		SyncronousPopulator.Action action = new SyncronousPopulator.Action() {			
+		PopulatorAction action = new PopulatorAction() {			
 			@Override
 			public boolean isFinished() {
 				return true;
@@ -115,7 +117,7 @@ public class PlayerEventListener implements Listener {
 			}
 		};
 
-		Stargate.syncSecPopulator.new ConditionallRepeatedTask(action) {
+		new ConditionallRepeatedTask(Stargate.syncSecPopulator, action) {
 
 			@Override
 			public boolean isCondition() {
@@ -124,4 +126,7 @@ public class PlayerEventListener implements Listener {
 		};
 	}
     
+	private void loadInterServerPortals() {
+		
+	}
 }

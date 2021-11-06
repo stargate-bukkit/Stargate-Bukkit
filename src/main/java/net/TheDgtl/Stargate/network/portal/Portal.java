@@ -18,7 +18,8 @@ import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.SyncronousPopulator;
+import net.TheDgtl.Stargate.actions.DelayedAction;
+import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.InvalidStructure;
 import net.TheDgtl.Stargate.exception.NameError;
@@ -167,7 +168,7 @@ public abstract class Portal implements IPortal {
 		
 		
 		// Create action which will close this portal
-		SyncronousPopulator.Action action = new SyncronousPopulator.Action() {
+		PopulatorAction action = new PopulatorAction() {
 
 			@Override
 			public void run(boolean forceEnd) {
@@ -180,7 +181,7 @@ public abstract class Portal implements IPortal {
 			}
 		};
 		// Make the action on a delay
-		Stargate.syncSecPopulator.new DelayedAction(delay, action);
+		new DelayedAction(Stargate.syncSecPopulator, delay, action);
 	}
 
 	/**
