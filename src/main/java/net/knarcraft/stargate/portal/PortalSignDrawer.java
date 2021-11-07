@@ -46,16 +46,29 @@ public class PortalSignDrawer {
      * Draws the sign of the portal this sign drawer is responsible for
      */
     public void drawSign() {
+        Sign sign = getSign();
+        if (sign == null) {
+            return;
+        }
+
+        drawSign(sign);
+    }
+
+    /**
+     * Gets the sign for this sign drawer's portal
+     * 
+     * @return <p>The sign of this sign drawer's portal</p>
+     */
+    private Sign getSign() {
         Block signBlock = portal.getSignLocation().getBlock();
         BlockState state = signBlock.getState();
         if (!(state instanceof Sign sign)) {
             Stargate.logWarning("Sign block is not a Sign object");
             Stargate.debug("Portal::drawSign", String.format("Block: %s @ %s", signBlock.getType(),
                     signBlock.getLocation()));
-            return;
+            return null;
         }
-
-        drawSign(sign);
+        return sign;
     }
 
     /**
@@ -65,9 +78,7 @@ public class PortalSignDrawer {
      */
     private void drawSign(Sign sign) {
         //Clear sign
-        for (int index = 0; index <= 3; index++) {
-            sign.setLine(index, "");
-        }
+        clearSign(sign);
         setLine(sign, 0, highlightColor + "-" + mainColor +
                 portal.getName() + highlightColor + "-");
 
@@ -87,6 +98,31 @@ public class PortalSignDrawer {
             }
         }
 
+        sign.update();
+    }
+
+    /**
+     * Clears all lines of a sign, but does not update the sign
+     * 
+     * @param sign <p>The sign to clear</p>
+     */
+    private void clearSign(Sign sign) {
+        for (int index = 0; index <= 3; index++) {
+            sign.setLine(index, "");
+        }
+    }
+
+    /**
+     * Marks this sign drawer's portal as unregistered
+     */
+    public void drawUnregisteredSign() {
+        Sign sign = getSign();
+        if (sign == null) {
+            return;
+        }
+        clearSign(sign);
+        sign.setLine(0, portal.getName());
+        sign.setLine(3, errorColor + Stargate.getString("signInvalidGate"));
         sign.update();
     }
 
@@ -175,7 +211,7 @@ public class PortalSignDrawer {
     }
 
     /**
-     * Draws a bungee sign
+     * Draws the sign of a BungeeCord portal
      *
      * @param sign <p>The sign to re-draw</p>
      */
@@ -186,8 +222,10 @@ public class PortalSignDrawer {
     }
 
     /**
-     * Draws an inactive sign
+     * Draws the sign of an in-active portal
      *
+     * <p>The sign for an in-active portal should display the right-click prompt and the network.</p>
+     * 
      * @param sign <p>The sign to re-draw</p>
      */
     private void drawInactiveSign(Sign sign) {

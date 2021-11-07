@@ -4,8 +4,6 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.World;
-import org.bukkit.block.Sign;
-import org.bukkit.block.data.type.WallSign;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -220,15 +218,8 @@ public class PortalRegistry {
             }
         }
 
-        //Clear sign data
-        if (portal.getSignLocation().getBlock().getBlockData() instanceof WallSign) {
-            Sign sign = (Sign) portal.getSignLocation().getBlock().getState();
-            sign.setLine(0, portal.getName());
-            sign.setLine(1, "");
-            sign.setLine(2, "");
-            sign.setLine(3, "");
-            sign.update();
-        }
+        //Mark the portal's sign as unregistered
+        new PortalSignDrawer(portal).drawUnregisteredSign();
 
         PortalFileHelper.saveAllPortals(portal.getWorld());
         portal.setRegistered(false);
