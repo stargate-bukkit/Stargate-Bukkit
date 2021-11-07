@@ -243,6 +243,7 @@ public class GateHandler {
         loadGateFromJar("nethergate.gate", gateFolder);
         loadGateFromJar("watergate.gate", gateFolder);
         loadGateFromJar("endgate.gate", gateFolder);
+        loadGateFromJar("squarenetherglowstonegate.gate", gateFolder);
     }
 
     /**
