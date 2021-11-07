@@ -19,7 +19,7 @@ For first-time contributors, the plugin has become difficult to modify.
 
 ## Approach
 - [X] Create a fresh, completely wiped, branch in this repo.
-- [ ] Determine everything that the original stargate did, and add it to a [projects page](https://github.com/the-lockedcraft-legacy-organization/Stargate-Bukkit/projects/1)
+- [X] Determine everything that the original stargate did, and add it to a [projects page](https://github.com/the-lockedcraft-legacy-organization/Stargate-Bukkit/projects/1)
 - [ ] Reach parity with the original
 - [ ] Add any additional features suggested by the community.
 - [ ] Release as a beta
