@@ -162,6 +162,7 @@ public class PortalRegistry {
      */
     public static void unregisterPortal(Portal portal, boolean removeAll) {
         Stargate.debug("Unregister", "Unregistering gate " + portal.getName());
+        portal.getPortalActivator().deactivate();
         portal.getPortalOpener().closePortal(true);
 
         String portalName = portal.getName().toLowerCase();
