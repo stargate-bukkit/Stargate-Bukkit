@@ -163,6 +163,15 @@ public class Stargate extends JavaPlugin {
 			msgr.unregisterIncomingPluginChannel(this);
 		}
 		getServer().getScheduler().cancelTasks(this);
+		
+		if(!(boolean)getSetting(Setting.USING_BUNGEE))
+			return;
+		
+		try {
+			factory.endInterserverConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void log(Level priorityLevel, String msg) {

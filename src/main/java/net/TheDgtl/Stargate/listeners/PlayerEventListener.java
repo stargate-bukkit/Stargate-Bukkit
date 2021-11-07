@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.listeners;
 
+import java.sql.SQLException;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -84,7 +85,7 @@ public class PlayerEventListener implements Listener {
 
 		if(!Stargate.knowsServerName) {
 			getBungeeServerName();
-			
+			loadInterServerPortals();
 		}
 
 		Player player = event.getPlayer();
@@ -102,6 +103,9 @@ public class PlayerEventListener implements Listener {
 	 * @return
 	 */
 	private void getBungeeServerName() {
+		/*
+		 * Action for loading bungee server id
+		 */
 		PopulatorAction action = new PopulatorAction() {			
 			@Override
 			public boolean isFinished() {
@@ -117,16 +121,39 @@ public class PlayerEventListener implements Listener {
 			}
 		};
 
-		new ConditionallRepeatedTask(Stargate.syncSecPopulator, action) {
+		
+		/*
+		 * Repeatedly try to load bungee server id until either the id is known, or no player is able to send bungee messages.
+		 */
+		Stargate.syncSecPopulator.addAction(new ConditionallRepeatedTask(action) {
 
 			@Override
 			public boolean isCondition() {
 				return (Stargate.knowsServerName) || (1 > Bukkit.getServer().getOnlinePlayers().size());
 			}
-		};
+		});
 	}
     
 	private void loadInterServerPortals() {
+		PopulatorAction action = new PopulatorAction() {
+
+			@Override
+			public void run(boolean forceEnd) {
+				try {
+					Stargate.factory.startInterServerConnection();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public boolean isFinished() {
+				return false;
+			}
+			
+		};
+		Stargate.syncSecPopulator.addAction(action);
 		
 	}
+	
 }

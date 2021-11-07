@@ -11,6 +11,7 @@ import org.bukkit.Location;
 
 import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.MySqlDatabase;
 import net.TheDgtl.Stargate.exception.NameError;
@@ -40,11 +41,45 @@ public class InterserverNetwork extends Network{
 	public void removeVirtualPortal(String virtualName) throws InvalidClassException {
 		if(!(getPortal(virtualName) instanceof VirtualPortal))
 			throw new InvalidClassException("portal has to be InterserverPortal class");
-		super.removePortal(getPortal(virtualName));
+		portalList.remove(virtualName);
 	}
 	
 	public void removeVirtualPortal(VirtualPortal portal) {
+		portalList.remove(portal.getName());
+	}
+	
+	public void removePortal(IPortal portal) {
 		super.removePortal(portal);
+		try {
+			unregisterFromInterserver(portal);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void registerToInterserver(IPortal portal) {
+		PopulatorAction action = new PopulatorAction() {
+
+			@Override
+			public void run(boolean forceEnd) {
+				savePortal(interserverDatabase, portal, true);
+			}
+
+			@Override
+			public boolean isFinished() {
+				return true;
+			}
+			
+		};
+		Stargate.syncSecPopulator.addAction(action, true);;
+	}
+	
+	public void unregisterFromInterserver(IPortal portal) throws SQLException {
+		Connection conn = interserverDatabase.getConnection();
+		PreparedStatement statement = sqlMaker.compileRemoveStatement(conn, portal);
+		statement.execute();
+		statement.close();
+		conn.close();
 	}
 	
 	@Override
@@ -54,18 +89,12 @@ public class InterserverNetwork extends Network{
 	
 	@Override
 	protected void savePortal(IPortal portal) {
-		boolean isInterServer;
 		/*
 		 * Save one local partition of every bungee gate on this server
 		 * Also save it to the interserver database, so that it can be
-		 * seen on other servers TODO rethink this
+		 * seen on other serversi
 		 */
-		super.savePortal(database, portal, (isInterServer=false));
-		super.savePortal(interserverDatabase, portal, (isInterServer=true));
-	}
-	
-	@Override
-	public void destroy() {
-		destroy();
+		super.savePortal(database, portal, false);
+		registerToInterserver(portal);
 	}
 }

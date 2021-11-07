@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.network;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +41,10 @@ public class Network {
 		this.database = database;
 		this.sqlMaker = sqlMaker;
 		portalList = new HashMap<>();
+	}
+	
+	public Collection<IPortal> getAllPortals() {
+		return portalList.values();
 	}
 	
 	public boolean portalExists(String name) {

@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.network;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 import org.bukkit.Location;
 
@@ -30,8 +31,10 @@ public class SQLQuerryMaker {
 	
 	public PreparedStatement compileAddStatement(Connection conn, IPortal portal, boolean isInterserver) throws SQLException {
 		PreparedStatement statement = conn.prepareStatement(
-				"INSERT INTO " +tableName+ " (network,name,world,x,y,z,flags)"
+				"INSERT INTO " +tableName
+				+ " (network,name,world,x,y,z,flags"+(isInterserver?",server":"")+")"
 				+ " VALUES(?,?,?,?,?,?,?"+(isInterserver?",?":"")+");");
+		
 		statement.setString(1, portal.getNetwork().getName());
 		statement.setString(2, portal.getName());
 		
@@ -44,7 +47,7 @@ public class SQLQuerryMaker {
 		
 		if(isInterserver) {
 			statement.setString(8, Stargate.serverName);
-		}
+			}
 		
 		return statement;
 	}

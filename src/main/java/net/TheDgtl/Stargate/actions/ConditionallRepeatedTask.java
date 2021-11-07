@@ -11,14 +11,11 @@ public abstract class ConditionallRepeatedTask implements PopulatorAction {
 	/**
 	 * 
 	 */
-	private final SyncronousPopulator syncronousPopulator;
 	private PopulatorAction action;
 	private boolean isFinished = false;
 
-	public ConditionallRepeatedTask(SyncronousPopulator syncronousPopulator, PopulatorAction action) {
-		this.syncronousPopulator = syncronousPopulator;
+	public ConditionallRepeatedTask(PopulatorAction action) {
 		this.action = action;
-		this.syncronousPopulator.addAction(this);
 	}
 
 	@Override

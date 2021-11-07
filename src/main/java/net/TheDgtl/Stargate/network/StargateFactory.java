@@ -70,14 +70,6 @@ public class StargateFactory {
 		loadAllPortals(database,bungeeDataBaseName);
 	}
 	
-	private String getCreateStatement(String databaseName, boolean isInterserver) {
-		return "CREATE TABLE IF NOT EXISTS "+ databaseName +" ("
-				+ " network VARCHAR, name VARCHAR, desti VARCHAR, world VARCHAR,"
-				+ " x INTEGER, y INTEGER, z INTEGER, flags VARCHAR,"
-				+ (isInterserver ? " server VARCHAR," : "")
-				+ " UNIQUE(network,name) );";
-	}
-	
 	private void runStatement(Database database, PreparedStatement statement) throws SQLException{
 		Connection conn = database.getConnection();
 		statement.execute();
@@ -96,21 +88,21 @@ public class StargateFactory {
 			return;
 		}
 		Connection conn2 = database.getConnection();
-		PreparedStatement localInterserverPortalsStatement = localSqlMaker.compileCreateStatement(conn2,(isInterServer = false));
+		PreparedStatement localInterserverPortalsStatement = bungeeSqlMaker.compileCreateStatement(conn2,(isInterServer = false));
 		runStatement(database,localInterserverPortalsStatement);
 		conn2.close();
 		
 		Connection conn3 = bungeeDatabase.getConnection();
-		PreparedStatement interserverPortalsStatement = localSqlMaker.compileCreateStatement(conn3,(isInterServer = true));
+		PreparedStatement interserverPortalsStatement = bungeeSqlMaker.compileCreateStatement(conn3,(isInterServer = true));
 		runStatement(bungeeDatabase,interserverPortalsStatement);
 		conn3.close();
 	}
 	
-	public void loadAllPortals(Database database, String databaseName) throws SQLException {
+	private void loadAllPortals(Database database, String databaseName) throws SQLException {
 		loadAllPortals(database,databaseName,false);
 	}
 	
-	public void loadAllPortals(Database database, String databaseName, boolean areVirtual) throws SQLException {
+	private void loadAllPortals(Database database, String databaseName, boolean areVirtual) throws SQLException {
 		Connection connection = database.getConnection();
 		PreparedStatement statement = connection.prepareStatement(
 				"SELECT * FROM " + databaseName);
@@ -128,7 +120,7 @@ public class StargateFactory {
 			
 			EnumSet<PortalFlag> flags = PortalFlag.parseFlags(flagsMsg);
 			
-			boolean isBungee = flags.contains(PortalFlag.BUNGEE);
+			boolean isBungee = flags.contains(PortalFlag.FANCY_INTERSERVER);
 			
 			try {
 				createNetwork(netName, isBungee);
@@ -140,7 +132,9 @@ public class StargateFactory {
 				String server = set.getString(9);
 				IPortal virtualPortal = new VirtualPortal(server,name,(InterserverNetwork) net,flags);
 				net.addPortal(virtualPortal, false);
-				return;
+				continue;
+			} else if(isBungee) {
+				
 			}
 			
 			World world = Bukkit.getWorld(worldName);
@@ -160,6 +154,27 @@ public class StargateFactory {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
+		}
+	}
+	
+	
+	public void startInterServerConnection() throws SQLException {
+		loadAllPortals(bungeeDatabase,bungeeDataBaseName,true);
+	}
+	
+	public void endInterserverConnection() throws SQLException {
+		for(InterserverNetwork net : bungeeNetList.values()) {
+			for(IPortal portal : net.getAllPortals()) {
+				/*
+				 * To not unregister portals not belonging to this server
+				 */
+				if(portal instanceof VirtualPortal)
+					continue;
+				/*
+				 * Removes the portal from the interserver database
+				 */
+				net.unregisterFromInterserver(portal);
+			}
 		}
 	}
 	
