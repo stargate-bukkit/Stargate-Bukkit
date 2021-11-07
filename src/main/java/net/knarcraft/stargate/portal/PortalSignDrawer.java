@@ -63,9 +63,11 @@ public class PortalSignDrawer {
         Block signBlock = portal.getSignLocation().getBlock();
         BlockState state = signBlock.getState();
         if (!(state instanceof Sign sign)) {
-            Stargate.logWarning("Sign block is not a Sign object");
-            Stargate.debug("Portal::drawSign", String.format("Block: %s @ %s", signBlock.getType(),
-                    signBlock.getLocation()));
+            if (!portal.getOptions().hasNoSign()) {
+                Stargate.logWarning("Sign block is not a Sign object");
+                Stargate.debug("Portal::drawSign", String.format("Block: %s @ %s", signBlock.getType(),
+                        signBlock.getLocation()));
+            }
             return null;
         }
         return sign;
@@ -122,7 +124,6 @@ public class PortalSignDrawer {
         }
         clearSign(sign);
         sign.setLine(0, portal.getName());
-        sign.setLine(3, errorColor + Stargate.getString("signInvalidGate"));
         sign.update();
     }
 

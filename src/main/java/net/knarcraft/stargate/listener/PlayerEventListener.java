@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.MessageSender;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalActivator;
@@ -11,6 +12,7 @@ import net.knarcraft.stargate.utility.BungeeHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import net.knarcraft.stargate.utility.UUIDMigrationHelper;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
@@ -264,11 +266,12 @@ public class PlayerEventListener implements Listener {
             return;
         }
 
+        //Prevent a double click caused by a Spigot bug
+        if (clickIsBug(event, block)) {
+            return;
+        }
+
         if (MaterialHelper.isButtonCompatible(block.getType())) {
-            //Prevent a double click caused by a Spigot bug
-            if (clickIsBug(event, block)) {
-                return;
-            }
 
             Portal portal = PortalHandler.getByBlock(block);
             if (portal == null) {
@@ -288,30 +291,56 @@ public class PlayerEventListener implements Listener {
             if (portal.getPortalOpener().isOpenFor(player) && !MaterialHelper.isContainer(block.getType())) {
                 event.setUseInteractedBlock(Event.Result.ALLOW);
             }
+        } else {
+            //Display information about the portal if it has no sign
+            displayPortalInfo(block, player);
         }
     }
 
     /**
-     * This function decides if a right click of a coral is caused by a Spigot bug
+     * Displays information about a clicked portal
      *
-     * <p>The Spigot bug currently makes every right click of a coral trigger twice, causing the portal to close
-     * immediately. This fix should detect the bug without breaking wall coral buttons once the bug is fixed.</p>
+     * <p>This will only display portal info if the portal has no sign and is not silent.</p>
+     *
+     * @param block  <p>The clicked block</p>
+     * @param player <p>The player that clicked the block</p>
+     */
+    private void displayPortalInfo(Block block, Player player) {
+        Portal portal = PortalHandler.getByBlock(block);
+        if (portal == null) {
+            return;
+        }
+
+        //Display portal information as a portal without a sign does not display any
+        if (portal.getOptions().hasNoSign() && !portal.getOptions().isSilent()) {
+            MessageSender sender = Stargate.getMessageSender();
+            sender.sendSuccessMessage(player, ChatColor.GOLD + "[PORTAL INFO]");
+            sender.sendSuccessMessage(player, String.format("Portal name: %s", portal.getName()));
+            sender.sendSuccessMessage(player, String.format("Portal destination: %s", portal.getDestinationName()));
+            sender.sendSuccessMessage(player, String.format("Portal network: %s", portal.getNetwork()));
+        }
+    }
+
+    /**
+     * This function decides if a right click of a block is caused by a Spigot bug
+     *
+     * <p>The Spigot bug currently makes every right click of some blocks trigger twice, causing the portal to close
+     * immediately, or causing portal information printing twice. This fix should detect the bug without breaking
+     * clicking once the bug is fixed.</p>
      *
      * @param event <p>The event causing the right click</p>
      * @param block <p>The block to check</p>
      * @return <p>True if the click is a bug and should be cancelled</p>
      */
     private boolean clickIsBug(PlayerInteractEvent event, Block block) {
-        if (MaterialHelper.isWallCoral(block.getType())) {
-            if (previousEvent != null &&
-                    event.getPlayer() == previousEvent.getPlayer() && eventTime + 15 > System.currentTimeMillis()) {
-                previousEvent = null;
-                eventTime = 0;
-                return true;
-            }
-            previousEvent = event;
-            eventTime = System.currentTimeMillis();
+        if (previousEvent != null &&
+                event.getPlayer() == previousEvent.getPlayer() && eventTime + 15 > System.currentTimeMillis()) {
+            previousEvent = null;
+            eventTime = 0;
+            return true;
         }
+        previousEvent = event;
+        eventTime = System.currentTimeMillis();
         return false;
     }
 

@@ -53,7 +53,12 @@ public enum PortalOption {
     /**
      * This option allows a portal which does not display a teleportation message, for better immersion
      */
-    SILENT('i', "stargate.option.silent", 21);
+    SILENT('i', "stargate.option.silent", 21),
+
+    /**
+     * This option causes a fixed portal's sign to be removed after creation
+     */
+    NO_SIGN('e', "stargate.option.nosign", 22);
 
     private final char characterRepresentation;
     private final String permissionString;

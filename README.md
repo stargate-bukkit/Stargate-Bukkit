@@ -61,6 +61,7 @@ stargate.option -- Allow use of all options
   stargate.option.nonetwork -- Allow use of 'N'oNetwork
   stargate.option.random -- Allow use of 'R'andom stargates
   stargate.option.silent -- Allow use of S'i'lent stargates
+  stargate.option.nosign -- Allow use of 'E' (No sign)
   
 stargate.create -- Allow creating Stargates on any network (Override all create permissions)
   stargate.create.personal -- Allow creating Stargates on network {playername}
@@ -128,9 +129,10 @@ section). See the Custom Gate Layout section to learn how to add custom gates.
     - 'S' is for showing an always-on gate in the network list
     - 'N' is for hiding the network name
     - 'R' is for random gates. These follow standard permissions of gates, but have a random exit location every time a
-      player enters.
-    - 'U' is for a gate connecting to another through bungee
+      player enters. (Implicitly always on)
+    - 'U' is for a gate connecting to another through bungee (Implicitly always on)
     - 'I' is for a silent gate, which does not output anything to the chat while teleporting. Increases immersion
+    - 'E' is for gate without a sign. Only for fixed stargates
 
 The options are the single letter, not the word. So to make a private hidden gate, your 4th line would be 'PH'.
 
@@ -385,6 +387,8 @@ bungeeSign=Teleport to
 - Adds an option to make a stargate silent (no text in chat when teleporting) for better immersion on RP servers
 - Makes buttons update and/or remove themselves when their location or material changes
 - Adds another default gate to show that it's possible to use any number of materials for a stargate's border
+- Adds an option for stargates without a sign. Right-clicking such a stargate will display gate information
+- Fixes a bug causing signs to be re-drawn after they're broken
 
 #### \[Version 0.9.0.5] EpicKnarvik97 fork
 

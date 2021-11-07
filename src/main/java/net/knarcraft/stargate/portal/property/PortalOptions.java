@@ -25,12 +25,17 @@ public class PortalOptions {
 
         if (this.isAlwaysOn() && !isFixed) {
             this.options.put(PortalOption.ALWAYS_ON, false);
-            Stargate.debug("Portal", "Can not create a non-fixed always-on gate. Setting AlwaysOn = false");
+            Stargate.debug("PortalOptions", "Can not create a non-fixed always-on gate. Setting AlwaysOn = false");
         }
 
         if ((this.isRandom() || this.isBungee()) && !this.isAlwaysOn()) {
             this.options.put(PortalOption.ALWAYS_ON, true);
-            Stargate.debug("Portal", "Gate marked as random or bungee, set to always-on");
+            Stargate.debug("PortalOptions", "Gate marked as random or bungee, set to always-on");
+        }
+
+        if (this.hasNoSign() && !this.isFixed) {
+            this.options.put(PortalOption.NO_SIGN, false);
+            Stargate.debug("PortalOptions", "Gate marked with no sign, but not fixed. Setting NoSign = false");
         }
     }
 
@@ -175,6 +180,17 @@ public class PortalOptions {
      */
     public boolean isSilent() {
         return this.options.get(PortalOption.SILENT);
+    }
+
+    /**
+     * Gets whether this portal has no sign
+     *
+     * <p>An always-on portal is allowed to not have a sign as it will never be interacted with anyway.</p>
+     *
+     * @return <p>Whether this portal has no sign</p>
+     */
+    public boolean hasNoSign() {
+        return this.options.get(PortalOption.NO_SIGN);
     }
 
 }

@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.event.StargateDestroyEvent;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalCreator;
@@ -79,6 +80,12 @@ public class BlockEventListener implements Listener {
         //Not creating a gate, just placing a sign
         if (portal == null) {
             return;
+        }
+
+        //Remove the sign if the no sign option is enabled
+        if (portal.getOptions().hasNoSign()) {
+            BlockChangeRequest request = new BlockChangeRequest(portal.getSignLocation(), Material.AIR, null);
+            Stargate.addBlockChangeRequest(request);
         }
 
         Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("createMsg"));

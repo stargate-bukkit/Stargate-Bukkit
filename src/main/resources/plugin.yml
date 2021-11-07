@@ -98,6 +98,7 @@ permissions:
       stargate.option.nonetwork: true
       stargate.option.random: true
       stargate.option.silent: true
+      stargate.option.nosign: true
   stargate.option.hidden:
     description: Allows the creation of a hidden stargate
     default: false
@@ -124,6 +125,9 @@ permissions:
     default: false
   stargate.option.silent:
     description: Allows the creation of a stargate which does not output anything to the chat
+    default: false
+  stargate.option.nosign:
+    description: Allows the creation of a stargate which has no sign
     default: false
   stargate.admin.hidden:
     description: Allows this player to see all hidden stargates
