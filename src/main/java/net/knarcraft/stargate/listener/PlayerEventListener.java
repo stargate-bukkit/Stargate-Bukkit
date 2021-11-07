@@ -314,10 +314,10 @@ public class PlayerEventListener implements Listener {
         //Display portal information as a portal without a sign does not display any
         if (portal.getOptions().hasNoSign() && !portal.getOptions().isSilent()) {
             MessageSender sender = Stargate.getMessageSender();
-            sender.sendSuccessMessage(player, ChatColor.GOLD + "[PORTAL INFO]");
-            sender.sendSuccessMessage(player, String.format("Portal name: %s", portal.getName()));
-            sender.sendSuccessMessage(player, String.format("Portal destination: %s", portal.getDestinationName()));
-            sender.sendSuccessMessage(player, String.format("Portal network: %s", portal.getNetwork()));
+            sender.sendSuccessMessage(player, ChatColor.GOLD + "[STARGATE INFO]");
+            sender.sendSuccessMessage(player, String.format("Stargate name: %s", portal.getName()));
+            sender.sendSuccessMessage(player, String.format("Stargate destination: %s", portal.getDestinationName()));
+            sender.sendSuccessMessage(player, String.format("Stargate network: %s", portal.getNetwork()));
         }
     }
 
