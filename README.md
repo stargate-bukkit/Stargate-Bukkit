@@ -202,7 +202,11 @@ The key `button` is used to define the type of button that is generated for this
 a type of wall coral (dead or alive), a type of shulker box or a chest.
 
 `X` and `-` are used to define block types for the layout (Any single-character can be used, such as `#`).  
-In the gate format, you can see we use `X` to show where obsidian must be, `-` where the controls (Button/sign) are.  
+In the gate format, you can see we use `X` to show where obsidian must be, `-` where the controls (Button/sign) are.
+
+For more complex gate designs, it is possible to add more materials. If you add something like a=GLOWSTONE, `a` can then
+be used in the gate layout, just as `X` is used. See the `squarenetherglowstonegate.gate` file for an example.
+
 You will also notice a `*` in the gate layout, this is the "exit point" of the gate, the block at which the player will
 teleport in front of.
 
@@ -380,6 +384,7 @@ bungeeSign=Teleport to
 - Validates and updates stargate buttons when the plugin is loaded or reloaded
 - Adds an option to make a stargate silent (no text in chat when teleporting) for better immersion on RP servers
 - Makes buttons update and/or remove themselves when their location or material changes
+- Adds another default gate to show that it's possible to use any number of materials for a stargate's border
 
 #### \[Version 0.9.0.5] EpicKnarvik97 fork
 
