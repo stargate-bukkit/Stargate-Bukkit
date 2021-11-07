@@ -208,7 +208,7 @@ public final class PortalFileHelper {
      * <p>This will open always on portals, print info about loaded stargates and re-draw portal signs for loaded
      * portals.</p>
      *
-     * @param world <p>The world portals have been loaded for</p>
+     * @param world               <p>The world portals have been loaded for</p>
      * @param needsToSaveDatabase <p>Whether the portal database's file needs to be updated</p>
      */
     private static void doPostLoadTasks(World world, boolean needsToSaveDatabase) {
@@ -320,7 +320,7 @@ public final class PortalFileHelper {
                     new RelativeBlockVector(0, 0, 1), portal.getYaw());
             if (!buttonLocation.equals(portal.getLocation().getSignLocation())) {
                 portal.getLocation().setButtonVector(control);
-                
+
                 BlockLocation oldButtonLocation = portal.getStructure().getButton();
                 if (oldButtonLocation != null && !oldButtonLocation.equals(buttonLocation)) {
                     Stargate.addBlockChangeRequest(new BlockChangeRequest(oldButtonLocation, Material.AIR, null));

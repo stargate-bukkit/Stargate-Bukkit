@@ -56,7 +56,7 @@ public class PortalSignDrawer {
 
     /**
      * Gets the sign for this sign drawer's portal
-     * 
+     *
      * @return <p>The sign of this sign drawer's portal</p>
      */
     private Sign getSign() {
@@ -103,7 +103,7 @@ public class PortalSignDrawer {
 
     /**
      * Clears all lines of a sign, but does not update the sign
-     * 
+     *
      * @param sign <p>The sign to clear</p>
      */
     private void clearSign(Sign sign) {
@@ -225,7 +225,7 @@ public class PortalSignDrawer {
      * Draws the sign of an in-active portal
      *
      * <p>The sign for an in-active portal should display the right-click prompt and the network.</p>
-     * 
+     *
      * @param sign <p>The sign to re-draw</p>
      */
     private void drawInactiveSign(Sign sign) {

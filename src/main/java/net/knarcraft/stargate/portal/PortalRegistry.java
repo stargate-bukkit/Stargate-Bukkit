@@ -243,13 +243,13 @@ public class PortalRegistry {
         } else {
             //Check if network exists in the lookup list. If not, register the new network
             if (!portalLookupByNetwork.containsKey(networkName)) {
-                Stargate.debug("register", String.format("Network %s not in lookupNamesNet, adding", 
+                Stargate.debug("register", String.format("Network %s not in lookupNamesNet, adding",
                         portal.getNetwork()));
                 portalLookupByNetwork.put(networkName, new HashMap<>());
             }
             //Check if this network exists in the network list. If not, register the network
             if (!allPortalNetworks.containsKey(networkName)) {
-                Stargate.debug("register", String.format("Network %s not in allPortalsNet, adding", 
+                Stargate.debug("register", String.format("Network %s not in allPortalsNet, adding",
                         portal.getNetwork()));
                 allPortalNetworks.put(networkName, new ArrayList<>());
             }
