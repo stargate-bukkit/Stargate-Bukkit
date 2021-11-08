@@ -295,7 +295,7 @@ public final class PortalFileHelper {
         BlockData buttonData = buttonLocation.getBlock().getBlockData();
         if (portal.getOptions().isAlwaysOn()) {
             //Clear button if not already air or water
-            if (buttonData.getMaterial() != Material.AIR && buttonData.getMaterial() != Material.WATER) {
+            if (MaterialHelper.isButtonCompatible(buttonData.getMaterial())) {
                 Material newMaterial = decideRemovalMaterial(buttonLocation, portal);
                 Stargate.addBlockChangeRequest(new BlockChangeRequest(buttonLocation, newMaterial, null));
             }
