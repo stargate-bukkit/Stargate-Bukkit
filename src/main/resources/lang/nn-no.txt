@@ -35,3 +35,9 @@ bungeeDisabled=BungeeCord støtte er slått av.
 bungeeDeny=Du har ikkje løyve til å opprette BungeeCord portar.
 bungeeEmpty=BungeeCord portar treng bade ein destinasjon og eit nettverk.
 bungeeSign=Teleporter til
+
+portalInfoTitle=[STJERNEPORT INFO]
+portalInfoName=Namn: %name%
+portalInfoDestination=Destinasjon: %destination%
+portalInfoNetwork=Nettverk: %network%
+portalInfoServer=Server: %server%

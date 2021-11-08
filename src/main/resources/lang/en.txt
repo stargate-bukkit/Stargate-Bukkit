@@ -35,3 +35,9 @@ bungeeDisabled=BungeeCord support is disabled.
 bungeeDeny=You do not have permission to create BungeeCord gates.
 bungeeEmpty=BungeeCord gates require both a destination and network.
 bungeeSign=Teleport to
+
+portalInfoTitle=[STARGATE INFO]
+portalInfoName=Name: %name%
+portalInfoDestination=Destination: %destination%
+portalInfoNetwork=Network: %network%
+portalInfoServer=Server: %server%

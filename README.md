@@ -376,6 +376,12 @@ bungeeDisabled=BungeeCord support is disabled.
 bungeeDeny=You do not have permission to create BungeeCord gates.
 bungeeEmpty=BungeeCord gates require both a destination and network.
 bungeeSign=Teleport to
+
+portalInfoTitle=[STARGATE INFO]
+portalInfoName=Name: %name%
+portalInfoDestination=Destination: %destination%
+portalInfoNetwork=Network: %network%
+portalInfoServer=Server: %server%
 ```
 
 # Changes
@@ -390,6 +396,7 @@ bungeeSign=Teleport to
 - Adds an option for stargates without a sign. Right-clicking such a stargate will display gate information
 - Fixes a bug causing signs to be re-drawn after they're broken
 - Makes buttons and signs be replaced by water instead of air when underwater
+- Makes portal info shown when right-clicking a stargate fully customizable
 
 #### \[Version 0.9.0.5] EpicKnarvik97 fork
 
