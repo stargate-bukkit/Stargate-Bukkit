@@ -73,6 +73,15 @@ public class StargateFactory {
 		loadAllPortals(database,bungeeDataBaseName);
 		Stargate.log(Level.FINER, "Loading portals from interserver bungee database");
 		loadAllPortals(bungeeDatabase,bungeeDataBaseName,true);
+		
+		refreshPortals(networkList); refreshPortals(bungeeNetList);
+	}
+	
+	
+	private void refreshPortals(HashMap<String, ? extends Network> networksList) {
+		for(Network net : networksList.values()) {
+			net.updatePortals();
+		}
 	}
 	
 	private void runStatement(Database database, PreparedStatement statement) throws SQLException{

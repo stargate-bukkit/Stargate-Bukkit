@@ -34,7 +34,7 @@ public class SQLQuerryMaker {
 	public PreparedStatement compileAddStatement(Connection conn, IPortal portal, boolean isInterserver) throws SQLException {
 		PreparedStatement statement = conn.prepareStatement(
 				"INSERT INTO " +tableName
-				+ " (network,desti,name,world,x,y,z,flags"+(isInterserver?",server,isOnline":"")+")"
+				+ " (network,name,desti,world,x,y,z,flags"+(isInterserver?",server,isOnline":"")+")"
 				+ " VALUES(?,?,?,?,?,?,?,?"+(isInterserver?",?,?":"")+");");
 		
 		statement.setString(1, portal.getNetwork().getName());
