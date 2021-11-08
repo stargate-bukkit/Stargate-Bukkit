@@ -28,6 +28,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * This listener listens to any player-related events related to stargates
@@ -186,7 +188,7 @@ public class PlayerEventListener implements Listener {
         }
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            handleRightClickBlock(event, player, block);
+            handleRightClickBlock(event, player, block, event.getHand());
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && block.getBlockData() instanceof WallSign) {
             //Handle left click of a wall sign
             handleSignClick(event, player, block, true);
@@ -259,8 +261,9 @@ public class PlayerEventListener implements Listener {
      * @param event  <p>The event triggering the right-click</p>
      * @param player <p>The player doing the right-click</p>
      * @param block  <p>The block the player clicked</p>
+     * @param hand   <p>The hand the player used to interact with the stargate</p>
      */
-    private void handleRightClickBlock(PlayerInteractEvent event, Player player, Block block) {
+    private void handleRightClickBlock(PlayerInteractEvent event, Player player, Block block, EquipmentSlot hand) {
         if (block.getBlockData() instanceof WallSign) {
             handleSignClick(event, player, block, false);
             return;
@@ -272,7 +275,6 @@ public class PlayerEventListener implements Listener {
         }
 
         if (MaterialHelper.isButtonCompatible(block.getType())) {
-
             Portal portal = PortalHandler.getByBlock(block);
             if (portal == null) {
                 return;
@@ -293,7 +295,10 @@ public class PlayerEventListener implements Listener {
             }
         } else {
             //Display information about the portal if it has no sign
-            displayPortalInfo(block, player);
+            ItemStack heldItem = player.getInventory().getItem(hand);
+            if (heldItem.getType().isAir() || !heldItem.getType().isBlock()) {
+                displayPortalInfo(block, player);
+            }
         }
     }
 
@@ -315,9 +320,9 @@ public class PlayerEventListener implements Listener {
         if (portal.getOptions().hasNoSign() && !portal.getOptions().isSilent()) {
             MessageSender sender = Stargate.getMessageSender();
             sender.sendSuccessMessage(player, ChatColor.GOLD + Stargate.getString("portalInfoTitle"));
-            sender.sendSuccessMessage(player, Stargate.replaceVars(Stargate.getString("portalInfoName"), 
+            sender.sendSuccessMessage(player, Stargate.replaceVars(Stargate.getString("portalInfoName"),
                     "%name%", portal.getName()));
-            sender.sendSuccessMessage(player, Stargate.replaceVars(Stargate.getString("portalInfoDestination"), 
+            sender.sendSuccessMessage(player, Stargate.replaceVars(Stargate.getString("portalInfoDestination"),
                     "%destination%", portal.getDestinationName()));
             if (portal.getOptions().isBungee()) {
                 sender.sendSuccessMessage(player, Stargate.replaceVars(Stargate.getString("portalInfoServer"),
