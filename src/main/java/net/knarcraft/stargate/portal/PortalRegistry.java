@@ -271,8 +271,10 @@ public class PortalRegistry {
             lookupBlocks.put(block, portal);
         }
         //Register the sign and button to the lookup lists
-        lookupBlocks.put(portal.getSignLocation(), portal);
-        lookupControls.put(portal.getSignLocation(), portal);
+        if (!portal.getOptions().hasNoSign()) {
+            lookupBlocks.put(portal.getSignLocation(), portal);
+            lookupControls.put(portal.getSignLocation(), portal);
+        }
 
         BlockLocation button = portal.getStructure().getButton();
         if (button != null) {
