@@ -18,6 +18,9 @@
 package net.TheDgtl.Stargate.listeners;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.io.InvalidClassException;
 import java.util.logging.Level;
 
@@ -33,17 +36,19 @@ import com.google.gson.stream.JsonReader;
 
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.Channel;
 
 public class StargateBungeePluginMessageListener implements PluginMessageListener {
 
+	Stargate stargate;
 	/**
 	 * TODO
 	 * - Send plugin enable message to all servers
 	 * - Send all loaded bungeeportals to all servers
 	 */
-	public StargateBungeePluginMessageListener() {
-		
+	public StargateBungeePluginMessageListener(Stargate stargate) {
+		this.stargate = stargate;
 	}
 	
 	/**
@@ -57,39 +62,66 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 	 */
 	@Override
 	public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {
+		Stargate.log(Level.FINEST, "Recieved pluginmessage");
+		
 		boolean usingBungee = (boolean) Stargate.getSetting(Setting.USING_BUNGEE);
 		if (!usingBungee || !channel.equals("BungeeCord"))
 			return;
 
-		ByteArrayDataInput in = ByteStreams.newDataInput(message);
-		String subChannel = in.readUTF();
-		switch (Channel.parse(subChannel)) {
-		case GET_SERVER:
-			Stargate.serverName = in.readUTF();
-			Stargate.knowsServerName = (Stargate.serverName != null) && (!Stargate.serverName.isEmpty());
-			break;
-		case PLAYER_CONNECT:
-			Stargate.log(Level.FINEST, "trying to read player join json msg");
-			short length = in.readShort();
-			byte[] buffer = new byte[length];
-			in.readFully(buffer);
-			JsonParser parser = new JsonParser();
-			JsonObject json = (JsonObject) parser.parse(buffer.toString());
-			String playerName = json.get("playerName").getAsString();
-			String portalName = json.get("portalName").getAsString();
-			String network = json.get("network").getAsString();
-			boolean isPersonalNet = json.get("isPrivate").getAsBoolean();
-			Stargate.addToQueue(playerName, portalName, network);
-			break;
-		case PLUGIN_ENABLE:
-			break;
-		case PLUGIN_DISABLE:
-			break;
-		case PLAYER_TELEPORT:
-			break;
-		default:
-			Stargate.log(Level.FINEST, "Recieved unknown message with a subchannel: " + subChannel);
-			break;
-		}
+		try {
+			DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
+			String subChannel = in.readUTF();
+			switch (Channel.parse(subChannel)) {
+			case GET_SERVER:
+				Stargate.serverName = in.readUTF();
+				Stargate.knowsServerName = (Stargate.serverName != null) && (!Stargate.serverName.isEmpty());
+				break;
+			case PLAYER_CONNECT:
+				break;
+			case PLUGIN_ENABLE:
+				break;
+			case PLUGIN_DISABLE:
+				break;
+			case PLAYER_TELEPORT:
+				Stargate.log(Level.FINEST, "trying to read player join json msg");
+				String msg = in.readUTF();
+				playerConnect(msg);
+				break;
+			default:
+				Stargate.log(Level.FINEST, "Recieved unknown message with a subchannel: " + subChannel);
+				break;
+			}
+		} catch (IOException ex) {
+			Stargate.log(Level.SEVERE,"[Stargate] Error receiving BungeeCord message");
+            ex.printStackTrace();
+            return;
+        }
+		
     }
+	
+	private void playerConnect(String msg) {
+		JsonParser parser = new JsonParser();
+		Stargate.log(Level.FINEST, msg);
+		JsonObject json = (JsonObject) parser.parse(msg);
+		String playerName = json.get("playerName").getAsString();
+		Stargate.log(Level.FINEST, "playerName= " + playerName);
+		
+		String portalName = json.get("portalName").getAsString();
+		Stargate.log(Level.FINEST, "portalName= " + portalName);
+		
+		String network = json.get("network").getAsString();
+		Stargate.log(Level.FINEST, "network= " + network);
+		
+		Player player = stargate.getServer().getPlayer(playerName);
+		if(player == null) {
+			Stargate.log(Level.FINEST, "Player was null; adding to queue");
+			Stargate.addToQueue(playerName, portalName, network);
+		}
+		else {
+			Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
+			IPortal dest = Stargate.factory.getNetwork(network, true).getPortal(portalName);
+			dest.teleportHere(player);
+		}
+	}
 }
+

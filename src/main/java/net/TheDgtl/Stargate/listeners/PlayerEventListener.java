@@ -40,23 +40,19 @@ public class PlayerEventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		Stargate.log(Level.FINEST, "ping 1");
 		Block block = event.getClickedBlock();
 		if (block == null)
 			return;
-		Stargate.log(Level.FINEST, "ping 2");
 		Action action = event.getAction();
 		// TODO material optimisation?
 		IPortal portal = Network.getPortal(block.getLocation(), GateStructureType.CONTROLL);
 		if (portal == null) {
 			return;
 		}
-		Stargate.log(Level.FINEST, "ping 3");
 
 		Material blockMat = block.getType();
 		if ((action == Action.RIGHT_CLICK_BLOCK)) {
 			// A cheat to avoid a glitch from bukkit
-			Stargate.log(Level.FINEST, "ping 4");
 			if (blockMat == Material.DEAD_TUBE_CORAL_WALL_FAN) {
 				antiDoubleActivate = !antiDoubleActivate;
 				if (antiDoubleActivate)
@@ -69,15 +65,12 @@ public class PlayerEventListener implements Listener {
 		Stargate.log(Level.FINEST, "ping 5");
 		Player player = event.getPlayer();
 		if (Tag.WALL_SIGNS.isTagged(blockMat)) {
-			Stargate.log(Level.FINEST, "ping 6");
 			if (portal.isOpenFor(player)) {
-				Stargate.log(Level.FINEST, "ping 7");
 				portal.onSignClick(action, player);
 			}
 			return;
 		}
 		if (Tag.BUTTONS.isTagged(blockMat) || (blockMat == Material.DEAD_TUBE_CORAL_WALL_FAN)) {
-			Stargate.log(Level.FINEST, "ping 8");
 			portal.onButtonClick(player);
 			return;
 		}

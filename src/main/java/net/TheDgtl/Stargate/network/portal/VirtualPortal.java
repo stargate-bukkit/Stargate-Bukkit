@@ -1,6 +1,10 @@
 package net.TheDgtl.Stargate.network.portal;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.EnumSet;
+import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -41,24 +45,41 @@ public class VirtualPortal implements IPortal {
 
 	@Override
 	public void teleportHere(Player player) {
-		ByteArrayDataOutput out = ByteStreams.newDataOutput();
-		out.writeUTF(Channel.PLAYER_TELEPORT.getChannel());
-		out.writeUTF(server);
-		JsonObject data = new JsonObject();
-		data.add("playerName", new JsonPrimitive(player.getName()));
-		data.add("portalName", new JsonPrimitive(this.name));
-		data.add("network", new JsonPrimitive(network.getName()));
-		data.add("isPrivate", new JsonPrimitive(flags.contains(PortalFlag.PERSONAL_NETWORK)));
-		String dataMsg = data.toString();
-		out.writeShort(dataMsg.length());
-		out.writeUTF(dataMsg);
 		Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
-		player.sendPluginMessage(plugin, Channel.BUNGEE.getChannel(), out.toByteArray());
+		try {
+			ByteArrayOutputStream bao = new ByteArrayOutputStream();
+            DataOutputStream msgData = new DataOutputStream(bao);
+            msgData.writeUTF(Channel.FORWARD.getChannel());
+            msgData.writeUTF(server);
+            msgData.writeUTF(Channel.PLAYER_TELEPORT.getChannel());
+			JsonObject data = new JsonObject();
+			data.add("playerName", new JsonPrimitive(player.getName()));
+			data.add("portalName", new JsonPrimitive(this.name));
+			data.add("network", new JsonPrimitive(network.getName()));
+			String dataMsg = data.toString();
+			msgData.writeUTF(dataMsg);
+			Stargate.log(Level.FINEST, bao.toString());
+			player.sendPluginMessage(plugin, Channel.BUNGEE.getChannel(), bao.toByteArray());
+		} catch (IOException ex) {
+            Stargate.log(Level.SEVERE,"[Stargate] Error sending BungeeCord teleport packet");
+            ex.printStackTrace();
+            return;
+        }
+		
+		
 
-		ByteArrayDataOutput out1 = ByteStreams.newDataOutput();
-		out1.writeUTF(Channel.PLAYER_CONNECT.getChannel());
-		out1.writeUTF(server);
-		player.sendPluginMessage(plugin, Channel.BUNGEE.getChannel(), out1.toByteArray());
+		try {
+            ByteArrayOutputStream bao = new ByteArrayOutputStream();
+            DataOutputStream msgData = new DataOutputStream(bao);
+            msgData.writeUTF(Channel.PLAYER_CONNECT.getChannel());
+            msgData.writeUTF(server);
+    		player.sendPluginMessage(plugin, Channel.BUNGEE.getChannel(), bao.toByteArray());
+		} catch (IOException ex) {
+             Stargate.log(Level.SEVERE,"[Stargate] Error sending BungeeCord connect packet");
+             ex.printStackTrace();
+             return;
+         }
+		
 	}
 
 	/**

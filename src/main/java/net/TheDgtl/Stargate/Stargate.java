@@ -122,7 +122,7 @@ public class Stargate extends JavaPlugin {
 			Messenger msgr = Bukkit.getMessenger();
 
 			msgr.registerOutgoingPluginChannel(this, Channel.BUNGEE.getChannel());
-			msgr.registerIncomingPluginChannel(this, Channel.BUNGEE.getChannel(), new StargateBungeePluginMessageListener());
+			msgr.registerIncomingPluginChannel(this, Channel.BUNGEE.getChannel(), new StargateBungeePluginMessageListener(this));
 		}
 	}
 
