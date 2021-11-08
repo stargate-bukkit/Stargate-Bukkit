@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -65,9 +66,13 @@ public class StargateFactory {
 		this.localSqlMaker = new SQLQuerryMaker(tableName);
 		
 		createTables();
-		
+
+		Stargate.log(Level.FINER, "Loading portals from base database");
 		loadAllPortals(database,tableName);
+		Stargate.log(Level.FINER, "Loading portals from local bungee database");
 		loadAllPortals(database,bungeeDataBaseName);
+		Stargate.log(Level.FINER, "Loading portals from interserver bungee database");
+		loadAllPortals(bungeeDatabase,bungeeDataBaseName,true);
 	}
 	
 	private void runStatement(Database database, PreparedStatement statement) throws SQLException{
@@ -75,7 +80,6 @@ public class StargateFactory {
 		statement.execute();
 		statement.close();
 	}
-	
 	
 	private void createTables() throws SQLException {
 		boolean isInterServer;
@@ -111,6 +115,7 @@ public class StargateFactory {
 		while(set.next()) {
 			String netName = set.getString(1);
 			String name = set.getString(2);
+			
 			String desti = set.getString(3);
 			String worldName = set.getString(4);
 			int x = set.getInt(5);
@@ -121,21 +126,27 @@ public class StargateFactory {
 			EnumSet<PortalFlag> flags = PortalFlag.parseFlags(flagsMsg);
 			
 			boolean isBungee = flags.contains(PortalFlag.FANCY_INTERSERVER);
-			
+			Stargate.log(Level.FINEST, "Trying to add portal " + name + ", on network " + netName + ",isInterserver = " + isBungee);
 			try {
 				createNetwork(netName, isBungee);
 			} catch (NameError e) {}
 			Network net = getNetwork(netName, isBungee);
 			
+			for(IPortal logPortal : net.getAllPortals()) {
+				Stargate.log(Level.FINEST,logPortal.getName());
+			}
 		
 			if(areVirtual) {
 				String server = set.getString(9);
-				IPortal virtualPortal = new VirtualPortal(server,name,(InterserverNetwork) net,flags);
-				net.addPortal(virtualPortal, false);
+				if(!net.portalExists(name)) {
+					IPortal virtualPortal = new VirtualPortal(server,name,(InterserverNetwork) net,flags);
+					net.addPortal(virtualPortal, false);
+					Stargate.log(Level.FINEST, "Added as virtual portal");
+				} else {
+					Stargate.log(Level.FINEST, "Not added");
+				}
 				continue;
-			} else if(isBungee) {
-				
-			}
+			} 
 			
 			World world = Bukkit.getWorld(worldName);
 			Block block = world.getBlockAt(x, y, z);
@@ -144,6 +155,10 @@ public class StargateFactory {
 			try {
 				IPortal portal = Portal.createPortalFromSign(net, virtualSign, block, flags);
 				net.addPortal(portal, false);
+				Stargate.log(Level.FINEST, "Added as normal portal");
+				if(isBungee) {
+					setInterserverPortalOnlineStatus(portal,true);
+				}
 			}  catch (GateConflict e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -155,25 +170,42 @@ public class StargateFactory {
 				e.printStackTrace();
 			} 
 		}
+		statement.close();
+		connection.close();
 	}
 	
+	private void setInterserverPortalOnlineStatus(IPortal portal, boolean isOnline) throws SQLException {
+		Connection conn = bungeeDatabase.getConnection();
+		PreparedStatement statement = bungeeSqlMaker.changePortalOnlineStatus(conn, portal,isOnline);
+		statement.execute();
+		statement.close();
+		conn.close();
+	}
 	
 	public void startInterServerConnection() throws SQLException {
-		loadAllPortals(bungeeDatabase,bungeeDataBaseName,true);
+		Connection conn = bungeeDatabase.getConnection();
+		for(Network net : bungeeNetList.values()) {
+			for(IPortal portal : net.getAllPortals()) {
+				if(portal instanceof VirtualPortal)
+					continue;
+				PreparedStatement statement = bungeeSqlMaker.compileRefreshPortalStatement(conn, portal);
+				statement.execute();
+				statement.close();
+			}
+		}
+		conn.close();
 	}
 	
 	public void endInterserverConnection() throws SQLException {
 		for(InterserverNetwork net : bungeeNetList.values()) {
 			for(IPortal portal : net.getAllPortals()) {
 				/*
-				 * To not unregister portals not belonging to this server
+				 * Virtual portal = portals on other servers
 				 */
 				if(portal instanceof VirtualPortal)
 					continue;
-				/*
-				 * Removes the portal from the interserver database
-				 */
-				net.unregisterFromInterserver(portal);
+				
+				setInterserverPortalOnlineStatus(portal,false);
 			}
 		}
 	}

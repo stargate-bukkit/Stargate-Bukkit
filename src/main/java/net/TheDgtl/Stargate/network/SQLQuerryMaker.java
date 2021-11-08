@@ -23,7 +23,7 @@ public class SQLQuerryMaker {
 		String statementMsg = "CREATE TABLE IF NOT EXISTS "+ tableName +" ("
 				+ " network VARCHAR, name VARCHAR, desti VARCHAR, world VARCHAR,"
 				+ " x INTEGER, y INTEGER, z INTEGER, flags VARCHAR,"
-				+ (isInterserver ? " server VARCHAR," : "")
+				+ (isInterserver ? " server VARCHAR, isOnline BOOL," : "")
 				+ " UNIQUE(network,name) );";
 		
 		return conn.prepareStatement(statementMsg);
@@ -32,8 +32,8 @@ public class SQLQuerryMaker {
 	public PreparedStatement compileAddStatement(Connection conn, IPortal portal, boolean isInterserver) throws SQLException {
 		PreparedStatement statement = conn.prepareStatement(
 				"INSERT INTO " +tableName
-				+ " (network,name,world,x,y,z,flags"+(isInterserver?",server":"")+")"
-				+ " VALUES(?,?,?,?,?,?,?"+(isInterserver?",?":"")+");");
+				+ " (network,name,world,x,y,z,flags"+(isInterserver?",server,isOnline":"")+")"
+				+ " VALUES(?,?,?,?,?,?,?"+(isInterserver?",?,?":"")+");");
 		
 		statement.setString(1, portal.getNetwork().getName());
 		statement.setString(2, portal.getName());
@@ -47,7 +47,8 @@ public class SQLQuerryMaker {
 		
 		if(isInterserver) {
 			statement.setString(8, Stargate.serverName);
-			}
+			statement.setBoolean(9, true);
+		}
 		
 		return statement;
 	}
@@ -59,5 +60,29 @@ public class SQLQuerryMaker {
 		output.setString(1, portal.getName());
 		output.setString(2, portal.getNetwork().getName());
 		return output;
+	}
+	
+	public PreparedStatement compileRefreshPortalStatement(Connection conn, IPortal portal) throws SQLException {
+		PreparedStatement statement = conn.prepareStatement(
+				"UPDATE " + tableName
+				+ " SET server = ?"
+				+ " WHERE network = ? AND name = ?;" );
+		
+		statement.setString(1, Stargate.serverName);
+		statement.setString(2, portal.getNetwork().getName());
+		statement.setString(3, portal.getName());
+		return statement;
+	}
+	
+	public PreparedStatement changePortalOnlineStatus(Connection conn, IPortal portal, boolean isOnline) throws SQLException {
+		PreparedStatement statement = conn.prepareStatement(
+				"UPDATE " + tableName
+				+ " SET isOnline = ?"
+				+ " WHERE network = ? AND name = ?;" );
+		
+		statement.setBoolean(1, isOnline);
+		statement.setString(2, portal.getNetwork().getName());
+		statement.setString(3, portal.getName());
+		return statement;
 	}
 }

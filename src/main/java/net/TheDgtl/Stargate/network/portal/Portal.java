@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
@@ -53,7 +54,7 @@ public abstract class Portal implements IPortal {
 	private Gate gate;
 	private EnumSet<PortalFlag> flags;
 	String name;
-	Player openFor;
+	UUID openFor;
 	IPortal destination = null;
 	private long openTime = -1;
 	
@@ -158,7 +159,7 @@ public abstract class Portal implements IPortal {
 
 	public void open(Player actor) {
 		getGate().open();
-		this.openFor = actor;
+		this.openFor = actor.getUniqueId();
 		if(hasFlag(PortalFlag.ALWAYS_ON)) {
 			return;
 		}
@@ -205,11 +206,12 @@ public abstract class Portal implements IPortal {
 			return;
 		getGate().close();
 		drawControll();
+		openFor = null;
 	}
 	
 	public boolean isOpenFor(Player player) {
 		// TODO Auto-generated method stub
-		return ((openFor == null) || (player == openFor));
+		return ((openFor == null) || (player.getUniqueId() == openFor));
 	}
 
 	public Location getExit() {

@@ -38,7 +38,7 @@ public class NetworkedPortal extends Portal {
 	public void onSignClick(Action action, Player actor) {
 		if (getDestinations().length < 1)
 			return;
-		openFor = actor;
+		openFor = actor.getUniqueId();
 		if ((selectedDesti == NO_DESTI_SELECTED) || getDestinations().length < 2) {
 			selectedDesti = getNextDesti(1, -1);
 		} else if (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK) {
