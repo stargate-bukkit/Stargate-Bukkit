@@ -10,6 +10,7 @@ import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
+import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
@@ -84,7 +85,8 @@ public class BlockEventListener implements Listener {
 
         //Remove the sign if the no sign option is enabled
         if (portal.getOptions().hasNoSign()) {
-            BlockChangeRequest request = new BlockChangeRequest(portal.getSignLocation(), Material.AIR, null);
+            Material replaceMaterial = PortalFileHelper.decideRemovalMaterial(portal.getSignLocation(), portal);
+            BlockChangeRequest request = new BlockChangeRequest(portal.getSignLocation(), replaceMaterial, null);
             Stargate.addBlockChangeRequest(request);
         }
 

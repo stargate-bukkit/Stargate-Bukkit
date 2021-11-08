@@ -13,11 +13,13 @@ import net.knarcraft.stargate.portal.property.PortalOwner;
 import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.knarcraft.stargate.portal.property.gate.GateHandler;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Waterlogged;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -292,9 +294,10 @@ public final class PortalFileHelper {
         BlockLocation buttonLocation = getButtonLocation(portal);
         BlockData buttonData = buttonLocation.getBlock().getBlockData();
         if (portal.getOptions().isAlwaysOn()) {
-            //Clear button if not already air
-            if (buttonData.getMaterial() != Material.AIR) {
-                Stargate.addBlockChangeRequest(new BlockChangeRequest(buttonLocation, Material.AIR, null));
+            //Clear button if not already air or water
+            if (buttonData.getMaterial() != Material.AIR && buttonData.getMaterial() != Material.WATER) {
+                Material newMaterial = decideRemovalMaterial(buttonLocation, portal);
+                Stargate.addBlockChangeRequest(new BlockChangeRequest(buttonLocation, newMaterial, null));
             }
         } else {
             //Replace button if the material does not match
@@ -302,6 +305,40 @@ public final class PortalFileHelper {
                 generatePortalButton(portal, DirectionHelper.getBlockFaceFromYaw(portal.getYaw()));
             }
         }
+    }
+
+    /**
+     * Decides the material to use for removing a portal's button/sign
+     *
+     * @param location <p>The location of the button/sign to replace</p>
+     * @param portal   <p>The portal the button/sign belongs to</p>
+     * @return <p>The material to use for removing the button/sign</p>
+     */
+    public static Material decideRemovalMaterial(BlockLocation location, Portal portal) {
+        //Get the blocks to each side of the location
+        Location leftLocation = location.getRelativeLocation(-1, 0, 0, portal.getYaw());
+        Location rightLocation = location.getRelativeLocation(1, 0, 0, portal.getYaw());
+
+        //If the block is water or is waterlogged, assume the portal is underwater
+        if (isUnderwater(leftLocation) || isUnderwater(rightLocation)) {
+            return Material.WATER;
+        } else {
+            return Material.AIR;
+        }
+    }
+
+    /**
+     * Checks whether the given location is underwater
+     *
+     * <p>If the location has a water block, or a block which is waterlogged, it will be considered underwater.</p>
+     *
+     * @param location <p>The location to check</p>
+     * @return <p>True if the location is underwater</p>
+     */
+    private static boolean isUnderwater(Location location) {
+        BlockData blockData = location.getBlock().getBlockData();
+        return blockData.getMaterial() == Material.WATER ||
+                (blockData instanceof Waterlogged waterlogged && waterlogged.isWaterlogged());
     }
 
     /**

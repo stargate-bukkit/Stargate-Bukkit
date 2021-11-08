@@ -389,6 +389,7 @@ bungeeSign=Teleport to
 - Adds another default gate to show that it's possible to use any number of materials for a stargate's border
 - Adds an option for stargates without a sign. Right-clicking such a stargate will display gate information
 - Fixes a bug causing signs to be re-drawn after they're broken
+- Makes buttons and signs be replaced by water instead of air when underwater
 
 #### \[Version 0.9.0.5] EpicKnarvik97 fork
 
