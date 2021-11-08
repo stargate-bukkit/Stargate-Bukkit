@@ -11,8 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -78,7 +76,7 @@ public class VirtualPortal implements IPortal {
              Stargate.log(Level.SEVERE,"[Stargate] Error sending BungeeCord connect packet");
              ex.printStackTrace();
              return;
-         }
+        }
 		
 	}
 
