@@ -386,6 +386,12 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+#### \[Version 0.9.0.7] EpicKnarvik97 fork
+
+- Stops registering the sign as a lookup block for stargates without a sign
+- Only removes a stargate's button if it's actually a button-compatible block
+- Only displays portal info if not placing a block
+
 #### \[Version 0.9.0.6] EpicKnarvik97 fork
 
 - Makes containers no longer open when used as buttons
