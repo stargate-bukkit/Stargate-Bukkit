@@ -23,6 +23,8 @@ public class CommandStarGate implements CommandExecutor {
                 return new CommandAbout().onCommand(commandSender, command, s, args);
             } else if (args[0].equalsIgnoreCase("reload")) {
                 return new CommandReload().onCommand(commandSender, command, s, args);
+            } else if (args[0].equalsIgnoreCase("config")) {
+                return new CommandConfig().onCommand(commandSender, command, s, args);
             }
             return false;
         } else {
