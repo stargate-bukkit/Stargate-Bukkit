@@ -42,7 +42,8 @@ public class SQLQuerryMaker {
 		String destiStr = null;
 		if(portal instanceof Portal) {
 			IPortal desti = ((Portal)portal).loadDestination();
-			destiStr = desti.getName();
+			if(desti != null)
+				destiStr = desti.getName();
 		}
 		statement.setString(3, destiStr);
 		Location loc = portal.getSignPos();

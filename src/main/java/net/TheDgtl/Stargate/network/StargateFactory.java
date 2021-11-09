@@ -80,8 +80,7 @@ public class StargateFactory {
 	
 	private void refreshPortals(HashMap<String, ? extends Network> networksList) {
 		for(Network net : networksList.values()) {
-			net.updatePortals();
-		}
+			net.updatePortals();		}
 	}
 	
 	private void runStatement(Database database, PreparedStatement statement) throws SQLException{

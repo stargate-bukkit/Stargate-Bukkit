@@ -4,7 +4,8 @@ import java.util.HashMap;
 
 public enum Channel {
 	GET_SERVER("GetServer"), PORTAL("SGPortal"), PLUGIN_ENABLE("SGPluginEnable"), PLUGIN_DISABLE("SGPluginDisable"),
-	PLAYER_TELEPORT("SGTeleport"), FORWARD("Forward"), BUNGEE("BungeeCord"), PLAYER_CONNECT("Connect");
+	PLAYER_TELEPORT("SGTeleport"), FORWARD("Forward"), BUNGEE("BungeeCord"), PLAYER_CONNECT("Connect"),
+	NETWORK_CHANGED("SGNetworkUpdate");
 
 	private static final HashMap<String, Channel> map = new HashMap<>();
 	static {

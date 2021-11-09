@@ -1,16 +1,25 @@
 package net.TheDgtl.Stargate.network;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InvalidClassException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateProtocol;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.MySqlDatabase;
@@ -71,7 +80,50 @@ public class InterserverNetwork extends Network{
 			}
 			
 		};
-		Stargate.syncSecPopulator.addAction(action, true);;
+		Stargate.syncSecPopulator.addAction(action, true);
+		updateInterserverNetwork(portal,StargateProtocol.TYPE_PORTAL_ADD);
+	}
+	
+	/**
+	 * Tries to update the interserver network globally on every connected server
+	 */
+	private void updateInterserverNetwork(IPortal portal, StargateProtocol type) {
+		Stargate stargate = Stargate.getPlugin(Stargate.class);
+		PopulatorAction action = new PopulatorAction(){
+			boolean isFinished = false;
+			
+			@Override
+			public void run(boolean forceEnd) {
+				if(stargate.getServer().getOnlinePlayers().size() > 0 || forceEnd) {
+					isFinished = true;
+					try {
+			            ByteArrayOutputStream bao = new ByteArrayOutputStream();
+			            DataOutputStream msgData = new DataOutputStream(bao);
+			            msgData.writeUTF(Channel.FORWARD.getChannel());
+			            msgData.writeUTF("ALL");
+			            msgData.writeUTF(Channel.NETWORK_CHANGED.getChannel());
+			            JsonObject data = new JsonObject();
+			            data.add(StargateProtocol.TYPE.toString(), new JsonPrimitive(type.toString()));
+			            data.add(StargateProtocol.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getName()));
+			            data.add(StargateProtocol.PORTAL.toString(), new JsonPrimitive(portal.getName()));
+			            data.add(StargateProtocol.SERVER.toString(), new JsonPrimitive(Stargate.serverName));
+			            data.add(StargateProtocol.PORTAL_FLAG.toString(), new JsonPrimitive(portal.getAllFlagsString()));
+			            msgData.writeUTF(data.toString());
+			            Bukkit.getServer().sendPluginMessage(stargate, Channel.BUNGEE.getChannel(), bao.toByteArray());
+					} catch (IOException ex) {
+			             Stargate.log(Level.SEVERE,"[Stargate] Error sending BungeeCord connect packet");
+			             ex.printStackTrace();
+			             return;
+			        }
+				}
+			}
+
+			@Override
+			public boolean isFinished() {
+				return isFinished;
+			}
+		};
+		Stargate.syncSecPopulator.addAction(action,true);
 	}
 	
 	public void unregisterFromInterserver(IPortal portal) throws SQLException {
@@ -80,6 +132,8 @@ public class InterserverNetwork extends Network{
 		statement.execute();
 		statement.close();
 		conn.close();
+		
+		updateInterserverNetwork(portal, StargateProtocol.TYPE_PORTAL_REMOVE);
 	}
 	
 	@Override
@@ -92,7 +146,7 @@ public class InterserverNetwork extends Network{
 		/*
 		 * Save one local partition of every bungee gate on this server
 		 * Also save it to the interserver database, so that it can be
-		 * seen on other serversi
+		 * seen on other servers
 		 */
 		super.savePortal(database, portal, false);
 		registerToInterserver(portal);

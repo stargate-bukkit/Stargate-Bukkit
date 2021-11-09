@@ -16,6 +16,7 @@ import com.google.gson.JsonPrimitive;
 
 import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateProtocol;
 import net.TheDgtl.Stargate.network.InterserverNetwork;
 import net.TheDgtl.Stargate.network.Network;
 
@@ -51,9 +52,9 @@ public class VirtualPortal implements IPortal {
             msgData.writeUTF(server);
             msgData.writeUTF(Channel.PLAYER_TELEPORT.getChannel());
 			JsonObject data = new JsonObject();
-			data.add("playerName", new JsonPrimitive(player.getName()));
-			data.add("portalName", new JsonPrimitive(this.name));
-			data.add("network", new JsonPrimitive(network.getName()));
+			data.add(StargateProtocol.PLAYER.toString(), new JsonPrimitive(player.getName()));
+			data.add(StargateProtocol.PORTAL.toString(), new JsonPrimitive(this.name));
+			data.add(StargateProtocol.NETWORK.toString(), new JsonPrimitive(network.getName()));
 			String dataMsg = data.toString();
 			msgData.writeUTF(dataMsg);
 			Stargate.log(Level.FINEST, bao.toString());
