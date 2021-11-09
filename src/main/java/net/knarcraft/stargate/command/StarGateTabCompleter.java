@@ -3,6 +3,7 @@ package net.knarcraft.stargate.command;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +20,13 @@ public class StarGateTabCompleter implements TabCompleter {
                                                 @NotNull String s, @NotNull String[] args) {
         List<String> commands = new ArrayList<>();
         commands.add("about");
-        commands.add("reload");
+        if (!(commandSender instanceof Player player) || player.hasPermission("stargate.admin.reload")) {
+            commands.add("reload");
+        }
+        if (!(commandSender instanceof Player player) || player.hasPermission("stargate.admin")) {
+            commands.add("config");
+        }
+
 
         if (args.length == 1) {
             return commands;
