@@ -81,8 +81,7 @@ public class PortalSignDrawer {
     private void drawSign(Sign sign) {
         //Clear sign
         clearSign(sign);
-        setLine(sign, 0, highlightColor + "-" + mainColor +
-                portal.getName() + highlightColor + "-");
+        setLine(sign, 0, highlightColor + "-" + mainColor + fixColor(portal.getName()) + highlightColor + "-");
 
         if (!portal.getPortalActivator().isActive()) {
             //Default sign text
@@ -123,7 +122,7 @@ public class PortalSignDrawer {
             return;
         }
         clearSign(sign);
-        sign.setLine(0, portal.getName());
+        sign.setLine(0, fixColor(portal.getName()));
         sign.update();
     }
 
@@ -173,10 +172,10 @@ public class PortalSignDrawer {
             boolean green = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
             ChatColor nameColor = (green ? freeColor : highlightColor);
             setLine(sign, signLineIndex, nameColor + ">" + (green ? freeColor : mainColor) +
-                    portal.getDestinationName() + nameColor + "<");
+                    fixColor(portal.getDestinationName()) + nameColor + "<");
         } else {
-            setLine(sign, signLineIndex, highlightColor + ">" + mainColor + portal.getDestinationName() +
-                    highlightColor + "<");
+            setLine(sign, signLineIndex, highlightColor + ">" + mainColor + 
+                    fixColor(portal.getDestinationName()) + highlightColor + "<");
         }
     }
 
@@ -205,9 +204,9 @@ public class PortalSignDrawer {
         if (freeGatesGreen) {
             Portal destination = PortalHandler.getByName(destinationName, portal.getNetwork());
             boolean green = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
-            setLine(sign, signLineIndex, (green ? freeColor : mainColor) + destinationName);
+            setLine(sign, signLineIndex, (green ? freeColor : mainColor) + fixColor(destinationName));
         } else {
-            setLine(sign, signLineIndex, mainColor + destinationName);
+            setLine(sign, signLineIndex, mainColor + fixColor(destinationName));
         }
     }
 
@@ -218,8 +217,10 @@ public class PortalSignDrawer {
      */
     private void drawBungeeSign(Sign sign) {
         setLine(sign, 1, Stargate.getString("bungeeSign"));
-        setLine(sign, 2, highlightColor + ">" + mainColor + portal.getDestinationName() + highlightColor + "<");
-        setLine(sign, 3, highlightColor + "[" + mainColor + portal.getNetwork() + highlightColor + "]");
+        setLine(sign, 2, highlightColor + ">" + mainColor + fixColor(portal.getDestinationName()) + 
+                highlightColor + "<");
+        setLine(sign, 3, highlightColor + "[" + mainColor + fixColor(portal.getNetwork()) + 
+                highlightColor + "]");
     }
 
     /**
@@ -233,7 +234,8 @@ public class PortalSignDrawer {
         setLine(sign, 1, Stargate.getString("signRightClick"));
         setLine(sign, 2, Stargate.getString("signToUse"));
         if (!portal.getOptions().isNoNetwork()) {
-            setLine(sign, 3, highlightColor + "(" + mainColor + portal.getNetwork() + highlightColor + ")");
+            setLine(sign, 3, highlightColor + "(" + mainColor + fixColor(portal.getNetwork()) + 
+                    highlightColor + ")");
         } else {
             setLine(sign, 3, "");
         }
@@ -247,12 +249,13 @@ public class PortalSignDrawer {
     private void drawFixedSign(Sign sign) {
         String destinationName = portal.getOptions().isRandom() ? Stargate.getString("signRandom") :
                 portal.getDestinationName();
-        setLine(sign, 1, highlightColor + ">" + mainColor + destinationName + highlightColor + "<");
+        setLine(sign, 1, highlightColor + ">" + mainColor + fixColor(destinationName) + highlightColor + "<");
 
         if (portal.getOptions().isNoNetwork()) {
             setLine(sign, 2, "");
         } else {
-            setLine(sign, 2, highlightColor + "(" + mainColor + portal.getNetwork() + highlightColor + ")");
+            setLine(sign, 2, highlightColor + "(" + mainColor + fixColor(portal.getNetwork()) + 
+                    highlightColor + ")");
         }
         Portal destination = PortalHandler.getByName(portal.getDestinationName(), portal.getNetwork());
         if (destination == null && !portal.getOptions().isRandom()) {
@@ -275,6 +278,16 @@ public class PortalSignDrawer {
         sign.update();
 
         Stargate.logInfo(String.format("Gate layout on line %d does not exist [%s]", lineIndex, gateName));
+    }
+
+    /**
+     * Fixes coloring of signs as the & character isn't translated on all servers
+     * 
+     * @param text <p>The text to fix the coloring of</p>
+     * @return <p>The text with the coloring fixed</p>
+     */
+    private String fixColor(String text) {
+        return ChatColor.translateAlternateColorCodes('&', text);
     }
 
 }
