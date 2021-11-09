@@ -6,13 +6,13 @@ import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -33,10 +33,10 @@ public final class EconomyConfig {
     /**
      * Instantiates a new economy config
      *
-     * @param newConfig <p>The file configuration to read values from</p>
+     * @param configOptions <p>The loaded config options to read</p>
      */
-    public EconomyConfig(FileConfiguration newConfig) {
-        loadEconomyConfig(newConfig);
+    public EconomyConfig(Map<ConfigOption, Object> configOptions) {
+        loadEconomyConfig(configOptions);
     }
 
     /**
@@ -332,16 +332,16 @@ public final class EconomyConfig {
     /**
      * Loads all config values related to economy
      *
-     * @param newConfig <p>The configuration containing the values to read</p>
+     * @param configOptions <p>The loaded config options to get values from</p>
      */
-    private void loadEconomyConfig(FileConfiguration newConfig) {
-        economyEnabled = newConfig.getBoolean("economy.useEconomy");
-        setDefaultCreateCost(newConfig.getInt("economy.createCost"));
-        setDefaultDestroyCost(newConfig.getInt("economy.destroyCost"));
-        setDefaultUseCost(newConfig.getInt("economy.useCost"));
-        toOwner = newConfig.getBoolean("economy.toOwner");
-        chargeFreeDestination = newConfig.getBoolean("economy.chargeFreeDestination");
-        freeGatesGreen = newConfig.getBoolean("economy.freeGatesGreen");
+    private void loadEconomyConfig(Map<ConfigOption, Object> configOptions) {
+        economyEnabled = (boolean) configOptions.get(ConfigOption.USE_ECONOMY);
+        setDefaultCreateCost((Integer) configOptions.get(ConfigOption.CREATE_COST));
+        setDefaultDestroyCost((Integer) configOptions.get(ConfigOption.DESTROY_COST));
+        setDefaultUseCost((Integer) configOptions.get(ConfigOption.USE_COST));
+        toOwner = (boolean) configOptions.get(ConfigOption.TO_OWNER);
+        chargeFreeDestination = (boolean) configOptions.get(ConfigOption.CHARGE_FREE_DESTINATION);
+        freeGatesGreen = (boolean) configOptions.get(ConfigOption.FREE_GATES_GREEN);
     }
 
     /**

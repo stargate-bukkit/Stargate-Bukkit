@@ -18,6 +18,7 @@ import org.bukkit.plugin.messaging.Messenger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Queue;
@@ -47,6 +48,7 @@ public final class StargateConfig {
 
     private boolean debuggingEnabled = false;
     private boolean permissionDebuggingEnabled = false;
+    private final Map<ConfigOption, Object> configOptions;
 
     /**
      * Instantiates a new stargate config
@@ -55,6 +57,7 @@ public final class StargateConfig {
      */
     public StargateConfig(Logger logger) {
         this.logger = logger;
+        configOptions = new HashMap<>();
 
         dataFolderPath = Stargate.getInstance().getDataFolder().getPath().replaceAll("\\\\", "/");
         portalFolder = dataFolderPath + "/portals/";
@@ -307,16 +310,34 @@ public final class StargateConfig {
         //Copy missing default values if any values are missing
         newConfig.options().copyDefaults(true);
 
+        //Load all options
+        for (ConfigOption option : ConfigOption.values()) {
+            Object optionValue;
+            String configNode = option.getConfigNode();
+
+            //Load the option using its correct data type
+            switch (option.getDataType()) {
+                case STRING -> {
+                    String value = newConfig.getString(configNode);
+                    optionValue = value != null ? value.trim() : "";
+                }
+                case BOOLEAN -> optionValue = newConfig.getBoolean(configNode);
+                case INTEGER -> optionValue = newConfig.getInt(configNode);
+                default -> throw new IllegalArgumentException("Invalid config data type encountered");
+            }
+            configOptions.put(option, optionValue);
+        }
+
         //Get the language name from the config
-        languageName = newConfig.getString("language");
+        languageName = (String) configOptions.get(ConfigOption.LANGUAGE);
 
         //Get important folders from the config
-        portalFolder = newConfig.getString("folders.portalFolder");
-        gateFolder = newConfig.getString("folders.gateFolder");
+        portalFolder = (String) configOptions.get(ConfigOption.PORTAL_FOLDER);
+        gateFolder = (String) configOptions.get(ConfigOption.GATE_FOLDER);
 
         //Get enabled debug settings from the config
-        debuggingEnabled = newConfig.getBoolean("debugging.debug");
-        permissionDebuggingEnabled = newConfig.getBoolean("debugging.permissionDebug");
+        debuggingEnabled = (boolean) configOptions.get(ConfigOption.DEBUG);
+        permissionDebuggingEnabled = (boolean) configOptions.get(ConfigOption.PERMISSION_DEBUG);
 
         //If users have an outdated config, assume they also need to update their default gates
         if (isMigrating) {
@@ -324,10 +345,10 @@ public final class StargateConfig {
         }
 
         //Load all gate config values
-        stargateGateConfig = new StargateGateConfig(newConfig);
+        stargateGateConfig = new StargateGateConfig(configOptions);
 
         //Load all economy config values
-        economyConfig = new EconomyConfig(newConfig);
+        economyConfig = new EconomyConfig(configOptions);
 
         Stargate.getInstance().saveConfig();
     }

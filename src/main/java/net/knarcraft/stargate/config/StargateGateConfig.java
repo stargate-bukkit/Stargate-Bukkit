@@ -3,36 +3,25 @@ package net.knarcraft.stargate.config;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.PortalSignDrawer;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
+
+import java.util.Map;
 
 /**
  * The Stargate gate config keeps track of all global config values related to gates
  */
 public final class StargateGateConfig {
-
-    private int maxGatesEachNetwork = 0;
-    private boolean rememberDestination = false;
-    private boolean handleVehicles = true;
-    private boolean handleEmptyVehicles = true;
-    private boolean handleCreatureTransportation = true;
-    private boolean handleNonPlayerVehicles = true;
-    private boolean handleLeashedCreatures = true;
-    private boolean sortNetworkDestinations = false;
-    private boolean protectEntrance = false;
-    private boolean enableBungee = true;
-    private boolean verifyPortals = true;
-    private boolean destroyExplosion = false;
-    private String defaultGateNetwork = "central";
     private static final int activeTime = 10;
     private static final int openTime = 10;
+    private final Map<ConfigOption, Object> configOptions;
 
     /**
      * Instantiates a new stargate config
      *
-     * @param newConfig <p>The file configuration to read values from</p>
+     * @param configOptions <p>The loaded config options to use</p>
      */
-    public StargateGateConfig(FileConfiguration newConfig) {
-        loadGateConfig(newConfig);
+    public StargateGateConfig(Map<ConfigOption, Object> configOptions) {
+        this.configOptions = configOptions;
+        loadGateConfig();
     }
 
     /**
@@ -59,7 +48,7 @@ public final class StargateGateConfig {
      * @return <p>Maximum number of gates for each network</p>
      */
     public int maxGatesEachNetwork() {
-        return maxGatesEachNetwork;
+        return (int) configOptions.get(ConfigOption.MAX_GATES_EACH_NETWORK);
     }
 
     /**
@@ -68,7 +57,7 @@ public final class StargateGateConfig {
      * @return <p>Whether a portal's lastly used destination should be remembered</p>
      */
     public boolean rememberDestination() {
-        return rememberDestination;
+        return (boolean) configOptions.get(ConfigOption.REMEMBER_DESTINATION);
     }
 
     /**
@@ -77,7 +66,7 @@ public final class StargateGateConfig {
      * @return <p>Whether vehicle teleportation should be handled</p>
      */
     public boolean handleVehicles() {
-        return handleVehicles;
+        return (boolean) configOptions.get(ConfigOption.HANDLE_VEHICLES);
     }
 
     /**
@@ -89,7 +78,7 @@ public final class StargateGateConfig {
      * @return <p>Whether vehicles without passengers should be handled</p>
      */
     public boolean handleEmptyVehicles() {
-        return handleEmptyVehicles;
+        return (boolean) configOptions.get(ConfigOption.HANDLE_EMPTY_VEHICLES);
     }
 
     /**
@@ -101,7 +90,7 @@ public final class StargateGateConfig {
      * @return <p>Whether vehicles with creatures should be handled</p>
      */
     public boolean handleCreatureTransportation() {
-        return handleCreatureTransportation;
+        return (boolean) configOptions.get(ConfigOption.HANDLE_CREATURE_TRANSPORTATION);
     }
 
     /**
@@ -118,7 +107,7 @@ public final class StargateGateConfig {
      * @return <p>Whether non-empty vehicles without a player should be handled</p>
      */
     public boolean handleNonPlayerVehicles() {
-        return handleNonPlayerVehicles;
+        return (boolean) configOptions.get(ConfigOption.HANDLE_NON_PLAYER_VEHICLES);
     }
 
     /**
@@ -127,7 +116,7 @@ public final class StargateGateConfig {
      * @return <p>Whether leashed creatures should be handled</p>
      */
     public boolean handleLeashedCreatures() {
-        return handleLeashedCreatures;
+        return (boolean) configOptions.get(ConfigOption.HANDLE_LEASHED_CREATURES);
     }
 
     /**
@@ -136,7 +125,7 @@ public final class StargateGateConfig {
      * @return <p>Whether network destinations should be sorted</p>
      */
     public boolean sortNetworkDestinations() {
-        return sortNetworkDestinations;
+        return (boolean) configOptions.get(ConfigOption.SORT_NETWORK_DESTINATIONS);
     }
 
     /**
@@ -145,7 +134,7 @@ public final class StargateGateConfig {
      * @return <p>Whether portal entrances should be protected</p>
      */
     public boolean protectEntrance() {
-        return protectEntrance;
+        return (boolean) configOptions.get(ConfigOption.PROTECT_ENTRANCE);
     }
 
     /**
@@ -154,7 +143,7 @@ public final class StargateGateConfig {
      * @return <p>Whether bungee support is enabled</p>
      */
     public boolean enableBungee() {
-        return enableBungee;
+        return (boolean) configOptions.get(ConfigOption.ENABLE_BUNGEE);
     }
 
     /**
@@ -163,7 +152,7 @@ public final class StargateGateConfig {
      * @return <p>Whether portals need to be verified</p>
      */
     public boolean verifyPortals() {
-        return verifyPortals;
+        return (boolean) configOptions.get(ConfigOption.VERIFY_PORTALS);
     }
 
     /**
@@ -172,7 +161,7 @@ public final class StargateGateConfig {
      * @return <p>Whether portals should be destroyed by explosions</p>
      */
     public boolean destroyedByExplosion() {
-        return destroyExplosion;
+        return (boolean) configOptions.get(ConfigOption.DESTROYED_BY_EXPLOSION);
     }
 
     /**
@@ -181,37 +170,16 @@ public final class StargateGateConfig {
      * @return <p>The default portal network</p>
      */
     public String getDefaultPortalNetwork() {
-        return defaultGateNetwork;
+        return (String) configOptions.get(ConfigOption.DEFAULT_GATE_NETWORK);
     }
 
     /**
      * Loads all config values related to gates
-     *
-     * @param newConfig <p>The configuration containing the values to read</p>
      */
-    private void loadGateConfig(FileConfiguration newConfig) {
-        String defaultNetwork = newConfig.getString("gates.defaultGateNetwork");
-        defaultGateNetwork = defaultNetwork != null ? defaultNetwork.trim() : null;
-        maxGatesEachNetwork = newConfig.getInt("gates.maxGatesEachNetwork");
-
-        //Functionality
-        handleVehicles = newConfig.getBoolean("gates.functionality.handleVehicles");
-        handleEmptyVehicles = newConfig.getBoolean("gates.functionality.handleEmptyVehicles");
-        handleCreatureTransportation = newConfig.getBoolean("gates.functionality.handleCreatureTransportation");
-        handleNonPlayerVehicles = newConfig.getBoolean("gates.functionality.handleNonPlayerVehicles");
-        handleLeashedCreatures = newConfig.getBoolean("gates.functionality.handleLeashedCreatures");
-        enableBungee = newConfig.getBoolean("gates.functionality.enableBungee");
-
-        //Integrity
-        protectEntrance = newConfig.getBoolean("gates.integrity.protectEntrance");
-        verifyPortals = newConfig.getBoolean("gates.integrity.verifyPortals");
-        destroyExplosion = newConfig.getBoolean("gates.integrity.destroyedByExplosion");
-
-        //Cosmetic
-        sortNetworkDestinations = newConfig.getBoolean("gates.cosmetic.sortNetworkDestinations");
-        rememberDestination = newConfig.getBoolean("gates.cosmetic.rememberDestination");
-        loadSignColor(newConfig.getString("gates.cosmetic.mainSignColor"),
-                newConfig.getString("gates.cosmetic.highlightSignColor"));
+    private void loadGateConfig() {
+        //Load the sign colors
+        loadSignColor((String) configOptions.get(ConfigOption.MAIN_SIGN_COLOR),
+                (String) configOptions.get(ConfigOption.HIGHLIGHT_SIGN_COLOR));
     }
 
     /**
