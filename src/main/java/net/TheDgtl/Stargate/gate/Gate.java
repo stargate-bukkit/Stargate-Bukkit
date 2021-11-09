@@ -208,21 +208,29 @@ public class Gate {
 		List<SGLocation> locs = getLocations(targetType);
 		BlockData blockData = Bukkit.createBlockData(mat);
 
-		if (mat == Material.NETHER_PORTAL) {
+		
+		if(blockData instanceof Orientable) {
 			Orientable orientation = (Orientable) blockData;
 			orientation.setAxis(converter.irisNormal);
 			blockData = orientation;
 		}
+		
+		
 		for (SGLocation loc : locs) {
 			Block blk = loc.getLocation().getBlock();
 			blk.setBlockData(blockData);
-			if (mat == Material.END_GATEWAY && blk.getWorld().getEnvironment() == World.Environment.THE_END) {
-				// force a location to prevent exit gateway generation
-				EndGateway gateway = (EndGateway) blk.getState();
-				gateway.setExitLocation(blk.getWorld().getSpawnLocation());
-				gateway.setExactTeleport(true);
-				gateway.update(false, false);
-			}
+			
+			if (mat == Material.END_GATEWAY) {
+                // force a location to prevent exit gateway generation
+                EndGateway gateway = (EndGateway) blk.getState();
+                // https://github.com/stargate-bukkit/Stargate-Bukkit/issues/36
+                gateway.setAge(-9223372036854775808L);
+                if(blk.getWorld().getEnvironment() == World.Environment.THE_END){
+                      gateway.setExitLocation(blk.getWorld().getSpawnLocation());
+                      gateway.setExactTeleport(true);
+                }
+                gateway.update(false, false);
+            }
 		}
 	}
 	
