@@ -1,6 +1,6 @@
 name: Stargate
 main: net.knarcraft.stargate.Stargate
-version: 0.9.0.7
+version: 0.9.1.0
 description: Stargate mod for Bukkit Revived
 author: EpicKnarvik97
 authors: [ Drakia, PseudoKnight, EpicKnarvik97 ]
@@ -138,14 +138,18 @@ permissions:
   stargate.admin.bungee:
     description: Allows the creation and destruction of a stargate between BungeeCord servers
     default: false
+  stargate.admin.config:
+    description: Allows the player to change config values from the chat
+    default: false
   stargate.server:
     description: Allows the creation of a BungeeCord stargate going to any server
     default: false
   stargate.admin:
-    description: Allow all admin features and commands (Hidden/Private bypass, BungeeCord, Reload)
+    description: Allow all admin features and commands (Hidden/Private bypass, BungeeCord, Reload, Config)
     default: op
     children:
       stargate.admin.reload: true
       stargate.admin.hidden: true
       stargate.admin.private: true
       stargate.admin.bungee: true
+      stargate.admin.config: true

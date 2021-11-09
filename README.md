@@ -14,6 +14,7 @@ can share a network or be split into clusters; they can be hidden on a network o
 - Underwater portals -- portals can be placed underwater as long as a waterproof button is used
 - API available -- using the API, a lot of behavior can be changed
 - Button customization -- a large amount of materials usable as buttons (buttons, wall corals, shulkers, chests)
+- Config commands -- All main config values can be changed from the commandline
 
 ## Background
 
@@ -80,11 +81,12 @@ stargate.free -- Allow free use/creation/destruction of Stargates
   stargate.free.create -- Allow free creation of Stargates
   stargate.free.destroy -- Allow free destruction of Stargates
   
-stargate.admin -- Allow all admin features (Hidden/Private only so far)
+stargate.admin -- Allow all admin features (Hidden/Private bypass, BungeeCord, Reload, Config)
   stargate.admin.private -- Allow use of Private gates not owned by user
   stargate.admin.hidden -- Allow access to Hidden gates not ownerd by user
   stargate.admin.bungee -- Allow the creation of BungeeCord stargates (U option)
   stargate.admin.reload -- Allow use of the reload command
+  stargate.admin.config -- Allows the player to change config values from the chat
 ```
 
 ## Default Permissions
@@ -385,6 +387,12 @@ portalInfoServer=Server: %server%
 ```
 
 # Changes
+
+#### \[Version 0.9.1.0] EpicKnarvik97 fork
+
+- Rewrites config loading as a part of the changes required to implement config commands
+- This update adds commands to change all config values from the chat or the console, complete with tab completion
+- Adds a new permission "stargate.admin.config" which is required to edit config values from the chat
 
 #### \[Version 0.9.0.7] EpicKnarvik97 fork
 

@@ -19,7 +19,7 @@ public class CommandConfig implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
                              @NotNull String[] args) {
         if (commandSender instanceof Player player) {
-            if (!player.hasPermission("stargate.admin")) {
+            if (!player.hasPermission("stargate.admin.config")) {
                 Stargate.getMessageSender().sendErrorMessage(commandSender, "Permission Denied");
                 return true;
             }

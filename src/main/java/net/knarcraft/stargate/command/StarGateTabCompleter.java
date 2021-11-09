@@ -48,7 +48,7 @@ public class StarGateTabCompleter implements TabCompleter {
         if (!(commandSender instanceof Player player) || player.hasPermission("stargate.admin.reload")) {
             commands.add("reload");
         }
-        if (!(commandSender instanceof Player player) || player.hasPermission("stargate.admin")) {
+        if (!(commandSender instanceof Player player) || player.hasPermission("stargate.admin.config")) {
             commands.add("config");
         }
         return commands;
