@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.command;
 
 import net.knarcraft.stargate.Stargate;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -24,7 +25,8 @@ public class CommandStarGate implements CommandExecutor {
             } else if (args[0].equalsIgnoreCase("reload")) {
                 return new CommandReload().onCommand(commandSender, command, s, args);
             } else if (args[0].equalsIgnoreCase("config")) {
-                return new CommandConfig().onCommand(commandSender, command, s, args);
+                String[] subArgs = (String[]) ArrayUtils.remove(args, 0);
+                return new CommandConfig().onCommand(commandSender, command, s, subArgs);
             }
             return false;
         } else {
