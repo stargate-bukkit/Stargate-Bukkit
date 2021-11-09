@@ -388,6 +388,10 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+#### \[Version 0.9.1.1] EpicKnarvik97 fork
+
+- Makes sure to translate the `&` character to fix a bug causing portal signs to not be colored on some servers
+
 #### \[Version 0.9.1.0] EpicKnarvik97 fork
 
 - Rewrites config loading as a part of the changes required to implement config commands

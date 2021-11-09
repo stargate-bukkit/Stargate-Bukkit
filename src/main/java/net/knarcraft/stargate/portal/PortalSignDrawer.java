@@ -174,7 +174,7 @@ public class PortalSignDrawer {
             setLine(sign, signLineIndex, nameColor + ">" + (green ? freeColor : mainColor) +
                     fixColor(portal.getDestinationName()) + nameColor + "<");
         } else {
-            setLine(sign, signLineIndex, highlightColor + ">" + mainColor + 
+            setLine(sign, signLineIndex, highlightColor + ">" + mainColor +
                     fixColor(portal.getDestinationName()) + highlightColor + "<");
         }
     }
@@ -217,9 +217,9 @@ public class PortalSignDrawer {
      */
     private void drawBungeeSign(Sign sign) {
         setLine(sign, 1, Stargate.getString("bungeeSign"));
-        setLine(sign, 2, highlightColor + ">" + mainColor + fixColor(portal.getDestinationName()) + 
+        setLine(sign, 2, highlightColor + ">" + mainColor + fixColor(portal.getDestinationName()) +
                 highlightColor + "<");
-        setLine(sign, 3, highlightColor + "[" + mainColor + fixColor(portal.getNetwork()) + 
+        setLine(sign, 3, highlightColor + "[" + mainColor + fixColor(portal.getNetwork()) +
                 highlightColor + "]");
     }
 
@@ -234,7 +234,7 @@ public class PortalSignDrawer {
         setLine(sign, 1, Stargate.getString("signRightClick"));
         setLine(sign, 2, Stargate.getString("signToUse"));
         if (!portal.getOptions().isNoNetwork()) {
-            setLine(sign, 3, highlightColor + "(" + mainColor + fixColor(portal.getNetwork()) + 
+            setLine(sign, 3, highlightColor + "(" + mainColor + fixColor(portal.getNetwork()) +
                     highlightColor + ")");
         } else {
             setLine(sign, 3, "");
@@ -254,7 +254,7 @@ public class PortalSignDrawer {
         if (portal.getOptions().isNoNetwork()) {
             setLine(sign, 2, "");
         } else {
-            setLine(sign, 2, highlightColor + "(" + mainColor + fixColor(portal.getNetwork()) + 
+            setLine(sign, 2, highlightColor + "(" + mainColor + fixColor(portal.getNetwork()) +
                     highlightColor + ")");
         }
         Portal destination = PortalHandler.getByName(portal.getDestinationName(), portal.getNetwork());
@@ -282,7 +282,7 @@ public class PortalSignDrawer {
 
     /**
      * Fixes coloring of signs as the & character isn't translated on all servers
-     * 
+     *
      * @param text <p>The text to fix the coloring of</p>
      * @return <p>The text with the coloring fixed</p>
      */
