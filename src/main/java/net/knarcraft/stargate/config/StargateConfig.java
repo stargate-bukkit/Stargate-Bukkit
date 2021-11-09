@@ -94,6 +94,15 @@ public final class StargateConfig {
     }
 
     /**
+     * Gets a copy of all loaded config options with its values
+     *
+     * @return <p>The loaded config options</p>
+     */
+    public Map<ConfigOption, Object> getConfigOptions() {
+        return new HashMap<>(configOptions);
+    }
+
+    /**
      * Gets the queue of open portals
      *
      * <p>The open portals queue is used to close open portals after some time has passed</p>
