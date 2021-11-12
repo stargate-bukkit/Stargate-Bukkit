@@ -19,7 +19,11 @@ import java.util.UUID;
 /**
  * Helps migrate player names to UUID where necessary
  */
-public class UUIDMigrationHelper {
+public final class UUIDMigrationHelper {
+
+    private UUIDMigrationHelper() {
+        
+    }
 
     private static Map<String, List<Portal>> playerNamesToMigrate;
 
