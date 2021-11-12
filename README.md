@@ -119,9 +119,9 @@ section). See the Custom Gate Layout section to learn how to add custom gates.
 
 ### Sign Layout:
 
-- Line 1: Gate Name (Max 11 characters)
-- Line 2: Destination Name \[Optional] (Max 11 characters, used for fixed-gates only)
-- Line 3: Network name \[Optional] (Max 11 characters)
+- Line 1: Gate Name (Max 13 characters)
+- Line 2: Destination Name \[Optional] (Max 13 characters, used for fixed-gates only)
+- Line 3: Network name \[Optional] (Max 13 characters)
 - Line 4: Options \[Optional] :
     - 'A' for always-on fixed gate
     - 'H' for hidden networked gate
@@ -136,7 +136,9 @@ section). See the Custom Gate Layout section to learn how to add custom gates.
     - 'I' is for a silent gate, which does not output anything to the chat while teleporting. Increases immersion
     - 'E' is for gate without a sign. Only for fixed stargates
 
-The options are the single letter, not the word. So to make a private hidden gate, your 4th line would be 'PH'.
+The options are the single letter, not the word. So to make a private hidden gate, your 4th line would be 'PH'. The
+&\[0-9a-f] color codes are not counted in the character limit, thus allowing a 13-character name with an additional 2
+characters used for the color code.
 
 #### Gate networks:
 
@@ -387,6 +389,13 @@ portalInfoServer=Server: %server%
 ```
 
 # Changes
+
+#### \[Version 0.9.2.0] EpicKnarvik97 fork
+
+- Increases max length of names and networks to 13 characters
+- Excludes color codes from the counted character length to allow a colored, 13-character name
+- Makes portal names and networks case- and color-agnostic to prevent some confusion caused by typos or sloppy
+  configuration
 
 #### \[Version 0.9.1.2] EpicKnarvik97 fork
 
