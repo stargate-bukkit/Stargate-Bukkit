@@ -228,7 +228,7 @@ public class PortalCreator {
      */
     private boolean checkIfNewPortalIsValid(int cost, String portalName) {
         //Check if the portal name can fit on the sign with padding (>name<)
-        if (portal.getName().length() < 1 || portal.getName().length() > 11) {
+        if (portal.getCleanName().length() < 1 || portal.getCleanName().length() > 13) {
             Stargate.debug("createPortal", "Name length error");
             Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createNameLength"));
             return false;
@@ -236,21 +236,21 @@ public class PortalCreator {
 
         if (portal.getOptions().isBungee()) {
             //Check if the bungee portal's name has been duplicated
-            if (PortalHandler.getBungeePortals().get(portal.getName().toLowerCase()) != null) {
+            if (PortalHandler.getBungeePortals().get(portal.getCleanName()) != null) {
                 Stargate.debug("createPortal::Bungee", "Gate name duplicate");
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createExists"));
                 return false;
             }
         } else {
             //Check if the portal name has been duplicated on the network
-            if (PortalHandler.getByName(portal.getName(), portal.getNetwork()) != null) {
+            if (PortalHandler.getByName(portal.getCleanName(), portal.getCleanNetwork()) != null) {
                 Stargate.debug("createPortal", "Gate name duplicate");
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createExists"));
                 return false;
             }
 
             //Check if the number of portals in the network has been surpassed
-            List<String> networkList = PortalHandler.getAllPortalNetworks().get(portal.getNetwork().toLowerCase());
+            List<String> networkList = PortalHandler.getAllPortalNetworks().get(portal.getCleanNetwork());
             int maxGates = Stargate.getGateConfig().maxGatesEachNetwork();
             if (maxGates > 0 && networkList != null && networkList.size() >= maxGates) {
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createFull"));
@@ -283,7 +283,7 @@ public class PortalCreator {
             portal.getPortalOpener().openPortal(true);
         } else if (portal.getOptions().isAlwaysOn()) {
             //For a normal always-on portal, open both the portal and the destination
-            Portal destinationPortal = PortalHandler.getByName(destinationName, portal.getNetwork());
+            Portal destinationPortal = PortalHandler.getByName(destinationName, portal.getCleanNetwork());
             if (destinationPortal != null) {
                 portal.getPortalOpener().openPortal(true);
                 destinationPortal.drawSign();

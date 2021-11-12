@@ -244,7 +244,7 @@ public class PlayerEventListener implements Listener {
      * @return <p>True if the player should be denied</p>
      */
     private boolean cannotAccessPortal(Player player, Portal portal) {
-        boolean deny = PermissionHelper.cannotAccessNetwork(player, portal.getNetwork());
+        boolean deny = PermissionHelper.cannotAccessNetwork(player, portal.getCleanNetwork());
 
         if (PermissionHelper.portalAccessDenied(player, portal, deny)) {
             if (!portal.getOptions().isSilent()) {

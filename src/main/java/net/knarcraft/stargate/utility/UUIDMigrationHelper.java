@@ -22,7 +22,7 @@ import java.util.UUID;
 public final class UUIDMigrationHelper {
 
     private UUIDMigrationHelper() {
-        
+
     }
 
     private static Map<String, List<Portal>> playerNamesToMigrate;
@@ -68,7 +68,7 @@ public final class UUIDMigrationHelper {
 
         //Get the real portal from the copy and set UUID
         for (Portal portalCopy : portals) {
-            Portal portal = PortalHandler.getByName(portalCopy.getName(), portalCopy.getNetwork());
+            Portal portal = PortalHandler.getByName(portalCopy.getCleanName(), portalCopy.getCleanNetwork());
             if (portal != null) {
                 portal.getOwner().setUUID(uniqueId);
                 worldsToSave.add(portal.getWorld());

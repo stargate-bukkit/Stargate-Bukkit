@@ -105,12 +105,12 @@ public final class PermissionHelper {
         boolean deny = false;
 
         if (entrancePortal.getOptions().isBungee()) {
-            if (!PermissionHelper.canAccessServer(player, entrancePortal.getNetwork())) {
+            if (!PermissionHelper.canAccessServer(player, entrancePortal.getCleanNetwork())) {
                 //If the portal is a bungee portal, and the player cannot access the server, deny
                 Stargate.debug("cannotAccessPortal", "Cannot access server");
                 deny = true;
             }
-        } else if (PermissionHelper.cannotAccessNetwork(player, entrancePortal.getNetwork())) {
+        } else if (PermissionHelper.cannotAccessNetwork(player, entrancePortal.getCleanNetwork())) {
             //If the player does not have access to the network, deny
             Stargate.debug("cannotAccessPortal", "Cannot access network");
             deny = true;
@@ -345,7 +345,7 @@ public final class PermissionHelper {
      * @return <p>True if the player is allowed to destroy the portal</p>
      */
     public static boolean canDestroyPortal(Player player, Portal portal) {
-        String network = portal.getNetwork();
+        String network = portal.getCleanNetwork();
 
         //Use a special check for bungee portals
         if (portal.getOptions().isBungee()) {

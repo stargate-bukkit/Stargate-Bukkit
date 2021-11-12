@@ -126,7 +126,7 @@ public class PortalOpener {
             return;
         }
 
-        boolean thisIsDestination = destination.getDestinationName().equalsIgnoreCase(portal.getName());
+        boolean thisIsDestination = Portal.cleanString(destination.getDestinationName()).equals(portal.getCleanName());
         //Only open destination if it's not-fixed or points at this portal, and is not already open
         if (!options.isRandom() && (!destination.getOptions().isFixed() || thisIsDestination) && !destination.isOpen()) {
             //Open the destination portal

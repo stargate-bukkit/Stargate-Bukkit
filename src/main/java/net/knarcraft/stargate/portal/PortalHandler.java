@@ -66,7 +66,7 @@ public class PortalHandler {
      */
     public static List<String> getDestinations(Portal entrancePortal, Player player, String network) {
         List<String> destinations = new ArrayList<>();
-        for (String destination : PortalRegistry.getAllPortalNetworks().get(network.toLowerCase())) {
+        for (String destination : PortalRegistry.getAllPortalNetworks().get(network)) {
             Portal portal = getByName(destination, network);
             if (portal == null) {
                 continue;
@@ -80,11 +80,12 @@ public class PortalHandler {
                 continue;
             }
             //Check if destination is this portal
-            if (destination.equalsIgnoreCase(entrancePortal.getName())) {
+            if (destination.equals(entrancePortal.getCleanName())) {
                 continue;
             }
             //Check if destination is a fixed portal not pointing to this portal
-            if (portal.getOptions().isFixed() && !portal.getDestinationName().equalsIgnoreCase(entrancePortal.getName())) {
+            if (portal.getOptions().isFixed() &&
+                    !Portal.cleanString(portal.getDestinationName()).equals(entrancePortal.getCleanName())) {
                 continue;
             }
             //Allow random use by non-players (Minecarts)
@@ -182,10 +183,10 @@ public class PortalHandler {
      * @param portal <p>The newly created portal</p>
      */
     static void updatePortalsPointingAtNewPortal(Portal portal) {
-        for (String originName : PortalRegistry.getAllPortalNetworks().get(portal.getNetwork().toLowerCase())) {
-            Portal origin = getByName(originName, portal.getNetwork());
+        for (String originName : PortalRegistry.getAllPortalNetworks().get(portal.getCleanNetwork())) {
+            Portal origin = getByName(originName, portal.getCleanNetwork());
             if (origin == null ||
-                    !origin.getDestinationName().equalsIgnoreCase(portal.getName()) ||
+                    !Portal.cleanString(origin.getDestinationName()).equals(portal.getCleanName()) ||
                     !origin.getStructure().isVerified()) {
                 continue;
             }

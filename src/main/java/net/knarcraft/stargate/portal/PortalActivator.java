@@ -64,7 +64,7 @@ public class PortalActivator {
      * @return <p>The destination portal the player should teleport to</p>
      */
     public Portal getDestination(Player player) {
-        String portalNetwork = portal.getNetwork();
+        String portalNetwork = portal.getCleanNetwork();
         if (portal.getOptions().isRandom()) {
             //Find possible destinations
             List<String> destinations = PortalHandler.getDestinations(portal, player, portalNetwork);
@@ -73,10 +73,10 @@ public class PortalActivator {
             }
             //Get one random destination
             String destination = destinations.get((new Random()).nextInt(destinations.size()));
-            return PortalHandler.getByName(destination, portalNetwork);
+            return PortalHandler.getByName(Portal.cleanString(destination), portalNetwork);
         } else {
             //Just return the normal fixed destination
-            return PortalHandler.getByName(destination, portalNetwork);
+            return PortalHandler.getByName(Portal.cleanString(destination), portalNetwork);
         }
     }
 
@@ -98,7 +98,7 @@ public class PortalActivator {
      * @param destination <p>The new destination of this portal activator's portal</p>
      */
     public void setDestination(Portal destination) {
-        setDestination(destination.getName());
+        setDestination(destination.getCleanName());
     }
 
     /**
@@ -136,7 +136,7 @@ public class PortalActivator {
         //Set the given player as the active player
         activePlayer = player;
 
-        String network = portal.getNetwork();
+        String network = portal.getCleanNetwork();
         destinations = PortalHandler.getDestinations(portal, player, network);
 
         //Sort destinations if enabled
@@ -242,7 +242,7 @@ public class PortalActivator {
             activate = true;
 
             Stargate.debug("cycleDestination", "Network Size: " +
-                    PortalHandler.getNetwork(portal.getNetwork()).size());
+                    PortalHandler.getNetwork(portal.getCleanNetwork()).size());
             Stargate.debug("cycleDestination", "Player has access to: " + destinations.size());
         }
 

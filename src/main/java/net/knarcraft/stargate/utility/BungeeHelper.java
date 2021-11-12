@@ -4,6 +4,7 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.teleporter.PlayerTeleporter;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -71,7 +72,7 @@ public final class BungeeHelper {
             //Build the message data and send it over the SGBungee BungeeCord channel
             dataOutputStream.writeUTF("Forward");
             //Send the message to the server defined in the entrance portal's network line
-            dataOutputStream.writeUTF(entrancePortal.getNetwork());
+            dataOutputStream.writeUTF(stripColor(entrancePortal.getNetwork()));
             //Specify the sub-channel/tag to make it recognizable on arrival
             dataOutputStream.writeUTF(bungeeSubChannel);
             //Write the length of the message
@@ -102,7 +103,7 @@ public final class BungeeHelper {
 
             //Send a connect-message to connect the player to the server defined in the entrance portal's network line
             dataOutputStream.writeUTF("Connect");
-            dataOutputStream.writeUTF(entrancePortal.getNetwork());
+            dataOutputStream.writeUTF(stripColor(entrancePortal.getNetwork()));
 
             //Send the plugin message
             player.sendPluginMessage(Stargate.getInstance(), bungeeChannel, byteArrayOutputStream.toByteArray());
@@ -205,6 +206,16 @@ public final class BungeeHelper {
 
         Stargate.debug("bungeeTeleport", "Teleported player to another server");
         return true;
+    }
+
+    /**
+     * Strips all color tags from a string
+     *
+     * @param string <p>The string to strip color from</p>
+     * @return <p>The string without color codes</p>
+     */
+    private static String stripColor(String string) {
+        return ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', string));
     }
 
 }

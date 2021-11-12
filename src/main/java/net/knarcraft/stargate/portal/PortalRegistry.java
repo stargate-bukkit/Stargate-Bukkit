@@ -63,7 +63,7 @@ public class PortalRegistry {
     private static void clearPortals(List<Portal> portalsToRemove) {
         //Store the names of the portals to remove as some maps require the name, not the object
         List<String> portalNames = new ArrayList<>();
-        portalsToRemove.forEach((portal) -> portalNames.add(portal.getName()));
+        portalsToRemove.forEach((portal) -> portalNames.add(portal.getCleanName()));
 
         //Clear all the lookup locations for the portals
         lookupBlocks.keySet().removeIf((key) -> portalsToRemove.contains(lookupBlocks.get(key)));
@@ -165,8 +165,8 @@ public class PortalRegistry {
         portal.getPortalActivator().deactivate();
         portal.getPortalOpener().closePortal(true);
 
-        String portalName = portal.getName().toLowerCase();
-        String networkName = portal.getNetwork().toLowerCase();
+        String portalName = portal.getCleanName();
+        String networkName = portal.getCleanNetwork();
 
         //Remove portal from lookup blocks
         for (BlockLocation block : portal.getStructure().getFrame()) {
@@ -203,7 +203,7 @@ public class PortalRegistry {
 
             //Update all portals in the same network with this portal as its destination
             for (String originName : allPortalNetworks.get(networkName)) {
-                Portal origin = PortalHandler.getByName(originName, portal.getNetwork());
+                Portal origin = PortalHandler.getByName(originName, portal.getCleanNetwork());
                 if (origin == null || !origin.getDestinationName().equalsIgnoreCase(portalName) ||
                         !origin.getStructure().isVerified()) {
                     continue;
@@ -235,8 +235,8 @@ public class PortalRegistry {
         portal.getOptions().setFixed(portal.getDestinationName().length() > 0 || portal.getOptions().isRandom() ||
                 portal.getOptions().isBungee());
 
-        String portalName = portal.getName().toLowerCase();
-        String networkName = portal.getNetwork().toLowerCase();
+        String portalName = portal.getCleanName();
+        String networkName = portal.getCleanNetwork();
 
         //Bungee portals are stored in their own list
         if (portal.getOptions().isBungee()) {

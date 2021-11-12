@@ -8,6 +8,7 @@ import net.knarcraft.stargate.portal.property.PortalOptions;
 import net.knarcraft.stargate.portal.property.PortalOwner;
 import net.knarcraft.stargate.portal.property.PortalStructure;
 import net.knarcraft.stargate.portal.property.gate.Gate;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -19,7 +20,10 @@ import java.util.Map;
 public class Portal {
 
     private final String name;
+    private final String cleanName;
     private final String network;
+    private final String cleanNetwork;
+
     private final PortalOwner portalOwner;
     private boolean isRegistered;
 
@@ -53,6 +57,8 @@ public class Portal {
         this.portalOpener = new PortalOpener(this, destination);
         this.structure = new PortalStructure(this, gate, button);
         this.portalActivator = portalOpener.getPortalActivator();
+        this.cleanName = cleanString(name);
+        this.cleanNetwork = cleanString(network);
     }
 
     /**
@@ -150,6 +156,15 @@ public class Portal {
     }
 
     /**
+     * Gets the clean name of the network this portal belongs to
+     *
+     * @return <p>The clean network name</p>
+     */
+    public String getCleanNetwork() {
+        return cleanNetwork;
+    }
+
+    /**
      * Gets the time this portal was triggered (activated/opened)
      *
      * <p>The time is given in the equivalent of a Unix timestamp. It's used to decide when a portal times out and
@@ -168,6 +183,15 @@ public class Portal {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Gets the clean name of this portal
+     *
+     * @return <p>The clean name of this portal</p>
+     */
+    public String getCleanName() {
+        return cleanName;
     }
 
     /**
@@ -273,6 +297,17 @@ public class Portal {
         return getTopLeft().getRelativeLocation(vector, getYaw());
     }
 
+    /**
+     * Cleans a string by removing color codes, lower-casing and replacing spaces with underscores
+     *
+     * @param string <p>The string to clean</p>
+     * @return <p>The clean string</p>
+     */
+    public static String cleanString(String string) {
+        string = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', string));
+        return string.toLowerCase().replace(' ', '_');
+    }
+
     @Override
     public String toString() {
         return String.format("Portal [id=%s, network=%s name=%s, type=%s]", getSignLocation(), network, name,
@@ -283,8 +318,8 @@ public class Portal {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((network == null) ? 0 : network.hashCode());
+        result = prime * result + ((cleanName == null) ? 0 : cleanName.hashCode());
+        result = prime * result + ((cleanNetwork == null) ? 0 : cleanNetwork.hashCode());
         return result;
     }
 
@@ -297,18 +332,18 @@ public class Portal {
             return false;
         }
         Portal other = (Portal) object;
-        if (name == null) {
-            if (other.name != null) {
+        if (cleanName == null) {
+            if (other.cleanName != null) {
                 return false;
             }
-        } else if (!name.equalsIgnoreCase(other.name)) {
+        } else if (!cleanName.equalsIgnoreCase(other.cleanName)) {
             return false;
         }
         //If none of the portals have a name, check if the network is the same
-        if (network == null) {
-            return other.network == null;
+        if (cleanNetwork == null) {
+            return other.cleanNetwork == null;
         } else {
-            return network.equalsIgnoreCase(other.network);
+            return cleanNetwork.equalsIgnoreCase(other.cleanNetwork);
         }
     }
 }
