@@ -278,9 +278,11 @@ public class Gate {
 		 * EVERY OPERATION DOES NOT MUTE/CHANGE THE INITIAL OBJECT!!!!
 		 */
 		Vector rotationAxis;
-		double rotation; // degrees
-		Axis irisNormal; //mathematical term for the normal axis orthogonal to the iris plane
+		double rotation; // radians
+		Axis irisNormal; // mathematical term for the normal axis orthogonal to the iris plane
 		boolean flipZAxis = false;
+		MatrixYRotation matrixRotation;
+		private MatrixYRotation matrixInverseRotation;
 		
 		/**
 		 * Compiles a vector operation which matches with the direction of a sign
@@ -288,7 +290,6 @@ public class Gate {
 		 * @throws InvalidStructure 
 		 */
 		private VectorOperation(BlockFace signFace) throws InvalidStructure {
-			rotationAxis = new Vector(0, 1, 0);
 			switch(signFace) {
 			case EAST:
 				rotation = 0;
@@ -310,6 +311,9 @@ public class Gate {
 				throw new InvalidStructure();
 			}
 			
+			
+			matrixRotation = new MatrixYRotation(rotation);
+			matrixInverseRotation = matrixRotation.getInverse();
 			Stargate.log(Level.FINER, "Chose a format rotation of " + rotation + " radians");
 		}
 
@@ -321,8 +325,7 @@ public class Gate {
 		 * @return vector
 		 */
 		public BlockVector doOperation(BlockVector vector) {
-			BlockVector output = vector.clone();
-			output.rotateAroundAxis(rotationAxis, rotation);
+			BlockVector output = matrixRotation.operation(vector);
 			if (flipZAxis)
 				output.setZ(-output.getZ());
 			return output;
@@ -339,11 +342,38 @@ public class Gate {
 			BlockVector output = vector.clone();
 			if (flipZAxis)
 				output.setZ(-output.getZ());
-			output.rotateAroundAxis(rotationAxis, -rotation);
-			return output;
+			return matrixInverseRotation.operation(output);
 		}
-		
-		
+		/**
+		 * A vector rotation limited to n*pi/2 radians rotations. Rotates around y-axis.
+		 * Rounded to avoid Math.sin and Math.cos approximation errors.<p>
+		 * 
+		 * </p>DOES NOT PERMUTE INPUT VECTOR
+		 * @author Thorin
+		 */
+		class MatrixYRotation{
+			private int sinTheta;
+			private int cosTheta;
+			private double rot;
+			private MatrixYRotation(double rot) {
+				sinTheta = (int) Math.round(Math.sin(rot));
+				cosTheta = (int) Math.round(Math.cos(rot));
+				this.rot = rot;
+			}
+			
+			BlockVector operation(BlockVector vector) {
+				BlockVector newVector = new BlockVector();
+				
+				newVector.setX(sinTheta*vector.getBlockZ() + cosTheta*vector.getBlockX());
+				newVector.setY(vector.getBlockY());
+				newVector.setZ(cosTheta*vector.getBlockZ()-sinTheta*vector.getBlockX());
+				return newVector;
+			}
+			
+			MatrixYRotation getInverse() {
+				return new MatrixYRotation(-rot);
+			}
+		}
 	}
 	
 }
