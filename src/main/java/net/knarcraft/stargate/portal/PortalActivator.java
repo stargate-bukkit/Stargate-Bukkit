@@ -98,7 +98,7 @@ public class PortalActivator {
      * @param destination <p>The new destination of this portal activator's portal</p>
      */
     public void setDestination(Portal destination) {
-        setDestination(destination.getCleanName());
+        setDestination(destination.getName());
     }
 
     /**

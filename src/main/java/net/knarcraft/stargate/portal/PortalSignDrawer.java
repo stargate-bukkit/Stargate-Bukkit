@@ -257,7 +257,8 @@ public class PortalSignDrawer {
             setLine(sign, 2, highlightColor + "(" + mainColor + fixColor(portal.getNetwork()) +
                     highlightColor + ")");
         }
-        Portal destination = PortalHandler.getByName(portal.getDestinationName(), portal.getNetwork());
+        Portal destination = PortalHandler.getByName(Portal.cleanString(portal.getDestinationName()), 
+                portal.getNetwork());
         if (destination == null && !portal.getOptions().isRandom()) {
             setLine(sign, 3, errorColor + Stargate.getString("signDisconnected"));
         } else {
