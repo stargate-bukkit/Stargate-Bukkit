@@ -355,6 +355,7 @@ public class Gate {
 			private int sinTheta;
 			private int cosTheta;
 			private double rot;
+			
 			private MatrixYRotation(double rot) {
 				sinTheta = (int) Math.round(Math.sin(rot));
 				cosTheta = (int) Math.round(Math.cos(rot));
@@ -370,6 +371,9 @@ public class Gate {
 				return newVector;
 			}
 			
+			/**
+			 * @return a inverse rotation of this rotation
+			 */
 			MatrixYRotation getInverse() {
 				return new MatrixYRotation(-rot);
 			}

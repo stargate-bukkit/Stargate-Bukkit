@@ -1,7 +1,5 @@
 package net.TheDgtl.Stargate.listeners;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.EnumSet;
 import java.util.logging.Level;
 
@@ -29,11 +27,8 @@ import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
 import net.TheDgtl.Stargate.gate.GateStructureType;
-import net.TheDgtl.Stargate.network.InterserverNetwork;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.portal.FixedPortal;
 import net.TheDgtl.Stargate.network.portal.IPortal;
-import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 
@@ -100,6 +95,10 @@ public class BlockEventListener implements Listener {
 			flags.add(PortalFlag.FANCY_INTERSERVER);
 		}
 		
+		if(flags.contains(PortalFlag.BUNGEE)) {
+			network = "§§§§§§#BUNGEE#§§§§§§";
+		}
+		
 		if (!permMngr.canCreateInNetwork(network)) {
 			if (!permMngr.canCreateInNetwork(player.getName())) {
 				hasPerm = false;
@@ -107,6 +106,7 @@ public class BlockEventListener implements Listener {
 			network = player.getName();
 			isPersonal = true;
 		}
+		
 		try {
 			Stargate.factory.createNetwork(network, flags.contains(PortalFlag.FANCY_INTERSERVER));
 		} catch (NameError e1) {

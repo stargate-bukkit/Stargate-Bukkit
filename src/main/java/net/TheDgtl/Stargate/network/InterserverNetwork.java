@@ -43,22 +43,11 @@ public class InterserverNetwork extends Network{
 			addPortal(portal,false);
 	}
 	
-	public void addVirtualPortal(VirtualPortal virtual) {
-		super.addPortal(virtual,false);
-	}
-	
-	public void removeVirtualPortal(String virtualName) throws InvalidClassException {
-		if(!(getPortal(virtualName) instanceof VirtualPortal))
-			throw new InvalidClassException("portal has to be InterserverPortal class");
-		portalList.remove(virtualName);
-	}
-	
-	public void removeVirtualPortal(VirtualPortal portal) {
-		portalList.remove(portal.getName());
-	}
-	
-	public void removePortal(IPortal portal) {
-		super.removePortal(portal);
+	@Override
+	public void removePortal(IPortal portal, boolean saveToDatabase) {
+		super.removePortal(portal,saveToDatabase);
+		if(!saveToDatabase)
+			return;
 		try {
 			unregisterFromInterserver(portal);
 		} catch (SQLException e) {

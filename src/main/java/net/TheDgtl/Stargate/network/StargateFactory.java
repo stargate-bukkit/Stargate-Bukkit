@@ -22,6 +22,7 @@ import net.TheDgtl.Stargate.database.MySqlDatabase;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
+import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -135,10 +136,16 @@ public class StargateFactory {
 			
 			boolean isBungee = flags.contains(PortalFlag.FANCY_INTERSERVER);
 			Stargate.log(Level.FINEST, "Trying to add portal " + name + ", on network " + netName + ",isInterserver = " + isBungee);
+			
+			String targetNet = netName;
+			if(flags.contains(PortalFlag.BUNGEE)) {
+				targetNet = "§§§§§§#BUNGEE#§§§§§§";
+			}
+			
 			try {
-				createNetwork(netName, isBungee);
+				createNetwork(targetNet, isBungee);
 			} catch (NameError e) {}
-			Network net = getNetwork(netName, isBungee);
+			Network net = getNetwork(targetNet, isBungee);
 			
 			for(IPortal logPortal : net.getAllPortals()) {
 				Stargate.log(Level.FINEST,logPortal.getName());
@@ -159,6 +166,8 @@ public class StargateFactory {
 			World world = Bukkit.getWorld(worldName);
 			Block block = world.getBlockAt(x, y, z);
 			String[] virtualSign = {name, desti, netName};
+			
+			
 			
 			try {
 				IPortal portal = Portal.createPortalFromSign(net, virtualSign, block, flags);
@@ -250,6 +259,10 @@ public class StargateFactory {
 		}
 	}
 	
+	HashMap<String,BungeePortal> bungeeList = new HashMap<>();
+	public BungeePortal getBungeeGate(String name) {
+		return bungeeList.get(name);
+	}
 	
 	/**
 	 * Convert a string processed from IPortal.getString(IPortal portal) back into a portal

@@ -29,17 +29,17 @@ import net.TheDgtl.Stargate.network.Network;
  */
 public class VirtualPortal implements IPortal {
 
-	private String server;
+	protected String server;
 	private String name;
-	private InterserverNetwork network;
+	private Network network;
 	private EnumSet<PortalFlag> flags;
 
-	public VirtualPortal(String server, String name, InterserverNetwork net, EnumSet<PortalFlag> flags) {
+	public VirtualPortal(String server, String name, Network net, EnumSet<PortalFlag> flags) {
 		this.server = server;
 		this.name = name;
 		this.network = net;
 		this.flags = flags;
-		network.addVirtualPortal(this);
+		network.addPortal(this,false);
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class VirtualPortal implements IPortal {
 
 	@Override
 	public void destroy() {
-		network.removeVirtualPortal(this);
+		network.removePortal(this,false);
 	}
 
 	@Override

@@ -146,7 +146,7 @@ public abstract class Portal implements IPortal {
 	 * Remove all information stored on this gate
 	 */
 	public void destroy() {
-		this.network.removePortal(this);
+		this.network.removePortal(this,true);
 		String[] lines = new String[] { name, "", "", "" };
 		getGate().drawControll(lines, false);
 		for (GateStructureType formatType : GateStructureType.values()) {

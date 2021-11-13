@@ -97,6 +97,10 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 				String msg1 = in.readUTF();
 				playerConnect(msg1);
 				break;
+			case LEGACY_BUNGEE:
+				String msg2 = in.readUTF();
+				legacyPlayerConnect(msg2);
+				break;
 			default:
 				Stargate.log(Level.FINEST, "Recieved unknown message with a subchannel: " + subChannel);
 				break;
@@ -109,6 +113,26 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 		
     }
 	
+	private void legacyPlayerConnect(String msg) {
+		String[] parts = msg.split("#@#");
+
+        String playerName = parts[0];
+        String destination = parts[1];
+        
+        Stargate.log(Level.FINEST, "desti="+destination+",player="+playerName);
+        
+        // Check if the player is online, if so, teleport, otherwise, queue
+        Player player = stargate.getServer().getPlayer(playerName);
+        if (player == null) {
+			Stargate.log(Level.FINEST, "Player was null; adding to queue");
+			Stargate.addToQueue(playerName, destination, "§§§§§§#BUNGEE#§§§§§§",false);
+        } else {
+        	Network net = Stargate.factory.getNetwork("§§§§§§#BUNGEE#§§§§§§", false);
+        	IPortal dest = net.getPortal(destination);
+        	dest.teleportHere(player);
+        }
+	}
+
 	private void updateNetwork(String msg) {
 		JsonParser parser = new JsonParser();
 		Stargate.log(Level.FINEST, msg);
@@ -123,10 +147,10 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 		
 		switch(type) {
 		case TYPE_PORTAL_ADD:
-			targetNet.addVirtualPortal(portal);
+			targetNet.addPortal(portal,false);
 			break;
 		case TYPE_PORTAL_REMOVE:
-			targetNet.removeVirtualPortal(portal);
+			targetNet.removePortal(portal,false);
 			break;
 		}
 		
@@ -143,7 +167,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 		Player player = stargate.getServer().getPlayer(playerName);
 		if(player == null) {
 			Stargate.log(Level.FINEST, "Player was null; adding to queue");
-			Stargate.addToQueue(playerName, portalName, network);
+			Stargate.addToQueue(playerName, portalName, network,true);
 		}
 		else {
 			Stargate.log(Level.FINEST, "Player was not null; trying to teleport");

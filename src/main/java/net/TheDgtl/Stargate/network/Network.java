@@ -71,14 +71,16 @@ public class Network {
 		}
 	}
 	
-	public void removePortal(IPortal portal) {
+	public void removePortal(IPortal portal,boolean saveToDatabase) {
+		portalList.remove(portal.getName());
+		if(!saveToDatabase)
+			return;
 		try {
 			Connection conn = database.getConnection();
 			PreparedStatement statement = sqlMaker.compileRemoveStatement(conn, portal);
 			statement.execute();
 			statement.close();
 			conn.close();
-			portalList.remove(portal.getName());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
