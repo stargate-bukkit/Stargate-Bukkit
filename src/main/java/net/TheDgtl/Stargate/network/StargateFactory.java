@@ -154,7 +154,7 @@ public class StargateFactory {
 			if(areVirtual) {
 				String server = set.getString(9);
 				if(!net.portalExists(name)) {
-					IPortal virtualPortal = new VirtualPortal(server,name,(InterserverNetwork) net,flags);
+					IPortal virtualPortal = new VirtualPortal(server,name,net,flags);
 					net.addPortal(virtualPortal, false);
 					Stargate.log(Level.FINEST, "Added as virtual portal");
 				} else {
@@ -177,13 +177,8 @@ public class StargateFactory {
 					setInterserverPortalOnlineStatus(portal,true);
 				}
 			}  catch (GateConflict e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (NoFormatFound e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (NameError e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
 		}

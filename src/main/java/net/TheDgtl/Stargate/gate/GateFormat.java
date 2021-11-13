@@ -235,7 +235,10 @@ public class GateFormat {
 					if (tag == null) {
 						throw new ParsingError("Invalid tag in line: " + line);
 					}
-					foundIds.addAll(tag.getValues());
+					for(Material mat : tag.getValues()) {
+						if(mat.isBlock())
+							foundIds.add(mat);
+					}
 					continue;
 				}
 				
@@ -244,6 +247,9 @@ public class GateFormat {
 					throw new ParsingError("Invalid material in line: " + line);
 				}
 				foundIds.add(id);
+			}
+			if(foundIds.size() == 0) {
+				throw new ParsingError("Invalid tag: Tag must include atleast one block");
 			}
 			return foundIds;
 

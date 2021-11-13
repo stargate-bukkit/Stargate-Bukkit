@@ -44,6 +44,7 @@ import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import net.TheDgtl.Stargate.Channel;
+import net.TheDgtl.Stargate.LangMsg;
 
 public class StargateBungeePluginMessageListener implements PluginMessageListener {
 
@@ -170,9 +171,15 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 			Stargate.addToQueue(playerName, portalName, network,true);
 		}
 		else {
+			try {
 			Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
-			IPortal dest = Stargate.factory.getNetwork(network, true).getPortal(portalName);
+			Network net = Stargate.factory.getNetwork(network, true);
+			
+			IPortal dest = net.getPortal(portalName);
 			dest.teleportHere(player);
+			} catch(NullPointerException e) {
+				player.sendMessage(Stargate.langManager.getMessage(LangMsg.BUNGEE_EMPTY, true));
+			}
 		}
 	}
 }

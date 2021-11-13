@@ -6,9 +6,11 @@ import java.util.HashMap;
 import net.TheDgtl.Stargate.exception.NoFlagFound;
 
 public enum PortalFlag {
-	RANDOM('R'), FANCY_INTERSERVER('C'), ALWAYS_ON('A'), BACKWARDS('B'),
+	RANDOM('R'), FANCY_INTERSERVER('I'), ALWAYS_ON('A'), BACKWARDS('B'),
 	HIDDEN('H'), PRIVATE('P'), FORCE_SHOW('S'), HIDE_NETWORK('N'), 
-	FREE('F'), FIXED('X'), PERSONAL_NETWORK('Z'), BUNGEE('U'), NETWORKED('W');
+	FREE('F'),  PERSONAL_NETWORK('Z'), BUNGEE('U'),
+	//Internal
+	NETWORKED('1'),FIXED('2'),IRON_DOOR('3');
 
 	public final char label;
 	static private final HashMap<Character, PortalFlag> map = new HashMap<>();

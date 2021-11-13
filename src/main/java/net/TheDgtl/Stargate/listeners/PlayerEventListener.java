@@ -33,12 +33,13 @@ import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.SGLocation;
 
 public class PlayerEventListener implements Listener {
 	private static boolean antiDoubleActivate = true;
 
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Block block = event.getClickedBlock();
 		if (block == null)
@@ -62,8 +63,9 @@ public class PlayerEventListener implements Listener {
 			event.setUseItemInHand(Event.Result.DENY);
 			event.setUseInteractedBlock(Event.Result.DENY);
 		}
-		Stargate.log(Level.FINEST, "ping 5");
+		
 		Player player = event.getPlayer();
+		
 		if (Tag.WALL_SIGNS.isTagged(blockMat)) {
 			if (portal.isOpenFor(player)) {
 				portal.onSignClick(action, player);
@@ -71,12 +73,17 @@ public class PlayerEventListener implements Listener {
 			return;
 		}
 		if (Tag.BUTTONS.isTagged(blockMat) || (blockMat == Material.DEAD_TUBE_CORAL_WALL_FAN)) {
+			if(portal.hasFlag(PortalFlag.IRON_DOOR) && event.useInteractedBlock() != Event.Result.DENY){
+				return;
+			}
 			portal.onButtonClick(player);
 			return;
 		}
 
 		Stargate.log(Level.WARNING, "This should never be triggered, an unkown glitch is occuring");
 	}
+	
+	
 	
 	
 	@EventHandler

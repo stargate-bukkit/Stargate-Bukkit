@@ -1,6 +1,5 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -8,11 +7,11 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
-import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.util.Vector;
@@ -61,22 +60,31 @@ public abstract class Portal implements IPortal {
 
 	Portal(Network network, String name, Block sign, EnumSet<PortalFlag> flags)
 			throws NameError, NoFormatFound, GateConflict {
+		Stargate.log(Level.FINEST, "point 1");
 		this.network = network;
 		this.name = name;
 		this.flags = flags;
 		if (name.isBlank() || (name.length() == Stargate.MAX_TEXT_LENGTH))
 			throw new NameError(LangMsg.NAME_LENGTH_FAULT);
+		Stargate.log(Level.FINEST, "point 2");
 		if (this.network.isPortalNameTaken(name)) {
 			throw new NameError(LangMsg.ALREADY_EXIST);
 		}
-
+		Stargate.log(Level.FINEST, "point 3, " + sign.toString());
+		
+		if( !(Tag.WALL_SIGNS.isTagged(sign.getType()))) {
+			throw new NoFormatFound();
+		}
+		Stargate.log(Level.FINEST, "point 4");
 		/*
 		 * Get the block behind the sign; the material of that block is stored in a
 		 * register with available gateFormats
 		 */
 		Directional signDirection = (Directional) sign.getBlockData();
 		Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
+		Stargate.log(Level.FINEST, "point 5");
 		List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
+		Stargate.log(Level.FINEST, "point 6");
 		setGate(FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing()));
 
 		String msg = "Selected with flags ";
@@ -154,12 +162,14 @@ public abstract class Portal implements IPortal {
 				network.unRegisterLocation(formatType, loc);
 			}
 		}
+		close();
 		network.updatePortals();
 	}
 
 	public void open(Player actor) {
 		getGate().open();
-		this.openFor = actor.getUniqueId();
+		if(actor != null)
+			this.openFor = actor.getUniqueId();
 		if(hasFlag(PortalFlag.ALWAYS_ON)) {
 			return;
 		}
