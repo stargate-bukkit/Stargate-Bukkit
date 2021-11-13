@@ -8,6 +8,8 @@ import net.knarcraft.stargate.portal.teleporter.PlayerTeleporter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import static net.knarcraft.stargate.Stargate.getMaxNameNetworkLength;
+
 /**
  * Helper class for deciding which actions a player is allowed to perform
  */
@@ -200,8 +202,8 @@ public final class PermissionHelper {
         }
         //Is able to create personal gates (Assumption is made they can also access them)
         String playerName = player.getName();
-        if (playerName.length() > 11) {
-            playerName = playerName.substring(0, 11);
+        if (playerName.length() > getMaxNameNetworkLength()) {
+            playerName = playerName.substring(0, getMaxNameNetworkLength());
         }
         return !network.equals(playerName) || !hasPermission(player, "stargate.create.personal");
     }

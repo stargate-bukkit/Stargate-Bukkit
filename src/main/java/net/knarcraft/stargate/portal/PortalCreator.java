@@ -22,6 +22,8 @@ import org.bukkit.event.block.SignChangeEvent;
 import java.util.List;
 import java.util.Map;
 
+import static net.knarcraft.stargate.Stargate.getMaxNameNetworkLength;
+
 /**
  * The portal creator can create and validate a new portal
  */
@@ -105,7 +107,8 @@ public class PortalCreator {
         Stargate.debug("createPortal", builder.toString());
 
         //Use default network if a proper alternative is not set
-        if (!portalOptions.get(PortalOption.BUNGEE) && (network.length() < 1 || network.length() > 11)) {
+        if (!portalOptions.get(PortalOption.BUNGEE) && (network.length() < 1 || network.length() >
+                getMaxNameNetworkLength())) {
             network = Stargate.getDefaultNetwork();
         }
 
@@ -117,8 +120,8 @@ public class PortalCreator {
             Stargate.debug("createPortal", "Player doesn't have create permissions on network. Trying personal");
             if (PermissionHelper.canCreatePersonalPortal(player)) {
                 network = player.getName();
-                if (network.length() > 11) {
-                    network = network.substring(0, 11);
+                if (network.length() > getMaxNameNetworkLength()) {
+                    network = network.substring(0, getMaxNameNetworkLength());
                 }
                 Stargate.debug("createPortal", "Creating personal portal");
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createPersonal"));
@@ -228,8 +231,9 @@ public class PortalCreator {
      */
     private boolean checkIfNewPortalIsValid(int cost, String portalName) {
         //Check if the portal name can fit on the sign with padding (>name<)
-        if (portal.getCleanName().length() < 1 || portal.getCleanName().length() > 13) {
-            Stargate.debug("createPortal", "Name length error");
+        if (portal.getCleanName().length() < 1 || portal.getCleanName().length() > getMaxNameNetworkLength()) {
+            Stargate.debug("createPortal", String.format("Name length error. %s is too long.",
+                    portal.getCleanName()));
             Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("createNameLength"));
             return false;
         }

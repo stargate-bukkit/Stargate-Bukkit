@@ -140,6 +140,15 @@ public class Stargate extends JavaPlugin {
     }
 
     /**
+     * Gets the max length of portal names and networks
+     *
+     * @return <p>The max portal name/network length</p>
+     */
+    public static int getMaxNameNetworkLength() {
+        return 13;
+    }
+
+    /**
      * Sends a debug message
      *
      * @param route   <p>The class name/route where something happened</p>
