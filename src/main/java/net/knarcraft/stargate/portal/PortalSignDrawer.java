@@ -247,7 +247,7 @@ public class PortalSignDrawer {
      * @param sign <p>The sign to re-draw</p>
      */
     private void drawFixedSign(Sign sign) {
-        Portal destinationPortal = PortalHandler.getByName(Portal.cleanString(portal.getDestinationName()), 
+        Portal destinationPortal = PortalHandler.getByName(Portal.cleanString(portal.getDestinationName()),
                 portal.getCleanNetwork());
         String destinationName = portal.getOptions().isRandom() ? Stargate.getString("signRandom") :
                 (destinationPortal != null ? destinationPortal.getName() : portal.getDestinationName());
@@ -259,7 +259,7 @@ public class PortalSignDrawer {
             setLine(sign, 2, highlightColor + "(" + mainColor + fixColor(portal.getNetwork()) +
                     highlightColor + ")");
         }
-        Portal destination = PortalHandler.getByName(Portal.cleanString(portal.getDestinationName()), 
+        Portal destination = PortalHandler.getByName(Portal.cleanString(portal.getDestinationName()),
                 portal.getNetwork());
         if (destination == null && !portal.getOptions().isRandom()) {
             setLine(sign, 3, errorColor + Stargate.getString("signDisconnected"));

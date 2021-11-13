@@ -304,8 +304,7 @@ public class Portal {
      * @return <p>The clean string</p>
      */
     public static String cleanString(String string) {
-        string = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', string));
-        return string.toLowerCase().replace(' ', '_');
+        return ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', string)).toLowerCase();
     }
 
     @Override
