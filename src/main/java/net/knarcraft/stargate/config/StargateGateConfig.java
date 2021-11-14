@@ -188,7 +188,7 @@ public final class StargateGateConfig {
      * @param mainSignColor <p>A string representing the main sign color</p>
      */
     private void loadSignColor(String mainSignColor, String highlightSignColor) {
-        if (mainSignColor != null) {
+        if (mainSignColor != null && highlightSignColor != null) {
             try {
                 PortalSignDrawer.setColors(ChatColor.valueOf(mainSignColor.toUpperCase()),
                         ChatColor.valueOf(highlightSignColor.toUpperCase()));

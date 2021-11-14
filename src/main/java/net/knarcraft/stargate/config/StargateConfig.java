@@ -309,9 +309,7 @@ public final class StargateConfig {
         FileConfiguration newConfig = Stargate.getInstance().getConfig();
 
         boolean isMigrating = false;
-        if (newConfig.getString("lang") != null ||
-                newConfig.getString("gates.integrity.ignoreEntrance") != null ||
-                newConfig.getString("ignoreEntrance") != null) {
+        if (newConfig.getString("lang") != null || newConfig.getString("economy.freeGatesGreen") != null) {
             migrateConfig(newConfig);
             isMigrating = true;
         }

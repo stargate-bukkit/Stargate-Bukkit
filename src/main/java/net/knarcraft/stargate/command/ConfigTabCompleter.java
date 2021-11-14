@@ -86,6 +86,7 @@ public class ConfigTabCompleter implements TabCompleter {
                 }
             case MAIN_SIGN_COLOR:
             case HIGHLIGHT_SIGN_COLOR:
+            case FREE_GATES_COLOR:
                 //Return all colors
                 return filterMatching(getColors(), typedText);
         }

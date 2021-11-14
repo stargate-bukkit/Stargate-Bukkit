@@ -27,7 +27,8 @@
 # useCost - The cost to use a gate
 # toOwner - Whether the charge for using a gate goes to the gate's owner
 # chargeFreeDestination - Whether a gate whose destination is a free gate is still charged
-# freeGatesGreen - Whether a free gate in the destination list is drawn green
+# freeGatesColored - Whether a free gate in the destination list is marked with a color
+# freeGatesColor - The color to use for marking free gates
 # I-------I-------I #
 # Debug options #
 # I-------I-------I #
@@ -64,7 +65,8 @@ economy:
   useCost: 0
   toOwner: false
   chargeFreeDestination: true
-  freeGatesGreen: false
+  freeGatesColored: false
+  freeGatesColor: DARK_GREEN
 debugging:
   debug: false
   permissionDebug: false

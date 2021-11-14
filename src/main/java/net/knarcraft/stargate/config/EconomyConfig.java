@@ -2,10 +2,12 @@ package net.knarcraft.stargate.config;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.Portal;
+import net.knarcraft.stargate.portal.PortalSignDrawer;
 import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -28,7 +30,7 @@ public final class EconomyConfig {
     private int destroyCost = 0;
     private boolean toOwner = false;
     private boolean chargeFreeDestination = true;
-    private boolean freeGatesGreen = false;
+    private boolean freeGatesColored = false;
 
     /**
      * Instantiates a new economy config
@@ -84,12 +86,12 @@ public final class EconomyConfig {
     }
 
     /**
-     * Gets whether free portals should be marked with green coloring
+     * Gets whether free portals should be marked with a different coloring
      *
-     * @return <p>Whether free portals should be green</p>
+     * @return <p>Whether free portals should be colored</p>
      */
-    public boolean drawFreePortalsGreen() {
-        return freeGatesGreen;
+    public boolean drawFreePortalsColored() {
+        return freeGatesColored;
     }
 
     /**
@@ -341,7 +343,14 @@ public final class EconomyConfig {
         setDefaultUseCost((Integer) configOptions.get(ConfigOption.USE_COST));
         toOwner = (boolean) configOptions.get(ConfigOption.TO_OWNER);
         chargeFreeDestination = (boolean) configOptions.get(ConfigOption.CHARGE_FREE_DESTINATION);
-        freeGatesGreen = (boolean) configOptions.get(ConfigOption.FREE_GATES_GREEN);
+        freeGatesColored = (boolean) configOptions.get(ConfigOption.FREE_GATES_COLORED);
+
+        try {
+            String freeColor = (String) configOptions.get(ConfigOption.FREE_GATES_COLOR);
+            PortalSignDrawer.setFreeColor(ChatColor.valueOf(freeColor.toUpperCase()));
+        } catch (IllegalArgumentException | NullPointerException ignored) {
+            PortalSignDrawer.setFreeColor(ChatColor.DARK_GREEN);
+        }
     }
 
     /**

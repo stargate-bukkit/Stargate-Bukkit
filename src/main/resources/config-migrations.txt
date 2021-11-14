@@ -25,3 +25,4 @@ toowner=economy.toOwner
 chargefreedestination=economy.chargeFreeDestination
 freegatesgreen=economy.freeGatesGreen
 CheckUpdates=
+economy.freeGatesGreen=economy.freeGatesColored

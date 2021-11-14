@@ -325,7 +325,8 @@ economy:
   useCost - The cost to use a stargate
   toOwner - Whether the money from gate-use goes to the owner or nobody
   chargeFreeDestination - Enable to make players pay for teleportation even if the destination is free
-  freeGatesGreen - Enable to make gates that won't cost the player money show up as green
+  freeGatesColored - Enable to make gates that won't cost the player money show up as green
+  freeGatesColor - This allows you to specify the color of the markings and name of free stargates
 debugging:
   debug - Whether to show massive debug output
   permissionDebug - Whether to show massive permission debug output
@@ -396,6 +397,7 @@ portalInfoServer=Server: %server%
 - Excludes color codes from the counted character length to allow a colored, 13-character name
 - Makes portal names and networks case- and color-agnostic to prevent some confusion caused by typos or sloppy
   configuration
+- Makes the free gate color configurable, and renames freeGatesGreen to freeGatesColored
 
 #### \[Version 0.9.1.2] EpicKnarvik97 fork
 

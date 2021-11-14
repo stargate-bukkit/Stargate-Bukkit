@@ -15,7 +15,7 @@ public class PortalSignDrawer {
 
     private final Portal portal;
     private final static ChatColor errorColor = ChatColor.DARK_RED;
-    private final static ChatColor freeColor = ChatColor.DARK_GREEN;
+    private static ChatColor freeColor;
     private static ChatColor mainColor;
     private static ChatColor highlightColor;
 
@@ -29,7 +29,7 @@ public class PortalSignDrawer {
     }
 
     /**
-     * Sets the main sign color
+     * Sets the main and highlighting sign colors
      *
      * <p>The main sign color is used for most text on the sign, while the highlighting color is used for the markings
      * around portal names and network names ('>','<','-',')','(')</p>
@@ -40,6 +40,15 @@ public class PortalSignDrawer {
     public static void setColors(ChatColor newMainColor, ChatColor newHighlightColor) {
         mainColor = newMainColor;
         highlightColor = newHighlightColor;
+    }
+
+    /**
+     * Sets the color to use for marking free stargates
+     *
+     * @param freeColor <p>The new color to use for marking free stargates</p>
+     */
+    public static void setFreeColor(ChatColor freeColor) {
+        PortalSignDrawer.freeColor = freeColor;
     }
 
     /**
@@ -136,42 +145,42 @@ public class PortalSignDrawer {
         int maxIndex = destinations.getDestinations().size() - 1;
         int signLineIndex = 0;
         int destinationIndex = destinations.getDestinations().indexOf(portal.getDestinationName());
-        boolean freeGatesGreen = Stargate.getEconomyConfig().useEconomy() &&
-                Stargate.getEconomyConfig().drawFreePortalsGreen();
+        boolean freeGatesColored = Stargate.getEconomyConfig().useEconomy() &&
+                Stargate.getEconomyConfig().drawFreePortalsColored();
 
         //Last, and not only entry. Draw the entry two back
         if ((destinationIndex == maxIndex) && (maxIndex > 1)) {
-            drawNetworkSignLine(freeGatesGreen, sign, ++signLineIndex, destinationIndex - 2);
+            drawNetworkSignLine(freeGatesColored, sign, ++signLineIndex, destinationIndex - 2);
         }
         //Not first entry. Draw the previous entry
         if (destinationIndex > 0) {
-            drawNetworkSignLine(freeGatesGreen, sign, ++signLineIndex, destinationIndex - 1);
+            drawNetworkSignLine(freeGatesColored, sign, ++signLineIndex, destinationIndex - 1);
         }
         //Draw the chosen entry (line 2 or 3)
-        drawNetworkSignChosenLine(freeGatesGreen, sign, ++signLineIndex);
+        drawNetworkSignChosenLine(freeGatesColored, sign, ++signLineIndex);
         //Has another entry and space on the sign
         if ((maxIndex >= destinationIndex + 1)) {
-            drawNetworkSignLine(freeGatesGreen, sign, ++signLineIndex, destinationIndex + 1);
+            drawNetworkSignLine(freeGatesColored, sign, ++signLineIndex, destinationIndex + 1);
         }
         //Has another entry and space on the sign
         if ((maxIndex >= destinationIndex + 2) && (++signLineIndex <= 3)) {
-            drawNetworkSignLine(freeGatesGreen, sign, signLineIndex, destinationIndex + 2);
+            drawNetworkSignLine(freeGatesColored, sign, signLineIndex, destinationIndex + 2);
         }
     }
 
     /**
      * Draws the chosen destination on one sign line
      *
-     * @param freeGatesGreen <p>Whether to display free gates in a green color</p>
-     * @param sign           <p>The sign to draw on</p>
-     * @param signLineIndex  <p>The line to draw on</p>
+     * @param freeGatesColored <p>Whether to display free gates in a different color</p>
+     * @param sign             <p>The sign to draw on</p>
+     * @param signLineIndex    <p>The line to draw on</p>
      */
-    private void drawNetworkSignChosenLine(boolean freeGatesGreen, Sign sign, int signLineIndex) {
-        if (freeGatesGreen) {
+    private void drawNetworkSignChosenLine(boolean freeGatesColored, Sign sign, int signLineIndex) {
+        if (freeGatesColored) {
             Portal destination = PortalHandler.getByName(portal.getDestinationName(), portal.getNetwork());
-            boolean green = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
-            ChatColor nameColor = (green ? freeColor : highlightColor);
-            setLine(sign, signLineIndex, nameColor + ">" + (green ? freeColor : mainColor) +
+            boolean free = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
+            ChatColor nameColor = (free ? freeColor : highlightColor);
+            setLine(sign, signLineIndex, nameColor + ">" + (free ? freeColor : mainColor) +
                     fixColor(portal.getDestinationName()) + nameColor + "<");
         } else {
             setLine(sign, signLineIndex, highlightColor + ">" + mainColor +
@@ -193,18 +202,18 @@ public class PortalSignDrawer {
     /**
      * Draws one network destination on one sign line
      *
-     * @param freeGatesGreen   <p>Whether to display free gates in a green color</p>
+     * @param freeGatesColored <p>Whether to display free gates in a different color</p>
      * @param sign             <p>The sign to draw on</p>
      * @param signLineIndex    <p>The line to draw on</p>
      * @param destinationIndex <p>The index of the destination to draw</p>
      */
-    private void drawNetworkSignLine(boolean freeGatesGreen, Sign sign, int signLineIndex, int destinationIndex) {
+    private void drawNetworkSignLine(boolean freeGatesColored, Sign sign, int signLineIndex, int destinationIndex) {
         PortalActivator destinations = portal.getPortalActivator();
         String destinationName = destinations.getDestinations().get(destinationIndex);
-        if (freeGatesGreen) {
+        if (freeGatesColored) {
             Portal destination = PortalHandler.getByName(destinationName, portal.getNetwork());
-            boolean green = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
-            setLine(sign, signLineIndex, (green ? freeColor : mainColor) + fixColor(destinationName));
+            boolean free = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
+            setLine(sign, signLineIndex, (free ? freeColor : mainColor) + fixColor(destinationName));
         } else {
             setLine(sign, signLineIndex, mainColor + fixColor(destinationName));
         }
