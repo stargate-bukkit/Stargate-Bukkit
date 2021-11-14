@@ -6,7 +6,7 @@ import net.knarcraft.stargate.event.StargateDeactivateEvent;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -141,7 +141,7 @@ public class PortalActivator {
 
         //Sort destinations if enabled
         if (Stargate.getGateConfig().sortNetworkDestinations()) {
-            Collections.sort(destinations);
+            destinations.sort(Comparator.comparing(Portal::cleanString));
         }
 
         //Select last used destination if remember destination is enabled
