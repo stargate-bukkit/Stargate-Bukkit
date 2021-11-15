@@ -191,9 +191,9 @@ public abstract class Teleporter {
      */
     private Location adjustExitLocation(Location traveller, Location exitLocation) {
         if (exitLocation != null) {
-            BlockData blockData = portal.getWorld().getBlockAt(exitLocation).getBlockData();
-            if ((blockData instanceof Bisected && ((Bisected) blockData).getHalf() == Bisected.Half.BOTTOM) ||
-                    (blockData instanceof Slab) && ((Slab) blockData).getType() == Slab.Type.BOTTOM) {
+            BlockData blockData = exitLocation.getBlock().getBlockData();
+            if ((blockData instanceof Bisected bisected && bisected.getHalf() == Bisected.Half.BOTTOM) ||
+                    (blockData instanceof Slab slab && slab.getType() == Slab.Type.BOTTOM)) {
                 //Prevent traveller from spawning inside a slab
                 Stargate.debug("adjustExitLocation", "Added a block to get above a slab");
                 exitLocation.add(0, 1, 0);

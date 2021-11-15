@@ -292,16 +292,15 @@ public final class PortalFileHelper {
      */
     private static void updatePortalButton(Portal portal) {
         BlockLocation buttonLocation = getButtonLocation(portal);
-        BlockData buttonData = buttonLocation.getBlock().getBlockData();
         if (portal.getOptions().isAlwaysOn()) {
             //Clear button if not already air or water
-            if (MaterialHelper.isButtonCompatible(buttonData.getMaterial())) {
+            if (MaterialHelper.isButtonCompatible(buttonLocation.getType())) {
                 Material newMaterial = decideRemovalMaterial(buttonLocation, portal);
                 Stargate.addBlockChangeRequest(new BlockChangeRequest(buttonLocation, newMaterial, null));
             }
         } else {
             //Replace button if the material does not match
-            if (buttonData.getMaterial() != portal.getGate().getPortalButton()) {
+            if (buttonLocation.getType() != portal.getGate().getPortalButton()) {
                 generatePortalButton(portal, DirectionHelper.getBlockFaceFromYaw(portal.getYaw()));
             }
         }
