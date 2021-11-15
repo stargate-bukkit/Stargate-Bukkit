@@ -44,7 +44,7 @@ public final class UUIDMigrationHelper {
             return;
         }
 
-        Stargate.debug("PlayerEventListener::migrateUUID", String.format("Migrating name to UUID for player %s",
+        Stargate.debug("UUIDMigrationHelper::migrateUUID", String.format("Migrating name to UUID for player %s",
                 playerName));
         List<Portal> portalsOwned = playersToMigrate.get(playerName);
         if (portalsOwned == null) {
