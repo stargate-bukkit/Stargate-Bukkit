@@ -62,31 +62,25 @@ public abstract class Portal implements IPortal {
 
 	Portal(Network network, String name, Block sign, EnumSet<PortalFlag> flags)
 			throws NameError, NoFormatFound, GateConflict {
-		Stargate.log(Level.FINEST, "point 1");
 		this.network = network;
 		this.name = name;
 		this.flags = flags;
 		if (name.isBlank() || (name.length() == Stargate.MAX_TEXT_LENGTH))
 			throw new NameError(LangMsg.NAME_LENGTH_FAULT);
-		Stargate.log(Level.FINEST, "point 2");
 		if (this.network.isPortalNameTaken(name)) {
 			throw new NameError(LangMsg.ALREADY_EXIST);
 		}
-		Stargate.log(Level.FINEST, "point 3, " + sign.toString());
 		
 		if( !(Tag.WALL_SIGNS.isTagged(sign.getType()))) {
 			throw new NoFormatFound();
 		}
-		Stargate.log(Level.FINEST, "point 4");
 		/*
 		 * Get the block behind the sign; the material of that block is stored in a
 		 * register with available gateFormats
 		 */
 		Directional signDirection = (Directional) sign.getBlockData();
 		Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
-		Stargate.log(Level.FINEST, "point 5");
 		List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
-		Stargate.log(Level.FINEST, "point 6");
 		setGate(FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing()));
 		
 		if(gate.getFormat().isIronDoorBlockable) {

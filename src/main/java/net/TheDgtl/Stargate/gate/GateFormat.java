@@ -69,7 +69,7 @@ public class GateFormat {
 		File[] files = dir.exists() ? dir.listFiles(new StargateFilenameFilter()) : new File[0];
 
 		for (File file : files) {
-			Stargate.log(Level.FINER, "Reading gateFormat from " + file.getName());
+			Stargate.log(Level.FINE, "Reading gateFormat from " + file.getName());
 			GateFormatParser gateParser = new GateFormatParser(file);
 			try {
 				gateParser.open();
@@ -128,6 +128,10 @@ public class GateFormat {
 		final static char ENTRANCE = '.';
 		final static char CONTROL = '-';
 
+		
+		boolean gateHasEntrance = false;
+		int amountOfControlBlocks = 0;
+		
 		HashSet<Material> irisOpen;
 		HashSet<Material> irisClosed;
 		GateIris iris;
@@ -160,12 +164,23 @@ public class GateFormat {
 		}
 
 		GateFormat parse() throws ParsingError {
+			Stargate.log(Level.FINEST, "filespace:" + file.length());
+			if(file.length() > 65536L)
+				throw new ParsingError("Design is too large");
+			
+			
 			HashMap<String, String> config = parseSettings();
 			HashMap<String, String> remainingConfig = setSettings(config);
 			
 			List<String> designLines = loadDesign();
 			setDesign(designLines);
 
+			if(!gateHasEntrance)
+				throw new ParsingError("Design is missing an entrance ");
+			if(amountOfControlBlocks < 2)
+				throw new ParsingError("Design requires atleast 2 control blocks '-' ");
+			
+			
 			return new GateFormat(iris, frame, control, remainingConfig, this.file.getName(), isIronDoorBlockable);
 		}
 
@@ -247,12 +262,12 @@ public class GateFormat {
 				
 				Material id = Material.getMaterial(stringId);
 				if (id == null) {
-					throw new ParsingError("Invalid material in line: " + line);
+					throw new ParsingError("Invalid material ''" + stringId + "''");
 				}
 				foundIds.add(id);
 			}
 			if(foundIds.size() == 0) {
-				throw new ParsingError("Invalid field''"+stringIdsMsg+"''': Field must include atleast one block");
+				throw new ParsingError("Invalid field''"+stringIdsMsg+"'': Field must include atleast one block");
 			}
 			return foundIds;
 
@@ -336,8 +351,10 @@ public class GateFormat {
 				break;
 			case ENTRANCE:
 				iris.addPart(selectedLocation.clone());
+				gateHasEntrance = true;
 				break;
 			case CONTROL:
+				amountOfControlBlocks++;
 				frame.addPart(selectedLocation.clone(), frameMaterials.get(key));
 				BlockVector controlLocation = selectedLocation.clone();
 				controlLocation.add(new BlockVector(1, 0, 0));
