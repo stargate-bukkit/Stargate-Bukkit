@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.gson.JsonObject;
@@ -155,7 +156,7 @@ public class VirtualPortal implements IPortal {
 	}
 
 	@Override
-	public void onButtonClick(Player player) {
+	public void onButtonClick(PlayerInteractEvent event) {
 	}
 
 	@Override

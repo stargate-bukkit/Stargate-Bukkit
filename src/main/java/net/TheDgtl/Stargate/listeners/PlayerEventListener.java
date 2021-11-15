@@ -61,7 +61,6 @@ public class PlayerEventListener implements Listener {
 			}
 			// Cancel item use
 			event.setUseItemInHand(Event.Result.DENY);
-			event.setUseInteractedBlock(Event.Result.DENY);
 		}
 		
 		Player player = event.getPlayer();
@@ -73,10 +72,7 @@ public class PlayerEventListener implements Listener {
 			return;
 		}
 		if (Tag.BUTTONS.isTagged(blockMat) || (blockMat == Material.DEAD_TUBE_CORAL_WALL_FAN)) {
-			if(portal.hasFlag(PortalFlag.IRON_DOOR) && event.useInteractedBlock() != Event.Result.DENY){
-				return;
-			}
-			portal.onButtonClick(player);
+			portal.onButtonClick(event);
 			return;
 		}
 

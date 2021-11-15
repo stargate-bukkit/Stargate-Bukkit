@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import java.util.TreeMap;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -18,23 +17,25 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.util.BlockVector;
-import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.exception.ParsingError;
 
 public class GateFormat {
 	public static HashMap<Material, List<GateFormat>> controlMaterialFormatsMap;
 	public EnumMap<GateStructureType, GateStructure> portalParts;
 
 	public final String name;
+	public boolean isIronDoorBlockable;
 
 	public GateFormat(GateIris iris, GateFrame frame, GateControll controll, HashMap<String, String> config,
-			String name) {
+			String name, boolean isIronDoorBlockable) {
 		portalParts = new EnumMap<>(GateStructureType.class);
 		portalParts.put(GateStructureType.IRIS, iris);
 		portalParts.put(GateStructureType.FRAME, frame);
 		portalParts.put(GateStructureType.CONTROLL, controll);
 		this.name = name;
+		this.isIronDoorBlockable = isIronDoorBlockable;
 	}
 
 	/**
@@ -74,7 +75,7 @@ public class GateFormat {
 				gateParser.open();
 				GateFormat format = gateParser.parse();
 				addGateFormat(controlToGateMap, format, gateParser.controlMaterials);
-			} catch (FileNotFoundException | GateFormatParser.ParsingError e) {
+			} catch (FileNotFoundException | ParsingError e) {
 				Stargate.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - " + e.getMessage());
 			} finally {
 				gateParser.close();
@@ -134,6 +135,8 @@ public class GateFormat {
 		GateControll control;
 		HashSet<Material> controlMaterials;
 
+		boolean isIronDoorBlockable = false;
+
 		GateFormatParser(File file) {
 			this.file = file;
 
@@ -163,7 +166,7 @@ public class GateFormat {
 			List<String> designLines = loadDesign();
 			setDesign(designLines);
 
-			return new GateFormat(iris, frame, control, remainingConfig, this.file.getName());
+			return new GateFormat(iris, frame, control, remainingConfig, this.file.getName(), isIronDoorBlockable);
 		}
 
 		
@@ -249,7 +252,7 @@ public class GateFormat {
 				foundIds.add(id);
 			}
 			if(foundIds.size() == 0) {
-				throw new ParsingError("Invalid tag: Tag must include atleast one block");
+				throw new ParsingError("Invalid field''"+stringIdsMsg+"''': Field must include atleast one block");
 			}
 			return foundIds;
 
@@ -300,6 +303,22 @@ public class GateFormat {
 					setDesignPoint(charLine[i], selectedLocation.clone());
 				}
 			}
+			
+			/*
+			 * Check if iris only contains 2 blocks, where one is above the other
+			 * (Only viable format that can be blocked by irondoor)
+			 */
+			List<BlockVector> irisBlocks = iris.getPartsPos();
+			if(irisBlocks.size() == 2) {
+				for(BlockVector block : irisBlocks) {
+					BlockVector above = block.clone();
+					above.setY(block.getBlockY()+1);
+					if(irisBlocks.contains(above)) {
+						isIronDoorBlockable = true;
+						break;
+					}
+				}
+			}
 		}
 		
 		/**
@@ -329,18 +348,6 @@ public class GateFormat {
 					throw new ParsingError("Unknown symbol '" + key + "' in gatedesign");
 				}
 				frame.addPart(selectedLocation.clone(), frameMaterials.get(key));
-			}
-		}
-		
-		
-		class ParsingError extends Exception {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = -8103799867513880231L;
-
-			ParsingError(String msg) {
-				super(msg);
 			}
 		}
 	}

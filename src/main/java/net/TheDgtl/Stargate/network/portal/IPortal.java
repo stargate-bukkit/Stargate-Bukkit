@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
@@ -32,7 +33,7 @@ public interface IPortal {
 
 	public void onSignClick(Action action, Player player);
 
-	void onButtonClick(Player player);
+	void onButtonClick(PlayerInteractEvent event);
 
 	void open(Player player);
 

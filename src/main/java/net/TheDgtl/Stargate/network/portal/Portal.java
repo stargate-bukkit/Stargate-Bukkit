@@ -13,7 +13,9 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.LangMsg;
@@ -86,7 +88,11 @@ public abstract class Portal implements IPortal {
 		List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
 		Stargate.log(Level.FINEST, "point 6");
 		setGate(FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing()));
-
+		
+		if(gate.getFormat().isIronDoorBlockable) {
+			flags.add(PortalFlag.IRON_DOOR);
+		}
+		
 		String msg = "Selected with flags ";
 		for (PortalFlag flag : flags) {
 			msg = msg + flag.label;
@@ -247,7 +253,21 @@ public abstract class Portal implements IPortal {
 		return destination;
 	}
 	
-	public void onButtonClick(Player player) {
+	@Override
+	public void onButtonClick(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		if(this.hasFlag(PortalFlag.IRON_DOOR) && event.useInteractedBlock() == Result.DENY) {
+			Block exitBlock = gate.getExit(hasFlag(PortalFlag.BACKWARDS)).getBlock();
+			if(exitBlock.getType() == Material.IRON_DOOR) {
+				Directional signDirection = (Directional)gate.getSignLoc().getBlock().getBlockData();
+				Directional doorDirection = (Directional)exitBlock.getBlockData();
+				if(signDirection.getFacing() == doorDirection.getFacing()) {
+					return;
+				}
+			}
+		}
+		
+		
 		IPortal destination = loadDestination();
 		if (destination == null) {
 			player.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
