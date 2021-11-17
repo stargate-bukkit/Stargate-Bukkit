@@ -130,7 +130,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         } else {
         	Network net = Stargate.factory.getNetwork("§§§§§§#BUNGEE#§§§§§§", false);
         	IPortal dest = net.getPortal(destination);
-        	dest.teleportHere(player);
+        	dest.teleportHere(player,null);
         }
 	}
 
@@ -176,7 +176,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 			Network net = Stargate.factory.getNetwork(network, true);
 			
 			IPortal dest = net.getPortal(portalName);
-			dest.teleportHere(player);
+			dest.teleportHere(player,null);
 			} catch(NullPointerException e) {
 				player.sendMessage(Stargate.langManager.getMessage(LangMsg.BUNGEE_EMPTY, true));
 			}

@@ -60,14 +60,7 @@ public class MoveEventListener implements Listener {
 		if (portal == null || !portal.isOpen())
 			return;
 		Player player = event.getPlayer();
-		if (!portal.isOpenFor(player)) {
-			// TODO send deny message
-			portal.teleportHere(player);
-			return;
-		}
-		// TODO check perm's
-		
-		portal.doTeleport(player);
+		portal.onIrisEntrance(player);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

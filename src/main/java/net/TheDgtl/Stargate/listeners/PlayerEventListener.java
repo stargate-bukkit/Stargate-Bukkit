@@ -99,7 +99,7 @@ public class PlayerEventListener implements Listener {
 		if (destination == null) {
 			return;
 		}
-		destination.teleportHere(player);
+		destination.teleportHere(player,null);
 	}
 	
 	/**

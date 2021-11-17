@@ -5,6 +5,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
 
@@ -22,6 +23,7 @@ public abstract class GateStructure {
 	 */
 	public boolean isValidState(Gate.VectorOperation converter, Location topleft) {
 		List<BlockVector> partsPos = getPartsPos();
+		WorldBorder border = topleft.getWorld().getWorldBorder();
 		for (BlockVector partPos : partsPos) {
 			BlockVector inverse = converter.doInverse(partPos);
 			Location partLoc = topleft.clone().add(inverse);
@@ -29,6 +31,11 @@ public abstract class GateStructure {
 					"Checking location (" + partLoc.getBlockX() + "," + partLoc.getBlockY() + "," + partLoc.getBlockZ()
 					+") relative pos[" + inverse.getBlockX() + "," + inverse.getBlockY() + "," + inverse.getBlockZ() + "]");
 			Block block = partLoc.getBlock();
+			
+			if(!border.isInside(partLoc)) {
+				return false;
+			}
+			
 			if (!isValidBlock(partPos, block.getType())) {
 				return false;
 			}

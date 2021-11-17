@@ -50,7 +50,7 @@ public class Gate {
 	 * WARNING: Don't modify this ever, always use .copy()
 	 */
 	BlockVector signPos;
-	private BlockFace facing;
+	public BlockFace facing;
 	private boolean isOpen = false;
 
 	
@@ -273,6 +273,15 @@ public class Gate {
 		this.format = format;
 	}
 
+	public BlockFace getFacing() {
+		return converter.facing;
+	}
+	
+	public Vector getRelativeVector(Location loc) {
+		Vector vec = topLeft.clone().subtract(loc).toVector();
+		return converter.doOperation(vec);
+	}
+	
 	public class VectorOperation {
 		/*
 		 * EVERY OPERATION DOES NOT MUTE/CHANGE THE INITIAL OBJECT!!!!
@@ -283,6 +292,7 @@ public class Gate {
 		boolean flipZAxis = false;
 		MatrixYRotation matrixRotation;
 		private MatrixYRotation matrixInverseRotation;
+		private BlockFace facing;
 		
 		/**
 		 * Compiles a vector operation which matches with the direction of a sign
@@ -311,7 +321,7 @@ public class Gate {
 				throw new InvalidStructure();
 			}
 			
-			
+			this.facing = signFace;
 			matrixRotation = new MatrixYRotation(rotation);
 			matrixInverseRotation = matrixRotation.getInverse();
 			Stargate.log(Level.FINER, "Chose a format rotation of " + rotation + " radians");
@@ -324,13 +334,17 @@ public class Gate {
 		 * @param vector
 		 * @return vector
 		 */
-		public BlockVector doOperation(BlockVector vector) {
-			BlockVector output = matrixRotation.operation(vector);
+		public Vector doOperation(Vector vector) {
+			Vector output = matrixRotation.operation(vector);
 			if (flipZAxis)
 				output.setZ(-output.getZ());
 			return output;
 		}
 
+		public BlockVector doOperation(BlockVector vector) {
+			return doOperation((Vector)vector).toBlockVector();
+		}
+		
 		/**
 		 * Inverse operation of doOperation; A vector operation that rotates around
 		 * origo and flips z axis. Does not permute input vector
@@ -338,11 +352,15 @@ public class Gate {
 		 * @param vector
 		 * @return vector
 		 */
-		public BlockVector doInverse(BlockVector vector) {
-			BlockVector output = vector.clone();
+		public Vector doInverse(Vector vector) {
+			Vector output = vector.clone();
 			if (flipZAxis)
 				output.setZ(-output.getZ());
 			return matrixInverseRotation.operation(output);
+		}
+		
+		public BlockVector doInverse(BlockVector vector) {
+			return doInverse((Vector)vector).toBlockVector();
 		}
 		/**
 		 * A vector rotation limited to n*pi/2 radians rotations. Rotates around y-axis.
@@ -362,12 +380,12 @@ public class Gate {
 				this.rot = rot;
 			}
 			
-			BlockVector operation(BlockVector vector) {
-				BlockVector newVector = new BlockVector();
+			Vector operation(Vector vector) {
+				Vector newVector = new Vector();
 				
-				newVector.setX(sinTheta*vector.getBlockZ() + cosTheta*vector.getBlockX());
-				newVector.setY(vector.getBlockY());
-				newVector.setZ(cosTheta*vector.getBlockZ()-sinTheta*vector.getBlockX());
+				newVector.setX(sinTheta*vector.getZ() + cosTheta*vector.getX());
+				newVector.setY(vector.getY());
+				newVector.setZ(cosTheta*vector.getZ()-sinTheta*vector.getX());
 				return newVector;
 			}
 			

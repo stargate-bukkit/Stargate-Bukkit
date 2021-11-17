@@ -28,6 +28,7 @@ import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFlagFound;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
 import net.TheDgtl.Stargate.gate.Gate;
+import net.TheDgtl.Stargate.gate.Gate.VectorOperation;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
@@ -220,7 +221,6 @@ public abstract class Portal implements IPortal {
 	}
 	
 	public boolean isOpenFor(Player player) {
-		// TODO Auto-generated method stub
 		return ((openFor == null) || (player.getUniqueId() == openFor));
 	}
 
@@ -273,6 +273,18 @@ public abstract class Portal implements IPortal {
 		destination.open(player);
 	}
 
+	@Override
+	public void onIrisEntrance(Player player) {
+		if (!isOpenFor(player)) {
+			// TODO send deny message
+			teleportHere(player,gate.facing);
+			return;
+		}
+		// TODO check perm's
+		
+		doTeleport(player);
+	}
+	
 	public Gate getGate() {
 		return gate;
 	}
@@ -281,8 +293,38 @@ public abstract class Portal implements IPortal {
 		this.gate = gate;
 	}
 	
-	public void teleportHere(Player player) {
-		Location exit = getExit();
+	/**
+	 * The {@link Vector#angle(Vector)} function is not directional, meaning if you exchange position with vectors,
+	 * there will be no difference in angle. The behaviour that is needed in some portal methods is for the angle to
+	 * change sign if the vectors change places.
+	 * 
+	 * NOTE: ONLY ACCOUNTS FOR Y AXIS ROTATIONS
+	 * @param vector1 normalized
+	 * @param vector2 normalized
+	 * @return angle between the two vectors
+	 */
+	private double directionalAngleOperator(Vector vector1, Vector vector2) {
+		return Math.atan2(vector1.clone().crossProduct(vector2).getY(), vector1.dot(vector2));
+	}
+	
+	@Override
+	public void teleportHere(Player player, BlockFace originFacing) {
+		Location exit = getExit().clone().add(new Vector(0.5,0,0.5));
+		if(originFacing != null) {
+			Vector originGateDirection =  originFacing.getDirection();
+			
+			Vector playerDirection = player.getLocation().getDirection();
+			BlockFace portalFacing = gate.facing.getOppositeFace();
+			if( flags.contains(PortalFlag.BACKWARDS) ) 
+				portalFacing = portalFacing.getOppositeFace();
+			double diffAngle = directionalAngleOperator(originGateDirection, portalFacing.getDirection());
+			Vector endDirection = playerDirection.rotateAroundY(diffAngle);
+			
+			exit.setDirection(endDirection);
+		} else {
+			exit.setDirection(gate.facing.getDirection());
+		}
+
 		player.teleport(exit);
 	}
 	
@@ -293,7 +335,15 @@ public abstract class Portal implements IPortal {
 			player.teleport(getExit());
 			return;
 		}
-		desti.teleportHere(player);
+		/*
+		 * If player enters from back, then take that into consideration
+		 */
+		BlockFace enterFacing = gate.facing;
+		Vector vec = gate.getRelativeVector(player.getPlayer().getLocation().add(new Vector(-0.5,0,-0.5)));
+		if(vec.getX() > 0) {
+			enterFacing = enterFacing.getOppositeFace();
+		}
+		desti.teleportHere(player,enterFacing);
 		desti.close();
 		close();
 	}

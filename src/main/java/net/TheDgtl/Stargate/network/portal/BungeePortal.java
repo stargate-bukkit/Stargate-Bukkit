@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.logging.Level;
 
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -87,7 +88,7 @@ public class BungeePortal extends Portal{
 		}
 		
 		 @Override
-		 public void teleportHere(Player player) {
+		 public void teleportHere(Player player, BlockFace originFacing) {
 			 Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
 				try {
 					ByteArrayOutputStream bao = new ByteArrayOutputStream();

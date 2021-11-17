@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -23,7 +24,7 @@ public interface IPortal {
 
 	boolean isOpenFor(Player player);
 
-	void teleportHere(Player player);
+	void teleportHere(Player player, BlockFace originFacing);
 
 	void doTeleport(Player player);
 
@@ -35,6 +36,8 @@ public interface IPortal {
 
 	void onButtonClick(PlayerInteractEvent event);
 
+	void onIrisEntrance(Player player);
+	
 	void open(Player player);
 
 	String getName();
