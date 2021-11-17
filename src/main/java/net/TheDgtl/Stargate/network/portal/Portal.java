@@ -12,6 +12,7 @@ import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
@@ -220,8 +221,13 @@ public abstract class Portal implements IPortal {
 		openFor = null;
 	}
 	
-	public boolean isOpenFor(Player player) {
-		return ((openFor == null) || (player.getUniqueId() == openFor));
+	@Override
+	public boolean isOpenFor(Entity target) {
+		/*
+		 * TODO: temporary test solution to test vehicles
+		 */
+		return true;
+		//return ((openFor == null) || (target.getUniqueId() == openFor));
 	}
 
 	public Location getExit() {
@@ -274,15 +280,15 @@ public abstract class Portal implements IPortal {
 	}
 
 	@Override
-	public void onIrisEntrance(Player player) {
-		if (!isOpenFor(player)) {
+	public void onIrisEntrance(Entity target) {
+		if (!isOpenFor(target)) {
 			// TODO send deny message
-			teleportHere(player,gate.facing);
+			teleportHere(target,gate.facing);
 			return;
 		}
 		// TODO check perm's
-		
-		doTeleport(player);
+		Stargate.log(Level.FINEST, "Trying to teleport entity");
+		doTeleport(target);
 	}
 	
 	public Gate getGate() {
@@ -308,7 +314,7 @@ public abstract class Portal implements IPortal {
 	}
 	
 	@Override
-	public void teleportHere(Player player, BlockFace originFacing) {
+	public void teleportHere(Entity player, BlockFace originFacing) {
 		Location exit = getExit().clone().add(new Vector(0.5,0,0.5));
 		if(originFacing != null) {
 			Vector originGateDirection =  originFacing.getDirection();
@@ -328,22 +334,23 @@ public abstract class Portal implements IPortal {
 		player.teleport(exit);
 	}
 	
-	public void doTeleport(Player player) {
+	@Override
+	public void doTeleport(Entity target) {
 		IPortal desti = getFinalDesti();
 		if(desti == null) {
-			player.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
-			player.teleport(getExit());
+			target.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
+			target.teleport(getExit());
 			return;
 		}
 		/*
 		 * If player enters from back, then take that into consideration
 		 */
 		BlockFace enterFacing = gate.facing;
-		Vector vec = gate.getRelativeVector(player.getPlayer().getLocation().add(new Vector(-0.5,0,-0.5)));
+		Vector vec = gate.getRelativeVector(target.getLocation().add(new Vector(-0.5,0,-0.5)));
 		if(vec.getX() > 0) {
 			enterFacing = enterFacing.getOppositeFace();
 		}
-		desti.teleportHere(player,enterFacing);
+		desti.teleportHere(target,enterFacing);
 		desti.close();
 		close();
 	}

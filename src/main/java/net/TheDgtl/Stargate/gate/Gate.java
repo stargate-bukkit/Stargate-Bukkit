@@ -26,7 +26,6 @@ import net.TheDgtl.Stargate.actions.BlockSetAction;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.InvalidStructure;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.SGLocation;
 
 /**
@@ -219,9 +218,9 @@ public class Gate {
 		for (SGLocation loc : locs) {
 			Block blk = loc.getLocation().getBlock();
 			blk.setBlockData(blockData);
-			
-			if (mat == Material.END_GATEWAY) {
-                // force a location to prevent exit gateway generation
+			switch(mat) {
+			case END_GATEWAY:
+				// force a location to prevent exit gateway generation
                 EndGateway gateway = (EndGateway) blk.getState();
                 // https://github.com/stargate-bukkit/Stargate-Bukkit/issues/36
                 gateway.setAge(-9223372036854775808L);
@@ -230,7 +229,10 @@ public class Gate {
                       gateway.setExactTeleport(true);
                 }
                 gateway.update(false, false);
-            }
+                break;
+			default:
+				break;
+			}
 		}
 	}
 	

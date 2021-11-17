@@ -6,12 +6,15 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.PluginMessageRecipient;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -45,8 +48,16 @@ public class VirtualPortal implements IPortal {
 	}
 
 	@Override
-	public void teleportHere(Player player, BlockFace originFacing) {
+	/**
+	 * TODO: implement vehicle compatibility.
+	 */
+	public void teleportHere(Entity target, BlockFace originFacing) {
 		Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
+		if(!(target instanceof Player)) {
+			return;
+		}
+		Player player = (Player)target;
+		
 		try {
 			ByteArrayOutputStream bao = new ByteArrayOutputStream();
             DataOutputStream msgData = new DataOutputStream(bao);
@@ -74,7 +85,7 @@ public class VirtualPortal implements IPortal {
             DataOutputStream msgData = new DataOutputStream(bao);
             msgData.writeUTF(Channel.PLAYER_CONNECT.getChannel());
             msgData.writeUTF(server);
-    		player.sendPluginMessage(plugin, Channel.BUNGEE.getChannel(), bao.toByteArray());
+            player.sendPluginMessage(plugin, Channel.BUNGEE.getChannel(), bao.toByteArray());
 		} catch (IOException ex) {
              Stargate.log(Level.SEVERE,"[Stargate] Error sending BungeeCord connect packet");
              ex.printStackTrace();
@@ -143,7 +154,7 @@ public class VirtualPortal implements IPortal {
 	}
 
 	@Override
-	public void doTeleport(Player player) {
+	public void doTeleport(Entity player) {
 	}
 
 	@Override
@@ -152,7 +163,7 @@ public class VirtualPortal implements IPortal {
 	}
 
 	@Override
-	public boolean isOpenFor(Player player) {
+	public boolean isOpenFor(Entity player) {
 		return false;
 	}
 
@@ -171,6 +182,6 @@ public class VirtualPortal implements IPortal {
 	}
 
 	@Override
-	public void onIrisEntrance(Player player) {}
+	public void onIrisEntrance(Entity player) {}
 	
 }

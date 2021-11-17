@@ -7,6 +7,7 @@ import java.util.Iterator;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -22,11 +23,11 @@ public interface IPortal {
 
 	boolean isOpen();
 
-	boolean isOpenFor(Player player);
+	boolean isOpenFor(Entity target);
 
-	void teleportHere(Player player, BlockFace originFacing);
+	void teleportHere(Entity target, BlockFace originFacing);
 
-	void doTeleport(Player player);
+	void doTeleport(Entity target);
 
 	void drawControll();
 
@@ -36,7 +37,7 @@ public interface IPortal {
 
 	void onButtonClick(PlayerInteractEvent event);
 
-	void onIrisEntrance(Player player);
+	void onIrisEntrance(Entity player);
 	
 	void open(Player player);
 
