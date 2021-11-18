@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -18,10 +19,6 @@ import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
-import org.bukkit.metadata.MetadataValueAdapter;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.LangMsg;
@@ -31,10 +28,8 @@ import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.InvalidStructure;
 import net.TheDgtl.Stargate.exception.NameError;
-import net.TheDgtl.Stargate.exception.NoFlagFound;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
 import net.TheDgtl.Stargate.gate.Gate;
-import net.TheDgtl.Stargate.gate.Gate.VectorOperation;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
@@ -65,6 +60,7 @@ public abstract class Portal implements IPortal {
 	UUID openFor;
 	IPortal destination = null;
 	private long openTime = -1;
+	final static private double PORTAL_EXIT_SPEED_MODIFIER = 1; 
 	
 
 	Portal(Network network, String name, Block sign, EnumSet<PortalFlag> flags)
@@ -332,8 +328,7 @@ public abstract class Portal implements IPortal {
 			double diffAngle = directionalAngleOperator(originGateDirection, portalFacing.getDirection());
 			Vector endDirection = playerDirection.rotateAroundY(diffAngle);
 			exit.setDirection(endDirection);
-			targetVelocity.rotateAroundY(diffAngle);
-			
+			targetVelocity.rotateAroundY(diffAngle).multiply(PORTAL_EXIT_SPEED_MODIFIER);
 			
 			if(target instanceof PoweredMinecart) {
 				// TODO: NOT Currently implemented, does not seem to be a accesible way to fix this using spigot api
@@ -343,8 +338,20 @@ public abstract class Portal implements IPortal {
 			exit.setDirection(gate.facing.getDirection());
 		}
 		betterTeleport(target,exit);
-		target.setVelocity(targetVelocity);
-		
+		PopulatorAction action = new PopulatorAction() {
+
+			@Override
+			public void run(boolean forceEnd) {
+				target.setVelocity(targetVelocity);
+			}
+
+			@Override
+			public boolean isFinished() {
+				return true;
+			}
+			
+		};
+		Stargate.syncTickPopulator.addAction(action);
 	}
 	
 	private void betterTeleport(Entity target, Location loc) {

@@ -126,6 +126,7 @@ public class BlockEventListener implements Listener {
 				return;
 			}
 			selectedNet.addPortal(portal,true);
+			selectedNet.updatePortals();
 			Stargate.log(Level.FINE, "A Gateformat matches");
 			player.sendMessage(Stargate.langManager.getMessage(LangMsg.CREATE, false));
 		} catch (NoFormatFound e) {
