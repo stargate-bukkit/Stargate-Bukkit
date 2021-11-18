@@ -331,7 +331,44 @@ public abstract class Portal implements IPortal {
 			exit.setDirection(gate.facing.getDirection());
 		}
 
-		player.teleport(exit);
+		betterTeleport(player,exit);
+	}
+	
+	private void betterTeleport(Entity target, Location loc) {
+		/*
+		 * Latter algorithm works well, 
+		 */
+		if(target.getVehicle() != null) {
+			betterTeleport(target.getVehicle(),loc);
+			return;
+		}
+		
+		List<Entity> passangers = target.getPassengers();
+		if(target.eject()) {
+			Stargate.log(Level.FINEST, "Ejected all passangers, " + target.getPassengers().size() + " left");
+			for(Entity passanger : passangers) {
+				if(passanger instanceof Player)
+					continue;
+				betterTeleport(passanger, loc);
+				PopulatorAction action = new PopulatorAction() {
+					
+					@Override
+					public void run(boolean forceEnd) {
+						target.addPassenger(passanger);
+						if(passanger instanceof Player) {
+							Player player = (Player) passanger;
+						}
+							
+					}
+					@Override
+					public boolean isFinished() {
+						return true;
+					}
+				};
+				Stargate.syncTickPopulator.addAction(action);
+			}
+		}
+		target.teleport(loc);
 	}
 	
 	@Override
@@ -339,7 +376,7 @@ public abstract class Portal implements IPortal {
 		IPortal desti = getFinalDesti();
 		if(desti == null) {
 			target.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
-			target.teleport(getExit());
+			betterTeleport(target,getExit());
 			return;
 		}
 		/*

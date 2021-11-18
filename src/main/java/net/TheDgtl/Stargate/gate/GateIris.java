@@ -57,7 +57,7 @@ public class GateIris extends GateStructure{
 
 	@Override
 	protected boolean isValidBlock(BlockVector vec, Material mat) {
-		return irisClosed.contains(mat);
+		return irisClosed.contains(mat) || irisOpen.contains(mat);
 	}
 	
 	public Material getMat(boolean isOpen) {

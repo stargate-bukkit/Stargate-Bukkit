@@ -92,14 +92,12 @@ public class MoveEventListener implements Listener {
 				&& from.getBlockZ() == to.getBlockZ()) {
 			return;
 		}
-		Stargate.log(Level.FINEST, " Stargate vehicle moved one block");
 		
 		IPortal portal = Network.getPortal(to, GateStructureType.IRIS);
 		if (portal == null || !portal.isOpen())
 			return;
 		Stargate.log(Level.FINEST, " Portal was found (norwegian accent)");
 		Entity target = event.getVehicle();
-		Stargate.log(Level.FINEST, target.getCustomName());
 		portal.onIrisEntrance(target);
 	}
 }
