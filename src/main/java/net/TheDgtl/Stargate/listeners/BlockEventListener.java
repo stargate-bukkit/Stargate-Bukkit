@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.listeners;
 import java.util.EnumSet;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
@@ -88,7 +89,6 @@ public class BlockEventListener implements Listener {
 		if (network.isBlank())
 			network = (String) Stargate.getSetting(Setting.DEFAULT_NET);
 		boolean hasPerm = true;
-		boolean isPersonal = false;
 		
 		if(network.endsWith("]") && network.startsWith("[")) {
 			network = network.substring(1, network.length()-1);
@@ -99,24 +99,22 @@ public class BlockEventListener implements Listener {
 			network = "§§§§§§#BUNGEE#§§§§§§";
 		}
 		
-		if (!permMngr.canCreateInNetwork(network)) {
-			if (!permMngr.canCreateInNetwork(player.getName())) {
-				hasPerm = false;
-			}
-			network = player.getName();
-			isPersonal = true;
+		/*
+		 * TODO: PERMISSION CHECK
+		 */
+		
+		if(player.getName().equals(network))
+			flags.add(PortalFlag.PERSONAL_NETWORK);
+		
+		
+		Network selectedNet;
+		try {
+			selectedNet = selectNetwork(network,flags);
+		} catch (NameError e1) {
+			player.sendMessage(Stargate.langManager.getMessage(e1.getMsg(), true));
+			return;
 		}
 		
-		try {
-			Stargate.factory.createNetwork(network, flags.contains(PortalFlag.FANCY_INTERSERVER));
-		} catch (NameError e1) {
-			LangMsg msg= e1.getMsg();
-			if(msg != null) {
-				player.sendMessage(Stargate.langManager.getMessage(e1.getMsg(), true));
-				return;
-			}
-		}
-		Network selectedNet = Stargate.factory.getNetwork(network, flags.contains(PortalFlag.FANCY_INTERSERVER));
 
 		try {
 			IPortal portal = Portal.createPortalFromSign(selectedNet, lines, block, flags);
@@ -136,6 +134,20 @@ public class BlockEventListener implements Listener {
 		} catch (NameError e) {
 			player.sendMessage(Stargate.langManager.getMessage(e.getMsg(), true));
 		}
+	}
+	
+	private Network selectNetwork(String name, EnumSet<PortalFlag> flags) throws NameError {
+		try {
+			if(flags.contains(PortalFlag.PERSONAL_NETWORK))
+				name = Bukkit.getPlayer(name).getUniqueId().toString();
+			Stargate.factory.createNetwork(name, flags);
+		} catch (NameError e1) {
+			LangMsg msg= e1.getMsg();
+			if(msg != null) {
+				throw e1;
+			}
+		}
+		return Stargate.factory.getNetwork(name, flags.contains(PortalFlag.FANCY_INTERSERVER));
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

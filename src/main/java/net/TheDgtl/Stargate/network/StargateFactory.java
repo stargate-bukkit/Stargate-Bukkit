@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -143,7 +144,7 @@ public class StargateFactory {
 			}
 			
 			try {
-				createNetwork(targetNet, isBungee);
+				createNetwork(targetNet, flags);
 			} catch (NameError e) {}
 			Network net = getNetwork(targetNet, isBungee);
 			
@@ -222,20 +223,22 @@ public class StargateFactory {
 		}
 	}
 	
-	public void createNetwork(String netName, boolean isBungee) throws NameError {
-		if (netExists(netName, isBungee))
+	public void createNetwork(String netName, EnumSet<PortalFlag> flags) throws NameError {
+		if (netExists(netName, flags.contains(PortalFlag.FANCY_INTERSERVER)))
 			throw new NameError(null);
-		if (isBungee) {
+		if (flags.contains(PortalFlag.FANCY_INTERSERVER)) {
 			InterserverNetwork net = new InterserverNetwork(netName, database, bungeeDatabase, bungeeSqlMaker);
-			HashMap<String, InterserverNetwork> map;
-			map = bungeeNetList;
-			map.put(netName, net);
+			bungeeNetList.put(netName, net);
 			return;
+		} 
+		Network net;
+		if(flags.contains(PortalFlag.PERSONAL_NETWORK)) {
+			UUID id = UUID.fromString(netName);
+			net = new PersonalNetwork(id, database, bungeeSqlMaker);
+		} else {
+			net = new Network(netName,database,localSqlMaker);
 		}
-		Network net = new Network(netName,database,localSqlMaker);
-		HashMap<String, Network> map;
-		map = networkList;
-		map.put(netName, net);
+		networkList.put(netName, net);
 	}
 	
 	public boolean netExists(String netName, boolean isBungee) {
@@ -303,7 +306,7 @@ public class StargateFactory {
 
 		if (isVirtual) {
 			try {
-				createNetwork(netName,true);
+				createNetwork(netName,flags);
 			} catch(NameError e) {}
 			
 			InterserverNetwork network=  (InterserverNetwork) getNetwork(netName, true);
