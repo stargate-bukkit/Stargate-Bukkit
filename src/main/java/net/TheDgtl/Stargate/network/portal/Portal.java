@@ -14,9 +14,14 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.metadata.MetadataValueAdapter;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.LangMsg;
@@ -287,7 +292,7 @@ public abstract class Portal implements IPortal {
 			return;
 		}
 		// TODO check perm's
-		Stargate.log(Level.FINEST, "Trying to teleport entity");
+		Stargate.log(Level.FINEST, "Trying to teleport entity, initial velocity: " + target.getVelocity());
 		doTeleport(target);
 	}
 	
@@ -314,29 +319,37 @@ public abstract class Portal implements IPortal {
 	}
 	
 	@Override
-	public void teleportHere(Entity player, BlockFace originFacing) {
+	public void teleportHere(Entity target, BlockFace originFacing) {
+		Vector targetVelocity = target.getVelocity().clone();
 		Location exit = getExit().clone().add(new Vector(0.5,0,0.5));
 		if(originFacing != null) {
 			Vector originGateDirection =  originFacing.getDirection();
 			
-			Vector playerDirection = player.getLocation().getDirection();
+			Vector playerDirection = target.getLocation().getDirection();
 			BlockFace portalFacing = gate.facing.getOppositeFace();
 			if( flags.contains(PortalFlag.BACKWARDS) ) 
 				portalFacing = portalFacing.getOppositeFace();
 			double diffAngle = directionalAngleOperator(originGateDirection, portalFacing.getDirection());
 			Vector endDirection = playerDirection.rotateAroundY(diffAngle);
-			
 			exit.setDirection(endDirection);
+			targetVelocity.rotateAroundY(diffAngle);
+			
+			
+			if(target instanceof PoweredMinecart) {
+				// TODO: NOT Currently implemented, does not seem to be a accesible way to fix this using spigot api
+			}
+			
 		} else {
 			exit.setDirection(gate.facing.getDirection());
 		}
-
-		betterTeleport(player,exit);
+		betterTeleport(target,exit);
+		target.setVelocity(targetVelocity);
+		
 	}
 	
 	private void betterTeleport(Entity target, Location loc) {
 		/*
-		 * Latter algorithm works well, 
+		 * To teleport the whole vessel, regardless of what entity triggered the initial event
 		 */
 		if(target.getVehicle() != null) {
 			betterTeleport(target.getVehicle(),loc);
@@ -345,7 +358,7 @@ public abstract class Portal implements IPortal {
 		
 		List<Entity> passangers = target.getPassengers();
 		if(target.eject()) {
-			Stargate.log(Level.FINEST, "Ejected all passangers, " + target.getPassengers().size() + " left");
+			Stargate.log(Level.FINEST, "Ejected all passangers");
 			for(Entity passanger : passangers) {
 				if(passanger instanceof Player)
 					continue;
@@ -355,10 +368,6 @@ public abstract class Portal implements IPortal {
 					@Override
 					public void run(boolean forceEnd) {
 						target.addPassenger(passanger);
-						if(passanger instanceof Player) {
-							Player player = (Player) passanger;
-						}
-							
 					}
 					@Override
 					public boolean isFinished() {

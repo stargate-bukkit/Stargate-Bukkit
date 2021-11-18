@@ -45,6 +45,9 @@ public class PlayerEventListener implements Listener {
 		if (block == null)
 			return;
 		Action action = event.getAction();
+		if(action == Action.RIGHT_CLICK_BLOCK && event.getPlayer().isSneaking())
+			return;
+		
 		// TODO material optimisation?
 		IPortal portal = Network.getPortal(block.getLocation(), GateStructureType.CONTROLL);
 		if (portal == null) {

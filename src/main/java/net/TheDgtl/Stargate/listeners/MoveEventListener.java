@@ -3,10 +3,12 @@ package net.TheDgtl.Stargate.listeners;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -65,29 +67,19 @@ public class MoveEventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerMove(@NotNull PlayerMoveEvent event) {
-		Location from = event.getFrom();
-		Location to = event.getTo();
-		// Check if player really moved
-		if (to == null || from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY()
-				&& from.getBlockZ() == to.getBlockZ()) {
-			return;
-		}
-		IPortal portal = Network.getPortal(to, GateStructureType.IRIS);
-
-		if (portal == null || !portal.isOpen())
-			return;
-		Player player = event.getPlayer();
-		portal.onIrisEntrance(player);
+		onAnyMove(event.getPlayer(),event.getTo(),event.getFrom());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onVehicleMove(VehicleMoveEvent event) {
-		// same thing as for player
-		// low priority implementation
-		Location from = event.getFrom();
-		Location to = event.getTo();
-		
-		// Check if Vehicle really moved
+		//TODO: not currently implemented
+		if(event.getVehicle() instanceof PoweredMinecart)
+			return;
+		onAnyMove(event.getVehicle(),event.getTo(),event.getFrom());
+	}
+	
+	private void onAnyMove(Entity target, Location to, Location from) {
+		// Check if entity moved one block (its only possible to have entered a portal if that's the case)
 		if (to == null || from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY()
 				&& from.getBlockZ() == to.getBlockZ()) {
 			return;
@@ -97,7 +89,11 @@ public class MoveEventListener implements Listener {
 		if (portal == null || !portal.isOpen())
 			return;
 		Stargate.log(Level.FINEST, " Portal was found (norwegian accent)");
-		Entity target = event.getVehicle();
+		
+		/*
+		 * Real velocity does not seem to work
+		 */
+		target.setVelocity(to.toVector().subtract(from.toVector()));
 		portal.onIrisEntrance(target);
 	}
 }
