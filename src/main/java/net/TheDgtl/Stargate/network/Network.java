@@ -128,6 +128,7 @@ public class Network {
 		if (!isOverrideHidden) {
 			HashSet<String> removeList = new HashSet<>();
 			for (String portalName : tempPortalList) {
+				//TODO PERMS: instead of checking this, check if re 
 				if (getPortal(portalName).hasFlag(PortalFlag.HIDDEN))
 					removeList.add(portalName);
 			}

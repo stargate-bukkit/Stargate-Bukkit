@@ -54,8 +54,8 @@ public class FixedPortal extends Portal{
 	}
 	
 	@Override
-	public void close() {
-		super.close();
+	public void close(boolean force) {
+		super.close(force);
 		this.openFor = null;
 	}
 }

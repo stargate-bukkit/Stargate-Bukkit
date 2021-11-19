@@ -23,6 +23,7 @@ import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.event.StargateDestroyEvent;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
@@ -36,6 +37,7 @@ import net.TheDgtl.Stargate.network.portal.PortalFlag;
 public class BlockEventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
+		
 		// TODO Have a list of all possible portalMaterials and skip if not any of those
 		Location loc = event.getBlock().getLocation();
 		IPortal portal = Network.getPortal(loc, GateStructureType.FRAME);
@@ -44,10 +46,24 @@ public class BlockEventListener implements Listener {
 			StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, event.getPlayer(), false, "", cost);
 			PermissionManager permMngr = new PermissionManager(event.getPlayer());
 			if (permMngr.hasPerm(dEvent)) {
+				PopulatorAction action = new PopulatorAction() {
 
-				String msg = Stargate.langManager.getMessage(LangMsg.DESTROY, false);
-				event.getPlayer().sendMessage(msg);
-				portal.destroy();
+					@Override
+					public void run(boolean forceEnd) {
+						String msg = Stargate.langManager.getMessage(LangMsg.DESTROY, false);
+						event.getPlayer().sendMessage(msg);
+						
+						portal.destroy();
+						Stargate.log(Level.FINEST, "Broke the portal");
+					}
+
+					@Override
+					public boolean isFinished() {
+						return true;
+					}
+					
+				};
+				Stargate.syncTickPopulator.addAction(action);
 				return;
 			}
 
@@ -57,6 +73,7 @@ public class BlockEventListener implements Listener {
 			return;
 		}
 		if (Network.getPortal(loc, GateStructureType.CONTROLL) != null) {
+			Stargate.log(Level.FINEST, " Canceled sign break event");
 			event.setCancelled(true);
 		}
 	}

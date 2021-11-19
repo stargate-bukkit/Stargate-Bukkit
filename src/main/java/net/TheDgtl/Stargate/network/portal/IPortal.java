@@ -31,7 +31,7 @@ public interface IPortal {
 
 	void drawControll();
 
-	void close();
+	void close(boolean force);
 
 	public void onSignClick(Action action, Player player);
 

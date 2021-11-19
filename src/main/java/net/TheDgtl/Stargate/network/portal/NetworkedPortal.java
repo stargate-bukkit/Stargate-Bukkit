@@ -86,9 +86,9 @@ public class NetworkedPortal extends Portal {
 	}
 	
 	@Override
-	public void close() {
+	public void close(boolean force) {
 		this.selectedDesti = NO_DESTI_SELECTED;
-		super.close();
+		super.close(force);
 	}
 	
 	@Override

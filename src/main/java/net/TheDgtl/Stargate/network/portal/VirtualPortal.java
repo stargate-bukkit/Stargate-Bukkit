@@ -95,13 +95,10 @@ public class VirtualPortal implements IPortal {
 	}
 
 	/**
-	 * TODO not implemented
+	 * TODO not implemented, probably never will / as it would be overusing much needed bungeecord message data
 	 */
 	@Override
-	public void close() {
-		// TODO Auto-generated method stub
-
-	}
+	public void close(boolean force) {}
 
 	@Override
 	public String getName() {

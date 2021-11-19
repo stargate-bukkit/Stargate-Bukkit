@@ -26,6 +26,8 @@ import net.TheDgtl.Stargate.actions.BlockSetAction;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.InvalidStructure;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.SGLocation;
 
 /**
@@ -48,9 +50,11 @@ public class Gate {
 	/**
 	 * WARNING: Don't modify this ever, always use .copy()
 	 */
-	BlockVector signPos;
+	public BlockVector signPos;
+	public BlockVector buttonPos;
 	public BlockFace facing;
 	private boolean isOpen = false;
+	private Portal portal;
 
 	
 	
@@ -67,9 +71,10 @@ public class Gate {
 	 * @throws InvalidStructure
 	 * @throws GateConflict
 	 */
-	public Gate(GateFormat format, Location loc, BlockFace signFace) throws InvalidStructure, GateConflict {
+	public Gate(GateFormat format, Location loc, BlockFace signFace, Portal portal) throws InvalidStructure, GateConflict {
 		this.setFormat(format);
 		facing = signFace;
+		this.portal = portal;
 		converter = new VectorOperation(signFace);
 
 		if (matchesFormat(loc))
@@ -103,7 +108,19 @@ public class Gate {
 				if(isGateConflict()) {
 					throw new GateConflict();
 				}
+				/*
+				 * Just a cheat to exclude the sign location, and determine the position of the
+				 * button. Note that this will have weird behaviour if there's more than 3
+				 * controllblocks
+				 */
 				signPos = controlBlock;
+				for (BlockVector buttonVec : getFormat().getControllBlocks()) {
+					if (signPos == buttonVec)
+						continue;
+					buttonPos = buttonVec;
+					break;
+				}
+						
 				return true;
 			}
 		}
@@ -126,7 +143,7 @@ public class Gate {
 	 * @param signLines an array with 4 elements, representing each line of a sign
 	 */
 	public void drawControll(String[] signLines, boolean isDrawButton) {
-		Location signLoc = topLeft.clone().add(converter.doInverse(signPos));
+		Location signLoc = getLocation(signPos);
 		BlockState signState = signLoc.getBlock().getState();
 		if (!(signState instanceof Sign)) {
 			Stargate.log(Level.FINE, "Could not find sign at position " + signLoc.toString());
@@ -140,35 +157,22 @@ public class Gate {
 		new BlockSetAction(Stargate.syncTickPopulator, sign, true);
 		if(!isDrawButton)
 			return;
-		/*
-		 * Just a cheat to exclude the sign location, and determine the position of the
-		 * button. Note that this will have weird behaviour if there's more than 3
-		 * controllblocks
-		 */
-		Location buttonLoc = topLeft.clone();
-		for (BlockVector buttonVec : getFormat().getControllBlocks()) {
-			if (signPos == buttonVec)
-				continue;
-			buttonLoc.add(converter.doInverse(buttonVec));
-			break;
-		}
-		/*
-		 * Set a button with the same facing as the sign
-		 */
+		
+		Location buttonLoc = getLocation(buttonPos);
 		Material buttonMat = getButtonMaterial();
         Directional buttonData = (Directional) Bukkit.createBlockData(buttonMat);
-        buttonData.setFacing(getButtonFacing(buttonMat,(Directional) sign.getBlockData()));
+        buttonData.setFacing(facing);
         
 		buttonLoc.getBlock().setBlockData(buttonData);
 		
 	}
 	
 	public Location getSignLoc() {
-		return topLeft.clone().add(converter.doInverse(signPos));
+		return getLocation(signPos);
 	}
 	
-	private BlockFace getButtonFacing(Material buttonMat, Directional signDirection) {
-		return signDirection.getFacing();
+	public Location getButtonLoc() {
+		return getLocation(buttonPos);
 	}
 	
 	private Material getButtonMaterial() {
@@ -191,12 +195,23 @@ public class Gate {
 	 */
 	public List<SGLocation> getLocations(GateStructureType structKey) {
 		List<SGLocation> output = new ArrayList<>();
+		
 		for(BlockVector vec : getFormat().portalParts.get(structKey).getPartsPos()) {
-			Location loc = topLeft.clone().add(converter.doInverse(vec));
+			Location loc = getLocation(vec);
 			output.add(new SGLocation(loc));
+		}
+		
+		if(structKey == GateStructureType.CONTROLL && portal.hasFlag(PortalFlag.ALWAYS_ON)) {
+			Location buttonLoc = getLocation(buttonPos);
+			output.remove(new SGLocation(buttonLoc));
 		}
 		return output;
 	}
+	
+	private Location getLocation(Vector vec) {
+		return topLeft.clone().add(converter.doInverse(vec));
+	}
+	
 	/**
 	 * Set the iris mat, note that nether portals have to be oriented in the right axis, and 
 	 * force a location to prevent exit gateway generation.
@@ -249,14 +264,9 @@ public class Gate {
 		setOpen(false);
 	}
 
-	public Location getExit(boolean isBackwards) {
+	public Location getExit() {
 		BlockVector formatExit = getFormat().getExit();
-		Location exit = topLeft.clone().add(converter.doInverse(formatExit));
-		
-		Vector offsett = facing.getDirection();
-		if(isBackwards)
-			return exit.subtract(offsett);
-		return exit.add(offsett);
+		return getLocation(formatExit);
 	}
 	
 	public boolean isOpen() {

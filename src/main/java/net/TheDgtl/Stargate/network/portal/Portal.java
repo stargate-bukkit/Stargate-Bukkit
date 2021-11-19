@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -119,7 +118,7 @@ public abstract class Portal implements IPortal {
 		for (GateFormat gateFormat : gateFormats) {
 			Stargate.log(Level.FINE, "--------- " + gateFormat.name + " ---------");
 			try {
-				return new Gate(gateFormat, signLocation, signFacing);
+				return new Gate(gateFormat, signLocation, signFacing, this);
 			} catch (InvalidStructure e) {
 			}
 		}
@@ -157,15 +156,18 @@ public abstract class Portal implements IPortal {
 	 * Remove all information stored on this gate
 	 */
 	public void destroy() {
+		Stargate.log(Level.FINEST, "PING 1");
+		close(true);
 		this.network.removePortal(this,true);
 		String[] lines = new String[] { name, "", "", "" };
 		getGate().drawControll(lines, false);
+		
 		for (GateStructureType formatType : GateStructureType.values()) {
 			for (SGLocation loc : this.getGate().getLocations(formatType)) {
+				Stargate.log(Level.FINEST, "Unregestering type: " + formatType + " location, at: " + loc);
 				network.unRegisterLocation(formatType, loc);
 			}
 		}
-		close();
 		network.updatePortals();
 	}
 
@@ -211,11 +213,12 @@ public abstract class Portal implements IPortal {
 	 */
 	public void close(long relatedOpenTime) {
 		if (relatedOpenTime == openTime)
-			close();
+			close(false);
 	}
 
-	public void close() {
-		if(hasFlag(PortalFlag.ALWAYS_ON))
+	@Override
+	public void close(boolean force) {
+		if(hasFlag(PortalFlag.ALWAYS_ON) && !force)
 			return;
 		getGate().close();
 		drawControll();
@@ -232,7 +235,10 @@ public abstract class Portal implements IPortal {
 	}
 
 	public Location getExit() {
-		return gate.getExit(hasFlag(PortalFlag.BACKWARDS));
+		BlockFace facing =  gate.facing;
+		if(flags.contains(PortalFlag.BACKWARDS))
+			facing = facing.getOppositeFace();
+		return gate.getExit().add(facing.getDirection());
 	}
 
 	public void setOverrideDesti(IPortal desti) {
@@ -258,7 +264,7 @@ public abstract class Portal implements IPortal {
 	public void onButtonClick(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		if(this.hasFlag(PortalFlag.IRON_DOOR) && event.useInteractedBlock() == Result.DENY) {
-			Block exitBlock = gate.getExit(hasFlag(PortalFlag.BACKWARDS)).getBlock();
+			Block exitBlock = gate.getExit().getBlock();
 			if(exitBlock.getType() == Material.IRON_DOOR) {
 				Directional signDirection = (Directional)gate.getSignLoc().getBlock().getBlockData();
 				Directional doorDirection = (Directional)exitBlock.getBlockData();
@@ -404,8 +410,8 @@ public abstract class Portal implements IPortal {
 			enterFacing = enterFacing.getOppositeFace();
 		}
 		desti.teleportHere(target,enterFacing);
-		desti.close();
-		close();
+		desti.close(false);
+		close(false);
 	}
 	
 	public static IPortal createPortalFromSign(Network net, String[] lines, Block block, EnumSet<PortalFlag> flags)
