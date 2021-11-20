@@ -45,12 +45,15 @@ import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.LangMsg;
-
+/**
+ * Deals with bungee plugin messages
+ * @author Thorin
+ */
 public class StargateBungeePluginMessageListener implements PluginMessageListener {
 
 	Stargate stargate;
 	/**
-	 * TODO
+	 * 
 	 * - Send plugin enable message to all servers
 	 * - Send all loaded bungeeportals to all servers
 	 */

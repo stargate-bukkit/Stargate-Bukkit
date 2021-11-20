@@ -10,21 +10,154 @@ commands:
     description: Used to reload the plugin. Console use only.
     usage: /<command> reload - Used to reload the plugin. Console use only.
 permissions:
-  stargate.use:
-    description: Allow use of all gates linking to any world in any network
-    default: true
-  stargate.create:
-    description: Allow creating gates on any network
-    default: op
-  stargate.destroy:
-    description: Allow destruction gates on any network
-    default: op
-  stargate.free:
-    description: Allow free use/creation/destruction of gates
-    default: op
-  stargate.option:
-    description: Allow use of all options
-    default: op
-  stargate.admin:
-    description: Allow all admin features (Hidden/Private only so far)
-    default: op
+  sg:
+    children:
+    
+      sg.info:
+        default: true
+        description: Group of nodes displaying info about the plugin (part of the /sg command).
+        children:
+          sg.info.version:
+            description: Displays the plugin's version in chat. (/sg version)
+          sg.info.help:
+            description: Links to the plugin's documentation in chat. (/sg help)
+            
+      sg.admin:
+        description: Group of nodes generally used by staff and admins.
+        default: op
+        children: 
+          sg.admin.reload:
+            description: Reloads the plugin's configuration (/sg reload)
+          sg.admin.bypass:
+            description: Bypasses various portal factors
+            children:
+              sg.admin.bypass.private:
+                description: Can see and use P gates
+              sg.admin.bypass.hidden:
+                description: Can see H gates
+              sg.admin.bypass.cost:
+                description: Bypass vault costs associated with portals
+                children:
+                  sg.admin.bypass.cost.destroy: 
+                    description: Bypass the cost associated with destroying a portal
+                  sg.admin.bypass.cost.create:
+                    description: Bypass the cost associated with creating a portal
+                  sg.admin.bypass.cost.use:
+                    description: Bypass the cost associated with creating a portal
+    
+      sg.use:
+        default: true
+        description: Can use any portal (can not see H gates, can not use other users' P gates).
+        children:
+          sg.use.follow:
+            description: Allow entering gates opened by another player
+          sg.use.world:
+            description: Allows players to use portals connecting to any dimension.
+          sg.use.owned: 
+            description: Can use any portal you own.
+          sg.use.network:
+            description: Allows players to use portals on any network.
+            children: 
+              sg.use.network.custom:
+                description: Use portal on any custom network
+              sg.use.network.personal:
+                description: Can use portals on their personal network.
+              sg.use.network.default:
+                description: Can use portals on the default network (central)
+          sg.use.type:
+            description: Can use all portals, regardless of flag type.
+            children:
+              #TODO add all flags
+              sg.use.type.fixed:
+                description: Can use fixed gates
+              sg.use.type.non-fixed:
+                description: Can use non-fixed gates
+          sg.use.design:
+            description: Can use any portal, regardless of the portal's design (gatefile).
+          
+      sg.create:
+        default: op
+        description: Allows creating any portal
+        children:
+          sg.create.world:
+            default: true
+            description: Allows players to create portals in any dimension.
+          sg.create.network:
+            description: Allows players to create portals on any network.
+            children:
+              sg.create.network.custom:
+                description: Create portal on any custom network
+              sg.create.network.personal:
+                default: true
+                description: Can create portals on their personal network.
+                #TODO: Meta thing?
+              sg.create.network.default:
+                description: Can create portals on the default network (central)
+          sg.create.type:
+            description: Can use all flags when creating portals
+            #TODO add all flags
+          sg.create.design:
+            description: Can create any portal, regardless of the design (gatefile)
+            
+      sg.destroy:
+        description: Can destroy any portal
+        default: op
+        children: 
+          sg.destroy.world:
+            description: Can destroy portals, regardless of dimension
+            default: true
+          sg.destroy.network:
+            description: Can destroy portals, regardless of network
+            children:
+              sg.destroy.network.personal:
+                description: Can destroy any portals on your personal network.
+          sg.destroy.type: 
+            description: Can destroy portals, regardless of type.
+            #TODO add all flags
+          sg.destroy.design:
+            description: Can destroy portals, regardless of design (gatefile).
+            
+      sg.preset:
+        description: Premade groupings if you are lazy ;)
+        default: false
+          sg.preset.user:
+            description: A permission set intended to be given to players who will be using -- but not making -- stargates.
+            children:
+              sg.info: true
+              sg.use: true
+          sg.preset.gatemaker:
+            description: A permission set intended to be given to players who will be making basic stargates for personal usage.
+            children:
+              sg.create.network.personal: true
+              sg.create.type.a: true
+              sg.create.type.h: true
+              sg.create.type.p: true
+              sg.destroy.owned: true
+              sg.destroy.network.personal: true
+          sg.preset.builder:
+            description: A set of permissions intended to be given to staff who will be making advanced stargates for server usage.
+            children:
+              sg.preset.gatemaker: true
+              sg.create.network.default: true
+              sg.create.type.a: true
+              sg.create.type.b: true
+              sg.create.type.n: true
+              sg.create.type.s: true
+              sg.create.type.v: true
+              sg.create.type.u: true
+              sg.create.type.i: true
+          sg.preset.moderator:
+            description: A set of permissions intended to be given to staff who will be moderating stargate usage amongst players.
+            children:
+              sg.preset.builder: true
+              sg.create.type.f: true
+              sg.create.type.r: true
+              sg.destroy.network: true
+              sg.create.network: true
+              sg.admin.bypass: true
+          sg.preset.admin:
+            description: A set of permissions intended to be given to admins tasked with configuring stargate and its permissions.
+            children:
+              sg.preset.moderator: true
+              sg.create: true
+              sg.admin: true

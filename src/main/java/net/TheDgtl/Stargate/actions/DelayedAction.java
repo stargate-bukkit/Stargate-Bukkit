@@ -11,9 +11,10 @@ public class DelayedAction implements PopulatorAction{
 	PopulatorAction action;
 	
 	/**
+	 * Will run a task after {@link DelayedAction#run(boolean)} has been triggered a specific amount of time
 	 * @param delay in ticks
-	 * @param action
-	 * @param syncronousPopulator TODO
+	 * @param action the action that will run upon completion
+	 * @param syncronousPopulator
 	 */
 	public DelayedAction(SyncronousPopulator syncronousPopulator, int delay, PopulatorAction action){
 		this.syncronousPopulator = syncronousPopulator;

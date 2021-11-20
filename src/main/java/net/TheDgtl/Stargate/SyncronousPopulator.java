@@ -8,8 +8,10 @@ import net.TheDgtl.Stargate.actions.PopulatorAction;
 import java.util.logging.Level;
 
 /**
- * Synchronously populates the interserver task queue.
- * TODO Better description.
+ * Cycles through a queue of actions everytime the {@link SyncronousPopulator#run()} function is triggered.
+ * 
+ * If used with the {@link BukkitScheduler#scheduleSyncRepeatingTask()} function, you can use this as a handy way
+ * to do synchronous tasks (tasks that happens during a specific tick)
  * @author Thorin
  */
 public class SyncronousPopulator implements Runnable{

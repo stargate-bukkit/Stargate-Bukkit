@@ -80,15 +80,6 @@ public class BlockEventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		// Check if a portal control block is selected
-		// If so, cancel event if not shift clicking
-		if(event.getPlayer().isSneaking())
-			return;
-		
-		if(Network.getPortal(event.getBlockAgainst().getLocation(), GateStructureType.CONTROLL) == null)
-			return;
-		
-		event.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -119,6 +110,9 @@ public class BlockEventListener implements Listener {
 		/*
 		 * TODO: PERMISSION CHECK
 		 */
+		
+		
+		
 		
 		if(player.getName().equals(network))
 			flags.add(PortalFlag.PERSONAL_NETWORK);
