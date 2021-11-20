@@ -2,7 +2,12 @@ package net.TheDgtl.Stargate;
 
 import java.util.HashMap;
 
+/**
+ * Loads values from the configuration into an enum.
+ * @author Thorin
+ */
 public enum Setting {
+// TODO This needs to be updated per Discussion Two.
 	DEFAULT_NET("preferences.defaultGateNetwork"), LANGUAGE("preferences.language"),
 	USING_BUNGEE("preferences.usingBungee"), 
 	

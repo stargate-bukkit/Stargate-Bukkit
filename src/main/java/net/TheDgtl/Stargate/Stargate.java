@@ -46,6 +46,18 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 
+/**
+ * A plugin that allows for instant-teleportation between large distances and across servers.
+ * Highly customisable and designed with end-user portal creation in mind!
+ *
+ * https://git.io/JuWkU | https://discord.gg/mTaHuK6BVa
+ *
+ * Lead Developers:
+ * @author Thorin (2020-Present)
+ * @author PseudoKnight (2015-2020)
+ * @author Drakia (2011-2013)
+ * @author Dinnerbone (2010-2011)
+  */
 public class Stargate extends JavaPlugin {
 	private static Stargate instance;
 
@@ -71,21 +83,20 @@ public class Stargate extends JavaPlugin {
 	public static final SyncronousPopulator syncSecPopulator = new SyncronousPopulator();
 	/**
 	 *  The string length of a name consisting of only 'i'. This will fill a sign (including <>)
-	 *  Note that this is a terribly relaxed restriction, mainly done to avoid any weird issues for
-	 *  in a SQL database
+	 *  Note that this is a terribly relaxed restriction, mainly done to prevent any from arising in a SQL database.
 	 */
 	public static final int MAX_TEXT_LENGTH = 40; 
 	
 	
 	/*
-	 * used in bungee / waterfall
+	 * Used in bungee / waterfall
 	 */
 	private HashMap<String,IPortal> bungeeQueue = new HashMap<>();
 	public static String serverName; 
 	public static boolean knowsServerName = false;
 	@Override
 	public void onEnable() {
-		// registers bstats metrics
+		// Registers bstats metrics
 		int pluginId = 10451;
 		new Metrics(this, pluginId);
 
@@ -146,14 +157,15 @@ public class Stargate extends JavaPlugin {
 	
 	@Override
 	public void onLoad() {
-		// economyHandler = new EconomyHandler(this);
+		// TODO Economy (issue #88)
+                //economyHandler = new EconomyHandler(this);
 	}
 
 	@Override
 	public void onDisable() {
 		/*
-		 * Portal.closeAllGates(this); Portal.clearGates(); managedWorlds.clear();
-		 * 
+		 * Replacement for legacy, which used:
+                 * methodPortal.closeAllGates(this); Portal.clearGates(); managedWorlds.clear();
 		 */
 		syncTickPopulator.forceDoAllTasks();
 		syncSecPopulator.forceDoAllTasks();
@@ -190,11 +202,13 @@ public class Stargate extends JavaPlugin {
 	public static void addToQueue(String playerName, String portalName, String netName, boolean isInterserver) {
     	Network net = factory.getNetwork(netName, isInterserver);
     	if(net == null) {
-    		//do some error thing
+    		//TODO Error: This bungee portal's %type% has been removed from the destination server instance.
+                //(See Discussion One) %type% = network.
     	}
     	IPortal portal = net.getPortal(portalName);
     	if(portal == null) {
-    		//same here
+    		//TODO Error: This bungee portal's %type% has been removed from the destination server instance.
+                //(See Discussion One) %type% = gate.
     	}
     	
     	instance.bungeeQueue.put(playerName, portal);

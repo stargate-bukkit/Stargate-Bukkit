@@ -7,6 +7,11 @@ import net.TheDgtl.Stargate.actions.PopulatorAction;
 
 import java.util.logging.Level;
 
+/**
+ * Synchronously populates the interserver task queue.
+ * TODO Better description.
+ * @author Thorin
+ */
 public class SyncronousPopulator implements Runnable{
 	
 	private final ArrayList<PopulatorAction> populatorQueue = new ArrayList<>();

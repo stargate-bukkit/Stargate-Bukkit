@@ -3,6 +3,11 @@ package net.TheDgtl.Stargate;
 import java.util.HashMap;
 import java.util.logging.Level;
 
+/**
+ * Manages stargate's localisation.
+ * @author Thorin
+ * @author Pheotis
+ */
 public enum LangMsg {
 	PREFIX("prefix"), TELEPORT("teleportMsg"), DESTROY("destroyMsg"), INVALID("invalidMsg"), BLOCKED("blockMsg"),
 	DEST_EMPTY("destEmpty"), DENY("denyMsg"), SPAWN_BLOCK("spawnBlockMsg"), DEDUCT("ecoDeduct"), REFUND("ecoRefund"),

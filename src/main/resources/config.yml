@@ -1,5 +1,7 @@
 # Stargate Configuration File  v. @version@
+# TODO This needs to be replaced with the config outlined in Discussion Two.
 preferences:
+# TODO Update localisation prompts.
   language: en
   usingBungee: true
   defaultGateNetwork: central
@@ -35,6 +37,7 @@ technical:
     driver: sqlite
     database: stargateBungee
     port:
+    # TODO This should be reset to a default value!
     address: C:\Users\46737\Desktop\Stupid location
   debug:
     # Lowest level of visibility for the plugin

@@ -8,6 +8,13 @@ import org.bukkit.entity.Player;
 import net.TheDgtl.Stargate.event.StargateEvent;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 
+/**
+ * Manages the plugin's permissions.
+ * @author Thorin
+ * @author Pheotis
+ */
+
+// TODO See Discussion Three
 public class PermissionManager {
 	private Player player;
 	private LangMsg denyMsg;

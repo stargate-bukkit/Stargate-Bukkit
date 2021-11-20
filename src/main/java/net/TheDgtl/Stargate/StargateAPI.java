@@ -9,56 +9,60 @@ import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 
+/**
+ * An API to facilitate addons and integrations.
+ * @author Thorin
+ */
 public class StargateAPI {
 	/*
-	 * Behaviours:
-	 * - Modify portal; change: network, name, owner, PortalType (if networked and so on)
-	 * - Create a new portal; force generates a portal from nothing
-	 * - Destroy a portal
+         * API specs currently being discussed on issue #77
 	 */
 	
 	/**
-	 * Check if a portal is in specified position
-	 * @param portalBlock
-	 * @return the portal if found / otherwise null
+	 * Search for a portal via a specified position.
+	 * @param Location portalBlock (the specified position)
+	 * @return If found, the portal; else, null.
 	 */
 	public IPortal getPortal(Location portalBlock) {
 		return Network.getPortal(portalBlock, GateStructureType.values());
 	}
 	
 	/**
-	 * Check if specific part of a portal is in the specified position
-	 * @param portalBlock
-	 * @param structure , the type of part of the portal
-	 * @return the portal if found / otherwise null
+	 * Search for a portal via a specified portal part and a specified position.
+	 * @param Location portalBlock (the specified position)
+	 * @param GateStructureType structure (the type of part of the portal)
+	 * @return If found, the portal; else, null.
 	 */
 	public IPortal getPortal(Location portalBlock, GateStructureType structure){
 		return Network.getPortal(portalBlock, structure);
 	}
 	
 	/**
-	  * Check if specific parts of a portal is in the specified position
-	 * @param portalBlock
-	 * @param structures , the types of parts of the portal
-	 * @return the portal if found / otherwise null
+	 * Search for a portal via specified portal parts and a specified position.
+	 * @param Location portalBlock (the specified position)
+	 * @param GateStructureType[] structures (the types of parts of the portal)
+	 * @return If found, the portal; else, null.
 	 */
 	public IPortal getPortal(Location portalBlock, GateStructureType[] structures){
 		return Network.getPortal(portalBlock, structures);
 	}
 	
 	/**
-	 * @param net Network
-	 * @param portalName Portal
-	 * @return The portal found / otherwise null
+         * Search for a portal based its name and network.
+	 * @param Network net (The portal's network)
+	 * @param String portalName (The portal's name)
+	 * @return If found, the portal; else, null.
 	 */
 	public IPortal getPortal(Network net, String portalName){
 		return net.getPortal(portalName);
 	}
 	
 	/**
-	 * @param netName name of the network
-	 * @param portalName name of the portal
-	 * @return The portal found / otherwise null
+         * Search for a portal across the proxy based on its name and network.
+	 * @param String netName (The portal's network)
+	 * @param String portalName (The portal's name)
+         * @param boolean isBungee (The portal's scope)
+	 * @return If found, the portal; else, null.
 	 */
 	public IPortal getPortal(String netName, String portalName, boolean isBungee){
 		Network net = Stargate.factory.getNetwork(netName, isBungee);
@@ -69,17 +73,18 @@ public class StargateAPI {
 	}
 	
 	/**
-	 * 
-	 * @param portal
-	 * @return The network which the portal is assigned to
+	 * Checks a portal's network.
+	 * @param IPortal portal (The portal)
+	 * @return The network within which the portal exists.
 	 */
 	public Network getNetwork(IPortal portal) {
 		return portal.getNetwork();
 	}
 	
 	/**
-	 * 
-	 * @param networkName
+	 * Checks a portal's network, from across the proxy.
+	 * @param String networkName
+         * @param boolean isBungee
 	 * @return The network found / otherwise null
 	 */
 	public Network getNetwork(String networkName, boolean isBungee) {
@@ -87,16 +92,16 @@ public class StargateAPI {
 	}
 	
 	/**
-	 * Change the network which a portal is operating at, note that you will need
-	 * to change it has a fixed destination
-	 * @param portal
-	 * @param targetNet
+	 * Change the network a portal is situated within (intended for non-fixed gates).
+	 * Note that, if targeting a fixed gate, its destination will also need to be changed.
+	 * @param IPortal portal
+	 * @param Network targetNet
 	 */
 	public void changeNetwork(IPortal portal, Network targetNet) {
 		portal.setNetwork(targetNet);
 	}
 	/**
-	 * TODO currently not implemented
+	 * TODO Currently not implemented
 	 * @param config
 	 * @param location
 	 * @param openFacing
@@ -106,10 +111,12 @@ public class StargateAPI {
 	}
 
 	/**
-	 * Force a connection between two portals. They do not have to be in the same
-	 * network. When portal has been entered, the destination will get removed
+	 * Force a connection between two portals.
+         * They do not have to be in the same network.
+         * Once entered, the portal's destination will be reset.
 	 * 
-	 * @param target the portal which will have it's destination changed
+	 * @param IPortal target (the portal that will have its destination changed).
+         * @param IPortal destination (where that destination will be changed to).
 	 * @param destination
 	 */
 	public void forceConnect(IPortal target, IPortal destination) {
