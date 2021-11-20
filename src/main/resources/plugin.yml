@@ -3,7 +3,7 @@ main: net.TheDgtl.Stargate.Stargate
 version: @version@
 description: Stargate mod for Bukkit
 authors: [Drakia, PseudoKnight, Frostalf, InteriorCamping, LittleBigBug, TheViperShow, Thorinwasher]
-website: http://www.thedgtl.net
+website: https://discord.gg/mTaHuK6BVa
 api-version: @spigot-version@
 commands:
   sg:
@@ -67,7 +67,32 @@ permissions:
           sg.use.type:
             description: Can use all portals, regardless of flag type.
             children:
-              #TODO add all flags
+              sg.use.type.a:
+                description: Can use always-on gates.
+              sg.use.type.b:
+                description: Can use backwards-facing gates.
+              sg.use.type.f:
+                description: Can use free gates.
+              sg.use.type.h:
+                description: Can use hidden gates.
+              sg.use.type.i:
+                description: Can use modern interserver gates.
+              sg.use.type.n:
+                description: Can use hidden-network gates.
+#             sg.use.type.of:
+#               description: Can use toggle gates.
+              sg.use.type.p:
+                description: Can use private gates.
+              sg.use.type.r:
+                description: Can use random gates.
+              sg.use.type.s:
+                description: Can use showing gates.
+#             sg.use.type.t:
+#               description: Can use terminal gates.
+              sg.use.type.u:
+                description: Can use legacy bungee gates.
+#             sg.use.type.v:
+#               description: Can use gates with invisible signs.
               sg.use.type.fixed:
                 description: Can use fixed gates
               sg.use.type.non-fixed:
@@ -90,15 +115,51 @@ permissions:
               sg.create.network.personal:
                 default: true
                 description: Can create portals on their personal network.
-                #TODO: Meta thing?
+                #TODO: Meta for personal network limits. Requires vault. See discussion four.
               sg.create.network.default:
                 description: Can create portals on the default network (central)
           sg.create.type:
             description: Can use all flags when creating portals
-            #TODO add all flags
+            children:
+              sg.create.type.a:
+                description: Can create gates with the always-on flag.
+              sg.create.type.b:
+                description: Can create gates with the backwards-facing flag.
+              sg.create.type.f:
+                description: Can create gates with the free flag.
+              sg.create.type.h:
+                description: Can create gates with the hidden flag.
+              sg.create.type.i:
+                description: Can create gates with the modern interserver flag.
+              sg.create.type.n:
+                description: Can create gates with the hidden-network flag.
+#             sg.create.type.o:
+#               description: Can create gates with the toggle flag.
+              sg.create.type.p:
+                description: Can create gates with the private flag.
+              sg.create.type.r:
+                description: Can create gates with the random flag.
+              sg.create.type.s:
+                description: Can create gates with the showing flag.
+#             sg.create.type.t:
+#               description: Can create terminal portals (be they in the terminal, or connecting to it)
+#               children:
+#                 sg.create.type.t.new:
+#                   description: Can create (sell) a new terminal gate on any network they have access to.
+#                   children:
+#                     sg.create.type.t.new.default:
+#                       description: Can create (sell) a new terminal gate on the default terminal network.
+#                 sg.create.type.t.connect:
+#                   description: Can create a gate connecting to any existing, available (for sale) terminal gate. !!(BYPASSES stargate.create.network)!!
+#                   children:
+#                     sg.create.type.t.connect.default:
+#                       description: Can create a gate connecting to any existing, available (for sale) terminal gate on the default network.              
+              sg.create.type.u:
+                description: Can create gates with the legacy bungee flag.
+#             sg.create.type.v:
+#               description: Can create gates with invisible signs.
           sg.create.design:
             description: Can create any portal, regardless of the design (gatefile)
-            
       sg.destroy:
         description: Can destroy any portal
         default: op
@@ -113,13 +174,40 @@ permissions:
                 description: Can destroy any portals on your personal network.
           sg.destroy.type: 
             description: Can destroy portals, regardless of type.
-            #TODO add all flags
+            children:
+              sg.destroy.type.a:
+                description: Can destroy always-on gates.
+              sg.destroy.type.b:
+                description: Can destroy backwards-facing gates.
+              sg.destroy.type.f:
+                description: Can destroy free gates.
+              sg.destroy.type.h:
+                description: Can destroy hidden gates.
+              sg.destroy.type.i:
+                description: Can destroy modern interserver gates.
+              sg.destroy.type.n:
+                description: Can destroy hidden-network gates.
+#             sg.destroy.type.o:
+#               description: Can destroy toggle gates.
+              sg.destroy.type.p:
+                description: Can destroy private gates.
+              sg.destroy.type.r:
+                description: Can destroy random gates.
+              sg.destroy.type.s:
+                description: Can destroy showing gates.
+#             sg.destroy.type.t:
+#               description: Can destroy terminal gates.
+              sg.destroy.type.u:
+                description: Can destroy legacy bungee gates.
+#             sg.destroy.type.v:
+#               description: Can destroy gates with invisible signs.
           sg.destroy.design:
             description: Can destroy portals, regardless of design (gatefile).
             
       sg.preset:
-        description: Premade groupings if you are lazy ;)
+        description: Premade groupings for convenience.
         default: false
+        children:
           sg.preset.user:
             description: A permission set intended to be given to players who will be using -- but not making -- stargates.
             children:
@@ -129,11 +217,21 @@ permissions:
             description: A permission set intended to be given to players who will be making basic stargates for personal usage.
             children:
               sg.create.network.personal: true
-              sg.create.type.a: true
               sg.create.type.h: true
               sg.create.type.p: true
               sg.destroy.owned: true
+#             sg.create.type.o: true
               sg.destroy.network.personal: true
+#         sg.preset.terminaluser:
+#           description: A permission set intended to be given to players who will be making basic stargates for personal usage.
+#           children:
+#             sg.preset.gatemaker: true
+#             sg.create.type.t.connect.default: true
+#         sg.preset.terminaluser:
+#           description: A permission set intended to be given to any staff who will be involved in making / administrating a terminal system in spawn.
+#           children:
+#             sg.preset.terminaluser: true
+#             sg.preset.type.t.new.default: true
           sg.preset.builder:
             description: A set of permissions intended to be given to staff who will be making advanced stargates for server usage.
             children:
@@ -146,6 +244,7 @@ permissions:
               sg.create.type.v: true
               sg.create.type.u: true
               sg.create.type.i: true
+#             sg.create.type.v: true
           sg.preset.moderator:
             description: A set of permissions intended to be given to staff who will be moderating stargate usage amongst players.
             children:
