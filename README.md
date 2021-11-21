@@ -36,10 +36,8 @@ Permissions have had a few changes, so you should check the permissions section 
 permissions.
 
 Payment to owner using Economy, through Vault, is only possible if the portal owner in the portal database is defined by
-a UUID, and not a username. Right now, there is no automatic upgrade from usernames to UUID. You must either make the
-stargate owner re-create the stargate or edit the file in the portals folder in a text editor. There are various ways to
-find the UUID of players. You may look in the usercache.json file in the server directory or search for the username on
-various websites.
+a UUID, and not a username. A player name will be upgraded to a UUID when the player with the given name joins the
+server.
 
 # Permissions
 
