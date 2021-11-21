@@ -180,5 +180,11 @@ public class VirtualPortal implements IPortal {
 
 	@Override
 	public void onIrisEntrance(Entity player) {}
+
+	@Override
+	public String getDesignName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

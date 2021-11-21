@@ -441,4 +441,8 @@ public abstract class Portal implements IPortal {
 		}
 		return out;
 	}
+	
+	public String getDesignName() {
+		return gate.getFormat().name;
+	}
 }

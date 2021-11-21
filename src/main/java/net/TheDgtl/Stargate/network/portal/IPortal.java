@@ -80,4 +80,6 @@ public interface IPortal {
 		}
 		return endMsg + "}"; 
 	}
+
+	String getDesignName();
 }

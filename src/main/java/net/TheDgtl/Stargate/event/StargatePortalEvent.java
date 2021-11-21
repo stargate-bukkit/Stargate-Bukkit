@@ -17,15 +17,24 @@
  */
 package net.TheDgtl.Stargate.event;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
 import net.TheDgtl.Stargate.network.portal.IPortal;
 
+/**
+ * Gets thrown whenever a player teleports. Should honestly be called StargateTeleportEvent, but unfortunatly
+ * is not because of legacy.
+ * @author Thorin
+ *
+ */
 public class StargatePortalEvent extends StargateEvent {
 	/*
 	 * An event which occurs every time players teleport? 
@@ -87,4 +96,14 @@ public class StargatePortalEvent extends StargateEvent {
     public void setExit(@NotNull Location exitLocation) {
         this.exit = Objects.requireNonNull(exitLocation);
     }
+
+	@Override
+	public List<Permission> getRelatedPerms() {
+		String identifier = "sg.use";
+		List<Permission> permList = new ArrayList<>();
+		if(!portal.isOpenFor(player)) {
+			permList.add(Permission.loadPermission(identifier + ".follow", null));
+		}
+		return permList;
+	}
 }

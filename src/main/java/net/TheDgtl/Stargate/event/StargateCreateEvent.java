@@ -18,10 +18,13 @@
 
 package net.TheDgtl.Stargate.event;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
 import net.TheDgtl.Stargate.network.portal.IPortal;
@@ -45,12 +48,10 @@ public class StargateCreateEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateCreateEvent(@NotNull Player player, @NotNull IPortal portal, @NotNull String[] lines, boolean deny, @NotNull String denyReason, int cost) {
+    public StargateCreateEvent(@NotNull Player player, @NotNull IPortal portal, @NotNull String[] lines, int cost) {
         super(Objects.requireNonNull(portal));
         this.player = Objects.requireNonNull(player);
         this.lines = Objects.requireNonNull(lines);
-        this.deny = deny;
-        this.denyReason = Objects.requireNonNull(denyReason);
         this.cost = cost;
     }
 
@@ -88,5 +89,11 @@ public class StargateCreateEvent extends StargateEvent {
     public void setCost(int cost) {
         this.cost = cost;
     }
+
+	@Override
+	public List<Permission> getRelatedPerms() {
+		String identifier = "sg.create";
+		return super.defaultPermCompile(identifier);
+	}
 
 }

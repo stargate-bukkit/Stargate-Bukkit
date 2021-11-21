@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
 
 import net.TheDgtl.Stargate.event.StargateEvent;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -18,6 +19,8 @@ import net.TheDgtl.Stargate.network.portal.PortalFlag;
 public class PermissionManager {
 	private Player player;
 	private LangMsg denyMsg;
+	private final static String STARGATE_TAG = "sg";
+	
 	public final static String FLAGPERMISSION = "stargate.flag";
 	public final static String DESTROYPERMISSION = "stargate.destroy";
 	public final static String CREATEPERMISSION = "stargate.create";
@@ -28,6 +31,14 @@ public class PermissionManager {
 		this.player = player;
 	}
 
+	public enum PortalAction{
+		CREATE, DESTROY, USE;
+	}
+	
+	public enum Select {
+		TYPE, NETWORK, WORLD, FOLLOW;
+	}
+	
 	public HashSet<PortalFlag> returnAllowedFlags(HashSet<PortalFlag> flags){
 		HashSet<PortalFlag> permissable = new HashSet<>();
 		
@@ -44,9 +55,9 @@ public class PermissionManager {
 	}
 	
 	public boolean hasPerm(StargateEvent event) {
-		List<String> perms = event.getRelatedPerms();
+		List<Permission> perms = event.getRelatedPerms();
 		
-		for(String perm : perms) {
+		for(Permission perm : perms) {
 			if(!player.hasPermission(perm)) {
 				return false;
 			}
@@ -61,7 +72,7 @@ public class PermissionManager {
 		if(player.getName() == network)
 			hasPerm = player.hasPermission(CREATEPERMISSION + ".personal");
 		else
-			hasPerm =  player.hasPermission(CREATEPERMISSION + "." + network);
+			hasPerm =  player.hasPermission(CREATEPERMISSION + ".custom." + network);
 		if(!hasPerm)
 			denyMsg = LangMsg.NET_DENY;
 		return hasPerm;
@@ -70,4 +81,6 @@ public class PermissionManager {
 	public LangMsg getDenyMsg() {
 		return denyMsg;
 	}
+	
+	
 }

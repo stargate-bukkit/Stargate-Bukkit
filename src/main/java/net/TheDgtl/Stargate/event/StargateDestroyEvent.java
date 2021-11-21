@@ -17,10 +17,12 @@
  */
 package net.TheDgtl.Stargate.event;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
 import net.TheDgtl.Stargate.network.portal.IPortal;
@@ -62,11 +64,9 @@ public class StargateDestroyEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateDestroyEvent(@NotNull IPortal portal, @NotNull Player player, boolean deny, @NotNull String denyMsg, int cost) {
+    public StargateDestroyEvent(@NotNull IPortal portal, @NotNull Player player, int cost) {
         super(Objects.requireNonNull(portal));
         this.player = Objects.requireNonNull(player);
-        this.deny = deny;
-        this.denyReason = Objects.requireNonNull(denyMsg);
         this.cost = cost;
     }
 
@@ -99,5 +99,10 @@ public class StargateDestroyEvent extends StargateEvent {
     public void setCost(int cost) {
         this.cost = cost;
     }
+
+	@Override
+	public List<Permission> getRelatedPerms() {
+		return super.defaultPermCompile("sg.destroy");
+	}
 
 }

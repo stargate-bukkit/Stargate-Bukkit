@@ -160,6 +160,7 @@ permissions:
 #               description: Can create gates with invisible signs.
           sg.create.design:
             description: Can create any portal, regardless of the design (gatefile)
+            
       sg.destroy:
         description: Can destroy any portal
         default: op
@@ -241,7 +242,6 @@ permissions:
               sg.create.type.b: true
               sg.create.type.n: true
               sg.create.type.s: true
-              sg.create.type.v: true
               sg.create.type.u: true
               sg.create.type.i: true
 #             sg.create.type.v: true

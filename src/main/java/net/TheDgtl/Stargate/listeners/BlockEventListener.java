@@ -43,7 +43,7 @@ public class BlockEventListener implements Listener {
 		IPortal portal = Network.getPortal(loc, GateStructureType.FRAME);
 		if (portal != null) {
 			int cost = 0; // TODO economy manager
-			StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, event.getPlayer(), false, "", cost);
+			StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, event.getPlayer(), cost);
 			PermissionManager permMngr = new PermissionManager(event.getPlayer());
 			if (permMngr.hasPerm(dEvent)) {
 				PopulatorAction action = new PopulatorAction() {

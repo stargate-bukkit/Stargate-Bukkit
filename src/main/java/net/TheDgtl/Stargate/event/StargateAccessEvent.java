@@ -18,13 +18,20 @@
 
 package net.TheDgtl.Stargate.event;
 
+import java.util.List;
 import java.util.Objects;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
 import net.TheDgtl.Stargate.network.portal.IPortal;
 
+/**
+ * TODO: Unsure what this one is meant to do in legacy
+ * @author Thorin
+ *
+ */
 public class StargateAccessEvent extends StargateEvent {
     private final Player player;
     private boolean deny;
@@ -58,5 +65,11 @@ public class StargateAccessEvent extends StargateEvent {
     public Player getPlayer() {
         return this.player;
     }
+
+	@Override
+	public List<Permission> getRelatedPerms() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
