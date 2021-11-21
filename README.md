@@ -132,7 +132,7 @@ section). See the Custom Gate Layout section to learn how to add custom gates.
       player enters. (Implicitly always on)
     - 'U' is for a gate connecting to another through bungee (Implicitly always on)
     - 'I' is for a silent gate, which does not output anything to the chat while teleporting. Increases immersion
-    - 'E' is for gate without a sign. Only for fixed stargates
+    - 'E' is for a gate without a sign. Only for fixed stargates
 
 The options are the single letter, not the word. So to make a private hidden gate, your 4th line would be 'PH'. The
 &\[0-9a-f] color codes are not counted in the character limit, thus allowing a 13-character name with an additional 2
