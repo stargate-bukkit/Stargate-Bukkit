@@ -11,8 +11,8 @@ commands:
   stargate:
     aliases:
       - sg
-    description: Used to see stargate info
-    usage: /<command> <reload/about> - Used to see stargate info or reload the plugin
+    description: Used to see stargate info, reloading and editing config values
+    usage: /<command> <reload/about/config> - Used to see stargate info, reload the plugin or change config values
 permissions:
   stargate.*:
     description: Wildcard permission which gives all Stargate permissions
