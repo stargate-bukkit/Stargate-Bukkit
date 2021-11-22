@@ -140,7 +140,9 @@ public class BlockEventListener implements Listener {
 
         //Destroy denied
         if (destroyEvent.getDeny()) {
-            Stargate.getMessageSender().sendErrorMessage(player, destroyEvent.getDenyReason());
+            if (!destroyEvent.getDenyReason().trim().isEmpty()) {
+                Stargate.getMessageSender().sendErrorMessage(player, destroyEvent.getDenyReason());
+            }
             event.setCancelled(true);
             return;
         }

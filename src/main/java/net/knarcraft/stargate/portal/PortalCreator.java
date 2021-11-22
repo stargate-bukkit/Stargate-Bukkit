@@ -192,7 +192,9 @@ public class PortalCreator {
 
         //Tell the user why it was denied from creating the portal
         if (stargateCreateEvent.getDeny()) {
-            Stargate.getMessageSender().sendErrorMessage(player, stargateCreateEvent.getDenyReason());
+            if (!stargateCreateEvent.getDenyReason().trim().isEmpty()) {
+                Stargate.getMessageSender().sendErrorMessage(player, stargateCreateEvent.getDenyReason());
+            }
             return null;
         }
 
