@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.listeners;
 
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -20,10 +21,13 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.jetbrains.annotations.NotNull;
 
 import net.TheDgtl.Stargate.LangMsg;
+import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 
 public class MoveEventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -88,7 +92,6 @@ public class MoveEventListener implements Listener {
 		IPortal portal = Network.getPortal(to, GateStructureType.IRIS);
 		if (portal == null || !portal.isOpen())
 			return;
-		Stargate.log(Level.FINEST, " Portal was found (norwegian accent)");
 		
 		/*
 		 * Real velocity does not seem to work

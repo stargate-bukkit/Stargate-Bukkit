@@ -53,7 +53,7 @@ public class PlayerEventListener implements Listener {
 		if (portal == null) {
 			return;
 		}
-
+		
 		Material blockMat = block.getType();
 		if ((action == Action.RIGHT_CLICK_BLOCK)) {
 			// A cheat to avoid a glitch from bukkit

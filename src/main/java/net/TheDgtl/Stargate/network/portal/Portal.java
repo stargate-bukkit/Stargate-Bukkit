@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -21,9 +22,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.LangMsg;
+import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
+import net.TheDgtl.Stargate.event.StargateOpenEvent;
+import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.InvalidStructure;
 import net.TheDgtl.Stargate.exception.NameError;
@@ -280,7 +284,11 @@ public abstract class Portal implements IPortal {
 			player.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
 			return;
 		}
-		// TODO checkPerms
+		PermissionManager mngr = new PermissionManager(player);
+		StargateOpenEvent oEvent = new StargateOpenEvent(player, this, false);
+		if(!mngr.hasPerm(oEvent) || oEvent.isCancelled())
+			return;
+		
 		this.destination = destination;
 		open(player);
 		destination.open(player);
@@ -288,12 +296,14 @@ public abstract class Portal implements IPortal {
 
 	@Override
 	public void onIrisEntrance(Entity target) {
-		if (!isOpenFor(target)) {
+		StargatePortalEvent event = new StargatePortalEvent(target, this);
+		Bukkit.getPluginManager().callEvent(event);
+		PermissionManager mngr = new PermissionManager(target);
+		if(!mngr.hasPerm(event) || event.isCancelled()){
 			// TODO send deny message
 			teleportHere(target,gate.facing);
 			return;
 		}
-		// TODO check perm's
 		Stargate.log(Level.FINEST, "Trying to teleport entity, initial velocity: " + target.getVelocity());
 		doTeleport(target);
 	}

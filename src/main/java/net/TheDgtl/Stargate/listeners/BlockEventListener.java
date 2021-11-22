@@ -24,6 +24,7 @@ import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
+import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateDestroyEvent;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
@@ -45,7 +46,7 @@ public class BlockEventListener implements Listener {
 			int cost = 0; // TODO economy manager
 			StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, event.getPlayer(), cost);
 			PermissionManager permMngr = new PermissionManager(event.getPlayer());
-			if (permMngr.hasPerm(dEvent)) {
+			if (permMngr.hasPerm(dEvent) && !dEvent.isCancelled()) {
 				PopulatorAction action = new PopulatorAction() {
 
 					@Override
@@ -72,8 +73,7 @@ public class BlockEventListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-		if (Network.getPortal(loc, GateStructureType.CONTROLL) != null) {
-			Stargate.log(Level.FINEST, " Canceled sign break event");
+		if (Network.getPortal(loc, new GateStructureType[]{GateStructureType.CONTROLL,GateStructureType.IRIS}) != null) {
 			event.setCancelled(true);
 		}
 	}
@@ -90,13 +90,13 @@ public class BlockEventListener implements Listener {
 
 		String[] lines = event.getLines();
 		String network = lines[2];
+		int cost = 0;
 		Player player = event.getPlayer();
 		EnumSet<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
 		PermissionManager permMngr = new PermissionManager(player);
-
+		
 		if (network.isBlank())
 			network = (String) Stargate.getSetting(Setting.DEFAULT_NET);
-		boolean hasPerm = true;
 		
 		if(network.endsWith("]") && network.startsWith("[")) {
 			network = network.substring(1, network.length()-1);
@@ -107,16 +107,14 @@ public class BlockEventListener implements Listener {
 			network = "§§§§§§#BUNGEE#§§§§§§";
 		}
 		
-		/*
-		 * TODO: PERMISSION CHECK
-		 */
+		if(!permMngr.canCreateInNetwork(network)) {
+			network = player.getName();
+		}
 		
-		
-		
-		
-		if(player.getName().equals(network))
+		if(player.getName().equals(network) || flags.contains(PortalFlag.PRIVATE))
 			flags.add(PortalFlag.PERSONAL_NETWORK);
 		
+		flags = permMngr.returnAllowedFlags(flags);
 		
 		Network selectedNet;
 		try {
@@ -129,7 +127,9 @@ public class BlockEventListener implements Listener {
 
 		try {
 			IPortal portal = Portal.createPortalFromSign(selectedNet, lines, block, flags);
-			if (!hasPerm) {
+			StargateCreateEvent sEvent = new StargateCreateEvent(event.getPlayer(),portal,lines,cost);
+			Bukkit.getPluginManager().callEvent(sEvent);
+			if (!permMngr.hasPerm(sEvent) || sEvent.isCancelled()) {
 				player.sendMessage(Stargate.langManager.getMessage(permMngr.getDenyMsg(), true));
 				portal.destroy();
 				return;

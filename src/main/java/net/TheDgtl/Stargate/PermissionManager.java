@@ -1,8 +1,10 @@
 package net.TheDgtl.Stargate;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
@@ -17,18 +19,14 @@ import net.TheDgtl.Stargate.network.portal.PortalFlag;
 
 // TODO See Discussion Three
 public class PermissionManager {
-	private Player player;
+	private Entity player;
 	private LangMsg denyMsg;
-	private final static String STARGATE_TAG = "sg";
 	
-	public final static String FLAGPERMISSION = "stargate.flag";
-	public final static String DESTROYPERMISSION = "stargate.destroy";
-	public final static String CREATEPERMISSION = "stargate.create";
-	public final static String USEPERMISSION = "stargate.use";
-	public final static String FREEPERMISSION = "stargate.free";
+	private final static String FLAGPERMISSION = "stargate.flag";
+	private final static String CREATEPERMISSION = "sg.create.network";
 
-	public PermissionManager(Player player) {
-		this.player = player;
+	public PermissionManager(Entity target) {
+		this.player = target;
 	}
 
 	public enum PortalAction{
@@ -39,15 +37,13 @@ public class PermissionManager {
 		TYPE, NETWORK, WORLD, FOLLOW;
 	}
 	
-	public HashSet<PortalFlag> returnAllowedFlags(HashSet<PortalFlag> flags){
-		HashSet<PortalFlag> permissable = new HashSet<>();
-		
+	public EnumSet<PortalFlag> returnAllowedFlags(EnumSet<PortalFlag> flags){
 		for(PortalFlag flag : flags) {
-			if(player.hasPermission( (FLAGPERMISSION + flag.label).toLowerCase() )) {
-				permissable.add(flag);
+			if(!player.hasPermission( (FLAGPERMISSION + flag.label).toLowerCase() )) {
+				flags.remove(flag);
 			}
 		}
-		return permissable;
+		return flags;
 	}
 	
 	public boolean hasPerm(String permission) {

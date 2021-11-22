@@ -18,6 +18,7 @@
 
 package net.TheDgtl.Stargate.event;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,7 +52,6 @@ public class StargateDeactivateEvent extends StargateEvent {
 
 	@Override
 	public List<Permission> getRelatedPerms() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<Permission>();
 	}
 }

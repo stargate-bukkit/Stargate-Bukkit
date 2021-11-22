@@ -22,12 +22,14 @@ import java.util.List;
 import java.util.Objects;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 
 /**
  * Gets thrown whenever a player teleports. Should honestly be called StargateTeleportEvent, but unfortunatly
@@ -41,9 +43,9 @@ public class StargatePortalEvent extends StargateEvent {
 	 */
 	
 	
-    private final Player player;
+    private final Entity target;
     private final IPortal destination;
-    private Location exit;
+	private Location exit;
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -57,22 +59,30 @@ public class StargatePortalEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargatePortalEvent(@NotNull Player player, @NotNull IPortal portal, @NotNull IPortal dest, @NotNull Location exit) {
+    public StargatePortalEvent(@NotNull Entity target, @NotNull IPortal portal) {
         super(Objects.requireNonNull(portal));
 
-        this.player = Objects.requireNonNull(player);
-        this.destination = Objects.requireNonNull(dest);
-        this.exit = Objects.requireNonNull(exit);
+        this.target = Objects.requireNonNull(target);
+        this.destination = ((Portal)portal).loadDestination();
+        if(destination instanceof Portal)
+        	this.exit = ((Portal)destination).getExit();
     }
 
     /**
      * @return player that went through the gate
      */
     @NotNull
+    @Deprecated
     public Player getPlayer() {
-        return player;
+    	if(target instanceof Player)
+    		return (Player)target;
+    	return null;
     }
 
+    public Entity getEntity() {
+    	return target;
+    }
+    
     /**
      * @return destination gate
      */
@@ -86,7 +96,9 @@ public class StargatePortalEvent extends StargateEvent {
      */
     @NotNull
     public Location getExit() {
-        return exit;
+    	if(destination instanceof Portal)
+    		return ((Portal)destination).getExit();
+        return null;
     }
 
     /**
@@ -101,7 +113,7 @@ public class StargatePortalEvent extends StargateEvent {
 	public List<Permission> getRelatedPerms() {
 		String identifier = "sg.use";
 		List<Permission> permList = new ArrayList<>();
-		if(!portal.isOpenFor(player)) {
+		if(target instanceof Player && !portal.isOpenFor(target)) {
 			permList.add(Permission.loadPermission(identifier + ".follow", null));
 		}
 		return permList;

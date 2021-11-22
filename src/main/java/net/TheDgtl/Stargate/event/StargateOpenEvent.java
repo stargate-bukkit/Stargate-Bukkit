@@ -27,10 +27,12 @@ import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 
 public class StargateOpenEvent extends StargateEvent {
     private final Player player;
     private boolean isForced;
+	private IPortal destination;
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -48,6 +50,7 @@ public class StargateOpenEvent extends StargateEvent {
         super(Objects.requireNonNull(portal));
         this.player = player;
         this.isForced = isForced;
+        this.destination = ((Portal)portal).loadDestination();
     }
 
     /**
@@ -58,6 +61,10 @@ public class StargateOpenEvent extends StargateEvent {
         return player;
     }
 
+    public IPortal getDestination() {
+    	return destination;
+    }
+    
     public boolean getIsForced() {
         return isForced;
     }

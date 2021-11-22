@@ -15,6 +15,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.event.StargateActivateEvent;
+import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
@@ -96,9 +97,11 @@ public class NetworkedPortal extends Portal {
 	
 	@Override
 	public void close(boolean force) {
+		if(hasFlag(PortalFlag.ALWAYS_ON) && !force)
+			return;
+		super.close(force);
 		this.selectedDesti = NO_DESTI_SELECTED;
 		deactivate();
-		super.close(force);
 	}
 	
 	@Override
@@ -156,6 +159,10 @@ public class NetworkedPortal extends Portal {
 		}
 		StargateActivateEvent event = new StargateActivateEvent(this,actor,destinations);
 		Bukkit.getPluginManager().callEvent(event);
+		if(event.isCancelled()) {
+			this.destinations.clear();
+			selectedDesti = NO_DESTI_SELECTED;
+		}
 		this.isActive = (destinations.size() > 0);
 	}
 	
@@ -171,6 +178,10 @@ public class NetworkedPortal extends Portal {
 	}
 	
 	private void deactivate() {
+		StargateDeactivateEvent event = new StargateDeactivateEvent(this);
+		Bukkit.getPluginManager().callEvent(event);
+		if(event.isCancelled())
+			return;
 		this.destinations.clear();
 		this.isActive = false;
 		selectedDesti = NO_DESTI_SELECTED;
