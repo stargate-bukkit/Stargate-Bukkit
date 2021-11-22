@@ -39,7 +39,6 @@ public class BlockEventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
 		
-		// TODO Have a list of all possible portalMaterials and skip if not any of those
 		Location loc = event.getBlock().getLocation();
 		IPortal portal = Network.getPortal(loc, GateStructureType.FRAME);
 		if (portal != null) {
@@ -67,9 +66,6 @@ public class BlockEventListener implements Listener {
 				Stargate.syncTickPopulator.addAction(action);
 				return;
 			}
-
-			String reason = Stargate.langManager.getMessage(permMngr.getDenyMsg(), true);
-			event.getPlayer().sendMessage(reason);
 			event.setCancelled(true);
 			return;
 		}

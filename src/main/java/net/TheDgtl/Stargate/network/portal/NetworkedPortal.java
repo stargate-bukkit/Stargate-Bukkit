@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 
 import net.TheDgtl.Stargate.LangMsg;
+import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
@@ -159,7 +160,8 @@ public class NetworkedPortal extends Portal {
 		}
 		StargateActivateEvent event = new StargateActivateEvent(this,actor,destinations);
 		Bukkit.getPluginManager().callEvent(event);
-		if(event.isCancelled()) {
+		PermissionManager mngr = new PermissionManager(actor);
+		if(event.isCancelled() || !mngr.hasPerm(event)) {
 			this.destinations.clear();
 			selectedDesti = NO_DESTI_SELECTED;
 		}

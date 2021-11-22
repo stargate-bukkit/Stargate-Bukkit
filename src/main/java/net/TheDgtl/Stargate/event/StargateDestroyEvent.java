@@ -102,7 +102,7 @@ public class StargateDestroyEvent extends StargateEvent {
 
 	@Override
 	public List<Permission> getRelatedPerms() {
-		return super.defaultPermCompile("sg.destroy");
+		return super.defaultPermCompile("sg.destroy",player.getUniqueId().toString());
 	}
 
 }

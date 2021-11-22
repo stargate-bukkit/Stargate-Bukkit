@@ -93,7 +93,7 @@ public class StargateCreateEvent extends StargateEvent {
 	@Override
 	public List<Permission> getRelatedPerms() {
 		String identifier = "sg.create";
-		return super.defaultPermCompile(identifier);
+		return super.defaultPermCompile(identifier,player.getUniqueId().toString());
 	}
 
 }

@@ -23,9 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.permissions.Permission;
+import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 
 import net.TheDgtl.Stargate.Setting;
@@ -37,10 +39,13 @@ public abstract class StargateEvent extends Event implements Cancellable {
 	// oldname = StargateEvent
     protected final IPortal portal;
     protected boolean cancelled;
+	private PluginManager pm;
+    
     
     public StargateEvent(@NotNull IPortal portal) {
         this.portal = Objects.requireNonNull(portal);
         this.cancelled = false;
+        this.pm = Bukkit.getPluginManager();
     }
 
     public IPortal getPortal() {
@@ -78,24 +83,24 @@ public abstract class StargateEvent extends Event implements Cancellable {
 				identifier = String.valueOf(flag.label).toLowerCase();
 				break;
 			}
-			permList.add( new Permission(permIdentifier + ".type." + flag.label));
+			permList.add(  pm.getPermission(permIdentifier + ".type." + identifier));
 		}
 		return permList;
 	}
 	
-	protected Permission compileNetworkPerm(String permIdentifier) {
-		if(portal.hasFlag(PortalFlag.PERSONAL_NETWORK))
-			return new Permission( permIdentifier + ".network.personal");
+	protected Permission compileNetworkPerm(String permIdentifier, String activator) {
+		if(portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && portal.getNetwork().getName().equals(activator))
+			return pm.getPermission(permIdentifier + ".network.personal");
 		if(portal.getNetwork().getName().equals((String)Stargate.getSetting(Setting.DEFAULT_NET)))
-			return new Permission( permIdentifier + ".network.default");
+			return pm.getPermission( permIdentifier + ".network.default");
 		Permission custom = new Permission( permIdentifier + ".network.custom." + portal.getNetwork().getName());
-		Permission parrent = new Permission(permIdentifier + ".network.custom");
+		Permission parrent = pm.getPermission(permIdentifier + ".network.custom");
 		custom.addParent(parrent, true);
 		return custom;
 	}
 	
 	protected Permission compileWorldPerm(String permIdentifier) {
-		Permission parrent = new Permission(permIdentifier + ".world");
+		Permission parrent = pm.getPermission(permIdentifier + ".world");
 		String permNode = permIdentifier + ".world." + portal.getSignPos().getWorld().getName();
 		Permission world = new Permission(permNode);
 		world.addParent(parrent, true);
@@ -103,18 +108,18 @@ public abstract class StargateEvent extends Event implements Cancellable {
 	}
 	
 	protected Permission compileDesignPerm(String permIdentifier) {
-		Permission parrent = new Permission(permIdentifier + ".design");
+		Permission parrent = pm.getPermission(permIdentifier + ".design");
 		String permNode = permIdentifier + ".design." + portal.getDesignName();
 		Permission design = new Permission(permNode);
 		design.addParent(parrent, true);
 		return design;
 	}
 	
-	protected List<Permission> defaultPermCompile(String permIdentifier){
+	protected List<Permission> defaultPermCompile(String permIdentifier, String activator){
 		List<Permission> permList = new ArrayList<>();
 		permList.addAll(compileFlagPerms(permIdentifier));
 		permList.add(compileWorldPerm(permIdentifier));
-		permList.add(compileNetworkPerm(permIdentifier));
+		permList.add(compileNetworkPerm(permIdentifier,activator));
 		permList.add(compileDesignPerm(permIdentifier));
 		return permList;
 	}

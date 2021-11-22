@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -22,23 +23,18 @@ public class PermissionManager {
 	private Entity player;
 	private LangMsg denyMsg;
 	
-	private final static String FLAGPERMISSION = "stargate.flag";
+	private final static String FLAGPERMISSION = "sg.create.flag.";
 	private final static String CREATEPERMISSION = "sg.create.network";
 
 	public PermissionManager(Entity target) {
 		this.player = target;
 	}
-
-	public enum PortalAction{
-		CREATE, DESTROY, USE;
-	}
-	
-	public enum Select {
-		TYPE, NETWORK, WORLD, FOLLOW;
-	}
 	
 	public EnumSet<PortalFlag> returnAllowedFlags(EnumSet<PortalFlag> flags){
 		for(PortalFlag flag : flags) {
+			if(flag == PortalFlag.PERSONAL_NETWORK || flag == PortalFlag.IRON_DOOR)
+				continue;
+			
 			if(!player.hasPermission( (FLAGPERMISSION + flag.label).toLowerCase() )) {
 				flags.remove(flag);
 			}
@@ -54,11 +50,12 @@ public class PermissionManager {
 		List<Permission> perms = event.getRelatedPerms();
 		
 		for(Permission perm : perms) {
+			Stargate.log(Level.FINEST, " checking permission " + ((perm!=null) ? perm.getName() : "null"));
 			if(!player.hasPermission(perm)) {
+				player.sendMessage("You dont have " + perm.getName());
 				return false;
 			}
 		}
-		//TODO throw event to bukkit event thing 
 		return true;
 	}
 	

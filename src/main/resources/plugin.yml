@@ -53,8 +53,6 @@ permissions:
             description: Allow entering gates opened by another player
           sg.use.world:
             description: Allows players to use portals connecting to any dimension.
-          sg.use.owned: 
-            description: Can use any portal you own.
           sg.use.network:
             description: Allows players to use portals on any network.
             children: 
@@ -160,6 +158,11 @@ permissions:
 #               description: Can create gates with invisible signs.
           sg.create.design:
             description: Can create any portal, regardless of the design (gatefile)
+            children:
+              sg.create.design.nether.gate: true
+              sg.create.design.water.gate: true
+              sg.create.design.wool.gate: true
+              
             
       sg.destroy:
         description: Can destroy any portal
@@ -173,6 +176,10 @@ permissions:
             children:
               sg.destroy.network.personal:
                 description: Can destroy any portals on your personal network.
+              sg.destroy.network.default:
+                description: Can destroy any portals on the default network. (central)
+              sg.destroy.network.custom:
+                description: Can destroy any portals on any custom network.
           sg.destroy.type: 
             description: Can destroy portals, regardless of type.
             children:
@@ -218,11 +225,14 @@ permissions:
             description: A permission set intended to be given to players who will be making basic stargates for personal usage.
             children:
               sg.create.network.personal: true
+              sg.destroy.network.personal: true
               sg.create.type.h: true
               sg.create.type.p: true
-              sg.destroy.owned: true
+              sg.destroy.type.h: true
+              sg.destroy.type.p: true
+              sg.create.design: true
+              sg.destroy.design: true
 #             sg.create.type.o: true
-              sg.destroy.network.personal: true
 #         sg.preset.terminaluser:
 #           description: A permission set intended to be given to players who will be making basic stargates for personal usage.
 #           children:

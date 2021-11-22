@@ -77,6 +77,6 @@ public class StargateActivateEvent extends StargateEvent {
 	@Override
 	public List<Permission> getRelatedPerms() {
 		String identifier = "sg.use";
-		return super.defaultPermCompile(identifier);
+		return super.defaultPermCompile(identifier,player.getUniqueId().toString());
 	}
 }
