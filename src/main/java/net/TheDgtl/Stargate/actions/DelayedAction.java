@@ -6,7 +6,6 @@ public class DelayedAction implements PopulatorAction{
 	/**
 	 * 
 	 */
-	private final SyncronousPopulator syncronousPopulator;
 	int delay;
 	PopulatorAction action;
 	
@@ -16,11 +15,9 @@ public class DelayedAction implements PopulatorAction{
 	 * @param action the action that will run upon completion
 	 * @param syncronousPopulator
 	 */
-	public DelayedAction(SyncronousPopulator syncronousPopulator, int delay, PopulatorAction action){
-		this.syncronousPopulator = syncronousPopulator;
+	public DelayedAction(int delay, PopulatorAction action){
 		this.delay = delay;
 		this.action = action;
-		this.syncronousPopulator.addAction(this);
 	}
 
 	@Override

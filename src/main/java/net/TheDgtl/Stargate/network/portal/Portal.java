@@ -197,7 +197,7 @@ public abstract class Portal implements IPortal {
 			}
 		};
 		// Make the action on a delay
-		new DelayedAction(Stargate.syncSecPopulator, delay, action);
+		Stargate.syncSecPopulator.addAction(new DelayedAction(delay, action));
 	}
 
 	/**
@@ -343,11 +343,11 @@ public abstract class Portal implements IPortal {
 		} else {
 			exit.setDirection(gate.facing.getDirection());
 		}
-		betterTeleport(target,exit);
 		PopulatorAction action = new PopulatorAction() {
 
 			@Override
 			public void run(boolean forceEnd) {
+				betterTeleport(target,exit);
 				target.setVelocity(targetVelocity);
 			}
 

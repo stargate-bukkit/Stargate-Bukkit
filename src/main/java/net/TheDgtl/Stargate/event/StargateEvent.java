@@ -19,6 +19,7 @@ package net.TheDgtl.Stargate.event;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -77,24 +78,24 @@ public abstract class StargateEvent extends Event implements Cancellable {
 				identifier = String.valueOf(flag.label).toLowerCase();
 				break;
 			}
-			permList.add( Permission.loadPermission(permIdentifier + ".type." + flag.label, null));
+			permList.add( new Permission(permIdentifier + ".type." + flag.label));
 		}
 		return permList;
 	}
 	
 	protected Permission compileNetworkPerm(String permIdentifier) {
 		if(portal.hasFlag(PortalFlag.PERSONAL_NETWORK))
-			return Permission.loadPermission( permIdentifier + ".network.personal", null );
+			return new Permission( permIdentifier + ".network.personal");
 		if(portal.getNetwork().getName().equals((String)Stargate.getSetting(Setting.DEFAULT_NET)))
-			return Permission.loadPermission( permIdentifier + ".network.default", null );
+			return new Permission( permIdentifier + ".network.default");
 		Permission custom = new Permission( permIdentifier + ".network.custom." + portal.getNetwork().getName());
-		Permission parrent = Permission.loadPermission(permIdentifier + ".network.custom", null);
+		Permission parrent = new Permission(permIdentifier + ".network.custom");
 		custom.addParent(parrent, true);
 		return custom;
 	}
 	
 	protected Permission compileWorldPerm(String permIdentifier) {
-		Permission parrent = Permission.loadPermission(permIdentifier + ".world", null);
+		Permission parrent = new Permission(permIdentifier + ".world");
 		String permNode = permIdentifier + ".world." + portal.getSignPos().getWorld().getName();
 		Permission world = new Permission(permNode);
 		world.addParent(parrent, true);
@@ -102,7 +103,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
 	}
 	
 	protected Permission compileDesignPerm(String permIdentifier) {
-		Permission parrent = Permission.loadPermission(permIdentifier + ".design", null);
+		Permission parrent = new Permission(permIdentifier + ".design");
 		String permNode = permIdentifier + ".design." + portal.getDesignName();
 		Permission design = new Permission(permNode);
 		design.addParent(parrent, true);

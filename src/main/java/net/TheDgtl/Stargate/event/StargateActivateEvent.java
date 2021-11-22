@@ -30,7 +30,7 @@ import net.TheDgtl.Stargate.network.portal.IPortal;
 
 public class StargateActivateEvent extends StargateEvent {
     private final Player player;
-    private List<String> destinations;
+    private List<IPortal> destinations;
     private String destination;
 
     private static final HandlerList handlers = new HandlerList();
@@ -45,11 +45,10 @@ public class StargateActivateEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateActivateEvent(@NotNull IPortal portal, @NotNull Player player, @NotNull List<String> destinations, @NotNull String destination) {
+    public StargateActivateEvent(@NotNull IPortal portal, @NotNull Player player, @NotNull List<IPortal> destinations) {
         super(Objects.requireNonNull(portal));
         this.player = Objects.requireNonNull(player);
         this.destinations = Objects.requireNonNull(destinations);
-        this.destination = Objects.requireNonNull(destination);
     }
 
     @NotNull
@@ -58,11 +57,11 @@ public class StargateActivateEvent extends StargateEvent {
     }
 
     @NotNull
-    public List<String> getDestinations() {
+    public List<IPortal> getDestinations() {
         return destinations;
     }
 
-    public void setDestinations(@NotNull List<String> destinations) {
+    public void setDestinations(@NotNull List<IPortal> destinations) {
         this.destinations = Objects.requireNonNull(destinations);
     }
 
