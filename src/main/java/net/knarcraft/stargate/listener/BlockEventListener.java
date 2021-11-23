@@ -171,7 +171,7 @@ public class BlockEventListener implements Listener {
         if (cost != 0) {
             String portalName = portal.getName();
             //Cannot pay
-            if (!Stargate.getEconomyConfig().chargePlayerIfNecessary(player, cost)) {
+            if (!EconomyHelper.chargePlayerIfNecessary(player, cost)) {
                 Stargate.debug("onBlockBreak", "Insufficient Funds");
                 EconomyHelper.sendInsufficientFundsMessage(portalName, player, cost);
                 event.setCancelled(true);

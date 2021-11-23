@@ -144,6 +144,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>The max portal name/network length</p>
      */
+    @SuppressWarnings("SameReturnValue")
     public static int getMaxNameNetworkLength() {
         return 13;
     }

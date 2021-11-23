@@ -243,7 +243,7 @@ public final class PermissionHelper {
             return true;
         }
         //Don't charge for free destinations unless specified in the config
-        return dest != null && !Stargate.getEconomyConfig().chargeFreeDestination() && dest.getOptions().isFree();
+        return dest != null && Stargate.getEconomyConfig().freeIfFreeDestination() && dest.getOptions().isFree();
     }
 
     /**
@@ -407,7 +407,7 @@ public final class PermissionHelper {
         }
 
         //Player cannot pay for teleportation
-        int cost = Stargate.getEconomyConfig().getUseCost(player, entrancePortal, destination);
+        int cost = EconomyHelper.getUseCost(player, entrancePortal, destination);
         if (cost > 0) {
             return EconomyHelper.cannotPayTeleportFee(entrancePortal, player, cost);
         }

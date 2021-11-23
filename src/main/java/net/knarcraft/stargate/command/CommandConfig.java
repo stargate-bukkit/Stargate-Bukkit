@@ -68,11 +68,11 @@ public class CommandConfig implements CommandExecutor {
         switch (selectedOption.getDataType()) {
             case BOOLEAN -> configuration.set(selectedOption.getConfigNode(), Boolean.parseBoolean(value));
             case INTEGER -> {
-                try {
-                    configuration.set(selectedOption.getConfigNode(), Integer.parseInt(value));
-                } catch (NumberFormatException exception) {
-                    commandSender.sendMessage(ChatColor.RED + "Invalid number given");
+                Integer intValue = getInteger(commandSender, selectedOption, value);
+                if (intValue == null) {
                     return;
+                } else {
+                    configuration.set(selectedOption.getConfigNode(), intValue);
                 }
             }
             case STRING -> {
@@ -91,6 +91,30 @@ public class CommandConfig implements CommandExecutor {
         //Save the config file and reload if necessary
         Stargate.getInstance().saveConfig();
         reloadIfNecessary(commandSender);
+    }
+
+    /**
+     * Gets an integer from a string
+     *
+     * @param commandSender  <p>The command sender that sent the config command</p>
+     * @param selectedOption <p>The option the command sender is trying to change</p>
+     * @param value          <p>The value given</p>
+     * @return <p>An integer, or null if it was invalid</p>
+     */
+    private Integer getInteger(CommandSender commandSender, ConfigOption selectedOption, String value) {
+        try {
+            int intValue = Integer.parseInt(value);
+
+            if ((selectedOption == ConfigOption.USE_COST || selectedOption == ConfigOption.CREATE_COST) && intValue < 0) {
+                commandSender.sendMessage(ChatColor.RED + "This config option cannot be negative.");
+                return null;
+            }
+
+            return intValue;
+        } catch (NumberFormatException exception) {
+            commandSender.sendMessage(ChatColor.RED + "Invalid number given");
+            return null;
+        }
     }
 
     /**

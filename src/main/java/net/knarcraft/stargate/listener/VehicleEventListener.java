@@ -110,7 +110,7 @@ public class VehicleEventListener implements Listener {
 
         //To prevent the case where the first passenger pays and then the second passenger is denied, this has to be
         // run after it has been confirmed that all passengers are able to pay
-        int cost = Stargate.getEconomyConfig().getUseCost(player, entrancePortal, destinationPortal);
+        int cost = EconomyHelper.getUseCost(player, entrancePortal, destinationPortal);
         if (cost > 0) {
             if (!takePlayerPayment(passengers, entrancePortal, cost)) {
                 return;
@@ -164,7 +164,7 @@ public class VehicleEventListener implements Listener {
         }
 
         //Check if the player is able to afford the teleport fee
-        int cost = Stargate.getEconomyConfig().getUseCost(player, entrancePortal, destinationPortal);
+        int cost = EconomyHelper.getUseCost(player, entrancePortal, destinationPortal);
         boolean canAffordFee = cost <= 0 || Stargate.getEconomyConfig().canAffordFee(player, cost);
         if (!canAffordFee && !entrancePortal.getOptions().isSilent()) {
             Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("ecoInFunds"));
