@@ -1,47 +1,229 @@
-# Stargate Configuration File  v. @version@
-# TODO This needs to be replaced with the config outlined in Discussion Two.
-preferences:
-# TODO Update localisation prompts.
-  language: en
-  usingBungee: true
-  defaultGateNetwork: central
-behaviour:
-  gateLimit: 0
-  handleVehicles: true
-  checkPortalValidity: false
-  checkTraversables: false
-  protectEntrance: false
-  destroyOnExplosion: false
-economy:
-  useEconomy: false
-  taxDestination: 
-  upkeepCost: 0
-  creationCost: 0
-  destroyCost: 0
-  useCost: 0
-  gateOwnerRevenue: false
-  chargeFreeDestination: true
-tweaks:
-  defaultSignColour: BLACK
-  highlightFreeGates: false
-  alphabeticNetworks: false
-  rememberLastDestination: false
-technical:
-  # Name of internal stargate storage
-  database: stargate
-  
-  # Settings for bungee portal storage. Note that this has to be the same for all stargate-bungeeinstances.
-  bungee:
-    # current tested drivers[mysql,mariadb,sqlite]
-    # sqlite not recomended for non local server networks or large networks
-    driver: sqlite
-    database: stargateBungee
-    port:
-    # TODO This should be reset to a default value!
-    address: C:\Users\46737\Desktop\Stupid location
-  debug:
-    # Lowest level of visibility for the plugin
-    debug-level: INFO
-    debug-targets: []
+################################################################################## Version: @version@
+# +--------------▄▄▄-- ‚——. -▄--▄-▄--▄-▄-▄▄▄▄▄---------------------------------------------------+ #
+# |              █▄▄▀ (“‡‡”) █▄▄▀ █▄▄▀ █   █         Support available at: discord.gg/mTaHuK6BVa | #
+# |              █▄▄█  \__/  █  █ █  █ █   █                    ‚-.                              | #
+# |         —————————————————————————————————————————————————— ((_)) ——————————————————          | #
+# |                                                             ‘-’                              | #
+# |         .|'''.|  |''||''|     |     '||''|.    ..|'''.|      |     |''||''| '||''''|         | #
+# |         ||..  '     ||       |||     ||   ||  .|'     '     |||       ||     ||  .           | #
+# |          ''|||.     ||      |  ||    ||''|'   ||    ....   |  ||      ||     ||''|           | #
+# |        .     '||    ||     .''''|.   ||   |.  '|.    ||   ;’   |.     ||     ||              | #
+# |         '....|'    .||.   .|.  .||. .||.  '|'  ''|...'|  .|.  .||.   .||.   .||.....|        | #
+# +----------------------------------------------------------------------------------------------+ #
+# |                        https://spigotmc.org/resources/stargate.87978/                        | #
+# +----------------------------------------------+-----------------------------------------------+ #
+# |      Documentation: https://git.io/Jc6jZ     |       Bug Reports: https://git.io/Jc6jW       | #
+# +----------------------------------------------+-----------------------------------------------+ #
+####################################################################################################
+
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                      General Preferences                                     | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# What language will stargate use when communicating with your users?
+# Supported values: [en, de, es, fr, hu, it, nl, pt, ru, sv, zh-CN, & zh-HK]
+#
+# If SG isn't yet available in your language, please consider becoming a translator:
+# https://dev.bukkit.org/projects/stargate10/localization
+lang: en
+
+bungee:
+    # Are you connected to a bungee-compatible proxy?
+    # Set this to true if you intend on building gates with the 'u' flag.
+    usingBungee: false
+
+    # If you are running multiple instances (i.e. bungee), what is this one's name?
+    # (i.e. hub, smp, pvp, etc.).
+    instanceName: example
     
-configVersion: 5
+    # By default, StarGate uses a local SQLite database to store its data.
+    #
+    # If you are running a large server, we recommend using a remote database.
+    # Note that such a database is required if you intend on building gates with the 'i' flag.
+    useRemoteDatabase: false
+    
+    # Only applicable if useRemoteDatabase is true.
+    remoteDatabaseSettings:    
+        # What driver should stargate use to connect to your database?
+        # Currently supported: [MySQL, MariaDB]
+        driver: MySQL
+    
+        # Where can stargate find your database?
+        address: localhost
+        port: 3306
+    
+        # Should stargate use SSL when connecting to your database?
+        useSSL: true
+    
+        # The name of the database StarGate will use to store its data. Must already exist.
+        # If you are using Bungee, this should be shared across all StarGate instances.
+        database: stargate
+    
+
+        # Credentials to use for the connection:
+        username: root
+        password: ''
+        
+        # Should we generate a database config file ('hikari.properties') in your stargate folder?
+        # Doing so will ignore all the remoteDatabaseSettings above in favour of the new file!
+        #
+        # This allows you to use advanced RDMS features such as pool limits, cache sizes, etc.
+        # A list of available settings can be found at this link: https://git.io/J1hua.
+        advancedDatabaseConfiguration: false
+
+# What network will be used when none has been specified? (Max length 12 characters)
+#
+# Note that this primarily applies to users with the stargate.create.network node.
+# Generally, that node is given to staff (we recommend stargate.create.personal for users).
+defaultGateNetwork: central
+
+# What network will StarGate reserve for terminal ('T') portals?
+#
+# Generally, this feature is used to make a group of portals in spawn known as a 'Terminal'.
+# Using this network, players can pay to connect their towns/bases/shops/etc. to the terminal.
+defaultTerminalNetwork: terminal
+
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                        Gate Behaviour                                        | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# What is the maximum number of gates a single network may contain? (0 for unlimited)
+networkLimit: 0
+
+#  Will vehicles and their passengers be able to travel through StarGate portals?
+#   [minecarts, boats, & saddled mobs = vehicles | players & mobs = passengers]
+handleVehicles: true
+
+# Will the server reverify all existing portals on startup?
+# 
+# This checks that the expected gates are both present and using a valid layout.
+# Designed to catch .gate file modifications, world changes, and terrain regeneration.
+# 
+# …««»»…  If you set this to true, you should ensure checkTraversables (below) is set to false!
+# “NOTE”  Otherwise, disallowed players, block updates, and snowmen can invalidate your portals!
+checkPortalValidity: false
+
+# Should the portal verification process account for 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 (open/closed) materials?
+# ie. will a gate still validate if its portal-closed material isn't present?
+# 
+# When enabled, this setting makes gate validation more comprehensive;
+# 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 blocks will no longer be able to overwrite existing blocks.
+checkTraversables: false
+
+# SG protects gate 𝑓𝑟𝑎𝑚𝑒 materials; should it also protect gate 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 (open/closed) materials?
+# ex. in nether.gate, should nether_portal be protected?
+# 
+# …««»»…  This feature can be somewhat resource intensive when active!
+# “NOTE”  Only enable this if you use breakable 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 materials.
+protectEntrance: false
+
+# Can StarGates be broken via an explosion?
+#  [tnt, creepers, etc.]
+destroyOnExplosion: false
+
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                            Economy                                           | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# Will StarGate interact with your server's economy?
+# 
+#  …««»»…  For these features, StarGate depends on the Vault plugin.
+#  “NOTE”  https://www.spigotmc.org/resources/vault.34315/
+useEconomy: false
+
+# Does your server have a tax account (closed economy)?
+# If so, please provide the name of your tax account (collected money will be sent to it).
+# If not, leave this section blank (collected money will be deleted).
+# 
+# Note that usageCost money is excluded from this system when toowner is true.
+taxAccount: 
+
+# How much will be deducted from players' accounts when creating a new gate?
+creationCost: 0
+
+# How much will be deducted from players' accounts when destroying an existing gate?
+destructionCost: 0
+
+# How much will be deducted from players' accounts when using a stargate to teleport?
+# This does not apply to stargates with the 'f' flag.
+usageCost: 0
+
+# Will fees collected for ‘usecost’ be paid to whomever created (owns) the applicable stargate?
+# If false, collected funds will be deleted.
+gateOwnerRevenue: false
+
+# Will ‘createcost’ still be charged if the new gate's destination is a gate with the 'f' flag?
+# Note that this only applies to fixed gates.
+chargeFreeDestination: true
+
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                       Aesthetic Tweaks                                       | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# What colour will StarGate use for all text when formatting gate signs?
+# Note that players can override this with DYE and/or GLOW_INK_SAC
+#
+# All colour names should follow this format:
+# https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Color.html#field.summary
+defaultSignColour: BLACK
+
+# When scrolling through a networked portal's destination list, will free gates be shown in GREEN?
+highlightFreeGates: false
+
+# For networked gates, are destinations listed alphabetically instead of chronologically?
+# (This applies to all gates that are neither fixed, random, nor terminals.
+alphabeticNetworks: false
+
+# Will the destination a networked portal last connected to be listed first in its scroll menu?
+rememberLastDestination: false
+
+# At what speed should players be sent out of portals?
+# When exiting a gate, players retain their original movement velocity, multiplied by this value.
+gateExitSpeedMultiplier: 1
+
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                           Technical                                          | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# |                                       [ Compatibility ]                                      | #
+# |__      These settings are provided to improve SG 10's interactions with other plugins.     __| #
+
+# When useRemoteDatabase is false, Stargate stores all of its portal data in a flatfile.
+# Where should this flatfile be stored?
+portalFile: stargate.db
+
+# Currently, on startup, a folder is checked for gate layouts stored as ‘.gate’ files.
+# Where can that folder be found?
+gateFolder: plugins/Stargate/gates/
+
+# |                                          [ Logging ]                                         | #
+# |__                   How much information should stargate send to console?                  __| #
+  
+# Possible Values:
+#   |=> SEVERE (Not recommended).
+#   |   - 𝐇𝐢𝐝𝐞 𝐞𝐯𝐞𝐫𝐲𝐭𝐡𝐢𝐧𝐠. 𝑂𝑛𝑙𝑦 𝑝𝑟𝑖𝑛𝑡 𝑡𝑜 𝑐𝑜𝑛𝑠𝑜𝑙𝑒 𝑖𝑓 𝑝𝑙𝑢𝑔𝑖𝑛 𝑓𝑎𝑡𝑎𝑙𝑙𝑦 𝑐𝑟𝑎𝑠ℎ𝑒𝑠
+#   |=> WARNING (Recommended for large and well-tested production implementations).
+#   |   - 𝐇𝐢𝐝𝐞 𝐧𝐨𝐫𝐦𝐚𝐥 𝐛𝐞𝐡𝐚𝐯𝐢𝐨𝐮𝐫. 𝑂𝑛𝑙𝑦 𝑝𝑟𝑖𝑛𝑡 𝑝𝑜𝑡𝑒𝑛𝑡𝑖𝑎𝑙 𝑖𝑠𝑠𝑢𝑒𝑠.
+#   |=> INFO (Recommended for most production implementations).
+#   |   - 𝐏𝐫𝐢𝐧𝐭 𝐧𝐨𝐫𝐦𝐚𝐥 𝐛𝐞𝐡𝐚𝐯𝐢𝐨𝐮𝐫. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑝𝑜𝑟𝑡𝑎𝑙 𝑒𝑣𝑒𝑛𝑡𝑠 (𝑢𝑠𝑎𝑔𝑒, 𝑐𝑟𝑒𝑎𝑡𝑖𝑜𝑛, 𝑑𝑒𝑠𝑡𝑟𝑢𝑐𝑡𝑖𝑜𝑛, 𝑒𝑡𝑐.)
+#   |=> CONFIG (Useful for configuring preproduction instances).
+#   |   - 𝐏𝐫𝐢𝐧𝐭 𝐩𝐞𝐫𝐦𝐢𝐬𝐬𝐢𝐨𝐧 𝐜𝐡𝐞𝐜𝐤𝐬. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑐ℎ𝑒𝑐𝑘𝑠 𝑚𝑎𝑑𝑒 𝑡𝑜 𝑑𝑒𝑡𝑒𝑟𝑚𝑖𝑛𝑒 𝑖𝑓 𝑝𝑙𝑎𝑦𝑒𝑟𝑠 𝑐𝑎𝑛 𝑝𝑒𝑟𝑓𝑜𝑟𝑚 𝑎𝑛 𝑎𝑐𝑡𝑖𝑜𝑛.
+#   |=> FINE (Recommended for basic troubleshooting).
+#   |   - 𝐏𝐫𝐢𝐧𝐭 𝐥𝐢𝐦𝐢𝐭𝐞𝐝 𝐝𝐞𝐛𝐮𝐠 𝐢𝐧𝐟𝐨. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑔𝑒𝑛𝑒𝑟𝑎𝑙 𝑝𝑙𝑢𝑔𝑖𝑛 𝑒𝑣𝑒𝑛𝑡𝑠 (𝑙𝑜𝑎𝑑𝑖𝑛𝑔, 𝑑𝑖𝑠𝑎𝑏𝑙𝑖𝑛𝑔, 𝑐𝑜𝑛𝑛𝑒𝑐𝑡𝑖𝑜𝑛𝑠, 𝑒𝑡𝑐.).
+#   |=> FINER (Recommended for some addon developers).
+#   |   - 𝐏𝐫𝐢𝐧𝐭 𝐦𝐨𝐬𝐭 𝐝𝐞𝐛𝐮𝐠 𝐢𝐧𝐟𝐨. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑚𝑒𝑠𝑠𝑎𝑔𝑒𝑠 𝑑𝑒𝑡𝑎𝑖𝑙𝑖𝑛𝑔 𝑡ℎ𝑒 𝑝𝑙𝑢𝑔𝑖𝑛'𝑠 𝑙𝑜𝑔𝑖𝑐 𝑎𝑛𝑑 𝑏𝑒ℎ𝑎𝑣𝑖𝑜𝑢𝑟.
+#   |=> FINEST (Only used by StarGate's core development team).
+#   |   - 𝐏𝐫𝐢𝐧𝐭 𝐞𝐯𝐞𝐫𝐲𝐭𝐡𝐢𝐧𝐠. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑙𝑖𝑡𝑒𝑟𝑎𝑙𝑙𝑦 𝑒𝑣𝑒𝑟𝑦𝑡ℎ𝑖𝑛𝑔, 𝑖𝑛𝑐𝑙𝑢𝑑𝑖𝑛𝑔 𝑛𝑢𝑚𝑒𝑟𝑜𝑢𝑠 𝑠𝑡𝑎𝑐𝑘 𝑡𝑟𝑎𝑐𝑒𝑠.
+loggingLevel: INFO
+
+# |                                           [ Debug ]                                          | #
+# |__     These settings are provided to help developers diagnose issues with this plugin.     __| #
+
+# An internal value used by the plugin to determine how old your config is.
+# Please do not change this.
+configVersion: 6

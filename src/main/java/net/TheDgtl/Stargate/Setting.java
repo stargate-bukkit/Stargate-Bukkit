@@ -8,24 +8,26 @@ import java.util.HashMap;
  */
 public enum Setting {
 // TODO This needs to be updated per Discussion Two.
-	DEFAULT_NET("preferences.defaultGateNetwork"), LANGUAGE("preferences.language"),
-	USING_BUNGEE("preferences.usingBungee"), 
+	DEFAULT_NET("defaultGateNetwork"), LANGUAGE("lang"),
+	USING_BUNGEE("bungee.usingBungee"), 
 	
-	GATE_LIMIT("behaviour.gateLimit"),
-	HANDLE_VEHICLES("behaviour.handleVehicles"), CHECK_PORTAL_VALIDITY("behaviour.checkPortalValidity"),
-	CHECK_TRAVERSIBLES("behaviour.checkTraversables"), PROTECT_ENTRANCE("behaviour.protectEntrance"),
-	DESTROY_ON_EXPLOSION("behaviour.destroyOnExplosion"),
+	GATE_LIMIT("networkLimit"),
+	HANDLE_VEHICLES("handleVehicles"), CHECK_PORTAL_VALIDITY("checkPortalValidity"),
+	CHECK_TRAVERSIBLES("checkTraversables"), PROTECT_ENTRANCE("protectEntrance"),
+	DESTROY_ON_EXPLOSION("destroyOnExplosion"),
 	
-	USE_ECONOMY("economy.useEconomy"), TAX_DESTINATION("economy.taxDestination"), UPKEEP_COST("economy.upkeepCost"),
-	CREATION_COST("economy.creationCost"), DESTROY_COST("economy.destroyCost"), USE_COST("economy.useCost"),
-	GATE_OWNER_REVENUE("economy.gateOwnerRevenue"), CHARGE_FREE_DESTINATION("economy.chargeFreeDestination"),
+	USE_ECONOMY("useEconomy"), TAX_DESTINATION("taxAccount"), UPKEEP_COST("economy.upkeepCost"),
+	CREATION_COST("creationCost"), DESTROY_COST("destructionCost"), USE_COST("usageCost"),
+	GATE_OWNER_REVENUE("gateOwnerRevenue"), CHARGE_FREE_DESTINATION("chargeFreeDestination"),
 	
-	DEFAULT_SIGN_COLOR("tweaks.defaultSignColour"), HIGHLIGHT_FREE_GATES("tweaks.highlightFreeGates"),
-	ALPHABETIC_NETWORKS("tweaks.alphabeticNetworks"), REMEMBER_LAST_DESTINATION("tweaks.rememberLastDestination"),
+	DEFAULT_SIGN_COLOR("defaultSignColour"), HIGHLIGHT_FREE_GATES("highlightFreeGates"),
+	ALPHABETIC_NETWORKS("alphabeticNetworks"), REMEMBER_LAST_DESTINATION("rememberLastDestination"),
+	GATE_EXIT_SPEED_MULTIPLIER("gateExitSpeedMultiplier"),
 
-	DEBUG_LEVEL("technical.debug.debug-level"), CONFIG_VERSION("configVersion"), DATABASE_NAME("technical.database"),
-	BUNGEE_DRIVER("technical.bungee.driver"), BUNGEE_DATABASE("technical.bungee.database"),
-	BUNGEE_PORT("technical.bungee.port"), BUNGEE_ADDRESS("technical.bungee.address");
+	DEBUG_LEVEL("loggingLevel"), CONFIG_VERSION("configVersion"), DATABASE_NAME("portalFile"),
+	USING_REMOTE_DATABASE("bungee.useRemoteDatabase"), SHOW_HIKARI_CONFIG("bungee.remoteDatabaseSettings.advancedDatabaseConfiguration"),
+	BUNGEE_DRIVER("remoteSettings.driver"), BUNGEE_DATABASE("remoteSettings.database"),
+	BUNGEE_PORT("remoteSettings.port"), BUNGEE_ADDRESS("remoteSettings.address");
 
 	private String key;
 	static private final HashMap<String,Setting> map = new HashMap<>();
@@ -47,5 +49,21 @@ public enum Setting {
 
 	String getKey() {
 		return key;
+	}
+	
+	public static int getInteger(Setting setting) {
+		return Stargate.getConfigStatic().getInt(setting.getKey());
+	}
+	
+	public static double getDouble(Setting setting) {
+		return Stargate.getConfigStatic().getDouble(setting.getKey());
+	}
+	
+	public static String getString(Setting setting) {
+		return Stargate.getConfigStatic().getString(setting.getKey());
+	}
+	
+	public static boolean getBoolean(Setting setting) {
+		return Stargate.getConfigStatic().getBoolean(setting.getKey());
 	}
 }

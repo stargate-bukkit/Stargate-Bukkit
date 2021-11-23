@@ -40,8 +40,8 @@ public class FixedPortal extends Portal{
 	@Override
 	public void drawControll() {
 		String[] lines = new String[4];
-		lines[0] = NameSurround.PORTAL.getSurround(name);
-		lines[1] = NameSurround.DESTI.getSurround(destination);
+		lines[0] = NameSurround.PORTAL.getSurround( super.formatTextFromSign(getColoredName()));
+		lines[1] = NameSurround.DESTI.getSurround( super.formatTextFromSign(loadDestination().getColoredName()));
 		lines[2] = this.network.concatName();
 		lines[3] = (this.network.isPortalNameTaken(destination)) ? ""
 					: Stargate.langManager.getString(LangMsg.DISCONNECTED);

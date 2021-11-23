@@ -17,6 +17,8 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.plugin.java.JavaPlugin;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -32,11 +34,7 @@ public class MySqlDatabase implements Database{
     private HikariDataSource hikariSource;
 
     private HikariConfig config;
-    private final String database;
-    private final String address;
-    private final int port;
-    private final DriverEnum driver;
-	private Stargate plugin;
+	private JavaPlugin plugin;
     
     /**
      * Caches and checks the status of a certain database..
@@ -47,24 +45,25 @@ public class MySqlDatabase implements Database{
      * @param plugin
      * @throws SQLException 
      */
-    public MySqlDatabase(DriverEnum driver, String address, int port, String database, Stargate plugin) throws SQLException {
-    	
-        this.database = database;
-        this.driver = driver;
-        this.port = port;
-        this.address = address;
+    public MySqlDatabase(DriverEnum driver, String address, int port, String database, JavaPlugin plugin) throws SQLException {
         this.plugin = plugin;
         
-        switch(this.driver) {
+        switch(driver) {
         case MYSQL:
 		case MARIADB:
-			setupMySQL(driver, address, port, database);
+			this.config = setupConfig(driver, address, port, database);
 			break;
 		default:
 			Stargate.log(Level.WARNING, "Unknown driver, '"+driver+"' , using SQLite by default. Stargate currently supports SQLite, MariaDB, MySql");
         }
+        hikariSource = setupMySql(this.config);
     }
 
+    public MySqlDatabase(JavaPlugin plugin) throws SQLException {
+    	this.plugin = plugin;
+    	this.config = setupConfig();
+    	hikariSource = setupMySql(this.config);
+    }
     /**
 	 * Gets the current database connection.
 	 * 
@@ -74,20 +73,15 @@ public class MySqlDatabase implements Database{
 	public Connection getConnection() throws SQLException {
 		return this.hikariSource.getConnection();
 	}
-
-	private void setupMySQL(DriverEnum driver, String address, int port, String database) throws SQLException {
-		// Creates a properties file if it doesn't exist
-		if (!new File(plugin.getDataFolder(), "hikari.properties").exists()) {
-			plugin.getLogger().warning("hikari.properties file is missing.");
-			plugin.getLogger().info("Providing you with a new properties file");
-			plugin.getDataFolder().mkdirs();
-    		plugin.saveResource("hikari.properties", true);
-    		getPluginManager().disablePlugin(plugin);
-    	}
-    	
-    	//creates a config based on the properties file
-        this.config = new HikariConfig(plugin.getDataFolder()+"/hikari.properties");
+	
+	private HikariDataSource setupMySql(HikariConfig config) throws SQLException {
+		DriverManager.registerDriver(new com.mysql.jdbc.Driver());
         
+        return new HikariDataSource(config);
+	}
+	
+	private HikariConfig setupConfig(DriverEnum driver, String address, int port, String database) throws SQLException {
+		HikariConfig config = new HikariConfig();
         
         config.setJdbcUrl("jdbc:"+ driver +"://" + address + ":" + port + "/" + database);
         try {
@@ -95,8 +89,20 @@ public class MySqlDatabase implements Database{
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(MySqlDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
-        DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-        
-        this.hikariSource = new HikariDataSource(config);
+        return config;
     }
+	
+	private HikariConfig setupConfig() throws SQLException {
+		// Creates a properties file if it doesn't exist
+		if (!new File(plugin.getDataFolder(), "hikari.properties").exists()) {
+			plugin.getLogger().warning("hikari.properties file is missing.");
+			plugin.getLogger().info("Providing you with a new properties file");
+			plugin.getDataFolder().mkdirs();
+			plugin.saveResource("hikari.properties", true);
+			getPluginManager().disablePlugin(plugin);
+		}
+
+		// creates a config based on the properties file
+		return new HikariConfig(plugin.getDataFolder() + "/hikari.properties");
+	}
 }

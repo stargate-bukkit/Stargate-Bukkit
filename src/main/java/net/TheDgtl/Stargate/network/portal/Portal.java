@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -21,8 +22,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
+import net.TheDgtl.Stargate.Bypass;
 import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.PermissionManager;
+import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
@@ -63,7 +66,6 @@ public abstract class Portal implements IPortal {
 	UUID openFor;
 	IPortal destination = null;
 	private long openTime = -1;
-	final static private double PORTAL_EXIT_SPEED_MODIFIER = 1; 
 	
 
 	Portal(Network network, String name, Block sign, EnumSet<PortalFlag> flags)
@@ -304,6 +306,7 @@ public abstract class Portal implements IPortal {
 			teleportHere(target,gate.facing);
 			return;
 		}
+
 		Stargate.log(Level.FINEST, "Trying to teleport entity, initial velocity: " + target.getVelocity());
 		doTeleport(target);
 	}
@@ -344,7 +347,7 @@ public abstract class Portal implements IPortal {
 			double diffAngle = directionalAngleOperator(originGateDirection, portalFacing.getDirection());
 			Vector endDirection = playerDirection.rotateAroundY(diffAngle);
 			exit.setDirection(endDirection);
-			targetVelocity.rotateAroundY(diffAngle).multiply(PORTAL_EXIT_SPEED_MODIFIER);
+			targetVelocity.rotateAroundY(diffAngle).multiply(Setting.getDouble(Setting.GATE_EXIT_SPEED_MULTIPLIER));
 			
 			if(target instanceof PoweredMinecart) {
 				// TODO: NOT Currently implemented, does not seem to be a accesible way to fix this using spigot api
@@ -370,6 +373,11 @@ public abstract class Portal implements IPortal {
 		Stargate.syncTickPopulator.addAction(action);
 	}
 	
+	/**
+	 * The {@link Entity#teleport(Entity)} method does not handle passengers / vehicles well. This method fixes that
+	 * @param target
+	 * @param loc
+	 */
 	private void betterTeleport(Entity target, Location loc) {
 		/*
 		 * To teleport the whole vessel, regardless of what entity triggered the initial event
@@ -408,8 +416,16 @@ public abstract class Portal implements IPortal {
 		IPortal desti = getFinalDesti();
 		if(desti == null) {
 			target.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
-			betterTeleport(target,getExit());
+			teleportHere(target,gate.facing);
 			return;
+		}
+		
+		int useCost = Setting.getInteger(Setting.USE_COST);
+		if (!(this.hasFlag(PortalFlag.FREE) || desti.hasFlag(PortalFlag.FREE))
+				&& (target instanceof Player && !((Player) target).hasPermission(Bypass.COST_USE.getPerm())
+						&& !Stargate.economyManager.chargePlayer((Player) target, useCost))) {
+			target.sendMessage(Stargate.langManager.getMessage(LangMsg.LACKING_FUNDS, true));
+			teleportHere(target, gate.facing);
 		}
 		/*
 		 * If player enters from back, then take that into consideration
@@ -454,5 +470,57 @@ public abstract class Portal implements IPortal {
 	
 	public String getDesignName() {
 		return gate.getFormat().name;
+	}
+	
+	protected Color[] getDefaultColor() {
+		return new Color[] {Color.BLACK, Color.WHITE};
+	}
+	
+	protected String formatTextFromSign(String[] white_darkText) {
+		switch(gate.getSignLoc().getBlock().getType()) {
+		// Dark signs
+		case DARK_OAK_WALL_SIGN:
+		case WARPED_WALL_SIGN:
+		case CRIMSON_WALL_SIGN:
+		case SPRUCE_WALL_SIGN:
+			return white_darkText[1];
+		default:
+			return white_darkText[0];
+		}
+	}
+	
+	public String[] getColoredName() {
+		Color[] colors = getDefaultColor();
+		if(hasFlag(PortalFlag.BACKWARDS)) {
+			colors = new Color[] {
+					Color.fromRGB(0, 4, 36),
+					Color.fromRGB(224, 227, 255)
+					};
+		}
+		if(hasFlag(PortalFlag.FORCE_SHOW)) {
+			colors = new Color[] {
+					Color.fromRGB(0, 36, 2),
+					Color.fromRGB(224, 255, 226)
+					};
+		}
+		if(hasFlag(PortalFlag.HIDDEN)) {
+			colors = new Color[] {
+					Color.fromRGB(41, 40, 0),
+					Color.fromRGB(255, 254, 222)
+					};
+		}
+		if(hasFlag(PortalFlag.FREE)) {
+			colors = new Color[] {
+					Color.fromRGB(0, 36, 2),
+					Color.fromRGB(224, 255, 226)
+					};
+		}
+		if(hasFlag(PortalFlag.PRIVATE)) {
+			colors = new Color[] {
+					Color.fromRGB(33, 0, 0),
+					Color.fromRGB(255, 222, 222)
+					};
+		}
+		return new String[] { (colors[0] + getName()), (colors[1] + getName())};
 	}
 }

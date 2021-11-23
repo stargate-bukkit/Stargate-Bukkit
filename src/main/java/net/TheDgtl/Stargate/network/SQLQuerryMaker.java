@@ -14,6 +14,8 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 
 public class SQLQuerryMaker {
 	private String tableName;
+	private String bungeeTableName;
+	private String interserverTableName;
 
 
 
@@ -21,19 +23,43 @@ public class SQLQuerryMaker {
 		this.tableName = tableName;
 	}
 	
-	public PreparedStatement compileCreateStatement(Connection conn, boolean isInterserver) throws SQLException {
-		String statementMsg = "CREATE TABLE IF NOT EXISTS "+ tableName +" ("
+	public SQLQuerryMaker(String tableName, String bungeeTableName, String interserverTableName) {
+		this.tableName = tableName;
+		this.bungeeTableName = bungeeTableName;
+		this.interserverTableName = interserverTableName;
+	}
+	
+	public enum Type{
+		LOCAL, BUNGEE, INTERSERVER;
+	}
+	
+	private String getName(Type type) {
+		switch(type) {
+		case LOCAL:
+			return tableName;
+		case BUNGEE:
+			return bungeeTableName;
+		case INTERSERVER:
+			return interserverTableName;
+		default:
+			return null;
+		}
+	}
+	
+	public PreparedStatement compileCreateStatement(Connection conn, Type type) throws SQLException {
+		String statementMsg = "CREATE TABLE IF NOT EXISTS "+ getName(type) +" ("
 				+ " network VARCHAR, name VARCHAR, desti VARCHAR, world VARCHAR,"
 				+ " x INTEGER, y INTEGER, z INTEGER, flags VARCHAR,"
-				+ (isInterserver ? " server VARCHAR, isOnline BOOL," : "")
+				+ ((type == Type.INTERSERVER) ? " server VARCHAR, isOnline BOOL," : "")
 				+ " UNIQUE(network,name) );";
 		
 		return conn.prepareStatement(statementMsg);
 	}
 	
-	public PreparedStatement compileAddStatement(Connection conn, IPortal portal, boolean isInterserver) throws SQLException {
+	public PreparedStatement compileAddStatement(Connection conn, IPortal portal, Type type) throws SQLException {
+		boolean isInterserver = (type == Type.INTERSERVER);
 		PreparedStatement statement = conn.prepareStatement(
-				"INSERT INTO " +tableName
+				"INSERT INTO " + getName(type)
 				+ " (network,name,desti,world,x,y,z,flags"+(isInterserver?",server,isOnline":"")+")"
 				+ " VALUES(?,?,?,?,?,?,?,?"+(isInterserver?",?,?":"")+");");
 		
@@ -61,18 +87,18 @@ public class SQLQuerryMaker {
 		return statement;
 	}
 	
-	public PreparedStatement compileRemoveStatement(Connection conn, IPortal portal) throws SQLException {
+	public PreparedStatement compileRemoveStatement(Connection conn, IPortal portal, Type type) throws SQLException {
 		PreparedStatement output = conn.prepareStatement(
-				"DELETE FROM " + tableName
+				"DELETE FROM " + getName(type)
 				+ " WHERE name = ? AND network = ?");
 		output.setString(1, portal.getName());
 		output.setString(2, portal.getNetwork().getName());
 		return output;
 	}
 	
-	public PreparedStatement compileRefreshPortalStatement(Connection conn, IPortal portal) throws SQLException {
+	public PreparedStatement compileRefreshPortalStatement(Connection conn, IPortal portal, Type type) throws SQLException {
 		PreparedStatement statement = conn.prepareStatement(
-				"UPDATE " + tableName
+				"UPDATE " + getName(type)
 				+ " SET server = ?"
 				+ " WHERE network = ? AND name = ?;" );
 		
@@ -82,9 +108,9 @@ public class SQLQuerryMaker {
 		return statement;
 	}
 	
-	public PreparedStatement changePortalOnlineStatus(Connection conn, IPortal portal, boolean isOnline) throws SQLException {
+	public PreparedStatement changePortalOnlineStatus(Connection conn, IPortal portal, boolean isOnline, Type type) throws SQLException {
 		PreparedStatement statement = conn.prepareStatement(
-				"UPDATE " + tableName
+				"UPDATE " + getName(type)
 				+ " SET isOnline = ?"
 				+ " WHERE network = ? AND name = ?;" );
 		

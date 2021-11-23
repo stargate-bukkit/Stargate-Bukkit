@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.messaging.PluginMessageRecipient;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -185,6 +184,11 @@ public class VirtualPortal implements IPortal {
 	public String getDesignName() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String[] getColoredName() {
+		return new String[] { Color.fromRGB(36, 0, 35) + getName(),Color.fromRGB(255, 224, 254) + getName()};
 	}
 	
 }

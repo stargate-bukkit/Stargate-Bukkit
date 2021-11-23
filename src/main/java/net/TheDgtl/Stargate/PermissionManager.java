@@ -5,12 +5,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
+import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateEvent;
+import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.milkbowl.vault.chat.Chat;
 
 /**
  * Manages the plugin's permissions.
@@ -22,12 +27,15 @@ import net.TheDgtl.Stargate.network.portal.PortalFlag;
 public class PermissionManager {
 	private Entity player;
 	private LangMsg denyMsg;
+	private Chat metadataProvider;
+	private boolean canProcessMetaData;
 	
 	private final static String FLAGPERMISSION = "sg.create.flag.";
 	private final static String CREATEPERMISSION = "sg.create.network";
 
 	public PermissionManager(Entity target) {
 		this.player = target;
+		canProcessMetaData = setupMetadataProvider();
 	}
 	
 	public EnumSet<PortalFlag> returnAllowedFlags(EnumSet<PortalFlag> flags){
@@ -42,6 +50,21 @@ public class PermissionManager {
 		return flags;
 	}
 	
+	/**
+	 * 
+	 * @return true if succesfull
+	 */
+	private boolean setupMetadataProvider() {
+		if(Bukkit.getPluginManager().getPlugin("Vault") == null)
+			return false;
+        RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
+        if (rsp == null) {
+            return false;
+        }
+        metadataProvider = rsp.getProvider();
+        return metadataProvider != null;
+    }
+	
 	public boolean hasPerm(String permission) {
 		return player.hasPermission(permission);
 	}
@@ -52,18 +75,48 @@ public class PermissionManager {
 		for(Permission perm : perms) {
 			Stargate.log(Level.FINEST, " checking permission " + ((perm!=null) ? perm.getName() : "null"));
 			if(!player.hasPermission(perm)) {
-				player.sendMessage("You dont have " + perm.getName());
+				//TODO messaging
+				// denyMsg = LangMsg.<something>
 				return false;
+			}
+		}
+		
+		if ((event instanceof StargateCreateEvent) && event.getPortal().hasFlag(PortalFlag.PERSONAL_NETWORK)
+				&& canProcessMetaData) {
+
+			int maxGates = metadataProvider.getPlayerInfoInteger(player.getWorld().getName(),(Player)player, "gate-limit", -1);
+			if(maxGates == -1) {
+				metadataProvider.getGroupInfoInteger(player.getWorld(), metadataProvider.getPrimaryGroup((Player)player), "gate-limit", -1);
+			}
+			if(maxGates == -1) {
+				maxGates = Setting.getInteger(Setting.GATE_LIMIT);
+			}
+			
+			if(maxGates > -1) {
+				Network net = event.getPortal().getNetwork();
+				int currentAmount = net.size();
+				
+				if(currentAmount >= maxGates) {
+					//TODO messaging , gatelimit reached
+					player.sendMessage("Gatelimit reached");
+					// denyMsg = LangMsg.<something>
+					return false;
+				}
 			}
 		}
 		return true;
 	}
 	
 	public boolean canCreateInNetwork(String network) {
+		if(network == null)
+			return false;
+		
 		boolean hasPerm = true;
 		
 		if(player.getName() == network)
 			hasPerm = player.hasPermission(CREATEPERMISSION + ".personal");
+		else if(network == Setting.getString(Setting.DEFAULT_NET))
+			hasPerm = player.hasPermission(CREATEPERMISSION + ".default");
 		else
 			hasPerm =  player.hasPermission(CREATEPERMISSION + ".custom." + network);
 		if(!hasPerm)
@@ -74,6 +127,4 @@ public class PermissionManager {
 	public LangMsg getDenyMsg() {
 		return denyMsg;
 	}
-	
-	
 }

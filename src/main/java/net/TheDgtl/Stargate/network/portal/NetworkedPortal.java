@@ -21,6 +21,7 @@ import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
 import net.TheDgtl.Stargate.network.Network;
+import net.md_5.bungee.api.ChatColor;
 
 public class NetworkedPortal extends Portal {
 	/**
@@ -63,7 +64,8 @@ public class NetworkedPortal extends Portal {
 	}
 	
 	private String getDestinationName(int index) {
-		return destinations.get(index).getName();
+		//TODO temporary; should be able to parse light/dark netcolors as well later on
+		return super.formatTextFromSign(destinations.get(index).getColoredName());
 	}
 
 	private String[] getDestinations(boolean isForce) {
@@ -121,7 +123,9 @@ public class NetworkedPortal extends Portal {
 				int desti = i + desti1;
 				if(desti == maxLength)
 					break;
+				
 				String aDestinationName = getDestinationName(desti);
+				
 				if (destiIndex == i) {
 					aDestinationName = NameSurround.DESTI.getSurround(aDestinationName);
 				}

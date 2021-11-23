@@ -19,6 +19,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
+import net.TheDgtl.Stargate.Bypass;
 import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
@@ -42,10 +43,24 @@ public class BlockEventListener implements Listener {
 		Location loc = event.getBlock().getLocation();
 		IPortal portal = Network.getPortal(loc, GateStructureType.FRAME);
 		if (portal != null) {
-			int cost = 0; // TODO economy manager
+			int cost = Setting.getInteger(Setting.DESTROY_COST);
 			StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, event.getPlayer(), cost);
+			Bukkit.getPluginManager().callEvent(dEvent);
 			PermissionManager permMngr = new PermissionManager(event.getPlayer());
 			if (permMngr.hasPerm(dEvent) && !dEvent.isCancelled()) {
+				/*
+				 * If setting charge free destination is false, destination portal is PortalFlag.Free and portal is of Fixed type
+				 * or if player has override cost permission, do not collect money
+				 */
+				if (!(!Setting.getBoolean(Setting.CHARGE_FREE_DESTINATION) && portal.hasFlag(PortalFlag.FIXED)
+						&& ((Portal) portal).loadDestination().hasFlag(PortalFlag.FREE))
+						&& !event.getPlayer().hasPermission(Bypass.COST_DESTROY.getPerm())
+						&& !Stargate.economyManager.chargePlayer(event.getPlayer(), dEvent.getCost())) {
+					event.getPlayer().sendMessage(Stargate.langManager.getMessage(LangMsg.LACKING_FUNDS, true));
+					event.setCancelled(true);
+					return;
+				}
+
 				PopulatorAction action = new PopulatorAction() {
 
 					@Override
@@ -86,13 +101,13 @@ public class BlockEventListener implements Listener {
 
 		String[] lines = event.getLines();
 		String network = lines[2];
-		int cost = 0;
+		int cost = Setting.getInteger(Setting.CREATION_COST);
 		Player player = event.getPlayer();
 		EnumSet<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
 		PermissionManager permMngr = new PermissionManager(player);
 		
 		if (network.isBlank())
-			network = (String) Stargate.getSetting(Setting.DEFAULT_NET);
+			network = Setting.getString(Setting.DEFAULT_NET);
 		
 		if(network.endsWith("]") && network.startsWith("[")) {
 			network = network.substring(1, network.length()-1);
@@ -103,8 +118,14 @@ public class BlockEventListener implements Listener {
 			network = "§§§§§§#BUNGEE#§§§§§§";
 		}
 		
+		
 		if(!permMngr.canCreateInNetwork(network)) {
-			network = player.getName();
+			Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to default...");
+			network = Setting.getString(Setting.DEFAULT_NET);
+			if(!permMngr.canCreateInNetwork(network)) {
+				Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to private...");
+				network = player.getName();
+			}
 		}
 		
 		if(player.getName().equals(network) || flags.contains(PortalFlag.PRIVATE))
@@ -124,9 +145,23 @@ public class BlockEventListener implements Listener {
 		try {
 			IPortal portal = Portal.createPortalFromSign(selectedNet, lines, block, flags);
 			StargateCreateEvent sEvent = new StargateCreateEvent(event.getPlayer(),portal,lines,cost);
+			
+			
 			Bukkit.getPluginManager().callEvent(sEvent);
-			if (!permMngr.hasPerm(sEvent) || sEvent.isCancelled()) {
+			
+			boolean hasPerm = permMngr.hasPerm(sEvent);
+			Stargate.log(Level.CONFIG, " player has perm = " + hasPerm);
+			if (sEvent.isCancelled() || !hasPerm) {
+				Stargate.log(Level.CONFIG, " Event was cancelled due to perm or external cancelation");
 				player.sendMessage(Stargate.langManager.getMessage(permMngr.getDenyMsg(), true));
+				portal.destroy();
+				return;
+			}
+			if(!(!Setting.getBoolean(Setting.CHARGE_FREE_DESTINATION) && portal.hasFlag(PortalFlag.FIXED)
+					&& ((Portal) portal).loadDestination().hasFlag(PortalFlag.FREE))
+					&& !event.getPlayer().hasPermission(Bypass.COST_CREATE.getPerm())
+					&& !Stargate.economyManager.chargePlayer(player, sEvent.getCost())) {
+				player.sendMessage(Stargate.langManager.getMessage(LangMsg.LACKING_FUNDS, true));
 				portal.destroy();
 				return;
 			}

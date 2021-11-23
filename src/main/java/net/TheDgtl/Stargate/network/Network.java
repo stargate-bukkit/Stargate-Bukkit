@@ -71,13 +71,13 @@ public class Network {
 		}
 	}
 	
-	public void removePortal(IPortal portal,boolean saveToDatabase) {
+	public void removePortal(IPortal portal,boolean saveToDatabase, SQLQuerryMaker.Type type) {
 		portalList.remove(portal.getName());
 		if(!saveToDatabase)
 			return;
 		try {
 			Connection conn = database.getConnection();
-			PreparedStatement statement = sqlMaker.compileRemoveStatement(conn, portal);
+			PreparedStatement statement = sqlMaker.compileRemoveStatement(conn, portal, type);
 			statement.execute();
 			statement.close();
 			conn.close();
@@ -85,11 +85,15 @@ public class Network {
 			e.printStackTrace();
 		}
 	}
+	
+	public void removePortal(IPortal portal, boolean saveToDatabase) {
+		this.removePortal(portal, saveToDatabase, SQLQuerryMaker.Type.LOCAL);
+	}
 
-	protected void savePortal(Database database, IPortal portal, boolean isInterServer) {
+	protected void savePortal(Database database, IPortal portal, SQLQuerryMaker.Type type) {
 		try {
 			Connection conn = database.getConnection();
-			PreparedStatement statement = sqlMaker.compileAddStatement(conn, portal, isInterServer);
+			PreparedStatement statement = sqlMaker.compileAddStatement(conn, portal, type);
 			statement.execute();
 			statement.close();
 			conn.close();
@@ -102,7 +106,7 @@ public class Network {
 	
 	protected void savePortal(IPortal portal) {
 		boolean isInterServer;
-		savePortal(database, portal, (isInterServer = false));
+		savePortal(database, portal, SQLQuerryMaker.Type.LOCAL);
 	}
 	
 	public void addPortal(IPortal portal, boolean saveToDatabase) {
@@ -222,6 +226,10 @@ public class Network {
 
 	public String getName() {
 		return name;
+	}
+
+	public int size() {
+		return this.getAllPortals().size();
 	}
 	
 }

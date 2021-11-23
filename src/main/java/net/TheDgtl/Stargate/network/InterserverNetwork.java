@@ -32,9 +32,8 @@ import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 public class InterserverNetwork extends Network{
 	private Database interserverDatabase;
 
-	public InterserverNetwork(String netName, Database database, Database interserverDatabase,SQLQuerryMaker sqlMaker) throws NameError {
+	public InterserverNetwork(String netName, Database database,SQLQuerryMaker sqlMaker) throws NameError {
 		super(netName, database, sqlMaker);
-		this.interserverDatabase = interserverDatabase;
 	}
 	
 	public InterserverNetwork(String netName, Database database,SQLQuerryMaker sqlMaker, List<IPortal> portals) throws NameError {
@@ -45,7 +44,7 @@ public class InterserverNetwork extends Network{
 	
 	@Override
 	public void removePortal(IPortal portal, boolean saveToDatabase) {
-		super.removePortal(portal,saveToDatabase);
+		super.removePortal(portal,saveToDatabase,SQLQuerryMaker.Type.BUNGEE);
 		if(!saveToDatabase)
 			return;
 		try {
@@ -60,7 +59,7 @@ public class InterserverNetwork extends Network{
 
 			@Override
 			public void run(boolean forceEnd) {
-				savePortal(interserverDatabase, portal, true);
+				savePortal(interserverDatabase, portal, SQLQuerryMaker.Type.INTERSERVER);
 			}
 
 			@Override
@@ -117,7 +116,7 @@ public class InterserverNetwork extends Network{
 	
 	public void unregisterFromInterserver(IPortal portal) throws SQLException {
 		Connection conn = interserverDatabase.getConnection();
-		PreparedStatement statement = sqlMaker.compileRemoveStatement(conn, portal);
+		PreparedStatement statement = sqlMaker.compileRemoveStatement(conn, portal, SQLQuerryMaker.Type.INTERSERVER);
 		statement.execute();
 		statement.close();
 		conn.close();
@@ -137,7 +136,7 @@ public class InterserverNetwork extends Network{
 		 * Also save it to the interserver database, so that it can be
 		 * seen on other servers
 		 */
-		super.savePortal(database, portal, false);
+		super.savePortal(database, portal, SQLQuerryMaker.Type.BUNGEE);
 		registerToInterserver(portal);
 	}
 }

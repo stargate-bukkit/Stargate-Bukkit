@@ -67,7 +67,7 @@ public interface IPortal {
 		data.put("flags", portal.getAllFlagsString());
 		data.put("name", portal.getName());
 		data.put("net", portal.getNetwork().getName());
-		if((boolean) Stargate.getSetting(Setting.USING_BUNGEE)) {
+		if(Setting.getBoolean(Setting.USING_BUNGEE)) {
 			data.put("server", Stargate.serverName);
 		}
 		String endMsg = type + "{";
@@ -82,4 +82,6 @@ public interface IPortal {
 	}
 
 	String getDesignName();
+
+	String[] getColoredName();
 }

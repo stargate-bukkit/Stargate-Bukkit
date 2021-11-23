@@ -87,7 +87,7 @@ public class Stargate extends JavaPlugin {
 	 */
 	public static final int MAX_TEXT_LENGTH = 40; 
 	
-	
+	public static EconomyManager economyManager;
 	/*
 	 * Used in bungee / waterfall
 	 */
@@ -96,17 +96,17 @@ public class Stargate extends JavaPlugin {
 	public static boolean knowsServerName = false;
 	@Override
 	public void onEnable() {
+		instance = this;
 		// Registers bstats metrics
 		int pluginId = 10451;
 		new Metrics(this, pluginId);
 
-		instance = this;
 		loadConfig();
 		
 		
-		
-		lowestMsgLevel = Level.parse((String) getSetting(Setting.DEBUG_LEVEL));
-		langManager = new LangManager(this, DATAFOLDER + "/" + LANGFOLDER, (String) getSetting(Setting.LANGUAGE));
+		economyManager = new EconomyManager();
+		lowestMsgLevel = Level.parse(Setting.getString(Setting.DEBUG_LEVEL));
+		langManager = new LangManager(this, DATAFOLDER + "/" + LANGFOLDER, Setting.getString(Setting.LANGUAGE));
 		saveDefaultGates();
 
 		GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATAFOLDER + "/" + GATEFOLDER);
@@ -129,7 +129,7 @@ public class Stargate extends JavaPlugin {
 		pm.registerEvents(new PlayerEventListener(),this);
 		pm.registerEvents(new PluginEventListener(),this);
 		pm.registerEvents(new WorldEventListener(),this);
-		if ((boolean) getSetting(Setting.USING_BUNGEE)) {
+		if (Setting.getBoolean(Setting.USING_BUNGEE)) {
 			Messenger msgr = Bukkit.getMessenger();
 
 			msgr.registerOutgoingPluginChannel(this, Channel.BUNGEE.getChannel());
@@ -150,7 +150,7 @@ public class Stargate extends JavaPlugin {
 	private void loadConfig() {
 		saveDefaultConfig();
 		reloadConfig();
-		if ((int) getSetting(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
+		if (Setting.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
 			// TODO refactoring
 		}
 	}
@@ -169,14 +169,14 @@ public class Stargate extends JavaPlugin {
 		 */
 		syncTickPopulator.forceDoAllTasks();
 		syncSecPopulator.forceDoAllTasks();
-		if((boolean)getSetting(Setting.USING_BUNGEE)) {
+		if(Setting.getBoolean(Setting.USING_BUNGEE)) {
 			Messenger msgr = Bukkit.getMessenger();
 			msgr.unregisterOutgoingPluginChannel(this);
 			msgr.unregisterIncomingPluginChannel(this);
 		}
 		getServer().getScheduler().cancelTasks(this);
 		
-		if(!(boolean)getSetting(Setting.USING_BUNGEE))
+		if(!Setting.getBoolean(Setting.USING_BUNGEE))
 			return;
 		
 		try {
@@ -195,8 +195,8 @@ public class Stargate extends JavaPlugin {
 		instance.getLogger().log(priorityLevel, msg);
 	}
 	
-	public static Object getSetting(Setting setting) {
-		return instance.getConfig().get(setting.getKey());
+	public static FileConfiguration getConfigStatic() {
+		return instance.getConfig();
 	}
 	
 	public static void addToQueue(String playerName, String portalName, String netName, boolean isInterserver) {

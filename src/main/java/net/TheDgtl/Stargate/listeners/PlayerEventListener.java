@@ -87,7 +87,7 @@ public class PlayerEventListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		if (!(boolean) Stargate.getSetting(Setting.USING_BUNGEE))
+		if (!Setting.getBoolean(Setting.USING_BUNGEE))
 			return;
 
 		if(!Stargate.knowsServerName) {

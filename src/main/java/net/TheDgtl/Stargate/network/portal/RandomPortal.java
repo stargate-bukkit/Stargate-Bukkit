@@ -29,7 +29,7 @@ public class RandomPortal extends Portal{
 	@Override
 	public void drawControll() {
 		String lines[] = {
-			NameSurround.PORTAL.getSurround(name),
+			NameSurround.PORTAL.getSurround( super.formatTextFromSign(getColoredName())),
 			NameSurround.DESTI.getSurround(Stargate.langManager.getString(LangMsg.RANDOM)),
 			network.concatName(),
 			""
