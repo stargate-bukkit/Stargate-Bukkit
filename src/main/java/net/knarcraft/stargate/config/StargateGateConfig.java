@@ -190,13 +190,13 @@ public final class StargateGateConfig {
     private void loadSignColor(String mainSignColor, String highlightSignColor) {
         if (mainSignColor != null && highlightSignColor != null) {
             try {
-                PortalSignDrawer.setColors(ChatColor.valueOf(mainSignColor.toUpperCase()),
-                        ChatColor.valueOf(highlightSignColor.toUpperCase()));
-                return;
+                PortalSignDrawer.setMainColor(ChatColor.valueOf(highlightSignColor.toUpperCase()));
+                PortalSignDrawer.setHighlightColor(ChatColor.valueOf(highlightSignColor.toUpperCase()));
             } catch (IllegalArgumentException | NullPointerException ignored) {
+                Stargate.logWarning("You have specified an invalid color in your config.yml. Defaulting to BLACK and WHITE");
+                PortalSignDrawer.setMainColor(ChatColor.BLACK);
+                PortalSignDrawer.setHighlightColor(ChatColor.WHITE);
             }
         }
-        Stargate.logWarning("You have specified an invalid color in your config.yml. Defaulting to BLACK and WHITE");
-        PortalSignDrawer.setColors(ChatColor.BLACK, ChatColor.WHITE);
     }
 }

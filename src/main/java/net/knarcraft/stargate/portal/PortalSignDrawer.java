@@ -29,17 +29,25 @@ public class PortalSignDrawer {
     }
 
     /**
-     * Sets the main and highlighting sign colors
+     * Sets the highlighting sign color
      *
-     * <p>The main sign color is used for most text on the sign, while the highlighting color is used for the markings
-     * around portal names and network names ('>','<','-',')','(')</p>
+     * <p>The highlighting color is used for the markings around portal names and network names ('>','<','-',')','(').</p>
      *
-     * @param newMainColor      <p>The new main sign color</p>
      * @param newHighlightColor <p>The new highlight color</p>
      */
-    public static void setColors(ChatColor newMainColor, ChatColor newHighlightColor) {
-        mainColor = newMainColor;
+    public static void setHighlightColor(ChatColor newHighlightColor) {
         highlightColor = newHighlightColor;
+    }
+
+    /**
+     * Sets the main sign color
+     *
+     * <p>The main sign color is used for most text on the sign.</p>
+     *
+     * @param newMainColor <p>The new main sign color</p>
+     */
+    public static void setMainColor(ChatColor newMainColor) {
+        mainColor = newMainColor;
     }
 
     /**

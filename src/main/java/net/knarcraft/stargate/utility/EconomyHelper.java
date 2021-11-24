@@ -1,8 +1,11 @@
 package net.knarcraft.stargate.utility;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.EconomyConfig;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.property.PortalOwner;
+import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -34,9 +37,9 @@ public final class EconomyHelper {
                     "was therefore not possible. Make the owner re-create the portal to fix this.", entrancePortal));
         }
         if (entrancePortal.getGate().getToOwner() && ownerUUID != null) {
-            success = Stargate.getEconomyConfig().chargePlayerIfNecessary(player, ownerUUID, cost);
+            success = chargePlayerIfNecessary(player, ownerUUID, cost);
         } else {
-            success = Stargate.getEconomyConfig().chargePlayerIfNecessary(player, cost);
+            success = chargePlayerIfNecessary(player, cost);
         }
 
         //Send the insufficient funds message
@@ -116,6 +119,116 @@ public final class EconomyHelper {
         String refundMsg = Stargate.getString("ecoRefund");
         refundMsg = replaceVars(refundMsg, portalName, -cost);
         Stargate.getMessageSender().sendSuccessMessage(player, refundMsg);
+    }
+
+    /**
+     * Determines the cost of using a gate
+     *
+     * @param player      <p>The player trying to use the gate</p>
+     * @param source      <p>The source/entry portal</p>
+     * @param destination <p>The destination portal</p>
+     * @return <p>The cost of using the portal</p>
+     */
+    public static int getUseCost(Player player, Portal source, Portal destination) {
+        EconomyConfig config = Stargate.getEconomyConfig();
+        //No payment required
+        if (!config.useEconomy() || source.getOptions().isFree()) {
+            return 0;
+        }
+        //Not charging for free destinations
+        if (destination != null && config.freeIfFreeDestination() && destination.getOptions().isFree()) {
+            return 0;
+        }
+        //Cost is 0 if the player owns this gate and funds go to the owner
+        if (source.getGate().getToOwner() && source.isOwner(player)) {
+            return 0;
+        }
+        //Player gets free gate use
+        if (PermissionHelper.hasPermission(player, "stargate.free.use")) {
+            return 0;
+        }
+
+        return source.getGate().getUseCost();
+    }
+
+    /**
+     * Charges the player for an action, if required
+     *
+     * @param player <p>The player to take money from</p>
+     * @param target <p>The target to pay</p>
+     * @param cost   <p>The cost of the transaction</p>
+     * @return <p>True if the player was charged successfully</p>
+     */
+    public static boolean chargePlayerIfNecessary(Player player, UUID target, int cost) {
+        if (skipPayment(cost)) {
+            return true;
+        }
+        //Charge player
+        return chargePlayer(player, target, cost);
+    }
+
+    /**
+     * Charges a player
+     *
+     * @param player <p>The player to charge</p>
+     * @param amount <p>The amount to charge</p>
+     * @return <p>True if the payment succeeded, or if no payment was necessary</p>
+     */
+    private static boolean chargePlayer(Player player, double amount) {
+        Economy economy = Stargate.getEconomyConfig().getEconomy();
+        if (Stargate.getEconomyConfig().isEconomyEnabled() && economy != null) {
+            if (!economy.has(player, amount)) {
+                return false;
+            }
+            economy.withdrawPlayer(player, amount);
+        }
+        return true;
+    }
+
+    /**
+     * Charges the player for an action, if required
+     *
+     * @param player <p>The player to take money from</p>
+     * @param cost   <p>The cost of the transaction</p>
+     * @return <p>True if the player was charged successfully</p>
+     */
+    public static boolean chargePlayerIfNecessary(Player player, int cost) {
+        if (skipPayment(cost)) {
+            return true;
+        }
+        //Charge player
+        return chargePlayer(player, cost);
+    }
+
+    /**
+     * Checks whether a payment transaction should be skipped
+     *
+     * @param cost <p>The cost of the transaction</p>
+     * @return <p>True if the transaction should be skipped</p>
+     */
+    private static boolean skipPayment(int cost) {
+        return cost == 0 || !Stargate.getEconomyConfig().useEconomy();
+    }
+
+    /**
+     * Charges a player, giving the charge to a target
+     *
+     * @param player <p>The player to charge</p>
+     * @param target <p>The UUID of the player to pay</p>
+     * @param amount <p>The amount to charge</p>
+     * @return <p>True if the payment succeeded, or if no payment was necessary</p>
+     */
+    private static boolean chargePlayer(Player player, UUID target, double amount) {
+        Economy economy = Stargate.getEconomyConfig().getEconomy();
+        if (Stargate.getEconomyConfig().isEconomyEnabled() && player.getUniqueId().compareTo(target) != 0 && economy != null) {
+            if (!economy.has(player, amount)) {
+                return false;
+            }
+            //Take money from the user and give to the owner
+            economy.withdrawPlayer(player, amount);
+            economy.depositPlayer(Bukkit.getOfflinePlayer(target), amount);
+        }
+        return true;
     }
 
     /**

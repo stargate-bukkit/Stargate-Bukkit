@@ -266,7 +266,7 @@ public class PortalCreator {
 
         if (cost > 0) {
             //Deduct the required fee from the player
-            if (!Stargate.getEconomyConfig().chargePlayerIfNecessary(player, cost)) {
+            if (!EconomyHelper.chargePlayerIfNecessary(player, cost)) {
                 EconomyHelper.sendInsufficientFundsMessage(portalName, player, cost);
                 Stargate.debug("createPortal", "Insufficient Funds");
                 return false;
