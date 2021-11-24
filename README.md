@@ -389,6 +389,12 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+#### \[Version 0.9.2.1] EpicKnarvik97 fork
+
+- Makes sure to only reload whatever is necessary when config values are changed using commands, instead of reloading
+  the entire config file every time
+- Protects portals from block placement when protectEntrance is enabled
+
 #### \[Version 0.9.2.0] EpicKnarvik97 fork
 
 - Increases max length of names and networks to 13 characters
