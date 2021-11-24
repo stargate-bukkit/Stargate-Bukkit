@@ -46,8 +46,6 @@ public final class StargateConfig {
     private String portalFolder;
     private String languageName = "en";
 
-    private boolean debuggingEnabled = false;
-    private boolean permissionDebuggingEnabled = false;
     private final Map<ConfigOption, Object> configOptions;
 
     /**
@@ -66,6 +64,18 @@ public final class StargateConfig {
     }
 
     /**
+     * Gets a direct reference to the config option map
+     *
+     * <p>This reference can be used to alter the value of config options. Values should only be altered after it's
+     * been verified that the value is valid.</p>
+     *
+     * @return <p>A reference to the config options map</p>
+     */
+    public Map<ConfigOption, Object> getConfigOptionsReference() {
+        return configOptions;
+    }
+
+    /**
      * Finish the config setup by loading languages, gates and portals, and loading economy if vault is loaded
      */
     public void finishSetup() {
@@ -81,7 +91,7 @@ public final class StargateConfig {
         languageLoader.reload();
 
         messageSender = new MessageSender(languageLoader);
-        if (debuggingEnabled) {
+        if (isDebuggingEnabled()) {
             languageLoader.debug();
         }
 
@@ -130,7 +140,7 @@ public final class StargateConfig {
      * @return <p>Whether debugging is enabled</p>
      */
     public boolean isDebuggingEnabled() {
-        return debuggingEnabled;
+        return (boolean) configOptions.get(ConfigOption.DEBUG);
     }
 
     /**
@@ -139,7 +149,7 @@ public final class StargateConfig {
      * @return <p>Whether permission debugging is enabled</p>
      */
     public boolean isPermissionDebuggingEnabled() {
-        return permissionDebuggingEnabled;
+        return (boolean) configOptions.get(ConfigOption.PERMISSION_DEBUG);
     }
 
     /**
@@ -186,6 +196,17 @@ public final class StargateConfig {
      * Un-loads all loaded data
      */
     private void unload() {
+        //De-activate, close and unload all loaded portals
+        unloadAllPortals();
+
+        //Clear all loaded gates
+        GateHandler.clearGates();
+    }
+
+    /**
+     * Un-loads all loaded portals
+     */
+    public void unloadAllPortals() {
         //De-activate all currently active portals
         for (Portal activePortal : activePortalsQueue) {
             activePortal.getPortalActivator().deactivate();
@@ -201,9 +222,6 @@ public final class StargateConfig {
 
         //Clear all loaded portals
         PortalRegistry.clearPortals();
-
-        //Clear all loaded gates
-        GateHandler.clearGates();
     }
 
     /**
@@ -256,7 +274,7 @@ public final class StargateConfig {
         //Update the language loader in case the loaded language changed
         languageLoader.setChosenLanguage(languageName);
         languageLoader.reload();
-        if (debuggingEnabled) {
+        if (isDebuggingEnabled()) {
             languageLoader.debug();
         }
 
@@ -267,7 +285,7 @@ public final class StargateConfig {
     /**
      * Starts the listener for listening to BungeeCord messages
      */
-    private void startStopBungeeListener(boolean start) {
+    public void startStopBungeeListener(boolean start) {
         Messenger messenger = Bukkit.getMessenger();
         String bungeeChannel = "BungeeCord";
 
@@ -283,7 +301,7 @@ public final class StargateConfig {
     /**
      * Reloads economy by enabling or disabling it as necessary
      */
-    private void reloadEconomy() {
+    public void reloadEconomy() {
         EconomyConfig economyConfig = getEconomyConfig();
         if (economyConfig.isEconomyEnabled() && economyConfig.getEconomy() == null) {
             setupVaultEconomy();
@@ -341,10 +359,6 @@ public final class StargateConfig {
         //Get important folders from the config
         portalFolder = (String) configOptions.get(ConfigOption.PORTAL_FOLDER);
         gateFolder = (String) configOptions.get(ConfigOption.GATE_FOLDER);
-
-        //Get enabled debug settings from the config
-        debuggingEnabled = (boolean) configOptions.get(ConfigOption.DEBUG);
-        permissionDebuggingEnabled = (boolean) configOptions.get(ConfigOption.PERMISSION_DEBUG);
 
         //If users have an outdated config, assume they also need to update their default gates
         if (isMigrating) {

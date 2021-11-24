@@ -31,7 +31,12 @@ public final class EconomyConfig {
      */
     public EconomyConfig(Map<ConfigOption, Object> configOptions) {
         this.configOptions = configOptions;
-        loadEconomyConfig(configOptions);
+        try {
+            String freeColor = (String) configOptions.get(ConfigOption.FREE_GATES_COLOR);
+            PortalSignDrawer.setFreeColor(ChatColor.valueOf(freeColor.toUpperCase()));
+        } catch (IllegalArgumentException | NullPointerException ignored) {
+            PortalSignDrawer.setFreeColor(ChatColor.DARK_GREEN);
+        }
     }
 
     /**
@@ -217,21 +222,6 @@ public final class EconomyConfig {
             return 0;
         } else {
             return gate.getDestroyCost();
-        }
-    }
-
-    /**
-     * Loads all config values related to economy
-     *
-     * @param configOptions <p>The loaded config options to get values from</p>
-     */
-    private void loadEconomyConfig(Map<ConfigOption, Object> configOptions) {
-
-        try {
-            String freeColor = (String) configOptions.get(ConfigOption.FREE_GATES_COLOR);
-            PortalSignDrawer.setFreeColor(ChatColor.valueOf(freeColor.toUpperCase()));
-        } catch (IllegalArgumentException | NullPointerException ignored) {
-            PortalSignDrawer.setFreeColor(ChatColor.DARK_GREEN);
         }
     }
 
