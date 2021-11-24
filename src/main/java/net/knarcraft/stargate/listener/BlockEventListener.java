@@ -25,6 +25,7 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
@@ -94,6 +95,22 @@ public class BlockEventListener implements Listener {
         Stargate.debug("onSignChange", "Initialized stargate: " + portal.getName());
         Stargate.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(),
                 portal::drawSign, 1);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (event.isCancelled() || !Stargate.getGateConfig().protectEntrance()) {
+            return;
+        }
+        Block block = event.getBlock();
+        Player player = event.getPlayer();
+
+        Portal portal = PortalHandler.getByEntrance(block);
+        if (portal != null) {
+            //Prevent blocks from being placed in the entrance, if protectEntrance is enabled, as breaking the block 
+            // would destroy the portal
+            event.setCancelled(true);
+        }
     }
 
     /**
