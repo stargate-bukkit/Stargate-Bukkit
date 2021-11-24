@@ -31,7 +31,6 @@ import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 
 import net.TheDgtl.Stargate.Setting;
-import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 

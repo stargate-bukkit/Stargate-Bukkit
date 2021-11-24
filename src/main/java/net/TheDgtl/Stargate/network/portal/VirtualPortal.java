@@ -1,12 +1,13 @@
 package net.TheDgtl.Stargate.network.portal;
 
+import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.UUID;
 import java.util.logging.Level;
 
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
@@ -23,6 +24,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateProtocol;
 import net.TheDgtl.Stargate.network.InterserverNetwork;
 import net.TheDgtl.Stargate.network.Network;
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * A virtual portal, which does not exist. Symbolises a portal that is outside
@@ -37,12 +39,14 @@ public class VirtualPortal implements IPortal {
 	private String name;
 	private Network network;
 	private EnumSet<PortalFlag> flags;
+	private UUID ownerUUID;
 
-	public VirtualPortal(String server, String name, Network net, EnumSet<PortalFlag> flags) {
+	public VirtualPortal(String server, String name, Network net, EnumSet<PortalFlag> flags, UUID ownerUUID) {
 		this.server = server;
 		this.name = name;
 		this.network = net;
 		this.flags = flags;
+		this.ownerUUID = ownerUUID;
 		network.addPortal(this,false);
 	}
 
@@ -187,8 +191,14 @@ public class VirtualPortal implements IPortal {
 	}
 
 	@Override
-	public String[] getColoredName() {
-		return new String[] { Color.fromRGB(36, 0, 35) + getName(),Color.fromRGB(255, 224, 254) + getName()};
+	public String getColoredName(boolean isLightSign) {
+		return (isLightSign ? ChatColor.of("#240023") : ChatColor.of("#FFE0FE")) + getName()
+				+ ChatColor.BLACK;
 	}
-	
+
+	@Override
+	public UUID getOwnerUUID() {
+		return this.getOwnerUUID();
+	}
+
 }

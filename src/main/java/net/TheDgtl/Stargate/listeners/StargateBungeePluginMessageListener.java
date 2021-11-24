@@ -23,6 +23,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InvalidClassException;
 import java.util.EnumSet;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
@@ -146,8 +147,9 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 		String network = json.get(StargateProtocol.NETWORK.toString()).getAsString();
 		String server = json.get(StargateProtocol.SERVER.toString()).getAsString();
 		String flags = json.get(StargateProtocol.PORTAL_FLAG.toString()).getAsString();
+		UUID ownerUUID =  UUID.fromString(json.get(StargateProtocol.OWNER.toString()).getAsString());
 		InterserverNetwork targetNet = (InterserverNetwork)Stargate.factory.getNetwork(network, true);
-		VirtualPortal portal = new VirtualPortal(server,portalName,targetNet,PortalFlag.parseFlags(flags));
+		VirtualPortal portal = new VirtualPortal(server,portalName,targetNet,PortalFlag.parseFlags(flags),ownerUUID);
 		
 		switch(type) {
 		case TYPE_PORTAL_ADD:

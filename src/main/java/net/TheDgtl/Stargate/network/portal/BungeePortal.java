@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.block.Block;
@@ -39,9 +40,9 @@ public class BungeePortal extends Portal{
 	private LegacyVirtualPortal targetPortal;
 	private String serverDesti;
 
-	BungeePortal(Network network, String name, String desti,String serverDesti, Block sign, EnumSet<PortalFlag> flags)
+	BungeePortal(Network network, String name, String desti,String serverDesti, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
 			throws NameError, NoFormatFound, GateConflict {
-		super(network, name, sign, flags);
+		super(network, name, sign, flags, ownerUUID);
 
 		/*
 		 * Create a virtual portal that handles everything related
@@ -51,7 +52,7 @@ public class BungeePortal extends Portal{
 		 * Note that this is only used locally inside this portal
 		 * and can not be found (should not) in any network anywhere.
 		 */
-		targetPortal = new LegacyVirtualPortal(serverDesti,desti,LEGACY_NETWORK,EnumSet.noneOf(PortalFlag.class));
+		targetPortal = new LegacyVirtualPortal(serverDesti,desti,LEGACY_NETWORK,EnumSet.noneOf(PortalFlag.class), ownerUUID);
 		this.serverDesti = serverDesti;
 		cheatNet = new Network(serverDesti,null,null);
 		drawControll();
@@ -65,9 +66,9 @@ public class BungeePortal extends Portal{
 		Stargate.log(Level.FINEST, "serverDesti = " + serverDesti);
 		
 		String[] lines = new String[4];
-		lines[0] = NameSurround.PORTAL.getSurround(super.formatTextFromSign( getColoredName()));
-		lines[1] = NameSurround.DESTI.getSurround(super.formatTextFromSign(targetPortal.getColoredName()));
-		lines[2] = serverDesti;
+		lines[0] = IPortal.getDefaultColor(super.isLightSign()) + NameSurround.PORTAL.getSurround(getColoredName(super.isLightSign()));
+		lines[1] = IPortal.getDefaultColor(super.isLightSign()) + NameSurround.DESTI.getSurround(targetPortal.getColoredName(super.isLightSign()));
+		lines[2] = IPortal.getDefaultColor(super.isLightSign()) + serverDesti;
 		lines[3] = "";
 		getGate().drawControll(lines,!hasFlag(PortalFlag.ALWAYS_ON));
 	}
@@ -84,8 +85,8 @@ public class BungeePortal extends Portal{
 	
 	class LegacyVirtualPortal extends VirtualPortal{
 
-		public LegacyVirtualPortal(String server, String name, Network net, EnumSet<PortalFlag> flags) {
-			super(server, name, net, flags);
+		public LegacyVirtualPortal(String server, String name, Network net, EnumSet<PortalFlag> flags, UUID ownerUUID) {
+			super(server, name, net, flags, ownerUUID);
 		}
 		
 		@Override

@@ -96,6 +96,7 @@ public class InterserverNetwork extends Network{
 			            data.add(StargateProtocol.PORTAL.toString(), new JsonPrimitive(portal.getName()));
 			            data.add(StargateProtocol.SERVER.toString(), new JsonPrimitive(Stargate.serverName));
 			            data.add(StargateProtocol.PORTAL_FLAG.toString(), new JsonPrimitive(portal.getAllFlagsString()));
+			            data.add(StargateProtocol.OWNER.toString(), new JsonPrimitive(portal.getOwnerUUID().toString()));
 			            msgData.writeUTF(data.toString());
 			            Bukkit.getServer().sendPluginMessage(stargate, Channel.BUNGEE.getChannel(), bao.toByteArray());
 					} catch (IOException ex) {

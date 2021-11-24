@@ -128,8 +128,10 @@ public class BlockEventListener implements Listener {
 			}
 		}
 		
-		if(player.getName().equals(network) || flags.contains(PortalFlag.PRIVATE))
+		if(player.getName().equals(network) || flags.contains(PortalFlag.PRIVATE)) {
 			flags.add(PortalFlag.PERSONAL_NETWORK);
+			network = player.getName();
+		}
 		
 		flags = permMngr.returnAllowedFlags(flags);
 		
@@ -143,7 +145,7 @@ public class BlockEventListener implements Listener {
 		
 
 		try {
-			IPortal portal = Portal.createPortalFromSign(selectedNet, lines, block, flags);
+			IPortal portal = Portal.createPortalFromSign(selectedNet, lines, block, flags, event.getPlayer().getUniqueId());
 			StargateCreateEvent sEvent = new StargateCreateEvent(event.getPlayer(),portal,lines,cost);
 			
 			

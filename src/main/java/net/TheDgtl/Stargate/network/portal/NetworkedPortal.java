@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
@@ -36,9 +37,9 @@ public class NetworkedPortal extends Portal {
 	private List<IPortal> destinations = new ArrayList<>();
 	private static int ACTIVE_DELAY = 15; // seconds
 
-	public NetworkedPortal(Network network, String name, Block sign, EnumSet<PortalFlag> flags)
+	public NetworkedPortal(Network network, String name, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
 			throws NoFormatFound, GateConflict, NameError {
-		super(network, name, sign, flags);
+		super(network, name, sign, flags, ownerUUID);
 
 		
 		drawControll();
@@ -65,11 +66,11 @@ public class NetworkedPortal extends Portal {
 	
 	private String getDestinationName(int index) {
 		//TODO temporary; should be able to parse light/dark netcolors as well later on
-		return super.formatTextFromSign(destinations.get(index).getColoredName());
+		return destinations.get(index).getColoredName(super.isLightSign());
 	}
 
-	private String[] getDestinations(boolean isForce) {
-		HashSet<String> tempPortalList = network.getAvailablePortals( (hasFlag(PortalFlag.FORCE_SHOW) || isForce), this);
+	private String[] getDestinations(Player actor) {
+		HashSet<String> tempPortalList = network.getAvailablePortals(actor, this);
 		return tempPortalList.toArray(new String[0]);
 	}
 
@@ -110,7 +111,7 @@ public class NetworkedPortal extends Portal {
 	@Override
 	public void drawControll() {
 		String[] lines = new String[4];
-		lines[0] = NameSurround.PORTAL.getSurround(name);
+		lines[0] = NameSurround.PORTAL.getSurround(super.getColoredName(super.isLightSign()));
 		if (!isActive) {
 			lines[1] = Stargate.langManager.getString(LangMsg.RIGHT_CLICK);
 			lines[2] = Stargate.langManager.getString(LangMsg.TO_USE);
@@ -158,7 +159,7 @@ public class NetworkedPortal extends Portal {
 		if(isActive)
 			return;
 		
-		String[] destiNames = getDestinations(false);
+		String[] destiNames = getDestinations(actor);
 		for(String name : destiNames) {
 			destinations.add(network.getPortal(name));
 		}

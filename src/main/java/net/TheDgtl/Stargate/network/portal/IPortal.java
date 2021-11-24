@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.network.portal;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -16,6 +17,7 @@ import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.network.InterserverNetwork;
 import net.TheDgtl.Stargate.network.Network;
+import net.md_5.bungee.api.ChatColor;
 
 public interface IPortal {
 
@@ -81,7 +83,13 @@ public interface IPortal {
 		return endMsg + "}"; 
 	}
 
+	static public ChatColor getDefaultColor(boolean isLightSign) {
+		return isLightSign?ChatColor.BLACK:ChatColor.WHITE;
+	}
+	
 	String getDesignName();
 
-	String[] getColoredName();
+	String getColoredName(boolean isLightSign);
+	
+	UUID getOwnerUUID();
 }

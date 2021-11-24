@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,8 +13,10 @@ import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.util.BlockVector;
 
+import net.TheDgtl.Stargate.Bypass;
 import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.database.Database;
@@ -126,14 +129,19 @@ public class Network {
 		}
 	}
  	
-	public HashSet<String> getAvailablePortals(boolean isOverrideHidden, IPortal requester){
+	public HashSet<String> getAvailablePortals(Player actor, IPortal requester){
 		HashSet<String> tempPortalList = new HashSet<>(portalList.keySet());
 		tempPortalList.remove(requester.getName());
-		if (!isOverrideHidden) {
+		if (!requester.hasFlag(PortalFlag.FORCE_SHOW)) {
 			HashSet<String> removeList = new HashSet<>();
 			for (String portalName : tempPortalList) {
-				//TODO PERMS: instead of checking this, check if re 
-				if (getPortal(portalName).hasFlag(PortalFlag.HIDDEN))
+				IPortal target = getPortal(portalName);
+				if (target.hasFlag(PortalFlag.HIDDEN)
+						&& (actor != null && !actor.hasPermission(Bypass.HIDDEN.getPerm())))
+					removeList.add(portalName);
+				if (target.hasFlag(PortalFlag.PRIVATE) && actor != null
+						&& !actor.hasPermission(Bypass.PRIVATE.getPerm())
+						&& !actor.getUniqueId().equals(target.getOwnerUUID()))
 					removeList.add(portalName);
 			}
 			tempPortalList.removeAll(removeList);

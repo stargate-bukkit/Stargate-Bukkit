@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.network.portal;
 import java.util.EnumSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -19,8 +20,8 @@ public class RandomPortal extends Portal{
 
 	private final Random randomizer = new Random();
 	
-	RandomPortal(Network network, String name, Block sign, EnumSet<PortalFlag> flags) throws NameError, NoFormatFound, GateConflict {
-		super(network, name, sign, flags);
+	RandomPortal(Network network, String name, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID) throws NameError, NoFormatFound, GateConflict {
+		super(network, name, sign, flags, ownerUUID);
 	}
 
 	@Override
@@ -29,9 +30,9 @@ public class RandomPortal extends Portal{
 	@Override
 	public void drawControll() {
 		String lines[] = {
-			NameSurround.PORTAL.getSurround( super.formatTextFromSign(getColoredName())),
-			NameSurround.DESTI.getSurround(Stargate.langManager.getString(LangMsg.RANDOM)),
-			network.concatName(),
+				IPortal.getDefaultColor(super.isLightSign()) + NameSurround.PORTAL.getSurround( getColoredName(super.isLightSign())),
+				IPortal.getDefaultColor(super.isLightSign()) + NameSurround.DESTI.getSurround(Stargate.langManager.getString(LangMsg.RANDOM)),
+				IPortal.getDefaultColor(super.isLightSign()) + network.concatName(),
 			""
 		};
 		getGate().drawControll(lines,!hasFlag(PortalFlag.ALWAYS_ON));
@@ -39,7 +40,7 @@ public class RandomPortal extends Portal{
 
 	@Override
 	public IPortal loadDestination() {
-		Set<String> allPortalNames = network.getAvailablePortals(hasFlag(PortalFlag.FORCE_SHOW), this);
+		Set<String> allPortalNames = network.getAvailablePortals(null, this);
 		String[] destinations = allPortalNames.toArray(new String[0]);
 		if (destinations.length < 1) {
 			return null;

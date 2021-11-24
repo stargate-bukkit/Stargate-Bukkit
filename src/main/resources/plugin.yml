@@ -36,6 +36,9 @@ permissions:
                 description: Can see and use P gates
               sg.admin.bypass.hidden:
                 description: Can see H gates
+              # TODO better description
+              sg.admin.bypass.gatelimit:
+                description: Bypass the gatelimit
               sg.admin.bypass.cost:
                 description: Bypass vault costs associated with portals
                 children:

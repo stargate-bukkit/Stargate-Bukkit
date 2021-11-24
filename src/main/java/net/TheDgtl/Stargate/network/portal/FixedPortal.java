@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.network.portal;
 
 import java.util.EnumSet;
+import java.util.UUID;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -19,9 +20,9 @@ public class FixedPortal extends Portal{
 	 */
 	String destination;
 
-	public FixedPortal(Network network, String name, String destiName, Block sign, EnumSet<PortalFlag> flags)
+	public FixedPortal(Network network, String name, String destiName, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
 			throws NoFormatFound, GateConflict, NameError {
-		super(network, name, sign, flags);
+		super(network, name, sign, flags, ownerUUID);
 		destination = destiName;
 
 		drawControll();
@@ -40,14 +41,14 @@ public class FixedPortal extends Portal{
 	@Override
 	public void drawControll() {
 		String[] lines = new String[4];
-		lines[0] = NameSurround.PORTAL.getSurround( super.formatTextFromSign(getColoredName()));
-		lines[1] = NameSurround.DESTI.getSurround( super.formatTextFromSign(loadDestination().getColoredName()));
+		lines[0] = NameSurround.PORTAL.getSurround(getColoredName(super.isLightSign()));
+		lines[1] = NameSurround.DESTI.getSurround( loadDestination().getColoredName(super.isLightSign()));
 		lines[2] = this.network.concatName();
-		lines[3] = (this.network.isPortalNameTaken(destination)) ? ""
-					: Stargate.langManager.getString(LangMsg.DISCONNECTED);
-		getGate().drawControll(lines,!hasFlag(PortalFlag.ALWAYS_ON));
+		lines[3] = ((this.network.isPortalNameTaken(destination)) ? ""
+				: Stargate.langManager.getString(LangMsg.DISCONNECTED));
+		getGate().drawControll(lines, !hasFlag(PortalFlag.ALWAYS_ON));
 	}
-	
+
 	@Override
 	public IPortal loadDestination() {
 		return this.network.getPortal(destination);

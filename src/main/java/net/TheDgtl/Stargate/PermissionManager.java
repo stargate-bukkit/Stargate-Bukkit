@@ -30,7 +30,7 @@ public class PermissionManager {
 	private Chat metadataProvider;
 	private boolean canProcessMetaData;
 	
-	private final static String FLAGPERMISSION = "sg.create.flag.";
+	private final static String FLAGPERMISSION = "sg.create.type.";
 	private final static String CREATEPERMISSION = "sg.create.network";
 
 	public PermissionManager(Entity target) {
@@ -77,6 +77,7 @@ public class PermissionManager {
 			if(!player.hasPermission(perm)) {
 				//TODO messaging
 				// denyMsg = LangMsg.<something>
+				denyMsg = LangMsg.NET_DENY;
 				return false;
 			}
 		}
@@ -92,13 +93,13 @@ public class PermissionManager {
 				maxGates = Setting.getInteger(Setting.GATE_LIMIT);
 			}
 			
-			if(maxGates > -1) {
+			if(maxGates > -1 && !player.hasPermission(Bypass.GATE_LIMIT.getPerm())) {
 				Network net = event.getPortal().getNetwork();
 				int currentAmount = net.size();
 				
 				if(currentAmount >= maxGates) {
 					//TODO messaging , gatelimit reached
-					player.sendMessage("Gatelimit reached");
+					denyMsg = LangMsg.NET_FULL;
 					// denyMsg = LangMsg.<something>
 					return false;
 				}

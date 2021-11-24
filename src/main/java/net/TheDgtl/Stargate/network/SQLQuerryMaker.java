@@ -49,7 +49,7 @@ public class SQLQuerryMaker {
 	public PreparedStatement compileCreateStatement(Connection conn, Type type) throws SQLException {
 		String statementMsg = "CREATE TABLE IF NOT EXISTS "+ getName(type) +" ("
 				+ " network VARCHAR, name VARCHAR, desti VARCHAR, world VARCHAR,"
-				+ " x INTEGER, y INTEGER, z INTEGER, flags VARCHAR,"
+				+ " x INTEGER, y INTEGER, z INTEGER, flags VARCHAR, ownerUUID VARCHAR,"
 				+ ((type == Type.INTERSERVER) ? " server VARCHAR, isOnline BOOL," : "")
 				+ " UNIQUE(network,name) );";
 		
@@ -60,8 +60,8 @@ public class SQLQuerryMaker {
 		boolean isInterserver = (type == Type.INTERSERVER);
 		PreparedStatement statement = conn.prepareStatement(
 				"INSERT INTO " + getName(type)
-				+ " (network,name,desti,world,x,y,z,flags"+(isInterserver?",server,isOnline":"")+")"
-				+ " VALUES(?,?,?,?,?,?,?,?"+(isInterserver?",?,?":"")+");");
+				+ " (network,name,desti,world,x,y,z,flags,ownerUUID"+(isInterserver?",server,isOnline":"")+")"
+				+ " VALUES(?,?,?,?,?,?,?,?,?"+(isInterserver?",?,?":"")+");");
 		
 		statement.setString(1, portal.getNetwork().getName());
 		statement.setString(2, portal.getName());
@@ -78,10 +78,11 @@ public class SQLQuerryMaker {
 		statement.setInt(6, loc.getBlockY());
 		statement.setInt(7, loc.getBlockZ());
 		statement.setString(8, portal.getAllFlagsString());
+		statement.setString(9, portal.getOwnerUUID().toString());
 		
 		if(isInterserver) {
-			statement.setString(9, Stargate.serverName);
-			statement.setBoolean(10, true);
+			statement.setString(10, Stargate.serverName);
+			statement.setBoolean(11, true);
 		}
 		
 		return statement;

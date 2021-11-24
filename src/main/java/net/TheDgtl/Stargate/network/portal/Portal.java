@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.network.portal;
 
+import java.awt.Color;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +8,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -39,6 +39,7 @@ import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * The parent class for ever portal that interacts with server worlds
@@ -66,10 +67,12 @@ public abstract class Portal implements IPortal {
 	UUID openFor;
 	IPortal destination = null;
 	private long openTime = -1;
+	private final UUID ownerUUID;
 	
 
-	Portal(Network network, String name, Block sign, EnumSet<PortalFlag> flags)
+	Portal(Network network, String name, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
 			throws NameError, NoFormatFound, GateConflict {
+		this.ownerUUID = ownerUUID;
 		this.network = network;
 		this.name = name;
 		this.flags = flags;
@@ -440,15 +443,15 @@ public abstract class Portal implements IPortal {
 		close(false);
 	}
 	
-	public static IPortal createPortalFromSign(Network net, String[] lines, Block block, EnumSet<PortalFlag> flags)
+	public static IPortal createPortalFromSign(Network net, String[] lines, Block block, EnumSet<PortalFlag> flags, UUID ownerUUID)
 			throws NameError, NoFormatFound, GateConflict {
 		if(flags.contains(PortalFlag.BUNGEE))
-			return new BungeePortal(net,lines[0],lines[1],lines[2],block,flags);
+			return new BungeePortal(net,lines[0],lines[1],lines[2],block,flags,ownerUUID);
 		if (flags.contains(PortalFlag.RANDOM))
-			return new RandomPortal(net, lines[0], block, flags);
+			return new RandomPortal(net, lines[0], block, flags,ownerUUID);
 		if ((lines[1] == null) || lines[1].isBlank())
-			return new NetworkedPortal(net, lines[0], block, flags);
-		return new FixedPortal(net, lines[0], lines[1], block, flags);
+			return new NetworkedPortal(net, lines[0], block, flags,ownerUUID);
+		return new FixedPortal(net, lines[0], lines[1], block, flags,ownerUUID);
 	}
 	
 	@Override
@@ -472,55 +475,62 @@ public abstract class Portal implements IPortal {
 		return gate.getFormat().name;
 	}
 	
-	protected Color[] getDefaultColor() {
-		return new Color[] {Color.BLACK, Color.WHITE};
-	}
-	
-	protected String formatTextFromSign(String[] white_darkText) {
+	protected boolean isLightSign() {
+		return true;
+		/*
 		switch(gate.getSignLoc().getBlock().getType()) {
 		// Dark signs
 		case DARK_OAK_WALL_SIGN:
 		case WARPED_WALL_SIGN:
 		case CRIMSON_WALL_SIGN:
 		case SPRUCE_WALL_SIGN:
-			return white_darkText[1];
+		case OAK_WALL_SIGN:
+			return false;
 		default:
-			return white_darkText[0];
+			return true;
 		}
+		*/
 	}
 	
-	public String[] getColoredName() {
-		Color[] colors = getDefaultColor();
+	@Override
+	public String getColoredName(boolean isLightSign) {
+		Stargate.log(Level.FINEST, " Gate " + this.getName() + " has flags: " + this.getAllFlagsString());
+		ChatColor[] colors = new ChatColor[] { IPortal.getDefaultColor(true), IPortal.getDefaultColor(false)};
 		if(hasFlag(PortalFlag.BACKWARDS)) {
-			colors = new Color[] {
-					Color.fromRGB(0, 4, 36),
-					Color.fromRGB(224, 227, 255)
+			colors = new ChatColor[] {
+					ChatColor.of("#240023"),
+					ChatColor.of("#FFDEDE")
 					};
 		}
 		if(hasFlag(PortalFlag.FORCE_SHOW)) {
-			colors = new Color[] {
-					Color.fromRGB(0, 36, 2),
-					Color.fromRGB(224, 255, 226)
+			colors = new ChatColor[] {
+					ChatColor.of("#002422"),
+					ChatColor.of("#E3FFFE")
 					};
 		}
 		if(hasFlag(PortalFlag.HIDDEN)) {
-			colors = new Color[] {
-					Color.fromRGB(41, 40, 0),
-					Color.fromRGB(255, 254, 222)
+			colors = new ChatColor[] {
+					ChatColor.of("#292800"),
+					ChatColor.of("#FFFEDE")
 					};
 		}
 		if(hasFlag(PortalFlag.FREE)) {
-			colors = new Color[] {
-					Color.fromRGB(0, 36, 2),
-					Color.fromRGB(224, 255, 226)
+			colors = new ChatColor[] {
+					ChatColor.of("#002402"),
+					ChatColor.of("#E0FFE2")
 					};
 		}
 		if(hasFlag(PortalFlag.PRIVATE)) {
-			colors = new Color[] {
-					Color.fromRGB(33, 0, 0),
-					Color.fromRGB(255, 222, 222)
+			colors = new ChatColor[] {
+					ChatColor.of("#210000"),
+					ChatColor.of("#FFDEDE")
 					};
 		}
-		return new String[] { (colors[0] + getName()), (colors[1] + getName())};
+		return (isLightSign?colors[0]:colors[1]) + getName() + ChatColor.BLACK;
+	}
+	
+	@Override
+	public UUID getOwnerUUID() {
+		return ownerUUID;
 	}
 }

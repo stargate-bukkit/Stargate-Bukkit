@@ -89,8 +89,8 @@ defaultTerminalNetwork: terminal
 # |                                        Gate Behaviour                                        | #
 # +----------------------------------------------------------------------------------------------+ #
 
-# What is the maximum number of gates a single network may contain? (0 for unlimited)
-networkLimit: 0
+# What is the maximum number of gates a single network may contain? (-1 for unlimited)
+networkLimit: -1
 
 #  Will vehicles and their passengers be able to travel through StarGate portals?
 #   [minecarts, boats, & saddled mobs = vehicles | players & mobs = passengers]

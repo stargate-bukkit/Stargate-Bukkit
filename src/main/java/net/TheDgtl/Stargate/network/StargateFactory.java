@@ -141,6 +141,7 @@ public class StargateFactory {
 			int y = set.getInt(6);
 			int z = set.getInt(7);
 			String flagsMsg = set.getString(8);
+			UUID ownerUUID =  UUID.fromString(set.getString(9));
 			
 			EnumSet<PortalFlag> flags = PortalFlag.parseFlags(flagsMsg);
 			
@@ -162,9 +163,9 @@ public class StargateFactory {
 			}
 		
 			if(areVirtual) {
-				String server = set.getString(9);
+				String server = set.getString(10);
 				if(!net.portalExists(name)) {
-					IPortal virtualPortal = new VirtualPortal(server,name,net,flags);
+					IPortal virtualPortal = new VirtualPortal(server,name,net,flags,ownerUUID);
 					net.addPortal(virtualPortal, false);
 					Stargate.log(Level.FINEST, "Added as virtual portal");
 				} else {
@@ -180,7 +181,7 @@ public class StargateFactory {
 			
 			
 			try {
-				IPortal portal = Portal.createPortalFromSign(net, virtualSign, block, flags);
+				IPortal portal = Portal.createPortalFromSign(net, virtualSign, block, flags,ownerUUID);
 				net.addPortal(portal, false);
 				Stargate.log(Level.FINEST, "Added as normal portal");
 				if(isBungee) {
@@ -272,55 +273,12 @@ public class StargateFactory {
 	}
 	
 	/**
-	 * Convert a string processed from IPortal.getString(IPortal portal) back into a portal
-	 * TODO only works for virtual portals
-	 * TODO come up with a good script to read this kind of data
+	 * Load portal from one line in legacy database
 	 * @param str
-	 * @param isVirtual should the string be converted as a virtual portal?
 	 * @return
-	 * @throws ClassNotFoundException Issue with type in the string
+	 * @throws ClassNotFoundException Issue with conversion
 	 */
-	public IPortal createFromString(String str, boolean isVirtual) throws ClassNotFoundException {
-		String type = str.substring(0, str.indexOf("{"));
-		String stringData = str.substring(str.indexOf("{") + 1, str.indexOf("}"));
-		String[] elements = stringData.split(",");
-		String portalName = "";
-		String destiName = "";
-		EnumSet<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
-		String netName = "";
-		String server = "";
-
-		for (String element : elements) {
-			String[] temp = element.split("=");
-			String key = temp[0];
-			String data = temp[1];
-			switch (key) {
-			case "flags":
-				flags = PortalFlag.parseFlags(data);
-				break;
-			case "name":
-				portalName = data;
-				break;
-			case "net":
-				netName = data;
-				break;
-			case "desti":
-				destiName = data;
-				break;
-			case "server":
-				server = data;
-				break;
-			}
-		}
-
-		if (isVirtual) {
-			try {
-				createNetwork(netName,flags);
-			} catch(NameError e) {}
-			
-			InterserverNetwork network=  (InterserverNetwork) getNetwork(netName, true);
-			return new VirtualPortal(server, portalName,network, flags);
-		}
-		return null; // TODO Not implemented yet
+	public IPortal createFromString(String str) throws ClassNotFoundException {
+		return null;
 	}
 }
