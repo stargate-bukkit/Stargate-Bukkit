@@ -306,6 +306,7 @@ public abstract class Portal implements IPortal {
 		PermissionManager mngr = new PermissionManager(target);
 		if(!mngr.hasPerm(event) || event.isCancelled()){
 			// TODO send deny message
+			target.sendMessage(Stargate.langManager.getMessage(LangMsg.DENY, true));
 			teleportHere(target,gate.facing);
 			return;
 		}
@@ -424,11 +425,20 @@ public abstract class Portal implements IPortal {
 		}
 		
 		int useCost = Setting.getInteger(Setting.USE_COST);
-		if (!(this.hasFlag(PortalFlag.FREE) || desti.hasFlag(PortalFlag.FREE))
-				&& (target instanceof Player && !((Player) target).hasPermission(Bypass.COST_USE.getPerm())
-						&& !Stargate.economyManager.chargePlayer((Player) target, useCost))) {
+		boolean shouldCharge = !(this.hasFlag(PortalFlag.FREE) ||  desti.hasFlag(PortalFlag.FREE)) && target instanceof Player
+				&& !((Player) target).hasPermission(Bypass.COST_USE.getPerm());
+		boolean succesFullTransaction = true;
+		if(shouldCharge) {
+			if(this.hasFlag(PortalFlag.PERSONAL_NETWORK)) 
+				succesFullTransaction = Stargate.economyManager.chargePlayer((Player) target, Bukkit.getOfflinePlayer(getOwnerUUID()), useCost);
+			else
+				succesFullTransaction = Stargate.economyManager.chargeAndTax((Player) target, useCost);
+		}
+		
+		if (!succesFullTransaction) {
 			target.sendMessage(Stargate.langManager.getMessage(LangMsg.LACKING_FUNDS, true));
 			teleportHere(target, gate.facing);
+			return;
 		}
 		/*
 		 * If player enters from back, then take that into consideration

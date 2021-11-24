@@ -139,7 +139,7 @@ useEconomy: false
 # If not, leave this section blank (collected money will be deleted).
 # 
 # Note that usageCost money is excluded from this system when toowner is true.
-taxAccount: 
+taxAccount: ""
 
 # How much will be deducted from players' accounts when creating a new gate?
 creationCost: 0
@@ -195,7 +195,7 @@ gateExitSpeedMultiplier: 1
 
 # When useRemoteDatabase is false, Stargate stores all of its portal data in a flatfile.
 # Where should this flatfile be stored?
-portalFile: stargate.db
+portalFile: stargate
 
 # Currently, on startup, a folder is checked for gate layouts stored as ‘.gate’ files.
 # Where can that folder be found?
