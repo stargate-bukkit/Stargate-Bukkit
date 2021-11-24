@@ -87,10 +87,12 @@ public class BlockEventListener implements Listener {
 	}
 	
 	private boolean shouldChargePlayer(Player player, IPortal portal) {
-		return !Setting.getBoolean(Setting.CHARGE_FREE_DESTINATION)
-				&& !portal.hasFlag(PortalFlag.FIXED)
-				&& !((Portal) portal).loadDestination().hasFlag(PortalFlag.FREE)
-				&& !player.hasPermission(Bypass.COST_CREATE.getPerm());
+		if(player.hasPermission(Bypass.COST_CREATE.getPerm()))
+			return false;
+		
+		return Setting.getBoolean(Setting.CHARGE_FREE_DESTINATION)
+				|| !portal.hasFlag(PortalFlag.FIXED)
+				|| !((Portal) portal).loadDestination().hasFlag(PortalFlag.FREE);
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
