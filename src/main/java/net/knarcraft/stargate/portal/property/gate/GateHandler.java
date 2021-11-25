@@ -189,7 +189,7 @@ public class GateHandler {
      */
     private static boolean validateGate(Gate gate, String fileName) {
         String failString = String.format("Could not load Gate %s", fileName) + " - %s";
-        
+
         if (gate.getLayout().getControls().length != 2) {
             Stargate.logSevere(String.format(failString, "Gates must have exactly 2 control points."));
             return false;
@@ -199,16 +199,24 @@ public class GateHandler {
             Stargate.logSevere(String.format(failString, "Gate button must be a type of button."));
             return false;
         }
-        
+
         if (!gate.getPortalOpenBlock().isBlock()) {
             Stargate.logSevere(String.format(failString, "Gate open block must be a type of block."));
             return false;
         }
-        
+
         if (!gate.getPortalClosedBlock().isBlock()) {
             Stargate.logSevere(String.format(failString, "Gate closed block must be a type of block."));
             return false;
         }
+
+        for (Material material : gate.getCharacterMaterialMap().values()) {
+            if (!material.isBlock()) {
+                Stargate.logSevere(String.format(failString, "Every gate border block must be a type of block."));
+                return false;
+            }
+        }
+
         return true;
     }
 

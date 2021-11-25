@@ -70,6 +70,15 @@ public class Gate {
     }
 
     /**
+     * Gets a copy of the character to material mapping for this gate
+     *
+     * @return <p>The character to material map</p>
+     */
+    public Map<Character, Material> getCharacterMaterialMap() {
+        return new HashMap<>(characterMaterialMap);
+    }
+
+    /**
      * Gets the material type used for this gate's control blocks
      *
      * @return <p>The material type used for control blocks</p>

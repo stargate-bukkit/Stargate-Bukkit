@@ -395,6 +395,7 @@ portalInfoServer=Server: %server%
   players accidentally losing the creatures during teleportation
 - Fixes a potential exception when a gate's open-block or closed-block is set to a material which isn't a block
 - Fixes a potential exception when a portal without a sign has an invalid gate type
+- Prevents loading of gate files using non-blocks as part of the border
 
 #### \[Version 0.9.2.1] EpicKnarvik97 fork
 
