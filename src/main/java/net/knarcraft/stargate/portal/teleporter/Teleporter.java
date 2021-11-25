@@ -254,23 +254,18 @@ public abstract class Teleporter {
      * Checks whether a player has leashed creatures that block the teleportation
      *
      * @param player <p>The player trying to teleport</p>
-     * @param silent <p>Whether the entrance portal is silent</p>
      * @return <p>False if the player has leashed any creatures that cannot go through the portal</p>
      */
-    public static boolean noLeashedCreaturesPreventTeleportation(Player player, boolean silent) {
+    public static boolean noLeashedCreaturesPreventTeleportation(Player player) {
+        //If it's enabled, there is no problem
+        if (Stargate.getGateConfig().handleLeashedCreatures()) {
+            return true;
+        }
+
         //Find any nearby leashed entities to teleport with the player
         List<Creature> nearbyEntities = getLeashedCreatures(player);
 
-        //If this feature is disabled, just return
-        if (!Stargate.getGateConfig().handleLeashedCreatures()) {
-            boolean isAllowed = nearbyEntities.isEmpty();
-            if (!isAllowed && !silent) {
-                Stargate.getMessageSender().sendErrorMessage(player, "Leashed teleportation is disabled");
-            }
-            return isAllowed;
-        } else {
-            return true;
-        }
+        return nearbyEntities.isEmpty();
     }
 
     /**

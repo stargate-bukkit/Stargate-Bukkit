@@ -174,7 +174,7 @@ public class VehicleEventListener implements Listener {
             return false;
         }
 
-        return Teleporter.noLeashedCreaturesPreventTeleportation(player, entrancePortal.getOptions().isSilent());
+        return Teleporter.noLeashedCreaturesPreventTeleportation(player);
     }
 
 }

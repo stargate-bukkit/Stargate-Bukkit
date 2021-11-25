@@ -173,7 +173,7 @@ public class PlayerEventListener implements Listener {
         }
 
         //Make sure to check if the player has any leashed creatures, even though leashed teleportation is disabled
-        return Teleporter.noLeashedCreaturesPreventTeleportation(player, entrancePortal.getOptions().isSilent());
+        return Teleporter.noLeashedCreaturesPreventTeleportation(player);
     }
 
     /**
