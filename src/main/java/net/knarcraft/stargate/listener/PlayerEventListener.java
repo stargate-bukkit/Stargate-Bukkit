@@ -13,6 +13,7 @@ import net.knarcraft.stargate.utility.BungeeHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import net.knarcraft.stargate.utility.UUIDMigrationHelper;
+import net.knarcraft.stargate.utility.UpdateChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
@@ -48,14 +49,22 @@ public class PlayerEventListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
         //Migrate player name to UUID if necessary
-        UUIDMigrationHelper.migrateUUID(event.getPlayer());
+        UUIDMigrationHelper.migrateUUID(player);
+
+        //Notify joining admins about the available update
+        String availableUpdate = Stargate.getUpdateAvailable();
+        if (availableUpdate != null && Stargate.getStargateConfig().alertAdminsAboutUpdates() &&
+                player.hasPermission("stargate.admin")) {
+            String updateMessage = UpdateChecker.getUpdateAvailableString(availableUpdate, Stargate.getPluginVersion());
+            Stargate.getMessageSender().sendErrorMessage(player, updateMessage);
+        }
 
         if (!Stargate.getGateConfig().enableBungee()) {
             return;
         }
 
-        Player player = event.getPlayer();
         //Check if the player is waiting to be teleported to a stargate
         String destination = BungeeHelper.removeFromQueue(player.getUniqueId());
         if (destination == null) {

@@ -147,7 +147,12 @@ public enum ConfigOption {
     /**
      * Whether to enable debug output for debugging permissions
      */
-    PERMISSION_DEBUG("debugging.permissionDebug", "Whether to enable permission debugging output", false);
+    PERMISSION_DEBUG("debugging.permissionDebug", "Whether to enable permission debugging output", false),
+
+    /**
+     * Whether to alert admins about new updates
+     */
+    ADMIN_UPDATE_ALERT("adminUpdateAlert", "Whether to alert admins about new plugin updates", true);
 
 
     private final String configNode;

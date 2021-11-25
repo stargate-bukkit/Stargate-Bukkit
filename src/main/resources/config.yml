@@ -18,6 +18,7 @@
 # mainSignColor - The color used for drawing signs (Default: BLACK).
 # highlightSignColor - The color used for sign markings (Default: WHITE)
 # verifyPortals - Whether all the non-sign blocks are checked to match the gate layout when a stargate is loaded.
+# adminUpdateAlert - Whether to alert admins about new plugin updates
 # I------------I-------------I #
 # stargate economy options #
 # I------------I-------------I #
@@ -36,6 +37,7 @@
 # permissionDebug - This will output any and all Permissions checks to console, used for permissions debugging (Requires debug: true)
 
 language: en
+adminUpdateAlert: true
 folders:
   portalFolder: plugins/Stargate/portals/
   gateFolder: plugins/Stargate/gates/

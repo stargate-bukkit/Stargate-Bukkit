@@ -320,6 +320,15 @@ public final class StargateConfig {
     }
 
     /**
+     * Gets whether admins should be alerted about new plugin updates
+     *
+     * @return <p>Whether admins should be alerted about new updates</p>
+     */
+    public boolean alertAdminsAboutUpdates() {
+        return (boolean) configOptions.get(ConfigOption.ADMIN_UPDATE_ALERT);
+    }
+
+    /**
      * Loads all config values
      */
     public void loadConfig() {
