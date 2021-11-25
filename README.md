@@ -389,6 +389,10 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+#### \[Version 0.9.2.3] EpicKnarvik97 fork
+
+- Fixes a typo which caused both colors to change into the highlightSignColor
+
 #### \[Version 0.9.2.2] EpicKnarvik97 fork
 
 - Prevents teleportation of a player holding creatures on a leash when handleLeashedCreatures is disabled, to prevent
