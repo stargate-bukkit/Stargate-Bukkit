@@ -21,6 +21,7 @@ import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.thread.BlockChangeThread;
 import net.knarcraft.stargate.thread.ChunkUnloadThread;
 import net.knarcraft.stargate.thread.StarGateThread;
+import net.knarcraft.stargate.utility.UpdateChecker;
 import org.bukkit.Server;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -55,6 +56,8 @@ public class Stargate extends JavaPlugin {
     private static PluginManager pluginManager;
     private static StargateConfig stargateConfig;
 
+    private static String updateAvailable = null;
+
     /**
      * Empty constructor necessary for Spigot
      */
@@ -72,6 +75,26 @@ public class Stargate extends JavaPlugin {
      */
     protected Stargate(JavaPluginLoader loader, PluginDescriptionFile descriptionFile, File dataFolder, File file) {
         super(loader, descriptionFile, dataFolder, file);
+    }
+
+    /**
+     * Stores information about an available update
+     *
+     * <p>If a non-null version is given, joining admins will be alerted about the new update.</p>
+     *
+     * @param version <p>The version of the new update available</p>
+     */
+    public static void setUpdateAvailable(String version) {
+        updateAvailable = version;
+    }
+
+    /**
+     * Gets information about an available update
+     *
+     * @return <p>The version number if an update is available. Null otherwise</p>
+     */
+    public static String getUpdateAvailable() {
+        return updateAvailable;
     }
 
     /**
@@ -334,6 +357,9 @@ public class Stargate extends JavaPlugin {
         runThreads();
 
         this.registerCommands();
+
+        //Check for any available updates
+        UpdateChecker.checkForUpdate();
     }
 
     /**
