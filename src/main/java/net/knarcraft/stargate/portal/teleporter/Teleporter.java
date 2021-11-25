@@ -257,15 +257,22 @@ public abstract class Teleporter {
      * @return <p>False if the player has leashed any creatures that cannot go through the portal</p>
      */
     public static boolean noLeashedCreaturesPreventTeleportation(Player player) {
+        //Find any nearby leashed entities to teleport with the player
+        List<Creature> nearbyCreatures = getLeashedCreatures(player);
+
+        //Disallow creatures with passengers to prevent smuggling
+        for (Creature creature : nearbyCreatures) {
+            if (!creature.getPassengers().isEmpty()) {
+                return false;
+            }
+        }
+
         //If it's enabled, there is no problem
         if (Stargate.getGateConfig().handleLeashedCreatures()) {
             return true;
+        } else {
+            return nearbyCreatures.isEmpty();
         }
-
-        //Find any nearby leashed entities to teleport with the player
-        List<Creature> nearbyEntities = getLeashedCreatures(player);
-
-        return nearbyEntities.isEmpty();
     }
 
     /**

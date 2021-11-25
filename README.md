@@ -391,11 +391,13 @@ portalInfoServer=Server: %server%
 
 #### \[Version 0.9.2.2] EpicKnarvik97 fork
 
-- Prevents teleportation of a player holding creatures on a leash when handleLeashedCreatures is disabled to prevent
+- Prevents teleportation of a player holding creatures on a leash when handleLeashedCreatures is disabled, to prevent
   players accidentally losing the creatures during teleportation
 - Fixes a potential exception when a gate's open-block or closed-block is set to a material which isn't a block
 - Fixes a potential exception when a portal without a sign has an invalid gate type
 - Prevents loading of gate files using non-blocks as part of the border
+- Prevents a player smuggling another player through a restricted stargate by sitting on a creature held in a lead by
+  the first player
 
 #### \[Version 0.9.2.1] EpicKnarvik97 fork
 
