@@ -293,7 +293,10 @@ public class PortalSignDrawer {
      * @param lineIndex      <p>The index of the line the invalid portal was found at</p>
      */
     public static void markPortalWithInvalidGate(PortalLocation portalLocation, String gateName, int lineIndex) {
-        Sign sign = (Sign) portalLocation.getSignLocation().getBlock().getState();
+        BlockState blockState = portalLocation.getSignLocation().getBlock().getState();
+        if (!(blockState instanceof Sign sign)) {
+            return;
+        }
         sign.setLine(3, errorColor + Stargate.getString("signInvalidGate"));
         sign.update();
 
