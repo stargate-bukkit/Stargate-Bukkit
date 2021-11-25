@@ -7,6 +7,7 @@ import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalActivator;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.teleporter.PlayerTeleporter;
+import net.knarcraft.stargate.portal.teleporter.Teleporter;
 import net.knarcraft.stargate.portal.teleporter.VehicleTeleporter;
 import net.knarcraft.stargate.utility.BungeeHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
@@ -170,7 +171,9 @@ public class PlayerEventListener implements Listener {
             }
             return false;
         }
-        return true;
+
+        //Make sure to check if the player has any leashed creatures, even though leashed teleportation is disabled
+        return Teleporter.noLeashedCreaturesPreventTeleportation(player, entrancePortal.getOptions().isSilent());
     }
 
     /**

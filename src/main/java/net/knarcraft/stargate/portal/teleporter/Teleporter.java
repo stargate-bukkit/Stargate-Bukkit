@@ -251,7 +251,33 @@ public abstract class Teleporter {
     }
 
     /**
+     * Checks whether a player has leashed creatures that block the teleportation
+     *
+     * @param player <p>The player trying to teleport</p>
+     * @param silent <p>Whether the entrance portal is silent</p>
+     * @return <p>False if the player has leashed any creatures that cannot go through the portal</p>
+     */
+    public static boolean noLeashedCreaturesPreventTeleportation(Player player, boolean silent) {
+        //Find any nearby leashed entities to teleport with the player
+        List<Creature> nearbyEntities = getLeashedCreatures(player);
+
+        //If this feature is disabled, just return
+        if (!Stargate.getGateConfig().handleLeashedCreatures()) {
+            boolean isAllowed = nearbyEntities.isEmpty();
+            if (!isAllowed && !silent) {
+                Stargate.getMessageSender().sendErrorMessage(player, "Leashed teleportation is disabled");
+            }
+            return isAllowed;
+        } else {
+            return true;
+        }
+    }
+
+    /**
      * Teleports any creatures leashed by the player
+     *
+     * <p>Will return false if the teleportation should be aborted because the player has leashed creatures that
+     * aren't allowed to be teleported with the player.</p>
      *
      * @param player <p>The player which is teleported</p>
      * @param origin <p>The portal the player is teleporting from</p>
@@ -264,6 +290,7 @@ public abstract class Teleporter {
 
         //Find any nearby leashed entities to teleport with the player
         List<Creature> nearbyEntities = getLeashedCreatures(player);
+
         //Teleport all creatures leashed by the player to the portal the player is to exit from
         for (Creature creature : nearbyEntities) {
             creature.setLeashHolder(null);
@@ -280,7 +307,7 @@ public abstract class Teleporter {
      * @param player <p>The player to check</p>
      * @return <p>A list of all creatures the player is holding in a leash (lead)</p>
      */
-    protected List<Creature> getLeashedCreatures(Player player) {
+    protected static List<Creature> getLeashedCreatures(Player player) {
         List<Creature> leashedCreatures = new ArrayList<>();
         //Find any nearby leashed entities to teleport with the player
         List<Entity> nearbyEntities = player.getNearbyEntities(15, 15, 15);

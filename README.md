@@ -389,6 +389,11 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+#### \[Version 0.9.2.2] EpicKnarvik97 fork
+
+- Prevents teleportation of a player holding creatures on a leash when handleLeashedCreatures is disabled to prevent
+  players accidentally losing the creatures during teleportation
+
 #### \[Version 0.9.2.1] EpicKnarvik97 fork
 
 - Makes sure to only reload whatever is necessary when config values are changed using commands, instead of reloading

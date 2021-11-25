@@ -3,6 +3,7 @@ package net.knarcraft.stargate.listener;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
+import net.knarcraft.stargate.portal.teleporter.Teleporter;
 import net.knarcraft.stargate.portal.teleporter.VehicleTeleporter;
 import net.knarcraft.stargate.utility.EconomyHelper;
 import net.knarcraft.stargate.utility.EntityHelper;
@@ -166,10 +167,14 @@ public class VehicleEventListener implements Listener {
         //Check if the player is able to afford the teleport fee
         int cost = EconomyHelper.getUseCost(player, entrancePortal, destinationPortal);
         boolean canAffordFee = cost <= 0 || Stargate.getEconomyConfig().canAffordFee(player, cost);
-        if (!canAffordFee && !entrancePortal.getOptions().isSilent()) {
-            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("ecoInFunds"));
+        if (!canAffordFee) {
+            if (!entrancePortal.getOptions().isSilent()) {
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("ecoInFunds"));
+            }
+            return false;
         }
-        return canAffordFee;
+
+        return Teleporter.noLeashedCreaturesPreventTeleportation(player, entrancePortal.getOptions().isSilent());
     }
 
 }
