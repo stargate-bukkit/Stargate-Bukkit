@@ -294,6 +294,7 @@ while the per-gate costs re defined in the .gate files. To define a certain cost
 
 ```
 language - The language to use (Included languages: en, de, es, fr, hu, it, nb-no, nl, nn-no, pt-br, ru)
+adminUpdateAlert - Whether to alert admins about an available update when joining the server
 folders:
   portalFolder - The folder your portal databases are saved in
   gateFolder - The folder containing your .gate files
@@ -388,6 +389,12 @@ portalInfoServer=Server: %server%
 ```
 
 # Changes
+
+#### \[Version 0.9.2.4] EpicKnarvik97 fork
+
+- Adds update checking, which will display a notice in the console when updates are available
+- Adds an alert about an available update when an admin joins the server
+- Adds the adminUpdateAlert config option to allow the admin notices to be turned off
 
 #### \[Version 0.9.2.3] EpicKnarvik97 fork
 
