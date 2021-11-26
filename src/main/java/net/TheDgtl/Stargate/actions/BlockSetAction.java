@@ -7,8 +7,9 @@ import org.bukkit.block.BlockState;
  */
 public class BlockSetAction implements PopulatorAction {
     
-    final private BlockState state;
-    final private boolean force;
+    private final BlockState state;
+    private final boolean force;
+    private boolean isFinished = false;
 
     /**
      * Instantiates a new block state action
@@ -23,18 +24,18 @@ public class BlockSetAction implements PopulatorAction {
 
     @Override
     public void run(boolean forceEnd) {
-        //TODO: Figure out the intended behavior
-        state.update(force);
+        state.update(force || forceEnd);
+        isFinished = true;
     }
 
     @Override
     public boolean isFinished() {
-        //TODO: Figure out the intended behavior
-        return true;
+        return isFinished;
     }
 
     @Override
     public String toString() {
         return state.toString();
     }
+    
 }
