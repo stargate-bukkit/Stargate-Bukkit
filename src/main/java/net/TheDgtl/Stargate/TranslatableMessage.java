@@ -8,7 +8,7 @@ import java.util.HashMap;
  * @author Thorin
  * @author Pheotis
  */
-public enum LangMsg {
+public enum TranslatableMessage {
     PREFIX("prefix"), TELEPORT("teleportMsg"), DESTROY("destroyMsg"), INVALID("invalidMsg"), BLOCKED("blockMsg"),
     DEST_EMPTY("destEmpty"), DENY("denyMsg"), SPAWN_BLOCK("spawnBlockMsg"), DEDUCT("ecoDeduct"), REFUND("ecoRefund"),
     ECO_OBTAIN("ecoObtain"), LACKING_FUNDS("ecoInFunds"), CREATE("createMsg"), NET_DENY("createNetDeny"),
@@ -19,15 +19,15 @@ public enum LangMsg {
     BUNGEE_EMPTY("bungeeEmpty"), BUNGEE_SIGN("bungeeSign");
 
     private final String key;
-    private static final HashMap<String, LangMsg> map = new HashMap<>();
+    private static final HashMap<String, TranslatableMessage> map = new HashMap<>();
 
     static {
-        for (LangMsg value : values()) {
+        for (TranslatableMessage value : values()) {
             map.put(value.getString(), value);
         }
     }
 
-    LangMsg(String key) {
+    TranslatableMessage(String key) {
         this.key = key;
     }
 
@@ -35,8 +35,8 @@ public enum LangMsg {
         return key;
     }
 
-    public static LangMsg parse(String value) {
-        for (LangMsg enumeration : values()) {
+    public static TranslatableMessage parse(String value) {
+        for (TranslatableMessage enumeration : values()) {
             if (enumeration.getString().equals(value))
                 return enumeration;
         }

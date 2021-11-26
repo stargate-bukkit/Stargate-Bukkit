@@ -1,8 +1,8 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.event.StargateActivateEvent;
@@ -112,8 +112,8 @@ public class NetworkedPortal extends Portal {
         String[] lines = new String[4];
         lines[0] = NameSurround.PORTAL.getSurround(super.getColoredName(super.isLightSign()));
         if (!isActive) {
-            lines[1] = Stargate.langManager.getString(LangMsg.RIGHT_CLICK);
-            lines[2] = Stargate.langManager.getString(LangMsg.TO_USE);
+            lines[1] = Stargate.langManager.getString(TranslatableMessage.RIGHT_CLICK);
+            lines[2] = Stargate.langManager.getString(TranslatableMessage.TO_USE);
             lines[3] = network.concatName();
         } else {
             int destiIndex = selectedDesti % 3;

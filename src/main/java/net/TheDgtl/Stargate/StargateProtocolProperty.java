@@ -6,7 +6,7 @@ package net.TheDgtl.Stargate;
  * @author Thorin
  */
 public enum StargateProtocolProperty {
-    
+
     /**
      * The network name property of a request
      */
@@ -41,5 +41,5 @@ public enum StargateProtocolProperty {
      * The portal owner property of a request
      */
     OWNER
-    
+
 }

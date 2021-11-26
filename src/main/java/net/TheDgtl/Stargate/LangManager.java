@@ -17,8 +17,8 @@ public class LangManager {
 
     private final String dataFolder;
     private String lang;
-    private EnumMap<LangMsg, String> strList;
-    private final EnumMap<LangMsg, String> defList;
+    private EnumMap<TranslatableMessage, String> strList;
+    private final EnumMap<TranslatableMessage, String> defList;
 
     private Stargate stargate;
 
@@ -35,13 +35,13 @@ public class LangManager {
         defList = loadLanguage(defaultLang);
     }
 
-    public String getMessage(LangMsg key, boolean isError) {
-        String prefix = (isError ? ChatColor.RED : ChatColor.GREEN) + strList.get(LangMsg.PREFIX);
+    public String getMessage(TranslatableMessage key, boolean isError) {
+        String prefix = (isError ? ChatColor.RED : ChatColor.GREEN) + strList.get(TranslatableMessage.PREFIX);
         String msg = getString(key).replaceAll("(&([a-f0-9]))", "\u00A7$2");
         return prefix + ChatColor.WHITE + msg;
     }
 
-    public String getString(LangMsg key) {
+    public String getString(TranslatableMessage key) {
         String msg = strList.get(key);
         if (msg == null)
             msg = defList.get(key);
@@ -49,7 +49,7 @@ public class LangManager {
     }
 
 
-    private EnumMap<LangMsg, String> loadLanguage(String language) {
+    private EnumMap<TranslatableMessage, String> loadLanguage(String language) {
 
         LangLoader loader = new LangLoader(language);
         try {
@@ -63,7 +63,7 @@ public class LangManager {
         }
 
         // This code only gets triggered if an error was thrown in the try clause
-        return new EnumMap<>(LangMsg.class);
+        return new EnumMap<>(TranslatableMessage.class);
         // TODO show error message
     }
 
@@ -102,8 +102,8 @@ public class LangManager {
             br = new BufferedReader(isr);
         }
 
-        EnumMap<LangMsg, String> load() throws IOException {
-            EnumMap<LangMsg, String> output = new EnumMap<>(LangMsg.class);
+        EnumMap<TranslatableMessage, String> load() throws IOException {
+            EnumMap<TranslatableMessage, String> output = new EnumMap<>(TranslatableMessage.class);
 
             String line = br.readLine();
             line = removeUTF8BOM(line);
@@ -114,7 +114,7 @@ public class LangManager {
                     line = br.readLine();
                     continue;
                 }
-                LangMsg key = LangMsg.parse(line.substring(0, eq));
+                TranslatableMessage key = TranslatableMessage.parse(line.substring(0, eq));
                 if (key == null) {
                     Stargate.log(Level.CONFIG, "Skipping line: " + line);
                     line = br.readLine();

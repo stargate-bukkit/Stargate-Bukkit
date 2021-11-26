@@ -1,8 +1,8 @@
 package net.TheDgtl.Stargate.network;
 
 import net.TheDgtl.Stargate.Bypass;
-import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.gate.GateStructureType;
@@ -36,7 +36,7 @@ public class Network {
 
     public Network(String name, Database database, SQLQuerryMaker sqlMaker) throws NameError {
         if (name.isBlank() || (name.length() == Stargate.MAX_TEXT_LENGTH))
-            throw new NameError(LangMsg.NAME_LENGTH_FAULT);
+            throw new NameError(TranslatableMessage.NAME_LENGTH_FAULT);
         this.name = name;
         this.database = database;
         this.sqlMaker = sqlMaker;

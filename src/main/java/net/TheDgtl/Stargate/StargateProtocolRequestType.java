@@ -2,7 +2,7 @@ package net.TheDgtl.Stargate;
 
 /**
  * An enum representing the different stargate protocol types
- * 
+ *
  * @author Kristian
  */
 public enum StargateProtocolRequestType {
@@ -16,5 +16,5 @@ public enum StargateProtocolRequestType {
      * Defines a portal removal request
      */
     TYPE_PORTAL_REMOVE
-    
+
 }

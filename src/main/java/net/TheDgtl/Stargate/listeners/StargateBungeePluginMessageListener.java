@@ -21,11 +21,11 @@ package net.TheDgtl.Stargate.listeners;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.TheDgtl.Stargate.Channel;
-import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateProtocolProperty;
 import net.TheDgtl.Stargate.StargateProtocolRequestType;
+import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.network.InterserverNetwork;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
@@ -52,10 +52,10 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
     /**
      * Instantiates a new stargate bungee plugin message listener
-     * 
+     *
      * <p>- Send plugin enable message to all servers
      * - Send all loaded bungee-portals to all servers</p>
-     * 
+     *
      * @param stargate <p>A stargate instance</p>
      */
     public StargateBungeePluginMessageListener(Stargate stargate) {
@@ -64,7 +64,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
     /**
      * Handles relevant received plugin messages
-     * 
+     *
      * <p>Types of messages that can be received and their response
      * - All loaded portals messages - add all loaded portals as "virtual portals"
      * - Plugin enabled message - send all loaded portals message to specific server
@@ -116,9 +116,9 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
     /**
      * Handle the connection of a player using the legacy Stargate method
-     * 
+     *
      * <p>This is done to let servers on any of the old Stargate forks connect to this version.</p>
-     * 
+     *
      * @param message <p>The legacy connect message to parse and handle</p>
      */
     private void legacyPlayerConnect(String message) {
@@ -144,7 +144,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
     /**
      * Updates a network according to a "network changed" message
-     * 
+     *
      * @param message <p>The network change message to parse and handle</p>
      */
     private void updateNetwork(String message) {
@@ -154,7 +154,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
         String requestTypeString = json.get(StargateProtocolProperty.TYPE.toString()).getAsString();
         StargateProtocolRequestType requestType = StargateProtocolRequestType.valueOf(requestTypeString);
-        
+
         String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
         String network = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
         String server = json.get(StargateProtocolProperty.SERVER.toString()).getAsString();
@@ -182,7 +182,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
     private void playerConnect(String message) {
         JsonParser parser = new JsonParser();
         Stargate.log(Level.FINEST, message);
-        
+
         JsonObject json = (JsonObject) parser.parse(message);
         String playerName = json.get(StargateProtocolProperty.PLAYER.toString()).getAsString();
         String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
@@ -200,10 +200,10 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                 IPortal destinationPortal = network.getPortal(portalName);
                 destinationPortal.teleportHere(player, null);
             } catch (NullPointerException e) {
-                player.sendMessage(Stargate.langManager.getMessage(LangMsg.BUNGEE_EMPTY, true));
+                player.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.BUNGEE_EMPTY, true));
             }
         }
     }
-    
+
 }
 

@@ -33,7 +33,7 @@ public class BungeePortal extends Portal {
     }
 
     /**
-     * CHEATS! we love cheats. This one helps saving the legacy bungee gate into sql table so that the
+     * CHEATS! we love cheats. This one helps sav the legacy bungee gate into sql table so that the
      * target server is stored as a replacement to network.
      */
     private Network cheatNet;

@@ -1,10 +1,10 @@
 package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Bypass;
-import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
@@ -75,9 +75,9 @@ public abstract class Portal implements IPortal {
         this.name = name;
         this.flags = flags;
         if (name.isBlank() || (name.length() == Stargate.MAX_TEXT_LENGTH))
-            throw new NameError(LangMsg.NAME_LENGTH_FAULT);
+            throw new NameError(TranslatableMessage.NAME_LENGTH_FAULT);
         if (this.network.isPortalNameTaken(name)) {
-            throw new NameError(LangMsg.ALREADY_EXIST);
+            throw new NameError(TranslatableMessage.ALREADY_EXIST);
         }
 
         if (!(Tag.WALL_SIGNS.isTagged(sign.getType()))) {
@@ -284,7 +284,7 @@ public abstract class Portal implements IPortal {
 
         IPortal destination = loadDestination();
         if (destination == null) {
-            player.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
+            player.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.INVALID, true));
             return;
         }
         PermissionManager mngr = new PermissionManager(player);
@@ -304,7 +304,7 @@ public abstract class Portal implements IPortal {
         PermissionManager mngr = new PermissionManager(target);
         if (!mngr.hasPerm(event) || event.isCancelled()) {
             // TODO send deny message
-            target.sendMessage(Stargate.langManager.getMessage(LangMsg.DENY, true));
+            target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.DENY, true));
             teleportHere(target, gate.facing);
             return;
         }
@@ -420,7 +420,7 @@ public abstract class Portal implements IPortal {
     public void doTeleport(Entity target) {
         IPortal desti = getFinalDesti();
         if (desti == null) {
-            target.sendMessage(Stargate.langManager.getMessage(LangMsg.INVALID, true));
+            target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.INVALID, true));
             teleportHere(target, gate.facing);
             return;
         }
@@ -437,7 +437,7 @@ public abstract class Portal implements IPortal {
         }
 
         if (!succesFullTransaction) {
-            target.sendMessage(Stargate.langManager.getMessage(LangMsg.LACKING_FUNDS, true));
+            target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
             teleportHere(target, gate.facing);
             return;
         }

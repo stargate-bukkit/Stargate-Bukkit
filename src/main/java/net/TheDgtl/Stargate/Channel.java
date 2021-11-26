@@ -45,7 +45,7 @@ public enum Channel {
 
     /**
      * Represents the custom forwarding sub-channel used for nothing ???
-     * 
+     * <p>
      * TODO: Figure out why this is never used or mentioned
      */
     PORTAL("SGPortal"),
@@ -66,7 +66,7 @@ public enum Channel {
 
     /**
      * Instantiates a new plugin channel
-     * 
+     *
      * @param channel <p>The name/string representation of the new plugin channel</p>
      */
     Channel(String channel) {
@@ -75,7 +75,7 @@ public enum Channel {
 
     /**
      * Gets this plugin channel's name/string representation
-     * 
+     *
      * @return <p>This plugin channel's string representation</p>
      */
     public String getChannel() {
@@ -84,7 +84,7 @@ public enum Channel {
 
     /**
      * Parses a channel's string representation into a channel enum
-     * 
+     *
      * @param channel <p>The channel name to parse</p>
      * @return <p>The matching channel enum, or null if no match was found</p>
      */
@@ -94,8 +94,8 @@ public enum Channel {
                 map.put(value.getChannel(), value);
             }
         }
-        
+
         return map.get(channel);
     }
-    
+
 }

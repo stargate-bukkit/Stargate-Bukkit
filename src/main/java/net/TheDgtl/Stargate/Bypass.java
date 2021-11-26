@@ -44,7 +44,7 @@ public enum Bypass {
 
     /**
      * Instantiates a new protection bypass
-     * 
+     *
      * @param permissionString <p>The permission string used for this protection bypass</p>
      */
     Bypass(String permissionString) {
@@ -53,7 +53,7 @@ public enum Bypass {
 
     /**
      * Gets all protections the given player is allowed to bypass
-     * 
+     *
      * @param player <p>The player to check</p>
      * @return <p>All protection the player can bypass</p>
      */
@@ -70,7 +70,7 @@ public enum Bypass {
 
     /**
      * Gets the permission string for this protection bypass
-     * 
+     *
      * @return <p>The permission string for this bypass permission</p>
      */
     public String getPermissionString() {

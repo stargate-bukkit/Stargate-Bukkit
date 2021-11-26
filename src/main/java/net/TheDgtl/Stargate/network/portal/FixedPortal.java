@@ -1,7 +1,7 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
@@ -45,7 +45,7 @@ public class FixedPortal extends Portal {
         lines[1] = NameSurround.DESTI.getSurround(loadDestination().getColoredName(super.isLightSign()));
         lines[2] = this.network.concatName();
         lines[3] = ((this.network.isPortalNameTaken(destination)) ? ""
-                : Stargate.langManager.getString(LangMsg.DISCONNECTED));
+                : Stargate.langManager.getString(TranslatableMessage.DISCONNECTED));
         getGate().drawControll(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }
 

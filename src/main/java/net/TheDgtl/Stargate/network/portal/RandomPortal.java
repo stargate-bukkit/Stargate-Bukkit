@@ -1,7 +1,7 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
@@ -31,7 +31,7 @@ public class RandomPortal extends Portal {
     public void drawControll() {
         String[] lines = {
                 IPortal.getDefaultColor(super.isLightSign()) + NameSurround.PORTAL.getSurround(getColoredName(super.isLightSign())),
-                IPortal.getDefaultColor(super.isLightSign()) + NameSurround.DESTI.getSurround(Stargate.langManager.getString(LangMsg.RANDOM)),
+                IPortal.getDefaultColor(super.isLightSign()) + NameSurround.DESTI.getSurround(Stargate.langManager.getString(TranslatableMessage.RANDOM)),
                 IPortal.getDefaultColor(super.isLightSign()) + network.concatName(),
                 ""
         };

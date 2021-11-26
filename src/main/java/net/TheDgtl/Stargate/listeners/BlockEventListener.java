@@ -1,10 +1,10 @@
 package net.TheDgtl.Stargate.listeners;
 
 import net.TheDgtl.Stargate.Bypass;
-import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateDestroyEvent;
@@ -52,7 +52,7 @@ public class BlockEventListener implements Listener {
                  * or if player has override cost permission, do not collect money
                  */
                 if (shouldChargePlayer(event.getPlayer(), portal) && !Stargate.economyManager.chargeAndTax(event.getPlayer(), dEvent.getCost())) {
-                    event.getPlayer().sendMessage(Stargate.langManager.getMessage(LangMsg.LACKING_FUNDS, true));
+                    event.getPlayer().sendMessage(Stargate.langManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
                     event.setCancelled(true);
                     return;
                 }
@@ -61,7 +61,7 @@ public class BlockEventListener implements Listener {
 
                     @Override
                     public void run(boolean forceEnd) {
-                        String msg = Stargate.langManager.getMessage(LangMsg.DESTROY, false);
+                        String msg = Stargate.langManager.getMessage(TranslatableMessage.DESTROY, false);
                         event.getPlayer().sendMessage(msg);
 
                         portal.destroy();
@@ -144,7 +144,7 @@ public class BlockEventListener implements Listener {
         try {
             selectedNet = selectNetwork(network, flags);
         } catch (NameError e1) {
-            player.sendMessage(Stargate.langManager.getMessage(e1.getMsg(), true));
+            player.sendMessage(Stargate.langManager.getMessage(e1.getErrorMessage(), true));
             return;
         }
 
@@ -166,20 +166,20 @@ public class BlockEventListener implements Listener {
             }
 
             if (shouldChargePlayer(player, portal) && !Stargate.economyManager.chargeAndTax(player, sEvent.getCost())) {
-                player.sendMessage(Stargate.langManager.getMessage(LangMsg.LACKING_FUNDS, true));
+                player.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
                 portal.destroy();
                 return;
             }
             selectedNet.addPortal(portal, true);
             selectedNet.updatePortals();
             Stargate.log(Level.FINE, "A Gateformat matches");
-            player.sendMessage(Stargate.langManager.getMessage(LangMsg.CREATE, false));
+            player.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.CREATE, false));
         } catch (NoFormatFound e) {
             Stargate.log(Level.FINE, "No Gateformat matches");
         } catch (GateConflict e) {
-            player.sendMessage(Stargate.langManager.getMessage(LangMsg.GATE_CONFLICT, true));
+            player.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.GATE_CONFLICT, true));
         } catch (NameError e) {
-            player.sendMessage(Stargate.langManager.getMessage(e.getMsg(), true));
+            player.sendMessage(Stargate.langManager.getMessage(e.getErrorMessage(), true));
         }
     }
 
@@ -189,7 +189,7 @@ public class BlockEventListener implements Listener {
                 name = Bukkit.getPlayer(name).getUniqueId().toString();
             Stargate.factory.createNetwork(name, flags);
         } catch (NameError e1) {
-            LangMsg msg = e1.getMsg();
+            TranslatableMessage msg = e1.getErrorMessage();
             if (msg != null) {
                 throw e1;
             }

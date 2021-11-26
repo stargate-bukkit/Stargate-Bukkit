@@ -201,7 +201,7 @@ portalFile: stargate
 # Where can that folder be found?
 gateFolder: plugins/Stargate/gates/
 
-  # |                                          [ Logging ]                                         | #
+# |                                          [ Logging ]                                         | #
 # |__                   How much information should stargate send to console?                  __| #
 
 # Possible Values:

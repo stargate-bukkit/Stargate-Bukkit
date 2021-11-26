@@ -38,7 +38,7 @@ public class SynchronousPopulator implements Runnable {
 
     /**
      * Adds a non-bungee populator action to the queue
-     * 
+     *
      * @param action <p>The action to add</p>
      */
     public void addAction(PopulatorAction action) {
@@ -47,8 +47,8 @@ public class SynchronousPopulator implements Runnable {
 
     /**
      * Adds a populator action to the queue
-     * 
-     * @param action <p>The action to add</p>
+     *
+     * @param action   <p>The action to add</p>
      * @param isBungee <p>Whether the action is to be performed on a BungeeCord portal</p>
      */
     public void addAction(PopulatorAction action, boolean isBungee) {

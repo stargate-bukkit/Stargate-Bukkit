@@ -25,7 +25,7 @@ import java.util.logging.Level;
 // TODO See Discussion Three
 public class PermissionManager {
     private Entity player;
-    private LangMsg denyMsg;
+    private TranslatableMessage denyMsg;
     private Chat metadataProvider;
     private boolean canProcessMetaData;
 
@@ -75,7 +75,7 @@ public class PermissionManager {
             if (!player.hasPermission(perm)) {
                 //TODO messaging
                 // denyMsg = LangMsg.<something>
-                denyMsg = LangMsg.NET_DENY;
+                denyMsg = TranslatableMessage.NET_DENY;
                 return false;
             }
         }
@@ -97,7 +97,7 @@ public class PermissionManager {
 
                 if (currentAmount >= maxGates) {
                     //TODO messaging , gatelimit reached
-                    denyMsg = LangMsg.NET_FULL;
+                    denyMsg = TranslatableMessage.NET_FULL;
                     // denyMsg = LangMsg.<something>
                     return false;
                 }
@@ -119,11 +119,11 @@ public class PermissionManager {
         else
             hasPerm = player.hasPermission(CREATEPERMISSION + ".custom." + network);
         if (!hasPerm)
-            denyMsg = LangMsg.NET_DENY;
+            denyMsg = TranslatableMessage.NET_DENY;
         return hasPerm;
     }
 
-    public LangMsg getDenyMsg() {
+    public TranslatableMessage getDenyMsg() {
         return denyMsg;
     }
 }
