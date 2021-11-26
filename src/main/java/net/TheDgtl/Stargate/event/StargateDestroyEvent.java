@@ -17,15 +17,14 @@
  */
 package net.TheDgtl.Stargate.event;
 
-import java.util.List;
-import java.util.Objects;
-
+import net.TheDgtl.Stargate.network.portal.IPortal;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Stargate - A portal plugin for Bukkit
@@ -46,7 +45,7 @@ import net.TheDgtl.Stargate.network.portal.IPortal;
  */
 
 public class StargateDestroyEvent extends StargateEvent {
-	// oldname = StargateDestroyEvent
+    // oldname = StargateDestroyEvent
     private final Player player;
     private boolean deny;
     private String denyReason;
@@ -100,9 +99,9 @@ public class StargateDestroyEvent extends StargateEvent {
         this.cost = cost;
     }
 
-	@Override
-	public List<Permission> getRelatedPerms() {
-		return super.defaultPermCompile("sg.destroy",player.getUniqueId().toString());
-	}
+    @Override
+    public List<Permission> getRelatedPerms() {
+        return super.defaultPermCompile("sg.destroy", player.getUniqueId().toString());
+    }
 
 }

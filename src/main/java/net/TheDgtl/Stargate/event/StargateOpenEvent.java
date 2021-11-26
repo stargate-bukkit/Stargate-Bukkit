@@ -18,21 +18,20 @@
 
 package net.TheDgtl.Stargate.event;
 
-import java.util.List;
-import java.util.Objects;
-
+import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
-import net.TheDgtl.Stargate.network.portal.Portal;
+import java.util.List;
+import java.util.Objects;
 
 public class StargateOpenEvent extends StargateEvent {
     private final Player player;
     private boolean isForced;
-	private IPortal destination;
+    private IPortal destination;
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -50,7 +49,7 @@ public class StargateOpenEvent extends StargateEvent {
         super(Objects.requireNonNull(portal));
         this.player = player;
         this.isForced = isForced;
-        this.destination = ((Portal)portal).loadDestination();
+        this.destination = ((Portal) portal).loadDestination();
     }
 
     /**
@@ -62,9 +61,9 @@ public class StargateOpenEvent extends StargateEvent {
     }
 
     public IPortal getDestination() {
-    	return destination;
+        return destination;
     }
-    
+
     public boolean getIsForced() {
         return isForced;
     }
@@ -73,9 +72,9 @@ public class StargateOpenEvent extends StargateEvent {
         this.isForced = isForced;
     }
 
-	@Override
-	public List<Permission> getRelatedPerms() {
-		String identifier = "sg.use";
-		return super.defaultPermCompile(identifier,player.getUniqueId().toString());
-	}
+    @Override
+    public List<Permission> getRelatedPerms() {
+        String identifier = "sg.use";
+        return super.defaultPermCompile(identifier, player.getUniqueId().toString());
+    }
 }

@@ -1,10 +1,10 @@
 package net.TheDgtl.Stargate;
 
 import java.util.HashMap;
-import java.util.logging.Level;
 
 /**
  * Manages stargate's localisation.
+ *
  * @author Thorin
  * @author Pheotis
  */

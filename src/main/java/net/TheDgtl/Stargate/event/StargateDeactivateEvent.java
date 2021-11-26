@@ -18,20 +18,19 @@
 
 package net.TheDgtl.Stargate.event;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
+import net.TheDgtl.Stargate.network.portal.IPortal;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * TODO: inverse of {@link StargateActivateEvent} don't know how to implement those currently
- * @author Thorin
  *
+ * @author Thorin
  */
 public class StargateDeactivateEvent extends StargateEvent {
     private static final HandlerList handlers = new HandlerList();
@@ -50,8 +49,8 @@ public class StargateDeactivateEvent extends StargateEvent {
         super(Objects.requireNonNull(portal));
     }
 
-	@Override
-	public List<Permission> getRelatedPerms() {
-		return new ArrayList<Permission>();
-	}
+    @Override
+    public List<Permission> getRelatedPerms() {
+        return new ArrayList<Permission>();
+    }
 }

@@ -1,91 +1,87 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.UUID;
-
+import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import net.TheDgtl.Stargate.Setting;
-import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.network.InterserverNetwork;
-import net.TheDgtl.Stargate.network.Network;
-import net.md_5.bungee.api.ChatColor;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.UUID;
 
 public interface IPortal {
-	
-	
 
-	void destroy();
 
-	boolean isOpen();
+    void destroy();
 
-	boolean isOpenFor(Entity target);
+    boolean isOpen();
 
-	void teleportHere(Entity target, BlockFace originFacing);
+    boolean isOpenFor(Entity target);
 
-	void doTeleport(Entity target);
+    void teleportHere(Entity target, BlockFace originFacing);
 
-	void drawControll();
+    void doTeleport(Entity target);
 
-	void close(boolean force);
+    void drawControll();
 
-	public void onSignClick(Action action, Player player);
+    void close(boolean force);
 
-	void onButtonClick(PlayerInteractEvent event);
+    public void onSignClick(Action action, Player player);
 
-	void onIrisEntrance(Entity player);
-	
-	void open(Player player);
+    void onButtonClick(PlayerInteractEvent event);
 
-	String getName();
+    void onIrisEntrance(Entity player);
 
-	void setNetwork(Network targetNet);
+    void open(Player player);
 
-	void setOverrideDesti(IPortal destination);
+    String getName();
 
-	Network getNetwork();
-	
-	boolean hasFlag(PortalFlag flag);
-	
-	String getAllFlagsString();
+    void setNetwork(Network targetNet);
 
-	Location getSignPos();
-	/**
-	 * Convert a portal into a string, would look like this:
-	 * 		Classname{key1=data1,key2=data2 ... }
-	 * @param portal
-	 * @return
-	 */
-	public static String getString(IPortal portal) {
-		String type = portal.getClass().getName();
-		
-		HashMap<String, String> data = new HashMap<>();
-		data.put("flags", portal.getAllFlagsString());
-		data.put("name", portal.getName());
-		data.put("net", portal.getNetwork().getName());
-		if(Setting.getBoolean(Setting.USING_BUNGEE)) {
-			data.put("server", Stargate.serverName);
-		}
-		String endMsg = type + "{";
-		Iterator<String> it = data.keySet().iterator();
-		while(it.hasNext()) {
-			String key = it.next();
-			endMsg = endMsg + key + "=" + data.get(key);
-			if(it.hasNext())
-				endMsg = endMsg + ",";
-		}
-		return endMsg + "}"; 
-	}
-	
-	String getDesignName();
-	
-	UUID getOwnerUUID();
+    void setOverrideDesti(IPortal destination);
+
+    Network getNetwork();
+
+    boolean hasFlag(PortalFlag flag);
+
+    String getAllFlagsString();
+
+    Location getSignPos();
+
+    /**
+     * Convert a portal into a string, would look like this:
+     * Classname{key1=data1,key2=data2 ... }
+     *
+     * @param portal
+     * @return
+     */
+    public static String getString(IPortal portal) {
+        String type = portal.getClass().getName();
+
+        HashMap<String, String> data = new HashMap<>();
+        data.put("flags", portal.getAllFlagsString());
+        data.put("name", portal.getName());
+        data.put("net", portal.getNetwork().getName());
+        if (Setting.getBoolean(Setting.USING_BUNGEE)) {
+            data.put("server", Stargate.serverName);
+        }
+        String endMsg = type + "{";
+        Iterator<String> it = data.keySet().iterator();
+        while (it.hasNext()) {
+            String key = it.next();
+            endMsg = endMsg + key + "=" + data.get(key);
+            if (it.hasNext())
+                endMsg = endMsg + ",";
+        }
+        return endMsg + "}";
+    }
+
+    String getDesignName();
+
+    UUID getOwnerUUID();
 }

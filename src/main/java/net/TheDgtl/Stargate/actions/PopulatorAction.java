@@ -10,7 +10,7 @@ public interface PopulatorAction {
     /**
      * Executes the population, and performs the populator action
      *
-     * @param forceEnd <p>Unused???</p>
+     * @param forceEnd <p>Whether to force the action to be performed</p>
      */
     void run(boolean forceEnd);
 

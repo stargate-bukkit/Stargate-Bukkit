@@ -17,12 +17,9 @@ package net.TheDgtl.Stargate.event;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-
+import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -30,17 +27,18 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.Setting;
-import net.TheDgtl.Stargate.network.portal.IPortal;
-import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
 
 public abstract class StargateEvent extends Event implements Cancellable {
-	// oldname = StargateEvent
+    // oldname = StargateEvent
     protected final IPortal portal;
     protected boolean cancelled;
-	private PluginManager pm;
-    
-    
+    private PluginManager pm;
+
+
     public StargateEvent(@NotNull IPortal portal) {
         this.portal = Objects.requireNonNull(portal);
         this.cancelled = false;
@@ -60,66 +58,67 @@ public abstract class StargateEvent extends Event implements Cancellable {
     public void setCancelled(boolean cancelled) {
         this.cancelled = cancelled;
     }
+
     //TODO temporary, this method should be abstract
-	public abstract List<Permission> getRelatedPerms();
-	
-	protected List<Permission> compileFlagPerms(String permIdentifier){
-		List<Permission> permList = new ArrayList<>();
-		EnumSet<PortalFlag> flags = PortalFlag.parseFlags(portal.getAllFlagsString());
-		for(PortalFlag flag : flags) {
-			String identifier;
-			switch(flag) {
-			case FIXED:
-				identifier = "fixed";
-				break;
-			case NETWORKED:
-				identifier = "non-fixed";
-				break;
-			case PERSONAL_NETWORK:
-			case IRON_DOOR:
-				continue;
-			default:
-				identifier = String.valueOf(flag.label).toLowerCase();
-				break;
-			}
-			permList.add(  pm.getPermission(permIdentifier + ".type." + identifier));
-		}
-		return permList;
-	}
-	
-	protected Permission compileNetworkPerm(String permIdentifier, String activator) {
-		if(portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && portal.getNetwork().getName().equals(activator))
-			return pm.getPermission(permIdentifier + ".network.personal");
-		if(portal.getNetwork().getName().equals(Setting.getString(Setting.DEFAULT_NET)))
-			return pm.getPermission( permIdentifier + ".network.default");
-		Permission custom = new Permission( permIdentifier + ".network.custom." + portal.getNetwork().getName());
-		Permission parrent = pm.getPermission(permIdentifier + ".network.custom");
-		custom.addParent(parrent, true);
-		return custom;
-	}
-	
-	protected Permission compileWorldPerm(String permIdentifier) {
-		Permission parrent = pm.getPermission(permIdentifier + ".world");
-		String permNode = permIdentifier + ".world." + portal.getSignPos().getWorld().getName();
-		Permission world = new Permission(permNode);
-		world.addParent(parrent, true);
-		return world;
-	}
-	
-	protected Permission compileDesignPerm(String permIdentifier) {
-		Permission parrent = pm.getPermission(permIdentifier + ".design");
-		String permNode = permIdentifier + ".design." + portal.getDesignName();
-		Permission design = new Permission(permNode);
-		design.addParent(parrent, true);
-		return design;
-	}
-	
-	protected List<Permission> defaultPermCompile(String permIdentifier, String activator){
-		List<Permission> permList = new ArrayList<>();
-		permList.addAll(compileFlagPerms(permIdentifier));
-		permList.add(compileWorldPerm(permIdentifier));
-		permList.add(compileNetworkPerm(permIdentifier,activator));
-		permList.add(compileDesignPerm(permIdentifier));
-		return permList;
-	}
+    public abstract List<Permission> getRelatedPerms();
+
+    protected List<Permission> compileFlagPerms(String permIdentifier) {
+        List<Permission> permList = new ArrayList<>();
+        EnumSet<PortalFlag> flags = PortalFlag.parseFlags(portal.getAllFlagsString());
+        for (PortalFlag flag : flags) {
+            String identifier;
+            switch (flag) {
+                case FIXED:
+                    identifier = "fixed";
+                    break;
+                case NETWORKED:
+                    identifier = "non-fixed";
+                    break;
+                case PERSONAL_NETWORK:
+                case IRON_DOOR:
+                    continue;
+                default:
+                    identifier = String.valueOf(flag.label).toLowerCase();
+                    break;
+            }
+            permList.add(pm.getPermission(permIdentifier + ".type." + identifier));
+        }
+        return permList;
+    }
+
+    protected Permission compileNetworkPerm(String permIdentifier, String activator) {
+        if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && portal.getNetwork().getName().equals(activator))
+            return pm.getPermission(permIdentifier + ".network.personal");
+        if (portal.getNetwork().getName().equals(Setting.getString(Setting.DEFAULT_NET)))
+            return pm.getPermission(permIdentifier + ".network.default");
+        Permission custom = new Permission(permIdentifier + ".network.custom." + portal.getNetwork().getName());
+        Permission parrent = pm.getPermission(permIdentifier + ".network.custom");
+        custom.addParent(parrent, true);
+        return custom;
+    }
+
+    protected Permission compileWorldPerm(String permIdentifier) {
+        Permission parrent = pm.getPermission(permIdentifier + ".world");
+        String permNode = permIdentifier + ".world." + portal.getSignPos().getWorld().getName();
+        Permission world = new Permission(permNode);
+        world.addParent(parrent, true);
+        return world;
+    }
+
+    protected Permission compileDesignPerm(String permIdentifier) {
+        Permission parrent = pm.getPermission(permIdentifier + ".design");
+        String permNode = permIdentifier + ".design." + portal.getDesignName();
+        Permission design = new Permission(permNode);
+        design.addParent(parrent, true);
+        return design;
+    }
+
+    protected List<Permission> defaultPermCompile(String permIdentifier, String activator) {
+        List<Permission> permList = new ArrayList<>();
+        permList.addAll(compileFlagPerms(permIdentifier));
+        permList.add(compileWorldPerm(permIdentifier));
+        permList.add(compileNetworkPerm(permIdentifier, activator));
+        permList.add(compileDesignPerm(permIdentifier));
+        return permList;
+    }
 }
