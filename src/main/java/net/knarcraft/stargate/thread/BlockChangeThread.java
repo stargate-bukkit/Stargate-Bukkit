@@ -39,8 +39,7 @@ public class BlockChangeThread implements Runnable {
         Block block = blockChangeRequest.getBlockLocation().getBlock();
         block.setType(blockChangeRequest.getMaterial(), false);
 
-        if (blockChangeRequest.getMaterial() == Material.END_GATEWAY &&
-                block.getWorld().getEnvironment() == World.Environment.THE_END) {
+        if (blockChangeRequest.getMaterial() == Material.END_GATEWAY) {
             //Force a specific location to prevent exit gateway generation
             fixEndGatewayGate(block);
         } else if (blockChangeRequest.getAxis() != null) {
@@ -56,8 +55,11 @@ public class BlockChangeThread implements Runnable {
      */
     private static void fixEndGatewayGate(Block block) {
         EndGateway gateway = (EndGateway) block.getState();
-        gateway.setExitLocation(block.getLocation());
-        gateway.setExactTeleport(true);
+        gateway.setAge(Long.MIN_VALUE);
+        if (block.getWorld().getEnvironment() == World.Environment.THE_END) {
+            gateway.setExitLocation(block.getLocation());
+            gateway.setExactTeleport(true);
+        }
         gateway.update(false, false);
     }
 
