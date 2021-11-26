@@ -4,7 +4,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.StargateProtocol;
+import net.TheDgtl.Stargate.StargateProtocolProperty;
+import net.TheDgtl.Stargate.StargateProtocolRequestType;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.exception.NameError;
@@ -62,13 +63,13 @@ public class InterserverNetwork extends Network {
 
         };
         Stargate.syncSecPopulator.addAction(action, true);
-        updateInterserverNetwork(portal, StargateProtocol.TYPE_PORTAL_ADD);
+        updateInterserverNetwork(portal, StargateProtocolRequestType.TYPE_PORTAL_ADD);
     }
 
     /**
      * Tries to update the interserver network globally on every connected server
      */
-    private void updateInterserverNetwork(IPortal portal, StargateProtocol type) {
+    private void updateInterserverNetwork(IPortal portal, StargateProtocolRequestType type) {
         Stargate stargate = Stargate.getPlugin(Stargate.class);
         PopulatorAction action = new PopulatorAction() {
             boolean isFinished = false;
@@ -84,12 +85,12 @@ public class InterserverNetwork extends Network {
                         msgData.writeUTF("ALL");
                         msgData.writeUTF(Channel.NETWORK_CHANGED.getChannel());
                         JsonObject data = new JsonObject();
-                        data.add(StargateProtocol.TYPE.toString(), new JsonPrimitive(type.toString()));
-                        data.add(StargateProtocol.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getName()));
-                        data.add(StargateProtocol.PORTAL.toString(), new JsonPrimitive(portal.getName()));
-                        data.add(StargateProtocol.SERVER.toString(), new JsonPrimitive(Stargate.serverName));
-                        data.add(StargateProtocol.PORTAL_FLAG.toString(), new JsonPrimitive(portal.getAllFlagsString()));
-                        data.add(StargateProtocol.OWNER.toString(), new JsonPrimitive(portal.getOwnerUUID().toString()));
+                        data.add(StargateProtocolProperty.TYPE.toString(), new JsonPrimitive(type.toString()));
+                        data.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getName()));
+                        data.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(portal.getName()));
+                        data.add(StargateProtocolProperty.SERVER.toString(), new JsonPrimitive(Stargate.serverName));
+                        data.add(StargateProtocolProperty.PORTAL_FLAG.toString(), new JsonPrimitive(portal.getAllFlagsString()));
+                        data.add(StargateProtocolProperty.OWNER.toString(), new JsonPrimitive(portal.getOwnerUUID().toString()));
                         msgData.writeUTF(data.toString());
                         Bukkit.getServer().sendPluginMessage(stargate, Channel.BUNGEE.getChannel(), bao.toByteArray());
                     } catch (IOException ex) {
@@ -114,7 +115,7 @@ public class InterserverNetwork extends Network {
         statement.close();
         conn.close();
 
-        updateInterserverNetwork(portal, StargateProtocol.TYPE_PORTAL_REMOVE);
+        updateInterserverNetwork(portal, StargateProtocolRequestType.TYPE_PORTAL_REMOVE);
     }
 
     @Override

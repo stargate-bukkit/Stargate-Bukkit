@@ -24,7 +24,8 @@ import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.StargateProtocol;
+import net.TheDgtl.Stargate.StargateProtocolProperty;
+import net.TheDgtl.Stargate.StargateProtocolRequestType;
 import net.TheDgtl.Stargate.network.InterserverNetwork;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
@@ -134,12 +135,12 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         JsonParser parser = new JsonParser();
         Stargate.log(Level.FINEST, msg);
         JsonObject json = (JsonObject) parser.parse(msg);
-        StargateProtocol type = StargateProtocol.valueOf(json.get(StargateProtocol.TYPE.toString()).getAsString());
-        String portalName = json.get(StargateProtocol.PORTAL.toString()).getAsString();
-        String network = json.get(StargateProtocol.NETWORK.toString()).getAsString();
-        String server = json.get(StargateProtocol.SERVER.toString()).getAsString();
-        String flags = json.get(StargateProtocol.PORTAL_FLAG.toString()).getAsString();
-        UUID ownerUUID = UUID.fromString(json.get(StargateProtocol.OWNER.toString()).getAsString());
+        StargateProtocolRequestType type = StargateProtocolRequestType.valueOf(json.get(StargateProtocolProperty.TYPE.toString()).getAsString());
+        String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
+        String network = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
+        String server = json.get(StargateProtocolProperty.SERVER.toString()).getAsString();
+        String flags = json.get(StargateProtocolProperty.PORTAL_FLAG.toString()).getAsString();
+        UUID ownerUUID = UUID.fromString(json.get(StargateProtocolProperty.OWNER.toString()).getAsString());
         InterserverNetwork targetNet = (InterserverNetwork) Stargate.factory.getNetwork(network, true);
         VirtualPortal portal = new VirtualPortal(server, portalName, targetNet, PortalFlag.parseFlags(flags), ownerUUID);
 
@@ -158,9 +159,9 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         JsonParser parser = new JsonParser();
         Stargate.log(Level.FINEST, msg);
         JsonObject json = (JsonObject) parser.parse(msg);
-        String playerName = json.get(StargateProtocol.PLAYER.toString()).getAsString();
-        String portalName = json.get(StargateProtocol.PORTAL.toString()).getAsString();
-        String network = json.get(StargateProtocol.NETWORK.toString()).getAsString();
+        String playerName = json.get(StargateProtocolProperty.PLAYER.toString()).getAsString();
+        String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
+        String network = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
 
         Player player = stargate.getServer().getPlayer(playerName);
         if (player == null) {
