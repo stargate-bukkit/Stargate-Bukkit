@@ -153,9 +153,10 @@ public class Gate {
         for (int i = 0; i < 4; i++) {
             sign.setLine(i, signLines[i]);
         }
-        new BlockSetAction(Stargate.syncTickPopulator, sign, true);
-        if (!isDrawButton)
+        Stargate.syncTickPopulator.addAction(new BlockSetAction(sign, true));
+        if (!isDrawButton) {
             return;
+        }
 
         Location buttonLoc = getLocation(buttonPos);
         Material buttonMat = getButtonMaterial();
