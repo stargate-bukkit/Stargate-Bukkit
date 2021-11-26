@@ -18,15 +18,14 @@
 
 package net.TheDgtl.Stargate.event;
 
-import java.util.List;
-import java.util.Objects;
-
+import net.TheDgtl.Stargate.network.portal.IPortal;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import java.util.List;
+import java.util.Objects;
 
 public class StargateActivateEvent extends StargateEvent {
     private final Player player;
@@ -74,9 +73,9 @@ public class StargateActivateEvent extends StargateEvent {
         this.destination = Objects.requireNonNull(destination);
     }
 
-	@Override
-	public List<Permission> getRelatedPerms() {
-		String identifier = "sg.use";
-		return super.defaultPermCompile(identifier,player.getUniqueId().toString());
-	}
+    @Override
+    public List<Permission> getRelatedPerms() {
+        String identifier = "sg.use";
+        return super.defaultPermCompile(identifier, player.getUniqueId().toString());
+    }
 }

@@ -18,15 +18,14 @@
 
 package net.TheDgtl.Stargate.event;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
+import net.TheDgtl.Stargate.network.portal.IPortal;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class StargateCloseEvent extends StargateEvent {
     private boolean force;
@@ -56,11 +55,11 @@ public class StargateCloseEvent extends StargateEvent {
         this.force = force;
     }
 
-	@Override
-	public List<Permission> getRelatedPerms() {
-		List<Permission> perms = new ArrayList<>();
-		return perms;
-	}
-    
-    
+    @Override
+    public List<Permission> getRelatedPerms() {
+        List<Permission> perms = new ArrayList<>();
+        return perms;
+    }
+
+
 }
