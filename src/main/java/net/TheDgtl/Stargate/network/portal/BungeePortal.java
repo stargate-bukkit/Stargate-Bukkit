@@ -66,9 +66,9 @@ public class BungeePortal extends Portal{
 		Stargate.log(Level.FINEST, "serverDesti = " + serverDesti);
 		
 		String[] lines = new String[4];
-		lines[0] = IPortal.getDefaultColor(super.isLightSign()) + NameSurround.PORTAL.getSurround(getColoredName(super.isLightSign()));
-		lines[1] = IPortal.getDefaultColor(super.isLightSign()) + NameSurround.DESTI.getSurround(targetPortal.getColoredName(super.isLightSign()));
-		lines[2] = IPortal.getDefaultColor(super.isLightSign()) + serverDesti;
+		lines[0] = super.colorDrawer.parseName(NameSurround.PORTAL,this);
+		lines[1] = super.colorDrawer.parseName(NameSurround.DESTI, loadDestination());
+		lines[2] = super.colorDrawer.parseLine(serverDesti);
 		lines[3] = "";
 		getGate().drawControll(lines,!hasFlag(PortalFlag.ALWAYS_ON));
 	}

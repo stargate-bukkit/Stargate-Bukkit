@@ -13,6 +13,7 @@ import org.bukkit.event.block.Action;
 
 import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.PermissionManager;
+import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
@@ -64,9 +65,8 @@ public class NetworkedPortal extends Portal {
 		drawControll();
 	}
 	
-	private String getDestinationName(int index) {
-		//TODO temporary; should be able to parse light/dark netcolors as well later on
-		return destinations.get(index).getColoredName(super.isLightSign());
+	private IPortal getDestination(int index) {
+		return destinations.get(index);
 	}
 
 	private String[] getDestinations(Player actor) {
@@ -111,11 +111,11 @@ public class NetworkedPortal extends Portal {
 	@Override
 	public void drawControll() {
 		String[] lines = new String[4];
-		lines[0] = NameSurround.PORTAL.getSurround(super.getColoredName(super.isLightSign()));
+		lines[0] = super.colorDrawer.parseName(NameSurround.PORTAL,this);
 		if (!isActive) {
-			lines[1] = Stargate.langManager.getString(LangMsg.RIGHT_CLICK);
-			lines[2] = Stargate.langManager.getString(LangMsg.TO_USE);
-			lines[3] = network.concatName();
+			lines[1] = super.colorDrawer.parseLine(Stargate.langManager.getString(LangMsg.RIGHT_CLICK));
+			lines[2] = super.colorDrawer.parseLine(Stargate.langManager.getString(LangMsg.TO_USE));
+			lines[3] = super.colorDrawer.parseLine(network.concatName());
 		} else {
 			int destiIndex = selectedDesti % 3;
 			int desti1 = selectedDesti - destiIndex;
@@ -125,12 +125,22 @@ public class NetworkedPortal extends Portal {
 				if(desti == maxLength)
 					break;
 				
-				String aDestinationName = getDestinationName(desti);
-				
-				if (destiIndex == i) {
-					aDestinationName = NameSurround.DESTI.getSurround(aDestinationName);
+				if(Setting.getInteger(Setting.NAME_STYLE)  == 1){
+					if (destiIndex == i) {
+						lines[i + 1] = super.colorDrawer.parseName(NameSurround.DESTI, this.getDestination(desti));
+					} else {
+						lines[i + 1] = super.colorDrawer.parseLine(this.getDestination(desti).getName());
+					}
+					continue;
 				}
-				lines[i + 1] = aDestinationName;
+				
+				NameSurround surround;
+				if (destiIndex == i) {
+					surround = NameSurround.DESTI;
+				} else {
+					surround = NameSurround.NOTHING;
+				}
+				lines[i + 1] = super.colorDrawer.parseName(surround, this.getDestination(desti));
 			}
 		}
 		getGate().drawControll(lines,!hasFlag(PortalFlag.ALWAYS_ON));

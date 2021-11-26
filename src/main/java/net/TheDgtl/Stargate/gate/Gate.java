@@ -217,7 +217,7 @@ public class Gate {
 	 * force a location to prevent exit gateway generation.
 	 * @param mat
 	 */
-	private void setIrisMat(Material mat) {
+	private void setIrisMaterial(Material mat) {
 		GateStructureType targetType = GateStructureType.IRIS;
 		List<SGLocation> locs = getLocations(targetType);
 		BlockData blockData = Bukkit.createBlockData(mat);
@@ -253,14 +253,14 @@ public class Gate {
 	
 	public void open() {
 		Material mat = getFormat().getIrisMat(true);
-		setIrisMat(mat);
+		setIrisMaterial(mat);
 		setOpen(true);
 		
 	}
 	
 	public void close() {
 		Material mat = getFormat().getIrisMat(false);
-		setIrisMat(mat);
+		setIrisMaterial(mat);
 		setOpen(false);
 	}
 
@@ -409,5 +409,4 @@ public class Gate {
 			}
 		}
 	}
-	
 }

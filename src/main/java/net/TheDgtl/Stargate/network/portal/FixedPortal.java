@@ -18,12 +18,12 @@ public class FixedPortal extends Portal{
 	/**
 	 * 
 	 */
-	String destination;
+	String destiName;
 
 	public FixedPortal(Network network, String name, String destiName, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
 			throws NoFormatFound, GateConflict, NameError {
 		super(network, name, sign, flags, ownerUUID);
-		destination = destiName;
+		this.destiName = destiName;
 
 		drawControll();
 	}
@@ -41,17 +41,22 @@ public class FixedPortal extends Portal{
 	@Override
 	public void drawControll() {
 		String[] lines = new String[4];
-		lines[0] = NameSurround.PORTAL.getSurround(getColoredName(super.isLightSign()));
-		lines[1] = NameSurround.DESTI.getSurround( loadDestination().getColoredName(super.isLightSign()));
-		lines[2] = this.network.concatName();
-		lines[3] = ((this.network.isPortalNameTaken(destination)) ? ""
-				: Stargate.langManager.getString(LangMsg.DISCONNECTED));
-		getGate().drawControll(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+		lines[0] = super.colorDrawer.parseName(NameSurround.PORTAL,this);
+		
+		IPortal destination = loadDestination();
+		if(destination != null)
+		    lines[1] = super.colorDrawer.parseName(NameSurround.DESTI, loadDestination());
+		else {
+		    lines[1] = super.colorDrawer.parseLine(destiName);
+		    lines[2] = super.colorDrawer.parseLine(this.network.concatName());
+	        lines[3] = super.colorDrawer.parseError(Stargate.langManager.getString(LangMsg.DISCONNECTED), NameSurround.BUNGEE);
+		}
+        getGate().drawControll(lines, !hasFlag(PortalFlag.ALWAYS_ON));
 	}
 
 	@Override
 	public IPortal loadDestination() {
-		return this.network.getPortal(destination);
+		return this.network.getPortal(destiName);
 	}
 	
 	@Override

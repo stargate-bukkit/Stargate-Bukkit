@@ -20,6 +20,8 @@ import net.TheDgtl.Stargate.network.Network;
 import net.md_5.bungee.api.ChatColor;
 
 public interface IPortal {
+	
+	
 
 	void destroy();
 
@@ -82,14 +84,8 @@ public interface IPortal {
 		}
 		return endMsg + "}"; 
 	}
-
-	static public ChatColor getDefaultColor(boolean isLightSign) {
-		return isLightSign?ChatColor.BLACK:ChatColor.WHITE;
-	}
 	
 	String getDesignName();
-
-	String getColoredName(boolean isLightSign);
 	
 	UUID getOwnerUUID();
 }

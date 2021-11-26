@@ -1,7 +1,7 @@
 package net.TheDgtl.Stargate.network.portal;
 
 public enum NameSurround {
-	PORTAL("-", "-"), DESTI(">", "<"), NETWORK("(", ")"), BUNGEE("[","]");
+	PORTAL("-", "-"), DESTI(">", "<"), NETWORK("(", ")"), BUNGEE("[","]"), NOTHING("","");
 
 	private final String begin;
 	private final String end;

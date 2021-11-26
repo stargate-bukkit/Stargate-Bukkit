@@ -30,9 +30,9 @@ public class RandomPortal extends Portal{
 	@Override
 	public void drawControll() {
 		String lines[] = {
-				IPortal.getDefaultColor(super.isLightSign()) + NameSurround.PORTAL.getSurround( getColoredName(super.isLightSign())),
-				IPortal.getDefaultColor(super.isLightSign()) + NameSurround.DESTI.getSurround(Stargate.langManager.getString(LangMsg.RANDOM)),
-				IPortal.getDefaultColor(super.isLightSign()) + network.concatName(),
+				super.colorDrawer.parseName(NameSurround.PORTAL, this),
+				super.colorDrawer.parseLine(NameSurround.DESTI.getSurround(Stargate.langManager.getString(LangMsg.RANDOM))),
+				super.colorDrawer.parseLine(network.concatName()),
 			""
 		};
 		getGate().drawControll(lines,!hasFlag(PortalFlag.ALWAYS_ON));

@@ -20,7 +20,8 @@ public enum Setting {
 	CREATION_COST("creationCost"), DESTROY_COST("destructionCost"), USE_COST("usageCost"),
 	GATE_OWNER_REVENUE("gateOwnerRevenue"), CHARGE_FREE_DESTINATION("chargeFreeDestination"),
 	
-	DEFAULT_SIGN_COLOR("defaultSignColour"), HIGHLIGHT_FREE_GATES("highlightFreeGates"),
+	DEFAULT_LIGHT_SIGN_COLOR("signStyle.defaultForeground"), DEFAULT_DARK_SIGN_COLOR("signStyle.defaultBackground"),
+	NAME_STYLE("signStyle.listing"), POINTER_STYLE("signStyle.pointer"),
 	ALPHABETIC_NETWORKS("alphabeticNetworks"), REMEMBER_LAST_DESTINATION("rememberLastDestination"),
 	GATE_EXIT_SPEED_MULTIPLIER("gateExitSpeedMultiplier"),
 

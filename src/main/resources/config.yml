@@ -169,8 +169,13 @@ chargeFreeDestination: true
 #
 # All colour names should follow this format:
 # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Color.html#field.summary
-defaultSignColour: BLACK
-
+signStyle:
+     defaultForeground: BLACK
+     defaultBackground: WHITE
+   # [1: foreground, 2: gate type, 3: grey, 4: background]
+     pointer: 4
+   # [1: selected gates coloured, 2: all gates coloured, 3: no gates coloured]
+     listing: 3
 # When scrolling through a networked portal's destination list, will free gates be shown in GREEN?
 highlightFreeGates: false
 
@@ -219,7 +224,7 @@ gateFolder: plugins/Stargate/gates/
 #   |   - 𝐏𝐫𝐢𝐧𝐭 𝐦𝐨𝐬𝐭 𝐝𝐞𝐛𝐮𝐠 𝐢𝐧𝐟𝐨. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑚𝑒𝑠𝑠𝑎𝑔𝑒𝑠 𝑑𝑒𝑡𝑎𝑖𝑙𝑖𝑛𝑔 𝑡ℎ𝑒 𝑝𝑙𝑢𝑔𝑖𝑛'𝑠 𝑙𝑜𝑔𝑖𝑐 𝑎𝑛𝑑 𝑏𝑒ℎ𝑎𝑣𝑖𝑜𝑢𝑟.
 #   |=> FINEST (Only used by StarGate's core development team).
 #   |   - 𝐏𝐫𝐢𝐧𝐭 𝐞𝐯𝐞𝐫𝐲𝐭𝐡𝐢𝐧𝐠. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑙𝑖𝑡𝑒𝑟𝑎𝑙𝑙𝑦 𝑒𝑣𝑒𝑟𝑦𝑡ℎ𝑖𝑛𝑔, 𝑖𝑛𝑐𝑙𝑢𝑑𝑖𝑛𝑔 𝑛𝑢𝑚𝑒𝑟𝑜𝑢𝑠 𝑠𝑡𝑎𝑐𝑘 𝑡𝑟𝑎𝑐𝑒𝑠.
-loggingLevel: INFO
+loggingLevel: FINEST
 
 # |                                           [ Debug ]                                          | #
 # |__     These settings are provided to help developers diagnose issues with this plugin.     __| #

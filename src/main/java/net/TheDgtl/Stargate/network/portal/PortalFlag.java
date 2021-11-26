@@ -8,7 +8,7 @@ import net.TheDgtl.Stargate.exception.NoFlagFound;
 public enum PortalFlag {
 	RANDOM('R'), FANCY_INTERSERVER('I'), ALWAYS_ON('A'), BACKWARDS('B'),
 	HIDDEN('H'), PRIVATE('P'), FORCE_SHOW('S'), HIDE_NETWORK('N'), 
-	FREE('F'), BUNGEE('U'),
+	FREE('F'), BUNGEE('U'), SILENT('Q'),
 	//Internal
 	NETWORKED('1'),FIXED('2'), IRON_DOOR('3'), PERSONAL_NETWORK('4');
 

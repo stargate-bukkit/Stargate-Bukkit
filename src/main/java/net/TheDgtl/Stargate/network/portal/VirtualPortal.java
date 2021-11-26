@@ -191,12 +191,6 @@ public class VirtualPortal implements IPortal {
 	}
 
 	@Override
-	public String getColoredName(boolean isLightSign) {
-		return (isLightSign ? ChatColor.of("#240023") : ChatColor.of("#FFE0FE")) + getName()
-				+ ChatColor.BLACK;
-	}
-
-	@Override
 	public UUID getOwnerUUID() {
 		return this.getOwnerUUID();
 	}

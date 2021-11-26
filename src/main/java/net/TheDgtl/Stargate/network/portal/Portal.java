@@ -8,11 +8,13 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -68,6 +70,7 @@ public abstract class Portal implements IPortal {
 	IPortal destination = null;
 	private long openTime = -1;
 	private final UUID ownerUUID;
+	protected PortalColorParser colorDrawer;
 	
 
 	Portal(Network network, String name, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
@@ -76,6 +79,8 @@ public abstract class Portal implements IPortal {
 		this.network = network;
 		this.name = name;
 		this.flags = flags;
+		
+		
 		if (name.isBlank() || (name.length() == Stargate.MAX_TEXT_LENGTH))
 			throw new NameError(LangMsg.NAME_LENGTH_FAULT);
 		if (this.network.isPortalNameTaken(name)) {
@@ -93,6 +98,8 @@ public abstract class Portal implements IPortal {
 		Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
 		List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
 		setGate(FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing()));
+
+		this.colorDrawer = new PortalColorParser((Sign)getSignPos().getBlock().getState());
 		
 		if(gate.getFormat().isIronDoorBlockable) {
 			flags.add(PortalFlag.IRON_DOOR);
@@ -391,27 +398,34 @@ public abstract class Portal implements IPortal {
 			return;
 		}
 		
-		List<Entity> passangers = target.getPassengers();
+		List<Entity> passengers = target.getPassengers();
 		if(target.eject()) {
 			Stargate.log(Level.FINEST, "Ejected all passangers");
-			for(Entity passanger : passangers) {
-				if(passanger instanceof Player)
-					continue;
-				betterTeleport(passanger, loc);
+			for(Entity passenger : passengers) {
+				
 				PopulatorAction action = new PopulatorAction() {
 					
 					@Override
 					public void run(boolean forceEnd) {
-						target.addPassenger(passanger);
+						betterTeleport(passenger, loc);
+						target.addPassenger(passenger);
 					}
 					@Override
 					public boolean isFinished() {
 						return true;
 					}
 				};
+				if(passenger instanceof Player) {
+					/*
+					 * Delay action by one tick to avoid client issues
+					 */
+					Stargate.syncTickPopulator.addAction(new DelayedAction(1,action));
+					continue;
+				}
 				Stargate.syncTickPopulator.addAction(action);
 			}
 		}
+		
 		target.teleport(loc);
 	}
 	
@@ -483,60 +497,6 @@ public abstract class Portal implements IPortal {
 	
 	public String getDesignName() {
 		return gate.getFormat().name;
-	}
-	
-	protected boolean isLightSign() {
-		return true;
-		/*
-		switch(gate.getSignLoc().getBlock().getType()) {
-		// Dark signs
-		case DARK_OAK_WALL_SIGN:
-		case WARPED_WALL_SIGN:
-		case CRIMSON_WALL_SIGN:
-		case SPRUCE_WALL_SIGN:
-		case OAK_WALL_SIGN:
-			return false;
-		default:
-			return true;
-		}
-		*/
-	}
-	
-	@Override
-	public String getColoredName(boolean isLightSign) {
-		Stargate.log(Level.FINEST, " Gate " + this.getName() + " has flags: " + this.getAllFlagsString());
-		ChatColor[] colors = new ChatColor[] { IPortal.getDefaultColor(true), IPortal.getDefaultColor(false)};
-		if(hasFlag(PortalFlag.BACKWARDS)) {
-			colors = new ChatColor[] {
-					ChatColor.of("#240023"),
-					ChatColor.of("#FFDEDE")
-					};
-		}
-		if(hasFlag(PortalFlag.FORCE_SHOW)) {
-			colors = new ChatColor[] {
-					ChatColor.of("#002422"),
-					ChatColor.of("#E3FFFE")
-					};
-		}
-		if(hasFlag(PortalFlag.HIDDEN)) {
-			colors = new ChatColor[] {
-					ChatColor.of("#292800"),
-					ChatColor.of("#FFFEDE")
-					};
-		}
-		if(hasFlag(PortalFlag.FREE)) {
-			colors = new ChatColor[] {
-					ChatColor.of("#002402"),
-					ChatColor.of("#E0FFE2")
-					};
-		}
-		if(hasFlag(PortalFlag.PRIVATE)) {
-			colors = new ChatColor[] {
-					ChatColor.of("#210000"),
-					ChatColor.of("#FFDEDE")
-					};
-		}
-		return (isLightSign?colors[0]:colors[1]) + getName() + ChatColor.BLACK;
 	}
 	
 	@Override
