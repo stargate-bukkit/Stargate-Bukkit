@@ -18,14 +18,16 @@
 
 package net.TheDgtl.Stargate.event;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Objects;
+import net.TheDgtl.Stargate.network.portal.IPortal;
 
 public class StargateCreateEvent extends StargateEvent {
     private final Player player;
@@ -88,10 +90,10 @@ public class StargateCreateEvent extends StargateEvent {
         this.cost = cost;
     }
 
-    @Override
-    public List<Permission> getRelatedPerms() {
-        String identifier = "sg.create";
-        return super.defaultPermCompile(identifier, player.getUniqueId().toString());
-    }
+	@Override
+	public List<Permission> getRelatedPerms() {
+		String identifier = "sg.create";
+		return super.defaultPermCompile(identifier,player.getUniqueId().toString());
+	}
 
 }

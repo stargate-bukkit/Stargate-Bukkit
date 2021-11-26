@@ -5,14 +5,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
-public class WorldEventListener implements Listener {
-    @EventHandler
+public class WorldEventListener implements Listener{
+	@EventHandler
     public void onWorldLoad(WorldLoadEvent event) {
-        // Load all portals in world
-    }
-
-    @EventHandler
+		// Load all portals in world
+	}
+	
+	@EventHandler
     public void onWorldUnload(WorldUnloadEvent event) {
-
-    }
+		
+	}
 }

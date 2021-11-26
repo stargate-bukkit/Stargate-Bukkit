@@ -29,48 +29,48 @@
 lang: en
 
 bungee:
-  # Are you connected to a bungee-compatible proxy?
-  # Set this to true if you intend on building gates with the 'u' flag.
-  usingBungee: false
+    # Are you connected to a bungee-compatible proxy?
+    # Set this to true if you intend on building gates with the 'u' flag.
+    usingBungee: false
 
-  # If you are running multiple instances (i.e. bungee), what is this one's name?
-  # (i.e. hub, smp, pvp, etc.).
-  instanceName: example
-
-  # By default, StarGate uses a local SQLite database to store its data.
-  #
-  # If you are running a large server, we recommend using a remote database.
-  # Note that such a database is required if you intend on building gates with the 'i' flag.
-  useRemoteDatabase: false
-
-  # Only applicable if useRemoteDatabase is true.
-  remoteDatabaseSettings:
-    # What driver should stargate use to connect to your database?
-    # Currently supported: [MySQL, MariaDB]
-    driver: MySQL
-
-    # Where can stargate find your database?
-    address: localhost
-    port: 3306
-
-    # Should stargate use SSL when connecting to your database?
-    useSSL: true
-
-    # The name of the database StarGate will use to store its data. Must already exist.
-    # If you are using Bungee, this should be shared across all StarGate instances.
-    database: stargate
-
-
-    # Credentials to use for the connection:
-    username: root
-    password: ''
-
-    # Should we generate a database config file ('hikari.properties') in your stargate folder?
-    # Doing so will ignore all the remoteDatabaseSettings above in favour of the new file!
+    # If you are running multiple instances (i.e. bungee), what is this one's name?
+    # (i.e. hub, smp, pvp, etc.).
+    instanceName: example
+    
+    # By default, StarGate uses a local SQLite database to store its data.
     #
-    # This allows you to use advanced RDMS features such as pool limits, cache sizes, etc.
-    # A list of available settings can be found at this link: https://git.io/J1hua.
-    advancedDatabaseConfiguration: false
+    # If you are running a large server, we recommend using a remote database.
+    # Note that such a database is required if you intend on building gates with the 'i' flag.
+    useRemoteDatabase: false
+    
+    # Only applicable if useRemoteDatabase is true.
+    remoteDatabaseSettings:    
+        # What driver should stargate use to connect to your database?
+        # Currently supported: [MySQL, MariaDB]
+        driver: MySQL
+    
+        # Where can stargate find your database?
+        address: localhost
+        port: 3306
+    
+        # Should stargate use SSL when connecting to your database?
+        useSSL: true
+    
+        # The name of the database StarGate will use to store its data. Must already exist.
+        # If you are using Bungee, this should be shared across all StarGate instances.
+        database: stargate
+    
+
+        # Credentials to use for the connection:
+        username: root
+        password: ''
+        
+        # Should we generate a database config file ('hikari.properties') in your stargate folder?
+        # Doing so will ignore all the remoteDatabaseSettings above in favour of the new file!
+        #
+        # This allows you to use advanced RDMS features such as pool limits, cache sizes, etc.
+        # A list of available settings can be found at this link: https://git.io/J1hua.
+        advancedDatabaseConfiguration: false
 
 # What network will be used when none has been specified? (Max length 12 characters)
 #
@@ -169,8 +169,13 @@ chargeFreeDestination: true
 #
 # All colour names should follow this format:
 # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Color.html#field.summary
-defaultSignColour: BLACK
-
+signStyle:
+     defaultForeground: BLACK
+     defaultBackground: WHITE
+   # [1: foreground, 2: gate type, 3: grey, 4: background]
+     pointer: 4
+   # [1: selected gates coloured, 2: all gates coloured, 3: no gates coloured]
+     listing: 3
 # When scrolling through a networked portal's destination list, will free gates be shown in GREEN?
 highlightFreeGates: false
 
@@ -203,7 +208,7 @@ gateFolder: plugins/Stargate/gates/
 
 # |                                          [ Logging ]                                         | #
 # |__                   How much information should stargate send to console?                  __| #
-
+  
 # Possible Values:
 #   |=> SEVERE (Not recommended).
 #   |   - 𝐇𝐢𝐝𝐞 𝐞𝐯𝐞𝐫𝐲𝐭𝐡𝐢𝐧𝐠. 𝑂𝑛𝑙𝑦 𝑝𝑟𝑖𝑛𝑡 𝑡𝑜 𝑐𝑜𝑛𝑠𝑜𝑙𝑒 𝑖𝑓 𝑝𝑙𝑢𝑔𝑖𝑛 𝑓𝑎𝑡𝑎𝑙𝑙𝑦 𝑐𝑟𝑎𝑠ℎ𝑒𝑠
@@ -219,7 +224,7 @@ gateFolder: plugins/Stargate/gates/
 #   |   - 𝐏𝐫𝐢𝐧𝐭 𝐦𝐨𝐬𝐭 𝐝𝐞𝐛𝐮𝐠 𝐢𝐧𝐟𝐨. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑚𝑒𝑠𝑠𝑎𝑔𝑒𝑠 𝑑𝑒𝑡𝑎𝑖𝑙𝑖𝑛𝑔 𝑡ℎ𝑒 𝑝𝑙𝑢𝑔𝑖𝑛'𝑠 𝑙𝑜𝑔𝑖𝑐 𝑎𝑛𝑑 𝑏𝑒ℎ𝑎𝑣𝑖𝑜𝑢𝑟.
 #   |=> FINEST (Only used by StarGate's core development team).
 #   |   - 𝐏𝐫𝐢𝐧𝐭 𝐞𝐯𝐞𝐫𝐲𝐭𝐡𝐢𝐧𝐠. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑙𝑖𝑡𝑒𝑟𝑎𝑙𝑙𝑦 𝑒𝑣𝑒𝑟𝑦𝑡ℎ𝑖𝑛𝑔, 𝑖𝑛𝑐𝑙𝑢𝑑𝑖𝑛𝑔 𝑛𝑢𝑚𝑒𝑟𝑜𝑢𝑠 𝑠𝑡𝑎𝑐𝑘 𝑡𝑟𝑎𝑐𝑒𝑠.
-loggingLevel: INFO
+loggingLevel: FINEST
 
 # |                                           [ Debug ]                                          | #
 # |__     These settings are provided to help developers diagnose issues with this plugin.     __| #
