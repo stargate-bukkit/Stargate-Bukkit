@@ -42,31 +42,11 @@ import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Tag;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.Directional;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.minecart.PoweredMinecart;
-import org.bukkit.event.Event.Result;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.util.Vector;
-
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Level;
 
 /**
  * The parent class for ever portal that interacts with server worlds
- *
  * @author Thorin
+ *
  */
 public abstract class Portal implements IPortal {
 	/**

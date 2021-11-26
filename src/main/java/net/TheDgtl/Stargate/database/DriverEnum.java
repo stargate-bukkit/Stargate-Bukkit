@@ -7,7 +7,6 @@ package net.TheDgtl.Stargate.database;
 
 /**
  * Enum to list drivers.
- *
  * @author Frostalf
  */
 public enum DriverEnum {
@@ -16,7 +15,7 @@ public enum DriverEnum {
     SQLITE,
     POSTREGSQL;
 
-    public static DriverEnum parse(String setting) {
-        return valueOf(setting.toUpperCase());
-    }
+	public static DriverEnum parse(String setting) {
+		return valueOf(setting.toUpperCase());
+	}
 }

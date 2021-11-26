@@ -1,23 +1,14 @@
 package net.TheDgtl.Stargate.actions;
 
 /**
- * An action to be triggered in the {@link net.TheDgtl.Stargate.SynchronousPopulator} class
- *
+ * A action to be triggered in the {@link SyncronousPopulator} class
  * @author Thorin
  */
-public interface PopulatorAction {
-    
-    /**
-     * Executes the population, and performs the populator action
-     * 
-     * @param forceEnd <p>Unused???</p>
-     */
-    void run(boolean forceEnd);
-
-    /**
-     * Whether the populator action has finished
-     * 
-     * @return <p>True if the populator action has finished</p>
-     */
-    boolean isFinished();
+public interface PopulatorAction{
+	/**
+	 * 
+	 * @param forceEnd , finish the action instantly
+	 */
+	public void run(boolean forceEnd);
+	public boolean isFinished();
 }

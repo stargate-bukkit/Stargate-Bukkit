@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 /**
  * Loads values from the configuration into an enum.
- *
  * @author Thorin
  */
 public enum Setting {
@@ -26,47 +25,46 @@ public enum Setting {
 	ALPHABETIC_NETWORKS("alphabeticNetworks"), REMEMBER_LAST_DESTINATION("rememberLastDestination"),
 	GATE_EXIT_SPEED_MULTIPLIER("gateExitSpeedMultiplier"),
 
-    DEBUG_LEVEL("loggingLevel"), CONFIG_VERSION("configVersion"), DATABASE_NAME("portalFile"),
-    USING_REMOTE_DATABASE("bungee.useRemoteDatabase"), SHOW_HIKARI_CONFIG("bungee.remoteDatabaseSettings.advancedDatabaseConfiguration"),
-    BUNGEE_DRIVER("remoteSettings.driver"), BUNGEE_DATABASE("remoteSettings.database"),
-    BUNGEE_PORT("remoteSettings.port"), BUNGEE_ADDRESS("remoteSettings.address");
+	DEBUG_LEVEL("loggingLevel"), CONFIG_VERSION("configVersion"), DATABASE_NAME("portalFile"),
+	USING_REMOTE_DATABASE("bungee.useRemoteDatabase"), SHOW_HIKARI_CONFIG("bungee.remoteDatabaseSettings.advancedDatabaseConfiguration"),
+	BUNGEE_DRIVER("remoteSettings.driver"), BUNGEE_DATABASE("remoteSettings.database"),
+	BUNGEE_PORT("remoteSettings.port"), BUNGEE_ADDRESS("remoteSettings.address");
 
-    private String key;
-    static private final HashMap<String, Setting> map = new HashMap<>();
+	private String key;
+	static private final HashMap<String,Setting> map = new HashMap<>();
+	static {
+		for(Setting value : values())
+			map.put(value.getKey(), value);
+	}
 
-    static {
-        for (Setting value : values())
-            map.put(value.getKey(), value);
-    }
+	Setting(String key) {
+		this.key = key;
+	}
 
-    Setting(String key) {
-        this.key = key;
-    }
+	static Setting parse(String key) {
+		for (Setting testSetting : values())
+			if (testSetting.getKey().equals(key))
+				return testSetting;
+		return null;
+	}
 
-    static Setting parse(String key) {
-        for (Setting testSetting : values())
-            if (testSetting.getKey().equals(key))
-                return testSetting;
-        return null;
-    }
-
-    String getKey() {
-        return key;
-    }
-
-    public static int getInteger(Setting setting) {
-        return Stargate.getConfigStatic().getInt(setting.getKey());
-    }
-
-    public static double getDouble(Setting setting) {
-        return Stargate.getConfigStatic().getDouble(setting.getKey());
-    }
-
-    public static String getString(Setting setting) {
-        return Stargate.getConfigStatic().getString(setting.getKey());
-    }
-
-    public static boolean getBoolean(Setting setting) {
-        return Stargate.getConfigStatic().getBoolean(setting.getKey());
-    }
+	String getKey() {
+		return key;
+	}
+	
+	public static int getInteger(Setting setting) {
+		return Stargate.getConfigStatic().getInt(setting.getKey());
+	}
+	
+	public static double getDouble(Setting setting) {
+		return Stargate.getConfigStatic().getDouble(setting.getKey());
+	}
+	
+	public static String getString(Setting setting) {
+		return Stargate.getConfigStatic().getString(setting.getKey());
+	}
+	
+	public static boolean getBoolean(Setting setting) {
+		return Stargate.getConfigStatic().getBoolean(setting.getKey());
+	}
 }

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Objects;
 
 import org.bukkit.Bukkit;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
