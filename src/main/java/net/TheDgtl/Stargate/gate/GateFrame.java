@@ -1,45 +1,39 @@
 package net.TheDgtl.Stargate.gate;
 
+import org.bukkit.Material;
+import org.bukkit.util.BlockVector;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
 
-import org.bukkit.Material;
-import org.bukkit.util.BlockVector;
-import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
+public class GateFrame extends GateStructure {
+    HashMap<BlockVector, HashSet<Material>> parts;
 
-import net.TheDgtl.Stargate.Stargate;
+    public GateFrame() {
+        parts = new HashMap<>();
+    }
 
-public class GateFrame extends GateStructure{
-	HashMap<BlockVector,HashSet<Material>> parts;
+    public void addPart(BlockVector vec, HashSet<Material> hashSet) {
+        parts.put(vec, hashSet);
+    }
 
-	public GateFrame() {
-		parts = new HashMap<>();
-	}
+    @Override
+    public void generateBlocks() {
+        // TODO Auto-generated method stub
 
-	public void addPart(BlockVector vec, HashSet<Material> hashSet) {
-		parts.put(vec, hashSet);
-	}
-
-	@Override
-	public void generateBlocks() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
 
-	@Override
-	protected List<BlockVector> getPartsPos() {
-		return new ArrayList<>(parts.keySet());
-	}
+    @Override
+    protected List<BlockVector> getPartsPos() {
+        return new ArrayList<>(parts.keySet());
+    }
 
 
-	@Override
-	protected boolean isValidBlock(BlockVector vec, Material mat) {
-		return parts.get(vec).contains(mat);
-	}
+    @Override
+    protected boolean isValidBlock(BlockVector vec, Material mat) {
+        return parts.get(vec).contains(mat);
+    }
 }

@@ -1,20 +1,19 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import java.util.EnumSet;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
-
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
-
 import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
 import net.TheDgtl.Stargate.network.Network;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+
+import java.util.EnumSet;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 public class RandomPortal extends Portal{
 

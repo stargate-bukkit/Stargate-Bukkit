@@ -1,16 +1,5 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
-
 import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
@@ -23,7 +12,16 @@ import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
 import net.TheDgtl.Stargate.network.Network;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
 public class NetworkedPortal extends Portal {
 	/**
@@ -34,7 +32,7 @@ public class NetworkedPortal extends Portal {
 	private int selectedDesti = NO_DESTI_SELECTED;
 	private boolean isActive;
 	private long activateTiming;
-	
+
 	private List<IPortal> destinations = new ArrayList<>();
 	private static int ACTIVE_DELAY = 15; // seconds
 
@@ -42,10 +40,9 @@ public class NetworkedPortal extends Portal {
 			throws NoFormatFound, GateConflict, NameError {
 		super(network, name, sign, flags, ownerUUID);
 
-		
 		drawControll();
 	}
-	
+
 	/**
 	 * TODO have this individual for each player?
 	 * @param action
@@ -64,7 +61,7 @@ public class NetworkedPortal extends Portal {
 		}
 		drawControll();
 	}
-	
+
 	private IPortal getDestination(int index) {
 		return destinations.get(index);
 	}
@@ -98,7 +95,7 @@ public class NetworkedPortal extends Portal {
 		int temp = initialDesti + destiLength;
 		return (temp + step) % destiLength;
 	}
-	
+
 	@Override
 	public void close(boolean force) {
 		if(hasFlag(PortalFlag.ALWAYS_ON) && !force)
@@ -107,7 +104,7 @@ public class NetworkedPortal extends Portal {
 		this.selectedDesti = NO_DESTI_SELECTED;
 		deactivate();
 	}
-	
+
 	@Override
 	public void drawControll() {
 		String[] lines = new String[4];

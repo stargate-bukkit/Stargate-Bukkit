@@ -29,48 +29,48 @@
 lang: en
 
 bungee:
-    # Are you connected to a bungee-compatible proxy?
-    # Set this to true if you intend on building gates with the 'u' flag.
-    usingBungee: false
+  # Are you connected to a bungee-compatible proxy?
+  # Set this to true if you intend on building gates with the 'u' flag.
+  usingBungee: false
 
-    # If you are running multiple instances (i.e. bungee), what is this one's name?
-    # (i.e. hub, smp, pvp, etc.).
-    instanceName: example
-    
-    # By default, StarGate uses a local SQLite database to store its data.
+  # If you are running multiple instances (i.e. bungee), what is this one's name?
+  # (i.e. hub, smp, pvp, etc.).
+  instanceName: example
+
+  # By default, StarGate uses a local SQLite database to store its data.
+  #
+  # If you are running a large server, we recommend using a remote database.
+  # Note that such a database is required if you intend on building gates with the 'i' flag.
+  useRemoteDatabase: false
+
+  # Only applicable if useRemoteDatabase is true.
+  remoteDatabaseSettings:
+    # What driver should stargate use to connect to your database?
+    # Currently supported: [MySQL, MariaDB]
+    driver: MySQL
+
+    # Where can stargate find your database?
+    address: localhost
+    port: 3306
+
+    # Should stargate use SSL when connecting to your database?
+    useSSL: true
+
+    # The name of the database StarGate will use to store its data. Must already exist.
+    # If you are using Bungee, this should be shared across all StarGate instances.
+    database: stargate
+
+
+    # Credentials to use for the connection:
+    username: root
+    password: ''
+
+    # Should we generate a database config file ('hikari.properties') in your stargate folder?
+    # Doing so will ignore all the remoteDatabaseSettings above in favour of the new file!
     #
-    # If you are running a large server, we recommend using a remote database.
-    # Note that such a database is required if you intend on building gates with the 'i' flag.
-    useRemoteDatabase: false
-    
-    # Only applicable if useRemoteDatabase is true.
-    remoteDatabaseSettings:    
-        # What driver should stargate use to connect to your database?
-        # Currently supported: [MySQL, MariaDB]
-        driver: MySQL
-    
-        # Where can stargate find your database?
-        address: localhost
-        port: 3306
-    
-        # Should stargate use SSL when connecting to your database?
-        useSSL: true
-    
-        # The name of the database StarGate will use to store its data. Must already exist.
-        # If you are using Bungee, this should be shared across all StarGate instances.
-        database: stargate
-    
-
-        # Credentials to use for the connection:
-        username: root
-        password: ''
-        
-        # Should we generate a database config file ('hikari.properties') in your stargate folder?
-        # Doing so will ignore all the remoteDatabaseSettings above in favour of the new file!
-        #
-        # This allows you to use advanced RDMS features such as pool limits, cache sizes, etc.
-        # A list of available settings can be found at this link: https://git.io/J1hua.
-        advancedDatabaseConfiguration: false
+    # This allows you to use advanced RDMS features such as pool limits, cache sizes, etc.
+    # A list of available settings can be found at this link: https://git.io/J1hua.
+    advancedDatabaseConfiguration: false
 
 # What network will be used when none has been specified? (Max length 12 characters)
 #
@@ -206,9 +206,9 @@ portalFile: stargate
 # Where can that folder be found?
 gateFolder: plugins/Stargate/gates/
 
-# |                                          [ Logging ]                                         | #
+  # |                                          [ Logging ]                                         | #
 # |__                   How much information should stargate send to console?                  __| #
-  
+
 # Possible Values:
 #   |=> SEVERE (Not recommended).
 #   |   - 𝐇𝐢𝐝𝐞 𝐞𝐯𝐞𝐫𝐲𝐭𝐡𝐢𝐧𝐠. 𝑂𝑛𝑙𝑦 𝑝𝑟𝑖𝑛𝑡 𝑡𝑜 𝑐𝑜𝑛𝑠𝑜𝑙𝑒 𝑖𝑓 𝑝𝑙𝑢𝑔𝑖𝑛 𝑓𝑎𝑡𝑎𝑙𝑙𝑦 𝑐𝑟𝑎𝑠ℎ𝑒𝑠
