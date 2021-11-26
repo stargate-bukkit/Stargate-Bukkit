@@ -86,7 +86,7 @@ public class BlockEventListener implements Listener {
     }
 
     private boolean shouldChargePlayer(Player player, IPortal portal) {
-        if (player.hasPermission(Bypass.COST_CREATE.getPerm()))
+        if (player.hasPermission(Bypass.COST_CREATE.getPermissionString()))
             return false;
 
         return Setting.getBoolean(Setting.CHARGE_FREE_DESTINATION)

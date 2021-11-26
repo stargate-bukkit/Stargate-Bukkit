@@ -427,7 +427,7 @@ public abstract class Portal implements IPortal {
 
         int useCost = Setting.getInteger(Setting.USE_COST);
         boolean shouldCharge = !(this.hasFlag(PortalFlag.FREE) || desti.hasFlag(PortalFlag.FREE)) && target instanceof Player
-                && !target.hasPermission(Bypass.COST_USE.getPerm());
+                && !target.hasPermission(Bypass.COST_USE.getPermissionString());
         boolean succesFullTransaction = true;
         if (shouldCharge) {
             if (this.hasFlag(PortalFlag.PERSONAL_NETWORK))

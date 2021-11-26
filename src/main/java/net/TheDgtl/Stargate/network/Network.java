@@ -133,10 +133,10 @@ public class Network {
             for (String portalName : tempPortalList) {
                 IPortal target = getPortal(portalName);
                 if (target.hasFlag(PortalFlag.HIDDEN)
-                        && (actor != null && !actor.hasPermission(Bypass.HIDDEN.getPerm())))
+                        && (actor != null && !actor.hasPermission(Bypass.HIDDEN.getPermissionString())))
                     removeList.add(portalName);
                 if (target.hasFlag(PortalFlag.PRIVATE) && actor != null
-                        && !actor.hasPermission(Bypass.PRIVATE.getPerm())
+                        && !actor.hasPermission(Bypass.PRIVATE.getPermissionString())
                         && !actor.getUniqueId().equals(target.getOwnerUUID()))
                     removeList.add(portalName);
             }

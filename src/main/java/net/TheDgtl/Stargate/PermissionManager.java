@@ -91,7 +91,7 @@ public class PermissionManager {
                 maxGates = Setting.getInteger(Setting.GATE_LIMIT);
             }
 
-            if (maxGates > -1 && !player.hasPermission(Bypass.GATE_LIMIT.getPerm())) {
+            if (maxGates > -1 && !player.hasPermission(Bypass.GATE_LIMIT.getPermissionString())) {
                 Network net = event.getPortal().getNetwork();
                 int currentAmount = net.size();
 
