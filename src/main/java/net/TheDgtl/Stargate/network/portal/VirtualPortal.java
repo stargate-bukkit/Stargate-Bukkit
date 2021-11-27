@@ -8,7 +8,6 @@ import net.TheDgtl.Stargate.StargateProtocol;
 import net.TheDgtl.Stargate.network.InterserverNetwork;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.Location;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;

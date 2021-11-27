@@ -27,7 +27,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -281,7 +280,7 @@ public abstract class Portal implements IPortal {
 
         IPortal destination = loadDestination();
         if (destination == null) {
-            player.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.INVALID, true));
+            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.INVALID, true));
             return;
         }
         PermissionManager mngr = new PermissionManager(player);
@@ -325,11 +324,11 @@ public abstract class Portal implements IPortal {
 
     @Override
     public void teleportHere(Entity target, Portal origin) {
-        
+
         BlockFace portalFacing = gate.facing.getOppositeFace();
         if (flags.contains(PortalFlag.BACKWARDS))
             portalFacing = portalFacing.getOppositeFace();
-        
+
         /*
          * If player enters from back, then take that into consideration
          */
@@ -338,12 +337,12 @@ public abstract class Portal implements IPortal {
         if (vec.getX() > 0) {
             enterFacing = enterFacing.getOppositeFace();
         }
-        
+
         boolean shouldCharge = !(this.hasFlag(PortalFlag.FREE) || origin.hasFlag(PortalFlag.FREE)) && target instanceof Player
                 && !((Player) target).hasPermission(Bypass.COST_USE.getPermissionString());
         int useCost = shouldCharge ? Setting.getInteger(Setting.USE_COST) : 0;
-        
-        Teleporter teleporter = new Teleporter(getExit(),origin,portalFacing,enterFacing,useCost);
+
+        Teleporter teleporter = new Teleporter(getExit(), origin, portalFacing, enterFacing, useCost);
         PopulatorAction action = new PopulatorAction() {
 
             @Override
@@ -358,14 +357,14 @@ public abstract class Portal implements IPortal {
 
         };
         Stargate.syncTickPopulator.addAction(action);
-       
+
     }
 
     @Override
     public void doTeleport(Entity target) {
         IPortal desti = getFinalDesti();
         if (desti == null) {
-            target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.INVALID, true));
+            target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.INVALID, true));
             teleportHere(target, this);
             return;
         }
