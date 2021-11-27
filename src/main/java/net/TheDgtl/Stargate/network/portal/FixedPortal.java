@@ -42,13 +42,12 @@ public class FixedPortal extends Portal {
     public void drawControll() {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.parseName(NameSurround.PORTAL, this);
-
+        lines[2] = super.colorDrawer.parseLine(this.network.concatName());
         IPortal destination = loadDestination();
         if (destination != null)
             lines[1] = super.colorDrawer.parseName(NameSurround.DESTI, loadDestination());
         else {
             lines[1] = super.colorDrawer.parseLine(destiName);
-            lines[2] = super.colorDrawer.parseLine(this.network.concatName());
             lines[3] = super.colorDrawer.parseError(Stargate.langManager.getString(TranslatableMessage.DISCONNECTED), NameSurround.BUNGEE);
         }
         getGate().drawControll(lines, !hasFlag(PortalFlag.ALWAYS_ON));

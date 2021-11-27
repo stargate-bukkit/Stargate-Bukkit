@@ -119,9 +119,6 @@ public class Teleporter {
     }
     
     private boolean charge(Player target) {
-        if(target.hasPermission(Bypass.COST_USE.getPermissionString()))
-            return true;
-        
         if(origin.hasFlag(PortalFlag.PERSONAL_NETWORK)) 
             return Stargate.economyManager.chargePlayer((Player) target, Bukkit.getOfflinePlayer(origin.getOwnerUUID()), cost);
         else
@@ -141,7 +138,7 @@ public class Teleporter {
         StargatePortalEvent event = new StargatePortalEvent(target, origin);
         Bukkit.getPluginManager().callEvent(event);
         PermissionManager mngr = new PermissionManager(target);
-        return (mngr.hasPerm(event) || !event.isCancelled());
+        return (mngr.hasPerm(event) && !event.isCancelled());
     }
     
     /**

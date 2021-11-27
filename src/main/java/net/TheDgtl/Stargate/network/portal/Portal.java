@@ -239,11 +239,7 @@ public abstract class Portal implements IPortal {
 
     @Override
     public boolean isOpenFor(Entity target) {
-        /*
-         * TODO: temporary test solution to test vehicles
-         */
-        return true;
-        //return ((openFor == null) || (target.getUniqueId() == openFor));
+        return ((openFor == null) || (target.getUniqueId() == openFor));
     }
 
     public Location getExit() {
@@ -286,7 +282,6 @@ public abstract class Portal implements IPortal {
             }
         }
 
-
         IPortal destination = loadDestination();
         if (destination == null) {
             player.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.INVALID, true));
@@ -304,16 +299,6 @@ public abstract class Portal implements IPortal {
 
     @Override
     public void onIrisEntrance(Entity target) {
-        StargatePortalEvent event = new StargatePortalEvent(target, this);
-        Bukkit.getPluginManager().callEvent(event);
-        PermissionManager mngr = new PermissionManager(target);
-        if (!mngr.hasPerm(event) || event.isCancelled()) {
-            // TODO send deny message
-            target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.DENY, true));
-            teleportHere(target, this);
-            return;
-        }
-
         Stargate.log(Level.FINEST, "Trying to teleport entity, initial velocity: " + target.getVelocity());
         doTeleport(target);
     }
@@ -387,23 +372,6 @@ public abstract class Portal implements IPortal {
             teleportHere(target, this);
             return;
         }
-
-        int useCost = Setting.getInteger(Setting.USE_COST);
-        boolean shouldCharge = !(this.hasFlag(PortalFlag.FREE) || desti.hasFlag(PortalFlag.FREE)) && target instanceof Player
-                && !((Player) target).hasPermission(Bypass.COST_USE.getPermissionString());
-        boolean succesFullTransaction = true;
-        if (shouldCharge) {
-            if (this.hasFlag(PortalFlag.PERSONAL_NETWORK))
-                succesFullTransaction = Stargate.economyManager.chargePlayer((Player) target, Bukkit.getOfflinePlayer(getOwnerUUID()), useCost);
-            else
-                succesFullTransaction = Stargate.economyManager.chargeAndTax((Player) target, useCost);
-        }
-
-        if (!succesFullTransaction) {
-            target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
-            teleportHere(target, this);
-            return;
-        }
         
         desti.teleportHere(target, this);
         desti.close(false);
@@ -445,5 +413,9 @@ public abstract class Portal implements IPortal {
     @Override
     public UUID getOwnerUUID() {
         return ownerUUID;
+    }
+    
+    public boolean isOwner(Player player) {
+        return ownerUUID.equals(player.getUniqueId());
     }
 }

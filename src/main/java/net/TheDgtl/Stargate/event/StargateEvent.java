@@ -87,8 +87,14 @@ public abstract class StargateEvent extends Event implements Cancellable {
     }
 
     protected Permission compileNetworkPerm(String permIdentifier, String activator) {
-        if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && portal.getNetwork().getName().equals(activator))
-            return pm.getPermission(permIdentifier + ".network.personal");
+        if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
+            if(portal.getNetwork().getName().equals(activator)) {
+                return pm.getPermission(permIdentifier + ".network.personal");
+            }else {
+                
+            }
+        }
+            
         if (portal.getNetwork().getName().equals(Setting.getString(Setting.DEFAULT_NET)))
             return pm.getPermission(permIdentifier + ".network.default");
         Permission custom = new Permission(permIdentifier + ".network.custom." + portal.getNetwork().getName());

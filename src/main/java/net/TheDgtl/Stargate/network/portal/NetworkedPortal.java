@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -32,6 +33,7 @@ public class NetworkedPortal extends Portal {
     private int selectedDesti = NO_DESTI_SELECTED;
     private boolean isActive;
     private long activateTiming;
+    private UUID activator;
 
     private List<IPortal> destinations = new ArrayList<>();
     private static int ACTIVE_DELAY = 15; // seconds
@@ -64,6 +66,13 @@ public class NetworkedPortal extends Portal {
         drawControll();
     }
 
+    @Override
+    public void onButtonClick(PlayerInteractEvent event) {
+        if(!event.getPlayer().getUniqueId().equals(activator))
+            return;
+        super.onButtonClick(event);
+    }
+    
     private IPortal getDestination(int index) {
         return destinations.get(index);
     }
@@ -149,6 +158,7 @@ public class NetworkedPortal extends Portal {
         /*
          * Schedule for deactivation
          */
+        this.activator = actor.getUniqueId();
         long activateTiming = System.currentTimeMillis();
         this.activateTiming = activateTiming;
         PopulatorAction action = new PopulatorAction() {
@@ -193,6 +203,7 @@ public class NetworkedPortal extends Portal {
     }
 
     private void deactivate() {
+        this.activator = null;
         StargateDeactivateEvent event = new StargateDeactivateEvent(this);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled())

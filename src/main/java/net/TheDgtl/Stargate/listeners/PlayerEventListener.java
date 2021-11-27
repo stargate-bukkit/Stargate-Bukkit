@@ -60,6 +60,7 @@ public class PlayerEventListener implements Listener {
 
         if (Tag.WALL_SIGNS.isTagged(blockMat)) {
             if (portal.isOpenFor(player)) {
+                Stargate.log(Level.FINEST, "Playername=" + player.getName());
                 portal.onSignClick(action, player);
             }
             return;

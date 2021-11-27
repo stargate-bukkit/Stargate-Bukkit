@@ -79,7 +79,7 @@ public class StargateActivateEvent extends StargateEvent {
     public List<Permission> getRelatedPerms() {
         String identifier = "sg.use";
         List<Permission> permsList = super.defaultPermCompile(identifier, player.getUniqueId().toString());
-        if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !player.getUniqueId().equals(portal.getOwnerUUID())) {
+        if (portal.hasFlag(PortalFlag.PRIVATE) && !player.getUniqueId().equals(portal.getOwnerUUID())) {
             permsList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
         }
         return permsList;
