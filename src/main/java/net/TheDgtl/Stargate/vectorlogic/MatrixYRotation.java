@@ -49,5 +49,5 @@ public class MatrixYRotation {
     public MatrixYRotation getInverse() {
         return new MatrixYRotation(-rot);
     }
-    
+
 }

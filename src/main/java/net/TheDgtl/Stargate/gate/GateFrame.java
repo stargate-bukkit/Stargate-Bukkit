@@ -5,18 +5,19 @@ import org.bukkit.util.BlockVector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class GateFrame extends GateStructure {
-    HashMap<BlockVector, HashSet<Material>> parts;
+    Map<BlockVector, Set<Material>> parts;
 
     public GateFrame() {
         parts = new HashMap<>();
     }
 
-    public void addPart(BlockVector vec, HashSet<Material> hashSet) {
-        parts.put(vec, hashSet);
+    public void addPart(BlockVector vec, Set<Material> set) {
+        parts.put(vec, set);
     }
 
     @Override

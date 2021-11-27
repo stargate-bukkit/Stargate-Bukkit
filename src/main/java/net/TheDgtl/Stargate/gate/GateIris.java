@@ -4,18 +4,18 @@ import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GateIris extends GateStructure {
 
-    public final HashSet<Material> irisOpen;
-    public final HashSet<Material> irisClosed;
+    public final Set<Material> irisOpen;
+    public final Set<Material> irisClosed;
     BlockVector exit;
     protected List<BlockVector> blocks;
 
 
-    public GateIris(HashSet<Material> irisOpen, HashSet<Material> irisClosed) {
+    public GateIris(Set<Material> irisOpen, Set<Material> irisClosed) {
         this.irisOpen = irisOpen;
         this.irisClosed = irisClosed;
         blocks = new ArrayList<>();
