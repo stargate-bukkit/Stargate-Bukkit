@@ -310,7 +310,7 @@ public abstract class Portal implements IPortal {
         if (!mngr.hasPerm(event) || event.isCancelled()) {
             // TODO send deny message
             target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.DENY, true));
-            teleportHere(target, gate.facing);
+            teleportHere(target, this);
             return;
         }
 
@@ -342,34 +342,31 @@ public abstract class Portal implements IPortal {
     }
 
     @Override
-    public void teleportHere(Entity target, BlockFace originFacing) {
-        Vector targetVelocity = target.getVelocity().clone();
-        Location exit = getExit().clone().add(new Vector(0.5, 0, 0.5));
-        if (originFacing != null) {
-            Vector originGateDirection = originFacing.getDirection();
-
-            Vector playerDirection = target.getLocation().getDirection();
-            BlockFace portalFacing = gate.facing.getOppositeFace();
-            if (flags.contains(PortalFlag.BACKWARDS))
-                portalFacing = portalFacing.getOppositeFace();
-            double diffAngle = directionalAngleOperator(originGateDirection, portalFacing.getDirection());
-            Vector endDirection = playerDirection.rotateAroundY(diffAngle);
-            exit.setDirection(endDirection);
-            targetVelocity.rotateAroundY(diffAngle).multiply(Setting.getDouble(Setting.GATE_EXIT_SPEED_MULTIPLIER));
-
-            if (target instanceof PoweredMinecart) {
-                // TODO: NOT Currently implemented, does not seem to be a accesible way to fix this using spigot api
-            }
-
-        } else {
-            exit.setDirection(gate.facing.getDirection());
+    public void teleportHere(Entity target, Portal origin) {
+        
+        BlockFace portalFacing = gate.facing.getOppositeFace();
+        if (flags.contains(PortalFlag.BACKWARDS))
+            portalFacing = portalFacing.getOppositeFace();
+        
+        /*
+         * If player enters from back, then take that into consideration
+         */
+        BlockFace enterFacing = origin.getGate().getFacing();
+        Vector vec = origin.getGate().getRelativeVector(target.getLocation().add(new Vector(-0.5, 0, -0.5)));
+        if (vec.getX() > 0) {
+            enterFacing = enterFacing.getOppositeFace();
         }
+        
+        boolean shouldCharge = !(this.hasFlag(PortalFlag.FREE) || origin.hasFlag(PortalFlag.FREE)) && target instanceof Player
+                && !((Player) target).hasPermission(Bypass.COST_USE.getPermissionString());
+        int useCost = shouldCharge ? Setting.getInteger(Setting.USE_COST) : 0;
+        
+        Teleporter teleporter = new Teleporter(getExit(),origin,portalFacing,enterFacing,useCost);
         PopulatorAction action = new PopulatorAction() {
 
             @Override
             public void run(boolean forceEnd) {
-                betterTeleport(target, exit);
-                target.setVelocity(targetVelocity);
+                teleporter.teleport(target);
             }
 
             @Override
@@ -379,53 +376,7 @@ public abstract class Portal implements IPortal {
 
         };
         Stargate.syncTickPopulator.addAction(action);
-    }
-
-    /**
-     * The {@link Entity#teleport(Entity)} method does not handle passengers / vehicles well. This method fixes that
-     *
-     * @param target
-     * @param loc
-     */
-    private void betterTeleport(Entity target, Location loc) {
-        /*
-         * To teleport the whole vessel, regardless of what entity triggered the initial event
-         */
-        if (target.getVehicle() != null) {
-            betterTeleport(target.getVehicle(), loc);
-            return;
-        }
-
-        List<Entity> passengers = target.getPassengers();
-        if (target.eject()) {
-            Stargate.log(Level.FINEST, "Ejected all passangers");
-            for (Entity passenger : passengers) {
-
-                PopulatorAction action = new PopulatorAction() {
-
-                    @Override
-                    public void run(boolean forceEnd) {
-                        betterTeleport(passenger, loc);
-                        target.addPassenger(passenger);
-                    }
-
-                    @Override
-                    public boolean isFinished() {
-                        return true;
-                    }
-                };
-                if (passenger instanceof Player) {
-                    /*
-                     * Delay action by one tick to avoid client issues
-                     */
-                    Stargate.syncTickPopulator.addAction(new DelayedAction(1, action));
-                    continue;
-                }
-                Stargate.syncTickPopulator.addAction(action);
-            }
-        }
-
-        target.teleport(loc);
+       
     }
 
     @Override
@@ -433,7 +384,7 @@ public abstract class Portal implements IPortal {
         IPortal desti = getFinalDesti();
         if (desti == null) {
             target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.INVALID, true));
-            teleportHere(target, gate.facing);
+            teleportHere(target, this);
             return;
         }
 
@@ -450,18 +401,11 @@ public abstract class Portal implements IPortal {
 
         if (!succesFullTransaction) {
             target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
-            teleportHere(target, gate.facing);
+            teleportHere(target, this);
             return;
         }
-        /*
-         * If player enters from back, then take that into consideration
-         */
-        BlockFace enterFacing = gate.facing;
-        Vector vec = gate.getRelativeVector(target.getLocation().add(new Vector(-0.5, 0, -0.5)));
-        if (vec.getX() > 0) {
-            enterFacing = enterFacing.getOppositeFace();
-        }
-        desti.teleportHere(target, enterFacing);
+        
+        desti.teleportHere(target, this);
         desti.close(false);
         close(false);
     }

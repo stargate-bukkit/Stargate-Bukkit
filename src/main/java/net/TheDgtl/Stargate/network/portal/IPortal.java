@@ -23,7 +23,7 @@ public interface IPortal {
 
     boolean isOpenFor(Entity target);
 
-    void teleportHere(Entity target, BlockFace originFacing);
+    void teleportHere(Entity target, Portal origin);
 
     void doTeleport(Entity target);
 

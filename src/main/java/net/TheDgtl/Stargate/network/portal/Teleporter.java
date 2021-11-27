@@ -8,36 +8,36 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.util.Vector;
 
 import net.TheDgtl.Stargate.Bypass;
-import net.TheDgtl.Stargate.LangMsg;
 import net.TheDgtl.Stargate.PermissionManager;
+import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.event.StargatePortalEvent;
 
 public class Teleporter {
     private Location destination;
-    private BlockFace destinationFace;
-    private BlockFace entranceFace;
     private Portal origin;
     private int cost;
     private double rotation;
 
     /**
-     * Instantiate a manager for advanced teleportation between portals
-     * @param destination
-     * @param 
-     * @param destinationFace
-     * @param entranceFace
+     * Instantiate a manager for advanced teleportation between a portal and a location
+     * @param destination location
+     * @param origin Portal origin
+     * @param destinationFace Facing of exit point
+     * @param entranceFace The facing that the player entered 
+     * @param cost of the teleportation for any players
      */
     public Teleporter(Location destination, Portal origin, BlockFace destinationFace, BlockFace entranceFace, int cost){
-        this.destination = destination;
+        //compensate so that the teleportation is centred in block
+        this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
         this.origin = origin;
-        this.destinationFace = destinationFace;
-        this.entranceFace = entranceFace;
         this.rotation = calculateAngleChange(entranceFace,destinationFace);
         this.cost = cost;
     }
@@ -89,15 +89,20 @@ public class Teleporter {
         }
         
         if(!hasPerm(target)) {
-            target.sendMessage(Stargate.langManager.getMessage(LangMsg.DENY, true));
-            origin.teleportHere(target,origin.getGate().getFacing());
+            target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.DENY, true));
+            origin.teleportHere(target,origin);
             return;
         }
         
         
         if(target instanceof Player && !charge((Player)target)) {
-            target.sendMessage(Stargate.langManager.getMessage(LangMsg.LACKING_FUNDS, true));
+            target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
             teleport(target, origin.getExit(), 180);
+            return;
+        }
+        
+        if (target instanceof PoweredMinecart) {
+            // TODO: NOT Currently implemented, does not seem to be a accesible way to fix this using spigot api
             return;
         }
         
@@ -109,11 +114,12 @@ public class Teleporter {
         Location exit = loc.setDirection(direction.rotateAroundY(rotation));
         Vector velocity = target.getVelocity();
         target.teleport(exit);
-        target.setVelocity(velocity.rotateAroundY(rotation));
+        Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(Setting.getDouble(Setting.GATE_EXIT_SPEED_MULTIPLIER));
+        target.setVelocity(targetVelocity);
     }
     
     private boolean charge(Player target) {
-        if(target.hasPermission(Bypass.COST_USE.getPerm()))
+        if(target.hasPermission(Bypass.COST_USE.getPermissionString()))
             return true;
         
         if(origin.hasFlag(PortalFlag.PERSONAL_NETWORK)) 
@@ -135,7 +141,7 @@ public class Teleporter {
         StargatePortalEvent event = new StargatePortalEvent(target, origin);
         Bukkit.getPluginManager().callEvent(event);
         PermissionManager mngr = new PermissionManager(target);
-        return (!mngr.hasPerm(event) || event.isCancelled());
+        return (mngr.hasPerm(event) || !event.isCancelled());
     }
     
     /**

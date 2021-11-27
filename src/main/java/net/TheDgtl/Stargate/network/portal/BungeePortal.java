@@ -91,7 +91,7 @@ public class BungeePortal extends Portal {
         }
 
         @Override
-        public void teleportHere(Entity target, BlockFace originFacing) {
+        public void teleportHere(Entity target, Portal origin) {
             Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
             if (!(target instanceof Player)) {
                 return;

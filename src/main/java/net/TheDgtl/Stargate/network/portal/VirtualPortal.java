@@ -49,7 +49,7 @@ public class VirtualPortal implements IPortal {
     /**
      * TODO: implement vehicle compatibility.
      */
-    public void teleportHere(Entity target, BlockFace originFacing) {
+    public void teleportHere(Entity target, Portal origin) {
         Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
         if (!(target instanceof Player)) {
             return;
