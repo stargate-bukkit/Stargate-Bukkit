@@ -25,6 +25,7 @@ public class Teleporter {
     private Portal origin;
     private int cost;
     private double rotation;
+    private BlockFace destinationFace;
 
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
@@ -37,12 +38,26 @@ public class Teleporter {
     public Teleporter(Location destination, Portal origin, BlockFace destinationFace, BlockFace entranceFace, int cost){
         //compensate so that the teleportation is centred in block
         this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
+        this.destinationFace = destinationFace;
         this.origin = origin;
         this.rotation = calculateAngleChange(entranceFace,destinationFace);
         this.cost = cost;
     }
     
     public void teleport(Entity target) {
+        /*
+         * To teleport the whole vessel, regardless of what entity triggered the initial event
+         */
+        while(target.getVehicle() != null) {
+            target = target.getVehicle();
+        }
+        
+        
+        double width = target.getWidth();
+        Vector offsett = destinationFace.getDirection();
+        offsett.multiply(Math.ceil((width+1)/2));
+        destination.subtract(offsett);
+        
         betterTeleport(target,rotation);
     }
     
@@ -51,15 +66,7 @@ public class Teleporter {
      * @param target
      * @param loc
      */
-    private void betterTeleport(Entity target, double rotation) {
-        /*
-         * To teleport the whole vessel, regardless of what entity triggered the initial event
-         */
-        if(target.getVehicle() != null) {
-            betterTeleport(target.getVehicle(),rotation);
-            return;
-        }
-        
+    private void betterTeleport(Entity target, double rotation) {        
         List<Entity> passengers = target.getPassengers();
         if(target.eject()) {
             Stargate.log(Level.FINEST, "Ejected all passangers");

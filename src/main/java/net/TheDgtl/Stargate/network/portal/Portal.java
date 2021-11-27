@@ -243,10 +243,7 @@ public abstract class Portal implements IPortal {
     }
 
     public Location getExit() {
-        BlockFace facing = gate.facing;
-        if (flags.contains(PortalFlag.BACKWARDS))
-            facing = facing.getOppositeFace();
-        return gate.getExit().add(facing.getDirection());
+        return gate.getExit();
     }
 
     public void setOverrideDesti(IPortal desti) {
