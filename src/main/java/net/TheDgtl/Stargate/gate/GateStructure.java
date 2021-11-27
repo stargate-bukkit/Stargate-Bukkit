@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.gate;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WorldBorder;
@@ -20,11 +21,11 @@ public abstract class GateStructure {
      * @param topleft
      * @return true if all parts had valid materials
      */
-    public boolean isValidState(Gate.VectorOperation converter, Location topleft) {
+    public boolean isValidState(VectorOperation converter, Location topleft) {
         List<BlockVector> partsPos = getPartsPos();
         WorldBorder border = topleft.getWorld().getWorldBorder();
         for (BlockVector partPos : partsPos) {
-            BlockVector inverse = converter.doInverse(partPos);
+            BlockVector inverse = converter.performInverseOperation(partPos);
             Location partLoc = topleft.clone().add(inverse);
             Stargate.log(Level.FINEST,
                     "Checking location (" + partLoc.getBlockX() + "," + partLoc.getBlockY() + "," + partLoc.getBlockZ()

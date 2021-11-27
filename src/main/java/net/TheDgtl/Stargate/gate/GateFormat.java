@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.gate;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.exception.ParsingError;
+import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -45,7 +46,7 @@ public class GateFormat {
      * @param loc
      * @return true if all structures are valid
      */
-    public boolean matches(Gate.VectorOperation converter, Location loc) {
+    public boolean matches(VectorOperation converter, Location loc) {
         for (GateStructureType structKey : portalParts.keySet()) {
             Stargate.log(Level.FINER, "---Validating " + structKey);
             if (!(portalParts.get(structKey).isValidState(converter, loc))) {

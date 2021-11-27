@@ -8,7 +8,7 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.SGLocation;
-import org.bukkit.Axis;
+import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -75,9 +75,10 @@ public class Gate {
         this.portal = portal;
         converter = new VectorOperation(signFace);
 
-        if (matchesFormat(loc))
+        if (matchesFormat(loc)) {
             return;
-        converter.flipZAxis = true;
+        }
+        converter.setFlipZAxis(true);
         if (matchesFormat(loc))
             return;
 
@@ -101,7 +102,7 @@ public class Gate {
              * the position of the sign minus a vector of a hypothetical sign position in
              * format.
              */
-            topLeft = loc.clone().subtract(converter.doInverse(controlBlock));
+            topLeft = loc.clone().subtract(converter.performInverseOperation(controlBlock));
 
             if (getFormat().matches(converter, topLeft)) {
                 if (isGateConflict()) {
@@ -207,7 +208,7 @@ public class Gate {
     }
 
     private Location getLocation(Vector vec) {
-        return topLeft.clone().add(converter.doInverse(vec));
+        return topLeft.clone().add(converter.performInverseOperation(vec));
     }
 
     /**
@@ -224,7 +225,7 @@ public class Gate {
 
         if (blockData instanceof Orientable) {
             Orientable orientation = (Orientable) blockData;
-            orientation.setAxis(converter.irisNormal);
+            orientation.setAxis(converter.getIrisNormal());
             blockData = orientation;
         }
 
@@ -285,130 +286,12 @@ public class Gate {
     }
 
     public BlockFace getFacing() {
-        return converter.facing;
+        return converter.getFacing();
     }
 
     public Vector getRelativeVector(Location loc) {
         Vector vec = topLeft.clone().subtract(loc).toVector();
-        return converter.doOperation(vec);
+        return converter.performOperation(vec);
     }
 
-    public class VectorOperation {
-        /*
-         * EVERY OPERATION DOES NOT MUTE/CHANGE THE INITIAL OBJECT!!!!
-         */
-        Vector rotationAxis;
-        double rotation; // radians
-        Axis irisNormal; // mathematical term for the normal axis orthogonal to the iris plane
-        boolean flipZAxis = false;
-        MatrixYRotation matrixRotation;
-        private MatrixYRotation matrixInverseRotation;
-        private BlockFace facing;
-
-        /**
-         * Compiles a vector operation which matches with the direction of a sign
-         *
-         * @param signFace
-         * @throws InvalidStructure
-         */
-        private VectorOperation(BlockFace signFace) throws InvalidStructure {
-            switch (signFace) {
-                case EAST:
-                    rotation = 0;
-                    irisNormal = Axis.Z;
-                    break;
-                case SOUTH:
-                    rotation = Math.PI / 2;
-                    irisNormal = Axis.X;
-                    break;
-                case WEST:
-                    rotation = Math.PI;
-                    irisNormal = Axis.Z;
-                    break;
-                case NORTH:
-                    rotation = -Math.PI / 2;
-                    irisNormal = Axis.X;
-                    break;
-                default:
-                    throw new InvalidStructure();
-            }
-
-            this.facing = signFace;
-            matrixRotation = new MatrixYRotation(rotation);
-            matrixInverseRotation = matrixRotation.getInverse();
-            Stargate.log(Level.FINER, "Chose a format rotation of " + rotation + " radians");
-        }
-
-        /**
-         * Inverse operation of doInverse; A vector operation that rotates around origo
-         * and flips z axis. Does not permute input vector
-         *
-         * @param vector
-         * @return vector
-         */
-        public Vector doOperation(Vector vector) {
-            Vector output = matrixRotation.operation(vector);
-            if (flipZAxis)
-                output.setZ(-output.getZ());
-            return output;
-        }
-
-        public BlockVector doOperation(BlockVector vector) {
-            return doOperation((Vector) vector).toBlockVector();
-        }
-
-        /**
-         * Inverse operation of doOperation; A vector operation that rotates around
-         * origo and flips z axis. Does not permute input vector
-         *
-         * @param vector
-         * @return vector
-         */
-        public Vector doInverse(Vector vector) {
-            Vector output = vector.clone();
-            if (flipZAxis)
-                output.setZ(-output.getZ());
-            return matrixInverseRotation.operation(output);
-        }
-
-        public BlockVector doInverse(BlockVector vector) {
-            return doInverse((Vector) vector).toBlockVector();
-        }
-
-        /**
-         * A vector rotation limited to n*pi/2 radians rotations. Rotates around y-axis.
-         * Rounded to avoid Math.sin and Math.cos approximation errors.<p>
-         *
-         * </p>DOES NOT PERMUTE INPUT VECTOR
-         *
-         * @author Thorin
-         */
-        class MatrixYRotation {
-            private int sinTheta;
-            private int cosTheta;
-            private double rot;
-
-            private MatrixYRotation(double rot) {
-                sinTheta = (int) Math.round(Math.sin(rot));
-                cosTheta = (int) Math.round(Math.cos(rot));
-                this.rot = rot;
-            }
-
-            Vector operation(Vector vector) {
-                Vector newVector = new Vector();
-
-                newVector.setX(sinTheta * vector.getZ() + cosTheta * vector.getX());
-                newVector.setY(vector.getY());
-                newVector.setZ(cosTheta * vector.getZ() - sinTheta * vector.getX());
-                return newVector;
-            }
-
-            /**
-             * @return a inverse rotation of this rotation
-             */
-            MatrixYRotation getInverse() {
-                return new MatrixYRotation(-rot);
-            }
-        }
-    }
 }
