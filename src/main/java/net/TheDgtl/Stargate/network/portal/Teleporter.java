@@ -91,14 +91,14 @@ public class Teleporter {
         }
 
         if (!hasPerm(target)) {
-            target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.DENY, true));
+            target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.DENY, true));
             origin.teleportHere(target, origin);
             return;
         }
 
 
         if (target instanceof Player && !charge((Player) target)) {
-            target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
+            target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
             teleport(target, origin.getExit(), 180);
             return;
         }

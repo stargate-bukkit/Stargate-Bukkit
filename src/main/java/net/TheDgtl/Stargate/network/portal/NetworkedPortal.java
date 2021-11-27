@@ -112,8 +112,8 @@ public class NetworkedPortal extends Portal {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.parseName(NameSurround.PORTAL, this);
         if (!isActive) {
-            lines[1] = super.colorDrawer.parseLine(Stargate.langManager.getString(TranslatableMessage.RIGHT_CLICK));
-            lines[2] = super.colorDrawer.parseLine(Stargate.langManager.getString(TranslatableMessage.TO_USE));
+            lines[1] = super.colorDrawer.parseLine(Stargate.languageManager.getString(TranslatableMessage.RIGHT_CLICK));
+            lines[2] = super.colorDrawer.parseLine(Stargate.languageManager.getString(TranslatableMessage.TO_USE));
             lines[3] = super.colorDrawer.parseLine(network.concatName());
         } else {
             int destiIndex = selectedDesti % 3;

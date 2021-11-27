@@ -288,7 +288,7 @@ public abstract class Portal implements IPortal {
 
         IPortal destination = loadDestination();
         if (destination == null) {
-            player.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.INVALID, true));
+            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.INVALID, true));
             return;
         }
         PermissionManager mngr = new PermissionManager(player);
@@ -308,7 +308,7 @@ public abstract class Portal implements IPortal {
         PermissionManager mngr = new PermissionManager(target);
         if (!mngr.hasPerm(event) || event.isCancelled()) {
             // TODO send deny message
-            target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.DENY, true));
+            target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.DENY, true));
             teleportHere(target, this);
             return;
         }
@@ -382,7 +382,7 @@ public abstract class Portal implements IPortal {
     public void doTeleport(Entity target) {
         IPortal desti = getFinalDesti();
         if (desti == null) {
-            target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.INVALID, true));
+            target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.INVALID, true));
             teleportHere(target, this);
             return;
         }
@@ -399,7 +399,7 @@ public abstract class Portal implements IPortal {
         }
 
         if (!succesFullTransaction) {
-            target.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
+            target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
             teleportHere(target, this);
             return;
         }

@@ -52,7 +52,7 @@ public class BlockEventListener implements Listener {
                  * or if player has override cost permission, do not collect money
                  */
                 if (shouldChargePlayer(event.getPlayer(), portal) && !Stargate.economyManager.chargeAndTax(event.getPlayer(), dEvent.getCost())) {
-                    event.getPlayer().sendMessage(Stargate.langManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
+                    event.getPlayer().sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
                     event.setCancelled(true);
                     return;
                 }
@@ -61,7 +61,7 @@ public class BlockEventListener implements Listener {
 
                     @Override
                     public void run(boolean forceEnd) {
-                        String msg = Stargate.langManager.getMessage(TranslatableMessage.DESTROY, false);
+                        String msg = Stargate.languageManager.getMessage(TranslatableMessage.DESTROY, false);
                         event.getPlayer().sendMessage(msg);
 
                         portal.destroy();
@@ -144,7 +144,7 @@ public class BlockEventListener implements Listener {
         try {
             selectedNet = selectNetwork(network, flags);
         } catch (NameError e1) {
-            player.sendMessage(Stargate.langManager.getMessage(e1.getErrorMessage(), true));
+            player.sendMessage(Stargate.languageManager.getMessage(e1.getErrorMessage(), true));
             return;
         }
 
@@ -160,26 +160,26 @@ public class BlockEventListener implements Listener {
             Stargate.log(Level.CONFIG, " player has perm = " + hasPerm);
             if (sEvent.isCancelled() || !hasPerm) {
                 Stargate.log(Level.CONFIG, " Event was cancelled due to perm or external cancelation");
-                player.sendMessage(Stargate.langManager.getMessage(permMngr.getDenyMsg(), true));
+                player.sendMessage(Stargate.languageManager.getMessage(permMngr.getDenyMsg(), true));
                 portal.destroy();
                 return;
             }
 
             if (shouldChargePlayer(player, portal) && !Stargate.economyManager.chargeAndTax(player, sEvent.getCost())) {
-                player.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
+                player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
                 portal.destroy();
                 return;
             }
             selectedNet.addPortal(portal, true);
             selectedNet.updatePortals();
             Stargate.log(Level.FINE, "A Gateformat matches");
-            player.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.CREATE, false));
+            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE, false));
         } catch (NoFormatFound e) {
             Stargate.log(Level.FINE, "No Gateformat matches");
         } catch (GateConflict e) {
-            player.sendMessage(Stargate.langManager.getMessage(TranslatableMessage.GATE_CONFLICT, true));
+            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.GATE_CONFLICT, true));
         } catch (NameError e) {
-            player.sendMessage(Stargate.langManager.getMessage(e.getErrorMessage(), true));
+            player.sendMessage(Stargate.languageManager.getMessage(e.getErrorMessage(), true));
         }
     }
 

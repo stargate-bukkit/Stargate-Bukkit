@@ -31,7 +31,7 @@ public class RandomPortal extends Portal {
     public void drawControll() {
         String[] lines = {
                 super.colorDrawer.parseName(NameSurround.PORTAL, this),
-                super.colorDrawer.parseLine(NameSurround.DESTI.getSurround(Stargate.langManager.getString(TranslatableMessage.RANDOM))),
+                super.colorDrawer.parseLine(NameSurround.DESTI.getSurround(Stargate.languageManager.getString(TranslatableMessage.RANDOM))),
                 super.colorDrawer.parseLine(network.concatName()),
                 ""
         };

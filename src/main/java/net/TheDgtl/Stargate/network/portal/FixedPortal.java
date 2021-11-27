@@ -49,7 +49,7 @@ public class FixedPortal extends Portal {
         else {
             lines[1] = super.colorDrawer.parseLine(destiName);
             lines[2] = super.colorDrawer.parseLine(this.network.concatName());
-            lines[3] = super.colorDrawer.parseError(Stargate.langManager.getString(TranslatableMessage.DISCONNECTED), NameSurround.BUNGEE);
+            lines[3] = super.colorDrawer.parseError(Stargate.languageManager.getString(TranslatableMessage.DISCONNECTED), NameSurround.BUNGEE);
         }
         getGate().drawControll(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }

@@ -66,7 +66,7 @@ public class Stargate extends JavaPlugin {
     private PluginManager pm;
 
     public static StargateFactory factory;
-    public static LangManager langManager;
+    public static LanguageManager languageManager;
     private final int CURRENT_CONFIG_VERSION = 5;
     /**
      * Goes through every action in the queue every 1 tick. Should be used in tasks that need to be finished within a short time frame
@@ -102,7 +102,7 @@ public class Stargate extends JavaPlugin {
 
         economyManager = new EconomyManager();
         lowestMsgLevel = Level.parse(Setting.getString(Setting.DEBUG_LEVEL));
-        langManager = new LangManager(this, DATAFOLDER + "/" + LANGFOLDER, Setting.getString(Setting.LANGUAGE));
+        languageManager = new LanguageManager(this, DATAFOLDER + "/" + LANGFOLDER, Setting.getString(Setting.LANGUAGE));
         saveDefaultGates();
 
         GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATAFOLDER + "/" + GATEFOLDER);
