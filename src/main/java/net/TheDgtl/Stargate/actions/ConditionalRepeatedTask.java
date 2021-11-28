@@ -1,18 +1,18 @@
 package net.TheDgtl.Stargate.actions;
 
 /**
- * Does a task every time time it gets triggered. If the condition is met, remove from queue
+ * Does a task every time it gets triggered. If the condition is met, remove from queue
  *
  * @author Thorin
  */
-public abstract class ConditionallRepeatedTask implements PopulatorAction {
+public abstract class ConditionalRepeatedTask implements PopulatorAction {
     /**
      *
      */
     private PopulatorAction action;
     private boolean isFinished = false;
 
-    public ConditionallRepeatedTask(PopulatorAction action) {
+    public ConditionalRepeatedTask(PopulatorAction action) {
         this.action = action;
     }
 

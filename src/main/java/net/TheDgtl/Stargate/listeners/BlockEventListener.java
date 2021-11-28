@@ -45,8 +45,8 @@ public class BlockEventListener implements Listener {
             int cost = Setting.getInteger(Setting.DESTROY_COST);
             StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, event.getPlayer(), cost);
             Bukkit.getPluginManager().callEvent(dEvent);
-            PermissionManager permMngr = new PermissionManager(event.getPlayer());
-            if (permMngr.hasPerm(dEvent) && !dEvent.isCancelled()) {
+            PermissionManager permissionManager = new PermissionManager(event.getPlayer());
+            if (permissionManager.hasPerm(dEvent) && !dEvent.isCancelled()) {
                 /*
                  * If setting charge free destination is false, destination portal is PortalFlag.Free and portal is of Fixed type
                  * or if player has override cost permission, do not collect money
@@ -109,7 +109,7 @@ public class BlockEventListener implements Listener {
         int cost = Setting.getInteger(Setting.CREATION_COST);
         Player player = event.getPlayer();
         EnumSet<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
-        PermissionManager permMngr = new PermissionManager(player);
+        PermissionManager permissionManager = new PermissionManager(player);
 
         if (network.trim().isEmpty())
             network = Setting.getString(Setting.DEFAULT_NET);
@@ -124,10 +124,10 @@ public class BlockEventListener implements Listener {
         }
 
 
-        if (!permMngr.canCreateInNetwork(network)) {
+        if (!permissionManager.canCreateInNetwork(network)) {
             Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to default...");
             network = Setting.getString(Setting.DEFAULT_NET);
-            if (!permMngr.canCreateInNetwork(network)) {
+            if (!permissionManager.canCreateInNetwork(network)) {
                 Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to private...");
                 network = player.getName();
             }
@@ -138,7 +138,7 @@ public class BlockEventListener implements Listener {
             network = player.getName();
         }
 
-        flags = permMngr.returnAllowedFlags(flags);
+        flags = permissionManager.returnAllowedFlags(flags);
 
         Network selectedNet;
         try {
@@ -156,11 +156,11 @@ public class BlockEventListener implements Listener {
 
             Bukkit.getPluginManager().callEvent(sEvent);
 
-            boolean hasPerm = permMngr.hasPerm(sEvent);
+            boolean hasPerm = permissionManager.hasPerm(sEvent);
             Stargate.log(Level.CONFIG, " player has perm = " + hasPerm);
             if (sEvent.isCancelled() || !hasPerm) {
-                Stargate.log(Level.CONFIG, " Event was cancelled due to perm or external cancelation");
-                player.sendMessage(Stargate.languageManager.getMessage(permMngr.getDenyMsg(), true));
+                Stargate.log(Level.CONFIG, " Event was cancelled due to perm or external cancellation");
+                player.sendMessage(Stargate.languageManager.getMessage(permissionManager.getDenyMsg(), true));
                 portal.destroy();
                 return;
             }
@@ -172,10 +172,10 @@ public class BlockEventListener implements Listener {
             }
             selectedNet.addPortal(portal, true);
             selectedNet.updatePortals();
-            Stargate.log(Level.FINE, "A Gateformat matches");
+            Stargate.log(Level.FINE, "A Gate format matches");
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE, false));
         } catch (NoFormatFound e) {
-            Stargate.log(Level.FINE, "No Gateformat matches");
+            Stargate.log(Level.FINE, "No Gate format matches");
         } catch (GateConflict e) {
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.GATE_CONFLICT, true));
         } catch (NameError e) {
