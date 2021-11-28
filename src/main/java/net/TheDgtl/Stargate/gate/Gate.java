@@ -4,6 +4,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.actions.BlockSetAction;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.InvalidStructure;
+import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -94,7 +95,7 @@ public class Gate {
      * @throws GateConflict
      */
     private boolean matchesFormat(Location loc) throws GateConflict {
-        List<BlockVector> controlBlocks = getFormat().getControllBlocks();
+        List<BlockVector> controlBlocks = getFormat().getControlBlocks();
         for (BlockVector controlBlock : controlBlocks) {
             /*
              * Top-left is origin for the format, everything becomes easier if you calculate
@@ -114,7 +115,7 @@ public class Gate {
                  * control-blocks
                  */
                 signPos = controlBlock;
-                for (BlockVector buttonVec : getFormat().getControllBlocks()) {
+                for (BlockVector buttonVec : getFormat().getControlBlocks()) {
                     if (signPos == buttonVec)
                         continue;
                     buttonPos = buttonVec;
@@ -195,12 +196,12 @@ public class Gate {
     public List<SGLocation> getLocations(GateStructureType structKey) {
         List<SGLocation> output = new ArrayList<>();
 
-        for (BlockVector vec : getFormat().portalParts.get(structKey).getPartsPos()) {
+        for (BlockVector vec : getFormat().portalParts.get(structKey).getStructureTypePositions()) {
             Location loc = getLocation(vec);
             output.add(new SGLocation(loc));
         }
 
-        if (structKey == GateStructureType.CONTROLL && portal.hasFlag(PortalFlag.ALWAYS_ON)) {
+        if (structKey == GateStructureType.CONTROL_BLOCK && portal.hasFlag(PortalFlag.ALWAYS_ON)) {
             Location buttonLoc = getLocation(buttonPos);
             output.remove(new SGLocation(buttonLoc));
         }

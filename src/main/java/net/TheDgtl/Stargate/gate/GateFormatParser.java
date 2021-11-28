@@ -1,6 +1,9 @@
 package net.TheDgtl.Stargate.gate;
 
 import net.TheDgtl.Stargate.exception.ParsingError;
+import net.TheDgtl.Stargate.gate.structure.GateControlBlock;
+import net.TheDgtl.Stargate.gate.structure.GateFrame;
+import net.TheDgtl.Stargate.gate.structure.GateIris;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -40,7 +43,7 @@ public class GateFormatParser {
     private Set<Material> irisClosed;
     private GateIris iris;
     private GateFrame frame;
-    private GateControll control;
+    private GateControlBlock controlBlocks;
     private Set<Material> controlMaterials;
 
     private boolean canBeBlockedByIronDoor = false;
@@ -95,7 +98,7 @@ public class GateFormatParser {
             throw new ParsingError("Design requires at least 2 control blocks '-' ");
         }
 
-        return new GateFormat(iris, frame, control, remainingConfig, filename, canBeBlockedByIronDoor);
+        return new GateFormat(iris, frame, controlBlocks, remainingConfig, filename, canBeBlockedByIronDoor);
     }
 
 
@@ -257,7 +260,7 @@ public class GateFormatParser {
     private void setDesign(List<String> lines) throws ParsingError {
         iris = new GateIris(irisOpen, irisClosed);
         frame = new GateFrame();
-        control = new GateControll();
+        controlBlocks = new GateControlBlock();
         int lineNumber, i;
         for (lineNumber = 0; lineNumber < lines.size(); lineNumber++) {
             char[] charLine = lines.get(lineNumber).toCharArray();
@@ -275,7 +278,7 @@ public class GateFormatParser {
      * by iron door)</p>
      */
     private void checkIfCanBeBlockedByIronDoor() {
-        List<BlockVector> irisBlocks = iris.getPartsPos();
+        List<BlockVector> irisBlocks = iris.getStructureTypePositions();
         if (irisBlocks.size() == 2) {
             for (BlockVector block : irisBlocks) {
                 BlockVector above = block.clone();
@@ -311,7 +314,7 @@ public class GateFormatParser {
                 frame.addPart(selectedLocation.clone(), frameMaterials.get(key));
                 BlockVector controlLocation = selectedLocation.clone();
                 controlLocation.add(new BlockVector(1, 0, 0));
-                control.addPart(controlLocation);
+                controlBlocks.addPart(controlLocation);
                 break;
             default:
                 if ((key == '?') || (!frameMaterials.containsKey(key))) {

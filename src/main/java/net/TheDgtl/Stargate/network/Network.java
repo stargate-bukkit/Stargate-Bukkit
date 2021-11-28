@@ -5,7 +5,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.exception.NameError;
-import net.TheDgtl.Stargate.gate.GateStructureType;
+import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.NameSurround;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -121,7 +121,7 @@ public class Network {
 
     public void updatePortals() {
         for (String portal : portalList.keySet()) {
-            getPortal(portal).drawControll();
+            getPortal(portal).drawControlMechanism();
         }
     }
 

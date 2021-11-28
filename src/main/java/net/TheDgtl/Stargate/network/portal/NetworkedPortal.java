@@ -43,7 +43,7 @@ public class NetworkedPortal extends Portal {
         super(network, name, sign, flags, ownerUUID);
 
 
-        drawControll();
+        drawControlMechanism();
     }
 
     /**
@@ -63,7 +63,7 @@ public class NetworkedPortal extends Portal {
             int step = (action == Action.RIGHT_CLICK_BLOCK) ? -1 : 1;
             selectedDestination = getNextDestination(step, selectedDestination);
         }
-        drawControll();
+        drawControlMechanism();
     }
 
     @Override
@@ -117,7 +117,7 @@ public class NetworkedPortal extends Portal {
     }
 
     @Override
-    public void drawControll() {
+    public void drawControlMechanism() {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.parseName(NameSurround.PORTAL, this);
         if (!isActive) {
@@ -211,6 +211,6 @@ public class NetworkedPortal extends Portal {
         this.destinations.clear();
         this.isActive = false;
         selectedDestination = NO_DESTINATION_SELECTED;
-        drawControll();
+        drawControlMechanism();
     }
 }
