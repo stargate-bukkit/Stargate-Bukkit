@@ -18,6 +18,7 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
@@ -111,43 +112,15 @@ public class BlockEventListener implements Listener {
         EnumSet<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
         PermissionManager permissionManager = new PermissionManager(player);
 
-        if (network.trim().isEmpty())
-            network = Setting.getString(Setting.DEFAULT_NET);
-
-        if (network.endsWith("]") && network.startsWith("[")) {
-            network = network.substring(1, network.length() - 1);
-            flags.add(PortalFlag.FANCY_INTER_SERVER);
-        }
-
-        if (flags.contains(PortalFlag.BUNGEE)) {
-            network = "§§§§§§#BUNGEE#§§§§§§";
-        }
-
-
-        if (!permissionManager.canCreateInNetwork(network)) {
-            Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to default...");
-            network = Setting.getString(Setting.DEFAULT_NET);
-            if (!permissionManager.canCreateInNetwork(network)) {
-                Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to private...");
-                network = player.getName();
-            }
-        }
-
-        if (player.getName().equals(network) || flags.contains(PortalFlag.PRIVATE)) {
-            flags.add(PortalFlag.PERSONAL_NETWORK);
-            network = player.getName();
-        }
-
         flags = permissionManager.returnAllowedFlags(flags);
-
+        String finalNetworkName = compileNetworkName(network,flags,player,permissionManager);
         Network selectedNet;
         try {
-            selectedNet = selectNetwork(network, flags);
+            selectedNet = selectNetwork(finalNetworkName, flags);
         } catch (NameError e1) {
             player.sendMessage(Stargate.languageManager.getMessage(e1.getErrorMessage(), true));
             return;
         }
-
 
         try {
             IPortal portal = Portal.createPortalFromSign(selectedNet, lines, block, flags, event.getPlayer().getUniqueId());
@@ -182,11 +155,64 @@ public class BlockEventListener implements Listener {
             player.sendMessage(Stargate.languageManager.getMessage(e.getErrorMessage(), true));
         }
     }
+    
+    /**
+     * Goes through some scenarios where the initial network name would need to be changed, and returns the modified network name
+     * @param initialNetworkName
+     * @param flags all the flags of the portal, this code has some side effects and might add some more flags
+     * @param player 
+     * @param permissionManager
+     * @return
+     */
+    private String compileNetworkName(String initialNetworkName, EnumSet<PortalFlag> flags, Player player,PermissionManager permissionManager) {
+        if (initialNetworkName.endsWith("]") && initialNetworkName.startsWith("[")) {
+            flags.add(PortalFlag.FANCY_INTER_SERVER);
+            return initialNetworkName.substring(1, initialNetworkName.length() - 1);
+        }
+        
+        if(initialNetworkName.endsWith("}") && initialNetworkName.startsWith("{")) {
+            String possiblePlayername = initialNetworkName.substring(1, initialNetworkName.length() - 1);
+                    
+            if( possiblePlayername != null) {
+                flags.add(PortalFlag.PERSONAL_NETWORK);
+                return Bukkit.getPlayer(possiblePlayername).getUniqueId().toString();
+            } else {
+                initialNetworkName = "";
+            }
+        }
+
+        if (!permissionManager.canCreateInNetwork(initialNetworkName) || initialNetworkName.trim().isEmpty()) {
+            Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to default...");
+            String defaultNet = Setting.getString(Setting.DEFAULT_NET);
+            if (!permissionManager.canCreateInNetwork(defaultNet)) {
+                Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to private...");
+                flags.add(PortalFlag.PERSONAL_NETWORK);
+                return player.getUniqueId().toString();
+            }
+            return defaultNet;
+        }
+        
+        @SuppressWarnings("deprecation")
+        OfflinePlayer possiblePersonalNetworkTarget = Bukkit.getOfflinePlayer(initialNetworkName);
+        if ( (possiblePersonalNetworkTarget != null) || flags.contains(PortalFlag.PRIVATE)) {
+            flags.add(PortalFlag.PERSONAL_NETWORK);
+            return possiblePersonalNetworkTarget.getUniqueId().toString();
+        }
+        
+        if (flags.contains(PortalFlag.BUNGEE)) {
+            return "§§§§§§#BUNGEE#§§§§§§";
+        }
+        return initialNetworkName;
+    }
 
     private Network selectNetwork(String name, EnumSet<PortalFlag> flags) throws NameError {
         try {
-            if (flags.contains(PortalFlag.PERSONAL_NETWORK))
+            if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
                 name = Bukkit.getPlayer(name).getUniqueId().toString();
+                if(name == null) {
+                    throw new NameError(TranslatableMessage.INVALID);
+                }
+            }
             Stargate.factory.createNetwork(name, flags);
         } catch (NameError e1) {
             TranslatableMessage msg = e1.getErrorMessage();
