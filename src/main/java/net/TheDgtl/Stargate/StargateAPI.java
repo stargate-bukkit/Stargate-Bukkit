@@ -1,7 +1,7 @@
 package net.TheDgtl.Stargate;
 
 import net.TheDgtl.Stargate.gate.Gate;
-import net.TheDgtl.Stargate.gate.GateStructureType;
+import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import org.bukkit.Location;
@@ -9,7 +9,7 @@ import org.bukkit.util.Vector;
 
 /**
  * An API to facilitate addons and integrations
- * 
+ *
  * <p>API specs currently being discussed on issue #77</p>
  *
  * @author Thorin

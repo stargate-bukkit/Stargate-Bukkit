@@ -7,7 +7,7 @@ import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.actions.ConditionalRepeatedTask;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
-import net.TheDgtl.Stargate.gate.GateStructureType;
+import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import org.bukkit.Bukkit;
@@ -39,7 +39,7 @@ public class PlayerEventListener implements Listener {
             return;
 
         // TODO material optimisation?
-        IPortal portal = Network.getPortal(block.getLocation(), GateStructureType.CONTROLL);
+        IPortal portal = Network.getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
         if (portal == null) {
             return;
         }

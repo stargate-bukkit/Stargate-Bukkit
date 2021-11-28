@@ -144,7 +144,7 @@ public class VirtualPortal implements IPortal {
     }
 
     @Override
-    public void drawControll() {
+    public void drawControlMechanism() {
     }
 
     @Override

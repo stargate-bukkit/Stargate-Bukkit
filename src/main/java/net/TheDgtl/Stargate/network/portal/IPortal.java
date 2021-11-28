@@ -26,7 +26,7 @@ public interface IPortal {
 
     void doTeleport(Entity target);
 
-    void drawControll();
+    void drawControlMechanism();
 
     void close(boolean force);
 

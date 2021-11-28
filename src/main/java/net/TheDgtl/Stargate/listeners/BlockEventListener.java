@@ -11,7 +11,7 @@ import net.TheDgtl.Stargate.event.StargateDestroyEvent;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
-import net.TheDgtl.Stargate.gate.GateStructureType;
+import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -81,7 +81,7 @@ public class BlockEventListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (Network.getPortal(loc, new GateStructureType[]{GateStructureType.CONTROLL, GateStructureType.IRIS}) != null) {
+        if (Network.getPortal(loc, new GateStructureType[]{GateStructureType.CONTROL_BLOCK, GateStructureType.IRIS}) != null) {
             event.setCancelled(true);
         }
     }

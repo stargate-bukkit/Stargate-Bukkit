@@ -14,7 +14,7 @@ import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
-import net.TheDgtl.Stargate.gate.GateStructureType;
+import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -145,7 +145,7 @@ public abstract class Portal implements IPortal {
 
     public abstract void onSignClick(Action action, Player actor);
 
-    public abstract void drawControll();
+    public abstract void drawControlMechanism();
 
     public abstract IPortal loadDestination();
 
@@ -225,7 +225,7 @@ public abstract class Portal implements IPortal {
         if (hasFlag(PortalFlag.ALWAYS_ON) && !force)
             return;
         getGate().close();
-        drawControll();
+        drawControlMechanism();
         openFor = null;
     }
 
@@ -248,7 +248,7 @@ public abstract class Portal implements IPortal {
 
     public void setNetwork(Network net) {
         this.network = net;
-        this.drawControll();
+        this.drawControlMechanism();
     }
 
     protected IPortal getFinalDestination() {

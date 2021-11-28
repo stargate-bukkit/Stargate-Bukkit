@@ -61,7 +61,7 @@ public class BungeePortal extends Portal {
     }
 
     @Override
-    public void drawControll() {
+    public void drawControlMechanism() {
         Stargate.log(Level.FINEST, "serverDestination = " + serverDestination);
 
         String[] lines = new String[4];

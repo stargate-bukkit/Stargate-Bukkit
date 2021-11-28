@@ -2,6 +2,11 @@ package net.TheDgtl.Stargate.gate;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.exception.ParsingError;
+import net.TheDgtl.Stargate.gate.structure.GateControlBlock;
+import net.TheDgtl.Stargate.gate.structure.GateFrame;
+import net.TheDgtl.Stargate.gate.structure.GateIris;
+import net.TheDgtl.Stargate.gate.structure.GateStructure;
+import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,12 +31,12 @@ public class GateFormat {
     public final String name;
     public boolean isIronDoorBlockable;
 
-    public GateFormat(GateIris iris, GateFrame frame, GateControll controll, Map<String, String> config,
+    public GateFormat(GateIris iris, GateFrame frame, GateControlBlock controlBlocks, Map<String, String> config,
                       String name, boolean isIronDoorBlockable) {
         portalParts = new EnumMap<>(GateStructureType.class);
         portalParts.put(GateStructureType.IRIS, iris);
         portalParts.put(GateStructureType.FRAME, frame);
-        portalParts.put(GateStructureType.CONTROLL, controll);
+        portalParts.put(GateStructureType.CONTROL_BLOCK, controlBlocks);
         this.name = name;
         this.isIronDoorBlockable = isIronDoorBlockable;
     }
@@ -111,14 +116,14 @@ public class GateFormat {
 
     }
 
-    public List<BlockVector> getControllBlocks() {
-        GateControll controll = (GateControll) portalParts.get(GateStructureType.CONTROLL);
+    public List<BlockVector> getControlBlocks() {
+        GateControlBlock controlBlocks = (GateControlBlock) portalParts.get(GateStructureType.CONTROL_BLOCK);
 
-        return controll.parts;
+        return controlBlocks.getStructureTypePositions();
     }
 
     public Material getIrisMat(boolean isOpen) {
-        return ((GateIris) portalParts.get(GateStructureType.IRIS)).getMat(isOpen);
+        return ((GateIris) portalParts.get(GateStructureType.IRIS)).getMaterial(isOpen);
     }
 
     public BlockVector getExit() {

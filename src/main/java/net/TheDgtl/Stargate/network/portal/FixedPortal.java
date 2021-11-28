@@ -37,7 +37,7 @@ public class FixedPortal extends Portal {
     }
 
     @Override
-    public void drawControll() {
+    public void drawControlMechanism() {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.parseName(NameSurround.PORTAL, this);
         lines[2] = super.colorDrawer.parseLine(this.network.concatName());
