@@ -189,7 +189,7 @@ public class GateFormatParser {
             foundIds.add(id);
         }
         if (foundIds.size() == 0) {
-            throw new ParsingError("Invalid field''" + materialString + "'': Field must include atleast one block");
+            throw new ParsingError("Invalid field''" + materialString + "'': Field must include at least one block");
         }
         return foundIds;
     }
@@ -243,7 +243,7 @@ public class GateFormatParser {
      * FFF    ---->z
      * <p>
      * where F,C,.,* resembles a gate design and the rest is the coordinate system used by the vectors.
-     * Note that origin is at the top-left corner of the gate design.
+     * Note that origin is in the top-left corner of the gate design.
      * <p>
      * Vectors are also divided into 3 different structures:
      * - GateIris
@@ -315,7 +315,7 @@ public class GateFormatParser {
                 break;
             default:
                 if ((key == '?') || (!frameMaterials.containsKey(key))) {
-                    throw new ParsingError("Unknown symbol '" + key + "' in gatedesign");
+                    throw new ParsingError("Unknown symbol '" + key + "' in gate design");
                 }
                 frame.addPart(selectedLocation.clone(), frameMaterials.get(key));
         }

@@ -18,15 +18,15 @@ public abstract class GateStructure {
      * have the material it has.
      *
      * @param converter
-     * @param topleft
+     * @param topLeft
      * @return true if all parts had valid materials
      */
-    public boolean isValidState(VectorOperation converter, Location topleft) {
+    public boolean isValidState(VectorOperation converter, Location topLeft) {
         List<BlockVector> partsPos = getPartsPos();
-        WorldBorder border = topleft.getWorld().getWorldBorder();
+        WorldBorder border = topLeft.getWorld().getWorldBorder();
         for (BlockVector partPos : partsPos) {
             BlockVector inverse = converter.performInverseOperation(partPos);
-            Location partLoc = topleft.clone().add(inverse);
+            Location partLoc = topLeft.clone().add(inverse);
             Stargate.log(Level.FINEST,
                     "Checking location (" + partLoc.getBlockX() + "," + partLoc.getBlockY() + "," + partLoc.getBlockZ()
                             + ") relative pos[" + inverse.getBlockX() + "," + inverse.getBlockY() + "," + inverse.getBlockZ() + "]");

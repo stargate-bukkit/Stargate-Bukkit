@@ -32,7 +32,7 @@ public class StargateFactory {
 
 
     private final HashMap<String, Network> networkList = new HashMap<>();
-    private final HashMap<String, InterserverNetwork> bungeeNetList = new HashMap<>();
+    private final HashMap<String, InterServerNetwork> bungeeNetList = new HashMap<>();
 
     String sharedTableName = "interserver";
     String bungeeDataBaseName = "bungee";
@@ -40,7 +40,7 @@ public class StargateFactory {
 
     private final Database database;
 
-    private SQLQuerryMaker sqlMaker;
+    private SQLQueryMaker sqlMaker;
     private boolean useInterServerNetworks;
 
     public StargateFactory(Stargate stargate) throws SQLException {
@@ -48,19 +48,19 @@ public class StargateFactory {
         useInterServerNetworks = (Setting.getBoolean(Setting.USING_REMOTE_DATABASE) && Setting.getBoolean(Setting.USING_BUNGEE));
 
         if (useInterServerNetworks) {
-            this.sqlMaker = new SQLQuerryMaker(tableName, bungeeDataBaseName, sharedTableName);
+            this.sqlMaker = new SQLQueryMaker(tableName, bungeeDataBaseName, sharedTableName);
         } else
-            this.sqlMaker = new SQLQuerryMaker(tableName);
+            this.sqlMaker = new SQLQueryMaker(tableName);
         createTables();
 
 
         Stargate.log(Level.FINER, "Loading portals from base database");
-        loadAllPortals(database, SQLQuerryMaker.Type.LOCAL);
+        loadAllPortals(database, SQLQueryMaker.Type.LOCAL);
         if (useInterServerNetworks) {
             Stargate.log(Level.FINER, "Loading portals from local bungee database");
-            loadAllPortals(database, SQLQuerryMaker.Type.BUNGEE);
-            Stargate.log(Level.FINER, "Loading portals from interserver bungee database");
-            loadAllPortals(database, SQLQuerryMaker.Type.INTERSERVER, true);
+            loadAllPortals(database, SQLQueryMaker.Type.BUNGEE);
+            Stargate.log(Level.FINER, "Loading portals from inter-server bungee database");
+            loadAllPortals(database, SQLQueryMaker.Type.INTER_SERVER, true);
         }
 
         refreshPortals(networkList);
@@ -78,14 +78,14 @@ public class StargateFactory {
             String address = Setting.getString(Setting.BUNGEE_ADDRESS);
             String username = Setting.getString(Setting.BUNGEE_USERNAME);
             String password = Setting.getString(Setting.BUNGEE_PASSWORD);
-            boolean useSSL = Setting.getBoolean(Setting.BUNGE_USESSL);
+            boolean useSSL = Setting.getBoolean(Setting.BUNGEE_USE_SSL);
 
             switch (driver) {
                 case MARIADB:
                 case MYSQL:
                     return new MySqlDatabase(driver, address, port, bungeeDatabaseName, username, password, useSSL, stargate);
                 default:
-                    throw new SQLException("Unsuported driver: Stargate currently suports MariaDb and MySql for remote databases");
+                    throw new SQLException("Unsupported driver: Stargate currently supports MariaDb and MySql for remote databases");
             }
         } else {
             String databaseName = Setting.getString(Setting.DATABASE_NAME);
@@ -108,7 +108,7 @@ public class StargateFactory {
 
     private void createTables() throws SQLException {
         Connection conn1 = database.getConnection();
-        PreparedStatement localPortalsStatement = sqlMaker.compileCreateStatement(conn1, SQLQuerryMaker.Type.LOCAL);
+        PreparedStatement localPortalsStatement = sqlMaker.compileCreateStatement(conn1, SQLQueryMaker.Type.LOCAL);
         runStatement(database, localPortalsStatement);
         conn1.close();
 
@@ -116,21 +116,21 @@ public class StargateFactory {
             return;
         }
         Connection conn2 = database.getConnection();
-        PreparedStatement localInterserverPortalsStatement = sqlMaker.compileCreateStatement(conn2, SQLQuerryMaker.Type.BUNGEE);
-        runStatement(database, localInterserverPortalsStatement);
+        PreparedStatement localInterServerPortalsStatement = sqlMaker.compileCreateStatement(conn2, SQLQueryMaker.Type.BUNGEE);
+        runStatement(database, localInterServerPortalsStatement);
         conn2.close();
 
         Connection conn3 = database.getConnection();
-        PreparedStatement interserverPortalsStatement = sqlMaker.compileCreateStatement(conn3, SQLQuerryMaker.Type.INTERSERVER);
-        runStatement(database, interserverPortalsStatement);
+        PreparedStatement interServerPortalsStatement = sqlMaker.compileCreateStatement(conn3, SQLQueryMaker.Type.INTER_SERVER);
+        runStatement(database, interServerPortalsStatement);
         conn3.close();
     }
 
-    private void loadAllPortals(Database database, SQLQuerryMaker.Type tableType) throws SQLException {
+    private void loadAllPortals(Database database, SQLQueryMaker.Type tableType) throws SQLException {
         loadAllPortals(database, tableType, false);
     }
 
-    private void loadAllPortals(Database database, SQLQuerryMaker.Type tableType, boolean areVirtual) throws SQLException {
+    private void loadAllPortals(Database database, SQLQueryMaker.Type tableType, boolean areVirtual) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement statement = sqlMaker.selectAll(connection, tableType);
 
@@ -139,7 +139,7 @@ public class StargateFactory {
             String netName = set.getString(1);
             String name = set.getString(2);
 
-            String desti = set.getString(3);
+            String destination = set.getString(3);
             String worldName = set.getString(4);
             int x = set.getInt(5);
             int y = set.getInt(6);
@@ -149,8 +149,8 @@ public class StargateFactory {
 
             EnumSet<PortalFlag> flags = PortalFlag.parseFlags(flagsMsg);
 
-            boolean isBungee = flags.contains(PortalFlag.FANCY_INTERSERVER);
-            Stargate.log(Level.FINEST, "Trying to add portal " + name + ", on network " + netName + ",isInterserver = " + isBungee);
+            boolean isBungee = flags.contains(PortalFlag.FANCY_INTER_SERVER);
+            Stargate.log(Level.FINEST, "Trying to add portal " + name + ", on network " + netName + ",isInterServer = " + isBungee);
 
             String targetNet = netName;
             if (flags.contains(PortalFlag.BUNGEE)) {
@@ -181,7 +181,7 @@ public class StargateFactory {
 
             World world = Bukkit.getWorld(worldName);
             Block block = world.getBlockAt(x, y, z);
-            String[] virtualSign = {name, desti, netName};
+            String[] virtualSign = {name, destination, netName};
 
 
             try {
@@ -189,7 +189,7 @@ public class StargateFactory {
                 net.addPortal(portal, false);
                 Stargate.log(Level.FINEST, "Added as normal portal");
                 if (isBungee) {
-                    setInterserverPortalOnlineStatus(portal, true);
+                    setInterServerPortalOnlineStatus(portal, true);
                 }
             } catch (GateConflict e) {
             } catch (NoFormatFound e) {
@@ -201,9 +201,9 @@ public class StargateFactory {
         connection.close();
     }
 
-    private void setInterserverPortalOnlineStatus(IPortal portal, boolean isOnline) throws SQLException {
+    private void setInterServerPortalOnlineStatus(IPortal portal, boolean isOnline) throws SQLException {
         Connection conn = database.getConnection();
-        PreparedStatement statement = sqlMaker.changePortalOnlineStatus(conn, portal, isOnline, SQLQuerryMaker.Type.INTERSERVER);
+        PreparedStatement statement = sqlMaker.changePortalOnlineStatus(conn, portal, isOnline, SQLQueryMaker.Type.INTER_SERVER);
         statement.execute();
         statement.close();
         conn.close();
@@ -215,7 +215,7 @@ public class StargateFactory {
             for (IPortal portal : net.getAllPortals()) {
                 if (portal instanceof VirtualPortal)
                     continue;
-                PreparedStatement statement = sqlMaker.compileRefreshPortalStatement(conn, portal, SQLQuerryMaker.Type.INTERSERVER);
+                PreparedStatement statement = sqlMaker.compileRefreshPortalStatement(conn, portal, SQLQueryMaker.Type.INTER_SERVER);
                 statement.execute();
                 statement.close();
             }
@@ -223,8 +223,8 @@ public class StargateFactory {
         conn.close();
     }
 
-    public void endInterserverConnection() throws SQLException {
-        for (InterserverNetwork net : bungeeNetList.values()) {
+    public void endInterServerConnection() throws SQLException {
+        for (InterServerNetwork net : bungeeNetList.values()) {
             for (IPortal portal : net.getAllPortals()) {
                 /*
                  * Virtual portal = portals on other servers
@@ -232,16 +232,16 @@ public class StargateFactory {
                 if (portal instanceof VirtualPortal)
                     continue;
 
-                setInterserverPortalOnlineStatus(portal, false);
+                setInterServerPortalOnlineStatus(portal, false);
             }
         }
     }
 
     public void createNetwork(String netName, EnumSet<PortalFlag> flags) throws NameError {
-        if (netExists(netName, flags.contains(PortalFlag.FANCY_INTERSERVER)))
+        if (netExists(netName, flags.contains(PortalFlag.FANCY_INTER_SERVER)))
             throw new NameError(null);
-        if (flags.contains(PortalFlag.FANCY_INTERSERVER)) {
-            InterserverNetwork net = new InterserverNetwork(netName, database, sqlMaker);
+        if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
+            InterServerNetwork net = new InterServerNetwork(netName, database, sqlMaker);
             bungeeNetList.put(netName, net);
             return;
         }

@@ -27,8 +27,8 @@ public enum TranslatableMessage {
 
     /**
      * The message to display if a stargate doesn't have a valid destination
-     * 
-     * <p>This is triggered when a stargate's button is clicked and it's missing a valid destination. It's also 
+     *
+     * <p>This is triggered when a stargate's button is clicked and it's missing a valid destination. It's also
      * triggered when trying to teleport if the destination is missing.</p>
      */
     INVALID("invalidMsg"),
@@ -103,7 +103,7 @@ public enum TranslatableMessage {
 
     /**
      * Instantiates a new translatable message
-     * 
+     *
      * @param key <p>The string key used to identify the message in the language files</p>
      */
     TranslatableMessage(String key) {
@@ -112,7 +112,7 @@ public enum TranslatableMessage {
 
     /**
      * Gets this translatable message's string key used to identify the message in language files
-     * 
+     *
      * @return <p>This translatable message's string key</p>
      */
     public String getMessageKey() {
@@ -121,7 +121,7 @@ public enum TranslatableMessage {
 
     /**
      * Parses the given string key into its enum representation
-     * 
+     *
      * @param key <p>The string key to parse</p>
      * @return <p>The TranslatableMessage corresponding to the key, or null if not found</p>
      */
@@ -131,7 +131,7 @@ public enum TranslatableMessage {
                 map.put(message.getMessageKey(), message);
             }
         }
-        
+
         for (TranslatableMessage enumeration : values()) {
             if (enumeration.getMessageKey().equals(key))
                 return enumeration;

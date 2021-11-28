@@ -29,8 +29,8 @@ public class PermissionManager {
     private Chat metadataProvider;
     private boolean canProcessMetaData;
 
-    private final static String FLAGPERMISSION = "sg.create.type.";
-    private final static String CREATEPERMISSION = "sg.create.network";
+    private final static String FLAG_PERMISSION = "sg.create.type.";
+    private final static String CREATE_PERMISSION = "sg.create.network";
 
     public PermissionManager(Entity target) {
         this.player = target;
@@ -42,7 +42,7 @@ public class PermissionManager {
             if (flag == PortalFlag.PERSONAL_NETWORK || flag == PortalFlag.IRON_DOOR)
                 continue;
 
-            if (!player.hasPermission((FLAGPERMISSION + flag.label).toLowerCase())) {
+            if (!player.hasPermission((FLAG_PERMISSION + flag.label).toLowerCase())) {
                 flags.remove(flag);
             }
         }
@@ -50,7 +50,7 @@ public class PermissionManager {
     }
 
     /**
-     * @return true if succesfull
+     * @return true if successful
      */
     private boolean setupMetadataProvider() {
         if (Bukkit.getPluginManager().getPlugin("Vault") == null)
@@ -99,7 +99,7 @@ public class PermissionManager {
                 int currentAmount = net.size();
 
                 if (currentAmount >= maxGates) {
-                    //TODO messaging , gatelimit reached
+                    //TODO messaging , gate limit reached
                     denyMsg = TranslatableMessage.NET_FULL;
                     // denyMsg = LangMsg.<something>
                     return false;
@@ -116,11 +116,11 @@ public class PermissionManager {
         boolean hasPerm;
 
         if (player.getName().equals(network))
-            hasPerm = player.hasPermission(CREATEPERMISSION + ".personal");
+            hasPerm = player.hasPermission(CREATE_PERMISSION + ".personal");
         else if (network.equals(Setting.getString(Setting.DEFAULT_NET)))
-            hasPerm = player.hasPermission(CREATEPERMISSION + ".default");
+            hasPerm = player.hasPermission(CREATE_PERMISSION + ".default");
         else
-            hasPerm = player.hasPermission(CREATEPERMISSION + ".custom." + network);
+            hasPerm = player.hasPermission(CREATE_PERMISSION + ".custom." + network);
         if (!hasPerm)
             denyMsg = TranslatableMessage.NET_DENY;
         return hasPerm;

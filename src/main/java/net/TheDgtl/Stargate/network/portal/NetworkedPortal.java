@@ -29,8 +29,8 @@ public class NetworkedPortal extends Portal {
      *
      */
     // used in networked portals
-    static final private int NO_DESTI_SELECTED = -1;
-    private int selectedDesti = NO_DESTI_SELECTED;
+    static final private int NO_DESTINATION_SELECTED = -1;
+    private int selectedDestination = NO_DESTINATION_SELECTED;
     private boolean isActive;
     private long activateTiming;
     private UUID activator;
@@ -57,11 +57,11 @@ public class NetworkedPortal extends Portal {
         activate(actor);
         if (destinations.size() < 1)
             return;
-        if (selectedDesti == NO_DESTI_SELECTED || destinations.size() < 2) {
-            selectedDesti = getNextDesti(1, -1);
+        if (selectedDestination == NO_DESTINATION_SELECTED || destinations.size() < 2) {
+            selectedDestination = getNextDestination(1, -1);
         } else if (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK) {
             int step = (action == Action.RIGHT_CLICK_BLOCK) ? -1 : 1;
-            selectedDesti = getNextDesti(step, selectedDesti);
+            selectedDestination = getNextDestination(step, selectedDestination);
         }
         drawControll();
     }
@@ -83,28 +83,28 @@ public class NetworkedPortal extends Portal {
     }
 
     public IPortal loadDestination() {
-        if (selectedDesti == NO_DESTI_SELECTED)
+        if (selectedDestination == NO_DESTINATION_SELECTED)
             return null;
-        return destinations.get(selectedDesti);
+        return destinations.get(selectedDestination);
     }
 
     /**
-     * A method which allows selecting a index x steps away from a reference index
+     * A method which allows selecting an index x steps away from a reference index
      * without having to bother with index out of bounds stuff. If the index is out
      * of bounds, it will just start counting from 0
      *
      * @param step
-     * @param initialDesti
+     * @param initialDestination
      * @return
      */
-    private int getNextDesti(int step, int initialDesti) {
-        int destiLength = destinations.size();
+    private int getNextDestination(int step, int initialDestination) {
+        int destinationLength = destinations.size();
         // Avoid infinite recursion if this is the only gate available
-        if (destiLength < 1) {
+        if (destinationLength < 1) {
             return -1;
         }
-        int temp = initialDesti + destiLength;
-        return (temp + step) % destiLength;
+        int temp = initialDestination + destinationLength;
+        return (temp + step) % destinationLength;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class NetworkedPortal extends Portal {
         if (hasFlag(PortalFlag.ALWAYS_ON) && !force)
             return;
         super.close(force);
-        this.selectedDesti = NO_DESTI_SELECTED;
+        this.selectedDestination = NO_DESTINATION_SELECTED;
         deactivate();
     }
 
@@ -125,30 +125,30 @@ public class NetworkedPortal extends Portal {
             lines[2] = super.colorDrawer.parseLine(Stargate.languageManager.getString(TranslatableMessage.TO_USE));
             lines[3] = super.colorDrawer.parseLine(network.concatName());
         } else {
-            int destiIndex = selectedDesti % 3;
-            int desti1 = selectedDesti - destiIndex;
+            int destinationIndex = selectedDestination % 3;
+            int firstDestination = selectedDestination - destinationIndex;
             int maxLength = destinations.size();
             for (int i = 0; i < 3; i++) {
-                int desti = i + desti1;
-                if (desti == maxLength)
+                int destination = i + firstDestination;
+                if (destination == maxLength)
                     break;
 
                 if (Setting.getInteger(Setting.NAME_STYLE) == 1) {
-                    if (destiIndex == i) {
-                        lines[i + 1] = super.colorDrawer.parseName(NameSurround.DESTI, this.getDestination(desti));
+                    if (destinationIndex == i) {
+                        lines[i + 1] = super.colorDrawer.parseName(NameSurround.DESTINATION, this.getDestination(destination));
                     } else {
-                        lines[i + 1] = super.colorDrawer.parseLine(this.getDestination(desti).getName());
+                        lines[i + 1] = super.colorDrawer.parseLine(this.getDestination(destination).getName());
                     }
                     continue;
                 }
 
                 NameSurround surround;
-                if (destiIndex == i) {
-                    surround = NameSurround.DESTI;
+                if (destinationIndex == i) {
+                    surround = NameSurround.DESTINATION;
                 } else {
                     surround = NameSurround.NOTHING;
                 }
-                lines[i + 1] = super.colorDrawer.parseName(surround, this.getDestination(desti));
+                lines[i + 1] = super.colorDrawer.parseName(surround, this.getDestination(destination));
             }
         }
         getGate().drawControll(lines, !hasFlag(PortalFlag.ALWAYS_ON));
@@ -178,22 +178,22 @@ public class NetworkedPortal extends Portal {
         if (isActive)
             return;
 
-        String[] destiNames = getDestinations(actor);
-        for (String name : destiNames) {
+        String[] destinationNames = getDestinations(actor);
+        for (String name : destinationNames) {
             destinations.add(network.getPortal(name));
         }
         StargateActivateEvent event = new StargateActivateEvent(this, actor, destinations);
         Bukkit.getPluginManager().callEvent(event);
-        PermissionManager mngr = new PermissionManager(actor);
-        if (event.isCancelled() || !mngr.hasPerm(event)) {
+        PermissionManager permissionManager = new PermissionManager(actor);
+        if (event.isCancelled() || !permissionManager.hasPerm(event)) {
             this.destinations.clear();
-            selectedDesti = NO_DESTI_SELECTED;
+            selectedDestination = NO_DESTINATION_SELECTED;
         }
         this.isActive = (destinations.size() > 0);
     }
 
     /**
-     * @param activateTiming , the time the portal was activated. Kept track of so that to be sure the deactivation
+     * @param activateTiming the time the portal was activated. Kept track of so that to be sure the deactivation
      *                       and activation matches
      */
     private void deactivate(long activateTiming) {
@@ -210,7 +210,7 @@ public class NetworkedPortal extends Portal {
             return;
         this.destinations.clear();
         this.isActive = false;
-        selectedDesti = NO_DESTI_SELECTED;
+        selectedDestination = NO_DESTINATION_SELECTED;
         drawControll();
     }
 }

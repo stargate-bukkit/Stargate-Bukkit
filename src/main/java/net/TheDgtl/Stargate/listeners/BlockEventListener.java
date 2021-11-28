@@ -116,7 +116,7 @@ public class BlockEventListener implements Listener {
 
         if (network.endsWith("]") && network.startsWith("[")) {
             network = network.substring(1, network.length() - 1);
-            flags.add(PortalFlag.FANCY_INTERSERVER);
+            flags.add(PortalFlag.FANCY_INTER_SERVER);
         }
 
         if (flags.contains(PortalFlag.BUNGEE)) {
@@ -194,7 +194,7 @@ public class BlockEventListener implements Listener {
                 throw e1;
             }
         }
-        return Stargate.factory.getNetwork(name, flags.contains(PortalFlag.FANCY_INTERSERVER));
+        return Stargate.factory.getNetwork(name, flags.contains(PortalFlag.FANCY_INTER_SERVER));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

@@ -60,7 +60,7 @@ public class PlayerEventListener implements Listener {
 
         if (Tag.WALL_SIGNS.isTagged(blockMat)) {
             if (portal.isOpenFor(player)) {
-                Stargate.log(Level.FINEST, "Playername=" + player.getName());
+                Stargate.log(Level.FINEST, "Player name=" + player.getName());
                 portal.onSignClick(action, player);
             }
             return;
@@ -70,7 +70,7 @@ public class PlayerEventListener implements Listener {
             return;
         }
 
-        Stargate.log(Level.WARNING, "This should never be triggered, an unkown glitch is occuring");
+        Stargate.log(Level.WARNING, "This should never be triggered, an unknown glitch is occurring");
     }
 
 

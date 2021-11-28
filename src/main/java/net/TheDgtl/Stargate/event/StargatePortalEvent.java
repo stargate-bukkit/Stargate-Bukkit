@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Gets thrown whenever a player teleports. Should honestly be called StargateTeleportEvent, but unfortunatly
+ * Gets thrown whenever a player teleports. Should honestly be called StargateTeleportEvent, but unfortunately
  * is not because of legacy.
  *
  * @author Thorin
@@ -93,7 +93,7 @@ public class StargatePortalEvent extends StargateEvent {
     }
 
     /**
-     * @return org.bukkit.Location Location players exit point
+     * @return Location players exit point
      */
     @NotNull
     public Location getExit() {

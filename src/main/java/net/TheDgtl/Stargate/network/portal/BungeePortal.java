@@ -67,7 +67,7 @@ public class BungeePortal extends Portal {
 
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.parseName(NameSurround.PORTAL, this);
-        lines[1] = super.colorDrawer.parseName(NameSurround.DESTI, loadDestination());
+        lines[1] = super.colorDrawer.parseName(NameSurround.DESTINATION, loadDestination());
         lines[2] = super.colorDrawer.parseLine(serverDestination);
         lines[3] = "";
         getGate().drawControll(lines, !hasFlag(PortalFlag.ALWAYS_ON));

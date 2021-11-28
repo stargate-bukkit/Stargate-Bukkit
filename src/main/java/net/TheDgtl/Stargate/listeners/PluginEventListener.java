@@ -17,7 +17,7 @@ public class PluginEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPluginDisable(PluginDisableEvent event) {
-        //check if the plugin was the economyhandler and send a message
+        //check if the plugin was the economy handler and send a message
         /*
          * if (event.getPlugin().equals(stargate.getEconomyHandler().getVault())) {
          * Stargate.log("Vault plugin lost.", Level.INFO); }

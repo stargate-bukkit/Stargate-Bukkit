@@ -46,7 +46,7 @@ bungee:
   # Only applicable if useRemoteDatabase is true.
   remoteDatabaseSettings:
     # What driver should stargate use to connect to your database?
-    # Currently supported: [MySQL, MariaDB]
+    # Currently, these are supported: [MySQL, MariaDB]
     driver: MySQL
 
     # Where can stargate find your database?
@@ -96,7 +96,7 @@ networkLimit: -1
 #   [minecarts, boats, & saddled mobs = vehicles | players & mobs = passengers]
 handleVehicles: true
 
-# Will the server reverify all existing portals on startup?
+# Will the server re-verify all existing portals on startup?
 # 
 # This checks that the expected gates are both present and using a valid layout.
 # Designed to catch .gate file modifications, world changes, and terrain regeneration.
@@ -106,7 +106,7 @@ handleVehicles: true
 checkPortalValidity: false
 
 # Should the portal verification process account for 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 (open/closed) materials?
-# ie. will a gate still validate if its portal-closed material isn't present?
+# i.e. will a gate still validate if its portal-closed material isn't present?
 # 
 # When enabled, this setting makes gate validation more comprehensive;
 # 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 blocks will no longer be able to overwrite existing blocks.
@@ -180,7 +180,7 @@ signStyle:
 highlightFreeGates: false
 
 # For networked gates, are destinations listed alphabetically instead of chronologically?
-# (This applies to all gates that are neither fixed, random, nor terminals.
+# (This applies to all gates that are neither fixed, random, nor terminals)
 alphabeticNetworks: false
 
 # Will the destination a networked portal last connected to be listed first in its scroll menu?

@@ -130,7 +130,7 @@ public class StargateAPI {
      * @param destination
      */
     public void forceConnect(IPortal target, IPortal destination) {
-        target.setOverrideDesti(destination);
+        target.setOverrideDestination(destination);
     }
 
     public class InterFacePortal {

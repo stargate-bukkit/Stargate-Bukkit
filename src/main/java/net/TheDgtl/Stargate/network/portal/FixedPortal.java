@@ -17,12 +17,12 @@ public class FixedPortal extends Portal {
     /**
      *
      */
-    String destiName;
+    String destinationName;
 
-    public FixedPortal(Network network, String name, String destiName, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
+    public FixedPortal(Network network, String name, String destinationName, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
             throws NoFormatFound, GateConflict, NameError {
         super(network, name, sign, flags, ownerUUID);
-        this.destiName = destiName;
+        this.destinationName = destinationName;
 
         drawControll();
     }
@@ -45,9 +45,9 @@ public class FixedPortal extends Portal {
         lines[2] = super.colorDrawer.parseLine(this.network.concatName());
         IPortal destination = loadDestination();
         if (destination != null)
-            lines[1] = super.colorDrawer.parseName(NameSurround.DESTI, loadDestination());
+            lines[1] = super.colorDrawer.parseName(NameSurround.DESTINATION, loadDestination());
         else {
-            lines[1] = super.colorDrawer.parseLine(destiName);
+            lines[1] = super.colorDrawer.parseLine(destinationName);
             lines[3] = super.colorDrawer.parseError(Stargate.languageManager.getString(TranslatableMessage.DISCONNECTED), NameSurround.BUNGEE);
         }
         getGate().drawControll(lines, !hasFlag(PortalFlag.ALWAYS_ON));
@@ -55,7 +55,7 @@ public class FixedPortal extends Portal {
 
     @Override
     public IPortal loadDestination() {
-        return this.network.getPortal(destiName);
+        return this.network.getPortal(destinationName);
     }
 
     @Override

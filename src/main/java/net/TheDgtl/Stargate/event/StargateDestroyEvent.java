@@ -45,7 +45,7 @@ import java.util.Objects;
  */
 
 public class StargateDestroyEvent extends StargateEvent {
-    // oldname = StargateDestroyEvent
+    // old name = StargateDestroyEvent
     private final Player player;
     private boolean deny;
     private String denyReason;
