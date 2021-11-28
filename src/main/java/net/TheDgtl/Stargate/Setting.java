@@ -28,8 +28,10 @@ public enum Setting {
 
     DEBUG_LEVEL("loggingLevel"), CONFIG_VERSION("configVersion"), DATABASE_NAME("portalFile"),
     USING_REMOTE_DATABASE("bungee.useRemoteDatabase"), SHOW_HIKARI_CONFIG("bungee.remoteDatabaseSettings.advancedDatabaseConfiguration"),
-    BUNGEE_DRIVER("remoteSettings.driver"), BUNGEE_DATABASE("remoteSettings.database"),
-    BUNGEE_PORT("remoteSettings.port"), BUNGEE_ADDRESS("remoteSettings.address");
+    BUNGEE_DRIVER("bungee.remoteDatabaseSettings.driver"), BUNGEE_DATABASE("bungee.remoteDatabaseSettings.database"),
+    BUNGEE_PORT("bungee.remoteDatabaseSettings.port"), BUNGEE_ADDRESS("bungee.remoteDatabaseSettings.address"),
+    BUNGEE_USERNAME("bungee.remoteDatabaseSettings.username"), BUNGEE_PASSWORD("bungee.remoteDatabaseSettings.password"),
+    BUNGE_USESSL("bungee.remoteDatabaseSettings.useSSL"), BUNGEE_INSTANCE_NAME("bungee.instanceName");
 
     private String key;
     static private final HashMap<String, Setting> map = new HashMap<>();

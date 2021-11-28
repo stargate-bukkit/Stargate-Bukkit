@@ -42,16 +42,17 @@ public class MySqlDatabase implements Database {
      * @param plugin
      * @throws SQLException
      */
-    public MySqlDatabase(DriverEnum driver, String address, int port, String database, JavaPlugin plugin) throws SQLException {
+    public MySqlDatabase(DriverEnum driver, String address, int port, String database, String userName, String password, boolean useSSL, JavaPlugin plugin) throws SQLException {
         this.plugin = plugin;
 
         switch (driver) {
             case MYSQL:
             case MARIADB:
-                this.config = setupConfig(driver, address, port, database);
+                this.config = setupConfig(driver, address, port, database, userName, password, useSSL);
                 break;
             default:
-                Stargate.log(Level.WARNING, "Unknown driver, '" + driver + "' , using SQLite by default. Stargate currently supports SQLite, MariaDB, MySql");
+                Stargate.log(Level.SEVERE, "Unknown driver, '" + driver + "' Stargate currently supports MariaDB, MySql");
+                getPluginManager().disablePlugin(plugin);
         }
         hikariSource = setupMySql(this.config);
     }
@@ -78,10 +79,13 @@ public class MySqlDatabase implements Database {
         return new HikariDataSource(config);
     }
 
-    private HikariConfig setupConfig(DriverEnum driver, String address, int port, String database) throws SQLException {
+    private HikariConfig setupConfig(DriverEnum driver, String address, int port, String database, String username, String password, boolean useSSL) throws SQLException {
         HikariConfig config = new HikariConfig();
 
-        config.setJdbcUrl("jdbc:" + driver + "://" + address + ":" + port + "/" + database);
+        config.setJdbcUrl("jdbc:" + driver.getDriver() + "://" + address + ":" + port + "/" + database);
+        config.setUsername(username);
+        config.setPassword(password);
+        config.addDataSourceProperty("useSSL", useSSL);
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException ex) {

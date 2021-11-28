@@ -41,25 +41,26 @@ public class StargateFactory {
     private final Database database;
 
     private SQLQuerryMaker sqlMaker;
+    private boolean useInterServerNetworks;
 
     public StargateFactory(Stargate stargate) throws SQLException {
         database = loadDatabase(stargate);
+        useInterServerNetworks = (Setting.getBoolean(Setting.USING_REMOTE_DATABASE) && Setting.getBoolean(Setting.USING_BUNGEE));
 
-        if (Setting.getBoolean(Setting.USING_REMOTE_DATABASE)) {
+        if (useInterServerNetworks) {
             this.sqlMaker = new SQLQuerryMaker(tableName, bungeeDataBaseName, sharedTableName);
-
         } else
             this.sqlMaker = new SQLQuerryMaker(tableName);
         createTables();
 
 
         Stargate.log(Level.FINER, "Loading portals from base database");
-        loadAllPortals(database, tableName);
-        if (Setting.getBoolean(Setting.USING_REMOTE_DATABASE)) {
+        loadAllPortals(database, SQLQuerryMaker.Type.LOCAL);
+        if (useInterServerNetworks) {
             Stargate.log(Level.FINER, "Loading portals from local bungee database");
-            loadAllPortals(database, bungeeDataBaseName);
+            loadAllPortals(database, SQLQuerryMaker.Type.BUNGEE);
             Stargate.log(Level.FINER, "Loading portals from interserver bungee database");
-            loadAllPortals(database, sharedTableName, true);
+            loadAllPortals(database, SQLQuerryMaker.Type.INTERSERVER, true);
         }
 
         refreshPortals(networkList);
@@ -75,11 +76,14 @@ public class StargateFactory {
             String bungeeDatabaseName = Setting.getString(Setting.BUNGEE_DATABASE);
             int port = Setting.getInteger(Setting.BUNGEE_PORT);
             String address = Setting.getString(Setting.BUNGEE_ADDRESS);
-
+            String username = Setting.getString(Setting.BUNGEE_USERNAME);
+            String password = Setting.getString(Setting.BUNGEE_PASSWORD);
+            boolean useSSL = Setting.getBoolean(Setting.BUNGE_USESSL);
+            
             switch (driver) {
                 case MARIADB:
                 case MYSQL:
-                    return new MySqlDatabase(driver, address, port, bungeeDatabaseName, stargate);
+                    return new MySqlDatabase(driver, address, port, bungeeDatabaseName, username, password, useSSL,stargate);
                 default:
                     throw new SQLException("Unsuported driver: Stargate currently suports MariaDb and MySql for remote databases");
             }
@@ -108,7 +112,7 @@ public class StargateFactory {
         runStatement(database, localPortalsStatement);
         conn1.close();
 
-        if (!Setting.getBoolean(Setting.USING_BUNGEE)) {
+        if (!useInterServerNetworks) {
             return;
         }
         Connection conn2 = database.getConnection();
@@ -122,14 +126,13 @@ public class StargateFactory {
         conn3.close();
     }
 
-    private void loadAllPortals(Database database, String databaseName) throws SQLException {
-        loadAllPortals(database, databaseName, false);
+    private void loadAllPortals(Database database, SQLQuerryMaker.Type tableType) throws SQLException {
+        loadAllPortals(database, tableType, false);
     }
 
-    private void loadAllPortals(Database database, String databaseName, boolean areVirtual) throws SQLException {
+    private void loadAllPortals(Database database, SQLQuerryMaker.Type tableType, boolean areVirtual) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement statement = connection.prepareStatement(
-                "SELECT * FROM " + databaseName);
+        PreparedStatement statement = sqlMaker.selectAll(connection, tableType);
 
         ResultSet set = statement.executeQuery();
         while (set.next()) {

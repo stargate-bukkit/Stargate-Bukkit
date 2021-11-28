@@ -11,12 +11,22 @@ package net.TheDgtl.Stargate.database;
  * @author Frostalf
  */
 public enum DriverEnum {
-    MYSQL,
-    MARIADB,
-    SQLITE,
-    POSTREGSQL;
+    MYSQL("mysql"),
+    MARIADB("mysql"),
+    SQLITE(""),
+    POSTREGSQL("");
 
     public static DriverEnum parse(String setting) {
         return valueOf(setting.toUpperCase());
+    }
+
+    private String driver;
+    
+    private DriverEnum(String driver) {
+        this.driver = driver;
+    }
+    
+    public String getDriver() {
+        return driver;
     }
 }

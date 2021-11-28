@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.network;
 
+import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -8,6 +9,7 @@ import org.bukkit.Location;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 public class SQLQuerryMaker {
     private String tableName;
@@ -20,8 +22,9 @@ public class SQLQuerryMaker {
     }
 
     public SQLQuerryMaker(String tableName, String bungeeTableName, String interserverTableName) {
-        this.tableName = tableName;
-        this.bungeeTableName = bungeeTableName;
+        String instanceName = Setting.getString(Setting.BUNGEE_INSTANCE_NAME);
+        this.tableName = tableName + instanceName;
+        this.bungeeTableName = bungeeTableName + instanceName;
         this.interserverTableName = interserverTableName;
     }
 
@@ -42,13 +45,19 @@ public class SQLQuerryMaker {
         }
     }
 
+    public PreparedStatement selectAll(Connection conn, Type type) throws SQLException {
+        PreparedStatement output = conn.prepareStatement(
+                "SELECT * FROM " + getName(type));
+        return output;
+    }
+    
     public PreparedStatement compileCreateStatement(Connection conn, Type type) throws SQLException {
         String statementMsg = "CREATE TABLE IF NOT EXISTS " + getName(type) + " ("
-                + " network VARCHAR, name VARCHAR, desti VARCHAR, world VARCHAR,"
-                + " x INTEGER, y INTEGER, z INTEGER, flags VARCHAR, ownerUUID VARCHAR,"
-                + ((type == Type.INTERSERVER) ? " server VARCHAR, isOnline BOOL," : "")
+                + " network TEXT, name TEXT, desti TEXT, world TEXT,"
+                + " x INTEGER, y INTEGER, z INTEGER, flags TEXT, ownerUUID TEXT,"
+                + ((type == Type.INTERSERVER) ? " server TEXT, isOnline INTEGER," : "")
                 + " UNIQUE(network,name) );";
-
+        Stargate.log(Level.FINEST, "sql querry: " + statementMsg);
         return conn.prepareStatement(statementMsg);
     }
 
