@@ -71,7 +71,7 @@ public class LanguageManager {
         }
         if (translatedMessage == null) {
             Stargate.log(Level.WARNING, String.format("Unable to find %s in the backup language file", key));
-            return key.getString();
+            return key.getMessageKey();
         }
         return translatedMessage;
     }
