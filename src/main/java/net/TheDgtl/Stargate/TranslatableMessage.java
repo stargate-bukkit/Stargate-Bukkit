@@ -56,7 +56,7 @@ public enum TranslatableMessage {
     /**
      * The message to display when a portal or network name exceeds the max length
      */
-    NAME_LENGTH_FAULT("createNameLength"),
+    INVALID_NAME("createNameLength"),
 
     /**
      * The message to display when a new stargate's name is already in use

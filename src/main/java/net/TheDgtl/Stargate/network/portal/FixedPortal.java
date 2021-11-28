@@ -23,8 +23,6 @@ public class FixedPortal extends Portal {
             throws NoFormatFound, GateConflict, NameError {
         super(network, name, sign, flags, ownerUUID);
         this.destinationName = destinationName;
-
-        drawControll();
     }
 
 
