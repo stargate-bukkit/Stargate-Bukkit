@@ -14,7 +14,7 @@ public enum Setting {
 
     GATE_LIMIT("networkLimit"),
     HANDLE_VEHICLES("handleVehicles"), CHECK_PORTAL_VALIDITY("checkPortalValidity"),
-    CHECK_TRAVERSIBLES("checkTraversables"), PROTECT_ENTRANCE("protectEntrance"),
+    CHECK_TRAVERSABLES("checkTraversables"), PROTECT_ENTRANCE("protectEntrance"),
     DESTROY_ON_EXPLOSION("destroyOnExplosion"),
 
     USE_ECONOMY("useEconomy"), TAX_DESTINATION("taxAccount"), UPKEEP_COST("economy.upkeepCost"),
@@ -31,7 +31,7 @@ public enum Setting {
     BUNGEE_DRIVER("bungee.remoteDatabaseSettings.driver"), BUNGEE_DATABASE("bungee.remoteDatabaseSettings.database"),
     BUNGEE_PORT("bungee.remoteDatabaseSettings.port"), BUNGEE_ADDRESS("bungee.remoteDatabaseSettings.address"),
     BUNGEE_USERNAME("bungee.remoteDatabaseSettings.username"), BUNGEE_PASSWORD("bungee.remoteDatabaseSettings.password"),
-    BUNGE_USESSL("bungee.remoteDatabaseSettings.useSSL"), BUNGEE_INSTANCE_NAME("bungee.instanceName");
+    BUNGEE_USE_SSL("bungee.remoteDatabaseSettings.useSSL"), BUNGEE_INSTANCE_NAME("bungee.instanceName");
 
     private String key;
     static private final HashMap<String, Setting> map = new HashMap<>();

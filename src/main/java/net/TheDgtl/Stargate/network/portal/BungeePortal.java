@@ -32,14 +32,14 @@ public class BungeePortal extends Portal {
     }
 
     /**
-     * CHEATS! we love cheats. This one helps saving the legacy bungee gate into sql table so that the
+     * CHEATS! we love cheats. This one helps to save the legacy bungee gate into sql table so that the
      * target server is stored as a replacement to network.
      */
     private Network cheatNet;
     private LegacyVirtualPortal targetPortal;
-    private String serverDesti;
+    private String serverDestination;
 
-    BungeePortal(Network network, String name, String desti, String serverDesti, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
+    BungeePortal(Network network, String name, String destination, String serverDestination, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
             throws NameError, NoFormatFound, GateConflict {
         super(network, name, sign, flags, ownerUUID);
 
@@ -51,9 +51,9 @@ public class BungeePortal extends Portal {
          * Note that this is only used locally inside this portal
          * and can not be found (should not) in any network anywhere.
          */
-        targetPortal = new LegacyVirtualPortal(serverDesti, desti, LEGACY_NETWORK, EnumSet.noneOf(PortalFlag.class), ownerUUID);
-        this.serverDesti = serverDesti;
-        cheatNet = new Network(serverDesti, null, null);
+        targetPortal = new LegacyVirtualPortal(serverDestination, destination, LEGACY_NETWORK, EnumSet.noneOf(PortalFlag.class), ownerUUID);
+        this.serverDestination = serverDestination;
+        cheatNet = new Network(serverDestination, null, null);
         drawControll();
     }
 
@@ -63,12 +63,12 @@ public class BungeePortal extends Portal {
 
     @Override
     public void drawControll() {
-        Stargate.log(Level.FINEST, "serverDesti = " + serverDesti);
+        Stargate.log(Level.FINEST, "serverDestination = " + serverDestination);
 
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.parseName(NameSurround.PORTAL, this);
-        lines[1] = super.colorDrawer.parseName(NameSurround.DESTI, loadDestination());
-        lines[2] = super.colorDrawer.parseLine(serverDesti);
+        lines[1] = super.colorDrawer.parseName(NameSurround.DESTINATION, loadDestination());
+        lines[2] = super.colorDrawer.parseLine(serverDestination);
         lines[3] = "";
         getGate().drawControll(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }

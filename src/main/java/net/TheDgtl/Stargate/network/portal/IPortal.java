@@ -42,7 +42,7 @@ public interface IPortal {
 
     void setNetwork(Network targetNet);
 
-    void setOverrideDesti(IPortal destination);
+    void setOverrideDestination(IPortal destination);
 
     Network getNetwork();
 

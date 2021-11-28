@@ -56,9 +56,9 @@ public class Gate {
     private Portal portal;
 
 
-    static final private Material DEFAULTBUTTON = Material.STONE_BUTTON;
-    static final private Material WATERBUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
-    static final public HashSet<Material> ALLPORTALMATERALS = new HashSet<>();
+    static final private Material DEFAULT_BUTTON = Material.STONE_BUTTON;
+    static final private Material DEFAULT_WATER_BUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
+    static final public HashSet<Material> ALL_PORTAL_MATERIALS = new HashSet<>();
 
     /**
      * Compares the format to real world; If the format matches with the world,
@@ -97,7 +97,7 @@ public class Gate {
         List<BlockVector> controlBlocks = getFormat().getControllBlocks();
         for (BlockVector controlBlock : controlBlocks) {
             /*
-             * Topleft is origo for the format, everything becomes easier if you calculate
+             * Top-left is origin for the format, everything becomes easier if you calculate
              * this position in the world; this is a hypothetical position, calculated from
              * the position of the sign minus a vector of a hypothetical sign position in
              * format.
@@ -111,7 +111,7 @@ public class Gate {
                 /*
                  * Just a cheat to exclude the sign location, and determine the position of the
                  * button. Note that this will have weird behaviour if there's more than 3
-                 * controllblocks
+                 * control-blocks
                  */
                 signPos = controlBlock;
                 for (BlockVector buttonVec : getFormat().getControllBlocks()) {
@@ -179,17 +179,17 @@ public class Gate {
         Material portalClosedMat = getFormat().getIrisMat(false);
         switch (portalClosedMat) {
             case AIR:
-                return DEFAULTBUTTON;
+                return DEFAULT_BUTTON;
             case WATER:
-                return WATERBUTTON;
+                return DEFAULT_WATER_BUTTON;
             default:
-                Stargate.log(Level.INFO, portalClosedMat.name() + " is currently not suported as a portal closed material");
-                return DEFAULTBUTTON;
+                Stargate.log(Level.INFO, portalClosedMat.name() + " is currently not supported as a portal closed material");
+                return DEFAULT_BUTTON;
         }
     }
 
     /**
-     * @param structKey , key for the structuretype to be retrieved
+     * @param structKey , key for the structure-type to be retrieved
      * @return
      */
     public List<SGLocation> getLocations(GateStructureType structKey) {
@@ -219,7 +219,7 @@ public class Gate {
      */
     private void setIrisMaterial(Material mat) {
         GateStructureType targetType = GateStructureType.IRIS;
-        List<SGLocation> locs = getLocations(targetType);
+        List<SGLocation> locations = getLocations(targetType);
         BlockData blockData = Bukkit.createBlockData(mat);
 
 
@@ -230,7 +230,7 @@ public class Gate {
         }
 
 
-        for (SGLocation loc : locs) {
+        for (SGLocation loc : locations) {
             Block blk = loc.getLocation().getBlock();
             blk.setBlockData(blockData);
             switch (mat) {

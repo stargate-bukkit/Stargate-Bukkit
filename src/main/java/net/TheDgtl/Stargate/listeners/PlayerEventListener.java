@@ -5,7 +5,7 @@ import com.google.common.io.ByteStreams;
 import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.actions.ConditionallRepeatedTask;
+import net.TheDgtl.Stargate.actions.ConditionalRepeatedTask;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
@@ -60,7 +60,7 @@ public class PlayerEventListener implements Listener {
 
         if (Tag.WALL_SIGNS.isTagged(blockMat)) {
             if (portal.isOpenFor(player)) {
-                Stargate.log(Level.FINEST, "Playername=" + player.getName());
+                Stargate.log(Level.FINEST, "Player name=" + player.getName());
                 portal.onSignClick(action, player);
             }
             return;
@@ -70,7 +70,7 @@ public class PlayerEventListener implements Listener {
             return;
         }
 
-        Stargate.log(Level.WARNING, "This should never be triggered, an unkown glitch is occuring");
+        Stargate.log(Level.WARNING, "This should never be triggered, an unknown glitch is occurring");
     }
 
 
@@ -95,7 +95,7 @@ public class PlayerEventListener implements Listener {
     }
 
     /**
-     * A stupid cheat to get serverName. A client is needed o get this data, hence
+     * A stupid cheat to get serverName. A client is needed to get this data, hence
      * this stupid solution
      *
      * @return
@@ -123,7 +123,7 @@ public class PlayerEventListener implements Listener {
         /*
          * Repeatedly try to load bungee server id until either the id is known, or no player is able to send bungee messages.
          */
-        Stargate.syncSecPopulator.addAction(new ConditionallRepeatedTask(action) {
+        Stargate.syncSecPopulator.addAction(new ConditionalRepeatedTask(action) {
 
             @Override
             public boolean isCondition() {

@@ -33,7 +33,7 @@ public class MySqlDatabase implements Database {
     private JavaPlugin plugin;
 
     /**
-     * Caches and checks the status of a certain database..
+     * Caches and checks the status of a certain database
      *
      * @param driver   Driver to use for this database communication.
      * @param address  Address of the database being checked.

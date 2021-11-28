@@ -43,7 +43,7 @@ They are often less scary than they seem and are almost always worthwhile.
 
 > When methods are modularised, they become simpler to understand and debug.
 
-Please divide your code into methods for calculations and methods for side-effects.
+Please divide your code into methods for calculations and methods for side effects.
 
 #### If you are unsure about something, take the time to ask/read up on it.
 

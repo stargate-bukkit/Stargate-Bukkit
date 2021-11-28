@@ -26,7 +26,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateProtocolProperty;
 import net.TheDgtl.Stargate.StargateProtocolRequestType;
 import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.network.InterserverNetwork;
+import net.TheDgtl.Stargate.network.InterServerNetwork;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -104,7 +104,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     legacyPlayerConnect(in.readUTF());
                     break;
                 default:
-                    Stargate.log(Level.FINEST, "Recieved unknown message with a subchannel: " + subChannel);
+                    Stargate.log(Level.FINEST, "Received unknown message with a sub-channel: " + subChannel);
                     break;
             }
         } catch (IOException ex) {
@@ -160,7 +160,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         String server = json.get(StargateProtocolProperty.SERVER.toString()).getAsString();
         String flags = json.get(StargateProtocolProperty.PORTAL_FLAG.toString()).getAsString();
         UUID ownerUUID = UUID.fromString(json.get(StargateProtocolProperty.OWNER.toString()).getAsString());
-        InterserverNetwork targetNetwork = (InterserverNetwork) Stargate.factory.getNetwork(network, true);
+        InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.factory.getNetwork(network, true);
         VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, PortalFlag.parseFlags(flags), ownerUUID);
 
         switch (requestType) {

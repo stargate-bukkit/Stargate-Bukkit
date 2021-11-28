@@ -5,7 +5,7 @@ import com.google.gson.JsonPrimitive;
 import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateProtocolProperty;
-import net.TheDgtl.Stargate.network.InterserverNetwork;
+import net.TheDgtl.Stargate.network.InterServerNetwork;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -23,7 +23,7 @@ import java.util.logging.Level;
 
 /**
  * A virtual portal, which does not exist. Symbolises a portal that is outside
- * this server and acts as an interface to send relevant interserver packets.
+ * this server and acts as an interface to send relevant inter-server packets.
  *
  * @author Thorin
  */
@@ -91,7 +91,7 @@ public class VirtualPortal implements IPortal {
     }
 
     /**
-     * TODO not implemented, probably never will / as it would be overusing much needed bungeecord message data
+     * TODO not implemented, probably never will / as it would be overusing much needed BungeeCord message data
      */
     @Override
     public void close(boolean force) {
@@ -104,14 +104,14 @@ public class VirtualPortal implements IPortal {
 
     @Override
     public void setNetwork(Network targetNet) {
-        this.network = (InterserverNetwork) targetNet;
+        this.network = (InterServerNetwork) targetNet;
     }
 
     /**
      * TODO Not implemented
      */
     @Override
-    public void setOverrideDesti(IPortal destination) {
+    public void setOverrideDestination(IPortal destination) {
     }
 
     @Override

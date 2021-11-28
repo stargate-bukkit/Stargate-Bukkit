@@ -53,9 +53,9 @@ public class Teleporter {
 
 
         double width = target.getWidth();
-        Vector offsett = destinationFace.getDirection();
-        offsett.multiply(Math.ceil((width + 1) / 2));
-        destination.subtract(offsett);
+        Vector offset = destinationFace.getDirection();
+        offset.multiply(Math.ceil((width + 1) / 2));
+        destination.subtract(offset);
 
         betterTeleport(target, rotation);
     }
@@ -69,7 +69,7 @@ public class Teleporter {
     private void betterTeleport(Entity target, double rotation) {
         List<Entity> passengers = target.getPassengers();
         if (target.eject()) {
-            Stargate.log(Level.FINEST, "Ejected all passangers");
+            Stargate.log(Level.FINEST, "Ejected all passengers");
             for (Entity passenger : passengers) {
 
                 PopulatorAction action = new PopulatorAction() {
@@ -110,7 +110,7 @@ public class Teleporter {
         }
 
         if (target instanceof PoweredMinecart) {
-            // TODO: NOT Currently implemented, does not seem to be a accesible way to fix this using spigot api
+            // TODO: NOT Currently implemented, does not seem to be a accessible way to fix this using spigot api
             return;
         }
 
@@ -145,8 +145,8 @@ public class Teleporter {
     private boolean hasPerm(Entity target) {
         StargatePortalEvent event = new StargatePortalEvent(target, origin);
         Bukkit.getPluginManager().callEvent(event);
-        PermissionManager mngr = new PermissionManager(target);
-        return (mngr.hasPerm(event) && !event.isCancelled());
+        PermissionManager permissionManager = new PermissionManager(target);
+        return (permissionManager.hasPerm(event) && !event.isCancelled());
     }
 
     /**

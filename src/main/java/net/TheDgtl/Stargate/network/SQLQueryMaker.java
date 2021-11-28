@@ -11,25 +11,25 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
-public class SQLQuerryMaker {
+public class SQLQueryMaker {
     private String tableName;
     private String bungeeTableName;
-    private String interserverTableName;
+    private String interServerTableName;
 
 
-    public SQLQuerryMaker(String tableName) {
+    public SQLQueryMaker(String tableName) {
         this.tableName = tableName;
     }
 
-    public SQLQuerryMaker(String tableName, String bungeeTableName, String interserverTableName) {
+    public SQLQueryMaker(String tableName, String bungeeTableName, String interServerTableName) {
         String instanceName = Setting.getString(Setting.BUNGEE_INSTANCE_NAME);
         this.tableName = tableName + instanceName;
         this.bungeeTableName = bungeeTableName + instanceName;
-        this.interserverTableName = interserverTableName;
+        this.interServerTableName = interServerTableName;
     }
 
     public enum Type {
-        LOCAL, BUNGEE, INTERSERVER;
+        LOCAL, BUNGEE, INTER_SERVER;
     }
 
     private String getName(Type type) {
@@ -38,8 +38,8 @@ public class SQLQuerryMaker {
                 return tableName;
             case BUNGEE:
                 return bungeeTableName;
-            case INTERSERVER:
-                return interserverTableName;
+            case INTER_SERVER:
+                return interServerTableName;
             default:
                 return null;
         }
@@ -53,30 +53,30 @@ public class SQLQuerryMaker {
 
     public PreparedStatement compileCreateStatement(Connection conn, Type type) throws SQLException {
         String statementMsg = "CREATE TABLE IF NOT EXISTS " + getName(type) + " ("
-                + " network TEXT, name TEXT, desti TEXT, world TEXT,"
+                + " network TEXT, name TEXT, destination TEXT, world TEXT,"
                 + " x INTEGER, y INTEGER, z INTEGER, flags TEXT, ownerUUID TEXT,"
-                + ((type == Type.INTERSERVER) ? " server TEXT, isOnline INTEGER," : "")
+                + ((type == Type.INTER_SERVER) ? " server TEXT, isOnline INTEGER," : "")
                 + " UNIQUE(network,name) );";
-        Stargate.log(Level.FINEST, "sql querry: " + statementMsg);
+        Stargate.log(Level.FINEST, "sql query: " + statementMsg);
         return conn.prepareStatement(statementMsg);
     }
 
     public PreparedStatement compileAddStatement(Connection conn, IPortal portal, Type type) throws SQLException {
-        boolean isInterserver = (type == Type.INTERSERVER);
+        boolean isInterServer = (type == Type.INTER_SERVER);
         PreparedStatement statement = conn.prepareStatement(
                 "INSERT INTO " + getName(type)
-                        + " (network,name,desti,world,x,y,z,flags,ownerUUID" + (isInterserver ? ",server,isOnline" : "") + ")"
-                        + " VALUES(?,?,?,?,?,?,?,?,?" + (isInterserver ? ",?,?" : "") + ");");
+                        + " (network,name,destination,world,x,y,z,flags,ownerUUID" + (isInterServer ? ",server,isOnline" : "") + ")"
+                        + " VALUES(?,?,?,?,?,?,?,?,?" + (isInterServer ? ",?,?" : "") + ");");
 
         statement.setString(1, portal.getNetwork().getName());
         statement.setString(2, portal.getName());
-        String destiStr = null;
+        String destinationString = null;
         if (portal instanceof Portal) {
-            IPortal desti = ((Portal) portal).loadDestination();
-            if (desti != null)
-                destiStr = desti.getName();
+            IPortal destination = ((Portal) portal).loadDestination();
+            if (destination != null)
+                destinationString = destination.getName();
         }
-        statement.setString(3, destiStr);
+        statement.setString(3, destinationString);
         Location loc = portal.getSignPos();
         statement.setString(4, loc.getWorld().getName());
         statement.setInt(5, loc.getBlockX());
@@ -85,7 +85,7 @@ public class SQLQuerryMaker {
         statement.setString(8, portal.getAllFlagsString());
         statement.setString(9, portal.getOwnerUUID().toString());
 
-        if (isInterserver) {
+        if (isInterServer) {
             statement.setString(10, Stargate.serverName);
             statement.setBoolean(11, true);
         }

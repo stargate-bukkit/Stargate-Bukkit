@@ -64,7 +64,7 @@ public class EconomyManager {
     }
 
     /**
-     * Money for the taxgods. May you live in wealth
+     * Money for the tax gods. May you live in wealth
      *
      * @param player
      * @param amount
@@ -74,18 +74,18 @@ public class EconomyManager {
         String bankUUIDStr = Setting.getString(Setting.TAX_DESTINATION);
         if (!bankUUIDStr.isEmpty()) {
             OfflinePlayer bankAccount = Bukkit.getOfflinePlayer(UUID.fromString(bankUUIDStr));
-            return chargeAndDepocitPlayer(player, bankAccount, amount);
+            return chargeAndDepositPlayer(player, bankAccount, amount);
         }
         return chargePlayer(player, amount);
     }
 
     public boolean chargePlayer(OfflinePlayer player, OfflinePlayer transactionTarget, int amount) {
         if (Setting.getBoolean(Setting.GATE_OWNER_REVENUE))
-            return chargeAndDepocitPlayer(player, transactionTarget, amount);
+            return chargeAndDepositPlayer(player, transactionTarget, amount);
         return chargeAndTax(player, amount);
     }
 
-    private boolean chargeAndDepocitPlayer(OfflinePlayer player, OfflinePlayer transactionTarget, int amount) {
+    private boolean chargeAndDepositPlayer(OfflinePlayer player, OfflinePlayer transactionTarget, int amount) {
         if (chargePlayer(player, amount)) {
             return depositPlayer(transactionTarget, amount);
         }

@@ -14,7 +14,7 @@ public enum DriverEnum {
     MYSQL("mysql"),
     MARIADB("mysql"),
     SQLITE(""),
-    POSTREGSQL("");
+    POSTGRESQL("");
 
     public static DriverEnum parse(String setting) {
         return valueOf(setting.toUpperCase());

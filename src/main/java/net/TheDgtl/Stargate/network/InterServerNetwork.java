@@ -23,14 +23,14 @@ import java.util.List;
 import java.util.logging.Level;
 
 
-public class InterserverNetwork extends Network {
-    private Database interserverDatabase;
+public class InterServerNetwork extends Network {
+    private Database interServerDatabase;
 
-    public InterserverNetwork(String netName, Database database, SQLQuerryMaker sqlMaker) throws NameError {
+    public InterServerNetwork(String netName, Database database, SQLQueryMaker sqlMaker) throws NameError {
         super(netName, database, sqlMaker);
     }
 
-    public InterserverNetwork(String netName, Database database, SQLQuerryMaker sqlMaker, List<IPortal> portals) throws NameError {
+    public InterServerNetwork(String netName, Database database, SQLQueryMaker sqlMaker, List<IPortal> portals) throws NameError {
         super(netName, database, sqlMaker);
         for (IPortal portal : portals)
             addPortal(portal, false);
@@ -38,22 +38,22 @@ public class InterserverNetwork extends Network {
 
     @Override
     public void removePortal(IPortal portal, boolean saveToDatabase) {
-        super.removePortal(portal, saveToDatabase, SQLQuerryMaker.Type.BUNGEE);
+        super.removePortal(portal, saveToDatabase, SQLQueryMaker.Type.BUNGEE);
         if (!saveToDatabase)
             return;
         try {
-            unregisterFromInterserver(portal);
+            unregisterFromInterServer(portal);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void registerToInterserver(IPortal portal) {
+    public void registerToInterServer(IPortal portal) {
         PopulatorAction action = new PopulatorAction() {
 
             @Override
             public void run(boolean forceEnd) {
-                savePortal(interserverDatabase, portal, SQLQuerryMaker.Type.INTERSERVER);
+                savePortal(interServerDatabase, portal, SQLQueryMaker.Type.INTER_SERVER);
             }
 
             @Override
@@ -63,13 +63,13 @@ public class InterserverNetwork extends Network {
 
         };
         Stargate.syncSecPopulator.addAction(action, true);
-        updateInterserverNetwork(portal, StargateProtocolRequestType.PORTAL_ADD);
+        updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_ADD);
     }
 
     /**
-     * Tries to update the interserver network globally on every connected server
+     * Tries to update the inter-server network globally on every connected server
      */
-    private void updateInterserverNetwork(IPortal portal, StargateProtocolRequestType type) {
+    private void updateInterServerNetwork(IPortal portal, StargateProtocolRequestType type) {
         Stargate stargate = Stargate.getPlugin(Stargate.class);
         PopulatorAction action = new PopulatorAction() {
             boolean isFinished = false;
@@ -109,14 +109,14 @@ public class InterserverNetwork extends Network {
         Stargate.syncSecPopulator.addAction(action, true);
     }
 
-    public void unregisterFromInterserver(IPortal portal) throws SQLException {
-        Connection conn = interserverDatabase.getConnection();
-        PreparedStatement statement = sqlMaker.compileRemoveStatement(conn, portal, SQLQuerryMaker.Type.INTERSERVER);
+    public void unregisterFromInterServer(IPortal portal) throws SQLException {
+        Connection conn = interServerDatabase.getConnection();
+        PreparedStatement statement = sqlMaker.compileRemoveStatement(conn, portal, SQLQueryMaker.Type.INTER_SERVER);
         statement.execute();
         statement.close();
         conn.close();
 
-        updateInterserverNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
+        updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
     }
 
     @Override
@@ -128,10 +128,10 @@ public class InterserverNetwork extends Network {
     protected void savePortal(IPortal portal) {
         /*
          * Save one local partition of every bungee gate on this server
-         * Also save it to the interserver database, so that it can be
+         * Also save it to the inter-server database, so that it can be
          * seen on other servers
          */
-        super.savePortal(database, portal, SQLQuerryMaker.Type.BUNGEE);
-        registerToInterserver(portal);
+        super.savePortal(database, portal, SQLQueryMaker.Type.BUNGEE);
+        registerToInterServer(portal);
     }
 }

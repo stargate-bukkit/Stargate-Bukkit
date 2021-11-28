@@ -58,10 +58,10 @@ public class Stargate extends JavaPlugin {
 
     private Level lowestMsgLevel = Level.FINEST;//setting before config loads
 
-    final String DATAFOLDER = this.getDataFolder().getPath().replaceAll("\\\\", "/");
-    final String GATEFOLDER = "gates";
-    final String LANGFOLDER = "lang";
-    final String PORTALFOLDER = "portals";
+    final String DATA_FOLDER = this.getDataFolder().getPath().replaceAll("\\\\", "/");
+    final String GATE_FOLDER = "gates";
+    final String LANGUAGE_FOLDER = "lang";
+    final String PORTAL_FOLDER = "portals";
 
     private PluginManager pm;
 
@@ -71,14 +71,14 @@ public class Stargate extends JavaPlugin {
     /**
      * Goes through every action in the queue every 1 tick. Should be used in tasks that need to be finished within a short time frame
      */
-    public static final SyncronousPopulator syncTickPopulator = new SyncronousPopulator();
+    public static final SynchronousPopulator syncTickPopulator = new SynchronousPopulator();
     /**
      * Goes through every action it the queue every 1 second (20 ticks). Should be used in delayed actions
      */
-    public static final SyncronousPopulator syncSecPopulator = new SyncronousPopulator();
+    public static final SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
     /**
      * The string length of a name consisting of only 'i'. This will fill a sign (including <>)
-     * Note that this is a terribly relaxed restriction, mainly done to prevent any from arising in a SQL database.
+     * Note that this is a terribly relaxed restriction, mainly done to prevent any from arising in an SQL database.
      */
     public static final int MAX_TEXT_LENGTH = 40;
 
@@ -102,10 +102,10 @@ public class Stargate extends JavaPlugin {
 
         economyManager = new EconomyManager();
         lowestMsgLevel = Level.parse(Setting.getString(Setting.DEBUG_LEVEL));
-        languageManager = new LanguageManager(this, DATAFOLDER + "/" + LANGFOLDER, Setting.getString(Setting.LANGUAGE));
+        languageManager = new LanguageManager(this, DATA_FOLDER + "/" + LANGUAGE_FOLDER, Setting.getString(Setting.LANGUAGE));
         saveDefaultGates();
 
-        GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATAFOLDER + "/" + GATEFOLDER);
+        GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATA_FOLDER + "/" + GATE_FOLDER);
         try {
             factory = new StargateFactory(this);
         } catch (SQLException e) {
@@ -134,12 +134,12 @@ public class Stargate extends JavaPlugin {
     }
 
     private void saveDefaultGates() {
-        //TODO is there a way to check all files in a resourcefolder? Possible solution seems unnecessarily complex
+        //TODO is there a way to check all files in a resource-folder? Possible solution seems unnecessarily complex
         String[] gateList = {"nether.gate", "water.gate", "wool.gate"};
         boolean replace = false;
         for (String gateName : gateList) {
-            if (!(new File(DATAFOLDER + "/" + GATEFOLDER + "/" + gateName).exists()))
-                this.saveResource(GATEFOLDER + "/" + gateName, replace);
+            if (!(new File(DATA_FOLDER + "/" + GATE_FOLDER + "/" + gateName).exists()))
+                this.saveResource(GATE_FOLDER + "/" + gateName, replace);
         }
     }
 
@@ -176,7 +176,7 @@ public class Stargate extends JavaPlugin {
             return;
 
         try {
-            factory.endInterserverConnection();
+            factory.endInterServerConnection();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -195,8 +195,8 @@ public class Stargate extends JavaPlugin {
         return instance.getConfig();
     }
 
-    public static void addToQueue(String playerName, String portalName, String netName, boolean isInterserver) {
-        Network net = factory.getNetwork(netName, isInterserver);
+    public static void addToQueue(String playerName, String portalName, String netName, boolean isInterServer) {
+        Network net = factory.getNetwork(netName, isInterServer);
         if (net == null) {
             //TODO Error: This bungee portal's %type% has been removed from the destination server instance.
             //(See Discussion One) %type% = network.

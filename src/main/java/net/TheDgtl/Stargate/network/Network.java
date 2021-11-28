@@ -29,12 +29,12 @@ public class Network {
     protected HashMap<String, IPortal> portalList;
     protected Database database;
     protected String name;
-    protected SQLQuerryMaker sqlMaker;
+    protected SQLQueryMaker sqlMaker;
 
 
     final static EnumMap<GateStructureType, HashMap<SGLocation, IPortal>> portalFromPartsMap = new EnumMap<>(GateStructureType.class);
 
-    public Network(String name, Database database, SQLQuerryMaker sqlMaker) throws NameError {
+    public Network(String name, Database database, SQLQueryMaker sqlMaker) throws NameError {
         if (name.isBlank() || (name.length() == Stargate.MAX_TEXT_LENGTH))
             throw new NameError(TranslatableMessage.NAME_LENGTH_FAULT);
         this.name = name;
@@ -71,7 +71,7 @@ public class Network {
         }
     }
 
-    public void removePortal(IPortal portal, boolean saveToDatabase, SQLQuerryMaker.Type type) {
+    public void removePortal(IPortal portal, boolean saveToDatabase, SQLQueryMaker.Type type) {
         portalList.remove(portal.getName());
         if (!saveToDatabase)
             return;
@@ -87,10 +87,10 @@ public class Network {
     }
 
     public void removePortal(IPortal portal, boolean saveToDatabase) {
-        this.removePortal(portal, saveToDatabase, SQLQuerryMaker.Type.LOCAL);
+        this.removePortal(portal, saveToDatabase, SQLQueryMaker.Type.LOCAL);
     }
 
-    protected void savePortal(Database database, IPortal portal, SQLQuerryMaker.Type type) {
+    protected void savePortal(Database database, IPortal portal, SQLQueryMaker.Type type) {
         try {
             Connection conn = database.getConnection();
             PreparedStatement statement = sqlMaker.compileAddStatement(conn, portal, type);
@@ -105,7 +105,7 @@ public class Network {
 
     protected void savePortal(IPortal portal) {
         boolean isInterServer;
-        savePortal(database, portal, SQLQuerryMaker.Type.LOCAL);
+        savePortal(database, portal, SQLQueryMaker.Type.LOCAL);
     }
 
     public void addPortal(IPortal portal, boolean saveToDatabase) {

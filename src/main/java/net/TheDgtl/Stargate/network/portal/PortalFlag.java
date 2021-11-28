@@ -6,7 +6,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 
 public enum PortalFlag {
-    RANDOM('R'), FANCY_INTERSERVER('I'), ALWAYS_ON('A'), BACKWARDS('B'),
+    RANDOM('R'), FANCY_INTER_SERVER('I'), ALWAYS_ON('A'), BACKWARDS('B'),
     HIDDEN('H'), PRIVATE('P'), FORCE_SHOW('S'), HIDE_NETWORK('N'),
     FREE('F'), BUNGEE('U'), SILENT('Q'),
     //Internal

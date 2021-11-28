@@ -30,7 +30,7 @@ public class MoveEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
-        // cancel portal and endgateway teleportation if it's from a Stargate entrance
+        // cancel portal and end-gateway teleportation if it's from a Stargate entrance
         PlayerTeleportEvent.TeleportCause cause = event.getCause();
 
         /*

@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 
 public abstract class StargateEvent extends Event implements Cancellable {
-    // oldname = StargateEvent
+    // old name = StargateEvent
     protected final IPortal portal;
     protected boolean cancelled;
     private PluginManager pm;
@@ -95,24 +95,24 @@ public abstract class StargateEvent extends Event implements Cancellable {
         if (portal.getNetwork().getName().equals(Setting.getString(Setting.DEFAULT_NET)))
             return pm.getPermission(permIdentifier + ".network.default");
         Permission custom = new Permission(permIdentifier + ".network.custom." + portal.getNetwork().getName());
-        Permission parrent = pm.getPermission(permIdentifier + ".network.custom");
-        custom.addParent(parrent, true);
+        Permission parent = pm.getPermission(permIdentifier + ".network.custom");
+        custom.addParent(parent, true);
         return custom;
     }
 
     protected Permission compileWorldPerm(String permIdentifier) {
-        Permission parrent = pm.getPermission(permIdentifier + ".world");
+        Permission parent = pm.getPermission(permIdentifier + ".world");
         String permNode = permIdentifier + ".world." + portal.getSignPos().getWorld().getName();
         Permission world = new Permission(permNode);
-        world.addParent(parrent, true);
+        world.addParent(parent, true);
         return world;
     }
 
     protected Permission compileDesignPerm(String permIdentifier) {
-        Permission parrent = pm.getPermission(permIdentifier + ".design");
+        Permission parent = pm.getPermission(permIdentifier + ".design");
         String permNode = permIdentifier + ".design." + portal.getDesignName();
         Permission design = new Permission(permNode);
-        design.addParent(parrent, true);
+        design.addParent(parent, true);
         return design;
     }
 

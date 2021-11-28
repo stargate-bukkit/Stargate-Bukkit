@@ -37,7 +37,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * The parent class for ever portal that interacts with server worlds
+ * The parent class for every portal that interacts with server worlds
  *
  * @author Thorin
  */
@@ -173,7 +173,7 @@ public abstract class Portal implements IPortal {
 
         for (GateStructureType formatType : GateStructureType.values()) {
             for (SGLocation loc : this.getGate().getLocations(formatType)) {
-                Stargate.log(Level.FINEST, "Unregestering type: " + formatType + " location, at: " + loc);
+                Stargate.log(Level.FINEST, "Unregistering type: " + formatType + " location, at: " + loc);
                 network.unRegisterLocation(formatType, loc);
             }
         }
@@ -214,7 +214,7 @@ public abstract class Portal implements IPortal {
      * then it is going to close, but the scheduled close event is still going to be
      * there. And if the portal gets activated again, it is going to close
      * prematurely, because of this already scheduled event. Solution to avoid this
-     * is to assign a opentime for each scheduled close event and only close if the
+     * is to assign an open-time for each scheduled close event and only close if the
      * related open time matches with the most recent time the portal was closed.
      *
      * @param relatedOpenTime
@@ -242,8 +242,8 @@ public abstract class Portal implements IPortal {
         return gate.getExit();
     }
 
-    public void setOverrideDesti(IPortal desti) {
-        this.destination = desti;
+    public void setOverrideDestination(IPortal destination) {
+        this.destination = destination;
     }
 
     public Network getNetwork() {
@@ -255,7 +255,7 @@ public abstract class Portal implements IPortal {
         this.drawControll();
     }
 
-    protected IPortal getFinalDesti() {
+    protected IPortal getFinalDestination() {
         if (destination == null)
             destination = loadDestination();
         return destination;
@@ -280,9 +280,9 @@ public abstract class Portal implements IPortal {
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.INVALID, true));
             return;
         }
-        PermissionManager mngr = new PermissionManager(player);
+        PermissionManager permissionManager = new PermissionManager(player);
         StargateOpenEvent oEvent = new StargateOpenEvent(player, this, false);
-        if (!mngr.hasPerm(oEvent) || oEvent.isCancelled())
+        if (!permissionManager.hasPerm(oEvent) || oEvent.isCancelled())
             return;
 
         this.destination = destination;
@@ -359,15 +359,15 @@ public abstract class Portal implements IPortal {
 
     @Override
     public void doTeleport(Entity target) {
-        IPortal desti = getFinalDesti();
-        if (desti == null) {
+        IPortal destination = getFinalDestination();
+        if (destination == null) {
             target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.INVALID, true));
             teleportHere(target, this);
             return;
         }
 
-        desti.teleportHere(target, this);
-        desti.close(false);
+        destination.teleportHere(target, this);
+        destination.close(false);
         close(false);
     }
 
