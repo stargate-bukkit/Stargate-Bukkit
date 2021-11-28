@@ -34,7 +34,7 @@ public class StargateFactory {
     private final HashMap<String, Network> networkList = new HashMap<>();
     private final HashMap<String, InterServerNetwork> bungeeNetList = new HashMap<>();
 
-    String sharedTableName = "interserver";
+    String sharedTableName = "interServer";
     String bungeeDataBaseName = "bungee";
     String tableName = "local";
 

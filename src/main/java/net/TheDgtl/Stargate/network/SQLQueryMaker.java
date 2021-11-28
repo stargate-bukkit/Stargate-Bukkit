@@ -53,7 +53,7 @@ public class SQLQueryMaker {
 
     public PreparedStatement compileCreateStatement(Connection conn, Type type) throws SQLException {
         String statementMsg = "CREATE TABLE IF NOT EXISTS " + getName(type) + " ("
-                + " network TEXT, name TEXT, desti TEXT, world TEXT,"
+                + " network TEXT, name TEXT, destination TEXT, world TEXT,"
                 + " x INTEGER, y INTEGER, z INTEGER, flags TEXT, ownerUUID TEXT,"
                 + ((type == Type.INTER_SERVER) ? " server TEXT, isOnline INTEGER," : "")
                 + " UNIQUE(network,name) );";
@@ -65,7 +65,7 @@ public class SQLQueryMaker {
         boolean isInterServer = (type == Type.INTER_SERVER);
         PreparedStatement statement = conn.prepareStatement(
                 "INSERT INTO " + getName(type)
-                        + " (network,name,desti,world,x,y,z,flags,ownerUUID" + (isInterServer ? ",server,isOnline" : "") + ")"
+                        + " (network,name,destination,world,x,y,z,flags,ownerUUID" + (isInterServer ? ",server,isOnline" : "") + ")"
                         + " VALUES(?,?,?,?,?,?,?,?,?" + (isInterServer ? ",?,?" : "") + ");");
 
         statement.setString(1, portal.getNetwork().getName());
