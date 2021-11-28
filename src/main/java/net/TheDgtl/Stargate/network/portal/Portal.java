@@ -75,13 +75,6 @@ public abstract class Portal implements IPortal {
         this.name = name;
         this.flags = flags;
 
-
-        if (name.trim().isEmpty() || (name.length() == Stargate.MAX_TEXT_LENGTH))
-            throw new NameError(TranslatableMessage.NAME_LENGTH_FAULT);
-        if (this.network.isPortalNameTaken(name)) {
-            throw new NameError(TranslatableMessage.ALREADY_EXIST);
-        }
-
         if (!(Tag.WALL_SIGNS.isTagged(sign.getType()))) {
             throw new NoFormatFound();
         }
@@ -94,6 +87,12 @@ public abstract class Portal implements IPortal {
         List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
         setGate(FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing()));
 
+        if (name.trim().isEmpty() || (name.length() == Stargate.MAX_TEXT_LENGTH))
+            throw new NameError(TranslatableMessage.NAME_LENGTH_FAULT);
+        if (this.network.isPortalNameTaken(name)) {
+            throw new NameError(TranslatableMessage.ALREADY_EXIST);
+        }
+        
         this.colorDrawer = new PortalColorParser((Sign) getSignPos().getBlock().getState());
 
         if (gate.getFormat().isIronDoorBlockable) {
