@@ -18,6 +18,9 @@
 package net.TheDgtl.Stargate.event;
 
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.PortalFlag;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
@@ -101,7 +104,12 @@ public class StargateDestroyEvent extends StargateEvent {
 
     @Override
     public List<Permission> getRelatedPerms() {
-        return super.defaultPermCompile("sg.destroy", player.getUniqueId().toString());
+        String identifier = "sg.destroy";
+        List<Permission> permList = super.defaultPermCompile(identifier, player.getUniqueId().toString());
+        if(portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !player.getUniqueId().equals(portal.getOwnerUUID())) {
+            permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
+        }
+        return permList;
     }
 
 }
