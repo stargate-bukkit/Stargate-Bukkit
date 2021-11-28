@@ -8,133 +8,141 @@ import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 /**
- * An API to facilitate addons and integrations.
+ * An API to facilitate addons and integrations
+ * 
+ * <p>API specs currently being discussed on issue #77</p>
  *
  * @author Thorin
  */
+@SuppressWarnings("unused")
 public class StargateAPI {
-    /*
-     * API specs currently being discussed on issue #77
-     */
 
     /**
-     * Search for a portal via a specified position.
+     * Gets a portal at the given location
      *
-     * @param Location portalBlock (the specified position)
-     * @return If found, the portal; else, null.
+     * <p>If a portal's frame, iris or control-blocks have a block at the given location, the portal will be
+     * returned.</p>
+     *
+     * @param portalBlock <p>The location to search for a portal</p>
+     * @return <p>A portal, or null if no portal was found</p>
      */
     public IPortal getPortal(Location portalBlock) {
         return Network.getPortal(portalBlock, GateStructureType.values());
     }
 
     /**
-     * Search for a portal via a specified portal part and a specified position.
+     * Get a portal at the given location, only if the location has the given gate structure type
      *
-     * @param Location          portalBlock (the specified position)
-     * @param GateStructureType structure (the type of part of the portal)
-     * @return If found, the portal; else, null.
+     * <p>If a portal has a block of the given structure type (control block, frame or iris) at the given location, the
+     * portal will be returned.</p>
+     *
+     * @param portalBlock   <p>The location to search for a portal</p>
+     * @param structureType <p>The type of gate structure to look for</p>
+     * @return <p>A portal, or null if no portal was found</p>
      */
-    public IPortal getPortal(Location portalBlock, GateStructureType structure) {
-        return Network.getPortal(portalBlock, structure);
+    public IPortal getPortal(Location portalBlock, GateStructureType structureType) {
+        return Network.getPortal(portalBlock, structureType);
     }
 
     /**
-     * Search for a portal via specified portal parts and a specified position.
+     * Get a portal at the given location, only if the location has one of the given gate structure types
      *
-     * @param Location            portalBlock (the specified position)
-     * @param GateStructureType[] structures (the types of parts of the portal)
-     * @return If found, the portal; else, null.
+     * <p>If a portal has a block of the given structure type (control block, frame or iris) at the given location, the
+     * portal will be returned.</p>
+     *
+     * @param portalBlock    <p>The location to search for a portal</p>
+     * @param structureTypes <p>The types of gate structures to look for</p>
+     * @return <p>A portal, or null if no portal was found</p>
      */
-    public IPortal getPortal(Location portalBlock, GateStructureType[] structures) {
-        return Network.getPortal(portalBlock, structures);
+    public IPortal getPortal(Location portalBlock, GateStructureType[] structureTypes) {
+        return Network.getPortal(portalBlock, structureTypes);
     }
 
     /**
-     * Search for a portal based its name and network.
+     * Get a portal in the given network, with the given name
      *
-     * @param Network net (The portal's network)
-     * @param String  portalName (The portal's name)
-     * @return If found, the portal; else, null.
+     * @param network    <p>The network to search</p>
+     * @param portalName <p>The name of the portal</p>
+     * @return <p>A portal, or null if no portal was found</p>
      */
-    public IPortal getPortal(Network net, String portalName) {
-        return net.getPortal(portalName);
+    public IPortal getPortal(Network network, String portalName) {
+        return network.getPortal(portalName);
     }
 
     /**
-     * Search for a portal across the proxy based on its name and network.
+     * Get a portal across the proxy network, given its name and network
      *
-     * @param String  netName (The portal's network)
-     * @param String  portalName (The portal's name)
-     * @param boolean isBungee (The portal's scope)
-     * @return If found, the portal; else, null.
+     * @param networkName <p>The name of the network to search</p>
+     * @param portalName  <p>The name of the portal to look for</p>
+     * @param isBungee    <p>Whether to search for a BungeeCord-connected portal</p>
+     * @return <p>A portal, or null if no portal was found</p>
      */
-    public IPortal getPortal(String netName, String portalName, boolean isBungee) {
-        Network net = Stargate.factory.getNetwork(netName, isBungee);
-        if (net == null)
+    public IPortal getPortal(String networkName, String portalName, boolean isBungee) {
+        Network network = Stargate.factory.getNetwork(networkName, isBungee);
+        if (network == null) {
             return null;
+        }
 
-        return net.getPortal(portalName);
+        return network.getPortal(portalName);
     }
 
     /**
-     * Checks a portal's network.
+     * Gets a network given one of the portals within the network
      *
-     * @param IPortal portal (The portal)
-     * @return The network within which the portal exists.
+     * @param portal <p>A portal within the target network</p>
+     * @return <p>The network the portal belongs to</p>
      */
     public Network getNetwork(IPortal portal) {
         return portal.getNetwork();
     }
 
     /**
-     * Checks a portal's network, from across the proxy.
+     * Gets a network across the proxy network
      *
-     * @param String  networkName
-     * @param boolean isBungee
-     * @return The network found / otherwise null
+     * @param networkName <p>The name of the network to get</p>
+     * @param isBungee    <p>Whether to search for a network across BungeeCord</p>
+     * @return <p>The network, or null if no such network was found</p>
      */
     public Network getNetwork(String networkName, boolean isBungee) {
         return Stargate.factory.getNetwork(networkName, isBungee);
     }
 
     /**
-     * Change the network a portal is situated within (intended for non-fixed
+     * Changes the network a portal belongs to
+     *
+     * <p>Change the network a portal is situated within (intended for non-fixed
      * gates). Note that, if targeting a fixed gate, its destination will also need
-     * to be changed.
+     * to be changed.</p>
      *
-     * @param IPortal portal
-     * @param Network targetNet
+     * @param portal        <p>The portal to change the network of</p>
+     * @param targetNetwork <p>The target network the portal should be moved to</p>
      */
-    public void changeNetwork(IPortal portal, Network targetNet) {
-        portal.setNetwork(targetNet);
+    public void changeNetwork(IPortal portal, Network targetNetwork) {
+        portal.setNetwork(targetNetwork);
     }
 
     /**
-     * TODO Currently not implemented
+     * Creates a new portal
      *
-     * @param config
-     * @param location
-     * @param openFacing
+     * @param gate       <p>The gate type to use for the new portal</p>
+     * @param location   <p>???</p>
+     * @param openFacing <p>???</p>
      */
-    public void createPortal(Gate config, Location location, Vector openFacing) {
-
+    public void createPortal(Gate gate, Location location, Vector openFacing) {
+        //TODO Currently not implemented
     }
 
     /**
-     * Force a connection between two portals. They do not have to be in the same
-     * network. Once entered, the portal's destination will be reset.
+     * Forces two portals to temporarily connect to each-other
      *
-     * @param IPortal     target (the portal that will have its destination
-     *                    changed).
-     * @param IPortal     destination (where that destination will be changed to).
-     * @param destination
+     * <p>Force a connection between two portals. They do not have to be in the same
+     * network. Once entered, the portal's destination will be reset.</p>
+     *
+     * @param target      <p>The portal to change the destination of</p>
+     * @param destination <p>The portal's new destination</p>
      */
     public void forceConnect(IPortal target, IPortal destination) {
         target.setOverrideDestination(destination);
-    }
-
-    public class InterFacePortal {
-        private IPortal portal;
     }
 
 }
