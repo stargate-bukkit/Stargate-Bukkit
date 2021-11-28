@@ -152,7 +152,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         Stargate.log(Level.FINEST, message);
         JsonObject json = (JsonObject) parser.parse(message);
 
-        String requestTypeString = json.get(StargateProtocolProperty.TYPE.toString()).getAsString();
+        String requestTypeString = json.get(StargateProtocolProperty.REQUEST_TYPE.toString()).getAsString();
         StargateProtocolRequestType requestType = StargateProtocolRequestType.valueOf(requestTypeString);
 
         String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();

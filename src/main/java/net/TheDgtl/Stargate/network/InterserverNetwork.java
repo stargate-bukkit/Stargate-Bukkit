@@ -85,7 +85,7 @@ public class InterserverNetwork extends Network {
                         msgData.writeUTF("ALL");
                         msgData.writeUTF(Channel.NETWORK_CHANGED.getChannel());
                         JsonObject data = new JsonObject();
-                        data.add(StargateProtocolProperty.TYPE.toString(), new JsonPrimitive(type.toString()));
+                        data.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(type.toString()));
                         data.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getName()));
                         data.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(portal.getName()));
                         data.add(StargateProtocolProperty.SERVER.toString(), new JsonPrimitive(Stargate.serverName));

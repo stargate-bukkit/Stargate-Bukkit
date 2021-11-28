@@ -30,7 +30,7 @@ public enum StargateProtocolProperty {
     /**
      * The protocol message type used for this request
      */
-    TYPE,
+    REQUEST_TYPE,
 
     /**
      * The enabled portal flags property of a request
