@@ -21,11 +21,11 @@ public enum DriverEnum {
     }
 
     private String driver;
-    
+
     private DriverEnum(String driver) {
         this.driver = driver;
     }
-    
+
     public String getDriver() {
         return driver;
     }

@@ -8,7 +8,6 @@ import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
-import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.InvalidStructure;
 import net.TheDgtl.Stargate.exception.NameError;
@@ -17,7 +16,6 @@ import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -92,7 +90,7 @@ public abstract class Portal implements IPortal {
         if (this.network.isPortalNameTaken(name)) {
             throw new NameError(TranslatableMessage.ALREADY_EXIST);
         }
-        
+
         this.colorDrawer = new PortalColorParser((Sign) getSignPos().getBlock().getState());
 
         if (gate.getFormat().isIronDoorBlockable) {
@@ -367,7 +365,7 @@ public abstract class Portal implements IPortal {
             teleportHere(target, this);
             return;
         }
-        
+
         desti.teleportHere(target, this);
         desti.close(false);
         close(false);
@@ -409,7 +407,7 @@ public abstract class Portal implements IPortal {
     public UUID getOwnerUUID() {
         return ownerUUID;
     }
-    
+
     public boolean isOwner(Player player) {
         return ownerUUID.equals(player.getUniqueId());
     }

@@ -68,11 +68,11 @@ public class NetworkedPortal extends Portal {
 
     @Override
     public void onButtonClick(PlayerInteractEvent event) {
-        if(!event.getPlayer().getUniqueId().equals(activator))
+        if (!event.getPlayer().getUniqueId().equals(activator))
             return;
         super.onButtonClick(event);
     }
-    
+
     private IPortal getDestination(int index) {
         return destinations.get(index);
     }

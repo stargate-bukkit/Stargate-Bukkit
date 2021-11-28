@@ -50,7 +50,7 @@ public class SQLQuerryMaker {
                 "SELECT * FROM " + getName(type));
         return output;
     }
-    
+
     public PreparedStatement compileCreateStatement(Connection conn, Type type) throws SQLException {
         String statementMsg = "CREATE TABLE IF NOT EXISTS " + getName(type) + " ("
                 + " network TEXT, name TEXT, desti TEXT, world TEXT,"

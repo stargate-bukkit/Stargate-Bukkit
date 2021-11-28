@@ -164,10 +164,10 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, PortalFlag.parseFlags(flags), ownerUUID);
 
         switch (requestType) {
-            case TYPE_PORTAL_ADD:
+            case PORTAL_ADD:
                 targetNetwork.addPortal(portal, false);
                 break;
-            case TYPE_PORTAL_REMOVE:
+            case PORTAL_REMOVE:
                 targetNetwork.removePortal(portal, false);
                 break;
         }

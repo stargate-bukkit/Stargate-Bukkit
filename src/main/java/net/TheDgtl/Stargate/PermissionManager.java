@@ -69,10 +69,10 @@ public class PermissionManager {
 
     public boolean hasPerm(StargateEvent event) {
         List<Permission> perms = event.getRelatedPerms();
-        
-        if(player instanceof Player)
-            Stargate.log(Level.FINEST, "checking perm for player " + ((Player)player).getName());
-        
+
+        if (player instanceof Player)
+            Stargate.log(Level.FINEST, "checking perm for player " + ((Player) player).getName());
+
         for (Permission perm : perms) {
             Stargate.log(Level.FINEST, " checking permission " + ((perm != null) ? perm.getName() : "null"));
             if (!player.hasPermission(perm)) {

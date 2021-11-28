@@ -10,11 +10,11 @@ public enum StargateProtocolRequestType {
     /**
      * Defines a portal adding request
      */
-    TYPE_PORTAL_ADD,
+    PORTAL_ADD,
 
     /**
      * Defines a portal removal request
      */
-    TYPE_PORTAL_REMOVE
+    PORTAL_REMOVE
 
 }

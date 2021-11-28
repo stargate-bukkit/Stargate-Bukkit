@@ -20,7 +20,6 @@ package net.TheDgtl.Stargate.event;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -116,12 +115,12 @@ public class StargatePortalEvent extends StargateEvent {
         List<Permission> permList = new ArrayList<>();
         if (target instanceof Player) {
             //TODO change this to meta instead
-            if(!portal.isOpenFor(target))
+            if (!portal.isOpenFor(target))
                 permList.add(Bukkit.getPluginManager().getPermission(identifier + ".follow"));
-            if(portal.hasFlag(PortalFlag.PRIVATE) && portal.getOwnerUUID().equals(target.getUniqueId()))
+            if (portal.hasFlag(PortalFlag.PRIVATE) && portal.getOwnerUUID().equals(target.getUniqueId()))
                 permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
         }
-        
+
         return permList;
     }
 }

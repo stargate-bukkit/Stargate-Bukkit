@@ -1,6 +1,5 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import net.TheDgtl.Stargate.Bypass;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
@@ -48,17 +47,17 @@ public class Teleporter {
         /*
          * To teleport the whole vessel, regardless of what entity triggered the initial event
          */
-        while(target.getVehicle() != null) {
+        while (target.getVehicle() != null) {
             target = target.getVehicle();
         }
-        
-        
+
+
         double width = target.getWidth();
         Vector offsett = destinationFace.getDirection();
-        offsett.multiply(Math.ceil((width+1)/2));
+        offsett.multiply(Math.ceil((width + 1) / 2));
         destination.subtract(offsett);
-        
-        betterTeleport(target,rotation);
+
+        betterTeleport(target, rotation);
     }
 
     /**
@@ -128,7 +127,7 @@ public class Teleporter {
     }
 
     private boolean charge(Player target) {
-        if(origin.hasFlag(PortalFlag.PERSONAL_NETWORK))
+        if (origin.hasFlag(PortalFlag.PERSONAL_NETWORK))
             return Stargate.economyManager.chargePlayer((Player) target, Bukkit.getOfflinePlayer(origin.getOwnerUUID()), cost);
         else
             return Stargate.economyManager.chargeAndTax((Player) target, cost);

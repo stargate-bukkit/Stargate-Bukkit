@@ -79,11 +79,11 @@ public class StargateFactory {
             String username = Setting.getString(Setting.BUNGEE_USERNAME);
             String password = Setting.getString(Setting.BUNGEE_PASSWORD);
             boolean useSSL = Setting.getBoolean(Setting.BUNGE_USESSL);
-            
+
             switch (driver) {
                 case MARIADB:
                 case MYSQL:
-                    return new MySqlDatabase(driver, address, port, bungeeDatabaseName, username, password, useSSL,stargate);
+                    return new MySqlDatabase(driver, address, port, bungeeDatabaseName, username, password, useSSL, stargate);
                 default:
                     throw new SQLException("Unsuported driver: Stargate currently suports MariaDb and MySql for remote databases");
             }
