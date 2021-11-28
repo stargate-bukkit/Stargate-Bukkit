@@ -53,7 +53,7 @@ public class LanguageManager {
      * @return <p>A translated and formatted message</p>
      */
     public String getMessage(TranslatableMessage key, boolean isError) {
-        String prefix = (isError ? ChatColor.RED : ChatColor.GREEN) + translatedStrings.get(TranslatableMessage.PREFIX);
+        String prefix = (isError ? ChatColor.RED : ChatColor.GREEN) + getString(TranslatableMessage.PREFIX);
         String message = getString(key).replaceAll("(&([a-f0-9]))", "\u00A7$2");
         return prefix + ChatColor.WHITE + message;
     }
@@ -122,7 +122,13 @@ public class LanguageManager {
     private EnumMap<TranslatableMessage, String> loadLanguageFile(String language) throws IOException {
         File languageFile = new File(languageFolder, language + ".txt");
         if (!languageFile.exists()) {
-            stargate.saveResource("lang/" + language + ".txt", false);
+            try {
+                stargate.saveResource("lang/" + language + ".txt", false);
+            } catch (IllegalArgumentException ignored) {
+                Stargate.log(Level.SEVERE, String.format("The selected language, \"%s\", is not supported, and no " +
+                        "custom language file exists. Falling back to English.", language));
+                return new EnumMap<>(TranslatableMessage.class);
+            }
         }
 
         BufferedReader bufferedReader = getBufferedReader(languageFile);
