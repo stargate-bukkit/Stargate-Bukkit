@@ -19,6 +19,9 @@
 package net.TheDgtl.Stargate.event;
 
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.PortalFlag;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
@@ -91,7 +94,11 @@ public class StargateCreateEvent extends StargateEvent {
     @Override
     public List<Permission> getRelatedPerms() {
         String identifier = "sg.create";
-        return super.defaultPermCompile(identifier, player.getUniqueId().toString());
+        List<Permission> permList = super.defaultPermCompile(identifier, player.getUniqueId().toString());
+        if(portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !player.getUniqueId().equals(portal.getOwnerUUID())) {
+            permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
+        }
+        return permList;
     }
 
 }

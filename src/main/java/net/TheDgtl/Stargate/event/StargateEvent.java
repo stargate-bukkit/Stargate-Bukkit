@@ -21,6 +21,7 @@ import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.permissions.Permission;
@@ -88,11 +89,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
 
     protected Permission compileNetworkPerm(String permIdentifier, String activator) {
         if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
-            if (portal.getNetwork().getName().equals(activator)) {
-                return pm.getPermission(permIdentifier + ".network.personal");
-            } else {
-
-            }
+            return pm.getPermission(permIdentifier + ".network.personal");
         }
 
         if (portal.getNetwork().getName().equals(Setting.getString(Setting.DEFAULT_NET)))
@@ -119,11 +116,11 @@ public abstract class StargateEvent extends Event implements Cancellable {
         return design;
     }
 
-    protected List<Permission> defaultPermCompile(String permIdentifier, String activator) {
+    protected List<Permission> defaultPermCompile(String permIdentifier, String activatorUUID) {
         List<Permission> permList = new ArrayList<>();
         permList.addAll(compileFlagPerms(permIdentifier));
         permList.add(compileWorldPerm(permIdentifier));
-        permList.add(compileNetworkPerm(permIdentifier, activator));
+        permList.add(compileNetworkPerm(permIdentifier, activatorUUID));
         permList.add(compileDesignPerm(permIdentifier));
         return permList;
     }

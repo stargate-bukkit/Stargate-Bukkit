@@ -117,7 +117,7 @@ public class StargatePortalEvent extends StargateEvent {
             //TODO change this to meta instead
             if (!portal.isOpenFor(target))
                 permList.add(Bukkit.getPluginManager().getPermission(identifier + ".follow"));
-            if (portal.hasFlag(PortalFlag.PRIVATE) && portal.getOwnerUUID().equals(target.getUniqueId()))
+            if (portal.hasFlag(PortalFlag.PRIVATE) && !portal.getOwnerUUID().equals(target.getUniqueId()))
                 permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
         }
 
