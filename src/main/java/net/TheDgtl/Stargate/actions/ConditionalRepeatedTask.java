@@ -1,29 +1,45 @@
 package net.TheDgtl.Stargate.actions;
 
+import java.util.function.Supplier;
+
 /**
  * Does a task every time it gets triggered. If the condition is met, remove from queue
  *
  * @author Thorin
  */
-public abstract class ConditionalRepeatedTask implements PopulatorAction {
-    /**
-     *
-     */
-    private final PopulatorAction action;
+public class ConditionalRepeatedTask implements ForcibleAction {
+
+    private final Supplier<Boolean> task;
+    private final Supplier<Boolean> condition;
     private boolean isFinished = false;
 
-    public ConditionalRepeatedTask(PopulatorAction action) {
-        this.action = action;
+    /**
+     * Instantiates a new conditional repeated task
+     *
+     * @param task      <p>The task to repeat</p>
+     * @param condition <p>The condition to keep running</p>
+     */
+    public ConditionalRepeatedTask(Supplier<Boolean> task, Supplier<Boolean> condition) {
+        this.task = task;
+        this.condition = condition;
     }
 
     @Override
     public void run(boolean forceEnd) {
-        if (isCondition() || forceEnd) {
+        if (forceEnd) {
             isFinished = true;
-            return;
+        } else {
+            run();
         }
+    }
 
-        action.run(forceEnd);
+    @Override
+    public void run() {
+        if (isConditionFalse()) {
+            isFinished = true;
+        } else {
+            task.get();
+        }
     }
 
     @Override
@@ -33,14 +49,16 @@ public abstract class ConditionalRepeatedTask implements PopulatorAction {
 
     @Override
     public String toString() {
-        return "[RepeatedCond](" + action.toString() + ")";
+        return "[RepeatedCond](" + task.toString() + ")";
     }
 
     /**
-     * If this returns true, then the repeated task will stop.
+     * Checks if the running condition is no longer true
      *
-     * @return
+     * @return <p>Whether the running condition is no longer true</p>
      */
-    public abstract boolean isCondition();
+    public boolean isConditionFalse() {
+        return !condition.get();
+    }
 
 }

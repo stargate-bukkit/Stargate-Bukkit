@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate;
 
-import net.TheDgtl.Stargate.actions.PopulatorAction;
+import net.TheDgtl.Stargate.actions.ForcibleAction;
+import net.TheDgtl.Stargate.actions.SimpleAction;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,10 +19,10 @@ import java.util.logging.Level;
  */
 public class SynchronousPopulator implements Runnable {
 
-    private final List<PopulatorAction> populatorQueue = new ArrayList<>();
-    private final List<PopulatorAction> bungeePopulatorQueue = new ArrayList<>();
-    private final List<PopulatorAction> addList = new ArrayList<>();
-    private final List<PopulatorAction> bungeeAddList = new ArrayList<>();
+    private final List<SimpleAction> populatorQueue = new ArrayList<>();
+    private final List<SimpleAction> bungeePopulatorQueue = new ArrayList<>();
+    private final List<SimpleAction> addList = new ArrayList<>();
+    private final List<SimpleAction> bungeeAddList = new ArrayList<>();
 
     @Override
     public void run() {
@@ -41,7 +42,7 @@ public class SynchronousPopulator implements Runnable {
      *
      * @param action <p>The action to add</p>
      */
-    public void addAction(PopulatorAction action) {
+    public void addAction(SimpleAction action) {
         addAction(action, false);
     }
 
@@ -51,7 +52,7 @@ public class SynchronousPopulator implements Runnable {
      * @param action   <p>The action to add</p>
      * @param isBungee <p>Whether the action is to be performed on a BungeeCord portal</p>
      */
-    public void addAction(PopulatorAction action, boolean isBungee) {
+    public void addAction(SimpleAction action, boolean isBungee) {
         if (action != null) {
             Stargate.log(Level.FINEST, "Adding action " + action);
         }
@@ -87,14 +88,19 @@ public class SynchronousPopulator implements Runnable {
      * @param queue       <p>The queue to cycle through</p>
      * @param forceAction <p>Whether to force the actions to run, regardless of anything that might prevent them</p>
      */
-    private void cycleQueue(List<PopulatorAction> queue, boolean forceAction) {
-        Iterator<PopulatorAction> iterator = queue.iterator();
+    private void cycleQueue(List<SimpleAction> queue, boolean forceAction) {
+        Iterator<SimpleAction> iterator = queue.iterator();
         long initialSystemTime = System.nanoTime();
 
         //Go through all populator actions until 25 milliseconds have passed, or the queue is empty
         while (iterator.hasNext() && (System.nanoTime() - initialSystemTime < 25000000)) {
-            PopulatorAction action = iterator.next();
-            action.run(forceAction);
+            SimpleAction action = iterator.next();
+            if (action instanceof ForcibleAction) {
+                ((ForcibleAction) action).run(forceAction);
+            } else {
+                action.run();
+            }
+
             if (action.isFinished()) {
                 iterator.remove();
             }

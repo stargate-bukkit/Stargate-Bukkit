@@ -5,7 +5,6 @@ import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
-import net.TheDgtl.Stargate.actions.PopulatorAction;
 import net.TheDgtl.Stargate.event.StargateActivateEvent;
 import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
 import net.TheDgtl.Stargate.exception.GateConflict;
@@ -23,6 +22,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public class NetworkedPortal extends Portal {
     /**
@@ -158,17 +158,9 @@ public class NetworkedPortal extends Portal {
         this.activator = actor.getUniqueId();
         long activateTiming = System.currentTimeMillis();
         this.activateTiming = activateTiming;
-        PopulatorAction action = new PopulatorAction() {
-
-            @Override
-            public void run(boolean forceEnd) {
-                deactivate(activateTiming);
-            }
-
-            @Override
-            public boolean isFinished() {
-                return true;
-            }
+        Supplier<Boolean> action = () -> {
+            deactivate(activateTiming);
+            return true;
         };
         Stargate.syncSecPopulator.addAction(new DelayedAction(ACTIVE_DELAY, action));
 

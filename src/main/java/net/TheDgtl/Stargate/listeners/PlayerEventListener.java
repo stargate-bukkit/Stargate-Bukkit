@@ -6,7 +6,8 @@ import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.actions.ConditionalRepeatedTask;
-import net.TheDgtl.Stargate.actions.PopulatorAction;
+import net.TheDgtl.Stargate.actions.SimpleAction;
+import net.TheDgtl.Stargate.actions.SupplierAction;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
@@ -24,6 +25,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.sql.SQLException;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 public class PlayerEventListener implements Listener {
@@ -104,52 +106,30 @@ public class PlayerEventListener implements Listener {
         /*
          * Action for loading bungee server id
          */
-        PopulatorAction action = new PopulatorAction() {
-            @Override
-            public boolean isFinished() {
-                return true;
-            }
-
-            @Override
-            public void run(boolean forceEnd) {
-                ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                out.writeUTF(Channel.GET_SERVER.getChannel());
-                Bukkit.getServer().sendPluginMessage(Stargate.getPlugin(Stargate.class), Channel.BUNGEE.getChannel(),
-                        out.toByteArray());
-            }
-        };
-
+        Supplier<Boolean> action = (() -> {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF(Channel.GET_SERVER.getChannel());
+            Bukkit.getServer().sendPluginMessage(Stargate.getPlugin(Stargate.class), Channel.BUNGEE.getChannel(),
+                    out.toByteArray());
+            return true;
+        });
 
         /*
          * Repeatedly try to load bungee server id until either the id is known, or no player is able to send bungee messages.
          */
-        Stargate.syncSecPopulator.addAction(new ConditionalRepeatedTask(action) {
-
-            @Override
-            public boolean isCondition() {
-                return (Stargate.knowsServerName) || (1 > Bukkit.getServer().getOnlinePlayers().size());
-            }
-        });
+        Stargate.syncSecPopulator.addAction(new ConditionalRepeatedTask(action,
+                () -> !((Stargate.knowsServerName) || (1 > Bukkit.getServer().getOnlinePlayers().size()))));
     }
 
     private void updateInterServerPortals() {
-        PopulatorAction action = new PopulatorAction() {
-
-            @Override
-            public void run(boolean forceEnd) {
-                try {
-                    Stargate.factory.startInterServerConnection();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        SimpleAction action = new SupplierAction(() -> {
+            try {
+                Stargate.factory.startInterServerConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-
-            @Override
-            public boolean isFinished() {
-                return true;
-            }
-
-        };
+            return true;
+        });
         Stargate.syncSecPopulator.addAction(action, true);
 
     }

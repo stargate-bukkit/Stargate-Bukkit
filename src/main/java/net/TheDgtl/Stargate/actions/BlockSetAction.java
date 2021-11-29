@@ -5,7 +5,7 @@ import org.bukkit.block.BlockState;
 /**
  * Represents the action of changing the state of a block
  */
-public class BlockSetAction implements PopulatorAction {
+public class BlockSetAction implements SimpleAction {
 
     private final BlockState state;
     private final boolean force;
@@ -23,8 +23,8 @@ public class BlockSetAction implements PopulatorAction {
     }
 
     @Override
-    public void run(boolean forceEnd) {
-        state.update(force || forceEnd);
+    public void run() {
+        state.update(force);
         isFinished = true;
     }
 

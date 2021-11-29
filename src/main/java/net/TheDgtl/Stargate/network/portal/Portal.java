@@ -6,7 +6,7 @@ import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
-import net.TheDgtl.Stargate.actions.PopulatorAction;
+import net.TheDgtl.Stargate.actions.SupplierAction;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.InvalidStructure;
@@ -34,6 +34,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 /**
@@ -188,18 +189,11 @@ public abstract class Portal implements IPortal {
 
 
         // Create action which will close this portal
-        PopulatorAction action = new PopulatorAction() {
-
-            @Override
-            public void run(boolean forceEnd) {
-                close(openTime);
-            }
-
-            @Override
-            public boolean isFinished() {
-                return true;
-            }
+        Supplier<Boolean> action = () -> {
+            close(openTime);
+            return true;
         };
+
         // Make the action on a delay
         Stargate.syncSecPopulator.addAction(new DelayedAction(delay, action));
     }
@@ -336,20 +330,12 @@ public abstract class Portal implements IPortal {
         int useCost = shouldCharge ? Setting.getInteger(Setting.USE_COST) : 0;
 
         Teleporter teleporter = new Teleporter(getExit(), origin, portalFacing, enterFacing, useCost);
-        PopulatorAction action = new PopulatorAction() {
 
-            @Override
-            public void run(boolean forceEnd) {
-                teleporter.teleport(target);
-            }
-
-            @Override
-            public boolean isFinished() {
-                return true;
-            }
-
+        Supplier<Boolean> action = () -> {
+            teleporter.teleport(target);
+            return true;
         };
-        Stargate.syncTickPopulator.addAction(action);
+        Stargate.syncTickPopulator.addAction(new SupplierAction(action));
 
     }
 
