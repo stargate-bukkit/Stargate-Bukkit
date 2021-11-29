@@ -86,7 +86,7 @@ public abstract class Portal implements IPortal {
         setGate(FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing()));
 
         if (name.trim().isEmpty() || (name.length() == Stargate.MAX_TEXT_LENGTH))
-            throw new NameError(TranslatableMessage.NAME_LENGTH_FAULT);
+            throw new NameError(TranslatableMessage.INVALID_NAME);
         if (this.network.isPortalNameTaken(name)) {
             throw new NameError(TranslatableMessage.ALREADY_EXIST);
         }
@@ -103,10 +103,6 @@ public abstract class Portal implements IPortal {
         }
         Stargate.log(Level.FINE, msg.toString());
 
-        for (GateStructureType key : getGate().getFormat().portalParts.keySet()) {
-            List<SGLocation> locations = getGate().getLocations(key);
-            network.registerLocations(key, generateLocationHashMap(locations));
-        }
         if (hasFlag(PortalFlag.ALWAYS_ON))
             this.open(null);
     }
@@ -134,7 +130,7 @@ public abstract class Portal implements IPortal {
         throw new NoFormatFound();
     }
 
-    private HashMap<SGLocation, IPortal> generateLocationHashMap(List<SGLocation> locations) {
+    public HashMap<SGLocation, IPortal> generateLocationHashMap(List<SGLocation> locations) {
         HashMap<SGLocation, IPortal> output = new HashMap<>();
         for (SGLocation loc : locations) {
             output.put(loc, this);

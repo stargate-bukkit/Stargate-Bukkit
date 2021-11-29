@@ -41,9 +41,6 @@ public class NetworkedPortal extends Portal {
     public NetworkedPortal(Network network, String name, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
             throws NoFormatFound, GateConflict, NameError {
         super(network, name, sign, flags, ownerUUID);
-
-
-        drawControlMechanism();
     }
 
     /**

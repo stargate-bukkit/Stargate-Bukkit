@@ -54,7 +54,6 @@ public class BungeePortal extends Portal {
         targetPortal = new LegacyVirtualPortal(serverDestination, destination, LEGACY_NETWORK, EnumSet.noneOf(PortalFlag.class), ownerUUID);
         this.serverDestination = serverDestination;
         cheatNet = new Network(serverDestination, null, null);
-        this.drawControlMechanism();
     }
 
     @Override

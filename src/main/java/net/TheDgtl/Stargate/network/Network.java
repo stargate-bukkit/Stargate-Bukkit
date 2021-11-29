@@ -36,7 +36,7 @@ public class Network {
 
     public Network(String name, Database database, SQLQueryGenerator sqlMaker) throws NameError {
         if (name.trim().isEmpty() || (name.length() == Stargate.MAX_TEXT_LENGTH))
-            throw new NameError(TranslatableMessage.NAME_LENGTH_FAULT);
+            throw new NameError(TranslatableMessage.INVALID_NAME);
         this.name = name;
         this.database = database;
         this.sqlMaker = sqlMaker;
@@ -104,11 +104,17 @@ public class Network {
     }
 
     protected void savePortal(IPortal portal) {
-        boolean isInterServer;
         savePortal(database, portal, PortalType.LOCAL);
     }
 
     public void addPortal(IPortal portal, boolean saveToDatabase) {
+        if(portal instanceof Portal) {
+            Portal physicalPortal = (Portal) portal;
+            for (GateStructureType key : physicalPortal.getGate().getFormat().portalParts.keySet()) {
+                List<SGLocation> locations = physicalPortal.getGate().getLocations(key);
+                this.registerLocations(key, physicalPortal.generateLocationHashMap(locations));
+            }
+        }
         if (saveToDatabase) {
             savePortal(portal);
         }
