@@ -90,7 +90,7 @@ public class StargateFactory {
         } else {
             String databaseName = Setting.getString(Setting.DATABASE_NAME);
             File file = new File(stargate.getDataFolder().getAbsoluteFile(), databaseName + ".db");
-            return new SQLiteDatabase(file, stargate);
+            return new SQLiteDatabase(file);
         }
     }
 

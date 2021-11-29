@@ -5,7 +5,6 @@
  */
 package net.TheDgtl.Stargate.database;
 
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.TheDgtl.Stargate.Stargate;
@@ -17,7 +16,6 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 
 import static org.bukkit.Bukkit.getPluginManager;
-
 
 /**
  * Represents a MySQL database
@@ -39,9 +37,9 @@ public class MySqlDatabase implements Database {
      * @param port     <p>The port of the MySQL server</p>
      * @param database <p>The database to store Stargate tables in</p>
      * @param plugin   <p>An instance of the Stargate plugin</p>
-     * @throws SQLException <p>If unable to setup a database connection</p>
      */
-    public MySqlDatabase(DriverEnum driver, String address, int port, String database, String userName, String password, boolean useSSL, JavaPlugin plugin) throws SQLException {
+    public MySqlDatabase(DriverEnum driver, String address, int port, String database, String userName, String password,
+                         boolean useSSL, JavaPlugin plugin) {
         this.plugin = plugin;
 
         switch (driver) {
@@ -78,9 +76,8 @@ public class MySqlDatabase implements Database {
      *
      * @param config <p>The Hikari config to use</p>
      * @return <p>A Hikari data source</p>
-     * @throws SQLException <p>If unable to establish the Hikari data source</p>
      */
-    private HikariDataSource setupMySql(HikariConfig config) throws SQLException {
+    private HikariDataSource setupMySql(HikariConfig config) {
         return new HikariDataSource(config);
     }
 
