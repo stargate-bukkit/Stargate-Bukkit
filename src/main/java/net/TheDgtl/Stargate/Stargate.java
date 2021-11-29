@@ -108,10 +108,9 @@ public class Stargate extends JavaPlugin {
 
         loadConfig();
         
-        if(Setting.getBoolean(Setting.USING_BUNGEE) && Setting.getBoolean(Setting.USING_REMOTE_DATABASE)) {
+        if(Setting.getBoolean(Setting.USING_REMOTE_DATABASE)) {
             loadBungeeServerName();
         }
-
         economyManager = new EconomyManager();
         lowestMsgLevel = Level.parse(Setting.getString(Setting.DEBUG_LEVEL));
         languageManager = new LanguageManager(this, DATA_FOLDER + "/" + LANGUAGE_FOLDER, Setting.getString(Setting.LANGUAGE));
@@ -132,18 +131,23 @@ public class Stargate extends JavaPlugin {
     }
 
     private void loadBungeeServerName() {
-        File file = new File("Don't_delite_me","serverUUID.txt");
-        if(!file.exists()) {
+        Stargate.log(Level.FINEST, DATA_FOLDER);
+        File path = new File(String.format("%s/Don't_delite_me", this.getDataFolder().getAbsolutePath()));
+        if (!path.exists()) {
+            path.mkdir();
+        }
+        File file = new File(path, "serverUUID.txt");
+        if (!file.exists()) {
             try {
                 file.createNewFile();
                 BufferedWriter writer = FileHelper.getBufferedWriter(file);
                 writer.write(UUID.randomUUID().toString());
                 writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
             }
         }
-        
         try {
             BufferedReader reader = FileHelper.getBufferedReader(file);
             Stargate.serverUUID = UUID.fromString(reader.readLine());
