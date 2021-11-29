@@ -5,7 +5,7 @@ import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
-import net.TheDgtl.Stargate.actions.PopulatorAction;
+import net.TheDgtl.Stargate.actions.SupplierAction;
 import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,6 +16,7 @@ import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.util.Vector;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 public class Teleporter {
@@ -72,19 +73,12 @@ public class Teleporter {
             Stargate.log(Level.FINEST, "Ejected all passengers");
             for (Entity passenger : passengers) {
 
-                PopulatorAction action = new PopulatorAction() {
-
-                    @Override
-                    public void run(boolean forceEnd) {
-                        betterTeleport(passenger, rotation);
-                        target.addPassenger(passenger);
-                    }
-
-                    @Override
-                    public boolean isFinished() {
-                        return true;
-                    }
+                Supplier<Boolean> action = () -> {
+                    betterTeleport(passenger, rotation);
+                    target.addPassenger(passenger);
+                    return true;
                 };
+
                 if (passenger instanceof Player) {
                     /*
                      * Delay action by one tick to avoid client issues
@@ -92,7 +86,7 @@ public class Teleporter {
                     Stargate.syncTickPopulator.addAction(new DelayedAction(1, action));
                     continue;
                 }
-                Stargate.syncTickPopulator.addAction(action);
+                Stargate.syncTickPopulator.addAction(new SupplierAction(action));
             }
         }
 

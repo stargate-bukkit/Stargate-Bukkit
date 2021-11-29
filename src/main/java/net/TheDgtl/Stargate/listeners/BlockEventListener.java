@@ -5,7 +5,7 @@ import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.actions.PopulatorAction;
+import net.TheDgtl.Stargate.actions.SupplierAction;
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateDestroyEvent;
 import net.TheDgtl.Stargate.exception.GateConflict;
@@ -34,6 +34,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
 import java.util.EnumSet;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 public class BlockEventListener implements Listener {
@@ -58,24 +59,15 @@ public class BlockEventListener implements Listener {
                     return;
                 }
 
-                PopulatorAction action = new PopulatorAction() {
+                Supplier<Boolean> action = () -> {
+                    String msg = Stargate.languageManager.getMessage(TranslatableMessage.DESTROY, false);
+                    event.getPlayer().sendMessage(msg);
 
-                    @Override
-                    public void run(boolean forceEnd) {
-                        String msg = Stargate.languageManager.getMessage(TranslatableMessage.DESTROY, false);
-                        event.getPlayer().sendMessage(msg);
-
-                        portal.destroy();
-                        Stargate.log(Level.FINEST, "Broke the portal");
-                    }
-
-                    @Override
-                    public boolean isFinished() {
-                        return true;
-                    }
-
+                    portal.destroy();
+                    Stargate.log(Level.FINEST, "Broke the portal");
+                    return true;
                 };
-                Stargate.syncTickPopulator.addAction(action);
+                Stargate.syncTickPopulator.addAction(new SupplierAction(action));
                 return;
             }
             event.setCancelled(true);
