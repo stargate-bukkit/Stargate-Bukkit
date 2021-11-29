@@ -33,7 +33,7 @@ public class Network {
     protected SQLQueryGenerator sqlMaker;
 
 
-    final static EnumMap<GateStructureType, HashMap<SGLocation, IPortal>> portalFromPartsMap = new EnumMap<>(GateStructureType.class);
+    final static EnumMap<GateStructureType, HashMap<SGLocation, Portal>> portalFromPartsMap = new EnumMap<>(GateStructureType.class);
 
     public Network(String name, Database database, SQLQueryGenerator sqlMaker) throws NameError {
         if (name.trim().isEmpty() || (name.length() == Stargate.MAX_TEXT_LENGTH))
@@ -56,7 +56,7 @@ public class Network {
         return portalList.get(name);
     }
 
-    public void registerLocations(GateStructureType type, HashMap<SGLocation, IPortal> locationsMap) {
+    public void registerLocations(GateStructureType type, HashMap<SGLocation, Portal> locationsMap) {
         if (!portalFromPartsMap.containsKey(type)) {
             portalFromPartsMap.put(type, new HashMap<>());
         }
@@ -64,7 +64,7 @@ public class Network {
     }
 
     public void unRegisterLocation(GateStructureType type, SGLocation loc) {
-        HashMap<SGLocation, IPortal> map = portalFromPartsMap.get(type);
+        HashMap<SGLocation, Portal> map = portalFromPartsMap.get(type);
         if (map != null) {
             Stargate.log(Level.FINEST, "Unregistering portal " + map.get(loc).getName() + " with structType " + type
                     + " at location " + loc.toString());
@@ -152,11 +152,11 @@ public class Network {
         return tempPortalList;
     }
 
-    static public IPortal getPortal(Location loc, GateStructureType key) {
+    static public Portal getPortal(Location loc, GateStructureType key) {
         return getPortal(new SGLocation(loc), key);
     }
 
-    public static IPortal getPortal(Location loc, GateStructureType[] keys) {
+    public static Portal getPortal(Location loc, GateStructureType[] keys) {
 
         return getPortal(new SGLocation(loc), keys);
     }
@@ -168,7 +168,7 @@ public class Network {
      * @param key
      * @return
      */
-    static public IPortal getPortal(SGLocation loc, GateStructureType key) {
+    static public Portal getPortal(SGLocation loc, GateStructureType key) {
         if (!(portalFromPartsMap.containsKey(key))) {
             return null;
         }
@@ -182,9 +182,9 @@ public class Network {
      * @param keys
      * @return
      */
-    static public IPortal getPortal(SGLocation loc, GateStructureType[] keys) {
+    static public Portal getPortal(SGLocation loc, GateStructureType[] keys) {
         for (GateStructureType key : keys) {
-            IPortal portal = getPortal(loc, key);
+            Portal portal = getPortal(loc, key);
             if (portal != null)
                 return portal;
         }
