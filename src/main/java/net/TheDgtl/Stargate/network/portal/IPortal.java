@@ -30,12 +30,6 @@ public interface IPortal {
 
     void close(boolean force);
 
-    public void onSignClick(Action action, Player player);
-
-    void onButtonClick(PlayerInteractEvent event);
-
-    void onIrisEntrance(Entity player);
-
     void open(Player player);
 
     String getName();

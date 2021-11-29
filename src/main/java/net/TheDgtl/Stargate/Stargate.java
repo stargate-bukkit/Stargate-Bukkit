@@ -27,6 +27,8 @@ import net.TheDgtl.Stargate.listeners.WorldEventListener;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.util.FileHelper;
+
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -35,9 +37,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -58,10 +68,11 @@ public class Stargate extends JavaPlugin {
 
     private Level lowestMsgLevel = Level.FINEST;//setting before config loads
 
-    final String DATA_FOLDER = this.getDataFolder().getPath().replaceAll("\\\\", "/");
+    final String DATA_FOLDER = this.getDataFolder().getAbsolutePath().replaceAll("\\\\", "/");
     final String GATE_FOLDER = "gates";
     final String LANGUAGE_FOLDER = "lang";
     final String PORTAL_FOLDER = "portals";
+    final String INTERNAL_FOLDER = ".internal";
 
     private PluginManager pm;
 
@@ -90,6 +101,8 @@ public class Stargate extends JavaPlugin {
     public static String serverName;
     public static boolean knowsServerName = false;
 
+    private static UUID serverUUID;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -98,8 +111,10 @@ public class Stargate extends JavaPlugin {
         new Metrics(this, pluginId);
 
         loadConfig();
-
-
+        
+        if(Setting.getBoolean(Setting.USING_REMOTE_DATABASE)) {
+            loadBungeeServerName();
+        }
         economyManager = new EconomyManager();
         lowestMsgLevel = Level.parse(Setting.getString(Setting.DEBUG_LEVEL));
         languageManager = new LanguageManager(this, DATA_FOLDER + "/" + LANGUAGE_FOLDER, Setting.getString(Setting.LANGUAGE));
@@ -117,6 +132,38 @@ public class Stargate extends JavaPlugin {
         BukkitScheduler scheduler = getServer().getScheduler();
         scheduler.scheduleSyncRepeatingTask(this, syncTickPopulator, 0L, 1L);
         scheduler.scheduleSyncRepeatingTask(this, syncSecPopulator, 0L, 20L);
+    }
+
+    private void loadBungeeServerName() {
+        Stargate.log(Level.FINEST, DATA_FOLDER);
+        File path = new File(String.format("%s/%s", this.getDataFolder().getAbsolutePath(),INTERNAL_FOLDER));
+        if (!path.exists()) {
+            path.mkdir();
+            try {
+                Files.setAttribute(path.toPath(), "dos:hidden", true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        File file = new File(path, "serverUUID.txt");
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+                BufferedWriter writer = FileHelper.getBufferedWriter(file);
+                writer.write(UUID.randomUUID().toString());
+                writer.close();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+        }
+        try {
+            BufferedReader reader = FileHelper.getBufferedReader(file);
+            Stargate.serverUUID = UUID.fromString(reader.readLine());
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void registerListeners() {

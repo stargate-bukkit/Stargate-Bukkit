@@ -83,7 +83,6 @@ public class MySqlDatabase implements Database {
      * @throws SQLException <p>If unable to establish the Hikari data source</p>
      */
     private HikariDataSource setupMySql(HikariConfig config) throws SQLException {
-        DriverManager.registerDriver(new com.mysql.jdbc.Driver());
         return new HikariDataSource(config);
     }
 
@@ -107,11 +106,6 @@ public class MySqlDatabase implements Database {
         config.setUsername(username);
         config.setPassword(password);
         config.addDataSourceProperty("useSSL", useSSL);
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(MySqlDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
         return config;
     }
 

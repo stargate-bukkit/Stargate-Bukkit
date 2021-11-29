@@ -130,8 +130,8 @@ public abstract class Portal implements IPortal {
         throw new NoFormatFound();
     }
 
-    public HashMap<SGLocation, IPortal> generateLocationHashMap(List<SGLocation> locations) {
-        HashMap<SGLocation, IPortal> output = new HashMap<>();
+    public HashMap<SGLocation, Portal> generateLocationHashMap(List<SGLocation> locations) {
+        HashMap<SGLocation, Portal> output = new HashMap<>();
         for (SGLocation loc : locations) {
             output.put(loc, this);
         }
@@ -257,7 +257,6 @@ public abstract class Portal implements IPortal {
         return destination;
     }
 
-    @Override
     public void onButtonClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (this.hasFlag(PortalFlag.IRON_DOOR) && event.useInteractedBlock() == Result.DENY) {
@@ -286,7 +285,6 @@ public abstract class Portal implements IPortal {
         destination.open(player);
     }
 
-    @Override
     public void onIrisEntrance(Entity target) {
         Stargate.log(Level.FINEST, "Trying to teleport entity, initial velocity: " + target.getVelocity());
         doTeleport(target);
