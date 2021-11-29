@@ -2,6 +2,8 @@ package net.TheDgtl.Stargate;
 
 import org.bukkit.ChatColor;
 
+import net.TheDgtl.Stargate.util.FileHelper;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -131,7 +133,7 @@ public class LanguageManager {
             }
         }
 
-        BufferedReader bufferedReader = getBufferedReader(languageFile);
+        BufferedReader bufferedReader = FileHelper.getBufferedReader(languageFile);
         EnumMap<TranslatableMessage, String> output = readLanguageReader(bufferedReader);
         try {
             bufferedReader.close();
@@ -173,20 +175,6 @@ public class LanguageManager {
 
         return output;
     }
-
-    /**
-     * Gets a buffered reader for reading the given language file
-     *
-     * @param languageFile <p>The language file to read</p>
-     * @return <p>A buffered reader for reading the language file</p>
-     * @throws FileNotFoundException <p></p>
-     */
-    private BufferedReader getBufferedReader(File languageFile) throws FileNotFoundException {
-        InputStream inputStream = new FileInputStream(languageFile);
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        return new BufferedReader(inputStreamReader);
-    }
-
 
     /**
      * Removes a UTF-8 byte order mark from a text string as it may mess up parsing

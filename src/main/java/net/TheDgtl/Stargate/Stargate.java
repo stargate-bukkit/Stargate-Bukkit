@@ -27,6 +27,8 @@ import net.TheDgtl.Stargate.listeners.WorldEventListener;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.util.FileHelper;
+
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -35,9 +37,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -90,6 +97,8 @@ public class Stargate extends JavaPlugin {
     public static String serverName;
     public static boolean knowsServerName = false;
 
+    private static UUID serverUUID;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -98,7 +107,10 @@ public class Stargate extends JavaPlugin {
         new Metrics(this, pluginId);
 
         loadConfig();
-
+        
+        if(Setting.getBoolean(Setting.USING_BUNGEE) && Setting.getBoolean(Setting.USING_REMOTE_DATABASE)) {
+            loadBungeeServerName();
+        }
 
         economyManager = new EconomyManager();
         lowestMsgLevel = Level.parse(Setting.getString(Setting.DEBUG_LEVEL));
@@ -117,6 +129,28 @@ public class Stargate extends JavaPlugin {
         BukkitScheduler scheduler = getServer().getScheduler();
         scheduler.scheduleSyncRepeatingTask(this, syncTickPopulator, 0L, 1L);
         scheduler.scheduleSyncRepeatingTask(this, syncSecPopulator, 0L, 20L);
+    }
+
+    private void loadBungeeServerName() {
+        File file = new File("Don't_delite_me","serverUUID.txt");
+        if(!file.exists()) {
+            try {
+                file.createNewFile();
+                BufferedWriter writer = FileHelper.getBufferedWriter(file);
+                writer.write(UUID.randomUUID().toString());
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        try {
+            BufferedReader reader = FileHelper.getBufferedReader(file);
+            Stargate.serverUUID = UUID.fromString(reader.readLine());
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void registerListeners() {
