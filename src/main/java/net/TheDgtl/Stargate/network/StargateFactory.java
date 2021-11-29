@@ -72,7 +72,7 @@ public class StargateFactory {
             if (Setting.getBoolean(Setting.SHOW_HIKARI_CONFIG))
                 return new MySqlDatabase(stargate);
 
-            DriverEnum driver = DriverEnum.parse(Setting.getString(Setting.BUNGEE_DRIVER));
+            DriverEnum driver = DriverEnum.valueOf(Setting.getString(Setting.BUNGEE_DRIVER).toUpperCase());
             String bungeeDatabaseName = Setting.getString(Setting.BUNGEE_DATABASE);
             int port = Setting.getInteger(Setting.BUNGEE_PORT);
             String address = Setting.getString(Setting.BUNGEE_ADDRESS);
