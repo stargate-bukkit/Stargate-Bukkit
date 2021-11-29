@@ -112,13 +112,13 @@ public class BlockEventListener implements Listener {
         EnumSet<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
         PermissionManager permissionManager = new PermissionManager(player);
         TranslatableMessage errorMessage = null;
-        
-        
+
+
         flags = permissionManager.returnAllowedFlags(flags);
         String finalNetworkName;
         Network selectedNet = null;
         try {
-            finalNetworkName = compileNetworkName(network,flags,player,permissionManager);
+            finalNetworkName = compileNetworkName(network, flags, player, permissionManager);
             selectedNet = selectNetwork(finalNetworkName, flags);
         } catch (NameError e2) {
             errorMessage = e2.getErrorMessage();
@@ -133,13 +133,13 @@ public class BlockEventListener implements Listener {
 
             boolean hasPerm = permissionManager.hasPerm(sEvent);
             Stargate.log(Level.CONFIG, " player has perm = " + hasPerm);
-            
-            
+
+
             if (errorMessage != null) {
-                player.sendMessage(Stargate.languageManager.getMessage(errorMessage,true));
+                player.sendMessage(Stargate.languageManager.getMessage(errorMessage, true));
                 return;
             }
-            
+
             if (sEvent.isCancelled() || !hasPerm) {
                 Stargate.log(Level.CONFIG, " Event was cancelled due to perm or external cancellation");
                 player.sendMessage(Stargate.languageManager.getMessage(permissionManager.getDenyMsg(), true));
@@ -163,29 +163,30 @@ public class BlockEventListener implements Listener {
             player.sendMessage(Stargate.languageManager.getMessage(e.getErrorMessage(), true));
         }
     }
-    
+
     /**
      * Goes through some scenarios where the initial network name would need to be changed, and returns the modified network name
+     *
      * @param initialNetworkName
-     * @param flags all the flags of the portal, this code has some side effects and might add some more flags
-     * @param player 
+     * @param flags              all the flags of the portal, this code has some side effects and might add some more flags
+     * @param player
      * @param permissionManager
      * @return
-     * @throws NameError 
+     * @throws NameError
      */
-    private String compileNetworkName(String initialNetworkName, EnumSet<PortalFlag> flags, Player player,PermissionManager permissionManager) throws NameError {
+    private String compileNetworkName(String initialNetworkName, EnumSet<PortalFlag> flags, Player player, PermissionManager permissionManager) throws NameError {
         if (initialNetworkName.endsWith("]") && initialNetworkName.startsWith("[")) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
             return initialNetworkName.substring(1, initialNetworkName.length() - 1);
         }
-        
-        if(initialNetworkName.endsWith("}") && initialNetworkName.startsWith("{")) {
+
+        if (initialNetworkName.endsWith("}") && initialNetworkName.startsWith("{")) {
             String possiblePlayername = initialNetworkName.substring(1, initialNetworkName.length() - 1);
-                    
-            if( possiblePlayername != null) {
+
+            if (possiblePlayername != null) {
                 flags.add(PortalFlag.PERSONAL_NETWORK);
                 Player possiblePlayer = Bukkit.getPlayer(possiblePlayername);
-                if(possiblePlayer != null)
+                if (possiblePlayer != null)
                     return possiblePlayer.getUniqueId().toString();
             }
             throw new NameError(TranslatableMessage.INVALID_NAME);
@@ -201,14 +202,14 @@ public class BlockEventListener implements Listener {
             }
             return defaultNet;
         }
-        
+
         @SuppressWarnings("deprecation")
         OfflinePlayer possiblePersonalNetworkTarget = Bukkit.getOfflinePlayer(initialNetworkName);
-        if ( (possiblePersonalNetworkTarget != null) || flags.contains(PortalFlag.PRIVATE)) {
+        if ((possiblePersonalNetworkTarget != null) || flags.contains(PortalFlag.PRIVATE)) {
             flags.add(PortalFlag.PERSONAL_NETWORK);
             return possiblePersonalNetworkTarget.getUniqueId().toString();
         }
-        
+
         if (flags.contains(PortalFlag.BUNGEE)) {
             return "§§§§§§#BUNGEE#§§§§§§";
         }

@@ -8,6 +8,7 @@ import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.NameSurround;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.SGLocation;
 import org.bukkit.Location;
@@ -108,7 +109,7 @@ public class Network {
     }
 
     public void addPortal(IPortal portal, boolean saveToDatabase) {
-        if(portal instanceof Portal) {
+        if (portal instanceof Portal) {
             Portal physicalPortal = (Portal) portal;
             for (GateStructureType key : physicalPortal.getGate().getFormat().portalParts.keySet()) {
                 List<SGLocation> locations = physicalPortal.getGate().getLocations(key);
