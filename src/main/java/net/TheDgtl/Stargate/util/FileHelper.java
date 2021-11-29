@@ -29,7 +29,7 @@ public class FileHelper {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
         return new BufferedReader(inputStreamReader);
     }
-    
+
     static public BufferedWriter getBufferedWriter(File languageFile) throws FileNotFoundException {
         FileOutputStream outputStream = new FileOutputStream(languageFile);
         OutputStreamWriter outputStreamReader = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);

@@ -28,7 +28,6 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.util.FileHelper;
-
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -40,11 +39,8 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
@@ -111,8 +107,8 @@ public class Stargate extends JavaPlugin {
         new Metrics(this, pluginId);
 
         loadConfig();
-        
-        if(Setting.getBoolean(Setting.USING_REMOTE_DATABASE)) {
+
+        if (Setting.getBoolean(Setting.USING_REMOTE_DATABASE)) {
             loadBungeeServerName();
         }
         economyManager = new EconomyManager();
@@ -136,7 +132,7 @@ public class Stargate extends JavaPlugin {
 
     private void loadBungeeServerName() {
         Stargate.log(Level.FINEST, DATA_FOLDER);
-        File path = new File(String.format("%s/%s", this.getDataFolder().getAbsolutePath(),INTERNAL_FOLDER));
+        File path = new File(String.format("%s/%s", this.getDataFolder().getAbsolutePath(), INTERNAL_FOLDER));
         if (!path.exists()) {
             path.mkdir();
             try {
