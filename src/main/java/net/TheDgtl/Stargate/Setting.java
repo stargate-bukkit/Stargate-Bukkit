@@ -33,7 +33,7 @@ public enum Setting {
     BUNGEE_USERNAME("bungee.remoteDatabaseSettings.username"), BUNGEE_PASSWORD("bungee.remoteDatabaseSettings.password"),
     BUNGEE_USE_SSL("bungee.remoteDatabaseSettings.useSSL"), BUNGEE_INSTANCE_NAME("bungee.instanceName");
 
-    private String key;
+    private final String key;
     static private final HashMap<String, Setting> map = new HashMap<>();
 
     static {

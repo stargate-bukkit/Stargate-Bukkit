@@ -34,33 +34,33 @@ public class StargateFactory {
     private final HashMap<String, Network> networkList = new HashMap<>();
     private final HashMap<String, InterServerNetwork> bungeeNetList = new HashMap<>();
 
-    String sharedTableName = "interServer";
-    String bungeeDataBaseName = "bungee";
-    String tableName = "local";
+    final String sharedTableName = "interServer";
+    final String bungeeDataBaseName = "bungee";
+    final String tableName = "local";
 
     private final Database database;
 
-    private SQLQueryMaker sqlMaker;
-    private boolean useInterServerNetworks;
+    private final SQLQueryGenerator sqlMaker;
+    private final boolean useInterServerNetworks;
 
     public StargateFactory(Stargate stargate) throws SQLException {
         database = loadDatabase(stargate);
         useInterServerNetworks = (Setting.getBoolean(Setting.USING_REMOTE_DATABASE) && Setting.getBoolean(Setting.USING_BUNGEE));
 
         if (useInterServerNetworks) {
-            this.sqlMaker = new SQLQueryMaker(tableName, bungeeDataBaseName, sharedTableName);
+            this.sqlMaker = new SQLQueryGenerator(tableName, bungeeDataBaseName, sharedTableName);
         } else
-            this.sqlMaker = new SQLQueryMaker(tableName);
+            this.sqlMaker = new SQLQueryGenerator(tableName);
         createTables();
 
 
         Stargate.log(Level.FINER, "Loading portals from base database");
-        loadAllPortals(database, SQLQueryMaker.Type.LOCAL);
+        loadAllPortals(database, PortalType.LOCAL);
         if (useInterServerNetworks) {
             Stargate.log(Level.FINER, "Loading portals from local bungee database");
-            loadAllPortals(database, SQLQueryMaker.Type.BUNGEE);
+            loadAllPortals(database, PortalType.BUNGEE);
             Stargate.log(Level.FINER, "Loading portals from inter-server bungee database");
-            loadAllPortals(database, SQLQueryMaker.Type.INTER_SERVER, true);
+            loadAllPortals(database, PortalType.INTER_SERVER, true);
         }
 
         refreshPortals(networkList);
@@ -108,7 +108,7 @@ public class StargateFactory {
 
     private void createTables() throws SQLException {
         Connection conn1 = database.getConnection();
-        PreparedStatement localPortalsStatement = sqlMaker.compileCreateStatement(conn1, SQLQueryMaker.Type.LOCAL);
+        PreparedStatement localPortalsStatement = sqlMaker.generateCreateTableStatement(conn1, PortalType.LOCAL);
         runStatement(database, localPortalsStatement);
         conn1.close();
 
@@ -116,23 +116,23 @@ public class StargateFactory {
             return;
         }
         Connection conn2 = database.getConnection();
-        PreparedStatement localInterServerPortalsStatement = sqlMaker.compileCreateStatement(conn2, SQLQueryMaker.Type.BUNGEE);
+        PreparedStatement localInterServerPortalsStatement = sqlMaker.generateCreateTableStatement(conn2, PortalType.BUNGEE);
         runStatement(database, localInterServerPortalsStatement);
         conn2.close();
 
         Connection conn3 = database.getConnection();
-        PreparedStatement interServerPortalsStatement = sqlMaker.compileCreateStatement(conn3, SQLQueryMaker.Type.INTER_SERVER);
+        PreparedStatement interServerPortalsStatement = sqlMaker.generateCreateTableStatement(conn3, PortalType.INTER_SERVER);
         runStatement(database, interServerPortalsStatement);
         conn3.close();
     }
 
-    private void loadAllPortals(Database database, SQLQueryMaker.Type tableType) throws SQLException {
-        loadAllPortals(database, tableType, false);
+    private void loadAllPortals(Database database, PortalType tablePortalType) throws SQLException {
+        loadAllPortals(database, tablePortalType, false);
     }
 
-    private void loadAllPortals(Database database, SQLQueryMaker.Type tableType, boolean areVirtual) throws SQLException {
+    private void loadAllPortals(Database database, PortalType tablePortalType, boolean areVirtual) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement statement = sqlMaker.selectAll(connection, tableType);
+        PreparedStatement statement = sqlMaker.generateGetAllPortalsStatement(connection, tablePortalType);
 
         ResultSet set = statement.executeQuery();
         while (set.next()) {
@@ -203,7 +203,7 @@ public class StargateFactory {
 
     private void setInterServerPortalOnlineStatus(IPortal portal, boolean isOnline) throws SQLException {
         Connection conn = database.getConnection();
-        PreparedStatement statement = sqlMaker.changePortalOnlineStatus(conn, portal, isOnline, SQLQueryMaker.Type.INTER_SERVER);
+        PreparedStatement statement = sqlMaker.generateSetPortalOnlineStatusStatement(conn, portal, isOnline, PortalType.INTER_SERVER);
         statement.execute();
         statement.close();
         conn.close();
@@ -215,7 +215,7 @@ public class StargateFactory {
             for (IPortal portal : net.getAllPortals()) {
                 if (portal instanceof VirtualPortal)
                     continue;
-                PreparedStatement statement = sqlMaker.compileRefreshPortalStatement(conn, portal, SQLQueryMaker.Type.INTER_SERVER);
+                PreparedStatement statement = sqlMaker.generateSetServerStatement(conn, portal, PortalType.INTER_SERVER);
                 statement.execute();
                 statement.close();
             }
@@ -271,7 +271,7 @@ public class StargateFactory {
         }
     }
 
-    HashMap<String, BungeePortal> bungeeList = new HashMap<>();
+    final HashMap<String, BungeePortal> bungeeList = new HashMap<>();
 
     public BungeePortal getBungeeGate(String name) {
         return bungeeList.get(name);

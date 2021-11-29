@@ -69,13 +69,13 @@ public interface IPortal {
         if (Setting.getBoolean(Setting.USING_BUNGEE)) {
             data.put("server", Stargate.serverName);
         }
-        String endMsg = type + "{";
+        StringBuilder endMsg = new StringBuilder(type + "{");
         Iterator<String> it = data.keySet().iterator();
         while (it.hasNext()) {
             String key = it.next();
-            endMsg = endMsg + key + "=" + data.get(key);
+            endMsg.append(key).append("=").append(data.get(key));
             if (it.hasNext())
-                endMsg = endMsg + ",";
+                endMsg.append(",");
         }
         return endMsg + "}";
     }

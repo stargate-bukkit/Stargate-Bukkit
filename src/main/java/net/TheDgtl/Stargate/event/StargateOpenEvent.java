@@ -31,7 +31,7 @@ import java.util.Objects;
 public class StargateOpenEvent extends StargateEvent {
     private final Player player;
     private boolean isForced;
-    private IPortal destination;
+    private final IPortal destination;
 
     private static final HandlerList handlers = new HandlerList();
 

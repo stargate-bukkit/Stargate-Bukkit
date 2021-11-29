@@ -86,7 +86,7 @@ public class Stargate extends JavaPlugin {
     /*
      * Used in bungee / waterfall
      */
-    private HashMap<String, IPortal> bungeeQueue = new HashMap<>();
+    private final HashMap<String, IPortal> bungeeQueue = new HashMap<>();
     public static String serverName;
     public static boolean knowsServerName = false;
 

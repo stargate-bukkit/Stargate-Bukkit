@@ -52,9 +52,9 @@ public class Gate {
      */
     public BlockVector signPos;
     public BlockVector buttonPos;
-    public BlockFace facing;
+    public final BlockFace facing;
     private boolean isOpen = false;
-    private Portal portal;
+    private final Portal portal;
 
 
     static final private Material DEFAULT_BUTTON = Material.STONE_BUTTON;
@@ -147,7 +147,7 @@ public class Gate {
         Location signLoc = getLocation(signPos);
         BlockState signState = signLoc.getBlock().getState();
         if (!(signState instanceof Sign)) {
-            Stargate.log(Level.FINE, "Could not find sign at position " + signLoc.toString());
+            Stargate.log(Level.FINE, "Could not find sign at position " + signLoc);
             return;
         }
 
@@ -234,20 +234,15 @@ public class Gate {
         for (SGLocation loc : locations) {
             Block blk = loc.getLocation().getBlock();
             blk.setBlockData(blockData);
-            switch (mat) {
-                case END_GATEWAY:
-                    // force a location to prevent exit gateway generation
-                    EndGateway gateway = (EndGateway) blk.getState();
-                    // https://github.com/stargate-bukkit/Stargate-Bukkit/issues/36
-                    gateway.setAge(-9223372036854775808L);
-                    if (blk.getWorld().getEnvironment() == World.Environment.THE_END) {
-                        gateway.setExitLocation(blk.getWorld().getSpawnLocation());
-                        gateway.setExactTeleport(true);
-                    }
-                    gateway.update(false, false);
-                    break;
-                default:
-                    break;
+            if (mat == Material.END_GATEWAY) {// force a location to prevent exit gateway generation
+                EndGateway gateway = (EndGateway) blk.getState();
+                // https://github.com/stargate-bukkit/Stargate-Bukkit/issues/36
+                gateway.setAge(-9223372036854775808L);
+                if (blk.getWorld().getEnvironment() == World.Environment.THE_END) {
+                    gateway.setExitLocation(blk.getWorld().getSpawnLocation());
+                    gateway.setExactTeleport(true);
+                }
+                gateway.update(false, false);
             }
         }
     }

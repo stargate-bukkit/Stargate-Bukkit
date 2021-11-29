@@ -20,9 +20,9 @@ public enum DriverEnum {
         return valueOf(setting.toUpperCase());
     }
 
-    private String driver;
+    private final String driver;
 
-    private DriverEnum(String driver) {
+    DriverEnum(String driver) {
         this.driver = driver;
     }
 

@@ -10,12 +10,12 @@ import java.util.logging.Level;
 
 public class PortalColorParser {
 
-    private Sign sign;
-    private boolean isLightSign;
-    private ChatColor defaultLightColor;
-    private ChatColor defaultDarkColor;
-    static private ChatColor GRAY_SELECTOR_COLOR = ChatColor.of("#808080");
-    static private ChatColor ERROR_COLOR = ChatColor.RED;
+    private final Sign sign;
+    private final boolean isLightSign;
+    private final ChatColor defaultLightColor;
+    private final ChatColor defaultDarkColor;
+    static private final ChatColor GRAY_SELECTOR_COLOR = ChatColor.of("#808080");
+    static private final ChatColor ERROR_COLOR = ChatColor.RED;
 
     @SuppressWarnings("deprecation")
     public PortalColorParser(Sign sign) {

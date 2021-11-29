@@ -14,7 +14,7 @@ import java.util.Set;
  */
 public class GateFrame extends GateStructure {
 
-    Map<BlockVector, Set<Material>> parts;
+    final Map<BlockVector, Set<Material>> parts;
 
     /**
      * Instantiates a new gate frame

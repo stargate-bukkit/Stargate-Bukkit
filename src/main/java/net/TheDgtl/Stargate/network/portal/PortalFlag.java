@@ -21,7 +21,7 @@ public enum PortalFlag {
         }
     }
 
-    private PortalFlag(char label) {
+    PortalFlag(char label) {
         this.label = label;
     }
 

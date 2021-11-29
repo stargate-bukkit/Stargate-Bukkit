@@ -55,10 +55,10 @@ public abstract class Portal implements IPortal {
      * minute or something) maybe follow an external script that gives when the
      * states should change
      */
-    int delay = 20; // seconds
+    final int delay = 20; // seconds
     private Gate gate;
-    private EnumSet<PortalFlag> flags;
-    String name;
+    private final EnumSet<PortalFlag> flags;
+    final String name;
     UUID openFor;
     IPortal destination = null;
     private long openTime = -1;
@@ -97,11 +97,11 @@ public abstract class Portal implements IPortal {
             flags.add(PortalFlag.IRON_DOOR);
         }
 
-        String msg = "Selected with flags ";
+        StringBuilder msg = new StringBuilder("Selected with flags ");
         for (PortalFlag flag : flags) {
-            msg = msg + flag.label;
+            msg.append(flag.label);
         }
-        Stargate.log(Level.FINE, msg);
+        Stargate.log(Level.FINE, msg.toString());
 
         for (GateStructureType key : getGate().getFormat().portalParts.keySet()) {
             List<SGLocation> locations = getGate().getLocations(key);
@@ -336,7 +336,7 @@ public abstract class Portal implements IPortal {
         }
 
         boolean shouldCharge = !(this.hasFlag(PortalFlag.FREE) || origin.hasFlag(PortalFlag.FREE)) && target instanceof Player
-                && !((Player) target).hasPermission(Bypass.COST_USE.getPermissionString());
+                && !target.hasPermission(Bypass.COST_USE.getPermissionString());
         int useCost = shouldCharge ? Setting.getInteger(Setting.USE_COST) : 0;
 
         Teleporter teleporter = new Teleporter(getExit(), origin, portalFacing, enterFacing, useCost);
@@ -392,11 +392,11 @@ public abstract class Portal implements IPortal {
     }
 
     public String getAllFlagsString() {
-        String out = "";
+        StringBuilder out = new StringBuilder();
         for (PortalFlag flag : flags) {
-            out = out + flag.label;
+            out.append(flag.label);
         }
-        return out;
+        return out.toString();
     }
 
     public String getDesignName() {

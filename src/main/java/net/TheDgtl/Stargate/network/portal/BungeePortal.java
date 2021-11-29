@@ -35,9 +35,9 @@ public class BungeePortal extends Portal {
      * CHEATS! we love cheats. This one helps to save the legacy bungee gate into sql table so that the
      * target server is stored as a replacement to network.
      */
-    private Network cheatNet;
-    private LegacyVirtualPortal targetPortal;
-    private String serverDestination;
+    private final Network cheatNet;
+    private final LegacyVirtualPortal targetPortal;
+    private final String serverDestination;
 
     BungeePortal(Network network, String name, String destination, String serverDestination, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
             throws NameError, NoFormatFound, GateConflict {
@@ -121,7 +121,6 @@ public class BungeePortal extends Portal {
             } catch (IOException ex) {
                 Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord connect packet");
                 ex.printStackTrace();
-                return;
             }
 
         }

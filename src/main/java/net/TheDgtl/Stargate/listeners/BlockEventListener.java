@@ -113,7 +113,7 @@ public class BlockEventListener implements Listener {
         PermissionManager permissionManager = new PermissionManager(player);
 
         flags = permissionManager.returnAllowedFlags(flags);
-        String finalNetworkName = compileNetworkName(network,flags,player,permissionManager);
+        String finalNetworkName = compileNetworkName(network, flags, player, permissionManager);
         Network selectedNet;
         try {
             selectedNet = selectNetwork(finalNetworkName, flags);
@@ -155,25 +155,26 @@ public class BlockEventListener implements Listener {
             player.sendMessage(Stargate.languageManager.getMessage(e.getErrorMessage(), true));
         }
     }
-    
+
     /**
      * Goes through some scenarios where the initial network name would need to be changed, and returns the modified network name
+     *
      * @param initialNetworkName
-     * @param flags all the flags of the portal, this code has some side effects and might add some more flags
-     * @param player 
+     * @param flags              all the flags of the portal, this code has some side effects and might add some more flags
+     * @param player
      * @param permissionManager
      * @return
      */
-    private String compileNetworkName(String initialNetworkName, EnumSet<PortalFlag> flags, Player player,PermissionManager permissionManager) {
+    private String compileNetworkName(String initialNetworkName, EnumSet<PortalFlag> flags, Player player, PermissionManager permissionManager) {
         if (initialNetworkName.endsWith("]") && initialNetworkName.startsWith("[")) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
             return initialNetworkName.substring(1, initialNetworkName.length() - 1);
         }
-        
-        if(initialNetworkName.endsWith("}") && initialNetworkName.startsWith("{")) {
+
+        if (initialNetworkName.endsWith("}") && initialNetworkName.startsWith("{")) {
             String possiblePlayername = initialNetworkName.substring(1, initialNetworkName.length() - 1);
-                    
-            if( possiblePlayername != null) {
+
+            if (possiblePlayername != null) {
                 flags.add(PortalFlag.PERSONAL_NETWORK);
                 return Bukkit.getPlayer(possiblePlayername).getUniqueId().toString();
             } else {
@@ -191,14 +192,14 @@ public class BlockEventListener implements Listener {
             }
             return defaultNet;
         }
-        
+
         @SuppressWarnings("deprecation")
         OfflinePlayer possiblePersonalNetworkTarget = Bukkit.getOfflinePlayer(initialNetworkName);
-        if ( (possiblePersonalNetworkTarget != null) || flags.contains(PortalFlag.PRIVATE)) {
+        if ((possiblePersonalNetworkTarget != null) || flags.contains(PortalFlag.PRIVATE)) {
             flags.add(PortalFlag.PERSONAL_NETWORK);
             return possiblePersonalNetworkTarget.getUniqueId().toString();
         }
-        
+
         if (flags.contains(PortalFlag.BUNGEE)) {
             return "§§§§§§#BUNGEE#§§§§§§";
         }
@@ -209,7 +210,7 @@ public class BlockEventListener implements Listener {
         try {
             if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
                 name = Bukkit.getPlayer(name).getUniqueId().toString();
-                if(name == null) {
+                if (name == null) {
                     throw new NameError(TranslatableMessage.INVALID);
                 }
             }

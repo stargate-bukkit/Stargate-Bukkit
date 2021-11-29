@@ -27,10 +27,10 @@ import static org.bukkit.Bukkit.getPluginManager;
  */
 public class MySqlDatabase implements Database {
 
-    private HikariDataSource hikariSource;
+    private final HikariDataSource hikariSource;
 
     private HikariConfig config;
-    private JavaPlugin plugin;
+    private final JavaPlugin plugin;
 
     /**
      * Caches and checks the status of a certain database

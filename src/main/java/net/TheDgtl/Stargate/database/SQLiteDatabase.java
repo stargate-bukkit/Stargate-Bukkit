@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 public class SQLiteDatabase implements Database {
     private String url;
     private Connection previousConnection;
-    File dbFile;
+    final File dbFile;
 
     public SQLiteDatabase(File dbFile, Stargate stargate) throws SQLException {
         this.dbFile = dbFile;

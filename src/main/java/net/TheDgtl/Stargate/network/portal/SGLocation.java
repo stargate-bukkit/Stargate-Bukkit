@@ -7,8 +7,10 @@ public class SGLocation {
     /**
      * A class used to avoid memory leak from world unloading
      */
-    int x, y, z;
-    String world;
+    final int x;
+    final int y;
+    final int z;
+    final String world;
 
     public SGLocation(Location loc) {
         x = loc.getBlockX();

@@ -36,7 +36,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
     // old name = StargateEvent
     protected final IPortal portal;
     protected boolean cancelled;
-    private PluginManager pm;
+    private final PluginManager pm;
 
 
     public StargateEvent(@NotNull IPortal portal) {
@@ -115,8 +115,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
     }
 
     protected List<Permission> defaultPermCompile(String permIdentifier, String activatorUUID) {
-        List<Permission> permList = new ArrayList<>();
-        permList.addAll(compileFlagPerms(permIdentifier));
+        List<Permission> permList = new ArrayList<>(compileFlagPerms(permIdentifier));
         permList.add(compileWorldPerm(permIdentifier));
         permList.add(compileNetworkPerm(permIdentifier, activatorUUID));
         permList.add(compileDesignPerm(permIdentifier));

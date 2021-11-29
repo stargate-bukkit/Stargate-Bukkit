@@ -5,7 +5,6 @@ import com.google.gson.JsonPrimitive;
 import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateProtocolProperty;
-import net.TheDgtl.Stargate.network.InterServerNetwork;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -29,11 +28,11 @@ import java.util.logging.Level;
  */
 public class VirtualPortal implements IPortal {
 
-    protected String server;
-    private String name;
+    protected final String server;
+    private final String name;
     private Network network;
-    private EnumSet<PortalFlag> flags;
-    private UUID ownerUUID;
+    private final EnumSet<PortalFlag> flags;
+    private final UUID ownerUUID;
 
     public VirtualPortal(String server, String name, Network net, EnumSet<PortalFlag> flags, UUID ownerUUID) {
         this.server = server;
@@ -85,7 +84,6 @@ public class VirtualPortal implements IPortal {
         } catch (IOException ex) {
             Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord connect packet");
             ex.printStackTrace();
-            return;
         }
 
     }
@@ -104,7 +102,7 @@ public class VirtualPortal implements IPortal {
 
     @Override
     public void setNetwork(Network targetNet) {
-        this.network = (InterServerNetwork) targetNet;
+        this.network = targetNet;
     }
 
     /**
@@ -187,7 +185,7 @@ public class VirtualPortal implements IPortal {
 
     @Override
     public UUID getOwnerUUID() {
-        return this.getOwnerUUID();
+        return null;
     }
 
 }

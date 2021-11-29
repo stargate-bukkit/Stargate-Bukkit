@@ -15,7 +15,7 @@ public class GateIris extends GateStructure {
     public final Set<Material> irisOpen;
     public final Set<Material> irisClosed;
     BlockVector exit;
-    protected List<BlockVector> blocks;
+    protected final List<BlockVector> blocks;
 
     /**
      * Instantiates a new gate iris

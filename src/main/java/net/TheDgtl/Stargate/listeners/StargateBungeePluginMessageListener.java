@@ -48,7 +48,7 @@ import java.util.logging.Level;
  */
 public class StargateBungeePluginMessageListener implements PluginMessageListener {
 
-    Stargate stargate;
+    final Stargate stargate;
 
     /**
      * Instantiates a new stargate bungee plugin message listener

@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class GateControlBlock extends GateStructure {
 
-    List<BlockVector> parts;
+    final List<BlockVector> parts;
 
     /**
      * Instantiates a new gate control block container

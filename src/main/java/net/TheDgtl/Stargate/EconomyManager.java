@@ -13,7 +13,7 @@ public class EconomyManager {
 
 
     private Economy econ;
-    private boolean hasVault;
+    private final boolean hasVault;
 
     public EconomyManager() {
         if (!Setting.getBoolean(Setting.USE_ECONOMY)) {

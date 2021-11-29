@@ -35,8 +35,8 @@ public class NetworkedPortal extends Portal {
     private long activateTiming;
     private UUID activator;
 
-    private List<IPortal> destinations = new ArrayList<>();
-    private static int ACTIVE_DELAY = 15; // seconds
+    private final List<IPortal> destinations = new ArrayList<>();
+    private static final int ACTIVE_DELAY = 15; // seconds
 
     public NetworkedPortal(Network network, String name, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
             throws NoFormatFound, GateConflict, NameError {

@@ -26,11 +26,11 @@ import java.util.logging.Level;
 public class InterServerNetwork extends Network {
     private Database interServerDatabase;
 
-    public InterServerNetwork(String netName, Database database, SQLQueryMaker sqlMaker) throws NameError {
+    public InterServerNetwork(String netName, Database database, SQLQueryGenerator sqlMaker) throws NameError {
         super(netName, database, sqlMaker);
     }
 
-    public InterServerNetwork(String netName, Database database, SQLQueryMaker sqlMaker, List<IPortal> portals) throws NameError {
+    public InterServerNetwork(String netName, Database database, SQLQueryGenerator sqlMaker, List<IPortal> portals) throws NameError {
         super(netName, database, sqlMaker);
         for (IPortal portal : portals)
             addPortal(portal, false);
@@ -38,7 +38,7 @@ public class InterServerNetwork extends Network {
 
     @Override
     public void removePortal(IPortal portal, boolean saveToDatabase) {
-        super.removePortal(portal, saveToDatabase, SQLQueryMaker.Type.BUNGEE);
+        super.removePortal(portal, saveToDatabase, PortalType.BUNGEE);
         if (!saveToDatabase)
             return;
         try {
@@ -53,7 +53,7 @@ public class InterServerNetwork extends Network {
 
             @Override
             public void run(boolean forceEnd) {
-                savePortal(interServerDatabase, portal, SQLQueryMaker.Type.INTER_SERVER);
+                savePortal(interServerDatabase, portal, PortalType.INTER_SERVER);
             }
 
             @Override
@@ -96,7 +96,6 @@ public class InterServerNetwork extends Network {
                     } catch (IOException ex) {
                         Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord connect packet");
                         ex.printStackTrace();
-                        return;
                     }
                 }
             }
@@ -111,7 +110,7 @@ public class InterServerNetwork extends Network {
 
     public void unregisterFromInterServer(IPortal portal) throws SQLException {
         Connection conn = interServerDatabase.getConnection();
-        PreparedStatement statement = sqlMaker.compileRemoveStatement(conn, portal, SQLQueryMaker.Type.INTER_SERVER);
+        PreparedStatement statement = sqlMaker.generateRemovePortalStatement(conn, portal, PortalType.INTER_SERVER);
         statement.execute();
         statement.close();
         conn.close();
@@ -131,7 +130,7 @@ public class InterServerNetwork extends Network {
          * Also save it to the inter-server database, so that it can be
          * seen on other servers
          */
-        super.savePortal(database, portal, SQLQueryMaker.Type.BUNGEE);
+        super.savePortal(database, portal, PortalType.BUNGEE);
         registerToInterServer(portal);
     }
 }

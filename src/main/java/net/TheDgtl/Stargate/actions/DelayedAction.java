@@ -5,7 +5,7 @@ public class DelayedAction implements PopulatorAction {
      *
      */
     int delay;
-    PopulatorAction action;
+    final PopulatorAction action;
 
     /**
      * Will run a task after {@link DelayedAction#run(boolean)} has been triggered a specific amount of time

@@ -24,10 +24,10 @@ import java.util.logging.Level;
 
 // TODO See Discussion Three
 public class PermissionManager {
-    private Entity player;
+    private final Entity player;
     private TranslatableMessage denyMsg;
     private Chat metadataProvider;
-    private boolean canProcessMetaData;
+    private final boolean canProcessMetaData;
 
     private final static String FLAG_PERMISSION = "sg.create.type.";
     private final static String CREATE_PERMISSION = "sg.create.network";
@@ -71,7 +71,7 @@ public class PermissionManager {
         List<Permission> perms = event.getRelatedPerms();
 
         if (player instanceof Player)
-            Stargate.log(Level.FINEST, "checking perm for player " + ((Player) player).getName());
+            Stargate.log(Level.FINEST, "checking perm for player " + player.getName());
 
         for (Permission perm : perms) {
             Stargate.log(Level.FINEST, " checking permission " + ((perm != null) ? perm.getName() : "null"));

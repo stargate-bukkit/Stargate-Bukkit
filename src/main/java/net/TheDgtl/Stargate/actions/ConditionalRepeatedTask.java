@@ -9,7 +9,7 @@ public abstract class ConditionalRepeatedTask implements PopulatorAction {
     /**
      *
      */
-    private PopulatorAction action;
+    private final PopulatorAction action;
     private boolean isFinished = false;
 
     public ConditionalRepeatedTask(PopulatorAction action) {

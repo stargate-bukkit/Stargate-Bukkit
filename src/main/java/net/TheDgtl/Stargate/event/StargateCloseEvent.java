@@ -57,8 +57,7 @@ public class StargateCloseEvent extends StargateEvent {
 
     @Override
     public List<Permission> getRelatedPerms() {
-        List<Permission> perms = new ArrayList<>();
-        return perms;
+        return new ArrayList<>();
     }
 
 

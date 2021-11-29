@@ -26,10 +26,10 @@ import java.util.logging.Level;
 
 public class GateFormat {
     public static Map<Material, List<GateFormat>> controlMaterialFormatsMap;
-    public EnumMap<GateStructureType, GateStructure> portalParts;
+    public final EnumMap<GateStructureType, GateStructure> portalParts;
 
     public final String name;
-    public boolean isIronDoorBlockable;
+    public final boolean isIronDoorBlockable;
 
     public GateFormat(GateIris iris, GateFrame frame, GateControlBlock controlBlocks, Map<String, String> config,
                       String name, boolean isIronDoorBlockable) {

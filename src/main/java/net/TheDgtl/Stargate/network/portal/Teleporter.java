@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class Teleporter {
-    private Location destination;
-    private Portal origin;
-    private int cost;
-    private double rotation;
-    private BlockFace destinationFace;
+    private final Location destination;
+    private final Portal origin;
+    private final int cost;
+    private final double rotation;
+    private final BlockFace destinationFace;
 
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
@@ -64,7 +64,7 @@ public class Teleporter {
      * The {@link Entity#teleport(Entity)} method does not handle passengers / vehicles well. This method fixes that
      *
      * @param target
-     * @param loc
+     * @param rotation
      */
     private void betterTeleport(Entity target, double rotation) {
         List<Entity> passengers = target.getPassengers();
@@ -128,9 +128,9 @@ public class Teleporter {
 
     private boolean charge(Player target) {
         if (origin.hasFlag(PortalFlag.PERSONAL_NETWORK))
-            return Stargate.economyManager.chargePlayer((Player) target, Bukkit.getOfflinePlayer(origin.getOwnerUUID()), cost);
+            return Stargate.economyManager.chargePlayer(target, Bukkit.getOfflinePlayer(origin.getOwnerUUID()), cost);
         else
-            return Stargate.economyManager.chargeAndTax((Player) target, cost);
+            return Stargate.economyManager.chargeAndTax(target, cost);
     }
 
     private double calculateAngleChange(BlockFace originFacing, BlockFace destinationFacing) {

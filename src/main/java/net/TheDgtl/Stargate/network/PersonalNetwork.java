@@ -8,9 +8,9 @@ import org.bukkit.Bukkit;
 import java.util.UUID;
 
 public class PersonalNetwork extends Network {
-    private String playerName;
+    private final String playerName;
 
-    public PersonalNetwork(UUID id, Database database, SQLQueryMaker sqlMaker) throws NameError {
+    public PersonalNetwork(UUID id, Database database, SQLQueryGenerator sqlMaker) throws NameError {
         super(id.toString(), database, sqlMaker);
         playerName = Bukkit.getOfflinePlayer(id).getName();
     }
