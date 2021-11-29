@@ -42,7 +42,7 @@ public class BlockEventListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
 
         Location loc = event.getBlock().getLocation();
-        IPortal portal = Network.getPortal(loc, GateStructureType.FRAME);
+        Portal portal = Network.getPortal(loc, GateStructureType.FRAME);
         if (portal != null) {
             int cost = Setting.getInteger(Setting.DESTROY_COST);
             StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, event.getPlayer(), cost);

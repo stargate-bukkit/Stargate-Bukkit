@@ -9,8 +9,6 @@ import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.ByteArrayOutputStream;
@@ -134,17 +132,6 @@ public class VirtualPortal implements IPortal {
         return flags.contains(flag);
     }
 
-    /*
-     * WASTE METHODS WHICH WILL NEVER BE TRIGGERED IN ANY CIRCUMSTANCE
-     */
-    @Override
-    public void onSignClick(Action action, Player actor) {
-    }
-
-    @Override
-    public void drawControlMechanism() {
-    }
-
     @Override
     public void doTeleport(Entity player) {
     }
@@ -160,10 +147,6 @@ public class VirtualPortal implements IPortal {
     }
 
     @Override
-    public void onButtonClick(PlayerInteractEvent event) {
-    }
-
-    @Override
     public String getAllFlagsString() {
         return "";
     }
@@ -174,18 +157,17 @@ public class VirtualPortal implements IPortal {
     }
 
     @Override
-    public void onIrisEntrance(Entity player) {
-    }
-
-    @Override
     public String getDesignName() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public UUID getOwnerUUID() {
         return null;
+    }
+
+    @Override
+    public void drawControlMechanism() {
     }
 
 }

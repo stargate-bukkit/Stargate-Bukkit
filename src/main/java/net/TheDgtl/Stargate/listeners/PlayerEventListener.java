@@ -11,6 +11,7 @@ import net.TheDgtl.Stargate.actions.SupplierAction;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -41,7 +42,7 @@ public class PlayerEventListener implements Listener {
             return;
 
         // TODO material optimisation?
-        IPortal portal = Network.getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
+        Portal portal = Network.getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
         if (portal == null) {
             return;
         }
