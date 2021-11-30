@@ -1,5 +1,7 @@
 package net.TheDgtl.Stargate;
 
+import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.util.TranslatableMessageFormater;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
@@ -10,7 +12,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public class EconomyManager {
-
 
     private Economy econ;
     private final boolean hasVault;
@@ -48,6 +49,11 @@ public class EconomyManager {
             return true;
 
         EconomyResponse response = econ.withdrawPlayer(player, amount);
+        if(player.getPlayer() != null) {
+            String unformatedMessage = Stargate.languageManager.getMessage(TranslatableMessage.ECO_DEDUCT, false);
+            String message = TranslatableMessageFormater.compileCost(unformatedMessage, amount);
+            player.getPlayer().sendMessage(message);
+        }
         return response.transactionSuccess();
     }
 
@@ -79,15 +85,26 @@ public class EconomyManager {
         return chargePlayer(player, amount);
     }
 
-    public boolean chargePlayer(OfflinePlayer player, OfflinePlayer transactionTarget, int amount) {
-        if (Setting.getBoolean(Setting.GATE_OWNER_REVENUE))
-            return chargeAndDepositPlayer(player, transactionTarget, amount);
+    public boolean chargePlayer(OfflinePlayer player, IPortal origin, int amount) {
+        if (Setting.getBoolean(Setting.GATE_OWNER_REVENUE)) {
+            if(chargeAndDepositPlayer(player, Bukkit.getServer().getOfflinePlayer(origin.getOwnerUUID()), amount)) {
+                if(player.getPlayer() != null) {
+                    String uncompiledMessage = Stargate.languageManager.getMessage(TranslatableMessage.ECO_OBTAIN, hasVault);
+                    String portalNameCompiledMessage = TranslatableMessageFormater.compilePortal(uncompiledMessage, origin.getName());
+                    String message = TranslatableMessageFormater.compileCost(portalNameCompiledMessage, amount);
+                    player.getPlayer().sendMessage(message);
+                }
+                return true;
+            }
+            return false;
+        }
         return chargeAndTax(player, amount);
     }
 
     private boolean chargeAndDepositPlayer(OfflinePlayer player, OfflinePlayer transactionTarget, int amount) {
         if (chargePlayer(player, amount)) {
-            return depositPlayer(transactionTarget, amount);
+             depositPlayer(transactionTarget, amount);
+             return true;
         }
         return false;
     }

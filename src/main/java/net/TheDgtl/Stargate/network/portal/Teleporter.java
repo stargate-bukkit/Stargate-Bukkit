@@ -92,6 +92,8 @@ public class Teleporter {
 
         if (!hasPerm(target)) {
             target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.DENY, true));
+            //For non math guys: teleport entity to the exit of the portal it entered. Also turn the entity around 180 degrees
+            teleport(target,origin.getExit(),Math.PI);
             origin.teleportHere(target, origin);
             return;
         }
@@ -118,11 +120,12 @@ public class Teleporter {
         target.teleport(exit);
         Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(Setting.getDouble(Setting.GATE_EXIT_SPEED_MULTIPLIER));
         target.setVelocity(targetVelocity);
+        target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT, false));
     }
 
     private boolean charge(Player target) {
         if (origin.hasFlag(PortalFlag.PERSONAL_NETWORK))
-            return Stargate.economyManager.chargePlayer(target, Bukkit.getOfflinePlayer(origin.getOwnerUUID()), cost);
+            return Stargate.economyManager.chargePlayer(target, origin, cost);
         else
             return Stargate.economyManager.chargeAndTax(target, cost);
     }

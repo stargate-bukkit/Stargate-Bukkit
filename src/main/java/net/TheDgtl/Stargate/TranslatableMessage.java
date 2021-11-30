@@ -42,6 +42,17 @@ public enum TranslatableMessage {
      * The message to be displayed if a player is missing the sufficient funds to perform an action
      */
     LACKING_FUNDS("ecoInFunds"),
+    
+    
+    /**
+     * The message to be displayed when a player successfully is charged money
+     */
+    ECO_DEDUCT("ecoDeduct"),
+    
+    /**
+     * The message to be displayed when a player receives money from a owned portal
+     */
+    ECO_OBTAIN("ecoObtain"),
 
     /**
      * The message to be displayed when a stargate has been successfully created
