@@ -1,10 +1,13 @@
 package net.TheDgtl.Stargate.database;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MySQLDatabaseTest {
 
     private static DriverEnum driver;
@@ -15,7 +18,7 @@ public class MySQLDatabaseTest {
     private static String password;
     private static boolean useSSL;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         driver = DriverEnum.MARIADB;
         address = "LOCALHOST";
@@ -30,6 +33,7 @@ public class MySQLDatabaseTest {
     @Order(1)
     public void loadDatabase() {
         Database database = new MySqlDatabase(driver, address, port, databaseName, username, password, useSSL);
-        Assert.assertNotNull(database);
+        Assertions.assertNotNull(database);
     }
+    
 }

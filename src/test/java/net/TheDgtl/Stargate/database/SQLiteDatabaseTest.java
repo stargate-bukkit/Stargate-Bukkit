@@ -60,7 +60,7 @@ public class SQLiteDatabaseTest {
         MockBukkit.unmock();
         System.out.println("Tearing down test data");
     }
-    
+
     @Test
     @Order(1)
     void addTableTest() throws SQLException {
@@ -80,7 +80,7 @@ public class SQLiteDatabaseTest {
 
         ResultSet set = statement.executeQuery();
         ResultSetMetaData metaData = set.getMetaData();
-        
+
         int rows = 0;
         while (set.next()) {
             rows++;
