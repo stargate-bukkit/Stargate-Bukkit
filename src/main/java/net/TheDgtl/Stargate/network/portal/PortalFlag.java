@@ -24,7 +24,7 @@ public enum PortalFlag {
     PortalFlag(char label) {
         this.label = label;
     }
-    
+
     public Character getLabel() {
         return this.label;
     }

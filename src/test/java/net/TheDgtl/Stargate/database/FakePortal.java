@@ -91,7 +91,7 @@ public class FakePortal implements IPortal {
 
     @Override
     public String getAllFlagsString() {
-        return null;
+        return "ABQF";
     }
 
     @Override

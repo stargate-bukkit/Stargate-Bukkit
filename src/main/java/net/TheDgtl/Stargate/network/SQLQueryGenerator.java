@@ -22,6 +22,7 @@ public class SQLQueryGenerator {
     private String interServerTableName;
     private final StargateLogger logger;
     private final String flagTable = "SG_Hub_Flag";
+    private final String flagRelationTable = "SG_Hub_PortalFlagRelation";
 
     /**
      * Instantiates a new SQL query generator
@@ -101,7 +102,7 @@ public class SQLQueryGenerator {
 
     /**
      * Gets a prepared statement for creating the flag table
-     * 
+     *
      * @param connection <p>The database connection to use</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
@@ -109,6 +110,22 @@ public class SQLQueryGenerator {
     public PreparedStatement generateCreateFlagTableStatement(Connection connection) throws SQLException {
         String statementMessage = String.format("CREATE TABLE %s (id INTEGER AUTO_INCREMENT, character CHAR(1) UNIQUE NOT NULL, " +
                 "PRIMARY KEY (id));", flagTable);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
+     * Gets a prepared statement for adding a flag to a portal
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateCreateFlagRelationTableStatement(Connection connection) throws SQLException {
+        String statementMessage = String.format("CREATE TABLE %s (name NVARCHAR(180), " +
+                        "network NVARCHAR(180), flag INTEGER, PRIMARY KEY (name, network, flag), FOREIGN KEY (name) REFERENCES " +
+                        "%s (name), FOREIGN KEY (network) REFERENCES %s (network), FOREIGN KEY (flag) REFERENCES %s (id));",
+                flagRelationTable, tableName, tableName, flagTable);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
     }
@@ -122,6 +139,20 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateAddFlagStatement(Connection connection) throws SQLException {
         String statementMessage = String.format("INSERT INTO %s (character) VALUES (?);", flagTable);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
+     * Gets a prepared statement for inserting a relation between a portal and a flag
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateAddPortalFlagRelationStatement(Connection connection) throws SQLException {
+        String statementMessage = String.format("INSERT INTO %s (name, network, flag) VALUES (?, ?, " +
+                "(SELECT id FROM %s WHERE character = ?));", flagRelationTable, flagTable);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
     }

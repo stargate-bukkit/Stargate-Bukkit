@@ -56,6 +56,7 @@ public class SQLiteDatabaseTest {
 
     @AfterAll
     public static void tearDown() throws SQLException {
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_PortalFlagRelation"));
         finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_Portal;"));
         finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_Flag;"));
         connection.close();
@@ -77,6 +78,12 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(3)
+    void createPortalFlagRelationTableTest() throws SQLException {
+        finishStatement(generator.generateCreateFlagRelationTableStatement(connection));
+    }
+
+    @Test
+    @Order(4)
     void addFlagsTest() throws SQLException {
         PreparedStatement statement = generator.generateAddFlagStatement(connection);
 
@@ -88,13 +95,19 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     void addPortalTest() throws SQLException {
         finishStatement(generator.generateAddPortalStatement(connection, testPortal, PortalType.LOCAL));
+        PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection);
+        for (Character character : testPortal.getAllFlagsString().toCharArray()) {
+            addFlagStatement.setString(1, testPortal.getName());
+            addFlagStatement.setString(2, testPortal.getNetwork().getName());
+            addFlagStatement.setString(3, String.valueOf(character));
+        }
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     void getPortalTest() throws SQLException {
         PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, PortalType.LOCAL);
 
@@ -113,7 +126,7 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     void destroyPortalTest() throws SQLException {
         finishStatement(generator.generateRemovePortalStatement(connection, testPortal, PortalType.LOCAL));
 
