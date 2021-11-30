@@ -115,8 +115,8 @@ public class SQLiteDatabaseTest {
         while (set.next()) {
             System.out.print("Flag ");
             rows++;
-            for (int i = 1; i < metaData.getColumnCount() - 1; i++) {
-                System.out.print(metaData.getColumnName(i) + " = " + set.getObject(i) + ", ");
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                System.out.print(metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
             }
             System.out.println();
         }
@@ -161,9 +161,9 @@ public class SQLiteDatabaseTest {
         int rows = 0;
         while (set.next()) {
             rows++;
-            for (int i = 1; i < metaData.getColumnCount() - 1; i++) {
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
                 System.out.print(
-                        metaData.getColumnName(i) + " = " + set.getObject(i) + ", ");
+                        metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
             }
             System.out.println();
         }
