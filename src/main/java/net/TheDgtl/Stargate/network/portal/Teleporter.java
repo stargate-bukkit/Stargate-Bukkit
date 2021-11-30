@@ -110,6 +110,11 @@ public class Teleporter {
             return;
         }
 
+        // To smooth the experienced for highly used portals, or entity teleportation
+        if(!destination.getChunk().isLoaded()) {
+            destination.getChunk().load();
+        }
+        
         teleport(target, destination, rotation);
     }
 

@@ -190,6 +190,8 @@ rememberLastDestination: false
 # When exiting a gate, players retain their original movement velocity, multiplied by this value.
 gateExitSpeedMultiplier: 1
 
+# TODO: write a desription
+disableCustomColoredNames: true
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                           Technical                                          | #

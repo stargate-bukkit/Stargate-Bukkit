@@ -14,6 +14,8 @@ import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -242,7 +244,11 @@ public class StargateFactory {
             throw new NameError(null);
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             InterServerNetwork net = new InterServerNetwork(netName, database, sqlMaker);
-            bungeeNetList.put(netName, net);
+            String netHash = net.getName();
+            if(Setting.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
+                netHash = ChatColor.stripColor(netHash);
+            }
+            bungeeNetList.put(netHash, net);
             return;
         }
         Network net;

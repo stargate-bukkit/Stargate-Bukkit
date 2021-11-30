@@ -24,7 +24,7 @@ public enum Setting {
     DEFAULT_LIGHT_SIGN_COLOR("signStyle.defaultForeground"), DEFAULT_DARK_SIGN_COLOR("signStyle.defaultBackground"),
     NAME_STYLE("signStyle.listing"), POINTER_STYLE("signStyle.pointer"),
     ALPHABETIC_NETWORKS("alphabeticNetworks"), REMEMBER_LAST_DESTINATION("rememberLastDestination"),
-    GATE_EXIT_SPEED_MULTIPLIER("gateExitSpeedMultiplier"),
+    GATE_EXIT_SPEED_MULTIPLIER("gateExitSpeedMultiplier"), DISABLE_CUSTOM_COLORED_NAMES("disableCustomColoredNames"),
 
     DEBUG_LEVEL("loggingLevel"), CONFIG_VERSION("configVersion"), DATABASE_NAME("portalFile"),
     USING_REMOTE_DATABASE("bungee.useRemoteDatabase"), SHOW_HIKARI_CONFIG("bungee.remoteDatabaseSettings.advancedDatabaseConfiguration"),

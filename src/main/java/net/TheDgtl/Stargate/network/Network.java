@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.network;
 
 import net.TheDgtl.Stargate.Bypass;
+import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.database.Database;
@@ -11,6 +12,8 @@ import net.TheDgtl.Stargate.network.portal.NameSurround;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.SGLocation;
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -109,6 +112,8 @@ public class Network {
     }
 
     public void addPortal(IPortal portal, boolean saveToDatabase) {
+
+        
         if (portal instanceof Portal) {
             Portal physicalPortal = (Portal) portal;
             for (GateStructureType key : physicalPortal.getGate().getFormat().portalParts.keySet()) {
@@ -119,7 +124,11 @@ public class Network {
         if (saveToDatabase) {
             savePortal(portal);
         }
-        portalList.put(portal.getName(), portal);
+        String portalHash = portal.getName();
+        if(Setting.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
+            portalHash = ChatColor.stripColor(portalHash);
+        }
+        portalList.put(portalHash, portal);
     }
 
     public boolean isPortalNameTaken(String name) {
