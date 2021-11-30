@@ -41,7 +41,7 @@ public class InterServerNetwork extends Network {
 
     @Override
     public void removePortal(IPortal portal, boolean saveToDatabase) {
-        super.removePortal(portal, saveToDatabase, PortalType.BUNGEE);
+        super.removePortal(portal, saveToDatabase, PortalType.LOCAL);
         if (!saveToDatabase)
             return;
         try {

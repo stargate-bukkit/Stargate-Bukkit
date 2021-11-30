@@ -48,17 +48,15 @@ public class StargateFactory {
         useInterServerNetworks = (Setting.getBoolean(Setting.USING_REMOTE_DATABASE) && Setting.getBoolean(Setting.USING_BUNGEE));
 
         if (useInterServerNetworks) {
-            this.sqlMaker = new SQLQueryGenerator(tableName, bungeeDataBaseName, sharedTableName);
+            this.sqlMaker = new SQLQueryGenerator(tableName, sharedTableName, Stargate.getInstance());
         } else
-            this.sqlMaker = new SQLQueryGenerator(tableName);
+            this.sqlMaker = new SQLQueryGenerator(tableName, Stargate.getInstance());
         createTables();
 
 
         Stargate.log(Level.FINER, "Loading portals from base database");
         loadAllPortals(database, PortalType.LOCAL);
         if (useInterServerNetworks) {
-            Stargate.log(Level.FINER, "Loading portals from local bungee database");
-            loadAllPortals(database, PortalType.BUNGEE);
             Stargate.log(Level.FINER, "Loading portals from inter-server bungee database");
             loadAllPortals(database, PortalType.INTER_SERVER, true);
         }

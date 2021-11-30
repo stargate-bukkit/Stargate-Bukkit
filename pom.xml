@@ -66,6 +66,18 @@
             <version>5.1.41</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.seeseemelk</groupId>
+            <artifactId>MockBukkit-v1.16</artifactId>
+            <version>1.5.2</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <build>
         <finalName>Stargate-${project.version}</finalName>

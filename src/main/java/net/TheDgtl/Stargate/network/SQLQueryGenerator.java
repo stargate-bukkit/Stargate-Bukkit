@@ -1,9 +1,10 @@
 package net.TheDgtl.Stargate.network;
 
-import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -18,30 +19,31 @@ import java.util.logging.Level;
 public class SQLQueryGenerator {
 
     private final String tableName;
-    private String bungeeTableName;
     private String interServerTableName;
+    private final StargateLogger logger;
 
     /**
      * Instantiates a new SQL query generator
      *
      * @param tableName <p>The name of the table used for normal portals</p>
      */
-    public SQLQueryGenerator(String tableName) {
+    public SQLQueryGenerator(String tableName, StargateLogger logger) {
         this.tableName = tableName;
+        this.logger = logger;
     }
 
     /**
      * Instantiates a new SQL query generator
      *
      * @param tableName            <p>The name of the table used for normal portals</p>
-     * @param bungeeTableName      <p>The name of the table used for bungee portals</p>
      * @param interServerTableName <p>The name of the table used for inter-server portals</p>
      */
-    public SQLQueryGenerator(String tableName, String bungeeTableName, String interServerTableName) {
-        String instanceName = Setting.getString(Setting.BUNGEE_INSTANCE_NAME);
-        this.tableName = tableName + instanceName;
-        this.bungeeTableName = bungeeTableName + instanceName;
-        this.interServerTableName = interServerTableName;
+    public SQLQueryGenerator(String tableName, String interServerTableName, StargateLogger logger) {
+        String mainPrefix = "SG_";
+        String instancePrefix = "Hub_";
+        this.tableName = mainPrefix + instancePrefix + tableName;
+        this.interServerTableName = mainPrefix + instancePrefix + interServerTableName;
+        this.logger = logger;
     }
 
     /**
@@ -54,8 +56,6 @@ public class SQLQueryGenerator {
         switch (portalType) {
             case LOCAL:
                 return tableName;
-            case BUNGEE:
-                return bungeeTableName;
             case INTER_SERVER:
                 return interServerTableName;
             default:
@@ -84,11 +84,13 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreateTableStatement(Connection conn, PortalType portalType) throws SQLException {
-        String interServerExtraFields = (portalType == PortalType.INTER_SERVER) ? " server TEXT, isOnline INTEGER," : "";
-        String statementMessage = String.format("CREATE TABLE IF NOT EXISTS %s (network TEXT, name TEXT, " +
-                "destination TEXT, world TEXT, x INTEGER, y INTEGER, z INTEGER, flags TEXT, ownerUUID TEXT,%s " +
-                "UNIQUE(network, name));", getTableName(portalType), interServerExtraFields);
-        Stargate.log(Level.FINEST, "sql query: " + statementMessage);
+        String interServerExtraFields = (portalType == PortalType.INTER_SERVER) ?
+                " isOnline BOOLEAN, homeServerId VARCHAR(36)," : " isBungee BOOLEAN,";
+        String statementMessage = String.format("CREATE TABLE IF NOT EXISTS %s (name NVARCHAR(180), network NVARCHAR(180), " +
+                "destination NVARCHAR(180), world NVARCHAR(255) NOT NULL, x INTEGER, y INTEGER, z INTEGER, ownerUUID VARCHAR(36),%s " +
+                "PRIMARY KEY (name, network));", getTableName(portalType), interServerExtraFields);
+        //TODO: Add CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci') equivalent for SQLite
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return conn.prepareStatement(statementMessage);
     }
 
@@ -104,11 +106,13 @@ public class SQLQueryGenerator {
     public PreparedStatement generateAddPortalStatement(Connection conn, IPortal portal,
                                                         PortalType portalType) throws SQLException {
         boolean isInterServer = (portalType == PortalType.INTER_SERVER);
-        String extraKeys = (isInterServer ? ", server, isOnline" : "");
+        String extraKeys = (isInterServer ? ", homeServerId, isOnline" : ", isBungee");
         String extraValues = (isInterServer ? ", ?, ?" : "");
         PreparedStatement statement = conn.prepareStatement(
-                String.format("INSERT INTO %s (network, name, destination, world, x, y, z, flags, ownerUUID%s)"
+                String.format("INSERT INTO %s (network, name, destination, world, x, y, z, ownerUUID%s)"
                         + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?%s);", getTableName(portalType), extraKeys, extraValues));
+
+        //TODO: Add portal flags
 
         statement.setString(1, portal.getNetwork().getName());
         statement.setString(2, portal.getName());
@@ -125,12 +129,14 @@ public class SQLQueryGenerator {
         statement.setInt(5, signLocation.getBlockX());
         statement.setInt(6, signLocation.getBlockY());
         statement.setInt(7, signLocation.getBlockZ());
-        statement.setString(8, portal.getAllFlagsString());
-        statement.setString(9, portal.getOwnerUUID().toString());
+        //statement.setString(8, portal.getAllFlagsString());
+        statement.setString(8, portal.getOwnerUUID().toString());
 
         if (isInterServer) {
-            statement.setString(10, Stargate.serverName);
-            statement.setBoolean(11, true);
+            statement.setString(9, Stargate.serverName);
+            statement.setBoolean(10, true);
+        } else {
+            statement.setBoolean(9, portal.hasFlag(PortalFlag.BUNGEE));
         }
 
         return statement;
