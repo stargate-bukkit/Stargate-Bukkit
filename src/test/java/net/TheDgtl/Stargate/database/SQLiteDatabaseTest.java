@@ -3,9 +3,11 @@ package net.TheDgtl.Stargate.database;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
+import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.SQLQueryGenerator;
+import net.TheDgtl.Stargate.network.portal.FakePortal;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import org.bukkit.Material;
 import org.junit.jupiter.api.AfterAll;
@@ -43,12 +45,16 @@ public class SQLiteDatabaseTest {
         Network testNetwork = new Network("test", database, generator);
         IPortal testPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "portal",
                 testNetwork, UUID.randomUUID());
-        tester = new DatabaseTester(database, connection, generator, testPortal);
+        IPortal testInterPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "iportal",
+                testNetwork, UUID.randomUUID());
+        tester = new DatabaseTester(database, connection, generator, testPortal, testInterPortal);
     }
 
     @AfterAll
     public static void tearDown() throws SQLException {
+        finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS SG_Hub_InterPortalView"));
         finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS SG_Hub_PortalView"));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_InterPortalFlagRelation"));
         finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_PortalFlagRelation"));
         finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_Portal;"));
         finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_InterPortal;"));
@@ -84,38 +90,68 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(5)
+    void createInterPortalFlagRelationTableTest() throws SQLException {
+        tester.createInterPortalFlagRelationTableTest();
+    }
+
+    @Test
+    @Order(6)
     void createPortalViewTest() throws SQLException {
         tester.createPortalViewTest();
     }
 
     @Test
-    @Order(6)
+    @Order(7)
+    void createInterPortalViewTest() throws SQLException {
+        tester.createInterPortalViewTest();
+    }
+
+    @Test
+    @Order(8)
     void addFlagsTest() throws SQLException {
         tester.addFlagsTest();
     }
 
     @Test
-    @Order(7)
+    @Order(9)
     void getFlagsTest() throws SQLException {
         tester.getFlagsTest();
     }
 
     @Test
-    @Order(8)
+    @Order(10)
     void addPortalTest() throws SQLException {
         tester.addPortalTest();
     }
 
     @Test
-    @Order(9)
+    @Order(11)
+    void addInterPortalTest() throws SQLException {
+        tester.addInterPortalTest();
+    }
+
+    @Test
+    @Order(12)
     void getPortalTest() throws SQLException {
         tester.getPortalTest();
     }
 
     @Test
-    @Order(10)
+    @Order(13)
+    void getInterPortalTest() throws SQLException {
+        tester.getInterPortalTest();
+    }
+
+    @Test
+    @Order(14)
     void destroyPortalTest() throws SQLException {
         tester.destroyPortalTest();
+    }
+
+    @Test
+    @Order(15)
+    void destroyInterPortalTest() throws SQLException {
+        tester.destroyInterPortalTest();
     }
 
 }

@@ -1,6 +1,4 @@
-package net.TheDgtl.Stargate.database;
-
-import net.TheDgtl.Stargate.StargateLogger;
+package net.TheDgtl.Stargate;
 
 import java.util.logging.Level;
 

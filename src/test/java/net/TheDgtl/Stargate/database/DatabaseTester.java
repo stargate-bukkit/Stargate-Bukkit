@@ -19,12 +19,15 @@ public class DatabaseTester {
     private static SQLQueryGenerator generator;
 
     private static IPortal testPortal;
+    private static IPortal testInterPortal;
 
-    public DatabaseTester(Database database, Connection connection, SQLQueryGenerator generator, IPortal testPortal) {
+    public DatabaseTester(Database database, Connection connection, SQLQueryGenerator generator, IPortal testPortal, 
+                          IPortal testInterPortal) {
         DatabaseTester.database = database;
         DatabaseTester.connection = connection;
         DatabaseTester.generator = generator;
         DatabaseTester.testPortal = testPortal;
+        DatabaseTester.testInterPortal = testInterPortal;
     }
 
     public static void tearDown() throws SQLException {
@@ -47,8 +50,16 @@ public class DatabaseTester {
         finishStatement(generator.generateCreateFlagRelationTableStatement(connection));
     }
 
+    void createInterPortalFlagRelationTableTest() throws SQLException {
+        finishStatement(generator.generateCreateInterFlagRelationTableStatement(connection));
+    }
+
     void createPortalViewTest() throws SQLException {
         finishStatement(generator.generateCreatePortalViewTableStatement(connection));
+    }
+
+    void createInterPortalViewTest() throws SQLException {
+        finishStatement(generator.generateCreateInterPortalViewTableStatement(connection));
     }
 
     void addFlagsTest() throws SQLException {
@@ -87,14 +98,9 @@ public class DatabaseTester {
         try {
             finishStatement(generator.generateAddPortalStatement(connection, testPortal, PortalType.LOCAL));
 
-            PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection);
-            for (Character character : testPortal.getAllFlagsString().toCharArray()) {
-                System.out.println("Adding flag " + character + " to portal: " + testPortal.toString());
-                addFlagStatement.setString(1, testPortal.getName());
-                addFlagStatement.setString(2, testPortal.getNetwork().getName());
-                addFlagStatement.setString(3, String.valueOf(character));
-                addFlagStatement.execute();
-            }
+            PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection, 
+                    PortalType.LOCAL);
+            addFlags(addFlagStatement, testPortal);
             addFlagStatement.close();
             connection.commit();
             connection.setAutoCommit(true);
@@ -102,6 +108,41 @@ public class DatabaseTester {
             connection.rollback();
             connection.setAutoCommit(true);
             throw exception;
+        }
+    }
+
+    void addInterPortalTest() throws SQLException {
+        connection.setAutoCommit(false);
+        try {
+            finishStatement(generator.generateAddPortalStatement(connection, testInterPortal, PortalType.INTER_SERVER));
+
+            PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection, 
+                    PortalType.INTER_SERVER);
+            addFlags(addFlagStatement, testInterPortal);
+            addFlagStatement.close();
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (SQLException exception) {
+            connection.rollback();
+            connection.setAutoCommit(true);
+            throw exception;
+        }
+    }
+
+    /**
+     * Adds flags for the given portal to the database
+     * 
+     * @param addFlagStatement <p>The statement used to add flags</p>
+     * @param portal <p>The portal to add the flags of</p>
+     * @throws SQLException <p>If unable to set the flags</p>
+     */
+    private void addFlags(PreparedStatement addFlagStatement, IPortal portal) throws SQLException {
+        for (Character character : portal.getAllFlagsString().toCharArray()) {
+            System.out.println("Adding flag " + character + " to portal: " + portal);
+            addFlagStatement.setString(1, portal.getName());
+            addFlagStatement.setString(2, portal.getNetwork().getName());
+            addFlagStatement.setString(3, String.valueOf(character));
+            addFlagStatement.execute();
         }
     }
 
@@ -125,6 +166,26 @@ public class DatabaseTester {
         Assertions.assertTrue(rows > 0);
     }
 
+    void getInterPortalTest() throws SQLException {
+        printTableInfo("SG_Hub_InterPortalView");
+
+        PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, PortalType.INTER_SERVER);
+
+        ResultSet set = statement.executeQuery();
+        ResultSetMetaData metaData = set.getMetaData();
+
+        int rows = 0;
+        while (set.next()) {
+            rows++;
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                System.out.print(
+                        metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
+            }
+            System.out.println();
+        }
+        Assertions.assertTrue(rows > 0);
+    }
+
     void destroyPortalTest() throws SQLException {
         finishStatement(generator.generateRemovePortalStatement(connection, testPortal, PortalType.LOCAL));
 
@@ -132,6 +193,17 @@ public class DatabaseTester {
                 + " WHERE name = ? AND network = ?");
         statement.setString(1, testPortal.getName());
         statement.setString(2, testPortal.getNetwork().getName());
+        ResultSet set = statement.executeQuery();
+        Assertions.assertFalse(set.next());
+    }
+
+    void destroyInterPortalTest() throws SQLException {
+        finishStatement(generator.generateRemovePortalStatement(connection, testInterPortal, PortalType.INTER_SERVER));
+
+        PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM SG_Hub_InterPortal"
+                + " WHERE name = ? AND network = ?");
+        statement.setString(1, testInterPortal.getName());
+        statement.setString(2, testInterPortal.getNetwork().getName());
         ResultSet set = statement.executeQuery();
         Assertions.assertFalse(set.next());
     }
