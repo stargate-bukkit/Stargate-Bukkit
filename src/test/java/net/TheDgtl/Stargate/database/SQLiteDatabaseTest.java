@@ -8,6 +8,7 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.SQLQueryGenerator;
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Material;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -32,7 +33,7 @@ public class SQLiteDatabaseTest {
     private static Connection connection;
     private static WorldMock world;
     private static SQLQueryGenerator generator;
-    
+
     private static Network testNetwork;
     private static IPortal testPortal;
 
@@ -47,7 +48,7 @@ public class SQLiteDatabaseTest {
         connection = database.getConnection();
         generator = new SQLQueryGenerator("Portal", new FakeStargate());
         generator = new SQLQueryGenerator("Portals", new FakeStargate());
-        
+
         testNetwork = new Network("test", database, generator);
         testPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "portal", testNetwork,
                 UUID.randomUUID());
@@ -88,7 +89,7 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(4)
-    void addPortalTest() throws NameError, SQLException {
+    void addPortalTest() throws SQLException {
         finishStatement(generator.generateAddPortalStatement(connection, testPortal, PortalType.LOCAL));
     }
 
@@ -105,23 +106,23 @@ public class SQLiteDatabaseTest {
             rows++;
             for (int i = 1; i < metaData.getColumnCount() - 1; i++) {
                 System.out.println(
-                        metaData.getColumnName(i) +" = " +set.getObject(i));
+                        metaData.getColumnName(i) + " = " + set.getObject(i));
             }
         }
         Assertions.assertTrue(rows > 0);
     }
-    
+
     @Test
-    @Order(4)
+    @Order(6)
     void destroyPortalTest() throws SQLException {
-        finishStatement( generator.generateRemovePortalStatement(connection, testPortal, PortalType.LOCAL) );
-        
+        finishStatement(generator.generateRemovePortalStatement(connection, testPortal, PortalType.LOCAL));
+
         PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM SG_Hub_Portals"
                 + " WHERE name=? AND network=?");
         statement.setString(1, testPortal.getName());
         statement.setString(2, testPortal.getNetwork().getName());
         ResultSet set = statement.executeQuery();
-        Assertions.assertTrue(!set.next());
+        Assertions.assertFalse(set.next());
     }
 
     /**
