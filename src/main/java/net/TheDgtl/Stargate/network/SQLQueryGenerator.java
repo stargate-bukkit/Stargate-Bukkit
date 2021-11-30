@@ -187,7 +187,7 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateCreatePortalViewStatement(Connection connection, PortalType portalType) throws SQLException {
         String statementMessage = "CREATE VIEW IF NOT EXISTS {PortalView} AS SELECT {Portal}.*, " +
-                "GROUP_CONCAT({Flag}.character, '') AS flags, {LastKnownName}.lastKnownName FROM {Portal} LEFT OUTER " +
+                "COALESCE(GROUP_CONCAT({Flag}.character, ''), '') AS flags, {LastKnownName}.lastKnownName FROM {Portal} LEFT OUTER " +
                 "JOIN {PortalFlagRelation} ON {Portal}.name = {PortalFlagRelation}.name AND {Portal}.network = " +
                 "{PortalFlagRelation}.network LEFT OUTER JOIN {Flag} ON {PortalFlagRelation}.flag = {Flag}.id LEFT " +
                 "OUTER JOIN {LastKnownName} ON {Portal}.network = {LastKnownName}.uuid;";
