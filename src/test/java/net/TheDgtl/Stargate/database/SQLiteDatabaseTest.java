@@ -8,6 +8,7 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.SQLQueryGenerator;
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Material;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -42,13 +43,13 @@ public class SQLiteDatabaseTest {
 
         database = new SQLiteDatabase(new File("test.db"));
         connection = database.getConnection();
-        generator = new SQLQueryGenerator("Portals", new FakeStargate());
+        generator = new SQLQueryGenerator("Portal", new FakeStargate());
     }
 
     @AfterAll
     public static void tearDown() throws SQLException {
-        PreparedStatement statement = connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_Portals;");
-        finishStatement(statement);
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_Portal;"));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_Flag;"));
         connection.close();
         MockBukkit.unmock();
         System.out.println("Tearing down test data");
@@ -62,6 +63,24 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(2)
+    void createFlagTableTest() throws SQLException {
+        finishStatement(generator.generateCreateFlagTableStatement(connection));
+    }
+
+    @Test
+    @Order(3)
+    void addFlagsTest() throws SQLException {
+        PreparedStatement statement = generator.generateAddFlagStatement(connection);
+
+        for (PortalFlag flag : PortalFlag.values()) {
+            statement.setString(1, String.valueOf(flag.getLabel()));
+            statement.execute();
+        }
+        statement.close();
+    }
+
+    @Test
+    @Order(4)
     void addPortalTest() throws NameError, SQLException {
         Network network = new Network("test", database, generator);
         IPortal portal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "portal", network,
@@ -70,7 +89,7 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(3)
+    @Order(5)
     void getPortalTest() throws SQLException {
         PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, PortalType.LOCAL);
 
@@ -86,7 +105,7 @@ public class SQLiteDatabaseTest {
         }
         Assertions.assertTrue(rows > 0);
     }
-
+    
     /**
      * Finishes a prepared statement by executing and closing it
      *

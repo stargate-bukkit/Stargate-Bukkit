@@ -21,6 +21,7 @@ public class SQLQueryGenerator {
     private final String tableName;
     private String interServerTableName;
     private final StargateLogger logger;
+    private final String flagTable = "SG_Hub_Flag";
 
     /**
      * Instantiates a new SQL query generator
@@ -96,6 +97,33 @@ public class SQLQueryGenerator {
         //TODO: Add CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci') equivalent for SQLite
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return conn.prepareStatement(statementMessage);
+    }
+
+    /**
+     * Gets a prepared statement for creating the flag table
+     * 
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateCreateFlagTableStatement(Connection connection) throws SQLException {
+        String statementMessage = String.format("CREATE TABLE %s (id INTEGER AUTO_INCREMENT, character CHAR(1) UNIQUE NOT NULL, " +
+                "PRIMARY KEY (id));", flagTable);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
+     * Gets a prepared statement for inserting a flag into the flag table
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateAddFlagStatement(Connection connection) throws SQLException {
+        String statementMessage = String.format("INSERT INTO %s (character) VALUES (?);", flagTable);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
     }
 
     /**
