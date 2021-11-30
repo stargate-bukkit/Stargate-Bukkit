@@ -128,7 +128,7 @@ public class Network {
 
     public void updatePortals() {
         for (String portal : portalList.keySet()) {
-            getPortal(portal).drawControlMechanism();
+            getPortal(portal).update();
         }
     }
 

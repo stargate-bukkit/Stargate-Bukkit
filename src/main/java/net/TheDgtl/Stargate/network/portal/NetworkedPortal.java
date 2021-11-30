@@ -51,6 +51,8 @@ public class NetworkedPortal extends Portal {
      */
     @Override
     public void onSignClick(Action action, Player actor) {
+        if(!actor.getUniqueId().equals(this.getOwnerUUID()) || this.isOpen())
+            return;
         activate(actor);
         if (destinations.size() < 1)
             return;

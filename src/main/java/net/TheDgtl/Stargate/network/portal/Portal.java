@@ -56,7 +56,7 @@ public abstract class Portal implements IPortal {
      * minute or something) maybe follow an external script that gives when the
      * states should change
      */
-    final int delay = 20; // seconds
+    final int openDelay = 20; // seconds
     private Gate gate;
     private final EnumSet<PortalFlag> flags;
     final String name;
@@ -144,6 +144,15 @@ public abstract class Portal implements IPortal {
         return gate.getSignLoc();
     }
 
+    
+    @Override
+    public void update() {
+        if(isOpen() && loadDestination() == null) {
+            close(false);
+        }
+        drawControlMechanism();
+    }
+    
     public abstract void onSignClick(Action action, Player actor);
 
     public abstract void drawControlMechanism();
@@ -195,7 +204,7 @@ public abstract class Portal implements IPortal {
         };
 
         // Make the action on a delay
-        Stargate.syncSecPopulator.addAction(new DelayedAction(delay, action));
+        Stargate.syncSecPopulator.addAction(new DelayedAction(openDelay, action));
     }
 
     /**
@@ -205,7 +214,7 @@ public abstract class Portal implements IPortal {
      * there. And if the portal gets activated again, it is going to close
      * prematurely, because of this already scheduled event. Solution to avoid this
      * is to assign an open-time for each scheduled close event and only close if the
-     * related open time matches with the most recent time the portal was closed.
+     * related open time matches with the most recent time the portal was opened.
      *
      * @param relatedOpenTime
      */
@@ -215,8 +224,8 @@ public abstract class Portal implements IPortal {
     }
 
     @Override
-    public void close(boolean force) {
-        if (hasFlag(PortalFlag.ALWAYS_ON) && !force)
+    public void close(boolean forceClose) {
+        if (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose)
             return;
         getGate().close();
         drawControlMechanism();
@@ -290,21 +299,6 @@ public abstract class Portal implements IPortal {
 
     public void setGate(Gate gate) {
         this.gate = gate;
-    }
-
-    /**
-     * The {@link Vector#angle(Vector)} function is not directional, meaning if you exchange position with vectors,
-     * there will be no difference in angle. The behaviour that is needed in some portal methods is for the angle to
-     * change sign if the vectors change places.
-     * <p>
-     * NOTE: ONLY ACCOUNTS FOR Y AXIS ROTATIONS
-     *
-     * @param vector1 normalized
-     * @param vector2 normalized
-     * @return angle between the two vectors
-     */
-    private double directionalAngleOperator(Vector vector1, Vector vector2) {
-        return Math.atan2(vector1.clone().crossProduct(vector2).getY(), vector1.dot(vector2));
     }
 
     @Override
