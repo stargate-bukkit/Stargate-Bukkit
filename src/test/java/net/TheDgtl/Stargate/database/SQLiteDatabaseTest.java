@@ -8,7 +8,6 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.SQLQueryGenerator;
 import net.TheDgtl.Stargate.network.portal.IPortal;
-import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Material;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -33,9 +32,12 @@ public class SQLiteDatabaseTest {
     private static Connection connection;
     private static WorldMock world;
     private static SQLQueryGenerator generator;
+    
+    private static Network testNetwork;
+    private static IPortal testPortal;
 
     @BeforeAll
-    public static void setUp() throws SQLException {
+    public static void setUp() throws SQLException, NameError {
         System.out.println("Setting up test data");
         ServerMock server = MockBukkit.mock();
         world = new WorldMock(Material.DIRT, 5);
@@ -44,6 +46,11 @@ public class SQLiteDatabaseTest {
         database = new SQLiteDatabase(new File("test.db"));
         connection = database.getConnection();
         generator = new SQLQueryGenerator("Portal", new FakeStargate());
+        generator = new SQLQueryGenerator("Portals", new FakeStargate());
+        
+        testNetwork = new Network("test", database, generator);
+        testPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "portal", testNetwork,
+                UUID.randomUUID());
     }
 
     @AfterAll
@@ -82,10 +89,7 @@ public class SQLiteDatabaseTest {
     @Test
     @Order(4)
     void addPortalTest() throws NameError, SQLException {
-        Network network = new Network("test", database, generator);
-        IPortal portal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "portal", network,
-                UUID.randomUUID());
-        finishStatement(generator.generateAddPortalStatement(connection, portal, PortalType.LOCAL));
+        finishStatement(generator.generateAddPortalStatement(connection, testPortal, PortalType.LOCAL));
     }
 
     @Test
@@ -100,12 +104,26 @@ public class SQLiteDatabaseTest {
         while (set.next()) {
             rows++;
             for (int i = 1; i < metaData.getColumnCount() - 1; i++) {
-                System.out.println(set.getObject(i));
+                System.out.println(
+                        metaData.getColumnName(i) +" = " +set.getObject(i));
             }
         }
         Assertions.assertTrue(rows > 0);
     }
     
+    @Test
+    @Order(4)
+    void destroyPortalTest() throws SQLException {
+        finishStatement( generator.generateRemovePortalStatement(connection, testPortal, PortalType.LOCAL) );
+        
+        PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM SG_Hub_Portals"
+                + " WHERE name=? AND network=?");
+        statement.setString(1, testPortal.getName());
+        statement.setString(2, testPortal.getNetwork().getName());
+        ResultSet set = statement.executeQuery();
+        Assertions.assertTrue(!set.next());
+    }
+
     /**
      * Finishes a prepared statement by executing and closing it
      *
