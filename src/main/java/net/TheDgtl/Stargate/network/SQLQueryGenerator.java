@@ -22,11 +22,12 @@ public class SQLQueryGenerator {
     private final String portalTableName;
     private String interPortalTableName;
     private final StargateLogger logger;
-    private final String flagTable = "SG_Hub_Flag";
-    private final String flagRelationTable = "SG_Hub_PortalFlagRelation";
-    private final String portalViewName = "SG_Hub_PortalView";
-    private final String interPortalViewName = "SG_Hub_InterPortalView";
-    private final String interFlagRelationTable = "SG_Hub_InterPortalFlagRelation";
+    private final String flagTable = "SG_Test_Flag";
+    private final String flagRelationTable = "SG_Test_PortalFlagRelation";
+    private final String portalViewName = "SG_Test_PortalView";
+    private final String interPortalViewName = "SG_Test_InterPortalView";
+    private final String interFlagRelationTable = "SG_Test_InterPortalFlagRelation";
+    private final String lastKnownNameTable = "SG_Test_LastKnownName";
 
     /**
      * Instantiates a new SQL query generator
@@ -35,7 +36,7 @@ public class SQLQueryGenerator {
      */
     public SQLQueryGenerator(String portalTableName, StargateLogger logger) {
         String mainPrefix = "SG_";
-        String instancePrefix = "Hub_";
+        String instancePrefix = "Test_";
         this.portalTableName = mainPrefix + instancePrefix + portalTableName;
         this.logger = logger;
     }
@@ -48,7 +49,7 @@ public class SQLQueryGenerator {
      */
     public SQLQueryGenerator(String portalTableName, String interPortalTableName, StargateLogger logger) {
         String mainPrefix = "SG_";
-        String instancePrefix = "Hub_";
+        String instancePrefix = "Test_";
         this.portalTableName = mainPrefix + instancePrefix + portalTableName;
         this.interPortalTableName = mainPrefix + instancePrefix + interPortalTableName;
         this.logger = logger;
@@ -64,6 +65,7 @@ public class SQLQueryGenerator {
     private String getTableName(PortalType portalType, boolean getting) {
         switch (portalType) {
             case LOCAL:
+            case BUNGEE:
                 if (getting) {
                     return portalViewName;
                 } else {
@@ -143,33 +145,35 @@ public class SQLQueryGenerator {
     }
 
     /**
-     * Gets a prepared statement for adding a flag to a portal
+     * Gets a prepared statement for creating the last known name table
      *
      * @param connection <p>The database connection to use</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreateFlagRelationTableStatement(Connection connection) throws SQLException {
-        String statementMessage = "CREATE TABLE {PortalFlagRelation} (name NVARCHAR(180), " +
-                "network NVARCHAR(180), flag INTEGER, PRIMARY KEY (name, network, flag), FOREIGN KEY (name) REFERENCES " +
-                "{Portal} (name), FOREIGN KEY (network) REFERENCES {Portal} (network), FOREIGN KEY (flag) REFERENCES {Flag} (id));";
+    public PreparedStatement generateCreateLastKnownNameTableStatement(Connection connection) throws SQLException {
+        String statementMessage = "CREATE TABLE {LastKnownName} (uuid VARCHAR(36), lastKnownName VARCHAR(16), " +
+                "PRIMARY KEY (uuid));";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
     }
 
     /**
-     * Gets a prepared statement for adding a flag to an inter-portal
+     * Gets a prepared statement for adding a flag to a portal
      *
      * @param connection <p>The database connection to use</p>
+     * @param portalType <p>The type of portal to create the table for</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreateInterFlagRelationTableStatement(Connection connection) throws SQLException {
-        String statementMessage = "CREATE TABLE {InterPortalFlagRelation} (name NVARCHAR(180), " +
+    public PreparedStatement generateCreateFlagRelationTableStatement(Connection connection, PortalType portalType) throws SQLException {
+        String statementMessage = "CREATE TABLE {PortalFlagRelation} (name NVARCHAR(180), " +
                 "network NVARCHAR(180), flag INTEGER, PRIMARY KEY (name, network, flag), FOREIGN KEY (name) REFERENCES " +
-                "{InterPortal} (name), FOREIGN KEY (network) REFERENCES {InterPortal} (network), " +
-                "FOREIGN KEY (flag) REFERENCES {Flag} (id));";
+                "{Portal} (name), FOREIGN KEY (network) REFERENCES {Portal} (network), FOREIGN KEY (flag) REFERENCES {Flag} (id));";
+        if (portalType == PortalType.INTER_SERVER) {
+            statementMessage = statementMessage.replace("{Portal", "{InterPortal");
+        }
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -182,21 +186,15 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreatePortalViewTableStatement(Connection connection) throws SQLException {
+    public PreparedStatement generateCreatePortalViewTableStatement(Connection connection, PortalType portalType) throws SQLException {
         String statementMessage = "CREATE VIEW {PortalView} AS SELECT {Portal}.*, " +
-                "GROUP_CONCAT({Flag}.character, '') AS flags FROM {Portal} LEFT OUTER JOIN {PortalFlagRelation} ON " +
-                "{Portal}.name = {PortalFlagRelation}.name AND {Portal}.network = {PortalFlagRelation}.network LEFT " +
-                "OUTER JOIN {Flag} ON {PortalFlagRelation}.flag = {Flag}.id;";
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
-    }
-    
-    public PreparedStatement generateCreateInterPortalViewTableStatement(Connection connection) throws SQLException {
-        String statementMessage = "CREATE VIEW {InterPortalView} AS SELECT {InterPortal}.*, " +
-                "GROUP_CONCAT({Flag}.character, '') AS flags FROM {InterPortal} LEFT OUTER JOIN {InterPortalFlagRelation} ON " +
-                "{InterPortal}.name = {InterPortalFlagRelation}.name AND {InterPortal}.network = {InterPortalFlagRelation}.network LEFT " +
-                "OUTER JOIN {Flag} ON {InterPortalFlagRelation}.flag = {Flag}.id;";
+                "GROUP_CONCAT({Flag}.character, '') AS flags, {LastKnownName}.lastKnownName FROM {Portal} LEFT OUTER " +
+                "JOIN {PortalFlagRelation} ON {Portal}.name = {PortalFlagRelation}.name AND {Portal}.network = " +
+                "{PortalFlagRelation}.network LEFT OUTER JOIN {Flag} ON {PortalFlagRelation}.flag = {Flag}.id LEFT " +
+                "OUTER JOIN {LastKnownName} ON {Portal}.network = {LastKnownName}.uuid;";
+        if (portalType == PortalType.INTER_SERVER) {
+            statementMessage = statementMessage.replace("{Portal", "{InterPortal");
+        }
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -356,10 +354,10 @@ public class SQLQueryGenerator {
      */
     private String replaceKnownTableNames(String input) {
         return replaceTableNames(input,
-                new String[]{"{Portal}", "{PortalView}", "{Flag}", "{PortalFlagRelation}", "{InterPortal}", 
-                        "{InterPortalView}", "{InterPortalFlagRelation}"},
-                new String[]{portalTableName, portalViewName, flagTable, flagRelationTable, interPortalTableName, 
-                        interPortalViewName, interFlagRelationTable});
+                new String[]{"{Portal}", "{PortalView}", "{Flag}", "{PortalFlagRelation}", "{InterPortal}",
+                        "{InterPortalView}", "{InterPortalFlagRelation}", "{LastKnownName}"},
+                new String[]{portalTableName, portalViewName, flagTable, flagRelationTable, interPortalTableName,
+                        interPortalViewName, interFlagRelationTable, lastKnownNameTable});
     }
 
     /**

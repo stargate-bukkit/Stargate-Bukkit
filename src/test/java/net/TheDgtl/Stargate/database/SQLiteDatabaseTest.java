@@ -52,13 +52,14 @@ public class SQLiteDatabaseTest {
 
     @AfterAll
     public static void tearDown() throws SQLException {
-        finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS SG_Hub_InterPortalView"));
-        finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS SG_Hub_PortalView"));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_InterPortalFlagRelation"));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_PortalFlagRelation"));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_Portal;"));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_InterPortal;"));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_Flag;"));
+        finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS SG_Test_InterPortalView"));
+        finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS SG_Test_PortalView"));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Test_InterPortalFlagRelation"));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Test_PortalFlagRelation"));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Test_Portal;"));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Test_InterPortal;"));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Test_LastKnownName;"));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Test_Flag;"));
         connection.close();
         MockBukkit.unmock();
         System.out.println("Tearing down test data");
@@ -71,85 +72,91 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(2)
+    @Order(1)
     void addInterPortalTableTest() throws SQLException {
         tester.addInterPortalTableTest();
     }
 
     @Test
-    @Order(3)
+    @Order(1)
     void createFlagTableTest() throws SQLException {
         tester.createFlagTableTest();
     }
 
     @Test
-    @Order(4)
+    @Order(1)
+    void createLastKnownNameTableTest() throws SQLException {
+        tester.createLastKnownNameTableTest();
+    }
+
+    @Test
+    @Order(2)
     void createPortalFlagRelationTableTest() throws SQLException {
         tester.createPortalFlagRelationTableTest();
     }
 
     @Test
-    @Order(5)
+    @Order(2)
     void createInterPortalFlagRelationTableTest() throws SQLException {
         tester.createInterPortalFlagRelationTableTest();
     }
 
     @Test
-    @Order(6)
+    @Order(3)
     void createPortalViewTest() throws SQLException {
         tester.createPortalViewTest();
     }
 
     @Test
-    @Order(7)
+    @Order(3)
     void createInterPortalViewTest() throws SQLException {
         tester.createInterPortalViewTest();
     }
 
     @Test
-    @Order(8)
+    @Order(3)
     void addFlagsTest() throws SQLException {
         tester.addFlagsTest();
     }
 
     @Test
-    @Order(9)
+    @Order(4)
     void getFlagsTest() throws SQLException {
         tester.getFlagsTest();
     }
 
     @Test
-    @Order(10)
+    @Order(5)
     void addPortalTest() throws SQLException {
         tester.addPortalTest();
     }
 
     @Test
-    @Order(11)
+    @Order(5)
     void addInterPortalTest() throws SQLException {
         tester.addInterPortalTest();
     }
 
     @Test
-    @Order(12)
+    @Order(6)
     void getPortalTest() throws SQLException {
         tester.getPortalTest();
     }
 
     @Test
-    @Order(13)
+    @Order(6)
     void getInterPortalTest() throws SQLException {
         tester.getInterPortalTest();
     }
 
     @Test
-    @Order(14)
+    @Order(7)
     void destroyPortalTest() throws SQLException {
         tester.destroyPortalTest();
     }
 
     @Test
-    @Order(15)
+    @Order(7)
     void destroyInterPortalTest() throws SQLException {
         tester.destroyInterPortalTest();
     }

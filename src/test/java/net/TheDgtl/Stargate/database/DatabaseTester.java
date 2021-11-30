@@ -21,7 +21,7 @@ public class DatabaseTester {
     private static IPortal testPortal;
     private static IPortal testInterPortal;
 
-    public DatabaseTester(Database database, Connection connection, SQLQueryGenerator generator, IPortal testPortal, 
+    public DatabaseTester(Database database, Connection connection, SQLQueryGenerator generator, IPortal testPortal,
                           IPortal testInterPortal) {
         DatabaseTester.database = database;
         DatabaseTester.connection = connection;
@@ -46,20 +46,24 @@ public class DatabaseTester {
         finishStatement(generator.generateCreateFlagTableStatement(connection));
     }
 
+    void createLastKnownNameTableTest() throws SQLException {
+        finishStatement(generator.generateCreateLastKnownNameTableStatement(connection));
+    }
+
     void createPortalFlagRelationTableTest() throws SQLException {
-        finishStatement(generator.generateCreateFlagRelationTableStatement(connection));
+        finishStatement(generator.generateCreateFlagRelationTableStatement(connection, PortalType.LOCAL));
     }
 
     void createInterPortalFlagRelationTableTest() throws SQLException {
-        finishStatement(generator.generateCreateInterFlagRelationTableStatement(connection));
+        finishStatement(generator.generateCreateFlagRelationTableStatement(connection, PortalType.INTER_SERVER));
     }
 
     void createPortalViewTest() throws SQLException {
-        finishStatement(generator.generateCreatePortalViewTableStatement(connection));
+        finishStatement(generator.generateCreatePortalViewTableStatement(connection, PortalType.LOCAL));
     }
 
     void createInterPortalViewTest() throws SQLException {
-        finishStatement(generator.generateCreateInterPortalViewTableStatement(connection));
+        finishStatement(generator.generateCreatePortalViewTableStatement(connection, PortalType.INTER_SERVER));
     }
 
     void addFlagsTest() throws SQLException {
@@ -74,7 +78,7 @@ public class DatabaseTester {
     }
 
     void getFlagsTest() throws SQLException {
-        printTableInfo("SG_Hub_Flag");
+        printTableInfo("SG_Test_Flag");
 
         PreparedStatement statement = generator.generateGetAllFlagsStatement(connection);
 
@@ -98,7 +102,7 @@ public class DatabaseTester {
         try {
             finishStatement(generator.generateAddPortalStatement(connection, testPortal, PortalType.LOCAL));
 
-            PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection, 
+            PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection,
                     PortalType.LOCAL);
             addFlags(addFlagStatement, testPortal);
             addFlagStatement.close();
@@ -116,7 +120,7 @@ public class DatabaseTester {
         try {
             finishStatement(generator.generateAddPortalStatement(connection, testInterPortal, PortalType.INTER_SERVER));
 
-            PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection, 
+            PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection,
                     PortalType.INTER_SERVER);
             addFlags(addFlagStatement, testInterPortal);
             addFlagStatement.close();
@@ -131,9 +135,9 @@ public class DatabaseTester {
 
     /**
      * Adds flags for the given portal to the database
-     * 
+     *
      * @param addFlagStatement <p>The statement used to add flags</p>
-     * @param portal <p>The portal to add the flags of</p>
+     * @param portal           <p>The portal to add the flags of</p>
      * @throws SQLException <p>If unable to set the flags</p>
      */
     private void addFlags(PreparedStatement addFlagStatement, IPortal portal) throws SQLException {
@@ -147,7 +151,7 @@ public class DatabaseTester {
     }
 
     void getPortalTest() throws SQLException {
-        printTableInfo("SG_Hub_PortalView");
+        printTableInfo("SG_Test_PortalView");
 
         PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, PortalType.LOCAL);
 
@@ -167,7 +171,7 @@ public class DatabaseTester {
     }
 
     void getInterPortalTest() throws SQLException {
-        printTableInfo("SG_Hub_InterPortalView");
+        printTableInfo("SG_Test_InterPortalView");
 
         PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, PortalType.INTER_SERVER);
 
@@ -189,7 +193,7 @@ public class DatabaseTester {
     void destroyPortalTest() throws SQLException {
         finishStatement(generator.generateRemovePortalStatement(connection, testPortal, PortalType.LOCAL));
 
-        PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM SG_Hub_Portal"
+        PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM SG_Test_Portal"
                 + " WHERE name = ? AND network = ?");
         statement.setString(1, testPortal.getName());
         statement.setString(2, testPortal.getNetwork().getName());
@@ -200,7 +204,7 @@ public class DatabaseTester {
     void destroyInterPortalTest() throws SQLException {
         finishStatement(generator.generateRemovePortalStatement(connection, testInterPortal, PortalType.INTER_SERVER));
 
-        PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM SG_Hub_InterPortal"
+        PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM SG_Test_InterPortal"
                 + " WHERE name = ? AND network = ?");
         statement.setString(1, testInterPortal.getName());
         statement.setString(2, testInterPortal.getNetwork().getName());
