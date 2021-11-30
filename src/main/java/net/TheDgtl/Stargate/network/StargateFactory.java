@@ -244,7 +244,7 @@ public class StargateFactory {
             throw new NameError(null);
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             InterServerNetwork net = new InterServerNetwork(netName, database, sqlMaker);
-            String netHash = net.getName();
+            String netHash = net.getName().toLowerCase();
             if(Setting.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
                 netHash = ChatColor.stripColor(netHash);
             }

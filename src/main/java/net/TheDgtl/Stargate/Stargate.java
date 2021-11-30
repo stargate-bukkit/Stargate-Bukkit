@@ -28,6 +28,8 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.util.FileHelper;
+import net.md_5.bungee.api.ChatColor;
+
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -97,7 +99,11 @@ public class Stargate extends JavaPlugin {
     public static String serverName;
     public static boolean knowsServerName = false;
 
-    private static UUID serverUUID;
+    public static UUID serverUUID;
+
+    public static ChatColor defaultLightSignColor = ChatColor.BLACK;
+
+    public static ChatColor defaultDarkColor = ChatColor.WHITE;
 
     @Override
     public void onEnable() {
@@ -107,6 +113,7 @@ public class Stargate extends JavaPlugin {
         new Metrics(this, pluginId);
 
         loadConfig();
+        loadColors();
 
         if (Setting.getBoolean(Setting.USING_REMOTE_DATABASE)) {
             loadBungeeServerName();
@@ -162,6 +169,18 @@ public class Stargate extends JavaPlugin {
         }
     }
 
+    private void loadColors() {
+        Stargate.defaultLightSignColor = loadColor(Setting.getString(Setting.DEFAULT_LIGHT_SIGN_COLOR));
+        Stargate.defaultDarkColor = loadColor(Setting.getString(Setting.DEFAULT_DARK_SIGN_COLOR));
+    }
+    
+    private ChatColor loadColor(String colorString) {
+        if(colorString.startsWith("#")) {
+            return ChatColor.of(colorString);
+        }
+        return ChatColor.valueOf(colorString);
+    }
+    
     private void registerListeners() {
         pm.registerEvents(new BlockEventListener(), this);
         pm.registerEvents(new MoveEventListener(), this);
@@ -240,14 +259,24 @@ public class Stargate extends JavaPlugin {
 
     public static void addToQueue(String playerName, String portalName, String netName, boolean isInterServer) {
         Network net = factory.getNetwork(netName, isInterServer);
+        
+        
+        /*
+         * TODO Error: When would errors like this appear?: Whenever a interserver server instance was
+         * deleted, but not cleared from the interserver database, errors like this would occur
+         */
         if (net == null) {
-            //TODO Error: This bungee portal's %type% has been removed from the destination server instance.
+            // Error: This bungee portal's %type% has been removed from the destination server instance.
             //(See Discussion One) %type% = network.
+            String msg = String.format("Interserver network ''%s'' could not be found",netName);
+            Stargate.log(Level.WARNING, msg);
         }
         IPortal portal = net.getPortal(portalName);
         if (portal == null) {
-            //TODO Error: This bungee portal's %type% has been removed from the destination server instance.
+            // Error: This bungee portal's %type% has been removed from the destination server instance.
             //(See Discussion One) %type% = gate.
+            String msg = String.format("Interserver portal ''%s'' in network ''%s'' could not be found",portalName,netName);
+            Stargate.log(Level.WARNING, msg);
         }
 
         instance.bungeeQueue.put(playerName, portal);

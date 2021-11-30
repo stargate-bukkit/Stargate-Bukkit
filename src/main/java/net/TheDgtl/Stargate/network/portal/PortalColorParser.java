@@ -12,19 +12,12 @@ public class PortalColorParser {
 
     private final Sign sign;
     private final boolean isLightSign;
-    private final ChatColor defaultLightColor;
-    private final ChatColor defaultDarkColor;
     static private final ChatColor GRAY_SELECTOR_COLOR = ChatColor.of("#808080");
     static private final ChatColor ERROR_COLOR = ChatColor.RED;
 
-    @SuppressWarnings("deprecation")
     public PortalColorParser(Sign sign) {
-        defaultLightColor = ChatColor.valueOf(Setting.getString(Setting.DEFAULT_LIGHT_SIGN_COLOR));
-        defaultDarkColor = ChatColor.valueOf(Setting.getString(Setting.DEFAULT_DARK_SIGN_COLOR));
         this.sign = sign;
         this.isLightSign = isLightSign();
-
-
     }
 
     /**
@@ -104,7 +97,7 @@ public class PortalColorParser {
     }
 
     private ChatColor getDefaultColor(boolean isLightSign) {
-        return isLightSign ? ChatColor.BLACK : ChatColor.WHITE;
+        return isLightSign ? Stargate.defaultLightSignColor : Stargate.defaultDarkColor;
     }
 
     private ChatColor getNameColor(IPortal portal, boolean isLightSign) {

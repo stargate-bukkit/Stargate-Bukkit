@@ -124,7 +124,7 @@ public class Network {
         if (saveToDatabase) {
             savePortal(portal);
         }
-        String portalHash = portal.getName();
+        String portalHash = portal.getName().toLowerCase();
         if(Setting.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
             portalHash = ChatColor.stripColor(portalHash);
         }
