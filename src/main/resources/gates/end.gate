@@ -1,0 +1,12 @@
+portal-open=END_GATEWAY
+portal-closed=AIR
+-=IRON_BLOCK
+S=QUARTZ_STAIRS
+H=QUARTZ_SLAB
+F=SMOOTH_QUARTZ
+
+HFFH
+S..S
+-..-
+S*.S
+HFFH

@@ -197,7 +197,7 @@ public class Stargate extends JavaPlugin {
 
     private void saveDefaultGates() {
         //TODO is there a way to check all files in a resource-folder? Possible solution seems unnecessarily complex
-        String[] gateList = {"nether.gate", "water.gate", "wool.gate"};
+        String[] gateList = {"nether.gate", "water.gate", "wool.gate", "end.gate"};
         boolean replace = false;
         for (String gateName : gateList) {
             if (!(new File(DATA_FOLDER + "/" + GATE_FOLDER + "/" + gateName).exists()))
