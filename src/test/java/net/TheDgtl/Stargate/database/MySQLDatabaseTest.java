@@ -45,12 +45,12 @@ public class MySQLDatabaseTest {
         Database database = new MySqlDatabase(driver, address, port, databaseName, username, password, true);
         connection = database.getConnection();
         nameConfig = new TableNameConfig("SG_Test_", "Server_");
-        SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate());
+        SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DriverEnum.MYSQL);
 
         Network testNetwork = new Network("test", database, generator);
         IPortal testPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "portal",
                 testNetwork, UUID.randomUUID());
-        IPortal testInterPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "iportal",
+        IPortal testInterPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "iPortal",
                 testNetwork, UUID.randomUUID());
         tester = new DatabaseTester(database, connection, generator, testPortal, testInterPortal, nameConfig);
     }

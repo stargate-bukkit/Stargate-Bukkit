@@ -51,7 +51,8 @@ public class StargateFactory {
         useInterServerNetworks = (Setting.getBoolean(Setting.USING_REMOTE_DATABASE) && Setting.getBoolean(Setting.USING_BUNGEE));
 
         TableNameConfig config = new TableNameConfig("SG_", "");
-        this.sqlMaker = new SQLQueryGenerator(config, Stargate.getInstance());
+        DriverEnum databaseEnum = Setting.getBoolean(Setting.USING_REMOTE_DATABASE) ? DriverEnum.MYSQL : DriverEnum.SQLITE;
+        this.sqlMaker = new SQLQueryGenerator(config, Stargate.getInstance(), databaseEnum);
         createTables();
 
 
@@ -171,16 +172,21 @@ public class StargateFactory {
 
         ResultSet set = statement.executeQuery();
         while (set.next()) {
-            String netName = set.getString(1);
-            String name = set.getString(2);
+            String name = set.getString("name");
+            String netName = set.getString("network");
 
-            String destination = set.getString(3);
-            String worldName = set.getString(4);
-            int x = set.getInt(5);
-            int y = set.getInt(6);
-            int z = set.getInt(7);
-            String flagsMsg = set.getString(8);
-            UUID ownerUUID = UUID.fromString(set.getString(9));
+            //Skip null rows
+            if (name == null && netName == null) {
+                continue;
+            }
+
+            String destination = set.getString("destination");
+            String worldName = set.getString("world");
+            int x = set.getInt("x");
+            int y = set.getInt("y");
+            int z = set.getInt("z");
+            String flagsMsg = set.getString("flags");
+            UUID ownerUUID = UUID.fromString(set.getString("ownerUUID"));
 
             EnumSet<PortalFlag> flags = PortalFlag.parseFlags(flagsMsg);
 
@@ -203,7 +209,7 @@ public class StargateFactory {
             }
 
             if (areVirtual) {
-                String server = set.getString(10);
+                String server = set.getString("homeServerId");
                 if (!net.portalExists(name)) {
                     IPortal virtualPortal = new VirtualPortal(server, name, net, flags, ownerUUID);
                     net.addPortal(virtualPortal, false);

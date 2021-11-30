@@ -1,8 +1,8 @@
 package net.TheDgtl.Stargate.network;
 
-import com.mysql.jdbc.MySQLConnection;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.database.DriverEnum;
 import net.TheDgtl.Stargate.database.TableNameConfig;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -22,16 +22,19 @@ public class SQLQueryGenerator {
 
     private final StargateLogger logger;
     private final TableNameConfig tableNameConfig;
+    private final DriverEnum driverEnum;
 
     /**
      * Instantiates a new SQL query generator
      *
      * @param tableNameConfig <p>The config to use for table names</p>
      * @param logger          <p>The logger to use for logging error messages</p>
+     * @param driverEnum      <p>The currently used database driver (for syntax variations)</p>
      */
-    public SQLQueryGenerator(TableNameConfig tableNameConfig, StargateLogger logger) {
+    public SQLQueryGenerator(TableNameConfig tableNameConfig, StargateLogger logger, DriverEnum driverEnum) {
         this.tableNameConfig = tableNameConfig;
         this.logger = logger;
+        this.driverEnum = driverEnum;
     }
 
     /**
@@ -115,7 +118,8 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreateFlagTableStatement(Connection connection) throws SQLException {
-        String autoIncrement = (connection instanceof MySQLConnection) ? "AUTO_INCREMENT" : "AUTOINCREMENT";
+        String autoIncrement = (driverEnum == DriverEnum.MARIADB || driverEnum == DriverEnum.MYSQL) ?
+                "AUTO_INCREMENT" : "AUTOINCREMENT";
         String statementMessage = String.format("CREATE TABLE IF NOT EXISTS {Flag} (id INTEGER PRIMARY KEY %s, character CHAR(1) " +
                 "UNIQUE NOT NULL);", autoIncrement);
         statementMessage = replaceKnownTableNames(statementMessage);
