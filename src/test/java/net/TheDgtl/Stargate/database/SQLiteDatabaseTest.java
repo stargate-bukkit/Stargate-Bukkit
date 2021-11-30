@@ -53,7 +53,7 @@ public class SQLiteDatabaseTest {
         MockBukkit.unmock();
         System.out.println("Tearing down test data");
     }
-    
+
     @Test
     @Order(1)
     void addTableTest() throws SQLException {
@@ -70,13 +70,13 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(10)
+    @Order(3)
     void getPortalTest() throws SQLException {
         PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, PortalType.LOCAL);
 
         ResultSet set = statement.executeQuery();
         ResultSetMetaData metaData = set.getMetaData();
-        
+
         int rows = 0;
         while (set.next()) {
             rows++;
