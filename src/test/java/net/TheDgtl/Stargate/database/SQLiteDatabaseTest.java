@@ -50,16 +50,16 @@ public class SQLiteDatabaseTest {
         MockBukkit.unmock();
         System.out.println("Tearing down test data");
     }
-
+    
     @Test
     @Order(1)
-    public void addTableTest() throws SQLException {
+    void addTableTest() throws SQLException {
         finishStatement(generator.generateCreateTableStatement(connection, PortalType.LOCAL));
     }
 
     @Test
     @Order(2)
-    public void addPortalTest() throws NameError, SQLException {
+    void addPortalTest() throws NameError, SQLException {
         Network network = new Network("test", database, generator);
         IPortal portal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "portal", network,
                 UUID.randomUUID());
@@ -68,12 +68,12 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(3)
-    public void getPortalTest() throws SQLException {
+    void getPortalTest() throws SQLException {
         PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, PortalType.LOCAL);
 
         ResultSet set = statement.executeQuery();
         ResultSetMetaData metaData = set.getMetaData();
-
+        
         int rows = 0;
         while (set.next()) {
             rows++;

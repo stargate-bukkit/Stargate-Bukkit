@@ -74,7 +74,9 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateGetAllPortalsStatement(Connection conn, PortalType portalType) throws SQLException {
-        return conn.prepareStatement(String.format("SELECT * FROM %s;", getTableName(portalType)));
+        String statementMsg = String.format("SELECT * FROM %s;", getTableName(portalType));
+        logger.logMessage(Level.FINEST, statementMsg);
+        return conn.prepareStatement(statementMsg);
     }
 
     /**
@@ -158,10 +160,11 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateRemovePortalStatement(Connection conn, IPortal portal,
                                                            PortalType portalType) throws SQLException {
-        PreparedStatement statement = conn.prepareStatement(
-                String.format("DELETE FROM %s WHERE name = ? AND network = ?", getTableName(portalType)));
+        String statementMessage = String.format("DELETE FROM %s WHERE name = ? AND network = ?", getTableName(portalType));
+        PreparedStatement statement = conn.prepareStatement(statementMessage);
         statement.setString(1, portal.getName());
         statement.setString(2, portal.getNetwork().getName());
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return statement;
     }
 

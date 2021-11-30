@@ -81,7 +81,7 @@ public class StargateFactory {
             switch (driver) {
                 case MARIADB:
                 case MYSQL:
-                    return new MySqlDatabase(driver, address, port, bungeeDatabaseName, username, password, useSSL, stargate);
+                    return new MySqlDatabase(driver, address, port, bungeeDatabaseName, username, password, useSSL);
                 default:
                     throw new SQLException("Unsupported driver: Stargate currently supports MariaDb and MySql for remote databases");
             }
