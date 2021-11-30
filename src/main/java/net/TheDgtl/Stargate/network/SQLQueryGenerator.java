@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.network;
 
+import com.mysql.jdbc.MySQLConnection;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.network.portal.IPortal;
@@ -131,8 +132,9 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreateFlagTableStatement(Connection connection) throws SQLException {
-        String statementMessage = "CREATE TABLE {Flag} (id INTEGER, character CHAR(1) UNIQUE " +
-                "NOT NULL, PRIMARY KEY (id));";
+        String autoIncrement = (connection instanceof MySQLConnection) ? "AUTO_INCREMENT" : "AUTOINCREMENT";
+        String statementMessage = String.format("CREATE TABLE {Flag} (id INTEGER PRIMARY KEY %s, character CHAR(1) " +
+                "UNIQUE NOT NULL);", autoIncrement);
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);

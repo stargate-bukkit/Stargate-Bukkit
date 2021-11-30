@@ -47,7 +47,6 @@ public class SQLiteDatabaseTest {
         database = new SQLiteDatabase(new File("test.db"));
         connection = database.getConnection();
         generator = new SQLQueryGenerator("Portal", new FakeStargate());
-        generator = new SQLQueryGenerator("Portals", new FakeStargate());
 
         testNetwork = new Network("test", database, generator);
         testPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "portal", testNetwork,
@@ -127,13 +126,25 @@ public class SQLiteDatabaseTest {
     @Test
     @Order(7)
     void addPortalTest() throws SQLException {
-        finishStatement(generator.generateAddPortalStatement(connection, testPortal, PortalType.LOCAL));
-        PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection);
-        for (Character character : testPortal.getAllFlagsString().toCharArray()) {
-            System.out.println("Adding flag " + character + " to portal: " + testPortal.toString());
-            addFlagStatement.setString(1, testPortal.getName());
-            addFlagStatement.setString(2, testPortal.getNetwork().getName());
-            addFlagStatement.setString(3, String.valueOf(character));
+        connection.setAutoCommit(false);
+        try {
+            finishStatement(generator.generateAddPortalStatement(connection, testPortal, PortalType.LOCAL));
+            
+            PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection);
+            for (Character character : testPortal.getAllFlagsString().toCharArray()) {
+                System.out.println("Adding flag " + character + " to portal: " + testPortal.toString());
+                addFlagStatement.setString(1, testPortal.getName());
+                addFlagStatement.setString(2, testPortal.getNetwork().getName());
+                addFlagStatement.setString(3, String.valueOf(character));
+                addFlagStatement.execute();
+            }
+            addFlagStatement.close();
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (SQLException exception) {
+            connection.rollback();
+            connection.setAutoCommit(true);
+            throw exception;
         }
     }
 
@@ -164,7 +175,7 @@ public class SQLiteDatabaseTest {
     void destroyPortalTest() throws SQLException {
         finishStatement(generator.generateRemovePortalStatement(connection, testPortal, PortalType.LOCAL));
 
-        PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM SG_Hub_Portals"
+        PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM SG_Hub_Portal"
                 + " WHERE name = ? AND network = ?");
         statement.setString(1, testPortal.getName());
         statement.setString(2, testPortal.getNetwork().getName());
