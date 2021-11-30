@@ -12,8 +12,10 @@ import org.bukkit.Material;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import java.io.File;
 import java.sql.Connection;
@@ -23,6 +25,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.UUID;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SQLiteDatabaseTest {
 
     private static Database database;
@@ -67,7 +70,7 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(3)
+    @Order(10)
     void getPortalTest() throws SQLException {
         PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, PortalType.LOCAL);
 
