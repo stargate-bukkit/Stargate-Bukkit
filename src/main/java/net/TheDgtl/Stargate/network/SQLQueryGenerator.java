@@ -18,34 +18,35 @@ import java.util.logging.Level;
  */
 public class SQLQueryGenerator {
 
-    private final String tableName;
+    private final String portalTableName;
     private String interServerTableName;
     private final StargateLogger logger;
     private final String flagTable = "SG_Hub_Flag";
     private final String flagRelationTable = "SG_Hub_PortalFlagRelation";
+    private final String portalViewName = "SG_Hub_PortalView";
 
     /**
      * Instantiates a new SQL query generator
      *
-     * @param tableName <p>The name of the table used for normal portals</p>
+     * @param portalTableName <p>The name of the table used for normal portals</p>
      */
-    public SQLQueryGenerator(String tableName, StargateLogger logger) {
+    public SQLQueryGenerator(String portalTableName, StargateLogger logger) {
         String mainPrefix = "SG_";
         String instancePrefix = "Hub_";
-        this.tableName = mainPrefix + instancePrefix + tableName;
+        this.portalTableName = mainPrefix + instancePrefix + portalTableName;
         this.logger = logger;
     }
 
     /**
      * Instantiates a new SQL query generator
      *
-     * @param tableName            <p>The name of the table used for normal portals</p>
+     * @param portalTableName      <p>The name of the table used for normal portals</p>
      * @param interServerTableName <p>The name of the table used for inter-server portals</p>
      */
-    public SQLQueryGenerator(String tableName, String interServerTableName, StargateLogger logger) {
+    public SQLQueryGenerator(String portalTableName, String interServerTableName, StargateLogger logger) {
         String mainPrefix = "SG_";
         String instancePrefix = "Hub_";
-        this.tableName = mainPrefix + instancePrefix + tableName;
+        this.portalTableName = mainPrefix + instancePrefix + portalTableName;
         this.interServerTableName = mainPrefix + instancePrefix + interServerTableName;
         this.logger = logger;
     }
@@ -54,14 +55,23 @@ public class SQLQueryGenerator {
      * Gets the correct table name, given a portal type
      *
      * @param portalType <p>The portal type to get the corresponding table from</p>
+     * @param getting    <p>Whether to return the view to get from or the table to insert to</p>
      * @return <p>The table corresponding to the portal type, or null if not found</p>
      */
-    private String getTableName(PortalType portalType) {
+    private String getTableName(PortalType portalType, boolean getting) {
         switch (portalType) {
             case LOCAL:
-                return tableName;
+                if (getting) {
+                    return portalViewName;
+                } else {
+                    return portalTableName;
+                }
             case INTER_SERVER:
-                return interServerTableName;
+                if (getting) {
+                    return interServerTableName;
+                } else {
+                    return interServerTableName;
+                }
             default:
                 return null;
         }
@@ -76,9 +86,22 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateGetAllPortalsStatement(Connection conn, PortalType portalType) throws SQLException {
-        String statementMsg = String.format("SELECT * FROM %s;", getTableName(portalType));
+        String statementMsg = String.format("SELECT * FROM %s;", getTableName(portalType, true));
         logger.logMessage(Level.FINEST, statementMsg);
         return conn.prepareStatement(statementMsg);
+    }
+
+    /**
+     * Gets a prepared statement for getting all stored flags
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateGetAllFlagsStatement(Connection connection) throws SQLException {
+        String statementMessage = String.format("SELECT id, character FROM %s;", flagTable);
+        logger.logMessage(Level.FINEST, statementMessage);
+        return connection.prepareStatement(statementMessage);
     }
 
     /**
@@ -94,7 +117,7 @@ public class SQLQueryGenerator {
                 " isOnline BOOLEAN, homeServerId VARCHAR(36)," : " isBungee BOOLEAN,";
         String statementMessage = String.format("CREATE TABLE IF NOT EXISTS %s (name NVARCHAR(180), network NVARCHAR(180), " +
                 "destination NVARCHAR(180), world NVARCHAR(255) NOT NULL, x INTEGER, y INTEGER, z INTEGER, ownerUUID VARCHAR(36),%s " +
-                "PRIMARY KEY (name, network));", getTableName(portalType), interServerExtraFields);
+                "PRIMARY KEY (name, network));", getTableName(portalType, false), interServerExtraFields);
         //TODO: Add CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci') equivalent for SQLite
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return conn.prepareStatement(statementMessage);
@@ -108,8 +131,9 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreateFlagTableStatement(Connection connection) throws SQLException {
-        String statementMessage = String.format("CREATE TABLE %s (id INTEGER AUTO_INCREMENT, character CHAR(1) UNIQUE NOT NULL, " +
-                "PRIMARY KEY (id));", flagTable);
+        String statementMessage = "CREATE TABLE {Flag} (id INTEGER, character CHAR(1) UNIQUE " +
+                "NOT NULL, PRIMARY KEY (id));";
+        statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
     }
@@ -122,10 +146,27 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreateFlagRelationTableStatement(Connection connection) throws SQLException {
-        String statementMessage = String.format("CREATE TABLE %s (name NVARCHAR(180), " +
-                        "network NVARCHAR(180), flag INTEGER, PRIMARY KEY (name, network, flag), FOREIGN KEY (name) REFERENCES " +
-                        "%s (name), FOREIGN KEY (network) REFERENCES %s (network), FOREIGN KEY (flag) REFERENCES %s (id));",
-                flagRelationTable, tableName, tableName, flagTable);
+        String statementMessage = "CREATE TABLE {PortalFlagRelation} (name NVARCHAR(180), " +
+                "network NVARCHAR(180), flag INTEGER, PRIMARY KEY (name, network, flag), FOREIGN KEY (name) REFERENCES " +
+                "{Portal} (name), FOREIGN KEY (network) REFERENCES {Portal} (network), FOREIGN KEY (flag) REFERENCES {Flag} (id));";
+        statementMessage = replaceKnownTableNames(statementMessage);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
+     * Gets a prepared statement for generating the portal view
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateCreatePortalViewTableStatement(Connection connection) throws SQLException {
+        String statementMessage = "CREATE VIEW {PortalView} AS SELECT {Portal}.*, " +
+                "GROUP_CONCAT({Flag}.character, '') AS flags FROM {Portal} LEFT OUTER JOIN {PortalFlagRelation} ON " +
+                "{Portal}.name = {PortalFlagRelation}.name AND {Portal}.network = {PortalFlagRelation}.network LEFT " +
+                "OUTER JOIN {Flag} ON {PortalFlagRelation}.flag = {Flag}.id;";
+        statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
     }
@@ -151,8 +192,9 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateAddPortalFlagRelationStatement(Connection connection) throws SQLException {
-        String statementMessage = String.format("INSERT INTO %s (name, network, flag) VALUES (?, ?, " +
-                "(SELECT id FROM %s WHERE character = ?));", flagRelationTable, flagTable);
+        String statementMessage = "INSERT INTO {PortalFlagRelation} (name, network, flag) VALUES (?, ?, " +
+                "(SELECT id FROM {Flag} WHERE character = ?));";
+        statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
     }
@@ -172,7 +214,7 @@ public class SQLQueryGenerator {
         String extraKeys = (isInterServer ? ", homeServerId, isOnline" : ", isBungee");
         String extraValues = (isInterServer ? ", ?, ?" : "");
         String statementMessage = String.format("INSERT INTO %s (network, name, destination, world, x, y, z, ownerUUID%s)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?%s);", getTableName(portalType), extraKeys, extraValues);
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?%s);", getTableName(portalType, false), extraKeys, extraValues);
 
         PreparedStatement statement = conn.prepareStatement(statementMessage);
 
@@ -219,7 +261,7 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateRemovePortalStatement(Connection conn, IPortal portal,
                                                            PortalType portalType) throws SQLException {
-        String statementMessage = String.format("DELETE FROM %s WHERE name = ? AND network = ?", getTableName(portalType));
+        String statementMessage = String.format("DELETE FROM %s WHERE name = ? AND network = ?", getTableName(portalType, false));
         PreparedStatement statement = conn.prepareStatement(statementMessage);
         statement.setString(1, portal.getName());
         statement.setString(2, portal.getNetwork().getName());
@@ -239,7 +281,7 @@ public class SQLQueryGenerator {
     public PreparedStatement generateSetServerStatement(Connection conn, IPortal portal,
                                                         PortalType portalType) throws SQLException {
         PreparedStatement statement = conn.prepareStatement(
-                String.format("UPDATE %s SET server = ? WHERE network = ? AND name = ?;", getTableName(portalType)));
+                String.format("UPDATE %s SET server = ? WHERE network = ? AND name = ?;", getTableName(portalType, false)));
 
         statement.setString(1, Stargate.serverName);
         statement.setString(2, portal.getNetwork().getName());
@@ -263,12 +305,40 @@ public class SQLQueryGenerator {
     public PreparedStatement generateSetPortalOnlineStatusStatement(Connection conn, IPortal portal, boolean isOnline,
                                                                     PortalType portalType) throws SQLException {
         PreparedStatement statement = conn.prepareStatement(
-                String.format("UPDATE %s SET isOnline = ? WHERE network = ? AND name = ?;", getTableName(portalType)));
+                String.format("UPDATE %s SET isOnline = ? WHERE network = ? AND name = ?;", getTableName(portalType, false)));
 
         statement.setBoolean(1, isOnline);
         statement.setString(2, portal.getNetwork().getName());
         statement.setString(3, portal.getName());
         return statement;
+    }
+
+    /**
+     * Replaces known table keys with their proper names
+     *
+     * @param input <p>The input query string to replace in</p>
+     * @return <p>The query string with keys replaced</p>
+     */
+    private String replaceKnownTableNames(String input) {
+        return replaceTableNames(input,
+                new String[]{"{Portal}", "{PortalView}", "{Flag}", "{PortalFlagRelation}"},
+                new String[]{portalTableName, portalViewName, flagTable, flagRelationTable});
+    }
+
+    /**
+     * Replaces the table name keys with the table name values
+     *
+     * @param query  <p>The query to replace keys for</p>
+     * @param keys   <p>The keys to replace</p>
+     * @param values <p>The corresponding values of each key</p>
+     * @return <p>The query with the values replaced</p>
+     */
+    private String replaceTableNames(String query, String[] keys, String[] values) {
+        int min = Math.min(keys.length, values.length);
+        for (int i = 0; i < min; i++) {
+            query = query.replace(keys[i], values[i]);
+        }
+        return query;
     }
 
 }

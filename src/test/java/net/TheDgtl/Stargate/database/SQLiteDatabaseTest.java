@@ -56,6 +56,7 @@ public class SQLiteDatabaseTest {
 
     @AfterAll
     public static void tearDown() throws SQLException {
+        finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS SG_Hub_PortalView"));
         finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_PortalFlagRelation"));
         finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_Portal;"));
         finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Hub_Flag;"));
@@ -84,10 +85,17 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(4)
+    void createPortalViewTest() throws SQLException {
+        finishStatement(generator.generateCreatePortalViewTableStatement(connection));
+    }
+
+    @Test
+    @Order(5)
     void addFlagsTest() throws SQLException {
         PreparedStatement statement = generator.generateAddFlagStatement(connection);
 
         for (PortalFlag flag : PortalFlag.values()) {
+            System.out.println("Adding flag " + flag.getLabel() + " to the database");
             statement.setString(1, String.valueOf(flag.getLabel()));
             statement.execute();
         }
@@ -95,11 +103,34 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
+    void getFlagsTest() throws SQLException {
+        printTableInfo("SG_Hub_Flag");
+
+        PreparedStatement statement = generator.generateGetAllFlagsStatement(connection);
+
+        ResultSet set = statement.executeQuery();
+        ResultSetMetaData metaData = set.getMetaData();
+
+        int rows = 0;
+        while (set.next()) {
+            System.out.print("Flag ");
+            rows++;
+            for (int i = 1; i < metaData.getColumnCount() - 1; i++) {
+                System.out.print(metaData.getColumnName(i) + " = " + set.getObject(i) + ", ");
+            }
+            System.out.println();
+        }
+        Assertions.assertTrue(rows > 0);
+    }
+
+    @Test
+    @Order(7)
     void addPortalTest() throws SQLException {
         finishStatement(generator.generateAddPortalStatement(connection, testPortal, PortalType.LOCAL));
         PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection);
         for (Character character : testPortal.getAllFlagsString().toCharArray()) {
+            System.out.println("Adding flag " + character + " to portal: " + testPortal.toString());
             addFlagStatement.setString(1, testPortal.getName());
             addFlagStatement.setString(2, testPortal.getNetwork().getName());
             addFlagStatement.setString(3, String.valueOf(character));
@@ -107,8 +138,10 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(6)
+    @Order(8)
     void getPortalTest() throws SQLException {
+        printTableInfo("SG_Hub_PortalView");
+
         PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, PortalType.LOCAL);
 
         ResultSet set = statement.executeQuery();
@@ -118,24 +151,45 @@ public class SQLiteDatabaseTest {
         while (set.next()) {
             rows++;
             for (int i = 1; i < metaData.getColumnCount() - 1; i++) {
-                System.out.println(
-                        metaData.getColumnName(i) + " = " + set.getObject(i));
+                System.out.print(
+                        metaData.getColumnName(i) + " = " + set.getObject(i) + ", ");
             }
+            System.out.println();
         }
         Assertions.assertTrue(rows > 0);
     }
 
     @Test
-    @Order(7)
+    @Order(9)
     void destroyPortalTest() throws SQLException {
         finishStatement(generator.generateRemovePortalStatement(connection, testPortal, PortalType.LOCAL));
 
         PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM SG_Hub_Portals"
-                + " WHERE name=? AND network=?");
+                + " WHERE name = ? AND network = ?");
         statement.setString(1, testPortal.getName());
         statement.setString(2, testPortal.getNetwork().getName());
         ResultSet set = statement.executeQuery();
         Assertions.assertFalse(set.next());
+    }
+
+    /**
+     * Prints info about a table for debugging
+     *
+     * @param tableName <p>The table to get information about</p>
+     * @throws SQLException <p>If unable to get information about the table</p>
+     */
+    private static void printTableInfo(String tableName) throws SQLException {
+        System.out.println("Getting table info for: " + tableName);
+        PreparedStatement tableInfoStatement = connection.prepareStatement(String.format("pragma table_info('%s');", tableName));
+        ResultSet infoResult = tableInfoStatement.executeQuery();
+        ResultSetMetaData infoMetaData = infoResult.getMetaData();
+        while (infoResult.next()) {
+            for (int i = 1; i < infoMetaData.getColumnCount() - 1; i++) {
+                System.out.print(
+                        infoMetaData.getColumnName(i) + " = " + infoResult.getObject(i) + ", ");
+            }
+            System.out.println();
+        }
     }
 
     /**
