@@ -83,6 +83,12 @@ public class MySQLDatabaseTest {
 
     @Test
     @Order(1)
+    void createServerInfoTableTest() throws SQLException {
+        tester.createServerInfoTableTest();
+    }
+
+    @Test
+    @Order(1)
     void createLastKnownNameTableTest() throws SQLException {
         tester.createLastKnownNameTableTest();
     }

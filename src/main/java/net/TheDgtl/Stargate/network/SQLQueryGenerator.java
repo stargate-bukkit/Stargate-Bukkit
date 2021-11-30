@@ -26,7 +26,8 @@ public class SQLQueryGenerator {
     /**
      * Instantiates a new SQL query generator
      *
-     * @param portalTableName <p>The name of the table used for normal portals</p>
+     * @param tableNameConfig <p>The config to use for table names</p>
+     * @param logger          <p>The logger to use for logging error messages</p>
      */
     public SQLQueryGenerator(TableNameConfig tableNameConfig, StargateLogger logger) {
         this.tableNameConfig = tableNameConfig;
@@ -123,6 +124,21 @@ public class SQLQueryGenerator {
     }
 
     /**
+     * Gets a prepared statement for creating the server info table
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateCreateServerInfoTableStatement(Connection connection) throws SQLException {
+        String statementMessage = "CREATE TABLE {ServerInfo} (serverId VARCHAR(36), serverName NVARCHAR(255), " +
+                "serverPrefix VARCHAR(50), PRIMARY KEY (serverId));";
+        statementMessage = replaceKnownTableNames(statementMessage);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
      * Gets a prepared statement for creating the last known name table
      *
      * @param connection <p>The database connection to use</p>
@@ -161,6 +177,7 @@ public class SQLQueryGenerator {
      * Gets a prepared statement for generating the portal view
      *
      * @param connection <p>The database connection to use</p>
+     * @param portalType <p>The type of portal to create the view for</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
@@ -333,11 +350,12 @@ public class SQLQueryGenerator {
     private String replaceKnownTableNames(String input) {
         return replaceTableNames(input,
                 new String[]{"{Portal}", "{PortalView}", "{Flag}", "{PortalFlagRelation}", "{InterPortal}",
-                        "{InterPortalView}", "{InterPortalFlagRelation}", "{LastKnownName}"},
+                        "{InterPortalView}", "{InterPortalFlagRelation}", "{LastKnownName}", "{ServerInfo}"},
                 new String[]{tableNameConfig.getPortalTableName(), tableNameConfig.getPortalViewName(),
                         tableNameConfig.getFlagTableName(), tableNameConfig.getFlagRelationTableName(),
                         tableNameConfig.getInterPortalTableName(), tableNameConfig.getInterPortalViewName(),
-                        tableNameConfig.getInterFlagRelationTableName(), tableNameConfig.getLastKnownNameTableName()});
+                        tableNameConfig.getInterFlagRelationTableName(), tableNameConfig.getLastKnownNameTableName(),
+                        tableNameConfig.getServerInfoTableName()});
     }
 
     /**

@@ -68,6 +68,10 @@ public class DatabaseTester {
         finishStatement(generator.generateCreatePortalViewTableStatement(connection, PortalType.INTER_SERVER));
     }
 
+    void createServerInfoTableTest() throws SQLException {
+        finishStatement(generator.generateCreateServerInfoTableStatement(connection));
+    }
+
     void addFlagsTest() throws SQLException {
         PreparedStatement statement = generator.generateAddFlagStatement(connection);
 
