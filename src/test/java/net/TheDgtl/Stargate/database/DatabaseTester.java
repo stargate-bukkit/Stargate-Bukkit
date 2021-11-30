@@ -20,14 +20,16 @@ public class DatabaseTester {
 
     private static IPortal testPortal;
     private static IPortal testInterPortal;
+    private static TableNameConfig nameConfig;
 
     public DatabaseTester(Database database, Connection connection, SQLQueryGenerator generator, IPortal testPortal,
-                          IPortal testInterPortal) {
+                          IPortal testInterPortal, TableNameConfig nameConfig) {
         DatabaseTester.database = database;
         DatabaseTester.connection = connection;
         DatabaseTester.generator = generator;
         DatabaseTester.testPortal = testPortal;
         DatabaseTester.testInterPortal = testInterPortal;
+        DatabaseTester.nameConfig = nameConfig;
     }
 
     public static void tearDown() throws SQLException {
@@ -193,8 +195,8 @@ public class DatabaseTester {
     void destroyPortalTest() throws SQLException {
         finishStatement(generator.generateRemovePortalStatement(connection, testPortal, PortalType.LOCAL));
 
-        PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM SG_Test_Portal"
-                + " WHERE name = ? AND network = ?");
+        PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM " +
+                nameConfig.getPortalTableName() + " WHERE name = ? AND network = ?");
         statement.setString(1, testPortal.getName());
         statement.setString(2, testPortal.getNetwork().getName());
         ResultSet set = statement.executeQuery();
@@ -230,6 +232,23 @@ public class DatabaseTester {
             }
             System.out.println();
         }
+    }
+
+    /**
+     * Deletes all table names used for testing
+     *
+     * @param nameConfig <p>The name config to get table names from</p>
+     * @throws SQLException <p>If unable to delete one of the tables</p>
+     */
+    static void deleteAllTables(TableNameConfig nameConfig) throws SQLException {
+        finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS " + nameConfig.getInterPortalViewName()));
+        finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS " + nameConfig.getPortalViewName()));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getInterFlagRelationTableName()));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getFlagRelationTableName()));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getPortalTableName()));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getInterPortalTableName()));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getLastKnownNameTableName()));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getFlagTableName()));
     }
 
     /**

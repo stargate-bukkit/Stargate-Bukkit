@@ -22,13 +22,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static net.TheDgtl.Stargate.database.DatabaseTester.finishStatement;
-
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SQLiteDatabaseTest {
 
     private static Connection connection;
     private static DatabaseTester tester;
+    private static TableNameConfig nameConfig;
 
     @BeforeAll
     public static void setUp() throws SQLException, NameError {
@@ -39,27 +38,20 @@ public class SQLiteDatabaseTest {
 
         Database database = new SQLiteDatabase(new File("test.db"));
         connection = database.getConnection();
-        SQLQueryGenerator generator = new SQLQueryGenerator("Portal", "InterPortal",
-                new FakeStargate());
+        nameConfig = new TableNameConfig("SG_Test_", "Server_");
+        SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate());
 
         Network testNetwork = new Network("test", database, generator);
         IPortal testPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "portal",
                 testNetwork, UUID.randomUUID());
         IPortal testInterPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "iportal",
                 testNetwork, UUID.randomUUID());
-        tester = new DatabaseTester(database, connection, generator, testPortal, testInterPortal);
+        tester = new DatabaseTester(database, connection, generator, testPortal, testInterPortal, nameConfig);
     }
 
     @AfterAll
     public static void tearDown() throws SQLException {
-        finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS SG_Test_InterPortalView"));
-        finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS SG_Test_PortalView"));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Test_InterPortalFlagRelation"));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Test_PortalFlagRelation"));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Test_Portal;"));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Test_InterPortal;"));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Test_LastKnownName;"));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS SG_Test_Flag;"));
+        DatabaseTester.deleteAllTables(nameConfig);
         connection.close();
         MockBukkit.unmock();
         System.out.println("Tearing down test data");

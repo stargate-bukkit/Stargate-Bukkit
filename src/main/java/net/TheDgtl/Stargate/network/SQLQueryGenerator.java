@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.network;
 import com.mysql.jdbc.MySQLConnection;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.database.TableNameConfig;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -19,39 +20,16 @@ import java.util.logging.Level;
  */
 public class SQLQueryGenerator {
 
-    private final String portalTableName;
-    private String interPortalTableName;
     private final StargateLogger logger;
-    private final String flagTable = "SG_Test_Flag";
-    private final String flagRelationTable = "SG_Test_PortalFlagRelation";
-    private final String portalViewName = "SG_Test_PortalView";
-    private final String interPortalViewName = "SG_Test_InterPortalView";
-    private final String interFlagRelationTable = "SG_Test_InterPortalFlagRelation";
-    private final String lastKnownNameTable = "SG_Test_LastKnownName";
+    private final TableNameConfig tableNameConfig;
 
     /**
      * Instantiates a new SQL query generator
      *
      * @param portalTableName <p>The name of the table used for normal portals</p>
      */
-    public SQLQueryGenerator(String portalTableName, StargateLogger logger) {
-        String mainPrefix = "SG_";
-        String instancePrefix = "Test_";
-        this.portalTableName = mainPrefix + instancePrefix + portalTableName;
-        this.logger = logger;
-    }
-
-    /**
-     * Instantiates a new SQL query generator
-     *
-     * @param portalTableName      <p>The name of the table used for normal portals</p>
-     * @param interPortalTableName <p>The name of the table used for inter-server portals</p>
-     */
-    public SQLQueryGenerator(String portalTableName, String interPortalTableName, StargateLogger logger) {
-        String mainPrefix = "SG_";
-        String instancePrefix = "Test_";
-        this.portalTableName = mainPrefix + instancePrefix + portalTableName;
-        this.interPortalTableName = mainPrefix + instancePrefix + interPortalTableName;
+    public SQLQueryGenerator(TableNameConfig tableNameConfig, StargateLogger logger) {
+        this.tableNameConfig = tableNameConfig;
         this.logger = logger;
     }
 
@@ -67,15 +45,15 @@ public class SQLQueryGenerator {
             case LOCAL:
             case BUNGEE:
                 if (getting) {
-                    return portalViewName;
+                    return tableNameConfig.getPortalViewName();
                 } else {
-                    return portalTableName;
+                    return tableNameConfig.getPortalTableName();
                 }
             case INTER_SERVER:
                 if (getting) {
-                    return interPortalViewName;
+                    return tableNameConfig.getInterPortalViewName();
                 } else {
-                    return interPortalTableName;
+                    return tableNameConfig.getInterPortalTableName();
                 }
             default:
                 return null;
@@ -104,7 +82,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateGetAllFlagsStatement(Connection connection) throws SQLException {
-        String statementMessage = String.format("SELECT id, character FROM %s;", flagTable);
+        String statementMessage = String.format("SELECT id, character FROM %s;", tableNameConfig.getFlagTableName());
         logger.logMessage(Level.FINEST, statementMessage);
         return connection.prepareStatement(statementMessage);
     }
@@ -208,7 +186,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateAddFlagStatement(Connection connection) throws SQLException {
-        String statementMessage = String.format("INSERT INTO %s (character) VALUES (?);", flagTable);
+        String statementMessage = String.format("INSERT INTO %s (character) VALUES (?);", tableNameConfig.getFlagTableName());
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
     }
@@ -356,8 +334,10 @@ public class SQLQueryGenerator {
         return replaceTableNames(input,
                 new String[]{"{Portal}", "{PortalView}", "{Flag}", "{PortalFlagRelation}", "{InterPortal}",
                         "{InterPortalView}", "{InterPortalFlagRelation}", "{LastKnownName}"},
-                new String[]{portalTableName, portalViewName, flagTable, flagRelationTable, interPortalTableName,
-                        interPortalViewName, interFlagRelationTable, lastKnownNameTable});
+                new String[]{tableNameConfig.getPortalTableName(), tableNameConfig.getPortalViewName(),
+                        tableNameConfig.getFlagTableName(), tableNameConfig.getFlagRelationTableName(),
+                        tableNameConfig.getInterPortalTableName(), tableNameConfig.getInterPortalViewName(),
+                        tableNameConfig.getInterFlagRelationTableName(), tableNameConfig.getLastKnownNameTableName()});
     }
 
     /**

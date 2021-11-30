@@ -6,6 +6,7 @@ import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.DriverEnum;
 import net.TheDgtl.Stargate.database.MySqlDatabase;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
+import net.TheDgtl.Stargate.database.TableNameConfig;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
@@ -47,10 +48,8 @@ public class StargateFactory {
         database = loadDatabase(stargate);
         useInterServerNetworks = (Setting.getBoolean(Setting.USING_REMOTE_DATABASE) && Setting.getBoolean(Setting.USING_BUNGEE));
 
-        if (useInterServerNetworks) {
-            this.sqlMaker = new SQLQueryGenerator(tableName, sharedTableName, Stargate.getInstance());
-        } else
-            this.sqlMaker = new SQLQueryGenerator(tableName, Stargate.getInstance());
+        TableNameConfig config = new TableNameConfig("SG_", "");
+        this.sqlMaker = new SQLQueryGenerator(config, Stargate.getInstance());
         createTables();
 
 
