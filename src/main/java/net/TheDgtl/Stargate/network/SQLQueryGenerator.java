@@ -6,7 +6,6 @@ import net.TheDgtl.Stargate.database.DriverEnum;
 import net.TheDgtl.Stargate.database.TableNameConfig;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
-import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -100,7 +99,7 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateCreatePortalTableStatement(Connection conn, PortalType portalType) throws SQLException {
         String interServerExtraFields = (portalType == PortalType.INTER_SERVER) ?
-                " isOnline BOOLEAN, homeServerId VARCHAR(36)," : " isBungee BOOLEAN,";
+                " isOnline BOOLEAN, homeServerId VARCHAR(36)," : "";
         String statementMessage = String.format("CREATE TABLE IF NOT EXISTS %s (name NVARCHAR(180), network NVARCHAR(180), " +
                 "destination NVARCHAR(180), world NVARCHAR(255) NOT NULL, x INTEGER, y INTEGER, z INTEGER, ownerUUID VARCHAR(36),%s " +
                 "PRIMARY KEY (name, network));", getTableName(portalType, false), interServerExtraFields);
@@ -242,10 +241,10 @@ public class SQLQueryGenerator {
     public PreparedStatement generateAddPortalStatement(Connection conn, IPortal portal,
                                                         PortalType portalType) throws SQLException {
         boolean isInterServer = (portalType == PortalType.INTER_SERVER);
-        String extraKeys = (isInterServer ? ", homeServerId, isOnline" : ", isBungee");
-        String extraValues = (isInterServer ? ", ?" : "");
+        String extraKeys = (isInterServer ? ", homeServerId, isOnline" : "");
+        String extraValues = (isInterServer ? ", ?, ?" : "");
         String statementMessage = String.format("INSERT INTO %s (network, name, destination, world, x, y, z, ownerUUID%s)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?%s);", getTableName(portalType, false), extraKeys, extraValues);
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?%s);", getTableName(portalType, false), extraKeys, extraValues);
 
         PreparedStatement statement = conn.prepareStatement(statementMessage);
 
@@ -270,8 +269,6 @@ public class SQLQueryGenerator {
         if (isInterServer) {
             statement.setString(9, Stargate.serverName);
             statement.setBoolean(10, true);
-        } else {
-            statement.setBoolean(9, portal.hasFlag(PortalFlag.BUNGEE));
         }
 
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
