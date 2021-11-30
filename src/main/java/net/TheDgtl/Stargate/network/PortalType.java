@@ -11,11 +11,6 @@ public enum PortalType {
     LOCAL,
 
     /**
-     * Bungee portals are the bungee portals on this server
-     */
-    BUNGEE,
-
-    /**
      * Inter-server portals are portals from all servers, and available from all servers
      */
     INTER_SERVER

@@ -47,7 +47,6 @@ public class SQLQueryGenerator {
     private String getTableName(PortalType portalType, boolean getting) {
         switch (portalType) {
             case LOCAL:
-            case BUNGEE:
                 if (getting) {
                     return tableNameConfig.getPortalViewName();
                 } else {
@@ -190,7 +189,7 @@ public class SQLQueryGenerator {
                 "COALESCE(GROUP_CONCAT({Flag}.character, ''), '') AS flags, {LastKnownName}.lastKnownName FROM {Portal} LEFT OUTER " +
                 "JOIN {PortalFlagRelation} ON {Portal}.name = {PortalFlagRelation}.name AND {Portal}.network = " +
                 "{PortalFlagRelation}.network LEFT OUTER JOIN {Flag} ON {PortalFlagRelation}.flag = {Flag}.id LEFT " +
-                "OUTER JOIN {LastKnownName} ON {Portal}.network = {LastKnownName}.uuid;";
+                "OUTER JOIN {LastKnownName} ON {Portal}.network = {LastKnownName}.uuid GROUP BY {Portal}.name, {Portal}.network;";
         if (portalType == PortalType.INTER_SERVER) {
             statementMessage = statementMessage.replace("{Portal", "{InterPortal");
         }
@@ -249,8 +248,6 @@ public class SQLQueryGenerator {
                 + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?%s);", getTableName(portalType, false), extraKeys, extraValues);
 
         PreparedStatement statement = conn.prepareStatement(statementMessage);
-
-        //TODO: Add portal flags
 
         statement.setString(1, portal.getNetwork().getName());
         statement.setString(2, portal.getName());

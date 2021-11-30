@@ -92,15 +92,47 @@ public class Network {
     }
 
     protected void savePortal(Database database, IPortal portal, PortalType portalType) {
+
+        Connection connection = null;
         try {
-            Connection conn = database.getConnection();
-            PreparedStatement statement = sqlMaker.generateAddPortalStatement(conn, portal, portalType);
-            statement.execute();
-            statement.close();
-            conn.close();
-            updatePortals();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            connection = database.getConnection();
+            connection.setAutoCommit(false);
+            PreparedStatement savePortalStatement = sqlMaker.generateAddPortalStatement(connection, portal, portalType);
+            savePortalStatement.execute();
+            savePortalStatement.close();
+
+            PreparedStatement addFlagStatement = sqlMaker.generateAddPortalFlagRelationStatement(connection, portalType);
+            addFlags(addFlagStatement, portal);
+            addFlagStatement.close();
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (SQLException exception) {
+            try {
+                if (connection != null) {
+                    connection.rollback();
+                    connection.setAutoCommit(true);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            exception.printStackTrace();
+        }
+    }
+
+    /**
+     * Adds flags for the given portal to the database
+     *
+     * @param addFlagStatement <p>The statement used to add flags</p>
+     * @param portal           <p>The portal to add the flags of</p>
+     * @throws SQLException <p>If unable to set the flags</p>
+     */
+    private void addFlags(PreparedStatement addFlagStatement, IPortal portal) throws SQLException {
+        for (Character character : portal.getAllFlagsString().toCharArray()) {
+            System.out.println("Adding flag " + character + " to portal: " + portal);
+            addFlagStatement.setString(1, portal.getName());
+            addFlagStatement.setString(2, portal.getNetwork().getName());
+            addFlagStatement.setString(3, String.valueOf(character));
+            addFlagStatement.execute();
         }
     }
 

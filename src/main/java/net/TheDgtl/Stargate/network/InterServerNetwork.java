@@ -116,7 +116,7 @@ public class InterServerNetwork extends Network {
          * Also save it to the inter-server database, so that it can be
          * seen on other servers
          */
-        super.savePortal(database, portal, PortalType.BUNGEE);
+        super.savePortal(database, portal, PortalType.LOCAL);
         registerToInterServer(portal);
     }
 }
