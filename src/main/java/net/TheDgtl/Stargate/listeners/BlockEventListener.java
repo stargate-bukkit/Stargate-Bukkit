@@ -26,6 +26,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
@@ -87,8 +88,12 @@ public class BlockEventListener implements Listener {
                 || !((Portal) portal).loadDestination().hasFlag(PortalFlag.FREE);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
+        Location loc = event.getBlock().getLocation();
+        Portal portal = Network.getPortal(loc, GateStructureType.IRIS);
+        if(portal != null)
+            event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -247,6 +252,14 @@ public class BlockEventListener implements Listener {
         Block from = event.getBlock();
         if ((Network.getPortal(to.getLocation(), GateStructureType.IRIS) != null)
                 || (Network.getPortal(from.getLocation(), GateStructureType.IRIS) != null))
+            event.setCancelled(true);
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockFormEvent(BlockFormEvent event) {
+        Location loc = event.getBlock().getLocation();
+        Portal portal = Network.getPortal(loc, GateStructureType.IRIS);
+        if(portal != null)
             event.setCancelled(true);
     }
 }
