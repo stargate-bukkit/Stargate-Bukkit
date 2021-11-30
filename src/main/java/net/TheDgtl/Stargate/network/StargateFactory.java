@@ -24,8 +24,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -97,30 +99,66 @@ public class StargateFactory {
         }
     }
 
-    private void runStatement(Database database, PreparedStatement statement) throws SQLException {
-        Connection conn = database.getConnection();
+    private void runStatement(PreparedStatement statement) throws SQLException {
         statement.execute();
         statement.close();
     }
 
     private void createTables() throws SQLException {
         Connection conn1 = database.getConnection();
-        PreparedStatement localPortalsStatement = sqlMaker.generateCreateTableStatement(conn1, PortalType.LOCAL);
-        runStatement(database, localPortalsStatement);
+        PreparedStatement localPortalsStatement = sqlMaker.generateCreatePortalTableStatement(conn1, PortalType.LOCAL);
+        runStatement(localPortalsStatement);
+        PreparedStatement flagStatement = sqlMaker.generateCreateFlagTableStatement(conn1);
+        runStatement(flagStatement);
+        addMissingFlags(conn1, sqlMaker);
+        PreparedStatement serverInfoStatement = sqlMaker.generateCreateServerInfoTableStatement(conn1);
+        runStatement(serverInfoStatement);
+        PreparedStatement lastKnownNameStatement = sqlMaker.generateCreateLastKnownNameTableStatement(conn1);
+        runStatement(lastKnownNameStatement);
+        PreparedStatement portalRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(conn1, PortalType.LOCAL);
+        runStatement(portalRelationStatement);
+        PreparedStatement portalViewStatement = sqlMaker.generateCreatePortalViewStatement(conn1, PortalType.LOCAL);
+        runStatement(portalViewStatement);
         conn1.close();
 
         if (!useInterServerNetworks) {
             return;
         }
-        Connection conn2 = database.getConnection();
-        PreparedStatement localInterServerPortalsStatement = sqlMaker.generateCreateTableStatement(conn2, PortalType.BUNGEE);
-        runStatement(database, localInterServerPortalsStatement);
-        conn2.close();
 
         Connection conn3 = database.getConnection();
-        PreparedStatement interServerPortalsStatement = sqlMaker.generateCreateTableStatement(conn3, PortalType.INTER_SERVER);
-        runStatement(database, interServerPortalsStatement);
+        PreparedStatement interServerPortalsStatement = sqlMaker.generateCreatePortalTableStatement(conn3, PortalType.INTER_SERVER);
+        runStatement(interServerPortalsStatement);
+        PreparedStatement interServerRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(conn1, PortalType.INTER_SERVER);
+        runStatement(interServerRelationStatement);
+        PreparedStatement interPortalViewStatement = sqlMaker.generateCreatePortalViewStatement(conn1, PortalType.INTER_SERVER);
+        runStatement(interPortalViewStatement);
         conn3.close();
+    }
+
+    /**
+     * Adds any flags not already in the database
+     *
+     * @param connection <p>The database connection to use</p>
+     * @param sqlMaker   <p>The SQL Query Generator to use for generating queries</p>
+     * @throws SQLException <p>If unable to get from, or update the database</p>
+     */
+    private void addMissingFlags(Connection connection, SQLQueryGenerator sqlMaker) throws SQLException {
+        PreparedStatement statement = sqlMaker.generateGetAllFlagsStatement(connection);
+        PreparedStatement addStatement = sqlMaker.generateAddFlagStatement(connection);
+
+        ResultSet set = statement.executeQuery();
+        List<String> knownFlags = new ArrayList<>();
+        while (set.next()) {
+            knownFlags.add(set.getString("character"));
+        }
+        for (PortalFlag flag : PortalFlag.values()) {
+            if (!knownFlags.contains(String.valueOf(flag.getLabel()))) {
+                addStatement.setString(1, String.valueOf(flag.getLabel()));
+                addStatement.execute();
+            }
+        }
+        statement.close();
+        addStatement.close();
     }
 
     private void loadAllPortals(Database database, PortalType tablePortalType) throws SQLException {

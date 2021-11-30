@@ -89,14 +89,14 @@ public class SQLQueryGenerator {
     }
 
     /**
-     * Gets a prepared statement for creating a new table
+     * Gets a prepared statement for creating a new portals table
      *
      * @param conn       <p>The database connection to use</p>
      * @param portalType <p>The type of the portal (used to determine which table to create)</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreateTableStatement(Connection conn, PortalType portalType) throws SQLException {
+    public PreparedStatement generateCreatePortalTableStatement(Connection conn, PortalType portalType) throws SQLException {
         String interServerExtraFields = (portalType == PortalType.INTER_SERVER) ?
                 " isOnline BOOLEAN, homeServerId VARCHAR(36)," : " isBungee BOOLEAN,";
         String statementMessage = String.format("CREATE TABLE IF NOT EXISTS %s (name NVARCHAR(180), network NVARCHAR(180), " +
@@ -116,7 +116,7 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateCreateFlagTableStatement(Connection connection) throws SQLException {
         String autoIncrement = (connection instanceof MySQLConnection) ? "AUTO_INCREMENT" : "AUTOINCREMENT";
-        String statementMessage = String.format("CREATE TABLE {Flag} (id INTEGER PRIMARY KEY %s, character CHAR(1) " +
+        String statementMessage = String.format("CREATE TABLE IF NOT EXISTS {Flag} (id INTEGER PRIMARY KEY %s, character CHAR(1) " +
                 "UNIQUE NOT NULL);", autoIncrement);
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
@@ -131,7 +131,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreateServerInfoTableStatement(Connection connection) throws SQLException {
-        String statementMessage = "CREATE TABLE {ServerInfo} (serverId VARCHAR(36), serverName NVARCHAR(255), " +
+        String statementMessage = "CREATE TABLE IF NOT EXISTS {ServerInfo} (serverId VARCHAR(36), serverName NVARCHAR(255), " +
                 "serverPrefix VARCHAR(50), PRIMARY KEY (serverId));";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
@@ -146,7 +146,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreateLastKnownNameTableStatement(Connection connection) throws SQLException {
-        String statementMessage = "CREATE TABLE {LastKnownName} (uuid VARCHAR(36), lastKnownName VARCHAR(16), " +
+        String statementMessage = "CREATE TABLE IF NOT EXISTS {LastKnownName} (uuid VARCHAR(36), lastKnownName VARCHAR(16), " +
                 "PRIMARY KEY (uuid));";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
@@ -162,7 +162,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreateFlagRelationTableStatement(Connection connection, PortalType portalType) throws SQLException {
-        String statementMessage = "CREATE TABLE {PortalFlagRelation} (name NVARCHAR(180), " +
+        String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalFlagRelation} (name NVARCHAR(180), " +
                 "network NVARCHAR(180), flag INTEGER, PRIMARY KEY (name, network, flag), FOREIGN KEY (name) REFERENCES " +
                 "{Portal} (name), FOREIGN KEY (network) REFERENCES {Portal} (network), FOREIGN KEY (flag) REFERENCES {Flag} (id));";
         if (portalType == PortalType.INTER_SERVER) {
@@ -181,8 +181,8 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreatePortalViewTableStatement(Connection connection, PortalType portalType) throws SQLException {
-        String statementMessage = "CREATE VIEW {PortalView} AS SELECT {Portal}.*, " +
+    public PreparedStatement generateCreatePortalViewStatement(Connection connection, PortalType portalType) throws SQLException {
+        String statementMessage = "CREATE VIEW IF NOT EXISTS {PortalView} AS SELECT {Portal}.*, " +
                 "GROUP_CONCAT({Flag}.character, '') AS flags, {LastKnownName}.lastKnownName FROM {Portal} LEFT OUTER " +
                 "JOIN {PortalFlagRelation} ON {Portal}.name = {PortalFlagRelation}.name AND {Portal}.network = " +
                 "{PortalFlagRelation}.network LEFT OUTER JOIN {Flag} ON {PortalFlagRelation}.flag = {Flag}.id LEFT " +

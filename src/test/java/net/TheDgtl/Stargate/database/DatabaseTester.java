@@ -12,6 +12,11 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+/**
+ * Test class for shared database tests to prevent duplication
+ *
+ * @author Kristian
+ */
 public class DatabaseTester {
 
     private static Database database;
@@ -22,6 +27,16 @@ public class DatabaseTester {
     private static IPortal testInterPortal;
     private static TableNameConfig nameConfig;
 
+    /**
+     * Instantiates a new database tester
+     *
+     * @param database        <p>The database to use for tests</p>
+     * @param connection      <p>The database connection to use for tests</p>
+     * @param generator       <p>The SQL Query generator to use for generating test queries</p>
+     * @param testPortal      <p>A normal portal to use for testing</p>
+     * @param testInterPortal <p>An inter-server portal to use for testing</p>
+     * @param nameConfig      <p>The config containing all table names</p>
+     */
     public DatabaseTester(Database database, Connection connection, SQLQueryGenerator generator, IPortal testPortal,
                           IPortal testInterPortal, TableNameConfig nameConfig) {
         DatabaseTester.database = database;
@@ -37,11 +52,11 @@ public class DatabaseTester {
     }
 
     void addPortalTableTest() throws SQLException {
-        finishStatement(generator.generateCreateTableStatement(connection, PortalType.LOCAL));
+        finishStatement(generator.generateCreatePortalTableStatement(connection, PortalType.LOCAL));
     }
 
     void addInterPortalTableTest() throws SQLException {
-        finishStatement(generator.generateCreateTableStatement(connection, PortalType.INTER_SERVER));
+        finishStatement(generator.generateCreatePortalTableStatement(connection, PortalType.INTER_SERVER));
     }
 
     void createFlagTableTest() throws SQLException {
@@ -61,11 +76,11 @@ public class DatabaseTester {
     }
 
     void createPortalViewTest() throws SQLException {
-        finishStatement(generator.generateCreatePortalViewTableStatement(connection, PortalType.LOCAL));
+        finishStatement(generator.generateCreatePortalViewStatement(connection, PortalType.LOCAL));
     }
 
     void createInterPortalViewTest() throws SQLException {
-        finishStatement(generator.generateCreatePortalViewTableStatement(connection, PortalType.INTER_SERVER));
+        finishStatement(generator.generateCreatePortalViewStatement(connection, PortalType.INTER_SERVER));
     }
 
     void createServerInfoTableTest() throws SQLException {
