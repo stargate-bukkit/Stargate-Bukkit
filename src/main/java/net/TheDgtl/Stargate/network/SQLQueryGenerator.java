@@ -28,7 +28,9 @@ public class SQLQueryGenerator {
      * @param tableName <p>The name of the table used for normal portals</p>
      */
     public SQLQueryGenerator(String tableName, StargateLogger logger) {
-        this.tableName = tableName;
+        String mainPrefix = "SG_";
+        String instancePrefix = "Hub_";
+        this.tableName = mainPrefix + instancePrefix + tableName;
         this.logger = logger;
     }
 
@@ -72,7 +74,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateGetAllPortalsStatement(Connection conn, PortalType portalType) throws SQLException {
-        return conn.prepareStatement(String.format("SELECT * FROM %s", getTableName(portalType)));
+        return conn.prepareStatement(String.format("SELECT * FROM %s;", getTableName(portalType)));
     }
 
     /**
@@ -108,9 +110,10 @@ public class SQLQueryGenerator {
         boolean isInterServer = (portalType == PortalType.INTER_SERVER);
         String extraKeys = (isInterServer ? ", homeServerId, isOnline" : ", isBungee");
         String extraValues = (isInterServer ? ", ?, ?" : "");
-        PreparedStatement statement = conn.prepareStatement(
-                String.format("INSERT INTO %s (network, name, destination, world, x, y, z, ownerUUID%s)"
-                        + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?%s);", getTableName(portalType), extraKeys, extraValues));
+        String statementMessage = String.format("INSERT INTO %s (network, name, destination, world, x, y, z, ownerUUID%s)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?%s);", getTableName(portalType), extraKeys, extraValues);
+
+        PreparedStatement statement = conn.prepareStatement(statementMessage);
 
         //TODO: Add portal flags
 
@@ -119,8 +122,9 @@ public class SQLQueryGenerator {
         String destinationString = null;
         if (portal instanceof Portal) {
             IPortal destination = ((Portal) portal).loadDestination();
-            if (destination != null)
+            if (destination != null) {
                 destinationString = destination.getName();
+            }
         }
         statement.setString(3, destinationString);
         Location signLocation = portal.getSignPos();
@@ -129,7 +133,6 @@ public class SQLQueryGenerator {
         statement.setInt(5, signLocation.getBlockX());
         statement.setInt(6, signLocation.getBlockY());
         statement.setInt(7, signLocation.getBlockZ());
-        //statement.setString(8, portal.getAllFlagsString());
         statement.setString(8, portal.getOwnerUUID().toString());
 
         if (isInterServer) {
@@ -138,6 +141,8 @@ public class SQLQueryGenerator {
         } else {
             statement.setBoolean(9, portal.hasFlag(PortalFlag.BUNGEE));
         }
+
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
 
         return statement;
     }
