@@ -327,8 +327,8 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateSetPortalOnlineStatusStatement(Connection conn, IPortal portal, boolean isOnline) throws SQLException {
         String statementString = "UPDATE {InterPortal} SET isOnline = ? WHERE network = ? AND name = ?;";
-
-        PreparedStatement statement = conn.prepareStatement(statementString);
+        String statementMessage = replaceKnownTableNames(statementString);
+        PreparedStatement statement = conn.prepareStatement(statementMessage);
         statement.setBoolean(1, isOnline);
         statement.setString(2, portal.getNetwork().getName());
         statement.setString(3, portal.getName());
