@@ -159,7 +159,7 @@ public class Network {
      */
     private void addFlags(PreparedStatement addFlagStatement, IPortal portal) throws SQLException {
         for (Character character : portal.getAllFlagsString().toCharArray()) {
-            System.out.println("Adding flag " + character + " to portal: " + portal);
+            Stargate.log(Level.FINER,"Adding flag " + character + " to portal: " + portal);
             addFlagStatement.setString(1, portal.getName());
             addFlagStatement.setString(2, portal.getNetwork().getName());
             addFlagStatement.setString(3, String.valueOf(character));
