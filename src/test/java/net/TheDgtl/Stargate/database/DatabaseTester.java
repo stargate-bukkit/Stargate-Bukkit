@@ -172,29 +172,25 @@ public class DatabaseTester {
     }
 
     void getPortalTest() throws SQLException {
-        printTableInfo("SG_Test_PortalView");
-
-        PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, PortalType.LOCAL);
-
-        ResultSet set = statement.executeQuery();
-        ResultSetMetaData metaData = set.getMetaData();
-
-        int rows = 0;
-        while (set.next()) {
-            rows++;
-            for (int i = 0; i < metaData.getColumnCount(); i++) {
-                System.out.print(
-                        metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
-            }
-            System.out.println();
-        }
-        Assertions.assertTrue(rows > 0);
+        getPortals(PortalType.LOCAL);
     }
 
     void getInterPortalTest() throws SQLException {
-        printTableInfo("SG_Test_InterPortalView");
+        getPortals(PortalType.INTER_SERVER);
+    }
 
-        PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, PortalType.INTER_SERVER);
+    /**
+     * Gets the portals of the given type and asserts that at least one portal exists
+     *
+     * @param portalType <p>The type of portal to get</p>
+     * @throws SQLException <p>If a database error occurs</p>
+     */
+    private void getPortals(PortalType portalType) throws SQLException {
+        String tableName = portalType == PortalType.LOCAL ? nameConfig.getPortalViewName() :
+                nameConfig.getInterPortalTableName();
+        printTableInfo(tableName);
+
+        PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, portalType);
 
         ResultSet set = statement.executeQuery();
         ResultSetMetaData metaData = set.getMetaData();
@@ -212,23 +208,60 @@ public class DatabaseTester {
     }
 
     void destroyPortalTest() throws SQLException {
-        finishStatement(generator.generateRemovePortalStatement(connection, testPortal, PortalType.LOCAL));
-
-        PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM " +
-                nameConfig.getPortalTableName() + " WHERE name = ? AND network = ?");
-        statement.setString(1, testPortal.getName());
-        statement.setString(2, testPortal.getNetwork().getName());
-        ResultSet set = statement.executeQuery();
-        Assertions.assertFalse(set.next());
+        destroyPortal(testPortal, PortalType.LOCAL);
     }
 
     void destroyInterPortalTest() throws SQLException {
-        finishStatement(generator.generateRemovePortalStatement(connection, testInterPortal, PortalType.INTER_SERVER));
+        destroyPortal(testInterPortal, PortalType.INTER_SERVER);
+    }
 
-        PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM SG_Test_InterPortal"
-                + " WHERE name = ? AND network = ?");
-        statement.setString(1, testInterPortal.getName());
-        statement.setString(2, testInterPortal.getNetwork().getName());
+    /**
+     * Destroys a portal, and fails the assertion if the portal isn't properly destroyed
+     *
+     * @param portal     <p>The portal to destroy</p>
+     * @param portalType <p>The type of the portal to destroy</p>
+     * @throws SQLException <p>If a database error occurs</p>
+     */
+    private void destroyPortal(IPortal portal, PortalType portalType) throws SQLException {
+        connection.setAutoCommit(false);
+
+        try {
+            PreparedStatement removeFlagsStatement = generator.generateRemoveFlagStatement(connection, portalType);
+            removeFlagsStatement.setString(1, portal.getName());
+            removeFlagsStatement.setString(2, portal.getNetwork().getName());
+            finishStatement(removeFlagsStatement);
+            finishStatement(generator.generateRemovePortalStatement(connection, portal, portalType));
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (SQLException exception) {
+            connection.rollback();
+            connection.setAutoCommit(true);
+            throw exception;
+        }
+        connection.setAutoCommit(true);
+
+        String flagTable = portalType == PortalType.LOCAL ? nameConfig.getFlagRelationTableName() :
+                nameConfig.getInterFlagRelationTableName();
+        checkIfHasNot(flagTable, portal.getName(), portal.getNetwork().getName());
+
+        String table = portalType == PortalType.LOCAL ? nameConfig.getPortalTableName() :
+                nameConfig.getInterPortalTableName();
+        checkIfHasNot(table, portal.getName(), portal.getNetwork().getName());
+    }
+
+    /**
+     * Checks if a table, where each element is identified by a name and a network does not contain an element
+     *
+     * @param table   <p>The name of the table to check</p>
+     * @param name    <p>The name of the element to check for</p>
+     * @param network <p>The network of the element to check for</p>
+     * @throws SQLException <p>If unable to get data from the database</p>
+     */
+    private void checkIfHasNot(String table, String name, String network) throws SQLException {
+        PreparedStatement statement = database.getConnection().prepareStatement("SELECT * FROM " + table +
+                " WHERE name = ? AND network = ?");
+        statement.setString(1, name);
+        statement.setString(2, network);
         ResultSet set = statement.executeQuery();
         Assertions.assertFalse(set.next());
     }
