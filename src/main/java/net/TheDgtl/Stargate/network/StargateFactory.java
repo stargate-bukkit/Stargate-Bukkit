@@ -63,7 +63,7 @@ public class StargateFactory {
         loadAllPortals(database, PortalType.LOCAL);
         if (useInterServerNetworks) {
             Stargate.log(Level.FINER, "Loading portals from inter-server bungee database");
-            loadAllPortals(database, PortalType.INTER_SERVER, true);
+            loadAllPortals(database, PortalType.INTER_SERVER);
         }
 
         refreshPortals(networkList);
@@ -170,10 +170,6 @@ public class StargateFactory {
     }
 
     private void loadAllPortals(Database database, PortalType tablePortalType) throws SQLException {
-        loadAllPortals(database, tablePortalType, false);
-    }
-
-    private void loadAllPortals(Database database, PortalType tablePortalType, boolean areVirtual) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement statement = sqlMaker.generateGetAllPortalsStatement(connection, tablePortalType);
 
@@ -215,16 +211,14 @@ public class StargateFactory {
                 Stargate.log(Level.FINEST, logPortal.getName());
             }
 
-            if (areVirtual) {
+            if (tablePortalType == PortalType.INTER_SERVER) {
                 String server = set.getString("homeServerId");
-                if (!net.portalExists(name)) {
+                if (!server.equals(Stargate.serverUUID.toString())) {
                     IPortal virtualPortal = new VirtualPortal(server, name, net, flags, ownerUUID);
                     net.addPortal(virtualPortal, false);
                     Stargate.log(Level.FINEST, "Added as virtual portal");
-                } else {
-                    Stargate.log(Level.FINEST, "Not added");
+                    continue;
                 }
-                continue;
             }
 
             World world = Bukkit.getWorld(worldName);

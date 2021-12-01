@@ -310,18 +310,23 @@ public abstract class Portal implements IPortal {
         if (flags.contains(PortalFlag.BACKWARDS))
             portalFacing = portalFacing.getOppositeFace();
 
-        /*
-         * If player enters from back, then take that into consideration
-         */
-        BlockFace enterFacing = origin.getGate().getFacing();
-        Vector vec = origin.getGate().getRelativeVector(target.getLocation().add(new Vector(-0.5, 0, -0.5)));
-        if (vec.getX() > 0) {
-            enterFacing = enterFacing.getOppositeFace();
-        }
+        
+        BlockFace enterFacing = null;
+        int useCost = 0;
+        if (origin != null) {
+            /*
+             * If player enters from back, then take that into consideration
+             */
+            enterFacing = origin.getGate().getFacing();
+            Vector vec = origin.getGate().getRelativeVector(target.getLocation().add(new Vector(-0.5, 0, -0.5)));
+            if (vec.getX() > 0) {
+                enterFacing = enterFacing.getOppositeFace();
+            }
 
-        boolean shouldCharge = !(this.hasFlag(PortalFlag.FREE) || origin.hasFlag(PortalFlag.FREE)) && target instanceof Player
-                && !target.hasPermission(Bypass.COST_USE.getPermissionString());
-        int useCost = shouldCharge ? Setting.getInteger(Setting.USE_COST) : 0;
+            boolean shouldCharge = !(this.hasFlag(PortalFlag.FREE) || origin.hasFlag(PortalFlag.FREE))
+                    && target instanceof Player && !target.hasPermission(Bypass.COST_USE.getPermissionString());
+            useCost = shouldCharge ? Setting.getInteger(Setting.USE_COST) : 0;
+        }
 
         Teleporter teleporter = new Teleporter(getExit(), origin, portalFacing, enterFacing, useCost);
 

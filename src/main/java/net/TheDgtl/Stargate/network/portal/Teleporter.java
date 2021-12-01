@@ -93,6 +93,11 @@ public class Teleporter {
             }
         }
 
+        if(origin == null) {
+            teleport(target, destination, rotation);
+            return;
+        }
+        
         if (!hasPerm(target)) {
             target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.DENY, true));
             //For non math guys: teleport entity to the exit of the portal it entered. Also turn the entity around 180 degrees
