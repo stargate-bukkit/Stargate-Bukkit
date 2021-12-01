@@ -51,9 +51,6 @@ public class PortalColorParser {
             case 2:
                 selectorColor = getNameColor(portal, isLightSign);
                 break;
-            case 3:
-                selectorColor = GRAY_SELECTOR_COLOR;
-                break;
             case 4:
                 selectorColor = getDefaultColor(!isLightSign);
                 break;
@@ -90,8 +87,13 @@ public class PortalColorParser {
 
     @SuppressWarnings("deprecation")
     private ChatColor getColor(boolean isLightSign) {
-        if (sign.getColor() != DyeColor.BLACK) {
-            return ChatColor.valueOf(sign.getColor().toString());
+        DyeColor signColor = sign.getColor();
+        if (signColor != DyeColor.BLACK) {
+            if (signColor != null) {
+                return ChatColor.valueOf(signColor.toString());
+            } else {
+                return null;
+            }
         }
         return getDefaultColor(isLightSign);
     }

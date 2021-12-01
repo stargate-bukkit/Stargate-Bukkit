@@ -108,7 +108,7 @@ public class GateFormat {
         }
     }
 
-    public static List<GateFormat> getPossibleGatesFromControll(Material controlBlockId) {
+    public static List<GateFormat> getPossibleGatesFromControlBlockMaterial(Material controlBlockId) {
         List<GateFormat> possibleGates = controlMaterialFormatsMap.get(controlBlockId);
         if (possibleGates == null)
             return new ArrayList<>();

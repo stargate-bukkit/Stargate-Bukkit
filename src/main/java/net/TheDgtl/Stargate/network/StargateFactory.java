@@ -17,7 +17,6 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -110,7 +109,7 @@ public class StargateFactory {
 
     /**
      * Creates all necessary database tables
-     * 
+     *
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
     private void createTables() throws SQLException {
@@ -133,7 +132,7 @@ public class StargateFactory {
             connection.close();
             return;
         }
-        
+
         PreparedStatement interServerPortalsStatement = sqlMaker.generateCreatePortalTableStatement(connection, PortalType.INTER_SERVER);
         runStatement(interServerPortalsStatement);
         PreparedStatement interServerRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(connection, PortalType.INTER_SERVER);
@@ -203,7 +202,7 @@ public class StargateFactory {
 
             try {
                 createNetwork(targetNet, flags);
-            } catch (NameError e) {
+            } catch (NameError ignored) {
             }
             Network net = getNetwork(targetNet, isBungee);
 
@@ -222,6 +221,9 @@ public class StargateFactory {
             }
 
             World world = Bukkit.getWorld(worldName);
+            if (world == null) {
+                continue;
+            }
             Block block = world.getBlockAt(x, y, z);
             String[] virtualSign = {name, destination, netName};
 
@@ -233,8 +235,7 @@ public class StargateFactory {
                 if (isBungee) {
                     setInterServerPortalOnlineStatus(portal, true);
                 }
-            } catch (GateConflict e) {
-            } catch (NoFormatFound e) {
+            } catch (GateConflict | NoFormatFound ignored) {
             } catch (NameError e) {
                 e.printStackTrace();
             }
@@ -285,7 +286,7 @@ public class StargateFactory {
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             InterServerNetwork net = new InterServerNetwork(netName, database, sqlMaker);
             String netHash = net.getName().toLowerCase();
-            if(Setting.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
+            if (Setting.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
                 netHash = ChatColor.stripColor(netHash);
             }
             bungeeNetList.put(netHash, net);
@@ -328,9 +329,8 @@ public class StargateFactory {
      *
      * @param str
      * @return
-     * @throws ClassNotFoundException Issue with conversion
      */
-    public IPortal createFromString(String str) throws ClassNotFoundException {
+    public IPortal createFromString(String str) {
         return null;
     }
 }

@@ -51,7 +51,7 @@ public class MySQLDatabaseTest {
                 testNetwork, UUID.randomUUID());
         IPortal testInterPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "iPortal",
                 testNetwork, UUID.randomUUID());
-        tester = new DatabaseTester(database, connection, generator, testPortal, testInterPortal, nameConfig,true);
+        tester = new DatabaseTester(database, connection, generator, testPortal, testInterPortal, nameConfig, true);
     }
 
     @AfterAll

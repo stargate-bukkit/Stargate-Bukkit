@@ -1,12 +1,8 @@
 package net.TheDgtl.Stargate.listeners;
 
-import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
-
-import java.util.logging.Level;
-
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -47,7 +43,8 @@ public class MoveEventListener implements Listener {
 
         switch (cause) {
             case END_GATEWAY:
-                if ((World.Environment.THE_END == event.getFrom().getWorld().getEnvironment())) {
+                World world = event.getFrom().getWorld();
+                if (world != null && World.Environment.THE_END == world.getEnvironment()) {
                     break;
                 }
                 return;

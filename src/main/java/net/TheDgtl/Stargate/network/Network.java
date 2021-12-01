@@ -14,7 +14,6 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.SGLocation;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -162,7 +161,7 @@ public class Network {
      */
     private void addFlags(PreparedStatement addFlagStatement, IPortal portal) throws SQLException {
         for (Character character : portal.getAllFlagsString().toCharArray()) {
-            Stargate.log(Level.FINER,"Adding flag " + character + " to portal: " + portal);
+            Stargate.log(Level.FINER, "Adding flag " + character + " to portal: " + portal);
             addFlagStatement.setString(1, portal.getName());
             addFlagStatement.setString(2, portal.getNetwork().getName());
             addFlagStatement.setString(3, String.valueOf(character));
@@ -176,7 +175,7 @@ public class Network {
 
     public void addPortal(IPortal portal, boolean saveToDatabase) {
 
-        
+
         if (portal instanceof Portal) {
             Portal physicalPortal = (Portal) portal;
             for (GateStructureType key : physicalPortal.getGate().getFormat().portalParts.keySet()) {
@@ -188,7 +187,7 @@ public class Network {
             savePortal(portal);
         }
         String portalHash = portal.getName().toLowerCase();
-        if(Setting.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
+        if (Setting.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
             portalHash = ChatColor.stripColor(portalHash);
         }
         portalList.put(portalHash, portal);

@@ -9,10 +9,10 @@ import java.util.UUID;
 
 public class FakePortal implements IPortal {
 
-    private Location signLocation;
-    private String portalName;
-    private Network network;
-    private UUID ownerUUID;
+    private final Location signLocation;
+    private final String portalName;
+    private final Network network;
+    private final UUID ownerUUID;
 
     public FakePortal(Location signLocation, String portalName, Network network, UUID ownerUUID) {
         this.signLocation = signLocation;
@@ -104,6 +104,6 @@ public class FakePortal implements IPortal {
     @Override
     public void update() {
         // TODO Auto-generated method stub
-        
+
     }
 }

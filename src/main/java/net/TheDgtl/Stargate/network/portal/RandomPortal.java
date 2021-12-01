@@ -35,7 +35,7 @@ public class RandomPortal extends Portal {
                 super.colorDrawer.parseLine(network.concatName()),
                 ""
         };
-        getGate().drawControll(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+        getGate().drawControlMechanism(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }
 
     @Override

@@ -172,7 +172,7 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateCreatePortalViewStatement(Connection connection, PortalType portalType) throws SQLException {
         String selectServerName = portalType == PortalType.INTER_SERVER ? ", {ServerInfo}.serverName" : "";
-        String joinServerName = portalType == PortalType.INTER_SERVER ? 
+        String joinServerName = portalType == PortalType.INTER_SERVER ?
                 " LEFT OUTER JOIN {ServerInfo} ON {ServerInfo}.serverId = {InterPortal}.homeServerId" : "";
         String statementMessage = String.format("CREATE VIEW IF NOT EXISTS {PortalView} AS SELECT {Portal}.*, " +
                 "COALESCE(GROUP_CONCAT({Flag}.`character`, ''), '') AS flags, {LastKnownName}.lastKnownName%s FROM " +

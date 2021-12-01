@@ -48,7 +48,7 @@ public class DatabaseTester {
         DatabaseTester.nameConfig = nameConfig;
         DatabaseTester.isMySQL = isMySQL;
     }
-    
+
 
     public static void tearDown() throws SQLException {
         connection.close();
@@ -310,8 +310,8 @@ public class DatabaseTester {
      */
     private static void printTableInfo(String tableName) throws SQLException {
         System.out.println("Getting table info for: " + tableName);
-        String statementMsg = String.format(!isMySQL?"pragma table_info('%s');":"DESCRIBE %s", tableName);
-        
+        String statementMsg = String.format(!isMySQL ? "pragma table_info('%s');" : "DESCRIBE %s", tableName);
+
         PreparedStatement tableInfoStatement = connection.prepareStatement(statementMsg);
         ResultSet infoResult = tableInfoStatement.executeQuery();
         ResultSetMetaData infoMetaData = infoResult.getMetaData();

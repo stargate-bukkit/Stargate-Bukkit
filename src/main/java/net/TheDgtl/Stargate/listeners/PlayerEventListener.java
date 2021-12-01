@@ -100,8 +100,6 @@ public class PlayerEventListener implements Listener {
     /**
      * A stupid cheat to get serverName. A client is needed to get this data, hence
      * this stupid solution
-     *
-     * @return
      */
     private void getBungeeServerName() {
         /*

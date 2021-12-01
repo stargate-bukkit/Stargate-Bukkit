@@ -45,7 +45,7 @@ public class SQLiteDatabaseTest {
                 testNetwork, UUID.randomUUID());
         IPortal testInterPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "iPortal",
                 testNetwork, UUID.randomUUID());
-        tester = new DatabaseTester(database, connection, generator, testPortal, testInterPortal, nameConfig,false);
+        tester = new DatabaseTester(database, connection, generator, testPortal, testInterPortal, nameConfig, false);
     }
 
     @AfterAll

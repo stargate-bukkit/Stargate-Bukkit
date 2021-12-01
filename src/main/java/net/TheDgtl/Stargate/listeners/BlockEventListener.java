@@ -92,7 +92,7 @@ public class BlockEventListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Location loc = event.getBlock().getLocation();
         Portal portal = Network.getPortal(loc, GateStructureType.IRIS);
-        if(portal != null)
+        if (portal != null)
             event.setCancelled(true);
     }
 
@@ -177,14 +177,12 @@ public class BlockEventListener implements Listener {
         }
 
         if (initialNetworkName.endsWith("}") && initialNetworkName.startsWith("{")) {
-            String possiblePlayername = initialNetworkName.substring(1, initialNetworkName.length() - 1);
+            String possiblePlayerName = initialNetworkName.substring(1, initialNetworkName.length() - 1);
 
-            if (possiblePlayername != null) {
-                flags.add(PortalFlag.PERSONAL_NETWORK);
-                Player possiblePlayer = Bukkit.getPlayer(possiblePlayername);
-                if (possiblePlayer != null)
-                    return possiblePlayer.getUniqueId().toString();
-            }
+            flags.add(PortalFlag.PERSONAL_NETWORK);
+            Player possiblePlayer = Bukkit.getPlayer(possiblePlayerName);
+            if (possiblePlayer != null)
+                return possiblePlayer.getUniqueId().toString();
             throw new NameError(TranslatableMessage.INVALID_NAME);
         }
 
@@ -201,7 +199,7 @@ public class BlockEventListener implements Listener {
 
         @SuppressWarnings("deprecation")
         OfflinePlayer possiblePersonalNetworkTarget = Bukkit.getOfflinePlayer(initialNetworkName);
-        if ((possiblePersonalNetworkTarget != null) || flags.contains(PortalFlag.PRIVATE)) {
+        if (flags.contains(PortalFlag.PRIVATE)) {
             flags.add(PortalFlag.PERSONAL_NETWORK);
             return possiblePersonalNetworkTarget.getUniqueId().toString();
         }
@@ -254,12 +252,12 @@ public class BlockEventListener implements Listener {
                 || (Network.getPortal(from.getLocation(), GateStructureType.IRIS) != null))
             event.setCancelled(true);
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockFormEvent(BlockFormEvent event) {
         Location loc = event.getBlock().getLocation();
         Portal portal = Network.getPortal(loc, GateStructureType.IRIS);
-        if(portal != null)
+        if (portal != null)
             event.setCancelled(true);
     }
 }

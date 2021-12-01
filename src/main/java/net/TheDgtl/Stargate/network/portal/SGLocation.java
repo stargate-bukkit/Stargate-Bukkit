@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.network.portal;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 
 public class SGLocation {
     /**
@@ -12,11 +13,12 @@ public class SGLocation {
     final int z;
     final String world;
 
-    public SGLocation(Location loc) {
-        x = loc.getBlockX();
-        y = loc.getBlockY();
-        z = loc.getBlockZ();
-        world = loc.getWorld().getName();
+    public SGLocation(Location location) {
+        x = location.getBlockX();
+        y = location.getBlockY();
+        z = location.getBlockZ();
+        World worldObject = location.getWorld();
+        world = worldObject == null ? "" : worldObject.getName();
     }
 
     public Location getLocation() {

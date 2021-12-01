@@ -51,7 +51,7 @@ public class NetworkedPortal extends Portal {
      */
     @Override
     public void onSignClick(Action action, Player actor) {
-        if(!actor.getUniqueId().equals(this.getOwnerUUID()) || this.isOpen())
+        if (!actor.getUniqueId().equals(this.getOwnerUUID()) || this.isOpen())
             return;
         activate(actor);
         if (destinations.size() < 1)
@@ -150,7 +150,7 @@ public class NetworkedPortal extends Portal {
                 lines[i + 1] = super.colorDrawer.parseName(surround, this.getDestination(destination));
             }
         }
-        getGate().drawControll(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+        getGate().drawControlMechanism(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }
 
     private void activate(Player actor) {

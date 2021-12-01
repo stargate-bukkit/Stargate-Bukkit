@@ -16,8 +16,6 @@ import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
-import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -85,7 +83,7 @@ public abstract class Portal implements IPortal {
          */
         Directional signDirection = (Directional) sign.getBlockData();
         Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
-        List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControll(behind.getType());
+        List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControlBlockMaterial(behind.getType());
         setGate(FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing()));
 
         if (name.trim().isEmpty() || (name.length() == Stargate.MAX_TEXT_LENGTH))
@@ -127,7 +125,7 @@ public abstract class Portal implements IPortal {
             Stargate.log(Level.FINE, "--------- " + gateFormat.name + " ---------");
             try {
                 return new Gate(gateFormat, signLocation, signFacing, this);
-            } catch (InvalidStructure e) {
+            } catch (InvalidStructure ignored) {
             }
         }
         throw new NoFormatFound();
@@ -146,15 +144,15 @@ public abstract class Portal implements IPortal {
         return gate.getSignLoc();
     }
 
-    
+
     @Override
     public void update() {
-        if(isOpen() && loadDestination() == null) {
+        if (isOpen() && loadDestination() == null) {
             close(false);
         }
         drawControlMechanism();
     }
-    
+
     public abstract void onSignClick(Action action, Player actor);
 
     public abstract void drawControlMechanism();
@@ -177,7 +175,7 @@ public abstract class Portal implements IPortal {
         close(true);
         this.network.removePortal(this, true);
         String[] lines = new String[]{name, "", "", ""};
-        getGate().drawControll(lines, false);
+        getGate().drawControlMechanism(lines, false);
 
         for (GateStructureType formatType : GateStructureType.values()) {
             for (SGLocation loc : this.getGate().getLocations(formatType)) {
@@ -310,7 +308,7 @@ public abstract class Portal implements IPortal {
         if (flags.contains(PortalFlag.BACKWARDS))
             portalFacing = portalFacing.getOppositeFace();
 
-        
+
         BlockFace enterFacing = null;
         int useCost = 0;
         if (origin != null) {

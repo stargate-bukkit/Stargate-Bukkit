@@ -42,10 +42,8 @@ public class VirtualPortal implements IPortal {
     }
 
     @Override
-    /**
-     * TODO: implement vehicle compatibility.
-     */
     public void teleportHere(Entity target, Portal origin) {
+        //TODO: implement vehicle compatibility.
         Stargate.log(Level.FINEST, "");
         Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
         if (!(target instanceof Player)) {
@@ -164,7 +162,7 @@ public class VirtualPortal implements IPortal {
 
     @Override
     public UUID getOwnerUUID() {
-        return null;
+        return ownerUUID;
     }
 
     @Override

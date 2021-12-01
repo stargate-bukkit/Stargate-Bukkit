@@ -143,7 +143,7 @@ public class Gate {
      *
      * @param signLines an array with 4 elements, representing each line of a sign
      */
-    public void drawControll(String[] signLines, boolean isDrawButton) {
+    public void drawControlMechanism(String[] signLines, boolean isDrawButton) {
         Location signLoc = getLocation(signPos);
         BlockState signState = signLoc.getBlock().getState();
         if (!(signState instanceof Sign)) {
@@ -223,13 +223,10 @@ public class Gate {
         List<SGLocation> locations = getLocations(targetType);
         BlockData blockData = Bukkit.createBlockData(mat);
 
-
         if (blockData instanceof Orientable) {
             Orientable orientation = (Orientable) blockData;
             orientation.setAxis(converter.getIrisNormal());
-            blockData = orientation;
         }
-
 
         for (SGLocation loc : locations) {
             Block blk = loc.getLocation().getBlock();

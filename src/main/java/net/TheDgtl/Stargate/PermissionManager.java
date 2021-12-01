@@ -60,7 +60,7 @@ public class PermissionManager {
             return false;
         }
         metadataProvider = rsp.getProvider();
-        return metadataProvider != null;
+        return true;
     }
 
     public boolean hasPerm(String permission) {
@@ -68,14 +68,14 @@ public class PermissionManager {
     }
 
     public boolean hasPerm(StargateEvent event) {
-        List<Permission> perms = event.getRelatedPerms();
+        List<Permission> relatedPermissions = event.getRelatedPerms();
 
         if (player instanceof Player)
             Stargate.log(Level.FINEST, "checking perm for player " + player.getName());
 
-        for (Permission perm : perms) {
-            Stargate.log(Level.FINEST, " checking permission " + ((perm != null) ? perm.getName() : "null"));
-            if (!player.hasPermission(perm)) {
+        for (Permission relatedPermission : relatedPermissions) {
+            Stargate.log(Level.FINEST, " checking permission " + ((relatedPermission != null) ? relatedPermission.getName() : "null"));
+            if (relatedPermission != null && !player.hasPermission(relatedPermission)) {
                 //TODO messaging
                 // denyMsg = LangMsg.<something>
                 denyMsg = TranslatableMessage.NET_DENY;
@@ -86,23 +86,25 @@ public class PermissionManager {
         if ((event instanceof StargateCreateEvent) && event.getPortal().hasFlag(PortalFlag.PERSONAL_NETWORK)
                 && canProcessMetaData) {
 
-            int maxGates = metadataProvider.getPlayerInfoInteger(player.getWorld().getName(), (Player) player, "gate-limit", -1);
-            if (maxGates == -1) {
-                metadataProvider.getGroupInfoInteger(player.getWorld(), metadataProvider.getPrimaryGroup((Player) player), "gate-limit", -1);
-            }
-            if (maxGates == -1) {
-                maxGates = Setting.getInteger(Setting.GATE_LIMIT);
-            }
+            if ((player instanceof Player)) {
+                int maxGates = metadataProvider.getPlayerInfoInteger(player.getWorld().getName(), (Player) player, "gate-limit", -1);
+                if (maxGates == -1) {
+                    metadataProvider.getGroupInfoInteger(player.getWorld(), metadataProvider.getPrimaryGroup((Player) player), "gate-limit", -1);
+                }
+                if (maxGates == -1) {
+                    maxGates = Setting.getInteger(Setting.GATE_LIMIT);
+                }
 
-            if (maxGates > -1 && !player.hasPermission(Bypass.GATE_LIMIT.getPermissionString())) {
-                Network net = event.getPortal().getNetwork();
-                int currentAmount = net.size();
+                if (maxGates > -1 && !player.hasPermission(Bypass.GATE_LIMIT.getPermissionString())) {
+                    Network net = event.getPortal().getNetwork();
+                    int currentAmount = net.size();
 
-                if (currentAmount >= maxGates) {
-                    //TODO messaging , gate limit reached
-                    denyMsg = TranslatableMessage.NET_FULL;
-                    // denyMsg = LangMsg.<something>
-                    return false;
+                    if (currentAmount >= maxGates) {
+                        //TODO messaging , gate limit reached
+                        denyMsg = TranslatableMessage.NET_FULL;
+                        // denyMsg = LangMsg.<something>
+                        return false;
+                    }
                 }
             }
         }

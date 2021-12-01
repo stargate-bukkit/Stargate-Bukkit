@@ -21,6 +21,7 @@ import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.permissions.Permission;
@@ -94,23 +95,33 @@ public abstract class StargateEvent extends Event implements Cancellable {
             return pm.getPermission(permIdentifier + ".network.default");
         Permission custom = new Permission(permIdentifier + ".network.custom." + portal.getNetwork().getName());
         Permission parent = pm.getPermission(permIdentifier + ".network.custom");
-        custom.addParent(parent, true);
+        if (parent != null) {
+            custom.addParent(parent, true);
+        }
         return custom;
     }
 
-    protected Permission compileWorldPerm(String permIdentifier) {
-        Permission parent = pm.getPermission(permIdentifier + ".world");
-        String permNode = permIdentifier + ".world." + portal.getSignPos().getWorld().getName();
-        Permission world = new Permission(permNode);
-        world.addParent(parent, true);
-        return world;
+    protected Permission compileWorldPerm(String permissionIdentifier) {
+        Permission parent = pm.getPermission(permissionIdentifier + ".world");
+        World world = portal.getSignPos().getWorld();
+        if (world == null) {
+            return null;
+        }
+        String permissionNode = permissionIdentifier + ".world." + world.getName();
+        Permission worldPermission = new Permission(permissionNode);
+        if (parent != null) {
+            worldPermission.addParent(parent, true);
+        }
+        return worldPermission;
     }
 
     protected Permission compileDesignPerm(String permIdentifier) {
         Permission parent = pm.getPermission(permIdentifier + ".design");
         String permNode = permIdentifier + ".design." + portal.getDesignName();
         Permission design = new Permission(permNode);
-        design.addParent(parent, true);
+        if (parent != null) {
+            design.addParent(parent, true);
+        }
         return design;
     }
 

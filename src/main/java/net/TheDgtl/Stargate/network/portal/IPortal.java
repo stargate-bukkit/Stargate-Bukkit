@@ -26,6 +26,7 @@ public interface IPortal {
 
     /**
      * Close portal
+     *
      * @param forceClose <p>Force close portals that should not be closed by design (for example always on gates)</p>
      */
     void close(boolean forceClose);
@@ -53,7 +54,7 @@ public interface IPortal {
      * @param portal
      * @return
      */
-    public static String getString(IPortal portal) {
+    static String getString(IPortal portal) {
         String type = portal.getClass().getName();
 
         HashMap<String, String> data = new HashMap<>();

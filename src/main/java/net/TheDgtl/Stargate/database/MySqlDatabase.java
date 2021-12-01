@@ -47,7 +47,6 @@ public class MySqlDatabase implements Database {
                 break;
             default:
                 Stargate.log(Level.SEVERE, "Unknown driver, '" + driver + "' Stargate currently supports MariaDB, MySql");
-                getPluginManager().disablePlugin(plugin);
         }
         hikariSource = setupMySql(this.config);
     }

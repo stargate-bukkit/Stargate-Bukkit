@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 
 public class Teleporter {
-    
+
     private static final double LOOK_FOR_LEASHED_RADIUS = 15;
     private final Location destination;
     private final Portal origin;
@@ -93,15 +93,15 @@ public class Teleporter {
             }
         }
 
-        if(origin == null) {
+        if (origin == null) {
             teleport(target, destination, rotation);
             return;
         }
-        
+
         if (!hasPerm(target)) {
             target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.DENY, true));
             //For non math guys: teleport entity to the exit of the portal it entered. Also turn the entity around 180 degrees
-            teleport(target,origin.getExit(),Math.PI);
+            teleport(target, origin.getExit(), Math.PI);
             origin.teleportHere(target, origin);
             return;
         }
@@ -116,24 +116,24 @@ public class Teleporter {
         }
 
         if (target instanceof PoweredMinecart) {
-            // TODO: NOT Currently implemented, does not seem to be a accessible way to fix this using spigot api
+            // TODO: NOT Currently implemented, does not seem to be an accessible way to fix this using spigot api
             return;
         }
 
         // To smooth the experienced for highly used portals, or entity teleportation
-        if(!destination.getChunk().isLoaded()) {
+        if (!destination.getChunk().isLoaded()) {
             destination.getChunk().load();
         }
-        
+
         teleport(target, destination, rotation);
     }
-    
+
     private void nearbyLeashedEntityTeleport(Player holder, double rotation) {
-        List<Entity> entities = holder.getNearbyEntities(LOOK_FOR_LEASHED_RADIUS,LOOK_FOR_LEASHED_RADIUS,LOOK_FOR_LEASHED_RADIUS);
-        for(Entity entity : entities) {
-            if(entity instanceof LivingEntity && ((LivingEntity)entity).isLeashed() && ((LivingEntity)entity).getLeashHolder() == holder) {
-                
-                betterTeleport(entity,rotation);
+        List<Entity> entities = holder.getNearbyEntities(LOOK_FOR_LEASHED_RADIUS, LOOK_FOR_LEASHED_RADIUS, LOOK_FOR_LEASHED_RADIUS);
+        for (Entity entity : entities) {
+            if (entity instanceof LivingEntity && ((LivingEntity) entity).isLeashed() && ((LivingEntity) entity).getLeashHolder() == holder) {
+
+                betterTeleport(entity, rotation);
             }
         }
     }

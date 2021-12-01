@@ -29,7 +29,6 @@ import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.util.FileHelper;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -41,6 +40,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
@@ -140,8 +140,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     private void loadBungeeServerName() {
         Stargate.log(Level.FINEST, DATA_FOLDER);
         File path = new File(String.format("%s/%s", this.getDataFolder().getAbsolutePath(), INTERNAL_FOLDER));
-        if (!path.exists()) {
-            path.mkdir();
+        if (!path.exists() && path.mkdir()) {
             try {
                 Files.setAttribute(path.toPath(), "dos:hidden", true);
             } catch (IOException e) {
@@ -151,7 +150,9 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         File file = new File(path, "serverUUID.txt");
         if (!file.exists()) {
             try {
-                file.createNewFile();
+                if (!file.createNewFile()) {
+                    throw new FileNotFoundException("serverUUID.txt was not found and could not be created");
+                }
                 BufferedWriter writer = FileHelper.getBufferedWriter(file);
                 writer.write(UUID.randomUUID().toString());
                 writer.close();
@@ -173,14 +174,14 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         Stargate.defaultLightSignColor = loadColor(Setting.getString(Setting.DEFAULT_LIGHT_SIGN_COLOR));
         Stargate.defaultDarkColor = loadColor(Setting.getString(Setting.DEFAULT_DARK_SIGN_COLOR));
     }
-    
+
     private ChatColor loadColor(String colorString) {
-        if(colorString.startsWith("#")) {
+        if (colorString.startsWith("#")) {
             return ChatColor.of(colorString);
         }
         return ChatColor.valueOf(colorString);
     }
-    
+
     private void registerListeners() {
         pm.registerEvents(new BlockEventListener(), this);
         pm.registerEvents(new MoveEventListener(), this);
@@ -272,24 +273,24 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     public static void addToQueue(String playerName, String portalName, String netName, boolean isInterServer) {
-        Network net = factory.getNetwork(netName, isInterServer);
-        
-        
+        Network network = factory.getNetwork(netName, isInterServer);
+
+
         /*
          * TODO Error: When would errors like this appear?: Whenever a interserver server instance was
-         * deleted, but not cleared from the interserver database, errors like this would occur
+         * deleted, but not cleared from the inter-server database, errors like this would occur
          */
-        if (net == null) {
+        if (network == null) {
             // Error: This bungee portal's %type% has been removed from the destination server instance.
             //(See Discussion One) %type% = network.
-            String msg = String.format("Interserver network ''%s'' could not be found",netName);
+            String msg = String.format("Inter-server network ''%s'' could not be found", netName);
             Stargate.log(Level.WARNING, msg);
         }
-        IPortal portal = net.getPortal(portalName);
+        IPortal portal = network == null ? null : network.getPortal(portalName);
         if (portal == null) {
             // Error: This bungee portal's %type% has been removed from the destination server instance.
             //(See Discussion One) %type% = gate.
-            String msg = String.format("Interserver portal ''%s'' in network ''%s'' could not be found",portalName,netName);
+            String msg = String.format("Inter-server portal ''%s'' in network ''%s'' could not be found", portalName, netName);
             Stargate.log(Level.WARNING, msg);
         }
 
