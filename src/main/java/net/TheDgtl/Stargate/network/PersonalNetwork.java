@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.network;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.database.Database;
+import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.network.portal.NameSurround;
 import org.bukkit.Bukkit;

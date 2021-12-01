@@ -1,7 +1,6 @@
 package net.TheDgtl.Stargate.database;
 
 import net.TheDgtl.Stargate.network.PortalType;
-import net.TheDgtl.Stargate.network.SQLQueryGenerator;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.junit.jupiter.api.Assertions;

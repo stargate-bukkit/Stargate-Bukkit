@@ -1,9 +1,8 @@
-package net.TheDgtl.Stargate.network;
+package net.TheDgtl.Stargate.database;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.database.DriverEnum;
-import net.TheDgtl.Stargate.database.TableNameConfig;
+import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.Location;

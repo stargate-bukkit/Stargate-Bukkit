@@ -5,6 +5,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.DriverEnum;
 import net.TheDgtl.Stargate.database.MySqlDatabase;
+import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.database.TableNameConfig;
 import net.TheDgtl.Stargate.exception.GateConflict;

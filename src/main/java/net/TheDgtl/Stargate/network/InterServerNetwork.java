@@ -9,6 +9,7 @@ import net.TheDgtl.Stargate.StargateProtocolRequestType;
 import net.TheDgtl.Stargate.actions.ForcibleFunctionAction;
 import net.TheDgtl.Stargate.actions.SupplierAction;
 import net.TheDgtl.Stargate.database.Database;
+import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.NameSurround;
@@ -17,8 +18,6 @@ import org.bukkit.Bukkit;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.function.Function;
@@ -27,7 +26,6 @@ import java.util.logging.Level;
 
 
 public class InterServerNetwork extends Network {
-    private Database interServerDatabase;
 
     public InterServerNetwork(String netName, Database database, SQLQueryGenerator sqlMaker) throws NameError {
         super(netName, database, sqlMaker);
@@ -35,13 +33,14 @@ public class InterServerNetwork extends Network {
 
     public InterServerNetwork(String netName, Database database, SQLQueryGenerator sqlMaker, List<IPortal> portals) throws NameError {
         super(netName, database, sqlMaker);
-        for (IPortal portal : portals)
+        for (IPortal portal : portals) {
             addPortal(portal, false);
+        }
     }
 
     @Override
     public void removePortal(IPortal portal, boolean saveToDatabase) {
-        super.removePortal(portal, saveToDatabase, PortalType.LOCAL);
+        super.removePortal(portal, saveToDatabase);
         if (!saveToDatabase)
             return;
         try {
@@ -53,7 +52,7 @@ public class InterServerNetwork extends Network {
 
     public void registerToInterServer(IPortal portal) {
         Supplier<Boolean> action = () -> {
-            savePortal(interServerDatabase, portal, PortalType.INTER_SERVER);
+            savePortal(database, portal, PortalType.INTER_SERVER);
             return true;
         };
         Stargate.syncSecPopulator.addAction(new SupplierAction(action), true);
@@ -95,31 +94,7 @@ public class InterServerNetwork extends Network {
     }
 
     public void unregisterFromInterServer(IPortal portal) throws SQLException {
-        Connection conn = interServerDatabase.getConnection();
-
-        try {
-            conn.setAutoCommit(false);
-
-            PreparedStatement removeFlagsStatement = sqlMaker.generateRemoveFlagStatement(conn, PortalType.INTER_SERVER);
-            removeFlagsStatement.setString(1, portal.getName());
-            removeFlagsStatement.setString(2, portal.getNetwork().getName());
-            removeFlagsStatement.execute();
-            removeFlagsStatement.close();
-
-            PreparedStatement statement = sqlMaker.generateRemovePortalStatement(conn, portal, PortalType.INTER_SERVER);
-            statement.execute();
-            statement.close();
-
-            conn.commit();
-            conn.setAutoCommit(true);
-            conn.close();
-        } catch (SQLException exception) {
-            conn.rollback();
-            conn.setAutoCommit(true);
-            conn.close();
-            throw exception;
-        }
-
+        removePortalFromDatabase(portal, PortalType.INTER_SERVER);
         updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
     }
 

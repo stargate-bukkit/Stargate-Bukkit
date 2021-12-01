@@ -6,7 +6,6 @@ import be.seeseemelk.mockbukkit.WorldMock;
 import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.SQLQueryGenerator;
 import net.TheDgtl.Stargate.network.portal.FakePortal;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import org.bukkit.Material;

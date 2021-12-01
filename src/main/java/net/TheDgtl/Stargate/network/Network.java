@@ -4,6 +4,7 @@ import net.TheDgtl.Stargate.Bypass;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.database.Database;
+import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.IPortal;
@@ -72,11 +73,27 @@ public class Network {
         }
     }
 
-    public void removePortal(IPortal portal, boolean saveToDatabase, PortalType portalType) {
+    public void removePortal(IPortal portal, boolean saveToDatabase) {
         portalList.remove(portal.getName());
         if (!saveToDatabase) {
             return;
         }
+
+        try {
+            removePortalFromDatabase(portal, PortalType.LOCAL);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Removes a portal and its associated data from the database
+     *
+     * @param portal     <p>The portal to remove</p>
+     * @param portalType <p>The type of portal to remove</p>
+     * @throws SQLException <p>If a database error occurs</p>
+     */
+    protected void removePortalFromDatabase(IPortal portal, PortalType portalType) throws SQLException {
         Connection conn = null;
         try {
             conn = database.getConnection();
@@ -97,21 +114,12 @@ public class Network {
             conn.setAutoCommit(true);
             conn.close();
         } catch (SQLException e) {
-            try {
-                if (conn != null) {
-                    conn.rollback();
-                    conn.setAutoCommit(false);
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
+            if (conn != null) {
+                conn.rollback();
+                conn.setAutoCommit(false);
+                conn.close();
             }
-            e.printStackTrace();
         }
-    }
-
-    public void removePortal(IPortal portal, boolean saveToDatabase) {
-        this.removePortal(portal, saveToDatabase, PortalType.LOCAL);
     }
 
     protected void savePortal(Database database, IPortal portal, PortalType portalType) {
