@@ -245,7 +245,7 @@ public class StargateFactory {
 
     private void setInterServerPortalOnlineStatus(IPortal portal, boolean isOnline) throws SQLException {
         Connection conn = database.getConnection();
-        PreparedStatement statement = sqlMaker.generateSetPortalOnlineStatusStatement(conn, portal, isOnline, PortalType.INTER_SERVER);
+        PreparedStatement statement = sqlMaker.generateSetPortalOnlineStatusStatement(conn, portal, isOnline);
         statement.execute();
         statement.close();
         conn.close();
@@ -257,7 +257,7 @@ public class StargateFactory {
             for (IPortal portal : net.getAllPortals()) {
                 if (portal instanceof VirtualPortal)
                     continue;
-                PreparedStatement statement = sqlMaker.generateSetServerStatement(conn, portal, PortalType.INTER_SERVER);
+                PreparedStatement statement = sqlMaker.generateSetServerStatement(conn, portal);
                 statement.execute();
                 statement.close();
             }
