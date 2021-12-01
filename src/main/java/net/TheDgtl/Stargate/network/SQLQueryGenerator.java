@@ -222,7 +222,25 @@ public class SQLQueryGenerator {
         String statementMessage = "INSERT INTO {PortalFlagRelation} (name, network, flag) VALUES (?, ?, " +
                 "(SELECT id FROM {Flag} WHERE character = ?));";
         if (portalType == PortalType.INTER_SERVER) {
-            statementMessage = statementMessage.replace("{PortalFlagRelation}", "{InterPortalFlagRelation}");
+            statementMessage = statementMessage.replace("{Portal", "{InterPortal");
+        }
+        statementMessage = replaceKnownTableNames(statementMessage);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
+     * Gets a prepared statement for removing the relation between a portal and its flags
+     *
+     * @param connection <p>The database connection to use</p>
+     * @param portalType <p>The portal type to remove the flags from</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateRemoveFlagStatement(Connection connection, PortalType portalType) throws SQLException {
+        String statementMessage = "DELETE FROM {PortalFlagRelation} WHERE name = ? AND network = ?";
+        if (portalType == PortalType.INTER_SERVER) {
+            statementMessage = statementMessage.replace("{Portal", "{InterPortal");
         }
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);

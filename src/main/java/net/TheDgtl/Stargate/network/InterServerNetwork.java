@@ -96,10 +96,29 @@ public class InterServerNetwork extends Network {
 
     public void unregisterFromInterServer(IPortal portal) throws SQLException {
         Connection conn = interServerDatabase.getConnection();
-        PreparedStatement statement = sqlMaker.generateRemovePortalStatement(conn, portal, PortalType.INTER_SERVER);
-        statement.execute();
-        statement.close();
-        conn.close();
+
+        try {
+            conn.setAutoCommit(false);
+
+            PreparedStatement removeFlagsStatement = sqlMaker.generateRemoveFlagStatement(conn, PortalType.INTER_SERVER);
+            removeFlagsStatement.setString(1, portal.getName());
+            removeFlagsStatement.setString(2, portal.getNetwork().getName());
+            removeFlagsStatement.execute();
+            removeFlagsStatement.close();
+
+            PreparedStatement statement = sqlMaker.generateRemovePortalStatement(conn, portal, PortalType.INTER_SERVER);
+            statement.execute();
+            statement.close();
+
+            conn.commit();
+            conn.setAutoCommit(true);
+            conn.close();
+        } catch (SQLException exception) {
+            conn.rollback();
+            conn.setAutoCommit(true);
+            conn.close();
+            throw exception;
+        }
 
         updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
     }

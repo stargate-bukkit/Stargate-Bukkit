@@ -74,15 +74,38 @@ public class Network {
 
     public void removePortal(IPortal portal, boolean saveToDatabase, PortalType portalType) {
         portalList.remove(portal.getName());
-        if (!saveToDatabase)
+        if (!saveToDatabase) {
             return;
+        }
+        Connection conn = null;
         try {
-            Connection conn = database.getConnection();
+            conn = database.getConnection();
+            conn.setAutoCommit(false);
+
+            PreparedStatement removeFlagsStatement = sqlMaker.generateRemoveFlagStatement(conn, portalType);
+            removeFlagsStatement.setString(1, portal.getName());
+            removeFlagsStatement.setString(2, portal.getNetwork().getName());
+            removeFlagsStatement.execute();
+            removeFlagsStatement.close();
+
             PreparedStatement statement = sqlMaker.generateRemovePortalStatement(conn, portal, portalType);
             statement.execute();
             statement.close();
+
+
+            conn.commit();
+            conn.setAutoCommit(true);
             conn.close();
         } catch (SQLException e) {
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                    conn.setAutoCommit(false);
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         }
     }
