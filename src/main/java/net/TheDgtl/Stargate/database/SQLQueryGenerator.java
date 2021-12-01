@@ -178,8 +178,8 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateCreateFlagRelationTableStatement(Connection connection, PortalType portalType) throws SQLException {
         String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalFlagRelation} (name NVARCHAR(180), " +
-                "network NVARCHAR(180), flag INTEGER, PRIMARY KEY (name, network, flag), FOREIGN KEY (name) REFERENCES " +
-                "{Portal} (name), FOREIGN KEY (network) REFERENCES {Portal} (network), FOREIGN KEY (flag) REFERENCES {Flag} (id));";
+                "network NVARCHAR(180), flag INTEGER, PRIMARY KEY (name, network, flag), FOREIGN KEY (name, network) " +
+                "REFERENCES {Portal} (name, network), FOREIGN KEY (flag) REFERENCES {Flag} (id));";
         if (portalType == PortalType.INTER_SERVER) {
             statementMessage = statementMessage.replace("{Portal", "{InterPortal");
         }
