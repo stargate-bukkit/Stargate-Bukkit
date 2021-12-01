@@ -106,7 +106,7 @@ public class Teleporter {
             target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
             teleport(target, origin.getExit(), 180);
             Player player = (Player) target;
-            nearbyLeashedEntityTeleport(player.getNearbyEntities(LOOK_FOR_LEASHED_RADIUS,LOOK_FOR_LEASHED_RADIUS,LOOK_FOR_LEASHED_RADIUS), rotation);
+            nearbyLeashedEntityTeleport(player, rotation);
             return;
         }
 
@@ -123,9 +123,11 @@ public class Teleporter {
         teleport(target, destination, rotation);
     }
     
-    private void nearbyLeashedEntityTeleport(List<Entity> entities, double rotation) {
+    private void nearbyLeashedEntityTeleport(Player holder, double rotation) {
+        List<Entity> entities = holder.getNearbyEntities(LOOK_FOR_LEASHED_RADIUS,LOOK_FOR_LEASHED_RADIUS,LOOK_FOR_LEASHED_RADIUS);
         for(Entity entity : entities) {
-            if(entity instanceof LivingEntity && ((LivingEntity)entity).isLeashed()) {
+            if(entity instanceof LivingEntity && ((LivingEntity)entity).isLeashed() && ((LivingEntity)entity).getLeashHolder() == holder) {
+                
                 betterTeleport(entity,rotation);
             }
         }
