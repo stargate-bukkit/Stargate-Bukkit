@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.util.Vector;
@@ -20,6 +21,8 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 
 public class Teleporter {
+    
+    private static final double LOOK_FOR_LEASHED_RADIUS = 15;
     private final Location destination;
     private final Portal origin;
     private final int cost;
@@ -102,6 +105,8 @@ public class Teleporter {
         if (target instanceof Player && !charge((Player) target)) {
             target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
             teleport(target, origin.getExit(), 180);
+            Player player = (Player) target;
+            nearbyLeashedEntityTeleport(player.getNearbyEntities(LOOK_FOR_LEASHED_RADIUS,LOOK_FOR_LEASHED_RADIUS,LOOK_FOR_LEASHED_RADIUS), rotation);
             return;
         }
 
@@ -116,6 +121,14 @@ public class Teleporter {
         }
         
         teleport(target, destination, rotation);
+    }
+    
+    private void nearbyLeashedEntityTeleport(List<Entity> entities, double rotation) {
+        for(Entity entity : entities) {
+            if(entity instanceof LivingEntity && ((LivingEntity)entity).isLeashed()) {
+                betterTeleport(entity,rotation);
+            }
+        }
     }
 
     private void teleport(Entity target, Location loc, double rotation) {
