@@ -47,11 +47,6 @@ public class FakePortal implements IPortal {
     }
 
     @Override
-    public void drawControlMechanism() {
-
-    }
-
-    @Override
     public void close(boolean force) {
 
     }
@@ -104,5 +99,11 @@ public class FakePortal implements IPortal {
     @Override
     public UUID getOwnerUUID() {
         return ownerUUID;
+    }
+
+    @Override
+    public void update() {
+        // TODO Auto-generated method stub
+        
     }
 }
