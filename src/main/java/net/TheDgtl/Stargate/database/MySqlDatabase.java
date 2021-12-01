@@ -27,7 +27,7 @@ public class MySqlDatabase implements Database {
 
     private final HikariDataSource hikariSource;
     private HikariConfig config;
-    private final JavaPlugin plugin;
+    private JavaPlugin plugin;
 
     /**
      * Instantiates a new MySQL database connection using the given values
@@ -36,11 +36,9 @@ public class MySqlDatabase implements Database {
      * @param address  <p>The address of the MySQL server</p>
      * @param port     <p>The port of the MySQL server</p>
      * @param database <p>The database to store Stargate tables in</p>
-     * @param plugin   <p>An instance of the Stargate plugin</p>
      */
     public MySqlDatabase(DriverEnum driver, String address, int port, String database, String userName, String password,
-                         boolean useSSL, JavaPlugin plugin) {
-        this.plugin = plugin;
+                         boolean useSSL) {
 
         switch (driver) {
             case MYSQL:

@@ -5,6 +5,7 @@ import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.database.Database;
+import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.IPortal;
@@ -75,35 +76,97 @@ public class Network {
         }
     }
 
-    public void removePortal(IPortal portal, boolean saveToDatabase, PortalType portalType) {
+    public void removePortal(IPortal portal, boolean saveToDatabase) {
         portalList.remove(portal.getName());
-        if (!saveToDatabase)
+        if (!saveToDatabase) {
             return;
+        }
+
         try {
-            Connection conn = database.getConnection();
-            PreparedStatement statement = sqlMaker.generateRemovePortalStatement(conn, portal, portalType);
-            statement.execute();
-            statement.close();
-            conn.close();
+            removePortalFromDatabase(portal, PortalType.LOCAL);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void removePortal(IPortal portal, boolean saveToDatabase) {
-        this.removePortal(portal, saveToDatabase, PortalType.LOCAL);
+    /**
+     * Removes a portal and its associated data from the database
+     *
+     * @param portal     <p>The portal to remove</p>
+     * @param portalType <p>The type of portal to remove</p>
+     * @throws SQLException <p>If a database error occurs</p>
+     */
+    protected void removePortalFromDatabase(IPortal portal, PortalType portalType) throws SQLException {
+        Connection conn = null;
+        try {
+            conn = database.getConnection();
+            conn.setAutoCommit(false);
+
+            PreparedStatement removeFlagsStatement = sqlMaker.generateRemoveFlagStatement(conn, portalType);
+            removeFlagsStatement.setString(1, portal.getName());
+            removeFlagsStatement.setString(2, portal.getNetwork().getName());
+            removeFlagsStatement.execute();
+            removeFlagsStatement.close();
+
+            PreparedStatement statement = sqlMaker.generateRemovePortalStatement(conn, portal, portalType);
+            statement.execute();
+            statement.close();
+
+
+            conn.commit();
+            conn.setAutoCommit(true);
+            conn.close();
+        } catch (SQLException e) {
+            if (conn != null) {
+                conn.rollback();
+                conn.setAutoCommit(false);
+                conn.close();
+            }
+        }
     }
 
     protected void savePortal(Database database, IPortal portal, PortalType portalType) {
+
+        Connection connection = null;
         try {
-            Connection conn = database.getConnection();
-            PreparedStatement statement = sqlMaker.generateAddPortalStatement(conn, portal, portalType);
-            statement.execute();
-            statement.close();
-            conn.close();
-            updatePortals();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            connection = database.getConnection();
+            connection.setAutoCommit(false);
+            PreparedStatement savePortalStatement = sqlMaker.generateAddPortalStatement(connection, portal, portalType);
+            savePortalStatement.execute();
+            savePortalStatement.close();
+
+            PreparedStatement addFlagStatement = sqlMaker.generateAddPortalFlagRelationStatement(connection, portalType);
+            addFlags(addFlagStatement, portal);
+            addFlagStatement.close();
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (SQLException exception) {
+            try {
+                if (connection != null) {
+                    connection.rollback();
+                    connection.setAutoCommit(true);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            exception.printStackTrace();
+        }
+    }
+
+    /**
+     * Adds flags for the given portal to the database
+     *
+     * @param addFlagStatement <p>The statement used to add flags</p>
+     * @param portal           <p>The portal to add the flags of</p>
+     * @throws SQLException <p>If unable to set the flags</p>
+     */
+    private void addFlags(PreparedStatement addFlagStatement, IPortal portal) throws SQLException {
+        for (Character character : portal.getAllFlagsString().toCharArray()) {
+            Stargate.log(Level.FINER,"Adding flag " + character + " to portal: " + portal);
+            addFlagStatement.setString(1, portal.getName());
+            addFlagStatement.setString(2, portal.getNetwork().getName());
+            addFlagStatement.setString(3, String.valueOf(character));
+            addFlagStatement.execute();
         }
     }
 

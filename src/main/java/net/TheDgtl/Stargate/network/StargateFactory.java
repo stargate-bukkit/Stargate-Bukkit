@@ -5,7 +5,9 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.DriverEnum;
 import net.TheDgtl.Stargate.database.MySqlDatabase;
+import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
+import net.TheDgtl.Stargate.database.TableNameConfig;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.exception.NoFormatFound;
@@ -25,8 +27,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -49,18 +53,15 @@ public class StargateFactory {
         database = loadDatabase(stargate);
         useInterServerNetworks = (Setting.getBoolean(Setting.USING_REMOTE_DATABASE) && Setting.getBoolean(Setting.USING_BUNGEE));
 
-        if (useInterServerNetworks) {
-            this.sqlMaker = new SQLQueryGenerator(tableName, bungeeDataBaseName, sharedTableName);
-        } else
-            this.sqlMaker = new SQLQueryGenerator(tableName);
+        TableNameConfig config = new TableNameConfig("SG_", "");
+        DriverEnum databaseEnum = Setting.getBoolean(Setting.USING_REMOTE_DATABASE) ? DriverEnum.MYSQL : DriverEnum.SQLITE;
+        this.sqlMaker = new SQLQueryGenerator(config, Stargate.getInstance(), databaseEnum);
         createTables();
 
 
         Stargate.log(Level.FINER, "Loading portals from base database");
         loadAllPortals(database, PortalType.LOCAL);
         if (useInterServerNetworks) {
-            Stargate.log(Level.FINER, "Loading portals from local bungee database");
-            loadAllPortals(database, PortalType.BUNGEE);
             Stargate.log(Level.FINER, "Loading portals from inter-server bungee database");
             loadAllPortals(database, PortalType.INTER_SERVER, true);
         }
@@ -85,7 +86,7 @@ public class StargateFactory {
             switch (driver) {
                 case MARIADB:
                 case MYSQL:
-                    return new MySqlDatabase(driver, address, port, bungeeDatabaseName, username, password, useSSL, stargate);
+                    return new MySqlDatabase(driver, address, port, bungeeDatabaseName, username, password, useSSL);
                 default:
                     throw new SQLException("Unsupported driver: Stargate currently supports MariaDb and MySql for remote databases");
             }
@@ -102,30 +103,70 @@ public class StargateFactory {
         }
     }
 
-    private void runStatement(Database database, PreparedStatement statement) throws SQLException {
-        Connection conn = database.getConnection();
+    private void runStatement(PreparedStatement statement) throws SQLException {
         statement.execute();
         statement.close();
     }
 
+    /**
+     * Creates all necessary database tables
+     * 
+     * @throws SQLException <p>If an SQL exception occurs</p>
+     */
     private void createTables() throws SQLException {
-        Connection conn1 = database.getConnection();
-        PreparedStatement localPortalsStatement = sqlMaker.generateCreateTableStatement(conn1, PortalType.LOCAL);
-        runStatement(database, localPortalsStatement);
-        conn1.close();
+        Connection connection = database.getConnection();
+        PreparedStatement localPortalsStatement = sqlMaker.generateCreatePortalTableStatement(connection, PortalType.LOCAL);
+        runStatement(localPortalsStatement);
+        PreparedStatement flagStatement = sqlMaker.generateCreateFlagTableStatement(connection);
+        runStatement(flagStatement);
+        addMissingFlags(connection, sqlMaker);
+        PreparedStatement serverInfoStatement = sqlMaker.generateCreateServerInfoTableStatement(connection);
+        runStatement(serverInfoStatement);
+        PreparedStatement lastKnownNameStatement = sqlMaker.generateCreateLastKnownNameTableStatement(connection);
+        runStatement(lastKnownNameStatement);
+        PreparedStatement portalRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(connection, PortalType.LOCAL);
+        runStatement(portalRelationStatement);
+        PreparedStatement portalViewStatement = sqlMaker.generateCreatePortalViewStatement(connection, PortalType.LOCAL);
+        runStatement(portalViewStatement);
 
         if (!useInterServerNetworks) {
+            connection.close();
             return;
         }
-        Connection conn2 = database.getConnection();
-        PreparedStatement localInterServerPortalsStatement = sqlMaker.generateCreateTableStatement(conn2, PortalType.BUNGEE);
-        runStatement(database, localInterServerPortalsStatement);
-        conn2.close();
+        
+        PreparedStatement interServerPortalsStatement = sqlMaker.generateCreatePortalTableStatement(connection, PortalType.INTER_SERVER);
+        runStatement(interServerPortalsStatement);
+        PreparedStatement interServerRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(connection, PortalType.INTER_SERVER);
+        runStatement(interServerRelationStatement);
+        PreparedStatement interPortalViewStatement = sqlMaker.generateCreatePortalViewStatement(connection, PortalType.INTER_SERVER);
+        runStatement(interPortalViewStatement);
+        connection.close();
+    }
 
-        Connection conn3 = database.getConnection();
-        PreparedStatement interServerPortalsStatement = sqlMaker.generateCreateTableStatement(conn3, PortalType.INTER_SERVER);
-        runStatement(database, interServerPortalsStatement);
-        conn3.close();
+    /**
+     * Adds any flags not already in the database
+     *
+     * @param connection <p>The database connection to use</p>
+     * @param sqlMaker   <p>The SQL Query Generator to use for generating queries</p>
+     * @throws SQLException <p>If unable to get from, or update the database</p>
+     */
+    private void addMissingFlags(Connection connection, SQLQueryGenerator sqlMaker) throws SQLException {
+        PreparedStatement statement = sqlMaker.generateGetAllFlagsStatement(connection);
+        PreparedStatement addStatement = sqlMaker.generateAddFlagStatement(connection);
+
+        ResultSet set = statement.executeQuery();
+        List<String> knownFlags = new ArrayList<>();
+        while (set.next()) {
+            knownFlags.add(set.getString("character"));
+        }
+        for (PortalFlag flag : PortalFlag.values()) {
+            if (!knownFlags.contains(String.valueOf(flag.getLabel()))) {
+                addStatement.setString(1, String.valueOf(flag.getLabel()));
+                addStatement.execute();
+            }
+        }
+        statement.close();
+        addStatement.close();
     }
 
     private void loadAllPortals(Database database, PortalType tablePortalType) throws SQLException {
@@ -138,16 +179,21 @@ public class StargateFactory {
 
         ResultSet set = statement.executeQuery();
         while (set.next()) {
-            String netName = set.getString(1);
-            String name = set.getString(2);
+            String name = set.getString("name");
+            String netName = set.getString("network");
 
-            String destination = set.getString(3);
-            String worldName = set.getString(4);
-            int x = set.getInt(5);
-            int y = set.getInt(6);
-            int z = set.getInt(7);
-            String flagsMsg = set.getString(8);
-            UUID ownerUUID = UUID.fromString(set.getString(9));
+            //Skip null rows
+            if (name == null && netName == null) {
+                continue;
+            }
+
+            String destination = set.getString("destination");
+            String worldName = set.getString("world");
+            int x = set.getInt("x");
+            int y = set.getInt("y");
+            int z = set.getInt("z");
+            String flagsMsg = set.getString("flags");
+            UUID ownerUUID = UUID.fromString(set.getString("ownerUUID"));
 
             EnumSet<PortalFlag> flags = PortalFlag.parseFlags(flagsMsg);
 
@@ -170,7 +216,7 @@ public class StargateFactory {
             }
 
             if (areVirtual) {
-                String server = set.getString(10);
+                String server = set.getString("homeServerId");
                 if (!net.portalExists(name)) {
                     IPortal virtualPortal = new VirtualPortal(server, name, net, flags, ownerUUID);
                     net.addPortal(virtualPortal, false);
@@ -205,7 +251,7 @@ public class StargateFactory {
 
     private void setInterServerPortalOnlineStatus(IPortal portal, boolean isOnline) throws SQLException {
         Connection conn = database.getConnection();
-        PreparedStatement statement = sqlMaker.generateSetPortalOnlineStatusStatement(conn, portal, isOnline, PortalType.INTER_SERVER);
+        PreparedStatement statement = sqlMaker.generateSetPortalOnlineStatusStatement(conn, portal, isOnline);
         statement.execute();
         statement.close();
         conn.close();
@@ -217,7 +263,7 @@ public class StargateFactory {
             for (IPortal portal : net.getAllPortals()) {
                 if (portal instanceof VirtualPortal)
                     continue;
-                PreparedStatement statement = sqlMaker.generateSetServerStatement(conn, portal, PortalType.INTER_SERVER);
+                PreparedStatement statement = sqlMaker.generateSetServerStatement(conn, portal);
                 statement.execute();
                 statement.close();
             }

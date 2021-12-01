@@ -4,3 +4,4 @@ target/
 *.prefs
 .classpath
 .project
+test.db

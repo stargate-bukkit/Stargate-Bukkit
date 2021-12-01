@@ -61,7 +61,7 @@ import java.util.logging.Level;
  * @author Drakia (2011-2013)
  * @author Dinnerbone (2010-2011)
  */
-public class Stargate extends JavaPlugin {
+public class Stargate extends JavaPlugin implements StargateLogger {
     private static Stargate instance;
 
     private Level lowestMsgLevel = Level.FINEST;//setting before config loads
@@ -245,12 +245,26 @@ public class Stargate extends JavaPlugin {
     }
 
     public static void log(Level priorityLevel, String msg) {
-        if (instance.lowestMsgLevel.intValue() <= priorityLevel.intValue()
+        instance.logMessage(priorityLevel, msg);
+    }
+
+    /**
+     * Gets an instance of this plugin
+     *
+     * @return <p>An instance of this plugin</p>
+     */
+    public static Stargate getInstance() {
+        return instance;
+    }
+
+    @Override
+    public void logMessage(Level priorityLevel, String message) {
+        if (this.lowestMsgLevel.intValue() <= priorityLevel.intValue()
                 && priorityLevel.intValue() < Level.INFO.intValue()) {
-            instance.getLogger().log(Level.INFO, msg);
+            this.getLogger().log(Level.INFO, message);
             return;
         }
-        instance.getLogger().log(priorityLevel, msg);
+        this.getLogger().log(priorityLevel, message);
     }
 
     public static FileConfiguration getConfigStatic() {
@@ -285,4 +299,5 @@ public class Stargate extends JavaPlugin {
     public static IPortal pullFromQueue(String playerName) {
         return instance.bungeeQueue.remove(playerName);
     }
+
 }

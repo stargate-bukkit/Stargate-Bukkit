@@ -25,10 +25,14 @@ public enum PortalFlag {
         this.label = label;
     }
 
+    public Character getLabel() {
+        return this.label;
+    }
+
     /**
      * Go through every character in line, and
      *
-     * @param line
+     * @param line <p></p>
      */
     public static EnumSet<PortalFlag> parseFlags(String line) {
         EnumSet<PortalFlag> foundFlags = EnumSet.noneOf(PortalFlag.class);
@@ -36,7 +40,7 @@ public enum PortalFlag {
         for (char character : charArray) {
             try {
                 foundFlags.add(PortalFlag.valueOf(character));
-            } catch (NoFlagFound e) {
+            } catch (NoFlagFound ignored) {
             }
         }
         return foundFlags;

@@ -29,7 +29,7 @@ public class SQLiteDatabase implements Database {
 
     @Override
     public Connection getConnection() throws SQLException {
-        if (previousConnection == null) {
+        if (previousConnection == null || previousConnection.isClosed()) {
             previousConnection = DriverManager.getConnection(this.url);
         }
         return previousConnection;
