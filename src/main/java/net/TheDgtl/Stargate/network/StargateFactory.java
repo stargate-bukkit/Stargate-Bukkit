@@ -130,9 +130,9 @@ public class StargateFactory {
         Connection conn3 = database.getConnection();
         PreparedStatement interServerPortalsStatement = sqlMaker.generateCreatePortalTableStatement(conn3, PortalType.INTER_SERVER);
         runStatement(interServerPortalsStatement);
-        PreparedStatement interServerRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(conn1, PortalType.INTER_SERVER);
+        PreparedStatement interServerRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(conn3, PortalType.INTER_SERVER);
         runStatement(interServerRelationStatement);
-        PreparedStatement interPortalViewStatement = sqlMaker.generateCreatePortalViewStatement(conn1, PortalType.INTER_SERVER);
+        PreparedStatement interPortalViewStatement = sqlMaker.generateCreatePortalViewStatement(conn3, PortalType.INTER_SERVER);
         runStatement(interPortalViewStatement);
         conn3.close();
     }
