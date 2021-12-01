@@ -171,11 +171,15 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalViewStatement(Connection connection, PortalType portalType) throws SQLException {
-        String statementMessage = "CREATE VIEW IF NOT EXISTS {PortalView} AS SELECT {Portal}.*, " +
-                "COALESCE(GROUP_CONCAT({Flag}.`character`, ''), '') AS flags, {LastKnownName}.lastKnownName FROM {Portal} LEFT OUTER " +
-                "JOIN {PortalFlagRelation} ON {Portal}.name = {PortalFlagRelation}.name AND {Portal}.network = " +
-                "{PortalFlagRelation}.network LEFT OUTER JOIN {Flag} ON {PortalFlagRelation}.flag = {Flag}.id LEFT " +
-                "OUTER JOIN {LastKnownName} ON {Portal}.network = {LastKnownName}.uuid GROUP BY {Portal}.name, {Portal}.network;";
+        String selectServerName = portalType == PortalType.INTER_SERVER ? ", {ServerInfo}.serverName" : "";
+        String joinServerName = portalType == PortalType.INTER_SERVER ? 
+                " LEFT OUTER JOIN {ServerInfo} ON {ServerInfo}.serverId = {InterPortal}.homeServerId" : "";
+        String statementMessage = String.format("CREATE VIEW IF NOT EXISTS {PortalView} AS SELECT {Portal}.*, " +
+                "COALESCE(GROUP_CONCAT({Flag}.`character`, ''), '') AS flags, {LastKnownName}.lastKnownName%s FROM " +
+                "{Portal} LEFT OUTER JOIN {PortalFlagRelation} ON {Portal}.name = {PortalFlagRelation}.name AND " +
+                "{Portal}.network = {PortalFlagRelation}.network LEFT OUTER JOIN {Flag} ON {PortalFlagRelation}.flag = " +
+                "{Flag}.id LEFT OUTER JOIN {LastKnownName} ON {Portal}.network = {LastKnownName}.uuid%s GROUP BY " +
+                "{Portal}.name, {Portal}.network;", selectServerName, joinServerName);
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
