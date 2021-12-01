@@ -124,6 +124,12 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(5)
+    void updateLastKnownNameTest() throws SQLException {
+        tester.updateLastKnownNameTest();
+    }
+
+    @Test
+    @Order(5)
     void addPortalTest() throws SQLException {
         tester.addPortalTest();
     }

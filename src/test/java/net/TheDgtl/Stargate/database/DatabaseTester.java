@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.UUID;
 
 /**
  * Test class for shared database tests to prevent duplication
@@ -214,6 +215,39 @@ public class DatabaseTester {
         destroyPortal(testInterPortal, PortalType.INTER_SERVER);
     }
 
+    void updateLastKnownNameTest() throws SQLException {
+        UUID uuid = testPortal.getOwnerUUID();
+        String lastKnownName = "AUserName";
+        String lastKnownName2 = "AUserName2";
+        PreparedStatement statement = generator.generateUpdateLastKnownNameStatement(connection);
+        statement.setString(1, uuid.toString());
+        statement.setString(2, lastKnownName);
+        statement.execute();
+        Assertions.assertEquals(lastKnownName, getLastKnownName(uuid));
+        statement.setString(2, lastKnownName2);
+        statement.execute();
+        statement.close();
+        Assertions.assertEquals(lastKnownName2, getLastKnownName(uuid));
+    }
+
+    /**
+     * Gets the last known name from the database
+     *
+     * @param uuid <p>The uuid to get the last known name from</p>
+     * @return <p>The last known name of the uuid</p>
+     * @throws SQLException <p>If a database error occurs</p>
+     */
+    private String getLastKnownName(UUID uuid) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("SELECT lastKnownName FROM " +
+                nameConfig.getLastKnownNameTableName() + " WHERE uuid = ?");
+        statement.setString(1, uuid.toString());
+        ResultSet result = statement.executeQuery();
+        result.next();
+        String output = result.getString(1);
+        statement.close();
+        return output;
+    }
+
     /**
      * Destroys a portal, and fails the assertion if the portal isn't properly destroyed
      *
@@ -294,6 +328,7 @@ public class DatabaseTester {
     static void deleteAllTables(TableNameConfig nameConfig) throws SQLException {
         finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS " + nameConfig.getInterPortalViewName()));
         finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS " + nameConfig.getPortalViewName()));
+        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getLastKnownNameTableName()));
         finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getInterFlagRelationTableName()));
         finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getFlagRelationTableName()));
         finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getPortalTableName()));

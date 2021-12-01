@@ -83,7 +83,21 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateGetAllFlagsStatement(Connection connection) throws SQLException {
-        String statementMessage = String.format("SELECT id, character FROM %s;", tableNameConfig.getFlagTableName());
+        String statementMessage = String.format("SELECT id, `character` FROM %s;", tableNameConfig.getFlagTableName());
+        logger.logMessage(Level.FINEST, statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
+     * Gets a prepared statement for inserting/updating the last known name of a player
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateUpdateLastKnownNameStatement(Connection connection) throws SQLException {
+        String statementMessage = "REPLACE INTO {LastKnownName} (uuid, lastKnownName) VALUES (?, ?);";
+        statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, statementMessage);
         return connection.prepareStatement(statementMessage);
     }
@@ -117,7 +131,7 @@ public class SQLQueryGenerator {
     public PreparedStatement generateCreateFlagTableStatement(Connection connection) throws SQLException {
         String autoIncrement = (driverEnum == DriverEnum.MARIADB || driverEnum == DriverEnum.MYSQL) ?
                 "AUTO_INCREMENT" : "AUTOINCREMENT";
-        String statementMessage = String.format("CREATE TABLE IF NOT EXISTS {Flag} (id INTEGER PRIMARY KEY %s, character CHAR(1) " +
+        String statementMessage = String.format("CREATE TABLE IF NOT EXISTS {Flag} (id INTEGER PRIMARY KEY %s, `character` CHAR(1) " +
                 "UNIQUE NOT NULL);", autoIncrement);
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
@@ -184,7 +198,7 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateCreatePortalViewStatement(Connection connection, PortalType portalType) throws SQLException {
         String statementMessage = "CREATE VIEW IF NOT EXISTS {PortalView} AS SELECT {Portal}.*, " +
-                "COALESCE(GROUP_CONCAT({Flag}.character, ''), '') AS flags, {LastKnownName}.lastKnownName FROM {Portal} LEFT OUTER " +
+                "COALESCE(GROUP_CONCAT({Flag}.`character`, ''), '') AS flags, {LastKnownName}.lastKnownName FROM {Portal} LEFT OUTER " +
                 "JOIN {PortalFlagRelation} ON {Portal}.name = {PortalFlagRelation}.name AND {Portal}.network = " +
                 "{PortalFlagRelation}.network LEFT OUTER JOIN {Flag} ON {PortalFlagRelation}.flag = {Flag}.id LEFT " +
                 "OUTER JOIN {LastKnownName} ON {Portal}.network = {LastKnownName}.uuid GROUP BY {Portal}.name, {Portal}.network;";
@@ -204,7 +218,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateAddFlagStatement(Connection connection) throws SQLException {
-        String statementMessage = String.format("INSERT INTO %s (character) VALUES (?);", tableNameConfig.getFlagTableName());
+        String statementMessage = String.format("INSERT INTO %s (`character`) VALUES (?);", tableNameConfig.getFlagTableName());
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
     }
@@ -219,7 +233,7 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateAddPortalFlagRelationStatement(Connection connection, PortalType portalType) throws SQLException {
         String statementMessage = "INSERT INTO {PortalFlagRelation} (name, network, flag) VALUES (?, ?, " +
-                "(SELECT id FROM {Flag} WHERE character = ?));";
+                "(SELECT id FROM {Flag} WHERE `character` = ?));";
         if (portalType == PortalType.INTER_SERVER) {
             statementMessage = statementMessage.replace("{Portal", "{InterPortal");
         }
