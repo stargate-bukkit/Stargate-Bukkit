@@ -106,35 +106,39 @@ public class StargateFactory {
         statement.close();
     }
 
+    /**
+     * Creates all necessary database tables
+     * 
+     * @throws SQLException <p>If an SQL exception occurs</p>
+     */
     private void createTables() throws SQLException {
-        Connection conn1 = database.getConnection();
-        PreparedStatement localPortalsStatement = sqlMaker.generateCreatePortalTableStatement(conn1, PortalType.LOCAL);
+        Connection connection = database.getConnection();
+        PreparedStatement localPortalsStatement = sqlMaker.generateCreatePortalTableStatement(connection, PortalType.LOCAL);
         runStatement(localPortalsStatement);
-        PreparedStatement flagStatement = sqlMaker.generateCreateFlagTableStatement(conn1);
+        PreparedStatement flagStatement = sqlMaker.generateCreateFlagTableStatement(connection);
         runStatement(flagStatement);
-        addMissingFlags(conn1, sqlMaker);
-        PreparedStatement serverInfoStatement = sqlMaker.generateCreateServerInfoTableStatement(conn1);
+        addMissingFlags(connection, sqlMaker);
+        PreparedStatement serverInfoStatement = sqlMaker.generateCreateServerInfoTableStatement(connection);
         runStatement(serverInfoStatement);
-        PreparedStatement lastKnownNameStatement = sqlMaker.generateCreateLastKnownNameTableStatement(conn1);
+        PreparedStatement lastKnownNameStatement = sqlMaker.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);
-        PreparedStatement portalRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(conn1, PortalType.LOCAL);
+        PreparedStatement portalRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(connection, PortalType.LOCAL);
         runStatement(portalRelationStatement);
-        PreparedStatement portalViewStatement = sqlMaker.generateCreatePortalViewStatement(conn1, PortalType.LOCAL);
+        PreparedStatement portalViewStatement = sqlMaker.generateCreatePortalViewStatement(connection, PortalType.LOCAL);
         runStatement(portalViewStatement);
-        conn1.close();
 
         if (!useInterServerNetworks) {
+            connection.close();
             return;
         }
-
-        Connection conn3 = database.getConnection();
-        PreparedStatement interServerPortalsStatement = sqlMaker.generateCreatePortalTableStatement(conn3, PortalType.INTER_SERVER);
+        
+        PreparedStatement interServerPortalsStatement = sqlMaker.generateCreatePortalTableStatement(connection, PortalType.INTER_SERVER);
         runStatement(interServerPortalsStatement);
-        PreparedStatement interServerRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(conn3, PortalType.INTER_SERVER);
+        PreparedStatement interServerRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(connection, PortalType.INTER_SERVER);
         runStatement(interServerRelationStatement);
-        PreparedStatement interPortalViewStatement = sqlMaker.generateCreatePortalViewStatement(conn3, PortalType.INTER_SERVER);
+        PreparedStatement interPortalViewStatement = sqlMaker.generateCreatePortalViewStatement(connection, PortalType.INTER_SERVER);
         runStatement(interPortalViewStatement);
-        conn3.close();
+        connection.close();
     }
 
     /**
