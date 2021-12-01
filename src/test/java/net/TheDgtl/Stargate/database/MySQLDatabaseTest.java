@@ -35,7 +35,7 @@ public class MySQLDatabaseTest {
         int port = 3306;
         String databaseName = "stargate";
         String username = "root";
-        String password = "";
+        String password = "root";
 
         ServerMock server = MockBukkit.mock();
         WorldMock world = new WorldMock(Material.DIRT, 5);
@@ -51,7 +51,7 @@ public class MySQLDatabaseTest {
                 testNetwork, UUID.randomUUID());
         IPortal testInterPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "iPortal",
                 testNetwork, UUID.randomUUID());
-        tester = new DatabaseTester(database, connection, generator, testPortal, testInterPortal, nameConfig);
+        tester = new DatabaseTester(database, connection, generator, testPortal, testInterPortal, nameConfig,true);
     }
 
     @AfterAll

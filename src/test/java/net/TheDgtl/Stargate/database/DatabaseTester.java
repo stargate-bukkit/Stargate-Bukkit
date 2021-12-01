@@ -26,6 +26,7 @@ public class DatabaseTester {
     private static IPortal testPortal;
     private static IPortal testInterPortal;
     private static TableNameConfig nameConfig;
+    private static boolean isMySQL;
 
     /**
      * Instantiates a new database tester
@@ -38,14 +39,16 @@ public class DatabaseTester {
      * @param nameConfig      <p>The config containing all table names</p>
      */
     public DatabaseTester(Database database, Connection connection, SQLQueryGenerator generator, IPortal testPortal,
-                          IPortal testInterPortal, TableNameConfig nameConfig) {
+                          IPortal testInterPortal, TableNameConfig nameConfig, boolean isMySQL) {
         DatabaseTester.database = database;
         DatabaseTester.connection = connection;
         DatabaseTester.generator = generator;
         DatabaseTester.testPortal = testPortal;
         DatabaseTester.testInterPortal = testInterPortal;
         DatabaseTester.nameConfig = nameConfig;
+        DatabaseTester.isMySQL = isMySQL;
     }
+    
 
     public static void tearDown() throws SQLException {
         connection.close();
@@ -307,7 +310,9 @@ public class DatabaseTester {
      */
     private static void printTableInfo(String tableName) throws SQLException {
         System.out.println("Getting table info for: " + tableName);
-        PreparedStatement tableInfoStatement = connection.prepareStatement(String.format("pragma table_info('%s');", tableName));
+        String statementMsg = String.format(!isMySQL?"pragma table_info('%s');":"DESCRIBE %s", tableName);
+        
+        PreparedStatement tableInfoStatement = connection.prepareStatement(statementMsg);
         ResultSet infoResult = tableInfoStatement.executeQuery();
         ResultSetMetaData infoMetaData = infoResult.getMetaData();
         while (infoResult.next()) {
