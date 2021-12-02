@@ -115,12 +115,12 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         loadConfig();
         loadColors();
 
-        if (Setting.getBoolean(Setting.USING_REMOTE_DATABASE)) {
+        if (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
             loadBungeeServerName();
         }
         economyManager = new EconomyManager();
-        lowestMsgLevel = Level.parse(Setting.getString(Setting.DEBUG_LEVEL));
-        languageManager = new LanguageManager(this, DATA_FOLDER + "/" + LANGUAGE_FOLDER, Setting.getString(Setting.LANGUAGE));
+        lowestMsgLevel = Level.parse(Settings.getString(Setting.DEBUG_LEVEL));
+        languageManager = new LanguageManager(this, DATA_FOLDER + "/" + LANGUAGE_FOLDER, Settings.getString(Setting.LANGUAGE));
         saveDefaultGates();
 
         GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATA_FOLDER + "/" + GATE_FOLDER);
@@ -171,8 +171,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     private void loadColors() {
-        Stargate.defaultLightSignColor = loadColor(Setting.getString(Setting.DEFAULT_LIGHT_SIGN_COLOR));
-        Stargate.defaultDarkColor = loadColor(Setting.getString(Setting.DEFAULT_DARK_SIGN_COLOR));
+        Stargate.defaultLightSignColor = loadColor(Settings.getString(Setting.DEFAULT_LIGHT_SIGN_COLOR));
+        Stargate.defaultDarkColor = loadColor(Settings.getString(Setting.DEFAULT_DARK_SIGN_COLOR));
     }
 
     private ChatColor loadColor(String colorString) {
@@ -188,7 +188,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         pm.registerEvents(new PlayerEventListener(), this);
         pm.registerEvents(new PluginEventListener(), this);
         pm.registerEvents(new WorldEventListener(), this);
-        if (Setting.getBoolean(Setting.USING_BUNGEE)) {
+        if (Settings.getBoolean(Setting.USING_BUNGEE)) {
             Messenger msgr = Bukkit.getMessenger();
 
             msgr.registerOutgoingPluginChannel(this, Channel.BUNGEE.getChannel());
@@ -209,7 +209,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     private void loadConfig() {
         saveDefaultConfig();
         reloadConfig();
-        if (Setting.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
+        if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
             // TODO refactoring
         }
     }
@@ -228,14 +228,14 @@ public class Stargate extends JavaPlugin implements StargateLogger {
          */
         syncTickPopulator.forceDoAllTasks();
         syncSecPopulator.forceDoAllTasks();
-        if (Setting.getBoolean(Setting.USING_BUNGEE)) {
+        if (Settings.getBoolean(Setting.USING_BUNGEE)) {
             Messenger msgr = Bukkit.getMessenger();
             msgr.unregisterOutgoingPluginChannel(this);
             msgr.unregisterIncomingPluginChannel(this);
         }
         getServer().getScheduler().cancelTasks(this);
 
-        if (!Setting.getBoolean(Setting.USING_BUNGEE))
+        if (!Settings.getBoolean(Setting.USING_BUNGEE))
             return;
 
         try {

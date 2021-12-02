@@ -92,7 +92,7 @@ public class PermissionManager {
                     metadataProvider.getGroupInfoInteger(player.getWorld(), metadataProvider.getPrimaryGroup((Player) player), "gate-limit", -1);
                 }
                 if (maxGates == -1) {
-                    maxGates = Setting.getInteger(Setting.GATE_LIMIT);
+                    maxGates = Settings.getInteger(Setting.GATE_LIMIT);
                 }
 
                 if (maxGates > -1 && !player.hasPermission(Bypass.GATE_LIMIT.getPermissionString())) {
@@ -119,7 +119,7 @@ public class PermissionManager {
 
         if (player.getName().equals(network))
             hasPerm = player.hasPermission(CREATE_PERMISSION + ".personal");
-        else if (network.equals(Setting.getString(Setting.DEFAULT_NET)))
+        else if (network.equals(Settings.getString(Setting.DEFAULT_NET)))
             hasPerm = player.hasPermission(CREATE_PERMISSION + ".default");
         else
             hasPerm = player.hasPermission(CREATE_PERMISSION + ".custom." + network);

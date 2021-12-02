@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
@@ -143,7 +144,7 @@ public class Teleporter {
         Location exit = loc.setDirection(direction.rotateAroundY(rotation));
         Vector velocity = target.getVelocity();
         target.teleport(exit);
-        Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(Setting.getDouble(Setting.GATE_EXIT_SPEED_MULTIPLIER));
+        Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(Settings.getDouble(Setting.GATE_EXIT_SPEED_MULTIPLIER));
         target.setVelocity(targetVelocity);
         target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT, false));
     }

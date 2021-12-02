@@ -17,7 +17,7 @@ public class EconomyManager {
     private final boolean hasVault;
 
     public EconomyManager() {
-        if (!Setting.getBoolean(Setting.USE_ECONOMY)) {
+        if (!Settings.getBoolean(Setting.USE_ECONOMY)) {
             hasVault = false;
             return;
         }
@@ -77,7 +77,7 @@ public class EconomyManager {
      * @return
      */
     public boolean chargeAndTax(OfflinePlayer player, int amount) {
-        String bankUUIDStr = Setting.getString(Setting.TAX_DESTINATION);
+        String bankUUIDStr = Settings.getString(Setting.TAX_DESTINATION);
         if (!bankUUIDStr.isEmpty()) {
             OfflinePlayer bankAccount = Bukkit.getOfflinePlayer(UUID.fromString(bankUUIDStr));
             return chargeAndDepositPlayer(player, bankAccount, amount);
@@ -86,7 +86,7 @@ public class EconomyManager {
     }
 
     public boolean chargePlayer(OfflinePlayer player, IPortal origin, int amount) {
-        if (Setting.getBoolean(Setting.GATE_OWNER_REVENUE)) {
+        if (Settings.getBoolean(Setting.GATE_OWNER_REVENUE)) {
             if (chargeAndDepositPlayer(player, Bukkit.getServer().getOfflinePlayer(origin.getOwnerUUID()), amount)) {
                 if (player.getPlayer() != null) {
                     String unCompiledMessage = Stargate.languageManager.getMessage(TranslatableMessage.ECO_OBTAIN, hasVault);

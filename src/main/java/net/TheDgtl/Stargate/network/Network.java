@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.network;
 
 import net.TheDgtl.Stargate.Bypass;
 import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.database.Database;
@@ -184,7 +185,6 @@ public class Network {
         if (saveToDatabase) {
             savePortal(portal);
         }
-        
         portalList.put(compilePortalHash(portal.getName()), portal);
     }
 

@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateProtocolProperty;
 import net.TheDgtl.Stargate.StargateProtocolRequestType;
@@ -77,7 +78,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {
         Stargate.log(Level.FINEST, "Received plugin-message");
 
-        boolean usingBungee = Setting.getBoolean(Setting.USING_BUNGEE);
+        boolean usingBungee = Settings.getBoolean(Setting.USING_BUNGEE);
         if (!usingBungee || !channel.equals("BungeeCord"))
             return;
 

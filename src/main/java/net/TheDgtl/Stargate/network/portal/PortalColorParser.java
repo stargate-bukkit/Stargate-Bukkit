@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
@@ -33,7 +34,7 @@ public class PortalColorParser {
         ChatColor nameColor;
         ChatColor selectorColor;
 
-        switch (Setting.getInteger(Setting.NAME_STYLE)) {
+        switch (Settings.getInteger(Setting.NAME_STYLE)) {
             case 1:
             case 2:
             default:
@@ -44,7 +45,7 @@ public class PortalColorParser {
                 break;
         }
 
-        switch (Setting.getInteger(Setting.NAME_STYLE)) {
+        switch (Settings.getInteger(Setting.NAME_STYLE)) {
             case 1:
                 selectorColor = getDefaultColor(isLightSign);
                 break;

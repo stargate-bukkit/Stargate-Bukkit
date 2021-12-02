@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.actions.ConditionalRepeatedTask;
 import net.TheDgtl.Stargate.actions.SimpleAction;
@@ -79,7 +80,7 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!Setting.getBoolean(Setting.USING_BUNGEE))
+        if (!Settings.getBoolean(Setting.USING_BUNGEE))
             return;
 
         if (!Stargate.knowsServerName) {

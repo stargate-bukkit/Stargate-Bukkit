@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.Location;
@@ -61,7 +62,7 @@ public interface IPortal {
         data.put("flags", portal.getAllFlagsString());
         data.put("name", portal.getName());
         data.put("net", portal.getNetwork().getName());
-        if (Setting.getBoolean(Setting.USING_BUNGEE)) {
+        if (Settings.getBoolean(Setting.USING_BUNGEE)) {
             data.put("server", Stargate.serverName);
         }
         StringBuilder endMsg = new StringBuilder(type + "{");

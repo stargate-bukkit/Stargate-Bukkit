@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.network;
 
 import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.DriverEnum;
@@ -51,10 +52,10 @@ public class StargateFactory {
 
     public StargateFactory(Stargate stargate) throws SQLException {
         database = loadDatabase(stargate);
-        useInterServerNetworks = (Setting.getBoolean(Setting.USING_REMOTE_DATABASE) && Setting.getBoolean(Setting.USING_BUNGEE));
+        useInterServerNetworks = (Settings.getBoolean(Setting.USING_REMOTE_DATABASE) && Settings.getBoolean(Setting.USING_BUNGEE));
         PREFIX = Setting.getString(Setting.BUNGEE_INSTANCE_NAME);
         TableNameConfig config = new TableNameConfig("SG_", "");
-        DriverEnum databaseEnum = Setting.getBoolean(Setting.USING_REMOTE_DATABASE) ? DriverEnum.MYSQL : DriverEnum.SQLITE;
+        DriverEnum databaseEnum = Settings.getBoolean(Setting.USING_REMOTE_DATABASE) ? DriverEnum.MYSQL : DriverEnum.SQLITE;
         this.sqlMaker = new SQLQueryGenerator(config, Stargate.getInstance(), databaseEnum);
         createTables();
 
@@ -71,17 +72,17 @@ public class StargateFactory {
     }
 
     private Database loadDatabase(Stargate stargate) throws SQLException {
-        if (Setting.getBoolean(Setting.USING_REMOTE_DATABASE)) {
-            if (Setting.getBoolean(Setting.SHOW_HIKARI_CONFIG))
+        if (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
+            if (Settings.getBoolean(Setting.SHOW_HIKARI_CONFIG))
                 return new MySqlDatabase(stargate);
 
-            DriverEnum driver = DriverEnum.valueOf(Setting.getString(Setting.BUNGEE_DRIVER).toUpperCase());
-            String bungeeDatabaseName = Setting.getString(Setting.BUNGEE_DATABASE);
-            int port = Setting.getInteger(Setting.BUNGEE_PORT);
-            String address = Setting.getString(Setting.BUNGEE_ADDRESS);
-            String username = Setting.getString(Setting.BUNGEE_USERNAME);
-            String password = Setting.getString(Setting.BUNGEE_PASSWORD);
-            boolean useSSL = Setting.getBoolean(Setting.BUNGEE_USE_SSL);
+            DriverEnum driver = DriverEnum.valueOf(Settings.getString(Setting.BUNGEE_DRIVER).toUpperCase());
+            String bungeeDatabaseName = Settings.getString(Setting.BUNGEE_DATABASE);
+            int port = Settings.getInteger(Setting.BUNGEE_PORT);
+            String address = Settings.getString(Setting.BUNGEE_ADDRESS);
+            String username = Settings.getString(Setting.BUNGEE_USERNAME);
+            String password = Settings.getString(Setting.BUNGEE_PASSWORD);
+            boolean useSSL = Settings.getBoolean(Setting.BUNGEE_USE_SSL);
 
             switch (driver) {
                 case MARIADB:
@@ -91,7 +92,7 @@ public class StargateFactory {
                     throw new SQLException("Unsupported driver: Stargate currently supports MariaDb and MySql for remote databases");
             }
         } else {
-            String databaseName = Setting.getString(Setting.DATABASE_NAME);
+            String databaseName = Settings.getString(Setting.DATABASE_NAME);
             File file = new File(stargate.getDataFolder().getAbsoluteFile(), databaseName + ".db");
             return new SQLiteDatabase(file);
         }
@@ -293,7 +294,7 @@ public class StargateFactory {
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             InterServerNetwork net = new InterServerNetwork(netName, database, sqlMaker);
             String netHash = net.getName().toLowerCase();
-            if (Setting.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
+            if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
                 netHash = ChatColor.stripColor(netHash);
             }
             bungeeNetList.put(netHash, net);
