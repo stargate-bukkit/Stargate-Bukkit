@@ -390,6 +390,11 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+#### \[Version 0.9.2.5] EpicKnarvik97 fork
+
+- Updates Java version to JDK 17
+- Updates Spigot API version to 1.18
+
 #### \[Version 0.9.2.4] EpicKnarvik97 fork
 
 - Adds update checking, which will display a notice in the console when updates are available
