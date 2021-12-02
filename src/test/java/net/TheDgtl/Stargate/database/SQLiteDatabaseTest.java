@@ -1,11 +1,8 @@
 package net.TheDgtl.Stargate.database;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.WorldMock;
 import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.exception.NameError;
-import org.bukkit.Material;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -27,15 +24,12 @@ public class SQLiteDatabaseTest {
     @BeforeAll
     public static void setUp() throws SQLException, NameError {
         System.out.println("Setting up test data");
-        ServerMock server = MockBukkit.mock();
-        WorldMock world = new WorldMock(Material.DIRT, 5);
-        server.addWorld(world);
         
         Database database = new SQLiteDatabase(new File("test.db"));
         connection = database.getConnection();
         nameConfig = new TableNameConfig("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DriverEnum.SQLITE);
-        tester = new DatabaseTester(database, connection,nameConfig, generator, true);
+        tester = new DatabaseTester(database, connection,nameConfig, generator, false);
     }
 
     @AfterAll
