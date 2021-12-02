@@ -36,6 +36,7 @@ import java.util.logging.Level;
 public class StargateFactory {
 
 
+    private String PREFIX = "";
     private final HashMap<String, Network> networkList = new HashMap<>();
     private final HashMap<String, InterServerNetwork> bungeeNetList = new HashMap<>();
 
@@ -51,7 +52,7 @@ public class StargateFactory {
     public StargateFactory(Stargate stargate) throws SQLException {
         database = loadDatabase(stargate);
         useInterServerNetworks = (Setting.getBoolean(Setting.USING_REMOTE_DATABASE) && Setting.getBoolean(Setting.USING_BUNGEE));
-
+        PREFIX = Setting.getString(Setting.BUNGEE_INSTANCE_NAME);
         TableNameConfig config = new TableNameConfig("SG_", "");
         DriverEnum databaseEnum = Setting.getBoolean(Setting.USING_REMOTE_DATABASE) ? DriverEnum.MYSQL : DriverEnum.SQLITE;
         this.sqlMaker = new SQLQueryGenerator(config, Stargate.getInstance(), databaseEnum);
@@ -119,8 +120,12 @@ public class StargateFactory {
         PreparedStatement flagStatement = sqlMaker.generateCreateFlagTableStatement(connection);
         runStatement(flagStatement);
         addMissingFlags(connection, sqlMaker);
+        
         PreparedStatement serverInfoStatement = sqlMaker.generateCreateServerInfoTableStatement(connection);
         runStatement(serverInfoStatement);
+        PreparedStatement serverInfoInsertStatement = sqlMaker.generateUpdateServerInfoStatus(connection,null,Stargate.serverUUID,PREFIX);
+        runStatement(serverInfoInsertStatement);
+        
         PreparedStatement lastKnownNameStatement = sqlMaker.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);
         PreparedStatement portalRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(connection, PortalType.LOCAL);
@@ -211,9 +216,11 @@ public class StargateFactory {
             }
 
             if (tablePortalType == PortalType.INTER_SERVER) {
-                String server = set.getString("homeServerId");
-                if (!server.equals(Stargate.serverUUID.toString())) {
-                    IPortal virtualPortal = new VirtualPortal(server, name, net, flags, ownerUUID);
+                String serverUUID = set.getString("homeServerId");
+                Stargate.log(Level.FINEST, "serverUUID = " + serverUUID);
+                if (!serverUUID.equals(Stargate.serverUUID.toString())) {
+                    String serverName = set.getString("serverName");
+                    IPortal virtualPortal = new VirtualPortal(serverName, name, net, flags, ownerUUID);
                     net.addPortal(virtualPortal, false);
                     Stargate.log(Level.FINEST, "Added as virtual portal");
                     continue;
@@ -258,7 +265,7 @@ public class StargateFactory {
             for (IPortal portal : net.getAllPortals()) {
                 if (portal instanceof VirtualPortal)
                     continue;
-                PreparedStatement statement = sqlMaker.generateSetServerStatement(conn, portal);
+                PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn,Stargate.serverName,Stargate.serverUUID,PREFIX);
                 statement.execute();
                 statement.close();
             }

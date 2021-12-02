@@ -174,8 +174,6 @@ public class Network {
     }
 
     public void addPortal(IPortal portal, boolean saveToDatabase) {
-
-
         if (portal instanceof Portal) {
             Portal physicalPortal = (Portal) portal;
             for (GateStructureType key : physicalPortal.getGate().getFormat().portalParts.keySet()) {
@@ -186,13 +184,18 @@ public class Network {
         if (saveToDatabase) {
             savePortal(portal);
         }
-        String portalHash = portal.getName().toLowerCase();
+        
+        portalList.put(compilePortalHash(portal.getName()), portal);
+    }
+
+    private String compilePortalHash(String portalName) {
+        String portalHash = portalName.toLowerCase();
         if (Setting.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
             portalHash = ChatColor.stripColor(portalHash);
         }
-        portalList.put(portalHash, portal);
+        return portalHash;
     }
-
+    
     public boolean isPortalNameTaken(String name) {
         return portalList.containsKey(name);
     }
@@ -205,7 +208,7 @@ public class Network {
 
     public HashSet<String> getAvailablePortals(Player actor, IPortal requester) {
         HashSet<String> tempPortalList = new HashSet<>(portalList.keySet());
-        tempPortalList.remove(requester.getName());
+        tempPortalList.remove(compilePortalHash(requester.getName()));
         if (!requester.hasFlag(PortalFlag.FORCE_SHOW)) {
             HashSet<String> removeList = new HashSet<>();
             for (String portalName : tempPortalList) {

@@ -1,9 +1,19 @@
 package net.TheDgtl.Stargate.database;
 
+import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.exception.NameError;
+import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PortalType;
+import net.TheDgtl.Stargate.network.portal.FakePortal;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+
+import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
+
+import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.WorldMock;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,7 +28,6 @@ import java.util.UUID;
  * @author Kristian
  */
 public class DatabaseTester {
-
     private static Database database;
     private static Connection connection;
     private static SQLQueryGenerator generator;
@@ -27,6 +36,9 @@ public class DatabaseTester {
     private static IPortal testInterPortal;
     private static TableNameConfig nameConfig;
     private static boolean isMySQL;
+    private static String serverName;
+    private static UUID serverUUID;
+    private static String serverPrefix;
 
     /**
      * Instantiates a new database tester
@@ -37,16 +49,29 @@ public class DatabaseTester {
      * @param testPortal      <p>A normal portal to use for testing</p>
      * @param testInterPortal <p>An inter-server portal to use for testing</p>
      * @param nameConfig      <p>The config containing all table names</p>
+     * @throws NameError 
      */
-    public DatabaseTester(Database database, Connection connection, SQLQueryGenerator generator, IPortal testPortal,
-                          IPortal testInterPortal, TableNameConfig nameConfig, boolean isMySQL) {
+    public DatabaseTester(Database database, Connection connection, TableNameConfig nameConfig, SQLQueryGenerator generator, boolean isMySQL) throws NameError {
         DatabaseTester.database = database;
         DatabaseTester.connection = connection;
         DatabaseTester.generator = generator;
-        DatabaseTester.testPortal = testPortal;
-        DatabaseTester.testInterPortal = testInterPortal;
-        DatabaseTester.nameConfig = nameConfig;
         DatabaseTester.isMySQL = isMySQL;
+        DatabaseTester.nameConfig = nameConfig;
+        
+        ServerMock server = MockBukkit.mock();
+        WorldMock world = new WorldMock(Material.DIRT, 5);
+        server.addWorld(world);
+        
+        DatabaseTester.serverName = "aServerName";
+        DatabaseTester.serverUUID = UUID.randomUUID();
+        Stargate.serverUUID = serverUUID;
+        DatabaseTester.serverPrefix = "aPrefix";
+        
+        Network testNetwork = new Network("test", database, generator);
+        DatabaseTester.testPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "portal",
+                testNetwork, UUID.randomUUID());
+        DatabaseTester.testInterPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "iPortal",
+                testNetwork, UUID.randomUUID());
     }
 
 
@@ -175,20 +200,22 @@ public class DatabaseTester {
     }
 
     void getPortalTest() throws SQLException {
-        getPortals(PortalType.LOCAL);
+        getPortals(PortalType.LOCAL,null,null);
     }
 
     void getInterPortalTest() throws SQLException {
-        getPortals(PortalType.INTER_SERVER);
+        getPortals(PortalType.INTER_SERVER,serverName,serverUUID);
     }
 
     /**
      * Gets the portals of the given type and asserts that at least one portal exists
      *
      * @param portalType <p>The type of portal to get</p>
+     * @param serverName <p>The expected name of the server</p>
+     * @param serverUUID <p>The expected serverUUID of the server </p>
      * @throws SQLException <p>If a database error occurs</p>
      */
-    private void getPortals(PortalType portalType) throws SQLException {
+    private void getPortals(PortalType portalType,String serverName, UUID serverUUID) throws SQLException {
         String tableName = portalType == PortalType.LOCAL ? nameConfig.getPortalViewName() :
                 nameConfig.getInterPortalTableName();
         printTableInfo(tableName);
@@ -208,6 +235,11 @@ public class DatabaseTester {
             System.out.println();
         }
         Assertions.assertTrue(rows > 0);
+        if(PortalType.INTER_SERVER != portalType)
+            return;
+        Assertions.assertTrue(set.getString("serverName").equals(serverName));
+        Assertions.assertTrue(set.getString("homeServerId").equals(serverUUID.toString()));
+        
     }
 
     void destroyPortalTest() throws SQLException {
@@ -284,7 +316,12 @@ public class DatabaseTester {
                 nameConfig.getInterPortalTableName();
         checkIfHasNot(table, portal.getName(), portal.getNetwork().getName());
     }
-
+    
+    public void updateServerInfoTest() throws SQLException {
+        PreparedStatement statement = generator.generateUpdateServerInfoStatus(connection, serverName, serverUUID, serverPrefix);
+        finishStatement(statement);
+    }
+    
     /**
      * Checks if a table, where each element is identified by a name and a network does not contain an element
      *
@@ -352,5 +389,8 @@ public class DatabaseTester {
         statement.execute();
         statement.close();
     }
+
+
+    
 
 }

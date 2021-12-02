@@ -11,6 +11,7 @@ import org.bukkit.World;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -171,7 +172,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalViewStatement(Connection connection, PortalType portalType) throws SQLException {
-        String selectServerName = portalType == PortalType.INTER_SERVER ? ", {ServerInfo}.serverName" : "";
+        String selectServerName = portalType == PortalType.INTER_SERVER ? ", {ServerInfo}.*" : "";
         String joinServerName = portalType == PortalType.INTER_SERVER ?
                 " LEFT OUTER JOIN {ServerInfo} ON {ServerInfo}.serverId = {InterPortal}.homeServerId" : "";
         String statementMessage = String.format("CREATE VIEW IF NOT EXISTS {PortalView} AS SELECT {Portal}.*, " +
@@ -268,7 +269,7 @@ public class SQLQueryGenerator {
         statement.setString(8, portal.getOwnerUUID().toString());
 
         if (isInterServer) {
-            statement.setString(9, Stargate.serverName);
+            statement.setString(9, Stargate.serverUUID.toString());
             statement.setBoolean(10, true);
         }
 
@@ -299,25 +300,6 @@ public class SQLQueryGenerator {
     }
 
     /**
-     * Gets a prepared statement for changing the server of a portal
-     *
-     * @param conn   <p>The database connection to use</p>
-     * @param portal <p>The portal to update</p>
-     * @return <p>A prepared statement</p>
-     * @throws SQLException <p>If unable to prepare the statement</p>
-     */
-    public PreparedStatement generateSetServerStatement(Connection conn, IPortal portal) throws SQLException {
-        String statementString = "UPDATE {InterPortal} SET homeServerId = ? WHERE network = ? AND name = ?;";
-        statementString = replaceKnownTableNames(statementString);
-        PreparedStatement statement = conn.prepareStatement(statementString);
-
-        statement.setString(1, Stargate.serverName);
-        statement.setString(2, portal.getNetwork().getName());
-        statement.setString(3, portal.getName());
-        return statement;
-    }
-
-    /**
      * Gets a prepared statement for changing the online status of a portal
      *
      * <p>An online portal is one that can be teleported to, while an offline portal cannot be teleported to until it
@@ -339,6 +321,16 @@ public class SQLQueryGenerator {
         return statement;
     }
 
+    
+    public PreparedStatement generateUpdateServerInfoStatus(Connection conn, String serverName, UUID serverUUID, String prefix) throws SQLException {
+        String statementString = "DELETE FROM {ServerInfo} WHERE serverId=?;";
+        String statementMessage = replaceKnownTableNames(statementString);
+        logger.logMessage(Level.FINEST, statementMessage);
+        PreparedStatement statement = conn.prepareStatement(statementMessage);
+        statement.setString(1, serverUUID.toString());
+        return statement;
+    }
+    
     /**
      * Adjusts table names for portal type and replaces known table names
      *

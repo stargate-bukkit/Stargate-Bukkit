@@ -1,14 +1,8 @@
 package net.TheDgtl.Stargate.database;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.WorldMock;
 import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.exception.NameError;
-import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.portal.FakePortal;
-import net.TheDgtl.Stargate.network.portal.IPortal;
-import org.bukkit.Material;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -18,7 +12,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.UUID;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MySQLDatabaseTest {
@@ -37,21 +30,12 @@ public class MySQLDatabaseTest {
         String username = "root";
         String password = "root";
 
-        ServerMock server = MockBukkit.mock();
-        WorldMock world = new WorldMock(Material.DIRT, 5);
-        server.addWorld(world);
-
         Database database = new MySqlDatabase(driver, address, port, databaseName, username, password, true);
         connection = database.getConnection();
-        nameConfig = new TableNameConfig("SG_Test_", "Server_");
+        MySQLDatabaseTest.nameConfig  = new TableNameConfig("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DriverEnum.MYSQL);
-
-        Network testNetwork = new Network("test", database, generator);
-        IPortal testPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "portal",
-                testNetwork, UUID.randomUUID());
-        IPortal testInterPortal = new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), "iPortal",
-                testNetwork, UUID.randomUUID());
-        tester = new DatabaseTester(database, connection, generator, testPortal, testInterPortal, nameConfig, true);
+        tester = new DatabaseTester(database, connection,nameConfig, generator, true);
+        
     }
 
     @AfterAll
@@ -139,6 +123,12 @@ public class MySQLDatabaseTest {
     void addPortalTest() throws SQLException {
         tester.addPortalTest();
     }
+    
+    @Test
+    @Order(1)
+    void updateServerInfoTest() throws SQLException {
+        tester.updateServerInfoTest();
+    }
 
     @Test
     @Order(5)
@@ -157,7 +147,7 @@ public class MySQLDatabaseTest {
     void getInterPortalTest() throws SQLException {
         tester.getInterPortalTest();
     }
-
+    
     @Test
     @Order(7)
     void destroyPortalTest() throws SQLException {

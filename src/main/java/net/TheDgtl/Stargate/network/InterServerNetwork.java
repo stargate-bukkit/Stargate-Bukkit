@@ -39,8 +39,16 @@ public class InterServerNetwork extends Network {
     }
 
     @Override
-    public void removePortal(IPortal portal, boolean saveToDatabase) {
+    public void removePortal(IPortal portal, boolean saveToDatabase){
         super.removePortal(portal, saveToDatabase);
+
+        
+        try {
+            removePortalFromDatabase(portal, PortalType.INTER_SERVER);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
         if (!saveToDatabase)
             return;
         try {
@@ -48,15 +56,6 @@ public class InterServerNetwork extends Network {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public void registerToInterServer(IPortal portal) {
-        Supplier<Boolean> action = () -> {
-            savePortal(database, portal, PortalType.INTER_SERVER);
-            return true;
-        };
-        Stargate.syncSecPopulator.addAction(new SupplierAction(action), true);
-        updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_ADD);
     }
 
     /**
@@ -94,8 +93,7 @@ public class InterServerNetwork extends Network {
     }
 
     public void unregisterFromInterServer(IPortal portal) throws SQLException {
-        removePortalFromDatabase(portal, PortalType.INTER_SERVER);
-        updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
+        
     }
 
     @Override
@@ -110,7 +108,11 @@ public class InterServerNetwork extends Network {
          * Also save it to the inter-server database, so that it can be
          * seen on other servers
          */
-        super.savePortal(database, portal, PortalType.LOCAL);
-        registerToInterServer(portal);
+        Supplier<Boolean> action = () -> {
+            savePortal(database, portal, PortalType.INTER_SERVER);
+            return true;
+        };
+        Stargate.syncSecPopulator.addAction(new SupplierAction(action), true);
+        updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_ADD);
     }
 }
