@@ -111,6 +111,10 @@ public class BlockEventListener implements Listener {
         PermissionManager permissionManager = new PermissionManager(player);
         TranslatableMessage errorMessage = null;
 
+        
+        if(lines[1].trim().isEmpty()) {
+            flags.add(PortalFlag.NETWORKED);
+        }
 
         flags = permissionManager.returnAllowedFlags(flags);
         String finalNetworkName;
