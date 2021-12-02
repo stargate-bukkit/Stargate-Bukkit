@@ -190,7 +190,7 @@ public class Network {
 
     private String compilePortalHash(String portalName) {
         String portalHash = portalName.toLowerCase();
-        if (Setting.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
+        if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
             portalHash = ChatColor.stripColor(portalHash);
         }
         return portalHash;

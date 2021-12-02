@@ -53,7 +53,7 @@ public class StargateFactory {
     public StargateFactory(Stargate stargate) throws SQLException {
         database = loadDatabase(stargate);
         useInterServerNetworks = (Settings.getBoolean(Setting.USING_REMOTE_DATABASE) && Settings.getBoolean(Setting.USING_BUNGEE));
-        PREFIX = Setting.getString(Setting.BUNGEE_INSTANCE_NAME);
+        PREFIX = Settings.getString(Setting.BUNGEE_INSTANCE_NAME);
         TableNameConfig config = new TableNameConfig("SG_", "");
         DriverEnum databaseEnum = Settings.getBoolean(Setting.USING_REMOTE_DATABASE) ? DriverEnum.MYSQL : DriverEnum.SQLITE;
         this.sqlMaker = new SQLQueryGenerator(config, Stargate.getInstance(), databaseEnum);
