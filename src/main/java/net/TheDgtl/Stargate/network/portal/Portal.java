@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.network.portal;
 import net.TheDgtl.Stargate.Bypass;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
@@ -323,7 +324,7 @@ public abstract class Portal implements IPortal {
 
             boolean shouldCharge = !(this.hasFlag(PortalFlag.FREE) || origin.hasFlag(PortalFlag.FREE))
                     && target instanceof Player && !target.hasPermission(Bypass.COST_USE.getPermissionString());
-            useCost = shouldCharge ? Setting.getInteger(Setting.USE_COST) : 0;
+            useCost = shouldCharge ? Settings.getInteger(Setting.USE_COST) : 0;
         }
 
         Teleporter teleporter = new Teleporter(getExit(), origin, portalFacing, enterFacing, useCost);

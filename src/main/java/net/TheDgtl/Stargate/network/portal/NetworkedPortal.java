@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
@@ -132,7 +133,7 @@ public class NetworkedPortal extends Portal {
                 if (destination == maxLength)
                     break;
 
-                if (Setting.getInteger(Setting.NAME_STYLE) == 1) {
+                if (Settings.getInteger(Setting.NAME_STYLE) == 1) {
                     if (destinationIndex == i) {
                         lines[i + 1] = super.colorDrawer.parseName(NameSurround.DESTINATION, this.getDestination(destination));
                     } else {

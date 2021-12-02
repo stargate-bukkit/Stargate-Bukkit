@@ -18,6 +18,7 @@ package net.TheDgtl.Stargate.event;
  */
 
 import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Bukkit;
@@ -91,7 +92,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
         if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
             return pm.getPermission(permIdentifier + ".network.personal");
         }
-        if (portal.getNetwork().getName().equals(Setting.getString(Setting.DEFAULT_NET)))
+        if (portal.getNetwork().getName().equals(Settings.getString(Setting.DEFAULT_NET)))
             return pm.getPermission(permIdentifier + ".network.default");
         Permission custom = new Permission(permIdentifier + ".network.custom." + portal.getNetwork().getName());
         Permission parent = pm.getPermission(permIdentifier + ".network.custom");

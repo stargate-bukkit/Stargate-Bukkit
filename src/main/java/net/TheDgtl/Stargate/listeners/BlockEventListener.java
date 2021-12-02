@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.listeners;
 import net.TheDgtl.Stargate.Bypass;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.SupplierAction;
@@ -45,7 +46,7 @@ public class BlockEventListener implements Listener {
         Location loc = event.getBlock().getLocation();
         Portal portal = Network.getPortal(loc, GateStructureType.FRAME);
         if (portal != null) {
-            int cost = Setting.getInteger(Setting.DESTROY_COST);
+            int cost = Settings.getInteger(Setting.DESTROY_COST);
             StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, event.getPlayer(), cost);
             Bukkit.getPluginManager().callEvent(dEvent);
             PermissionManager permissionManager = new PermissionManager(event.getPlayer());
@@ -83,7 +84,7 @@ public class BlockEventListener implements Listener {
         if (player.hasPermission(Bypass.COST_CREATE.getPermissionString()))
             return false;
 
-        return Setting.getBoolean(Setting.CHARGE_FREE_DESTINATION)
+        return Settings.getBoolean(Setting.CHARGE_FREE_DESTINATION)
                 || !portal.hasFlag(PortalFlag.FIXED)
                 || !((Portal) portal).loadDestination().hasFlag(PortalFlag.FREE);
     }
@@ -104,7 +105,7 @@ public class BlockEventListener implements Listener {
 
         String[] lines = event.getLines();
         String network = lines[2];
-        int cost = Setting.getInteger(Setting.CREATION_COST);
+        int cost = Settings.getInteger(Setting.CREATION_COST);
         Player player = event.getPlayer();
         EnumSet<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
         PermissionManager permissionManager = new PermissionManager(player);
@@ -188,7 +189,7 @@ public class BlockEventListener implements Listener {
 
         if (!permissionManager.canCreateInNetwork(initialNetworkName) || initialNetworkName.trim().isEmpty()) {
             Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to default...");
-            String defaultNet = Setting.getString(Setting.DEFAULT_NET);
+            String defaultNet = Settings.getString(Setting.DEFAULT_NET);
             if (!permissionManager.canCreateInNetwork(defaultNet)) {
                 Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to private...");
                 flags.add(PortalFlag.PERSONAL_NETWORK);

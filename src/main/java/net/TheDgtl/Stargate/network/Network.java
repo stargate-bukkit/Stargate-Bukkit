@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.network;
 
 import net.TheDgtl.Stargate.Bypass;
 import net.TheDgtl.Stargate.Setting;
+import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.database.Database;
@@ -187,7 +188,7 @@ public class Network {
             savePortal(portal);
         }
         String portalHash = portal.getName().toLowerCase();
-        if (Setting.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
+        if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
             portalHash = ChatColor.stripColor(portalHash);
         }
         portalList.put(portalHash, portal);
