@@ -231,15 +231,14 @@ public class DatabaseTester {
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 System.out.print(
                         metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
+                
+                if(PortalType.INTER_SERVER == portalType && set.getString("serverId").equals(serverUUID.toString())) {
+                    Assertions.assertTrue(set.getString("serverName").equals(serverName));
+                }
             }
             System.out.println();
         }
         Assertions.assertTrue(rows > 0);
-        if(PortalType.INTER_SERVER != portalType)
-            return;
-        Assertions.assertTrue(set.getString("serverName").equals(serverName));
-        Assertions.assertTrue(set.getString("homeServerId").equals(serverUUID.toString()));
-        
     }
 
     void destroyPortalTest() throws SQLException {
