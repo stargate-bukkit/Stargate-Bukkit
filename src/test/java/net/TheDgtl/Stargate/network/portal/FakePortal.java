@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
 public class FakePortal implements IPortal {
@@ -13,12 +14,14 @@ public class FakePortal implements IPortal {
     private final String portalName;
     private final Network network;
     private final UUID ownerUUID;
+    private EnumSet<PortalFlag> flags;
 
-    public FakePortal(Location signLocation, String portalName, Network network, UUID ownerUUID) {
+    public FakePortal(Location signLocation, String portalName, Network network, UUID ownerUUID, EnumSet<PortalFlag> flags) {
         this.signLocation = signLocation;
         this.portalName = portalName;
         this.network = network;
         this.ownerUUID = ownerUUID;
+        this.flags = flags;
     }
 
     @Override
@@ -78,12 +81,16 @@ public class FakePortal implements IPortal {
 
     @Override
     public boolean hasFlag(PortalFlag flag) {
-        return false;
+        return flags.contains(flag);
     }
 
     @Override
     public String getAllFlagsString() {
-        return "ABQF";
+        StringBuilder out = new StringBuilder();
+        for (PortalFlag flag : flags) {
+            out.append(flag.label);
+        }
+        return out.toString();
     }
 
     @Override

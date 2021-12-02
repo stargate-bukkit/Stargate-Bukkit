@@ -11,13 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import java.io.File;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SQLiteDatabaseTest {
 
-    private static Connection connection;
     private static DatabaseTester tester;
     private static TableNameConfig nameConfig;
 
@@ -26,16 +24,14 @@ public class SQLiteDatabaseTest {
         System.out.println("Setting up test data");
         
         Database database = new SQLiteDatabase(new File("test.db"));
-        connection = database.getConnection();
         nameConfig = new TableNameConfig("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DriverEnum.SQLITE);
-        tester = new DatabaseTester(database, connection,nameConfig, generator, false);
+        tester = new DatabaseTester(database,nameConfig, generator, false);
     }
 
     @AfterAll
     public static void tearDown() throws SQLException {
         DatabaseTester.deleteAllTables(nameConfig);
-        connection.close();
         MockBukkit.unmock();
         System.out.println("Tearing down test data");
     }

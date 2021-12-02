@@ -10,13 +10,11 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MySQLDatabaseTest {
 
-    private static Connection connection;
     private static DatabaseTester tester;
     private static TableNameConfig nameConfig;
 
@@ -31,17 +29,15 @@ public class MySQLDatabaseTest {
         String password = "root";
 
         Database database = new MySqlDatabase(driver, address, port, databaseName, username, password, true);
-        connection = database.getConnection();
         MySQLDatabaseTest.nameConfig  = new TableNameConfig("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DriverEnum.MYSQL);
-        tester = new DatabaseTester(database, connection,nameConfig, generator, true);
+        tester = new DatabaseTester(database,nameConfig, generator, true);
         
     }
 
     @AfterAll
     public static void tearDown() throws SQLException {
         DatabaseTester.deleteAllTables(nameConfig);
-        connection.close();
         MockBukkit.unmock();
         System.out.println("Tearing down test data");
     }
