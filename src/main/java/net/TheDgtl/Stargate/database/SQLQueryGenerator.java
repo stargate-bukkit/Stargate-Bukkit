@@ -172,7 +172,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalViewStatement(Connection connection, PortalType portalType) throws SQLException {
-        String selectServerName = portalType == PortalType.INTER_SERVER ? ", {ServerInfo}.*" : "";
+        String selectServerName = portalType == PortalType.INTER_SERVER ? ", {ServerInfo}.serverName" : "";
         String joinServerName = portalType == PortalType.INTER_SERVER ?
                 " LEFT OUTER JOIN {ServerInfo} ON {ServerInfo}.serverId = {InterPortal}.homeServerId" : "";
         String statementMessage = String.format("CREATE VIEW IF NOT EXISTS {PortalView} AS SELECT {Portal}.*, " +
@@ -323,11 +323,16 @@ public class SQLQueryGenerator {
 
     
     public PreparedStatement generateUpdateServerInfoStatus(Connection conn, String serverName, UUID serverUUID, String prefix) throws SQLException {
-        String statementString = "DELETE FROM {ServerInfo} WHERE serverId=?;";
+        String statementString = "DELETE FROM {ServerInfo} WHERE serverId=?;"
+                + " INSERT INTO {ServerInfo}(serverId, serverName,serverPrefix)"
+                + " VALUES(?,?,?);";
         String statementMessage = replaceKnownTableNames(statementString);
         logger.logMessage(Level.FINEST, statementMessage);
         PreparedStatement statement = conn.prepareStatement(statementMessage);
         statement.setString(1, serverUUID.toString());
+        statement.setString(2, serverUUID.toString());
+        statement.setString(3, serverUUID.toString());
+        statement.setString(4, serverUUID.toString());
         return statement;
     }
     

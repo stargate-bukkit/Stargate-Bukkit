@@ -113,6 +113,12 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
+    @Order(4)
+    void updateServerInfoTest() throws SQLException {
+        tester.updateServerInfoTest();
+    }
+
+    @Test
     @Order(5)
     void updateLastKnownNameTest() throws SQLException {
         tester.updateLastKnownNameTest();

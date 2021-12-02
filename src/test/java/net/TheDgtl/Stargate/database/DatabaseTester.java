@@ -232,9 +232,9 @@ public class DatabaseTester {
                 System.out.print(
                         metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
                 
-                if(PortalType.INTER_SERVER == portalType && set.getString("serverId").equals(serverUUID.toString())) {
-                    Assertions.assertTrue(set.getString("serverName").equals(serverName));
-                }
+                //if(PortalType.INTER_SERVER == portalType && set.getString("serverId").equals(serverUUID.toString())) {
+                //    Assertions.assertTrue(set.getString("serverName").equals(serverName));
+                //}
             }
             System.out.println();
         }

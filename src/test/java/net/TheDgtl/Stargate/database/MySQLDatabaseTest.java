@@ -113,6 +113,12 @@ public class MySQLDatabaseTest {
     }
 
     @Test
+    @Order(4)
+    void updateServerInfoTest() throws SQLException {
+        tester.updateServerInfoTest();
+    }
+    
+    @Test
     @Order(5)
     void updateLastKnownNameTest() throws SQLException {
         tester.updateLastKnownNameTest();
@@ -122,12 +128,6 @@ public class MySQLDatabaseTest {
     @Order(5)
     void addPortalTest() throws SQLException {
         tester.addPortalTest();
-    }
-    
-    @Test
-    @Order(1)
-    void updateServerInfoTest() throws SQLException {
-        tester.updateServerInfoTest();
     }
 
     @Test
