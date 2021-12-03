@@ -106,10 +106,12 @@ public class DatabaseTester {
     
     private EnumSet<PortalFlag> generateRandomFlags(){
         PortalFlag[] possibleFlags = PortalFlag.values();
-        int flagAmount = ThreadLocalRandom.current().nextInt(0,possibleFlags.length);
+        Random random = new Random();
+        int flagAmount = random.nextInt(possibleFlags.length);
         EnumSet<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
         for(int i = 0; i < flagAmount; i++) {
-            int flagType = ThreadLocalRandom.current().nextInt(0,possibleFlags.length);
+            random = new Random();
+            int flagType = random.nextInt(possibleFlags.length);
             flags.add(possibleFlags[flagType]);
         }
         return flags;
@@ -301,12 +303,12 @@ public class DatabaseTester {
             while (set.next()) {
                 rows++;
                 for (int i = 0; i < metaData.getColumnCount(); i++) {
-                    System.out.print(metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
+                    System.out.println(metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
 
                     String portalName = set.getString("name");
                     FakePortal targetPortal = portals.get(portalName);
                     Assertions.assertTrue(targetPortal.getOwnerUUID().toString().equals(set.getString("ownerUUID")));
-                    Assertions.assertTrue(targetPortal.getAllFlagsString().equals(set.getString("flags")));
+                    Assertions.assertTrue(isSameFlagString(targetPortal.getAllFlagsString(),set.getString("flags")));
 
                     //if (PortalType.INTER_SERVER == portalType
                     //        && set.getString("serverId").equals(serverUUID.toString())) {
@@ -493,6 +495,15 @@ public class DatabaseTester {
     }
 
 
-    
+    private boolean isSameFlagString(String flagString1, String flagStringFromSet) {
+        String[] flagsFromSet = flagStringFromSet.split(",");
+        if(flagString1.length() != flagsFromSet.length)
+            return false;
+        for(String flagString : flagsFromSet) {
+            if(!flagString1.contains(flagString))
+                return false;
+        }
+        return true;
+    }
 
 }
