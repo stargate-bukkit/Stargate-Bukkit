@@ -1,5 +1,8 @@
 package net.TheDgtl.Stargate.database;
 
+import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.WorldMock;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.network.Network;
@@ -7,27 +10,18 @@ import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.FakePortal;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
-
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
-
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.WorldMock;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Test class for shared database tests to prevent duplication
@@ -46,8 +40,8 @@ public class DatabaseTester {
     private static FakePortal testPortal;
     private static final String INTER_PORTAL_NAME = "iPortal";
     private static final String LOCAL_PORTAL_NAME = "portal";
-    private HashMap<String,FakePortal> interServerPortals;
-    private HashMap<String,FakePortal> localPortals;
+    private HashMap<String, FakePortal> interServerPortals;
+    private HashMap<String, FakePortal> localPortals;
 
     /**
      * Instantiates a new database tester
@@ -58,65 +52,65 @@ public class DatabaseTester {
      * @param testPortal      <p>A normal portal to use for testing</p>
      * @param testInterPortal <p>An inter-server portal to use for testing</p>
      * @param nameConfig      <p>The config containing all table names</p>
-     * @throws NameError 
+     * @throws NameError
      */
     public DatabaseTester(Database database, TableNameConfig nameConfig, SQLQueryGenerator generator, boolean isMySQL) throws NameError {
         DatabaseTester.database = database;
         DatabaseTester.generator = generator;
         DatabaseTester.isMySQL = isMySQL;
         DatabaseTester.nameConfig = nameConfig;
-        
+
         ServerMock server = MockBukkit.mock();
         WorldMock world = new WorldMock(Material.DIRT, 5);
         server.addWorld(world);
-        
+
         int interServerPortalTestLength = 3;
         int localPortalTestLength = 4;
-        
-        
+
+
         DatabaseTester.serverName = "aServerName";
         DatabaseTester.serverUUID = UUID.randomUUID();
         Stargate.serverUUID = serverUUID;
         DatabaseTester.serverPrefix = "aPrefix";
-        
+
         Network testNetwork = new Network("test", database, generator);
-        this.interServerPortals = generatePortals(world,testNetwork,true,interServerPortalTestLength);
-        this.localPortals = generatePortals(world,testNetwork,false,localPortalTestLength);
-        DatabaseTester.testPortal = generateFakePortal(world,testNetwork,"testPortal",false);
-        
+        this.interServerPortals = generatePortals(world, testNetwork, true, interServerPortalTestLength);
+        this.localPortals = generatePortals(world, testNetwork, false, localPortalTestLength);
+        DatabaseTester.testPortal = generateFakePortal(world, testNetwork, "testPortal", false);
+
     }
-    
-    private HashMap<String,FakePortal> generatePortals(WorldMock world, Network testNetwork, boolean isInterserver, int listSize){
-        HashMap<String,FakePortal> output = new HashMap<>();
-        for(int i = 0; i < listSize; i++) {
-            String name = (isInterserver?DatabaseTester.INTER_PORTAL_NAME:DatabaseTester.LOCAL_PORTAL_NAME)+i;
-            FakePortal portal = generateFakePortal(world,testNetwork, name, isInterserver);
-            output.put(portal.getName(),portal);
+
+    private HashMap<String, FakePortal> generatePortals(WorldMock world, Network testNetwork, boolean isInterserver, int listSize) {
+        HashMap<String, FakePortal> output = new HashMap<>();
+        for (int i = 0; i < listSize; i++) {
+            String name = (isInterserver ? DatabaseTester.INTER_PORTAL_NAME : DatabaseTester.LOCAL_PORTAL_NAME) + i;
+            FakePortal portal = generateFakePortal(world, testNetwork, name, isInterserver);
+            output.put(portal.getName(), portal);
         }
         return output;
     }
 
     private FakePortal generateFakePortal(WorldMock world, Network testNetwork, String name, boolean isInterserver) {
         EnumSet<PortalFlag> flags = generateRandomFlags();
-        if(isInterserver)
+        if (isInterserver)
             flags.add(PortalFlag.FANCY_INTER_SERVER);
         return new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), name,
                 testNetwork, UUID.randomUUID(), flags);
     }
-    
-    private EnumSet<PortalFlag> generateRandomFlags(){
+
+    private EnumSet<PortalFlag> generateRandomFlags() {
         PortalFlag[] possibleFlags = PortalFlag.values();
         Random random = new Random();
         int flagAmount = random.nextInt(possibleFlags.length);
         EnumSet<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
-        for(int i = 0; i < flagAmount; i++) {
+        for (int i = 0; i < flagAmount; i++) {
             random = new Random();
             int flagType = random.nextInt(possibleFlags.length);
             flags.add(possibleFlags[flagType]);
         }
         return flags;
     }
-    
+
     private static Connection getConnection() throws SQLException {
         return database.getConnection();
     }
@@ -174,14 +168,14 @@ public class DatabaseTester {
         finishStatement(generator.generateCreateServerInfoTableStatement(connection));
         connection.close();
     }
-    
+
     void addFlagsTest() throws SQLException {
         Connection connection = getConnection();
         PreparedStatement statement = generator.generateAddFlagStatement(connection);
 
         for (PortalFlag flag : PortalFlag.values()) {
-            System.out.println("Adding flag " + flag.getLabel() + " to the database");
-            statement.setString(1, String.valueOf(flag.getLabel()));
+            System.out.println("Adding flag " + flag.getCharacterRepresentation() + " to the database");
+            statement.setString(1, String.valueOf(flag.getCharacterRepresentation()));
             statement.execute();
         }
         statement.close();
@@ -234,7 +228,7 @@ public class DatabaseTester {
 
     void addInterPortalTest() throws SQLException {
         Connection connection = getConnection();
-        for(FakePortal portal : interServerPortals.values()) {
+        for (FakePortal portal : interServerPortals.values()) {
             connection.setAutoCommit(false);
             try {
                 finishStatement(
@@ -273,11 +267,11 @@ public class DatabaseTester {
     }
 
     void getPortalTest() throws SQLException {
-        getPortals(PortalType.LOCAL,localPortals);
+        getPortals(PortalType.LOCAL, localPortals);
     }
 
     void getInterPortalTest() throws SQLException {
-        getPortals(PortalType.INTER_SERVER,interServerPortals);
+        getPortals(PortalType.INTER_SERVER, interServerPortals);
     }
 
     /**
@@ -288,7 +282,7 @@ public class DatabaseTester {
      * @param serverUUID <p>The expected serverUUID of the server </p>
      * @throws SQLException <p>If a database error occurs</p>
      */
-    private void getPortals(PortalType portalType,HashMap<String,FakePortal> portals) throws SQLException {
+    private void getPortals(PortalType portalType, HashMap<String, FakePortal> portals) throws SQLException {
         String tableName = portalType == PortalType.LOCAL ? nameConfig.getPortalViewName() :
                 nameConfig.getInterPortalTableName();
         printTableInfo(tableName);
@@ -308,7 +302,7 @@ public class DatabaseTester {
                     String portalName = set.getString("name");
                     FakePortal targetPortal = portals.get(portalName);
                     Assertions.assertTrue(targetPortal.getOwnerUUID().toString().equals(set.getString("ownerUUID")));
-                    Assertions.assertTrue(isSameFlagString(targetPortal.getAllFlagsString(),set.getString("flags")));
+                    Assertions.assertTrue(isSameFlagString(targetPortal.getAllFlagsString(), set.getString("flags")));
 
                     //if (PortalType.INTER_SERVER == portalType
                     //        && set.getString("serverId").equals(serverUUID.toString())) {
@@ -410,14 +404,14 @@ public class DatabaseTester {
                 nameConfig.getInterPortalTableName();
         checkIfHasNot(table, portal.getName(), portal.getNetwork().getName());
     }
-    
+
     public void updateServerInfoTest() throws SQLException {
         Connection connection = getConnection();
         PreparedStatement statement = generator.generateUpdateServerInfoStatus(connection, serverName, serverUUID, serverPrefix);
         finishStatement(statement);
         connection.close();
     }
-    
+
     /**
      * Checks if a table, where each element is identified by a name and a network does not contain an element
      *
@@ -497,10 +491,10 @@ public class DatabaseTester {
 
     private boolean isSameFlagString(String flagString1, String flagStringFromSet) {
         String[] flagsFromSet = flagStringFromSet.split(",");
-        if(flagString1.length() != flagsFromSet.length)
+        if (flagString1.length() != flagsFromSet.length)
             return false;
-        for(String flagString : flagsFromSet) {
-            if(!flagString1.contains(flagString))
+        for (String flagString : flagsFromSet) {
+            if (!flagString1.contains(flagString))
                 return false;
         }
         return true;

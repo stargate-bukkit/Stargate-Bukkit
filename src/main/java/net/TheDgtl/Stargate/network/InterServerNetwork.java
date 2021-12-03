@@ -39,10 +39,10 @@ public class InterServerNetwork extends Network {
     }
 
     @Override
-    public void removePortal(IPortal portal, boolean saveToDatabase){
+    public void removePortal(IPortal portal, boolean saveToDatabase) {
         super.removePortal(portal, saveToDatabase);
 
-        
+
         try {
             removePortalFromDatabase(portal, PortalType.INTER_SERVER);
         } catch (SQLException e) {
@@ -93,7 +93,7 @@ public class InterServerNetwork extends Network {
     }
 
     public void unregisterFromInterServer(IPortal portal) throws SQLException {
-        
+
     }
 
     @Override

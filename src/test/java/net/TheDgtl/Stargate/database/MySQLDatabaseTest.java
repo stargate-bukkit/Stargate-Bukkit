@@ -29,10 +29,10 @@ public class MySQLDatabaseTest {
         String password = "root";
 
         Database database = new MySqlDatabase(driver, address, port, databaseName, username, password, true);
-        MySQLDatabaseTest.nameConfig  = new TableNameConfig("SG_Test_", "Server_");
+        MySQLDatabaseTest.nameConfig = new TableNameConfig("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DriverEnum.MYSQL);
-        tester = new DatabaseTester(database,nameConfig, generator, true);
-        
+        tester = new DatabaseTester(database, nameConfig, generator, true);
+
     }
 
     @AfterAll
@@ -113,7 +113,7 @@ public class MySQLDatabaseTest {
     void updateServerInfoTest() throws SQLException {
         tester.updateServerInfoTest();
     }
-    
+
     @Test
     @Order(5)
     void updateLastKnownNameTest() throws SQLException {
@@ -143,7 +143,7 @@ public class MySQLDatabaseTest {
     void getInterPortalTest() throws SQLException {
         tester.getInterPortalTest();
     }
-    
+
     @Test
     @Order(7)
     void destroyPortalTest() throws SQLException {

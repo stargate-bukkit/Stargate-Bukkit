@@ -57,7 +57,7 @@ public class Network {
     }
 
     public IPortal getPortal(String name) {
-        if(name == null)
+        if (name == null)
             return null;
         return portalList.get(this.compilePortalHash(name));
     }
@@ -197,7 +197,7 @@ public class Network {
         }
         return portalHash;
     }
-    
+
     public boolean isPortalNameTaken(String name) {
         return portalList.containsKey(name);
     }

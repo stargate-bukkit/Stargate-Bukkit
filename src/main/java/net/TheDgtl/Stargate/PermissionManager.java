@@ -42,7 +42,7 @@ public class PermissionManager {
             if (flag == PortalFlag.PERSONAL_NETWORK || flag == PortalFlag.IRON_DOOR)
                 continue;
 
-            if (!player.hasPermission((FLAG_PERMISSION + flag.label).toLowerCase())) {
+            if (!player.hasPermission((FLAG_PERMISSION + flag.getCharacterRepresentation()).toLowerCase())) {
                 flags.remove(flag);
             }
         }

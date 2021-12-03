@@ -88,7 +88,7 @@ public class FakePortal implements IPortal {
     public String getAllFlagsString() {
         StringBuilder out = new StringBuilder();
         for (PortalFlag flag : flags) {
-            out.append(flag.label);
+            out.append(flag.getCharacterRepresentation());
         }
         return out.toString();
     }

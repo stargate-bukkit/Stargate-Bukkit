@@ -22,11 +22,11 @@ public class SQLiteDatabaseTest {
     @BeforeAll
     public static void setUp() throws SQLException, NameError {
         System.out.println("Setting up test data");
-        
+
         Database database = new SQLiteDatabase(new File("test.db"));
         nameConfig = new TableNameConfig("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DriverEnum.SQLITE);
-        tester = new DatabaseTester(database,nameConfig, generator, false);
+        tester = new DatabaseTester(database, nameConfig, generator, false);
     }
 
     @AfterAll

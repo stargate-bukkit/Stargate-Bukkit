@@ -101,7 +101,7 @@ public abstract class Portal implements IPortal {
 
         StringBuilder msg = new StringBuilder("Selected with flags ");
         for (PortalFlag flag : flags) {
-            msg.append(flag.label);
+            msg.append(flag.getCharacterRepresentation());
         }
         Stargate.log(Level.FINE, msg.toString());
 
@@ -374,7 +374,7 @@ public abstract class Portal implements IPortal {
     public String getAllFlagsString() {
         StringBuilder out = new StringBuilder();
         for (PortalFlag flag : flags) {
-            out.append(flag.label);
+            out.append(flag.getCharacterRepresentation());
         }
         return out.toString();
     }

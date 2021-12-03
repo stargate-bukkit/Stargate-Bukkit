@@ -161,13 +161,14 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
         String network = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
         String server = json.get(StargateProtocolProperty.SERVER.toString()).getAsString();
-        EnumSet<PortalFlag> flags =  PortalFlag.parseFlags( json.get(StargateProtocolProperty.PORTAL_FLAG.toString()).getAsString() );
+        EnumSet<PortalFlag> flags = PortalFlag.parseFlags(json.get(StargateProtocolProperty.PORTAL_FLAG.toString()).getAsString());
         UUID ownerUUID = UUID.fromString(json.get(StargateProtocolProperty.OWNER.toString()).getAsString());
-        
+
         try {
             Stargate.factory.createNetwork(network, flags);
-        } catch (NameError e) {}
-        
+        } catch (NameError e) {
+        }
+
         InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.factory.getNetwork(network, true);
         VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
 

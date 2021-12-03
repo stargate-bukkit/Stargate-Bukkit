@@ -80,7 +80,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
                 case IRON_DOOR:
                     continue;
                 default:
-                    identifier = String.valueOf(flag.label).toLowerCase();
+                    identifier = String.valueOf(flag.getCharacterRepresentation()).toLowerCase();
                     break;
             }
             permList.add(pm.getPermission(permIdentifier + ".type." + identifier));

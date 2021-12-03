@@ -321,7 +321,7 @@ public class SQLQueryGenerator {
         return statement;
     }
 
-    
+
     public PreparedStatement generateUpdateServerInfoStatus(Connection conn, String serverName, UUID serverUUID, String prefix) throws SQLException {
         String statementString = "REPLACE INTO {ServerInfo}(serverId, serverName,serverPrefix)"
                 + " VALUES(?,?,?);";
@@ -333,7 +333,7 @@ public class SQLQueryGenerator {
         statement.setString(3, prefix);
         return statement;
     }
-    
+
     /**
      * Adjusts table names for portal type and replaces known table names
      *

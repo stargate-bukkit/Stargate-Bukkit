@@ -163,8 +163,8 @@ public class StargateFactory {
             knownFlags.add(set.getString("character"));
         }
         for (PortalFlag flag : PortalFlag.values()) {
-            if (!knownFlags.contains(String.valueOf(flag.getLabel()))) {
-                addStatement.setString(1, String.valueOf(flag.getLabel()));
+            if (!knownFlags.contains(String.valueOf(flag.getCharacterRepresentation()))) {
+                addStatement.setString(1, String.valueOf(flag.getCharacterRepresentation()));
                 addStatement.execute();
             }
         }
