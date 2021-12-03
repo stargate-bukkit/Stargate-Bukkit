@@ -9,7 +9,6 @@ import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.ByteArrayOutputStream;
@@ -54,10 +53,6 @@ public class BungeePortal extends Portal {
         targetPortal = new LegacyVirtualPortal(serverDestination, destination, LEGACY_NETWORK, EnumSet.noneOf(PortalFlag.class), ownerUUID);
         this.serverDestination = serverDestination;
         cheatNet = new Network(serverDestination, null, null);
-    }
-
-    @Override
-    public void onSignClick(Action action, Player actor) {
     }
 
     @Override

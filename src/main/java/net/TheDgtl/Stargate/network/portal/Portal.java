@@ -8,6 +8,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.SupplierAction;
+import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
 import net.TheDgtl.Stargate.exception.GateConflict;
 import net.TheDgtl.Stargate.exception.InvalidStructure;
@@ -26,9 +27,11 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.EnumSet;
@@ -154,7 +157,31 @@ public abstract class Portal implements IPortal {
         drawControlMechanism();
     }
 
-    public abstract void onSignClick(Action action, Player actor);
+    /**
+     * 
+     * @param action
+     * @param actor
+     * @return <p> What the result of the event</p>
+     */
+    public Event.Result onSignClick(PlayerInteractEvent event) {
+        ItemStack item = event.getItem();
+        PermissionManager permissionManager = new PermissionManager(event.getPlayer());
+        StargateCreateEvent colorSignPermission = new StargateCreateEvent(event.getPlayer(),this,new String[]{""},0);
+        if (!itemIsColor(item) || !permissionManager.hasPerm(colorSignPermission)) {
+            return Event.Result.DENY;
+        }
+        this.colorDrawer = new PortalColorParser((Sign) getSignPos().getBlock().getState());
+        this.drawControlMechanism();
+        return Event.Result.DEFAULT;
+    }
+
+    private boolean itemIsColor(ItemStack item) {
+        if(item == null)
+            return false;
+        
+        String itemName = item.getType().toString();
+        return (itemName.contains("DYE") || itemName.contains("GLOW_INK_SAC"));
+    }
 
     public abstract void drawControlMechanism();
 

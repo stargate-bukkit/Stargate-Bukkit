@@ -25,17 +25,6 @@ public class FixedPortal extends Portal {
         this.destinationName = destinationName;
     }
 
-
-    /**
-     * What will happen when a player clicks the sign?
-     *
-     * @param action
-     * @param actor
-     */
-    @Override
-    public void onSignClick(Action action, Player actor) {
-    }
-
     @Override
     public void drawControlMechanism() {
         String[] lines = new String[4];

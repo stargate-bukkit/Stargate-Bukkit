@@ -9,6 +9,7 @@ import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.EnumSet;
 import java.util.Random;
@@ -21,10 +22,6 @@ public class RandomPortal extends Portal {
 
     RandomPortal(Network network, String name, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID) throws NameError, NoFormatFound, GateConflict {
         super(network, name, sign, flags, ownerUUID);
-    }
-
-    @Override
-    public void onSignClick(Action action, Player actor) {
     }
 
     @Override

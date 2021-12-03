@@ -57,12 +57,6 @@ public class PlayerEventListener implements Listener {
         Material blockMat = block.getType();
         if ((action == Action.RIGHT_CLICK_BLOCK)) {
             // Cancel item use
-            ItemStack item = event.getItem();
-            PermissionManager permissionManager = new PermissionManager(event.getPlayer());
-            StargateCreateEvent colorSignPermission = new StargateCreateEvent(event.getPlayer(),portal,new String[]{""},0);
-            if (!itemIsColor(item) || !permissionManager.hasPerm(colorSignPermission)) {
-                event.setUseInteractedBlock(Event.Result.DENY);
-            }
         }
 
         Player player = event.getPlayer();
@@ -70,7 +64,7 @@ public class PlayerEventListener implements Listener {
         if (Tag.WALL_SIGNS.isTagged(blockMat)) {
             if (portal.isOpenFor(player)) {
                 Stargate.log(Level.FINEST, "Player name=" + player.getName());
-                portal.onSignClick(action, player);
+                portal.onSignClick(event);
             }
             return;
         }
@@ -80,14 +74,6 @@ public class PlayerEventListener implements Listener {
         }
 
         Stargate.log(Level.WARNING, "This should never be triggered, an unknown glitch is occurring");
-    }
-
-    private boolean itemIsColor(ItemStack item) {
-        if(item == null)
-            return false;
-        
-        String itemName = item.getType().toString();
-        return (itemName.contains("DYE") || itemName.contains("GLOW_INK_SAC"));
     }
     
     @EventHandler

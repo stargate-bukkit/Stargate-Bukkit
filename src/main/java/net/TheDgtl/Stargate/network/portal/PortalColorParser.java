@@ -5,22 +5,50 @@ import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.block.Sign;
 
+import java.util.EnumMap;
 import java.util.logging.Level;
 
 public class PortalColorParser {
 
-    private final Sign sign;
+    private final DyeColor signColor;
     private final boolean isLightSign;
     static private final ChatColor GRAY_SELECTOR_COLOR = ChatColor.of("#808080");
     static private final ChatColor ERROR_COLOR = ChatColor.RED;
 
+    static EnumMap<DyeColor,ChatColor> colorConversionMap = new EnumMap<>(DyeColor.class);
+    static {
+        colorConversionMap.put(DyeColor.BLACK, ChatColor.of("#1D1D21"));
+        colorConversionMap.put(DyeColor.BLUE, ChatColor.of("#3C44AA"));
+        colorConversionMap.put(DyeColor.BROWN, ChatColor.of("#835432"));
+        colorConversionMap.put(DyeColor.CYAN, ChatColor.of("#169C9C"));
+        colorConversionMap.put(DyeColor.GRAY, ChatColor.of("#474F52"));
+        colorConversionMap.put(DyeColor.GREEN, ChatColor.of("#5E7C16"));
+        colorConversionMap.put(DyeColor.LIGHT_BLUE, ChatColor.of("#3AB3DA"));
+        colorConversionMap.put(DyeColor.LIGHT_GRAY, ChatColor.of("#9D9D97"));
+        colorConversionMap.put(DyeColor.LIME, ChatColor.of("#80C71F"));
+        colorConversionMap.put(DyeColor.MAGENTA, ChatColor.of("#C74EBD"));
+        colorConversionMap.put(DyeColor.ORANGE, ChatColor.of("#F9801D"));
+        colorConversionMap.put(DyeColor.PINK, ChatColor.of("#F38BAA"));
+        colorConversionMap.put(DyeColor.PURPLE, ChatColor.of("#8932B8"));
+        colorConversionMap.put(DyeColor.RED, ChatColor.of("#B02E26"));
+        colorConversionMap.put(DyeColor.WHITE, ChatColor.of("#F9FFFE"));
+        colorConversionMap.put(DyeColor.YELLOW, ChatColor.of("#FED83D"));
+    }
+    
+    
+    
     public PortalColorParser(Sign sign) {
-        this.sign = sign;
-        this.isLightSign = isLightSign();
+        this.signColor = sign.getColor();
+        this.isLightSign = isLightSign(sign.getType());
     }
 
+    public PortalColorParser(DyeColor signColor, Material signMaterial) {
+        this.signColor = signColor;
+        this.isLightSign = isLightSign(signMaterial);
+    }
     /**
      * Compiles how this portal will look like on a sign, includes the
      *
@@ -72,9 +100,9 @@ public class PortalColorParser {
         return getColor(isLightSign) + surround.getSurround(ERROR_COLOR + error + getColor(isLightSign));
     }
 
-    protected boolean isLightSign() {
+    static protected boolean isLightSign(Material signMaterial) {
 
-        switch (sign.getType()) {
+        switch (signMaterial) {
             // Dark signs
             case DARK_OAK_WALL_SIGN:
             case WARPED_WALL_SIGN:
@@ -86,12 +114,10 @@ public class PortalColorParser {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private ChatColor getColor(boolean isLightSign) {
-        DyeColor signColor = sign.getColor();
         if (signColor != DyeColor.BLACK) {
             if (signColor != null) {
-                return ChatColor.valueOf(signColor.toString());
+                return getChatColorFromDyeColor(signColor);
             } else {
                 return null;
             }
@@ -128,4 +154,8 @@ public class PortalColorParser {
         return (isLightSign ? colors[0] : colors[1]);
     }
 
+    
+    private ChatColor getChatColorFromDyeColor(DyeColor color) {
+        return colorConversionMap.get(color);
+    }
 }
