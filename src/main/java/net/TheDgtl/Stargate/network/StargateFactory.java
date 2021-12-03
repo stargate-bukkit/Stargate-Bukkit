@@ -124,8 +124,6 @@ public class StargateFactory {
         
         PreparedStatement serverInfoStatement = sqlMaker.generateCreateServerInfoTableStatement(connection);
         runStatement(serverInfoStatement);
-        PreparedStatement serverInfoInsertStatement = sqlMaker.generateUpdateServerInfoStatus(connection,null,Stargate.serverUUID,PREFIX);
-        runStatement(serverInfoInsertStatement);
         
         PreparedStatement lastKnownNameStatement = sqlMaker.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);

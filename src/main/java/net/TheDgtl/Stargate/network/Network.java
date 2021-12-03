@@ -57,7 +57,9 @@ public class Network {
     }
 
     public IPortal getPortal(String name) {
-        return portalList.get(name);
+        if(name == null)
+            return null;
+        return portalList.get(this.compilePortalHash(name));
     }
 
     public void registerLocations(GateStructureType type, HashMap<SGLocation, Portal> locationsMap) {

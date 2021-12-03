@@ -95,7 +95,8 @@ public class Teleporter {
         }
 
         if (origin == null) {
-            teleport(target, destination, rotation);
+            destination.setDirection(destinationFace.getOppositeFace().getDirection());
+            teleport(target,destination);
             return;
         }
 
@@ -143,9 +144,14 @@ public class Teleporter {
         Vector direction = target.getLocation().getDirection();
         Location exit = loc.setDirection(direction.rotateAroundY(rotation));
         Vector velocity = target.getVelocity();
-        target.teleport(exit);
+        teleport(target,exit);
+        
         Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(Settings.getDouble(Setting.GATE_EXIT_SPEED_MULTIPLIER));
         target.setVelocity(targetVelocity);
+    }
+    
+    private void teleport(Entity target, Location exitpoint) {
+        target.teleport(exitpoint);
         target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT, false));
     }
 
@@ -161,7 +167,7 @@ public class Teleporter {
             Vector originGateDirection = originFacing.getDirection();
             return directionalAngleOperator(originGateDirection, destinationFacing.getDirection());
         } else {
-            return 0;
+            return -directionalAngleOperator(BlockFace.EAST.getDirection(), destinationFacing.getDirection());
         }
     }
 
