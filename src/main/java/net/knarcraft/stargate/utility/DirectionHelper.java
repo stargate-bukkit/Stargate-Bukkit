@@ -113,16 +113,21 @@ public final class DirectionHelper {
      * @return <p>A normal vector</p>
      */
     public static Vector getCoordinateVectorFromRelativeVector(double right, double down, double out, double yaw) {
-        Vector distanceVector = DirectionHelper.getDirectionVectorFromYaw(yaw);
-        distanceVector.multiply(out);
-
-        Vector rightVector = DirectionHelper.getDirectionVectorFromYaw(yaw - 90);
-        rightVector.multiply(right);
-
-        Vector depthVector = new Vector(0, -1, 0);
-        depthVector.multiply(down);
-
-        return distanceVector.add(rightVector).add(depthVector);
+        if (yaw == 0) {
+            //South
+            return new Vector(right, -down, out);
+        } else if (yaw == 90) {
+            //West
+            return new Vector(-out, -down, right);
+        } else if (yaw == 180) {
+            //North
+            return new Vector(-right, -down, -out);
+        } else if (yaw == 270) {
+            //East
+            return new Vector(out, -down, -right);
+        } else {
+            throw new IllegalArgumentException(String.format("Invalid yaw %f given", yaw));
+        }
     }
 
     /**
