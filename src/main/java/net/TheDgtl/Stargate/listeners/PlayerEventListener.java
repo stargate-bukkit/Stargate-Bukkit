@@ -45,7 +45,6 @@ public class PlayerEventListener implements Listener {
         Action action = event.getAction();
         if (action == Action.RIGHT_CLICK_BLOCK && event.getPlayer().isSneaking())
             return;
-
         if (this.clickIsBug(event, block)) {
             return;
         }
@@ -57,7 +56,6 @@ public class PlayerEventListener implements Listener {
         }
         Material blockMat = block.getType();
         if ((action == Action.RIGHT_CLICK_BLOCK)) {
-            
             // Cancel item use
             ItemStack item = event.getItem();
             PermissionManager permissionManager = new PermissionManager(event.getPlayer());
@@ -65,7 +63,6 @@ public class PlayerEventListener implements Listener {
             if (!itemIsColor(item) || !permissionManager.hasPerm(colorSignPermission)) {
                 event.setUseInteractedBlock(Event.Result.DENY);
             }
-            
         }
 
         Player player = event.getPlayer();
