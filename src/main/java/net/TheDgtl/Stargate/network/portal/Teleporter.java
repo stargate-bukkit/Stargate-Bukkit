@@ -96,7 +96,7 @@ public class Teleporter {
 
         if (origin == null) {
             destination.setDirection(destinationFace.getOppositeFace().getDirection());
-            teleport(target,destination);
+            teleport(target, destination);
             return;
         }
 
@@ -143,12 +143,12 @@ public class Teleporter {
         Vector direction = target.getLocation().getDirection();
         Location exit = loc.setDirection(direction.rotateAroundY(rotation));
         Vector velocity = target.getVelocity();
-        teleport(target,exit);
-        
+        teleport(target, exit);
+
         Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(Settings.getDouble(Setting.GATE_EXIT_SPEED_MULTIPLIER));
         target.setVelocity(targetVelocity);
     }
-    
+
     private void teleport(Entity target, Location exitpoint) {
         target.teleport(exitpoint);
         target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT, false));

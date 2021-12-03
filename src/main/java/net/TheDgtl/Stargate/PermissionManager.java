@@ -42,7 +42,7 @@ public class PermissionManager {
             if (flag == PortalFlag.PERSONAL_NETWORK || flag == PortalFlag.IRON_DOOR)
                 continue;
 
-            if (!player.hasPermission((FLAG_PERMISSION + flag.label).toLowerCase())) {
+            if (!player.hasPermission((FLAG_PERMISSION + flag.getCharacterRepresentation()).toLowerCase())) {
                 flags.remove(flag);
             }
         }
@@ -95,7 +95,7 @@ public class PermissionManager {
                     maxGates = Settings.getInteger(Setting.GATE_LIMIT);
                 }
 
-                if (maxGates > -1 && !player.hasPermission(Bypass.GATE_LIMIT.getPermissionString())) {
+                if (maxGates > -1 && !player.hasPermission(BypassPermission.GATE_LIMIT.getPermissionString())) {
                     Network net = event.getPortal().getNetwork();
                     int currentAmount = net.size();
 

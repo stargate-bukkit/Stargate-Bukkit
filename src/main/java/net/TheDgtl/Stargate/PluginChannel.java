@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * The channel represents the different usable plugin channels that can be used with BungeeCord
  */
-public enum Channel {
+public enum PluginChannel {
 
     /**
      * Represents the BungeeCord plugin channel
@@ -60,7 +60,7 @@ public enum Channel {
      */
     PLUGIN_DISABLE("SGPluginDisable");
 
-    private static final Map<String, Channel> map = new HashMap<>();
+    private static final Map<String, PluginChannel> map = new HashMap<>();
 
     private final String channel;
 
@@ -69,7 +69,7 @@ public enum Channel {
      *
      * @param channel <p>The name/string representation of the new plugin channel</p>
      */
-    Channel(String channel) {
+    PluginChannel(String channel) {
         this.channel = channel;
     }
 
@@ -88,9 +88,9 @@ public enum Channel {
      * @param channel <p>The channel name to parse</p>
      * @return <p>The matching channel enum, or null if no match was found</p>
      */
-    static public Channel parse(String channel) {
+    static public PluginChannel parse(String channel) {
         if (map.isEmpty()) {
-            for (Channel value : values()) {
+            for (PluginChannel value : values()) {
                 map.put(value.getChannel(), value);
             }
         }

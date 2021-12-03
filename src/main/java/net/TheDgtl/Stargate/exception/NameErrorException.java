@@ -5,7 +5,7 @@ import net.TheDgtl.Stargate.TranslatableMessage;
 /**
  * The name error exception is thrown when a portal name is invalid for whatever reason
  */
-public class NameError extends Exception {
+public class NameErrorException extends Exception {
 
     private static final long serialVersionUID = -9187508162071170232L;
     private final TranslatableMessage errorMessage;
@@ -15,7 +15,7 @@ public class NameError extends Exception {
      *
      * @param errorMessage <p>The message to display to the user</p>
      */
-    public NameError(TranslatableMessage errorMessage) {
+    public NameErrorException(TranslatableMessage errorMessage) {
         this.errorMessage = errorMessage;
     }
 

@@ -2,8 +2,8 @@ package net.TheDgtl.Stargate.listeners;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import net.TheDgtl.Stargate.Channel;
 import net.TheDgtl.Stargate.PermissionManager;
+import net.TheDgtl.Stargate.PluginChannel;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
@@ -36,7 +36,7 @@ import java.util.logging.Level;
 public class PlayerEventListener implements Listener {
     private static long eventTime;
     private static PlayerInteractEvent previousEvent;
-    
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
@@ -48,7 +48,7 @@ public class PlayerEventListener implements Listener {
         if (this.clickIsBug(event, block)) {
             return;
         }
-        
+
         // TODO material optimisation?
         Portal portal = Network.getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
         if (portal == null) {
@@ -106,8 +106,8 @@ public class PlayerEventListener implements Listener {
          */
         Supplier<Boolean> action = (() -> {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF(Channel.GET_SERVER.getChannel());
-            Bukkit.getServer().sendPluginMessage(Stargate.getPlugin(Stargate.class), Channel.BUNGEE.getChannel(),
+            out.writeUTF(PluginChannel.GET_SERVER.getChannel());
+            Bukkit.getServer().sendPluginMessage(Stargate.getPlugin(Stargate.class), PluginChannel.BUNGEE.getChannel(),
                     out.toByteArray());
             return true;
         });

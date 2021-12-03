@@ -2,8 +2,8 @@ package net.TheDgtl.Stargate.gate;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.actions.BlockSetAction;
-import net.TheDgtl.Stargate.exception.GateConflict;
-import net.TheDgtl.Stargate.exception.InvalidStructure;
+import net.TheDgtl.Stargate.exception.GateConflictException;
+import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -67,10 +67,10 @@ public class Gate {
      *
      * @param format
      * @param loc
-     * @throws InvalidStructure
-     * @throws GateConflict
+     * @throws InvalidStructureException
+     * @throws GateConflictException
      */
-    public Gate(GateFormat format, Location loc, BlockFace signFace, Portal portal) throws InvalidStructure, GateConflict {
+    public Gate(GateFormat format, Location loc, BlockFace signFace, Portal portal) throws InvalidStructureException, GateConflictException {
         this.setFormat(format);
         facing = signFace;
         this.portal = portal;
@@ -83,7 +83,7 @@ public class Gate {
         if (matchesFormat(loc))
             return;
 
-        throw new InvalidStructure();
+        throw new InvalidStructureException();
     }
 
     /**
@@ -92,9 +92,9 @@ public class Gate {
      *
      * @param loc
      * @return
-     * @throws GateConflict
+     * @throws GateConflictException
      */
-    private boolean matchesFormat(Location loc) throws GateConflict {
+    private boolean matchesFormat(Location loc) throws GateConflictException {
         List<BlockVector> controlBlocks = getFormat().getControlBlocks();
         for (BlockVector controlBlock : controlBlocks) {
             /*
@@ -107,7 +107,7 @@ public class Gate {
 
             if (getFormat().matches(converter, topLeft)) {
                 if (isGateConflict()) {
-                    throw new GateConflict();
+                    throw new GateConflictException();
                 }
                 /*
                  * Just a cheat to exclude the sign location, and determine the position of the

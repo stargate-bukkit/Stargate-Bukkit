@@ -9,9 +9,9 @@ import net.TheDgtl.Stargate.database.MySqlDatabase;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.database.TableNameConfig;
-import net.TheDgtl.Stargate.exception.GateConflict;
-import net.TheDgtl.Stargate.exception.NameError;
-import net.TheDgtl.Stargate.exception.NoFormatFound;
+import net.TheDgtl.Stargate.exception.GateConflictException;
+import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -121,10 +121,10 @@ public class StargateFactory {
         PreparedStatement flagStatement = sqlMaker.generateCreateFlagTableStatement(connection);
         runStatement(flagStatement);
         addMissingFlags(connection, sqlMaker);
-        
+
         PreparedStatement serverInfoStatement = sqlMaker.generateCreateServerInfoTableStatement(connection);
         runStatement(serverInfoStatement);
-        
+
         PreparedStatement lastKnownNameStatement = sqlMaker.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);
         PreparedStatement portalRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(connection, PortalType.LOCAL);
@@ -163,8 +163,8 @@ public class StargateFactory {
             knownFlags.add(set.getString("character"));
         }
         for (PortalFlag flag : PortalFlag.values()) {
-            if (!knownFlags.contains(String.valueOf(flag.getLabel()))) {
-                addStatement.setString(1, String.valueOf(flag.getLabel()));
+            if (!knownFlags.contains(String.valueOf(flag.getCharacterRepresentation()))) {
+                addStatement.setString(1, String.valueOf(flag.getCharacterRepresentation()));
                 addStatement.execute();
             }
         }
@@ -187,6 +187,10 @@ public class StargateFactory {
             }
 
             String destination = set.getString("destination");
+            //Make sure to treat no destination as empty, not a null string
+            if (set.wasNull()) {
+                destination = "";
+            }
             String worldName = set.getString("world");
             int x = set.getInt("x");
             int y = set.getInt("y");
@@ -206,7 +210,7 @@ public class StargateFactory {
 
             try {
                 createNetwork(targetNet, flags);
-            } catch (NameError ignored) {
+            } catch (NameErrorException ignored) {
             }
             Network net = getNetwork(targetNet, isBungee);
 
@@ -241,8 +245,8 @@ public class StargateFactory {
                 if (isBungee) {
                     setInterServerPortalOnlineStatus(portal, true);
                 }
-            } catch (GateConflict | NoFormatFound ignored) {
-            } catch (NameError e) {
+            } catch (GateConflictException | NoFormatFoundException ignored) {
+            } catch (NameErrorException e) {
                 e.printStackTrace();
             }
         }
@@ -264,7 +268,7 @@ public class StargateFactory {
             for (IPortal portal : net.getAllPortals()) {
                 if (portal instanceof VirtualPortal)
                     continue;
-                PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn,Stargate.serverName,Stargate.serverUUID,PREFIX);
+                PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn, Stargate.serverName, Stargate.serverUUID, PREFIX);
                 statement.execute();
                 statement.close();
             }
@@ -286,9 +290,9 @@ public class StargateFactory {
         }
     }
 
-    public void createNetwork(String netName, EnumSet<PortalFlag> flags) throws NameError {
+    public void createNetwork(String netName, EnumSet<PortalFlag> flags) throws NameErrorException {
         if (netExists(netName, flags.contains(PortalFlag.FANCY_INTER_SERVER)))
-            throw new NameError(null);
+            throw new NameErrorException(null);
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             InterServerNetwork net = new InterServerNetwork(netName, database, sqlMaker);
             String netHash = net.getName().toLowerCase();

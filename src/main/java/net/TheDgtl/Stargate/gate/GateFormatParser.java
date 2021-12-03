@@ -1,6 +1,6 @@
 package net.TheDgtl.Stargate.gate;
 
-import net.TheDgtl.Stargate.exception.ParsingError;
+import net.TheDgtl.Stargate.exception.ParsingErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateControlBlock;
 import net.TheDgtl.Stargate.gate.structure.GateFrame;
 import net.TheDgtl.Stargate.gate.structure.GateIris;
@@ -80,9 +80,9 @@ public class GateFormatParser {
      * Parses the gate file given during instantiation
      *
      * @return <p>The parsed gate format</p>
-     * @throws ParsingError <p>If unable to parse the file</p>
+     * @throws ParsingErrorException <p>If unable to parse the file</p>
      */
-    public GateFormat parse() throws ParsingError {
+    public GateFormat parse() throws ParsingErrorException {
         Map<String, String> config = parseSettings();
         Map<String, String> remainingConfig = setSettings(config);
 
@@ -91,11 +91,11 @@ public class GateFormatParser {
         checkIfCanBeBlockedByIronDoor();
 
         if (!gateHasEntrance) {
-            throw new ParsingError("Design is missing an entrance ");
+            throw new ParsingErrorException("Design is missing an entrance ");
         }
 
         if (amountOfControlBlocks < 2) {
-            throw new ParsingError("Design requires at least 2 control blocks '-' ");
+            throw new ParsingErrorException("Design requires at least 2 control blocks '-' ");
         }
 
         return new GateFormat(iris, frame, controlBlocks, remainingConfig, filename, canBeBlockedByIronDoor);
@@ -107,9 +107,9 @@ public class GateFormatParser {
      *
      * @param config <p>The configuration map to read</p>
      * @return <p>The remaining configuration options after the known options have been taken care of</p>
-     * @throws ParsingError <p>If unable to parse one of the materials given in the options</p>
+     * @throws ParsingErrorException <p>If unable to parse one of the materials given in the options</p>
      */
-    private Map<String, String> setSettings(Map<String, String> config) throws ParsingError {
+    private Map<String, String> setSettings(Map<String, String> config) throws ParsingErrorException {
         Map<String, String> remaining = new HashMap<>();
         for (String key : config.keySet()) {
             if (key.length() != 1) {
@@ -171,9 +171,9 @@ public class GateFormatParser {
      *
      * @param materialString <p>The string describing a material/material class to parse</p>
      * @return <p>The parsed material</p>
-     * @throws ParsingError <p>If unable to parse the given material</p>
+     * @throws ParsingErrorException <p>If unable to parse the given material</p>
      */
-    private Set<Material> parseMaterial(String materialString) throws ParsingError {
+    private Set<Material> parseMaterial(String materialString) throws ParsingErrorException {
         Set<Material> foundIds = new HashSet<>();
         String[] individualIDs = materialString.split(SPLIT_IDENTIFIER);
         for (String stringId : individualIDs) {
@@ -187,12 +187,12 @@ public class GateFormatParser {
             //Parse a normal material
             Material id = Material.getMaterial(stringId);
             if (id == null) {
-                throw new ParsingError("Invalid material ''" + stringId + "''");
+                throw new ParsingErrorException("Invalid material ''" + stringId + "''");
             }
             foundIds.add(id);
         }
         if (foundIds.size() == 0) {
-            throw new ParsingError("Invalid field''" + materialString + "'': Field must include at least one block");
+            throw new ParsingErrorException("Invalid field''" + materialString + "'': Field must include at least one block");
         }
         return foundIds;
     }
@@ -202,14 +202,14 @@ public class GateFormatParser {
      *
      * @param stringId <p>A string denoting a tag</p>
      * @param foundIds <p>The set to store found material ids to</p>
-     * @throws ParsingError <p>If unable to parse the tag</p>
+     * @throws ParsingErrorException <p>If unable to parse the tag</p>
      */
-    private void parseMaterialTag(String stringId, Set<Material> foundIds) throws ParsingError {
+    private void parseMaterialTag(String stringId, Set<Material> foundIds) throws ParsingErrorException {
         String tagString = stringId.replace(TAG_IDENTIFIER, "");
         Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS,
                 NamespacedKey.minecraft(tagString.toLowerCase()), Material.class);
         if (tag == null) {
-            throw new ParsingError("Invalid tag in line: " + line);
+            throw new ParsingErrorException("Invalid tag in line: " + line);
         }
         for (Material materialInTag : tag.getValues()) {
             if (materialInTag.isBlock()) {
@@ -255,9 +255,9 @@ public class GateFormatParser {
      * Note that some structures need a selected material</p>
      *
      * @param lines <p>The lines in the .gate file with everything about positions (the actual design)</p>
-     * @throws ParsingError <p>If encountering an unknown character</p>
+     * @throws ParsingErrorException <p>If encountering an unknown character</p>
      */
-    private void setDesign(List<String> lines) throws ParsingError {
+    private void setDesign(List<String> lines) throws ParsingErrorException {
         iris = new GateIris(irisOpen, irisClosed);
         frame = new GateFrame();
         controlBlocks = new GateControlBlock();
@@ -296,9 +296,9 @@ public class GateFormatParser {
      *
      * @param key              <p>The character key to take care of</p>
      * @param selectedLocation <p>The vector location of the character's position in the design</p>
-     * @throws ParsingError <p>If the character cannot be understood</p>
+     * @throws ParsingErrorException <p>If the character cannot be understood</p>
      */
-    private void setDesignPoint(char key, BlockVector selectedLocation) throws ParsingError {
+    private void setDesignPoint(char key, BlockVector selectedLocation) throws ParsingErrorException {
         switch (key) {
             case NOTHING:
                 break;
@@ -318,7 +318,7 @@ public class GateFormatParser {
                 break;
             default:
                 if ((key == '?') || (!frameMaterials.containsKey(key))) {
-                    throw new ParsingError("Unknown symbol '" + key + "' in gate design");
+                    throw new ParsingErrorException("Unknown symbol '" + key + "' in gate design");
                 }
                 frame.addPart(selectedLocation.clone(), frameMaterials.get(key));
         }

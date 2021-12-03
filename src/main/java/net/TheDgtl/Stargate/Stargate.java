@@ -172,16 +172,16 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     private void loadColors() {
         try {
-        Stargate.defaultLightSignColor = loadColor(Settings.getString(Setting.DEFAULT_LIGHT_SIGN_COLOR));
-        Stargate.defaultDarkColor = loadColor(Settings.getString(Setting.DEFAULT_DARK_SIGN_COLOR));
-        } catch(IllegalArgumentException e) {
+            Stargate.defaultLightSignColor = loadColor(Settings.getString(Setting.DEFAULT_LIGHT_SIGN_COLOR));
+            Stargate.defaultDarkColor = loadColor(Settings.getString(Setting.DEFAULT_DARK_SIGN_COLOR));
+        } catch (IllegalArgumentException e) {
             Stargate.log(Level.WARNING, "Invalid colors for sign texts, chosing default colors...");
             Stargate.defaultLightSignColor = ChatColor.BLACK;
             Stargate.defaultDarkColor = ChatColor.WHITE;
         }
     }
 
-    private ChatColor loadColor(String colorString) throws IllegalArgumentException{
+    private ChatColor loadColor(String colorString) throws IllegalArgumentException {
         if (colorString.startsWith("#")) {
             return ChatColor.of(colorString);
         }
@@ -197,8 +197,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         if (Settings.getBoolean(Setting.USING_BUNGEE)) {
             Messenger msgr = Bukkit.getMessenger();
 
-            msgr.registerOutgoingPluginChannel(this, Channel.BUNGEE.getChannel());
-            msgr.registerIncomingPluginChannel(this, Channel.BUNGEE.getChannel(), new StargateBungeePluginMessageListener(this));
+            msgr.registerOutgoingPluginChannel(this, PluginChannel.BUNGEE.getChannel());
+            msgr.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(), new StargateBungeePluginMessageListener(this));
         }
     }
 
