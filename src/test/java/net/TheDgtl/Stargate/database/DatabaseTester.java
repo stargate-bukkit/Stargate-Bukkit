@@ -70,8 +70,8 @@ public class DatabaseTester {
         WorldMock world = new WorldMock(Material.DIRT, 5);
         server.addWorld(world);
         
-        int interServerPortalTestLength = 4;
-        int localPortalTestLength = 5;
+        int interServerPortalTestLength = 3;
+        int localPortalTestLength = 4;
         
         
         DatabaseTester.serverName = "aServerName";
@@ -303,7 +303,7 @@ public class DatabaseTester {
             while (set.next()) {
                 rows++;
                 for (int i = 0; i < metaData.getColumnCount(); i++) {
-                    System.out.println(metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
+                    System.out.print(metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
 
                     String portalName = set.getString("name");
                     FakePortal targetPortal = portals.get(portalName);
@@ -316,8 +316,8 @@ public class DatabaseTester {
                     //}
                 }
                 System.out.println();
-                Assertions.assertTrue(rows > 0);
             }
+            Assertions.assertTrue(rows == portals.size());
         } finally {
             connection.close();
         }
