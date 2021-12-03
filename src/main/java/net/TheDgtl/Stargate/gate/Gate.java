@@ -6,9 +6,9 @@ import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import net.TheDgtl.Stargate.network.portal.SGLocation;
 import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -26,7 +26,6 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -38,63 +37,285 @@ import java.util.logging.Level;
 public class Gate {
 
     private GateFormat format;
-    /*
-     * a vector operation that goes from world -> format. Also contains the inverse
-     * operation for this
-     */
-    VectorOperation converter;
-    /**
-     * WARNING: Don't modify this ever, always use .copy()
-     */
-    Location topLeft;
-    /**
-     * WARNING: Don't modify this ever, always use .copy()
-     */
-    public BlockVector signPos;
-    public BlockVector buttonPos;
-    public final BlockFace facing;
+    private final VectorOperation converter;
+    private Location topLeft;
+    private BlockVector signPosition;
+    private BlockVector buttonPosition;
+    private final BlockFace facing;
     private boolean isOpen = false;
     private final Portal portal;
 
-
-    static final private Material DEFAULT_BUTTON = Material.STONE_BUTTON;
-    static final private Material DEFAULT_WATER_BUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
-    static final public HashSet<Material> ALL_PORTAL_MATERIALS = new HashSet<>();
+    private static final Material DEFAULT_BUTTON = Material.STONE_BUTTON;
+    private static final Material DEFAULT_WATER_BUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
 
     /**
-     * Compares the format to real world; If the format matches with the world,
-     * independent of rotation and mirroring.
+     * Instantiates a new gate
      *
-     * @param format
-     * @param loc
-     * @throws InvalidStructureException
-     * @throws GateConflictException
+     * @param format       <p>The gate format used by this gate</p>
+     * @param signLocation <p>The location of this gate's sign</p>
+     * @param signFace     <p>The direction this gate's sign is facing</p>
+     * @param portal       <p>The portal using this gate</p>
+     * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
+     * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
-    public Gate(GateFormat format, Location loc, BlockFace signFace, Portal portal) throws InvalidStructureException, GateConflictException {
+    public Gate(GateFormat format, Location signLocation, BlockFace signFace, Portal portal)
+            throws InvalidStructureException, GateConflictException {
         this.setFormat(format);
         facing = signFace;
         this.portal = portal;
-        converter = new VectorOperation(signFace);
+        converter = new VectorOperation(signFace, Stargate.getInstance());
 
-        if (matchesFormat(loc)) {
+        //Allow mirroring for non-symmetrical gates
+        if (matchesFormat(signLocation)) {
             return;
         }
         converter.setFlipZAxis(true);
-        if (matchesFormat(loc))
+        if (matchesFormat(signLocation)) {
             return;
+        }
 
         throw new InvalidStructureException();
     }
 
     /**
-     * Checks if format matches independent of controlBlock
+     * Set button and draw sign
+     *
+     * @param signLines an array with 4 elements, representing each line of a sign
+     */
+    public void drawControlMechanism(String[] signLines, boolean drawButton) {
+        drawSign(signLines);
+        if (drawButton) {
+            drawButton();
+        }
+    }
+
+    /**
+     * Draws this gate's sign
+     *
+     * @param signLines <p>The lines to draw on the sign</p>
+     */
+    private void drawSign(String[] signLines) {
+        Location signLocation = getLocation(signPosition);
+        BlockState signState = signLocation.getBlock().getState();
+        if (!(signState instanceof Sign)) {
+            Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
+            return;
+        }
+
+        Sign sign = (Sign) signState;
+        for (int i = 0; i < 4; i++) {
+            sign.setLine(i, signLines[i]);
+        }
+        Stargate.syncTickPopulator.addAction(new BlockSetAction(sign, true));
+    }
+
+    /**
+     * Draws this gate's button
+     */
+    private void drawButton() {
+        Location buttonLocation = getLocation(buttonPosition);
+        Material buttonMaterial = getButtonMaterial();
+        Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
+        buttonData.setFacing(facing);
+
+        buttonLocation.getBlock().setBlockData(buttonData);
+    }
+
+    /**
+     * Gets the block face of this gate's sign
+     *
+     * @return <p>The block face of this gate's sign</p>
+     */
+    public BlockFace getSignFace() {
+        return this.facing;
+    }
+
+    /**
+     * Gets the location of this gate's sign
+     *
+     * @return <p>The location of this gate's sign</p>
+     */
+    public Location getSignLocation() {
+        return getLocation(signPosition);
+    }
+
+    /**
+     * Gets all locations of this gate containing the given structure type
+     *
+     * @param structureType <p>The structure type to get locations of</p>
+     * @return <p>All locations containing the given structure type</p>
+     */
+    public List<BlockLocation> getLocations(GateStructureType structureType) {
+        List<BlockLocation> output = new ArrayList<>();
+
+        for (BlockVector vec : getFormat().portalParts.get(structureType).getStructureTypePositions()) {
+            Location loc = getLocation(vec);
+            output.add(new BlockLocation(loc));
+        }
+
+        if (structureType == GateStructureType.CONTROL_BLOCK && portal.hasFlag(PortalFlag.ALWAYS_ON)) {
+            Location buttonLoc = getLocation(buttonPosition);
+            output.remove(new BlockLocation(buttonLoc));
+        }
+        return output;
+    }
+
+    /**
+     * Opens this gate
+     */
+    public void open() {
+        changeOpenState(true);
+    }
+
+    /**
+     * Closes this gate
+     */
+    public void close() {
+        changeOpenState(false);
+    }
+
+    /**
+     * Gets the exit location of this gate
+     *
+     * @return <p>The exit location of this gate</p>
+     */
+    public Location getExit() {
+        BlockVector formatExit = getFormat().getExit();
+        return getLocation(formatExit);
+    }
+
+    /**
+     * Gets whether this gate is currently open
+     *
+     * @return <p>Whether this gate is currently open</p>
+     */
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    /**
+     * Sets whether this gate is currently open
+     *
+     * @param isOpen <p>Whether this gate is currently open</p>
+     */
+    public void setOpen(boolean isOpen) {
+        this.isOpen = isOpen;
+    }
+
+    /**
+     * Gets the gate format used by this gate
+     *
+     * @return <p>The gate format used by this gate</p>
+     */
+    public GateFormat getFormat() {
+        return format;
+    }
+
+    /**
+     * Sets the gate format used by this gate
+     *
+     * @param format <p>The gate format used by this gate</p>
+     */
+    public void setFormat(GateFormat format) {
+        this.format = format;
+    }
+
+    /**
+     * Gets the block face defining this gate's direction
+     *
+     * @return <p>The block face defining this gate's direction</p>
+     */
+    public BlockFace getFacing() {
+        return converter.getFacing();
+    }
+
+    /**
+     * Gets a vector relative to this gate's top-left location using the given location
+     *
+     * @param location <p>The location to turn into a relative location</p>
+     * @return <p>A location relative to this gate's top-left location</p>
+     */
+    public Vector getRelativeVector(Location location) {
+        Vector vector = topLeft.clone().subtract(location).toVector();
+        return converter.performOperation(vector);
+    }
+
+    /**
+     * Gets the button material to use for this gate
+     *
+     * @return <p>The button material to use for this gate</p>
+     */
+    private Material getButtonMaterial() {
+        Material portalClosedMaterial = getFormat().getIrisMaterial(false);
+        //TODO: Add support for using solid blocks as the gate-closed material for underwater portals
+        switch (portalClosedMaterial) {
+            case AIR:
+                return DEFAULT_BUTTON;
+            case WATER:
+                return DEFAULT_WATER_BUTTON;
+            default:
+                Stargate.log(Level.INFO, portalClosedMaterial.name() +
+                        " is currently not supported as a portal closed material");
+                return DEFAULT_BUTTON;
+        }
+    }
+
+    /**
+     * Changes the iris blocks to the given material
+     *
+     * <p>Note that nether portals have to be oriented in the right axis. End gateways need to be forced to a location
+     * to prevent exit gateway generation.</p>
+     *
+     * @param material <p>The new material to use for the iris</p>
+     */
+    private void setIrisMaterial(Material material) {
+        GateStructureType targetType = GateStructureType.IRIS;
+        List<BlockLocation> locations = getLocations(targetType);
+        BlockData blockData = Bukkit.createBlockData(material);
+
+        if (blockData instanceof Orientable) {
+            Orientable orientation = (Orientable) blockData;
+            orientation.setAxis(converter.getIrisNormal());
+        }
+
+        for (BlockLocation blockLocation : locations) {
+            Block block = blockLocation.getLocation().getBlock();
+            block.setBlockData(blockData);
+            if (material == Material.END_GATEWAY) {// force a location to prevent exit gateway generation
+                EndGateway gateway = (EndGateway) block.getState();
+                // https://github.com/stargate-bukkit/Stargate-Bukkit/issues/36
+                gateway.setAge(-9223372036854775808L);
+                if (block.getWorld().getEnvironment() == World.Environment.THE_END) {
+                    gateway.setExitLocation(block.getWorld().getSpawnLocation());
+                    gateway.setExactTeleport(true);
+                }
+                gateway.update(false, false);
+            }
+        }
+    }
+
+    /**
+     * Gets a location from a relative vector
+     *
+     * @param vector <p>The vector defining a location</p>
+     * @return <p>The location corresponding to the given vector</p>
+     */
+    private Location getLocation(Vector vector) {
+        return topLeft.clone().add(converter.performInverseOperation(vector));
+    }
+
+    /**
+     * Checks if the built stargate matches this gate's format
+     *
+     * <p>This will try to match the format regardless of which control block the sign was placed on</p>
+     * <p>
      * TODO: symmetric formats will be checked twice, make a way to determine if a format is symmetric to avoid this
      *
-     * @param loc
-     * @return
-     * @throws GateConflictException
+     * @param location <p>The top-left location of a built stargate</p>
+     * @return <p>True if the built stargate matches this format</p>
+     * @throws GateConflictException <p>If the built stargate conflicts with another gate</p>
      */
-    private boolean matchesFormat(Location loc) throws GateConflictException {
+    private boolean matchesFormat(Location location) throws GateConflictException {
         List<BlockVector> controlBlocks = getFormat().getControlBlocks();
         for (BlockVector controlBlock : controlBlocks) {
             /*
@@ -103,7 +324,7 @@ public class Gate {
              * the position of the sign minus a vector of a hypothetical sign position in
              * format.
              */
-            topLeft = loc.clone().subtract(converter.performInverseOperation(controlBlock));
+            topLeft = location.clone().subtract(converter.performInverseOperation(controlBlock));
 
             if (getFormat().matches(converter, topLeft)) {
                 if (isGateConflict()) {
@@ -114,11 +335,11 @@ public class Gate {
                  * button. Note that this will have weird behaviour if there's more than 3
                  * control-blocks
                  */
-                signPos = controlBlock;
+                signPosition = controlBlock;
                 for (BlockVector buttonVec : getFormat().getControlBlocks()) {
-                    if (signPos == buttonVec)
+                    if (signPosition == buttonVec)
                         continue;
-                    buttonPos = buttonVec;
+                    buttonPosition = buttonVec;
                     break;
                 }
 
@@ -128,9 +349,14 @@ public class Gate {
         return false;
     }
 
+    /**
+     * Checks if this gate is in conflict with another
+     *
+     * @return <p>True if there is a conflict</p>
+     */
     private boolean isGateConflict() {
-        List<SGLocation> locations = this.getLocations(GateStructureType.FRAME);
-        for (SGLocation loc : locations) {
+        List<BlockLocation> locations = this.getLocations(GateStructureType.FRAME);
+        for (BlockLocation loc : locations) {
             if (Network.getPortal(loc, GateStructureType.values()) != null) {
                 return true;
             }
@@ -139,152 +365,14 @@ public class Gate {
     }
 
     /**
-     * Set button and draw sign
+     * Changes the open-state of this gate
      *
-     * @param signLines an array with 4 elements, representing each line of a sign
+     * @param open <p>Whether to open this gate, as opposed to closing this gate</p>
      */
-    public void drawControlMechanism(String[] signLines, boolean isDrawButton) {
-        Location signLoc = getLocation(signPos);
-        BlockState signState = signLoc.getBlock().getState();
-        if (!(signState instanceof Sign)) {
-            Stargate.log(Level.FINE, "Could not find sign at position " + signLoc);
-            return;
-        }
-
-        Sign sign = (Sign) signState;
-        for (int i = 0; i < 4; i++) {
-            sign.setLine(i, signLines[i]);
-        }
-        Stargate.syncTickPopulator.addAction(new BlockSetAction(sign, true));
-        if (!isDrawButton)
-            return;
-
-        Location buttonLoc = getLocation(buttonPos);
-        Material buttonMat = getButtonMaterial();
-        Directional buttonData = (Directional) Bukkit.createBlockData(buttonMat);
-        buttonData.setFacing(facing);
-
-        buttonLoc.getBlock().setBlockData(buttonData);
-
-    }
-
-    public Location getSignLoc() {
-        return getLocation(signPos);
-    }
-
-    public Location getButtonLoc() {
-        return getLocation(buttonPos);
-    }
-
-    private Material getButtonMaterial() {
-        Material portalClosedMat = getFormat().getIrisMat(false);
-        switch (portalClosedMat) {
-            case AIR:
-                return DEFAULT_BUTTON;
-            case WATER:
-                return DEFAULT_WATER_BUTTON;
-            default:
-                Stargate.log(Level.INFO, portalClosedMat.name() + " is currently not supported as a portal closed material");
-                return DEFAULT_BUTTON;
-        }
-    }
-
-    /**
-     * @param structKey , key for the structure-type to be retrieved
-     * @return
-     */
-    public List<SGLocation> getLocations(GateStructureType structKey) {
-        List<SGLocation> output = new ArrayList<>();
-
-        for (BlockVector vec : getFormat().portalParts.get(structKey).getStructureTypePositions()) {
-            Location loc = getLocation(vec);
-            output.add(new SGLocation(loc));
-        }
-
-        if (structKey == GateStructureType.CONTROL_BLOCK && portal.hasFlag(PortalFlag.ALWAYS_ON)) {
-            Location buttonLoc = getLocation(buttonPos);
-            output.remove(new SGLocation(buttonLoc));
-        }
-        return output;
-    }
-
-    private Location getLocation(Vector vec) {
-        return topLeft.clone().add(converter.performInverseOperation(vec));
-    }
-
-    /**
-     * Set the iris mat, note that nether portals have to be oriented in the right axis, and
-     * force a location to prevent exit gateway generation.
-     *
-     * @param mat
-     */
-    private void setIrisMaterial(Material mat) {
-        GateStructureType targetType = GateStructureType.IRIS;
-        List<SGLocation> locations = getLocations(targetType);
-        BlockData blockData = Bukkit.createBlockData(mat);
-
-        if (blockData instanceof Orientable) {
-            Orientable orientation = (Orientable) blockData;
-            orientation.setAxis(converter.getIrisNormal());
-        }
-
-        for (SGLocation loc : locations) {
-            Block blk = loc.getLocation().getBlock();
-            blk.setBlockData(blockData);
-            if (mat == Material.END_GATEWAY) {// force a location to prevent exit gateway generation
-                EndGateway gateway = (EndGateway) blk.getState();
-                // https://github.com/stargate-bukkit/Stargate-Bukkit/issues/36
-                gateway.setAge(-9223372036854775808L);
-                if (blk.getWorld().getEnvironment() == World.Environment.THE_END) {
-                    gateway.setExitLocation(blk.getWorld().getSpawnLocation());
-                    gateway.setExactTeleport(true);
-                }
-                gateway.update(false, false);
-            }
-        }
-    }
-
-    public void open() {
-        Material mat = getFormat().getIrisMat(true);
-        setIrisMaterial(mat);
-        setOpen(true);
-
-    }
-
-    public void close() {
-        Material mat = getFormat().getIrisMat(false);
-        setIrisMaterial(mat);
-        setOpen(false);
-    }
-
-    public Location getExit() {
-        BlockVector formatExit = getFormat().getExit();
-        return getLocation(formatExit);
-    }
-
-    public boolean isOpen() {
-        return isOpen;
-    }
-
-    public void setOpen(boolean isOpen) {
-        this.isOpen = isOpen;
-    }
-
-    public GateFormat getFormat() {
-        return format;
-    }
-
-    public void setFormat(GateFormat format) {
-        this.format = format;
-    }
-
-    public BlockFace getFacing() {
-        return converter.getFacing();
-    }
-
-    public Vector getRelativeVector(Location loc) {
-        Vector vec = topLeft.clone().subtract(loc).toVector();
-        return converter.performOperation(vec);
+    private void changeOpenState(boolean open) {
+        Material newMaterial = getFormat().getIrisMaterial(open);
+        setIrisMaterial(newMaterial);
+        setOpen(open);
     }
 
 }
