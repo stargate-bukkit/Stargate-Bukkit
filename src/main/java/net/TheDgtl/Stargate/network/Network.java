@@ -9,11 +9,11 @@ import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
+import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.NameSurround;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import net.TheDgtl.Stargate.network.portal.SGLocation;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -37,7 +37,7 @@ public class Network {
     protected SQLQueryGenerator sqlMaker;
 
 
-    final static EnumMap<GateStructureType, HashMap<SGLocation, Portal>> portalFromPartsMap = new EnumMap<>(GateStructureType.class);
+    final static EnumMap<GateStructureType, HashMap<BlockLocation, Portal>> portalFromPartsMap = new EnumMap<>(GateStructureType.class);
 
     public Network(String name, Database database, SQLQueryGenerator sqlMaker) throws NameErrorException {
         if (name.trim().isEmpty() || (name.length() == Stargate.MAX_TEXT_LENGTH))
@@ -62,15 +62,15 @@ public class Network {
         return portalList.get(this.compilePortalHash(name));
     }
 
-    public void registerLocations(GateStructureType type, HashMap<SGLocation, Portal> locationsMap) {
+    public void registerLocations(GateStructureType type, HashMap<BlockLocation, Portal> locationsMap) {
         if (!portalFromPartsMap.containsKey(type)) {
             portalFromPartsMap.put(type, new HashMap<>());
         }
         portalFromPartsMap.get(type).putAll(locationsMap);
     }
 
-    public void unRegisterLocation(GateStructureType type, SGLocation loc) {
-        HashMap<SGLocation, Portal> map = portalFromPartsMap.get(type);
+    public void unRegisterLocation(GateStructureType type, BlockLocation loc) {
+        HashMap<BlockLocation, Portal> map = portalFromPartsMap.get(type);
         if (map != null) {
             Stargate.log(Level.FINEST, "Unregistering portal " + map.get(loc).getName() + " with structType " + type
                     + " at location " + loc.toString());
@@ -180,7 +180,7 @@ public class Network {
         if (portal instanceof Portal) {
             Portal physicalPortal = (Portal) portal;
             for (GateStructureType key : physicalPortal.getGate().getFormat().portalParts.keySet()) {
-                List<SGLocation> locations = physicalPortal.getGate().getLocations(key);
+                List<BlockLocation> locations = physicalPortal.getGate().getLocations(key);
                 this.registerLocations(key, physicalPortal.generateLocationHashMap(locations));
             }
         }
@@ -229,12 +229,12 @@ public class Network {
     }
 
     static public Portal getPortal(Location loc, GateStructureType key) {
-        return getPortal(new SGLocation(loc), key);
+        return getPortal(new BlockLocation(loc), key);
     }
 
     public static Portal getPortal(Location loc, GateStructureType[] keys) {
 
-        return getPortal(new SGLocation(loc), keys);
+        return getPortal(new BlockLocation(loc), keys);
     }
 
     /**
@@ -244,7 +244,7 @@ public class Network {
      * @param key
      * @return
      */
-    static public Portal getPortal(SGLocation loc, GateStructureType key) {
+    static public Portal getPortal(BlockLocation loc, GateStructureType key) {
         if (!(portalFromPartsMap.containsKey(key))) {
             return null;
         }
@@ -258,7 +258,7 @@ public class Network {
      * @param keys
      * @return
      */
-    static public Portal getPortal(SGLocation loc, GateStructureType[] keys) {
+    static public Portal getPortal(BlockLocation loc, GateStructureType[] keys) {
         for (GateStructureType key : keys) {
             Portal portal = getPortal(loc, key);
             if (portal != null)

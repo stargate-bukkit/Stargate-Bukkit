@@ -1,6 +1,6 @@
 package net.TheDgtl.Stargate.vectorlogic;
 
-import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import org.bukkit.Axis;
 import org.bukkit.block.BlockFace;
@@ -23,12 +23,17 @@ public class VectorOperation {
     private final BlockFace facing;
 
     /**
-     * Instantiates a vector operation which matches with the direction of a sign
+     * Instantiates a vector operation to rotate vectors in the direction of a sign face
+     *
+     * <p>Gate structures have their relative location represented by a vector where x = outwards, y = down and
+     * z = right. The vector operation rotates the given vectors so that "outwards" is going the same direction as the
+     * given sign face.</p>
      *
      * @param signFace <p>The sign face of a gate's sign</p>
+     * @param logger   <p>The logger to use for logging debug messages</p>
      * @throws InvalidStructureException <p>If given a sign face which is not one of EAST, SOUTH, WEST or NORTH</p>
      */
-    public VectorOperation(BlockFace signFace) throws InvalidStructureException {
+    public VectorOperation(BlockFace signFace, StargateLogger logger) throws InvalidStructureException {
         double rotation;
 
         switch (signFace) {
@@ -55,7 +60,7 @@ public class VectorOperation {
         this.facing = signFace;
         matrixRotation = new MatrixYRotation(rotation);
         matrixInverseRotation = matrixRotation.getInverse();
-        Stargate.log(Level.FINER, "Chose a format rotation of " + rotation + " radians");
+        logger.logMessage(Level.FINER, "Chose a format rotation of " + rotation + " radians");
     }
 
     /**

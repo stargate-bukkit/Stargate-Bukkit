@@ -84,7 +84,7 @@ public class GateFormatParser {
      */
     public GateFormat parse() throws ParsingErrorException {
         Map<String, String> config = parseSettings();
-        Map<String, String> remainingConfig = setSettings(config);
+        setSettings(config);
 
         List<String> designLines = loadDesign();
         setDesign(designLines);
@@ -98,7 +98,7 @@ public class GateFormatParser {
             throw new ParsingErrorException("Design requires at least 2 control blocks '-' ");
         }
 
-        return new GateFormat(iris, frame, controlBlocks, remainingConfig, filename, canBeBlockedByIronDoor);
+        return new GateFormat(iris, frame, controlBlocks, filename, canBeBlockedByIronDoor);
     }
 
 

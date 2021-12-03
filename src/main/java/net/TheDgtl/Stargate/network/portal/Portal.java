@@ -84,7 +84,7 @@ public abstract class Portal implements IPortal {
          */
         Directional signDirection = (Directional) sign.getBlockData();
         Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
-        List<GateFormat> gateFormats = GateFormat.getPossibleGatesFromControlBlockMaterial(behind.getType());
+        List<GateFormat> gateFormats = GateFormat.getPossibleGateFormatsFromControlBlockMaterial(behind.getType());
         setGate(FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing()));
 
         if (name.trim().isEmpty() || (name.length() == Stargate.MAX_TEXT_LENGTH))
@@ -132,9 +132,9 @@ public abstract class Portal implements IPortal {
         throw new NoFormatFoundException();
     }
 
-    public HashMap<SGLocation, Portal> generateLocationHashMap(List<SGLocation> locations) {
-        HashMap<SGLocation, Portal> output = new HashMap<>();
-        for (SGLocation loc : locations) {
+    public HashMap<BlockLocation, Portal> generateLocationHashMap(List<BlockLocation> locations) {
+        HashMap<BlockLocation, Portal> output = new HashMap<>();
+        for (BlockLocation loc : locations) {
             output.put(loc, this);
         }
         return output;
@@ -142,7 +142,7 @@ public abstract class Portal implements IPortal {
 
     @Override
     public Location getSignPos() {
-        return gate.getSignLoc();
+        return gate.getSignLocation();
     }
 
 
@@ -178,7 +178,7 @@ public abstract class Portal implements IPortal {
         getGate().drawControlMechanism(lines, false);
 
         for (GateStructureType formatType : GateStructureType.values()) {
-            for (SGLocation loc : this.getGate().getLocations(formatType)) {
+            for (BlockLocation loc : this.getGate().getLocations(formatType)) {
                 Stargate.log(Level.FINEST, "Unregistering type: " + formatType + " location, at: " + loc);
                 network.unRegisterLocation(formatType, loc);
             }
@@ -265,7 +265,7 @@ public abstract class Portal implements IPortal {
         if (this.hasFlag(PortalFlag.IRON_DOOR) && event.useInteractedBlock() == Result.DENY) {
             Block exitBlock = gate.getExit().add(gate.getFacing().getDirection()).getBlock();
             if (exitBlock.getType() == Material.IRON_DOOR) {
-                Directional signDirection = (Directional) gate.getSignLoc().getBlock().getBlockData();
+                Directional signDirection = (Directional) gate.getSignLocation().getBlock().getBlockData();
                 Directional doorDirection = (Directional) exitBlock.getBlockData();
                 if (signDirection.getFacing() == doorDirection.getFacing()) {
                     return;
@@ -304,7 +304,7 @@ public abstract class Portal implements IPortal {
     @Override
     public void teleportHere(Entity target, Portal origin) {
 
-        BlockFace portalFacing = gate.facing.getOppositeFace();
+        BlockFace portalFacing = gate.getSignFace().getOppositeFace();
         if (flags.contains(PortalFlag.BACKWARDS))
             portalFacing = portalFacing.getOppositeFace();
 

@@ -4,31 +4,38 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public class SGLocation {
-    /**
-     * A class used to avoid memory leak from world unloading
-     */
+/**
+ * A class used to avoid memory leak from world unloading
+ */
+public class BlockLocation {
+
     final int x;
     final int y;
     final int z;
     final String world;
 
-    public SGLocation(Location location) {
+    /**
+     * Instantiates a new block location
+     *
+     * @param location <p>The location this block location should represent</p>
+     */
+    public BlockLocation(Location location) {
         x = location.getBlockX();
         y = location.getBlockY();
         z = location.getBlockZ();
-        World worldObject = location.getWorld();
-        world = worldObject == null ? "" : worldObject.getName();
+        World world = location.getWorld();
+        this.world = world == null ? "" : world.getName();
     }
 
+    /**
+     * Gets the location corresponding to this block location
+     *
+     * @return <p>The location corresponding to this block location</p>
+     */
     public Location getLocation() {
         return new Location(Bukkit.getWorld(world), x, y, z);
     }
 
-
-    /*
-     * USED IN HASHING RELATED STUFF
-     */
     @Override
     public int hashCode() {
         int result = 18;
@@ -50,7 +57,7 @@ public class SGLocation {
         if (getClass() != other.getClass())
             return false;
 
-        SGLocation otherLoc = (SGLocation) other;
+        BlockLocation otherLoc = (BlockLocation) other;
         return (x == otherLoc.x) && (y == otherLoc.y) && (z == otherLoc.z) && (world.equals(otherLoc.world));
     }
 
@@ -58,4 +65,5 @@ public class SGLocation {
     public String toString() {
         return world + "(" + x + "," + y + "," + z + ")";
     }
+
 }
