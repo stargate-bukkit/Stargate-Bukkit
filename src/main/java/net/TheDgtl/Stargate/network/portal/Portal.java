@@ -172,7 +172,6 @@ public abstract class Portal implements IPortal {
      * Remove all information stored on this gate
      */
     public void destroy() {
-        Stargate.log(Level.FINEST, "PING 1");
         close(true);
         this.network.removePortal(this, true);
         String[] lines = new String[]{name, "", "", ""};
@@ -264,7 +263,7 @@ public abstract class Portal implements IPortal {
     public void onButtonClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (this.hasFlag(PortalFlag.IRON_DOOR) && event.useInteractedBlock() == Result.DENY) {
-            Block exitBlock = gate.getExit().getBlock();
+            Block exitBlock = gate.getExit().add(gate.getFacing().getDirection()).getBlock();
             if (exitBlock.getType() == Material.IRON_DOOR) {
                 Directional signDirection = (Directional) gate.getSignLoc().getBlock().getBlockData();
                 Directional doorDirection = (Directional) exitBlock.getBlockData();

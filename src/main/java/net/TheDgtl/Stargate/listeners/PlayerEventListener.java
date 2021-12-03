@@ -3,12 +3,14 @@ package net.TheDgtl.Stargate.listeners;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.TheDgtl.Stargate.Channel;
+import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.actions.ConditionalRepeatedTask;
 import net.TheDgtl.Stargate.actions.SimpleAction;
 import net.TheDgtl.Stargate.actions.SupplierAction;
+import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
@@ -25,14 +27,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.sql.SQLException;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
 public class PlayerEventListener implements Listener {
-    private static boolean antiDoubleActivate = true;
-
+    private static long eventTime;
+    private static PlayerInteractEvent previousEvent;
+    
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
@@ -41,23 +45,24 @@ public class PlayerEventListener implements Listener {
         Action action = event.getAction();
         if (action == Action.RIGHT_CLICK_BLOCK && event.getPlayer().isSneaking())
             return;
-
+        if (this.clickIsBug(event, block)) {
+            return;
+        }
+        
         // TODO material optimisation?
         Portal portal = Network.getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
         if (portal == null) {
             return;
         }
-
         Material blockMat = block.getType();
         if ((action == Action.RIGHT_CLICK_BLOCK)) {
-            // A cheat to avoid a glitch from bukkit
-            if (blockMat == Material.DEAD_TUBE_CORAL_WALL_FAN) {
-                antiDoubleActivate = !antiDoubleActivate;
-                if (antiDoubleActivate)
-                    return;
-            }
             // Cancel item use
-            event.setUseItemInHand(Event.Result.DENY);
+            ItemStack item = event.getItem();
+            PermissionManager permissionManager = new PermissionManager(event.getPlayer());
+            StargateCreateEvent colorSignPermission = new StargateCreateEvent(event.getPlayer(),portal,new String[]{""},0);
+            if (!itemIsColor(item) || !permissionManager.hasPerm(colorSignPermission)) {
+                event.setUseInteractedBlock(Event.Result.DENY);
+            }
         }
 
         Player player = event.getPlayer();
@@ -77,7 +82,14 @@ public class PlayerEventListener implements Listener {
         Stargate.log(Level.WARNING, "This should never be triggered, an unknown glitch is occurring");
     }
 
-
+    private boolean itemIsColor(ItemStack item) {
+        if(item == null)
+            return false;
+        
+        String itemName = item.getType().toString();
+        return (itemName.contains("DYE") || itemName.contains("GLOW_INK_SAC"));
+    }
+    
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (!Settings.getBoolean(Setting.USING_BUNGEE))
@@ -134,4 +146,26 @@ public class PlayerEventListener implements Listener {
 
     }
 
+    /**
+     * This function decides if a right click of a block is caused by a Spigot bug
+     *
+     * <p>The Spigot bug currently makes every right click of some blocks trigger twice, causing the portal to close
+     * immediately, or causing portal information printing twice. This fix should detect the bug without breaking
+     * clicking once the bug is fixed.</p>
+     *
+     * @param event <p>The event causing the right click</p>
+     * @param block <p>The block to check</p>
+     * @return <p>True if the click is a bug and should be cancelled</p>
+     */
+    private boolean clickIsBug(PlayerInteractEvent event, Block block) {
+        if (previousEvent != null &&
+                event.getPlayer() == previousEvent.getPlayer() && eventTime + 15 > System.currentTimeMillis()) {
+            previousEvent = null;
+            eventTime = 0;
+            return true;
+        }
+        previousEvent = event;
+        eventTime = System.currentTimeMillis();
+        return false;
+    }
 }
