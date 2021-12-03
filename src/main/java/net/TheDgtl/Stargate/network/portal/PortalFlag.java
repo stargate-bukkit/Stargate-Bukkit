@@ -1,6 +1,6 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import net.TheDgtl.Stargate.exception.NoFlagFound;
+import net.TheDgtl.Stargate.exception.NoFlagFoundException;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -125,7 +125,7 @@ public enum PortalFlag {
         for (char character : charArray) {
             try {
                 foundFlags.add(PortalFlag.valueOf(character));
-            } catch (NoFlagFound ignored) {
+            } catch (NoFlagFoundException ignored) {
             }
         }
         return foundFlags;
@@ -136,9 +136,9 @@ public enum PortalFlag {
      *
      * @param label <p>A character representing a portal flag</p>
      * @return <p>The portal flag represented by the character</p>
-     * @throws NoFlagFound <p>If unable to find a matching flag</p>
+     * @throws NoFlagFoundException <p>If unable to find a matching flag</p>
      */
-    public static PortalFlag valueOf(char label) throws NoFlagFound {
+    public static PortalFlag valueOf(char label) throws NoFlagFoundException {
         if (map.isEmpty()) {
             for (PortalFlag flag : values()) {
                 map.put(flag.characterRepresentation, flag);
@@ -149,7 +149,7 @@ public enum PortalFlag {
         if (flag != null) {
             return flag;
         } else {
-            throw new NoFlagFound();
+            throw new NoFlagFoundException();
         }
     }
 

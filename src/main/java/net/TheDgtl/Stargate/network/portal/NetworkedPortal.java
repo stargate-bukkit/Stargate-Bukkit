@@ -8,9 +8,9 @@ import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.event.StargateActivateEvent;
 import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
-import net.TheDgtl.Stargate.exception.GateConflict;
-import net.TheDgtl.Stargate.exception.NameError;
-import net.TheDgtl.Stargate.exception.NoFormatFound;
+import net.TheDgtl.Stargate.exception.GateConflictException;
+import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
@@ -40,7 +40,7 @@ public class NetworkedPortal extends Portal {
     private static final int ACTIVE_DELAY = 15; // seconds
 
     public NetworkedPortal(Network network, String name, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
-            throws NoFormatFound, GateConflict, NameError {
+            throws NoFormatFoundException, GateConflictException, NameErrorException {
         super(network, name, sign, flags, ownerUUID);
     }
 

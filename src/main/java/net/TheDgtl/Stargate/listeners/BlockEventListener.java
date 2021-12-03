@@ -1,6 +1,6 @@
 package net.TheDgtl.Stargate.listeners;
 
-import net.TheDgtl.Stargate.Bypass;
+import net.TheDgtl.Stargate.BypassPermission;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Settings;
@@ -9,9 +9,9 @@ import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.SupplierAction;
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateDestroyEvent;
-import net.TheDgtl.Stargate.exception.GateConflict;
-import net.TheDgtl.Stargate.exception.NameError;
-import net.TheDgtl.Stargate.exception.NoFormatFound;
+import net.TheDgtl.Stargate.exception.GateConflictException;
+import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
@@ -81,7 +81,7 @@ public class BlockEventListener implements Listener {
     }
 
     private boolean shouldChargePlayer(Player player, IPortal portal) {
-        if (player.hasPermission(Bypass.COST_CREATE.getPermissionString()))
+        if (player.hasPermission(BypassPermission.COST_CREATE.getPermissionString()))
             return false;
 
         return Settings.getBoolean(Setting.CHARGE_FREE_DESTINATION)
@@ -122,7 +122,7 @@ public class BlockEventListener implements Listener {
         try {
             finalNetworkName = compileNetworkName(network, flags, player, permissionManager);
             selectedNet = selectNetwork(finalNetworkName, flags);
-        } catch (NameError e2) {
+        } catch (NameErrorException e2) {
             errorMessage = e2.getErrorMessage();
         }
 
@@ -156,11 +156,11 @@ public class BlockEventListener implements Listener {
             selectedNet.updatePortals();
             Stargate.log(Level.FINE, "A Gate format matches");
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE, false));
-        } catch (NoFormatFound e) {
+        } catch (NoFormatFoundException e) {
             Stargate.log(Level.FINE, "No Gate format matches");
-        } catch (GateConflict e) {
+        } catch (GateConflictException e) {
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.GATE_CONFLICT, true));
-        } catch (NameError e) {
+        } catch (NameErrorException e) {
             player.sendMessage(Stargate.languageManager.getMessage(e.getErrorMessage(), true));
         }
     }
@@ -173,9 +173,9 @@ public class BlockEventListener implements Listener {
      * @param player
      * @param permissionManager
      * @return
-     * @throws NameError
+     * @throws NameErrorException
      */
-    private String compileNetworkName(String initialNetworkName, EnumSet<PortalFlag> flags, Player player, PermissionManager permissionManager) throws NameError {
+    private String compileNetworkName(String initialNetworkName, EnumSet<PortalFlag> flags, Player player, PermissionManager permissionManager) throws NameErrorException {
         if (initialNetworkName.endsWith("]") && initialNetworkName.startsWith("[")) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
             return initialNetworkName.substring(1, initialNetworkName.length() - 1);
@@ -188,7 +188,7 @@ public class BlockEventListener implements Listener {
             Player possiblePlayer = Bukkit.getPlayer(possiblePlayerName);
             if (possiblePlayer != null)
                 return possiblePlayer.getUniqueId().toString();
-            throw new NameError(TranslatableMessage.INVALID_NAME);
+            throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         }
 
         if (!permissionManager.canCreateInNetwork(initialNetworkName) || initialNetworkName.trim().isEmpty()) {
@@ -215,10 +215,10 @@ public class BlockEventListener implements Listener {
         return initialNetworkName;
     }
 
-    private Network selectNetwork(String name, EnumSet<PortalFlag> flags) throws NameError {
+    private Network selectNetwork(String name, EnumSet<PortalFlag> flags) throws NameErrorException {
         try {
             Stargate.factory.createNetwork(name, flags);
-        } catch (NameError e1) {
+        } catch (NameErrorException e1) {
             TranslatableMessage msg = e1.getErrorMessage();
             if (msg != null) {
                 throw e1;

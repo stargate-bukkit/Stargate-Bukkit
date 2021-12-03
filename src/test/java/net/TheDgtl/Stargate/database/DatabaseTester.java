@@ -4,7 +4,7 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.exception.NameError;
+import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.FakePortalGenerator;
@@ -72,7 +72,7 @@ public class DatabaseTester {
         Network testNetwork = null;
         try {
             testNetwork = new Network("test", database, generator);
-        } catch (NameError e) {
+        } catch (NameErrorException e) {
             e.printStackTrace();
         }
         FakePortalGenerator portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);

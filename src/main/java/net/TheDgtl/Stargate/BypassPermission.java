@@ -7,7 +7,7 @@ import java.util.EnumSet;
 /**
  * This enum represents the different permissions used to bypass various protections
  */
-public enum Bypass {
+public enum BypassPermission {
 
     /**
      * The ability to bypass the cost of using stargates
@@ -47,7 +47,7 @@ public enum Bypass {
      *
      * @param permissionString <p>The permission string used for this protection bypass</p>
      */
-    Bypass(String permissionString) {
+    BypassPermission(String permissionString) {
         this.permissionString = permissionString;
     }
 
@@ -57,15 +57,15 @@ public enum Bypass {
      * @param player <p>The player to check</p>
      * @return <p>All protection the player can bypass</p>
      */
-    public EnumSet<Bypass> getProtectionBypasses(Player player) {
+    public EnumSet<BypassPermission> getProtectionBypasses(Player player) {
         //TODO: Use or remove this method
-        EnumSet<Bypass> allowedBypasses = EnumSet.noneOf(Bypass.class);
-        for (Bypass bypass : values()) {
-            if (player.hasPermission(bypass.permissionString)) {
-                allowedBypasses.add(bypass);
+        EnumSet<BypassPermission> allowedBypassPermissions = EnumSet.noneOf(BypassPermission.class);
+        for (BypassPermission bypassPermission : values()) {
+            if (player.hasPermission(bypassPermission.permissionString)) {
+                allowedBypassPermissions.add(bypassPermission);
             }
         }
-        return allowedBypasses;
+        return allowedBypassPermissions;
     }
 
     /**

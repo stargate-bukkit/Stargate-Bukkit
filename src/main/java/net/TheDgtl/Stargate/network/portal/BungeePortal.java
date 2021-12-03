@@ -1,10 +1,10 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import net.TheDgtl.Stargate.Channel;
+import net.TheDgtl.Stargate.PluginChannel;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.exception.GateConflict;
-import net.TheDgtl.Stargate.exception.NameError;
-import net.TheDgtl.Stargate.exception.NoFormatFound;
+import net.TheDgtl.Stargate.exception.GateConflictException;
+import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -26,7 +26,7 @@ public class BungeePortal extends Portal {
     static {
         try {
             LEGACY_NETWORK = new Network("§§§§§§#BUNGEE#§§§§§§", null, null);
-        } catch (NameError e) {
+        } catch (NameErrorException e) {
             e.printStackTrace();
         }
     }
@@ -40,7 +40,7 @@ public class BungeePortal extends Portal {
     private final String serverDestination;
 
     BungeePortal(Network network, String name, String destination, String serverDestination, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
-            throws NameError, NoFormatFound, GateConflict {
+            throws NameErrorException, NoFormatFoundException, GateConflictException {
         super(network, name, sign, flags, ownerUUID);
 
         /*
@@ -98,13 +98,13 @@ public class BungeePortal extends Portal {
             try {
                 ByteArrayOutputStream bao = new ByteArrayOutputStream();
                 DataOutputStream msgData = new DataOutputStream(bao);
-                msgData.writeUTF(Channel.FORWARD.getChannel());
+                msgData.writeUTF(PluginChannel.FORWARD.getChannel());
                 msgData.writeUTF(server);
-                msgData.writeUTF(Channel.LEGACY_BUNGEE.getChannel());
+                msgData.writeUTF(PluginChannel.LEGACY_BUNGEE.getChannel());
                 String msg = player.getName() + "#@#" + destination.getName();
                 msgData.writeUTF(msg);
                 Stargate.log(Level.FINEST, bao.toString());
-                player.sendPluginMessage(plugin, Channel.BUNGEE.getChannel(), bao.toByteArray());
+                player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), bao.toByteArray());
             } catch (IOException ex) {
                 Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord teleport packet");
                 ex.printStackTrace();
@@ -114,9 +114,9 @@ public class BungeePortal extends Portal {
             try {
                 ByteArrayOutputStream bao = new ByteArrayOutputStream();
                 DataOutputStream msgData = new DataOutputStream(bao);
-                msgData.writeUTF(Channel.PLAYER_CONNECT.getChannel());
+                msgData.writeUTF(PluginChannel.PLAYER_CONNECT.getChannel());
                 msgData.writeUTF(server);
-                player.sendPluginMessage(plugin, Channel.BUNGEE.getChannel(), bao.toByteArray());
+                player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), bao.toByteArray());
             } catch (IOException ex) {
                 Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord connect packet");
                 ex.printStackTrace();

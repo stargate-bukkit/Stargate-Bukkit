@@ -1,7 +1,7 @@
 package net.TheDgtl.Stargate.vectorlogic;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.exception.InvalidStructure;
+import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import org.bukkit.Axis;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
@@ -26,9 +26,9 @@ public class VectorOperation {
      * Instantiates a vector operation which matches with the direction of a sign
      *
      * @param signFace <p>The sign face of a gate's sign</p>
-     * @throws InvalidStructure <p>If given a sign face which is not one of EAST, SOUTH, WEST or NORTH</p>
+     * @throws InvalidStructureException <p>If given a sign face which is not one of EAST, SOUTH, WEST or NORTH</p>
      */
-    public VectorOperation(BlockFace signFace) throws InvalidStructure {
+    public VectorOperation(BlockFace signFace) throws InvalidStructureException {
         double rotation;
 
         switch (signFace) {
@@ -49,7 +49,7 @@ public class VectorOperation {
                 irisNormal = Axis.X;
                 break;
             default:
-                throw new InvalidStructure();
+                throw new InvalidStructureException();
         }
 
         this.facing = signFace;

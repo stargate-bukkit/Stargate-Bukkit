@@ -9,9 +9,9 @@ import net.TheDgtl.Stargate.database.MySqlDatabase;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.database.TableNameConfig;
-import net.TheDgtl.Stargate.exception.GateConflict;
-import net.TheDgtl.Stargate.exception.NameError;
-import net.TheDgtl.Stargate.exception.NoFormatFound;
+import net.TheDgtl.Stargate.exception.GateConflictException;
+import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -210,7 +210,7 @@ public class StargateFactory {
 
             try {
                 createNetwork(targetNet, flags);
-            } catch (NameError ignored) {
+            } catch (NameErrorException ignored) {
             }
             Network net = getNetwork(targetNet, isBungee);
 
@@ -245,8 +245,8 @@ public class StargateFactory {
                 if (isBungee) {
                     setInterServerPortalOnlineStatus(portal, true);
                 }
-            } catch (GateConflict | NoFormatFound ignored) {
-            } catch (NameError e) {
+            } catch (GateConflictException | NoFormatFoundException ignored) {
+            } catch (NameErrorException e) {
                 e.printStackTrace();
             }
         }
@@ -290,9 +290,9 @@ public class StargateFactory {
         }
     }
 
-    public void createNetwork(String netName, EnumSet<PortalFlag> flags) throws NameError {
+    public void createNetwork(String netName, EnumSet<PortalFlag> flags) throws NameErrorException {
         if (netExists(netName, flags.contains(PortalFlag.FANCY_INTER_SERVER)))
-            throw new NameError(null);
+            throw new NameErrorException(null);
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             InterServerNetwork net = new InterServerNetwork(netName, database, sqlMaker);
             String netHash = net.getName().toLowerCase();

@@ -197,8 +197,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         if (Settings.getBoolean(Setting.USING_BUNGEE)) {
             Messenger msgr = Bukkit.getMessenger();
 
-            msgr.registerOutgoingPluginChannel(this, Channel.BUNGEE.getChannel());
-            msgr.registerIncomingPluginChannel(this, Channel.BUNGEE.getChannel(), new StargateBungeePluginMessageListener(this));
+            msgr.registerOutgoingPluginChannel(this, PluginChannel.BUNGEE.getChannel());
+            msgr.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(), new StargateBungeePluginMessageListener(this));
         }
     }
 

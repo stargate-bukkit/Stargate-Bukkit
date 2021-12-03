@@ -2,9 +2,9 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.exception.GateConflict;
-import net.TheDgtl.Stargate.exception.NameError;
-import net.TheDgtl.Stargate.exception.NoFormatFound;
+import net.TheDgtl.Stargate.exception.GateConflictException;
+import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -20,7 +20,7 @@ public class FixedPortal extends Portal {
     String destinationName;
 
     public FixedPortal(Network network, String name, String destinationName, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
-            throws NoFormatFound, GateConflict, NameError {
+            throws NoFormatFoundException, GateConflictException, NameErrorException {
         super(network, name, sign, flags, ownerUUID);
         this.destinationName = destinationName;
     }

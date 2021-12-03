@@ -1,13 +1,13 @@
 package net.TheDgtl.Stargate.network;
 
-import net.TheDgtl.Stargate.Bypass;
+import net.TheDgtl.Stargate.BypassPermission;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
-import net.TheDgtl.Stargate.exception.NameError;
+import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.NameSurround;
@@ -39,9 +39,9 @@ public class Network {
 
     final static EnumMap<GateStructureType, HashMap<SGLocation, Portal>> portalFromPartsMap = new EnumMap<>(GateStructureType.class);
 
-    public Network(String name, Database database, SQLQueryGenerator sqlMaker) throws NameError {
+    public Network(String name, Database database, SQLQueryGenerator sqlMaker) throws NameErrorException {
         if (name.trim().isEmpty() || (name.length() == Stargate.MAX_TEXT_LENGTH))
-            throw new NameError(TranslatableMessage.INVALID_NAME);
+            throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         this.name = name;
         this.database = database;
         this.sqlMaker = sqlMaker;
@@ -216,10 +216,10 @@ public class Network {
             for (String portalName : tempPortalList) {
                 IPortal target = getPortal(portalName);
                 if (target.hasFlag(PortalFlag.HIDDEN)
-                        && (actor != null && !actor.hasPermission(Bypass.HIDDEN.getPermissionString())))
+                        && (actor != null && !actor.hasPermission(BypassPermission.HIDDEN.getPermissionString())))
                     removeList.add(portalName);
                 if (target.hasFlag(PortalFlag.PRIVATE) && actor != null
-                        && !actor.hasPermission(Bypass.PRIVATE.getPermissionString())
+                        && !actor.hasPermission(BypassPermission.PRIVATE.getPermissionString())
                         && !actor.getUniqueId().equals(target.getOwnerUUID()))
                     removeList.add(portalName);
             }

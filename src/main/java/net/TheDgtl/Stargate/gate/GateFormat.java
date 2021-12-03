@@ -1,7 +1,7 @@
 package net.TheDgtl.Stargate.gate;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.exception.ParsingError;
+import net.TheDgtl.Stargate.exception.ParsingErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateControlBlock;
 import net.TheDgtl.Stargate.gate.structure.GateFrame;
 import net.TheDgtl.Stargate.gate.structure.GateIris;
@@ -86,13 +86,13 @@ public class GateFormat {
         try (Scanner scanner = new Scanner(file)) {
             Stargate.log(Level.FINEST, "fileSpace:" + file.length());
             if (file.length() > 65536L) {
-                throw new ParsingError("Design is too large");
+                throw new ParsingErrorException("Design is too large");
             }
 
             GateFormatParser gateParser = new GateFormatParser(scanner, file.getName());
             GateFormat format = gateParser.parse();
             addGateFormat(controlToGateMap, format, gateParser.getControlBlockMaterials());
-        } catch (FileNotFoundException | ParsingError e) {
+        } catch (FileNotFoundException | ParsingErrorException e) {
             Stargate.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - " + e.getMessage());
         }
     }

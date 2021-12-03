@@ -1,6 +1,6 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import net.TheDgtl.Stargate.Bypass;
+import net.TheDgtl.Stargate.BypassPermission;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Settings;
@@ -9,10 +9,10 @@ import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.SupplierAction;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
-import net.TheDgtl.Stargate.exception.GateConflict;
-import net.TheDgtl.Stargate.exception.InvalidStructure;
-import net.TheDgtl.Stargate.exception.NameError;
-import net.TheDgtl.Stargate.exception.NoFormatFound;
+import net.TheDgtl.Stargate.exception.GateConflictException;
+import net.TheDgtl.Stargate.exception.InvalidStructureException;
+import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
@@ -69,14 +69,14 @@ public abstract class Portal implements IPortal {
 
 
     Portal(Network network, String name, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
-            throws NameError, NoFormatFound, GateConflict {
+            throws NameErrorException, NoFormatFoundException, GateConflictException {
         this.ownerUUID = ownerUUID;
         this.network = network;
         this.name = name;
         this.flags = flags;
 
         if (!(Tag.WALL_SIGNS.isTagged(sign.getType()))) {
-            throw new NoFormatFound();
+            throw new NoFormatFoundException();
         }
         /*
          * Get the block behind the sign; the material of that block is stored in a
@@ -88,9 +88,9 @@ public abstract class Portal implements IPortal {
         setGate(FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing()));
 
         if (name.trim().isEmpty() || (name.length() == Stargate.MAX_TEXT_LENGTH))
-            throw new NameError(TranslatableMessage.INVALID_NAME);
+            throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         if (this.network.isPortalNameTaken(name)) {
-            throw new NameError(TranslatableMessage.ALREADY_EXIST);
+            throw new NameErrorException(TranslatableMessage.ALREADY_EXIST);
         }
 
         this.colorDrawer = new PortalColorParser((Sign) getSignPos().getBlock().getState());
@@ -116,20 +116,20 @@ public abstract class Portal implements IPortal {
      * @param signLocation
      * @param signFacing
      * @return A gate with matching format
-     * @throws NoFormatFound
-     * @throws GateConflict
+     * @throws NoFormatFoundException
+     * @throws GateConflictException
      */
     private Gate FindMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing)
-            throws NoFormatFound, GateConflict {
+            throws NoFormatFoundException, GateConflictException {
         Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
         for (GateFormat gateFormat : gateFormats) {
             Stargate.log(Level.FINE, "--------- " + gateFormat.name + " ---------");
             try {
                 return new Gate(gateFormat, signLocation, signFacing, this);
-            } catch (InvalidStructure ignored) {
+            } catch (InvalidStructureException ignored) {
             }
         }
-        throw new NoFormatFound();
+        throw new NoFormatFoundException();
     }
 
     public HashMap<SGLocation, Portal> generateLocationHashMap(List<SGLocation> locations) {
@@ -322,7 +322,7 @@ public abstract class Portal implements IPortal {
             }
 
             boolean shouldCharge = !(this.hasFlag(PortalFlag.FREE) || origin.hasFlag(PortalFlag.FREE))
-                    && target instanceof Player && !target.hasPermission(Bypass.COST_USE.getPermissionString());
+                    && target instanceof Player && !target.hasPermission(BypassPermission.COST_USE.getPermissionString());
             useCost = shouldCharge ? Settings.getInteger(Setting.USE_COST) : 0;
         }
 
@@ -351,7 +351,7 @@ public abstract class Portal implements IPortal {
     }
 
     public static IPortal createPortalFromSign(Network net, String[] lines, Block block, EnumSet<PortalFlag> flags, UUID ownerUUID)
-            throws NameError, NoFormatFound, GateConflict {
+            throws NameErrorException, NoFormatFoundException, GateConflictException {
         if (flags.contains(PortalFlag.BUNGEE))
             return new BungeePortal(net, lines[0], lines[1], lines[2], block, flags, ownerUUID);
         if (flags.contains(PortalFlag.RANDOM))

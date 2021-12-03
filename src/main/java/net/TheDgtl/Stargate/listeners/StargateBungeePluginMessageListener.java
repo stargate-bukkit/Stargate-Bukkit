@@ -20,14 +20,14 @@ package net.TheDgtl.Stargate.listeners;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.TheDgtl.Stargate.Channel;
+import net.TheDgtl.Stargate.PluginChannel;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateProtocolProperty;
 import net.TheDgtl.Stargate.StargateProtocolRequestType;
 import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.exception.NameError;
+import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.InterServerNetwork;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
@@ -87,7 +87,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         try {
             DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
             String subChannel = in.readUTF();
-            switch (Channel.parse(subChannel)) {
+            switch (PluginChannel.parse(subChannel)) {
                 case GET_SERVER:
                     Stargate.serverName = in.readUTF();
                     Stargate.knowsServerName = !Stargate.serverName.isEmpty();
@@ -166,7 +166,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
         try {
             Stargate.factory.createNetwork(network, flags);
-        } catch (NameError e) {
+        } catch (NameErrorException e) {
         }
 
         InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.factory.getNetwork(network, true);
