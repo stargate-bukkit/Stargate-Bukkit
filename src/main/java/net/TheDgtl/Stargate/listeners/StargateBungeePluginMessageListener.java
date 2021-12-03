@@ -27,6 +27,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateProtocolProperty;
 import net.TheDgtl.Stargate.StargateProtocolRequestType;
 import net.TheDgtl.Stargate.TranslatableMessage;
+import net.TheDgtl.Stargate.exception.NameError;
 import net.TheDgtl.Stargate.network.InterServerNetwork;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
@@ -39,6 +40,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -159,10 +161,15 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
         String network = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
         String server = json.get(StargateProtocolProperty.SERVER.toString()).getAsString();
-        String flags = json.get(StargateProtocolProperty.PORTAL_FLAG.toString()).getAsString();
+        EnumSet<PortalFlag> flags =  PortalFlag.parseFlags( json.get(StargateProtocolProperty.PORTAL_FLAG.toString()).getAsString() );
         UUID ownerUUID = UUID.fromString(json.get(StargateProtocolProperty.OWNER.toString()).getAsString());
+        
+        try {
+            Stargate.factory.createNetwork(network, flags);
+        } catch (NameError e) {}
+        
         InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.factory.getNetwork(network, true);
-        VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, PortalFlag.parseFlags(flags), ownerUUID);
+        VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
 
         switch (requestType) {
             case PORTAL_ADD:
