@@ -2,7 +2,6 @@ package net.TheDgtl.Stargate.database;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import net.TheDgtl.Stargate.FakeStargate;
-import net.TheDgtl.Stargate.exception.NameError;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -17,9 +16,10 @@ public class MySQLDatabaseTest {
 
     private static DatabaseTester tester;
     private static TableNameConfig nameConfig;
+    private static Database database;
 
     @BeforeAll
-    public static void setUp() throws SQLException, NameError {
+    public static void setUp() throws SQLException {
         System.out.println("Setting up test data");
         DriverEnum driver = DriverEnum.MARIADB;
         String address = "LOCALHOST";
@@ -32,14 +32,17 @@ public class MySQLDatabaseTest {
         MySQLDatabaseTest.nameConfig = new TableNameConfig("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DriverEnum.MYSQL);
         tester = new DatabaseTester(database, nameConfig, generator, true);
-
+        MySQLDatabaseTest.database = database;
     }
 
     @AfterAll
     public static void tearDown() throws SQLException {
-        DatabaseTester.deleteAllTables(nameConfig);
         MockBukkit.unmock();
-        System.out.println("Tearing down test data");
+        try {
+            DatabaseTester.deleteAllTables(nameConfig);
+        } finally {
+            database.getConnection().close();
+        }
     }
 
     @Test
