@@ -14,7 +14,6 @@ import org.bukkit.util.BlockVector;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -24,15 +23,27 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 
+/**
+ * A representation of a gate's format, including all its structures
+ */
 public class GateFormat {
+
     public static Map<Material, List<GateFormat>> controlMaterialFormatsMap;
-    public final EnumMap<GateStructureType, GateStructure> portalParts;
+    public final Map<GateStructureType, GateStructure> portalParts;
 
     public final String name;
     public final boolean isIronDoorBlockable;
 
-    public GateFormat(GateIris iris, GateFrame frame, GateControlBlock controlBlocks, Map<String, String> config,
-                      String name, boolean isIronDoorBlockable) {
+    /**
+     * Instantiates a new gate format
+     *
+     * @param iris                <p>The format's iris structure</p>
+     * @param frame               <p>The format's frame structure</p>
+     * @param controlBlocks       <p>The format's control block structure</p>
+     * @param name                <p>The name of the new gate format</p>
+     * @param isIronDoorBlockable <p>Whether the gate format's iris can be blocked by a single iron door</p>
+     */
+    public GateFormat(GateIris iris, GateFrame frame, GateControlBlock controlBlocks, String name, boolean isIronDoorBlockable) {
         portalParts = new EnumMap<>(GateStructureType.class);
         portalParts.put(GateStructureType.IRIS, iris);
         portalParts.put(GateStructureType.FRAME, frame);
@@ -42,34 +53,33 @@ public class GateFormat {
     }
 
     /**
-     * Checks through every structure in the format, and checks whether they are
-     * valid
+     * Checks if the structure of a physical stargate matches this one
      *
-     * @param converter
-     * @param loc
-     * @return true if all structures are valid
+     * @param converter <p></p>
+     * @param topLeft   <p>The top-left location of the physical stargate to match</p>
+     * @return <p>True if the stargate matches this format</p>
      */
-    public boolean matches(VectorOperation converter, Location loc) {
-        for (GateStructureType structKey : portalParts.keySet()) {
-            Stargate.log(Level.FINER, "---Validating " + structKey);
-            if (!(portalParts.get(structKey).isValidState(converter, loc))) {
-                Stargate.log(Level.INFO, structKey + " returned negative");
+    public boolean matches(VectorOperation converter, Location topLeft) {
+        for (GateStructureType structureType : portalParts.keySet()) {
+            Stargate.log(Level.FINER, "---Validating " + structureType);
+            if (!(portalParts.get(structureType).isValidState(converter, topLeft))) {
+                Stargate.log(Level.INFO, structureType + " returned negative");
                 return false;
             }
         }
         return true;
     }
 
-    private static class StargateFilenameFilter implements FilenameFilter {
-        public boolean accept(File dir, String name) {
-            return name.endsWith(".gate");
-        }
-    }
-
+    /**
+     * Loads all gate formats from the gate folder
+     *
+     * @param gateFolder <p>The folder to load gates from</p>
+     * @return <p>A map between a control block material and the corresponding gate format</p>
+     */
     public static Map<Material, List<GateFormat>> loadGateFormats(String gateFolder) {
         Map<Material, List<GateFormat>> controlToGateMap = new HashMap<>();
         File dir = new File(gateFolder);
-        File[] files = dir.exists() ? dir.listFiles(new StargateFilenameFilter()) : new File[0];
+        File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".gate")) : new File[0];
 
         if (files == null) {
             return null;
@@ -81,6 +91,12 @@ public class GateFormat {
         return controlToGateMap;
     }
 
+    /**
+     * Loads the given gate format file
+     *
+     * @param file             <p>The gate format file to load</p>
+     * @param controlToGateMap <p>The mapping between control blocks and gate formats to save to</p>
+     */
     private static void loadGateFormat(File file, Map<Material, List<GateFormat>> controlToGateMap) {
         Stargate.log(Level.FINE, "Reading gateFormat from " + file.getName());
         try (Scanner scanner = new Scanner(file)) {
@@ -97,38 +113,67 @@ public class GateFormat {
         }
     }
 
-    private static void addGateFormat(Map<Material, List<GateFormat>> register, GateFormat format,
+    /**
+     * Adds a new gate format
+     *
+     * @param controlToGateMap <p>The map of registered control block material to gate format mapping</p>
+     * @param format           <p>The gate format to register</p>
+     * @param controlMaterials <p>The allowed control block materials for the new gate format</p>
+     */
+    private static void addGateFormat(Map<Material, List<GateFormat>> controlToGateMap, GateFormat format,
                                       Set<Material> controlMaterials) {
-        for (Material mat : controlMaterials) {
-            if (!(register.containsKey(mat))) {
+        for (Material controlMaterial : controlMaterials) {
+            //Add an empty list if the material has no entry
+            if (!(controlToGateMap.containsKey(controlMaterial))) {
                 List<GateFormat> gateFormatList = new ArrayList<>();
-                register.put(mat, gateFormatList);
+                controlToGateMap.put(controlMaterial, gateFormatList);
             }
-            register.get(mat).add(format);
+            controlToGateMap.get(controlMaterial).add(format);
         }
     }
 
-    public static List<GateFormat> getPossibleGatesFromControlBlockMaterial(Material controlBlockId) {
-        List<GateFormat> possibleGates = controlMaterialFormatsMap.get(controlBlockId);
-        if (possibleGates == null)
+    /**
+     * Gets all gate format using the given control block material
+     *
+     * @param signParentBlockMaterial <p>The material of a placed sign's parent block</p>
+     * @return <p>All gate formats using the given control block</p>
+     */
+    public static List<GateFormat> getPossibleGateFormatsFromControlBlockMaterial(Material signParentBlockMaterial) {
+        List<GateFormat> possibleGates = controlMaterialFormatsMap.get(signParentBlockMaterial);
+        if (possibleGates == null) {
             return new ArrayList<>();
+        }
         return possibleGates;
 
     }
 
+    /**
+     * Gets the locations of this gate format's control blocks
+     *
+     * @return <p>The locations of this gate format's control blocks</p>
+     */
     public List<BlockVector> getControlBlocks() {
         GateControlBlock controlBlocks = (GateControlBlock) portalParts.get(GateStructureType.CONTROL_BLOCK);
-
         return controlBlocks.getStructureTypePositions();
     }
 
-    public Material getIrisMat(boolean isOpen) {
-        return ((GateIris) portalParts.get(GateStructureType.IRIS)).getMaterial(isOpen);
+    /**
+     * Gets the material used for this gate format's iris when in the given state
+     *
+     * @param getOpenMaterial <p>Whether to get the open-material or the closed-material</p>
+     * @return <p>The material used for this gate format's iris</p>
+     */
+    public Material getIrisMaterial(boolean getOpenMaterial) {
+        return ((GateIris) portalParts.get(GateStructureType.IRIS)).getMaterial(getOpenMaterial);
     }
 
+    /**
+     * Gets this gate format's exit block
+     *
+     * @return <p>This gate format's exit block</p>
+     */
     public BlockVector getExit() {
         return ((GateIris) portalParts.get(GateStructureType.IRIS)).getExit();
     }
-
 
 }
