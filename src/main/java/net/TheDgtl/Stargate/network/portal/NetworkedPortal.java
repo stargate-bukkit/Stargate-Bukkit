@@ -60,7 +60,7 @@ public class NetworkedPortal extends Portal {
         if (selectedDestination == NO_DESTINATION_SELECTED || destinations.size() < 2) {
             selectedDestination = getNextDestination(1, -1);
         } else if (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK) {
-            int step = (action == Action.RIGHT_CLICK_BLOCK) ? -1 : 1;
+            int step = (action == Action.RIGHT_CLICK_BLOCK) ? 1 : -1;
             selectedDestination = getNextDestination(step, selectedDestination);
         }
         drawControlMechanism();
