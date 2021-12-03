@@ -121,10 +121,10 @@ public class StargateFactory {
         PreparedStatement flagStatement = sqlMaker.generateCreateFlagTableStatement(connection);
         runStatement(flagStatement);
         addMissingFlags(connection, sqlMaker);
-        
+
         PreparedStatement serverInfoStatement = sqlMaker.generateCreateServerInfoTableStatement(connection);
         runStatement(serverInfoStatement);
-        
+
         PreparedStatement lastKnownNameStatement = sqlMaker.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);
         PreparedStatement portalRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(connection, PortalType.LOCAL);
@@ -187,6 +187,10 @@ public class StargateFactory {
             }
 
             String destination = set.getString("destination");
+            //Make sure to treat no destination as empty, not a null string
+            if (set.wasNull()) {
+                destination = "";
+            }
             String worldName = set.getString("world");
             int x = set.getInt("x");
             int y = set.getInt("y");
@@ -264,7 +268,7 @@ public class StargateFactory {
             for (IPortal portal : net.getAllPortals()) {
                 if (portal instanceof VirtualPortal)
                     continue;
-                PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn,Stargate.serverName,Stargate.serverUUID,PREFIX);
+                PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn, Stargate.serverName, Stargate.serverUUID, PREFIX);
                 statement.execute();
                 statement.close();
             }
