@@ -52,13 +52,13 @@ public class NetworkedPortal extends Portal {
      * @param actor
      */
     @Override
-    public Event.Result onSignClick(PlayerInteractEvent event) {
+    public void onSignClick(PlayerInteractEvent event) {
         Player actor = event.getPlayer();
         if (!actor.getUniqueId().equals(this.getOwnerUUID()) || this.isOpen())
-            return super.onSignClick(event);
+            return;
         activate(actor);
         if (destinations.size() < 1)
-            return super.onSignClick(event);
+            return;
         if (selectedDestination == NO_DESTINATION_SELECTED || destinations.size() < 2) {
             selectedDestination = getNextDestination(1, -1);
         } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
@@ -66,7 +66,7 @@ public class NetworkedPortal extends Portal {
             selectedDestination = getNextDestination(step, selectedDestination);
         }
         drawControlMechanism();
-        return super.onSignClick(event);
+        return;
     }
 
     @Override

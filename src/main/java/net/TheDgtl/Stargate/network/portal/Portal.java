@@ -6,6 +6,7 @@ import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
+import net.TheDgtl.Stargate.actions.BlockSetAction;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.SupplierAction;
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
@@ -18,6 +19,10 @@ import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.util.ColorConverter;
+
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -96,7 +101,7 @@ public abstract class Portal implements IPortal {
             throw new NameErrorException(TranslatableMessage.ALREADY_EXIST);
         }
 
-        this.colorDrawer = new PortalColorParser((Sign) getSignPos().getBlock().getState());
+        setSignColor(null);
 
         if (gate.getFormat().isIronDoorBlockable) {
             flags.add(PortalFlag.IRON_DOOR);
@@ -148,6 +153,21 @@ public abstract class Portal implements IPortal {
         return gate.getSignLoc();
     }
 
+    /**
+     * Replacement function for {@link Sign#setColor(org.bukkit.DyeColor)}, as the portal sign is an interface
+     * that is using a combination of various colors; more has to be processed
+     * @param color <p> Color to change the sign text to. If nulled, then default color will be used </p>
+     */
+    public void setSignColor(DyeColor color) {
+        Sign sign = (Sign) this.getSignPos().getBlock().getState();
+        if (color != null) {
+            sign.setColor(color);
+            Stargate.syncTickPopulator.addAction(new BlockSetAction(sign, true));
+        }
+        
+        colorDrawer = new PortalColorParser(sign.getColor(),sign.getType());
+        this.drawControlMechanism();
+    }
 
     @Override
     public void update() {
@@ -157,31 +177,7 @@ public abstract class Portal implements IPortal {
         drawControlMechanism();
     }
 
-    /**
-     * 
-     * @param action
-     * @param actor
-     * @return <p> What the result of the event</p>
-     */
-    public Event.Result onSignClick(PlayerInteractEvent event) {
-        ItemStack item = event.getItem();
-        PermissionManager permissionManager = new PermissionManager(event.getPlayer());
-        StargateCreateEvent colorSignPermission = new StargateCreateEvent(event.getPlayer(),this,new String[]{""},0);
-        if (!itemIsColor(item) || !permissionManager.hasPerm(colorSignPermission)) {
-            return Event.Result.DENY;
-        }
-        this.colorDrawer = new PortalColorParser((Sign) getSignPos().getBlock().getState());
-        this.drawControlMechanism();
-        return Event.Result.DEFAULT;
-    }
-
-    private boolean itemIsColor(ItemStack item) {
-        if(item == null)
-            return false;
-        
-        String itemName = item.getType().toString();
-        return (itemName.contains("DYE") || itemName.contains("GLOW_INK_SAC"));
-    }
+    public void onSignClick(PlayerInteractEvent event) {}
 
     public abstract void drawControlMechanism();
 
