@@ -8,7 +8,9 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simpler version of the vector operation class, but with the same functionality
@@ -16,6 +18,9 @@ import java.util.List;
  * @author Kristian
  */
 public class SimpleVectorOperation implements IVectorOperation {
+
+    private static final Map<BlockFace, List<VectorAction>> storedOperations = new HashMap<>();
+    private static final Map<BlockFace, List<VectorAction>> storedReverseOperations = new HashMap<>();
 
     private final Axis irisNormal;
     private boolean flipZAxis = false;
@@ -47,14 +52,10 @@ public class SimpleVectorOperation implements IVectorOperation {
 
         this.facing = signFace;
         this.operation = getOperation(signFace);
-        this.inverseOperation = getInverseOperation(this.operation);
+        this.inverseOperation = new ArrayList<>(storedReverseOperations.get(signFace));
     }
 
-    /**
-     * Gets the block face of a sign given upon instantiation
-     *
-     * @return <p>The block face of a sign given upon instantiation</p>
-     */
+    @Override
     public BlockFace getFacing() {
         return facing;
     }
@@ -66,12 +67,19 @@ public class SimpleVectorOperation implements IVectorOperation {
 
     @Override
     public void setFlipZAxis(boolean flipZAxis) {
-        if (flipZAxis && !this.flipZAxis) {
-            this.operation.add(VectorAction.NEGATE_Z);
-            this.inverseOperation.add(0, VectorAction.NEGATE_Z);
-        } else if (!flipZAxis == this.flipZAxis) {
-            this.operation.remove(this.operation.size() - 1);
-            this.inverseOperation.remove(0);
+        if (flipZAxis != this.flipZAxis) {
+            int lastIndex = this.operation.size() - 1;
+            if (lastIndex >= 0 && this.operation.get(lastIndex).equals(VectorAction.NEGATE_Z)) {
+                this.operation.remove(lastIndex);
+            } else {
+                this.operation.add(VectorAction.NEGATE_Z);
+            }
+            int inverseSize = inverseOperation.size();
+            if (inverseSize > 0 && this.inverseOperation.get(0).equals(VectorAction.NEGATE_Z)) {
+                this.inverseOperation.remove(0);
+            } else {
+                this.inverseOperation.add(0, VectorAction.NEGATE_Z);
+            }
         }
         this.flipZAxis = flipZAxis;
     }
@@ -99,11 +107,10 @@ public class SimpleVectorOperation implements IVectorOperation {
      */
     private Vector performOperation(Vector vector, boolean inverse) {
         if (inverse) {
-            runOperation(vector, this.inverseOperation);
+            return runOperation(vector, this.inverseOperation);
         } else {
-            runOperation(vector, this.operation);
+            return runOperation(vector, this.operation);
         }
-        return vector;
     }
 
     /**
@@ -112,7 +119,12 @@ public class SimpleVectorOperation implements IVectorOperation {
      * @param blockFace <p>The block face to rotate vector towards</p>
      * @return <p>The corresponding operation</p>
      */
-    private List<VectorAction> getOperation(BlockFace blockFace) {
+    private static List<VectorAction> getOperation(BlockFace blockFace) {
+        List<VectorAction> storedOperation = storedOperations.get(blockFace);
+        if (storedOperation != null) {
+            return new ArrayList<>(storedOperation);
+        }
+
         switch (blockFace) {
             case EAST:
                 return getEastOperation();
@@ -137,22 +149,45 @@ public class SimpleVectorOperation implements IVectorOperation {
      * @param inputVector  <p>The vector to run the operation on</p>
      * @param actionsToRun <p>The actions to run as part of the operation</p>
      */
-    private void runOperation(Vector inputVector, List<VectorAction> actionsToRun) {
+    private Vector runOperation(Vector inputVector, List<VectorAction> actionsToRun) {
+        optimizeOperation(actionsToRun);
+
         for (VectorAction action : actionsToRun) {
-            runAction(inputVector, action);
+            inputVector = runAction(inputVector, action);
         }
+        return inputVector;
     }
 
     /**
-     * Gets the reverse operation of a given operation
+     * Combines two actions into a single action
      *
-     * @param operation <p>The operation to get the reverse of</p>
-     * @return <p>The reverse of the given operation</p>
+     * @param action1 <p>The first action to combine</p>
+     * @param action2 <p>The second action to combine</p>
+     * @return <p>An action doing the same as doing the input actions in succession</p>
      */
-    private static List<VectorAction> getInverseOperation(List<VectorAction> operation) {
-        List<VectorAction> reverseOperation = new ArrayList<>(operation);
-        Collections.reverse(reverseOperation);
-        return reverseOperation;
+    private static VectorAction combineActions(VectorAction action1, VectorAction action2) {
+        if (action1 == VectorAction.NEGATE_X && action2 == VectorAction.NEGATE_Z ||
+                action1 == VectorAction.NEGATE_Z && action2 == VectorAction.NEGATE_X) {
+            return VectorAction.NEGATE_X_NEGATE_Z;
+        } else if (action1 == VectorAction.NEGATE_Z && action2 == VectorAction.SWAP_X_Z) {
+            return VectorAction.NEGATE_Z_SWAP_X_Z;
+        } else if (action1 == VectorAction.NEGATE_X && action2 == VectorAction.SWAP_X_Z) {
+            return VectorAction.NEGATE_X_SWAP_X_Z;
+        } else if (action1 == VectorAction.SWAP_X_Z && action2 == VectorAction.NEGATE_Z) {
+            return VectorAction.SWAP_X_Z_NEGATE_Z;
+        } else if (action1 == VectorAction.SWAP_X_Z && action2 == VectorAction.NEGATE_X) {
+            return VectorAction.SWAP_X_Z_NEGATE_X;
+        } else if (action1 == VectorAction.NEGATE_Z_SWAP_X_Z && action2 == VectorAction.NEGATE_Z) {
+            return VectorAction.SWAP_X_Z_NEGATE_X_Z;
+        } else if (action1 == VectorAction.NEGATE_X_SWAP_X_Z && action2 == VectorAction.NEGATE_Z) {
+            return VectorAction.SWAP_X_Z;
+        } else if (action1 == VectorAction.NEGATE_Z && action2 == VectorAction.SWAP_Y_Z) {
+            return VectorAction.NEGATE_Z_SWAP_Y_Z;
+        } else if (action1 == VectorAction.NEGATE_Y && action2 == VectorAction.SWAP_Y_Z) {
+            return VectorAction.NEGATE_Y_SWAP_Y_Z;
+        }
+
+        throw new IllegalArgumentException("No known combination of " + action1 + " and " + action2);
     }
 
     /**
@@ -160,28 +195,36 @@ public class SimpleVectorOperation implements IVectorOperation {
      *
      * @param inputVector <p>The vector to run the action on</p>
      * @param actionToRun <p>The action to run</p>
+     * @return <p>The resulting vector</p>
      */
-    private static void runAction(Vector inputVector, VectorAction actionToRun) {
+    private static Vector runAction(Vector inputVector, VectorAction actionToRun) {
         switch (actionToRun) {
             case NEGATE_Z:
-                inputVector.setZ(-inputVector.getZ());
-                break;
+                return new Vector(inputVector.getX(), inputVector.getY(), -inputVector.getZ());
             case NEGATE_X:
-                inputVector.setX(-inputVector.getX());
-                break;
+                return new Vector(-inputVector.getX(), inputVector.getY(), inputVector.getZ());
             case NEGATE_Y:
-                inputVector.setY(-inputVector.getY());
-                break;
+                return new Vector(inputVector.getX(), -inputVector.getY(), inputVector.getZ());
             case SWAP_X_Z:
-                double temp = inputVector.getX();
-                inputVector.setX(inputVector.getZ());
-                inputVector.setZ(temp);
-                break;
+                return new Vector(inputVector.getZ(), inputVector.getY(), inputVector.getX());
             case SWAP_Y_Z:
-                double temp2 = inputVector.getY();
-                inputVector.setY(inputVector.getZ());
-                inputVector.setZ(temp2);
-                break;
+                return new Vector(inputVector.getX(), inputVector.getZ(), inputVector.getY());
+            case NEGATE_X_NEGATE_Z:
+                return new Vector(-inputVector.getX(), inputVector.getY(), -inputVector.getZ());
+            case NEGATE_X_SWAP_X_Z:
+            case SWAP_X_Z_NEGATE_Z:
+                return new Vector(inputVector.getZ(), inputVector.getY(), -inputVector.getX());
+            case NEGATE_Y_SWAP_Y_Z:
+            case SWAP_Y_Z_NEGATE_Z:
+                return new Vector(inputVector.getX(), inputVector.getZ(), -inputVector.getY());
+            case NEGATE_Z_SWAP_X_Z:
+            case SWAP_X_Z_NEGATE_X:
+                return new Vector(-inputVector.getZ(), inputVector.getY(), inputVector.getX());
+            case NEGATE_Z_SWAP_Y_Z:
+            case SWAP_Y_Z_NEGATE_Y:
+                return new Vector(inputVector.getX(), -inputVector.getZ(), inputVector.getY());
+            case SWAP_X_Z_NEGATE_X_Z:
+                return new Vector(-inputVector.getZ(), inputVector.getY(), -inputVector.getX());
             default:
                 throw new IllegalArgumentException("Invalid vector action encountered");
         }
@@ -193,7 +236,9 @@ public class SimpleVectorOperation implements IVectorOperation {
      * @return <p>The required operation for rotating a vector to face east</p>
      */
     private static List<VectorAction> getEastOperation() {
-        return new ArrayList<>();
+        List<VectorAction> actions = new ArrayList<>();
+        storeOperation(actions, BlockFace.EAST);
+        return actions;
     }
 
     /**
@@ -202,9 +247,10 @@ public class SimpleVectorOperation implements IVectorOperation {
      * @return <p>The required operation for rotating a vector to face west</p>
      */
     private static List<VectorAction> getWestOperation() {
-        List<VectorAction> actions = new ArrayList<>(3);
+        List<VectorAction> actions = new ArrayList<>();
         actions.add(VectorAction.NEGATE_X);
         actions.add(VectorAction.NEGATE_Z);
+        storeOperation(actions, BlockFace.WEST);
         return actions;
     }
 
@@ -214,9 +260,10 @@ public class SimpleVectorOperation implements IVectorOperation {
      * @return <p>The required operation for rotating a vector to face south</p>
      */
     private static List<VectorAction> getSouthOperation() {
-        List<VectorAction> actions = new ArrayList<>(3);
+        List<VectorAction> actions = new ArrayList<>();
         actions.add(VectorAction.NEGATE_X);
         actions.add(VectorAction.SWAP_X_Z);
+        storeOperation(actions, BlockFace.SOUTH);
         return actions;
     }
 
@@ -226,9 +273,10 @@ public class SimpleVectorOperation implements IVectorOperation {
      * @return <p>The required operation for rotating a vector to face north</p>
      */
     private static List<VectorAction> getNorthOperation() {
-        List<VectorAction> actions = new ArrayList<>(3);
+        List<VectorAction> actions = new ArrayList<>();
         actions.add(VectorAction.NEGATE_Z);
         actions.add(VectorAction.SWAP_X_Z);
+        storeOperation(actions, BlockFace.NORTH);
         return actions;
     }
 
@@ -238,9 +286,10 @@ public class SimpleVectorOperation implements IVectorOperation {
      * @return <p>The required operation for rotating a vector to face upwards</p>
      */
     private static List<VectorAction> getUpOperation() {
-        List<VectorAction> actions = new ArrayList<>(3);
+        List<VectorAction> actions = new ArrayList<>();
         actions.add(VectorAction.NEGATE_Z);
         actions.add(VectorAction.SWAP_Y_Z);
+        storeOperation(actions, BlockFace.UP);
         return actions;
     }
 
@@ -250,10 +299,40 @@ public class SimpleVectorOperation implements IVectorOperation {
      * @return <p>The required operation for rotating a vector to face downwards</p>
      */
     private static List<VectorAction> getDownOperation() {
-        List<VectorAction> actions = new ArrayList<>(3);
+        List<VectorAction> actions = new ArrayList<>();
         actions.add(VectorAction.NEGATE_Y);
         actions.add(VectorAction.SWAP_Y_Z);
+        storeOperation(actions, BlockFace.DOWN);
         return actions;
+    }
+
+    /**
+     * Stores the given actions as the operation for the given block face
+     *
+     * @param actions   <p>The actions part of the operation</p>
+     * @param blockFace <p>The block face the operation rotates vectors towards</p>
+     */
+    private static void storeOperation(List<VectorAction> actions, BlockFace blockFace) {
+        List<VectorAction> operation = new ArrayList<>(actions);
+        storedOperations.put(blockFace, operation);
+
+        List<VectorAction> reverseOperation = new ArrayList<>(actions);
+        Collections.reverse(reverseOperation);
+        storedReverseOperations.put(blockFace, reverseOperation);
+    }
+
+    /**
+     * Optimizes an operation to just run a single action
+     *
+     * @param actionsToRun <p>The actions to run as part of the operation</p>
+     */
+    private static void optimizeOperation(List<VectorAction> actionsToRun) {
+        while (actionsToRun.size() >= 2) {
+            VectorAction combinedAction = combineActions(actionsToRun.get(0), actionsToRun.get(1));
+            actionsToRun.remove(0);
+            actionsToRun.remove(0);
+            actionsToRun.add(0, combinedAction);
+        }
     }
 
 }
