@@ -59,25 +59,25 @@ public class VectorOperationTest {
     @Test
     public void rotateEastInverseTest() throws InvalidStructureException {
         IVectorOperation operation = new VectorOperation(BlockFace.EAST, new FakeStargate());
-        vectorOperationTester.rotateEastInverseTest(operation);
+        vectorOperationTester.inverseOperationTest(operation);
     }
 
     @Test
     public void rotateWestInverseTest() throws InvalidStructureException {
         IVectorOperation operation = new VectorOperation(BlockFace.WEST, new FakeStargate());
-        vectorOperationTester.rotateWestInverseTest(operation);
+        vectorOperationTester.inverseOperationTest(operation);
     }
 
     @Test
     public void rotateSouthInverseTest() throws InvalidStructureException {
         IVectorOperation operation = new VectorOperation(BlockFace.SOUTH, new FakeStargate());
-        vectorOperationTester.rotateSouthInverseTest(operation);
+        vectorOperationTester.inverseOperationTest(operation);
     }
 
     @Test
     public void rotateNorthInverseTest() throws InvalidStructureException {
         IVectorOperation operation = new VectorOperation(BlockFace.NORTH, new FakeStargate());
-        vectorOperationTester.rotateNorthInverseTest(operation);
+        vectorOperationTester.inverseOperationTest(operation);
     }
 
     @Test

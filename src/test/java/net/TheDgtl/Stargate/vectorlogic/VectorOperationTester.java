@@ -41,10 +41,6 @@ public class VectorOperationTester {
         testSouthRotation(operation, false);
     }
 
-    public void rotateNorthInverseTest(IVectorOperation operation) {
-        testSouthRotation(operation, true);
-    }
-
     /**
      * Tests a southwards vector-rotation
      *
@@ -63,10 +59,6 @@ public class VectorOperationTester {
         testWestRotation(operation, false);
     }
 
-    public void rotateEastInverseTest(IVectorOperation operation) {
-        testWestRotation(operation, true);
-    }
-
     /**
      * Tests a westwards vector-rotation
      *
@@ -81,20 +73,16 @@ public class VectorOperationTester {
         }
     }
 
-    public void rotateWestInverseTest(IVectorOperation operation) {
-        for (Vector vector : testVectors) {
-            Vector newVector = operation.performInverseOperation(vector);
-            Vector rotatedVector = new Vector(vector.getX(), vector.getY(), vector.getZ());
-            Assertions.assertEquals(rotatedVector, newVector);
+    public void inverseOperationTest(IVectorOperation operation) {
+        for (Vector vector: testVectors) {
+            Vector operatedVector = operation.performOperation(vector);
+            Vector inverseOperatedVector = operation.performInverseOperation(operatedVector);
+            Assertions.assertEquals(inverseOperatedVector, vector);
         }
     }
 
     public void rotateNorthTest(IVectorOperation operation) {
         testNorthRotation(operation, false);
-    }
-
-    public void rotateSouthInverseTest(IVectorOperation operation) {
-        testNorthRotation(operation, true);
     }
 
     /**

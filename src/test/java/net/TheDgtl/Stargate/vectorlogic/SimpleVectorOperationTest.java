@@ -70,25 +70,25 @@ public class SimpleVectorOperationTest {
     @Test
     public void rotateEastInverseTest() throws InvalidStructureException {
         IVectorOperation operation = new SimpleVectorOperation(BlockFace.EAST);
-        vectorOperationTester.rotateEastInverseTest(operation);
+        vectorOperationTester.inverseOperationTest(operation);
     }
 
     @Test
     public void rotateWestInverseTest() throws InvalidStructureException {
         IVectorOperation operation = new SimpleVectorOperation(BlockFace.WEST);
-        vectorOperationTester.rotateWestInverseTest(operation);
+        vectorOperationTester.inverseOperationTest(operation);
     }
 
     @Test
     public void rotateSouthInverseTest() throws InvalidStructureException {
         IVectorOperation operation = new SimpleVectorOperation(BlockFace.SOUTH);
-        vectorOperationTester.rotateSouthInverseTest(operation);
+        vectorOperationTester.inverseOperationTest(operation);
     }
 
     @Test
     public void rotateNorthInverseTest() throws InvalidStructureException {
         IVectorOperation operation = new SimpleVectorOperation(BlockFace.NORTH);
-        vectorOperationTester.rotateNorthInverseTest(operation);
+        vectorOperationTester.inverseOperationTest(operation);
     }
 
     @Test
