@@ -38,43 +38,23 @@ public class VectorOperationTester {
     }
 
     public void rotateSouthTest(IVectorOperation operation) {
-        testSouthRotation(operation, false);
-    }
-
-    /**
-     * Tests a southwards vector-rotation
-     *
-     * @param operation <p>The operation to run</p>
-     * @param invert    <p>Whether to invert the operation</p>
-     */
-    private void testSouthRotation(IVectorOperation operation, boolean invert) {
         for (Vector vector : testVectors) {
-            Vector newVector = invert ? operation.performInverseOperation(vector) : operation.performOperation(vector);
+            Vector newVector = operation.performOperation(vector);
             Vector rotatedVector = new Vector(vector.getZ(), vector.getY(), -vector.getX());
             Assertions.assertEquals(rotatedVector, newVector);
         }
     }
 
     public void rotateWestTest(IVectorOperation operation) {
-        testWestRotation(operation, false);
-    }
-
-    /**
-     * Tests a westwards vector-rotation
-     *
-     * @param operation <p>The operation to run</p>
-     * @param invert    <p>Whether to invert the operation</p>
-     */
-    private void testWestRotation(IVectorOperation operation, boolean invert) {
         for (Vector vector : testVectors) {
-            Vector newVector = invert ? operation.performInverseOperation(vector) : operation.performOperation(vector);
+            Vector newVector = operation.performOperation(vector);
             Vector rotatedVector = new Vector(-vector.getX(), vector.getY(), -vector.getZ());
             Assertions.assertEquals(rotatedVector, newVector);
         }
     }
 
     public void inverseOperationTest(IVectorOperation operation) {
-        for (Vector vector: testVectors) {
+        for (Vector vector : testVectors) {
             Vector operatedVector = operation.performOperation(vector);
             Vector inverseOperatedVector = operation.performInverseOperation(operatedVector);
             Assertions.assertEquals(inverseOperatedVector, vector);
@@ -82,18 +62,8 @@ public class VectorOperationTester {
     }
 
     public void rotateNorthTest(IVectorOperation operation) {
-        testNorthRotation(operation, false);
-    }
-
-    /**
-     * Tests a northwards vector-rotation
-     *
-     * @param operation <p>The operation to run</p>
-     * @param invert    <p>Whether to invert the operation</p>
-     */
-    private void testNorthRotation(IVectorOperation operation, boolean invert) {
         for (Vector vector : testVectors) {
-            Vector newVector = invert ? operation.performInverseOperation(vector) : operation.performOperation(vector);
+            Vector newVector = operation.performOperation(vector);
             Vector rotatedVector = new Vector(-vector.getZ(), vector.getY(), vector.getX());
             Assertions.assertEquals(rotatedVector, newVector);
         }
@@ -134,8 +104,8 @@ public class VectorOperationTester {
     }
 
     public void flipTest(IVectorOperation operation) {
-        for(Vector vector: testVectors) {
-            Vector flippedVector = new Vector(vector.getX(),vector.getY(),-vector.getZ());
+        for (Vector vector : testVectors) {
+            Vector flippedVector = new Vector(vector.getX(), vector.getY(), -vector.getZ());
             operation.setFlipZAxis(false);
             Vector operatedVector = operation.performInverseOperation(flippedVector);
             operation.setFlipZAxis(true);
