@@ -63,12 +63,16 @@ public class SimpleVectorOperation implements IVectorOperation {
 
     @Override
     public Vector performOperation(Vector vector) {
-        return performOperation(vector, facing);
+        return performOperation(vector, facing, false);
     }
 
     @Override
     public Vector performInverseOperation(Vector vector) {
-        return performOperation(vector, facing.getOppositeFace());
+        if (facing == BlockFace.EAST || facing == BlockFace.WEST) {
+            return performOperation(vector, facing, true);
+        } else {
+            return performOperation(vector, facing.getOppositeFace(), true);
+        }
     }
 
     @Override
@@ -83,33 +87,39 @@ public class SimpleVectorOperation implements IVectorOperation {
      * @param blockFace <p>The block face the vector should be facing</p>
      * @return <p>A rotated copy of the given vector</p>
      */
-    private Vector performOperation(Vector vector, BlockFace blockFace) {
+    private Vector performOperation(Vector vector, BlockFace blockFace, boolean invert) {
+        
+        Vector clone = vector.clone();
+        if (invert && flipZAxis) {
+            clone.setZ(-clone.getZ());
+        }
+        
         Vector newVector;
         switch (blockFace) {
             case EAST:
-                newVector = vector.clone();
+                newVector = clone.clone();
                 break;
             case WEST:
-                newVector = new Vector(-vector.getX(), vector.getY(), -vector.getZ());
+                newVector = new Vector(-clone.getX(), clone.getY(), -clone.getZ());
                 break;
             case SOUTH:
-                newVector = new Vector(vector.getZ(), vector.getY(), -vector.getX());
+                newVector = new Vector(clone.getZ(), clone.getY(), -clone.getX());
                 break;
             case NORTH:
-                newVector = new Vector(-vector.getZ(), vector.getY(), vector.getX());
+                newVector = new Vector(-clone.getZ(), clone.getY(), clone.getX());
                 break;
             case UP:
-                newVector = new Vector(vector.getX(), -vector.getZ(), vector.getY());
+                newVector = new Vector(clone.getX(), -clone.getZ(), clone.getY());
                 break;
             case DOWN:
-                newVector = new Vector(vector.getX(), vector.getZ(), -vector.getY());
+                newVector = new Vector(clone.getX(), clone.getZ(), -clone.getY());
                 break;
             default:
                 throw new IllegalArgumentException("Unrecognized block face used for initialization");
         }
 
         //Flip the axis to allow a non-symmetrical design to be used both ways
-        if (flipZAxis) {
+        if (!invert && flipZAxis) {
             newVector.setZ(-newVector.getZ());
         }
 
