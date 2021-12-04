@@ -15,15 +15,11 @@ import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
-import net.TheDgtl.Stargate.network.portal.PortalColorParser;
 import net.TheDgtl.Stargate.util.ColorConverter;
-
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -67,7 +63,7 @@ public class PlayerEventListener implements Listener {
                 Stargate.log(Level.FINEST, "Player name=" + player.getName());
                 portal.onSignClick(event);
             }
-            if(isDyePortalSignText(event,portal)) {
+            if (isDyePortalSignText(event, portal)) {
                 portal.setSignColor(ColorConverter.getDyeColorFromMaterial(event.getMaterial()));
             } else {
                 event.setUseInteractedBlock(Event.Result.DENY);
@@ -84,14 +80,15 @@ public class PlayerEventListener implements Listener {
 
     /**
      * Will dye the text of a portals sign if the player is holding a dye and has enough permissions
-     * @param event
+     *
+     * @param event <p>The interact event causing this method to be triggered</p>
      * @param portal <p> Portal to dye <p>
      * @return Whether the portal should be dyed
      */
     private boolean isDyePortalSignText(PlayerInteractEvent event, Portal portal) {
         ItemStack item = event.getItem();
         PermissionManager permissionManager = new PermissionManager(event.getPlayer());
-        StargateCreateEvent colorSignPermission = new StargateCreateEvent(event.getPlayer(), portal, new String[] { "" },
+        StargateCreateEvent colorSignPermission = new StargateCreateEvent(event.getPlayer(), portal, new String[]{""},
                 0);
         if (!itemIsColor(item) || !permissionManager.hasPerm(colorSignPermission)) {
             return false;
@@ -101,13 +98,13 @@ public class PlayerEventListener implements Listener {
 
 
     private boolean itemIsColor(ItemStack item) {
-        if(item == null)
+        if (item == null)
             return false;
-        
+
         String itemName = item.getType().toString();
         return (itemName.contains("DYE") || itemName.contains("GLOW_INK_SAC"));
     }
-    
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (!Settings.getBoolean(Setting.USING_BUNGEE))

@@ -15,7 +15,6 @@ import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -48,8 +47,7 @@ public class NetworkedPortal extends Portal {
     /**
      * TODO have this individual for each player?
      *
-     * @param action
-     * @param actor
+     * @param event <p>The event triggering the sign click</p>
      */
     @Override
     public void onSignClick(PlayerInteractEvent event) {

@@ -5,18 +5,18 @@ import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-/*
+/**
  * @author Thorin
  */
 class ColorConverterTest {
 
     @Test
     void test() {
-        for(DyeColor color : DyeColor.values()) {
-            Assertions.assertTrue(ColorConverter.getChatColorFromDyeColor(color) != null);
+        for (DyeColor color : DyeColor.values()) {
+            Assertions.assertNotNull(ColorConverter.getChatColorFromDyeColor(color));
             Material dye = ColorConverter.getMaterialFromDyeColor(color);
-            Assertions.assertTrue(dye != null);
-            Assertions.assertEquals(color,ColorConverter.getDyeColorFromMaterial(dye));
+            Assertions.assertNotNull(dye);
+            Assertions.assertEquals(color, ColorConverter.getDyeColorFromMaterial(dye));
         }
     }
 

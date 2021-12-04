@@ -9,7 +9,6 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
 
-import java.util.EnumMap;
 import java.util.logging.Level;
 
 public class PortalColorParser {
@@ -18,8 +17,8 @@ public class PortalColorParser {
     private final boolean isLightSign;
     static private final ChatColor GRAY_SELECTOR_COLOR = ChatColor.of("#808080");
     static private final ChatColor ERROR_COLOR = ChatColor.RED;
-    
-    
+
+
     public PortalColorParser(Sign sign) {
         this.signColor = sign.getColor();
         this.isLightSign = isLightSign(sign.getType());
@@ -29,6 +28,7 @@ public class PortalColorParser {
         this.signColor = signColor;
         this.isLightSign = isLightSign(signMaterial);
     }
+
     /**
      * Compiles how this portal will look like on a sign, includes the
      *

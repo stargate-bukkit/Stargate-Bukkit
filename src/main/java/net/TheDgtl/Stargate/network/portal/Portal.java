@@ -9,7 +9,6 @@ import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.BlockSetAction;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.SupplierAction;
-import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
@@ -19,9 +18,6 @@ import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.util.ColorConverter;
-
-import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -32,11 +28,8 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.Event.Result;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.EnumSet;
@@ -156,6 +149,7 @@ public abstract class Portal implements IPortal {
     /**
      * Replacement function for {@link Sign#setColor(org.bukkit.DyeColor)}, as the portal sign is an interface
      * that is using a combination of various colors; more has to be processed
+     *
      * @param color <p> Color to change the sign text to. If nulled, then default color will be used </p>
      */
     public void setSignColor(DyeColor color) {
@@ -164,8 +158,8 @@ public abstract class Portal implements IPortal {
             sign.setColor(color);
             Stargate.syncTickPopulator.addAction(new BlockSetAction(sign, true));
         }
-        
-        colorDrawer = new PortalColorParser(sign.getColor(),sign.getType());
+
+        colorDrawer = new PortalColorParser(sign.getColor(), sign.getType());
         this.drawControlMechanism();
     }
 
@@ -177,7 +171,8 @@ public abstract class Portal implements IPortal {
         drawControlMechanism();
     }
 
-    public void onSignClick(PlayerInteractEvent event) {}
+    public void onSignClick(PlayerInteractEvent event) {
+    }
 
     public abstract void drawControlMechanism();
 

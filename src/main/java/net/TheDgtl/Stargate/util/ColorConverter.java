@@ -1,14 +1,15 @@
 package net.TheDgtl.Stargate.util;
 
-import java.util.EnumMap;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.EnumMap;
 
 public class ColorConverter {
-    private static final EnumMap<DyeColor,ChatColor> dyeColorToChatColorMap = new EnumMap<>(DyeColor.class);
+    
+    private static final EnumMap<DyeColor, ChatColor> dyeColorToChatColorMap = new EnumMap<>(DyeColor.class);
+
     static {
         dyeColorToChatColorMap.put(DyeColor.BLACK, ChatColor.of("#1D1D21"));
         dyeColorToChatColorMap.put(DyeColor.BLUE, ChatColor.of("#3C44AA"));
@@ -27,29 +28,30 @@ public class ColorConverter {
         dyeColorToChatColorMap.put(DyeColor.WHITE, ChatColor.of("#F9FFFE"));
         dyeColorToChatColorMap.put(DyeColor.YELLOW, ChatColor.of("#FED83D"));
     }
-    
-    private static final EnumMap<Material,DyeColor> materialToColorsConversionMap = new EnumMap<>(Material.class);
-    private static EnumMap<DyeColor, Material> dyeColorToMaterialColorsConversionMap = new EnumMap<>(DyeColor.class);
+
+    private static final EnumMap<Material, DyeColor> materialToColorsConversionMap = new EnumMap<>(Material.class);
+    private static final EnumMap<DyeColor, Material> dyeColorToMaterialColorsConversionMap = new EnumMap<>(DyeColor.class);
+
     static {
-        for(DyeColor color:DyeColor.values()) {
+        for (DyeColor color : DyeColor.values()) {
             Material dye = Material.getMaterial(color + "_DYE");
-            materialToColorsConversionMap.put(dye,color);
-            dyeColorToMaterialColorsConversionMap.put(color,dye);
+            materialToColorsConversionMap.put(dye, color);
+            dyeColorToMaterialColorsConversionMap.put(color, dye);
         }
     }
-    
+
     public static ChatColor getChatColorFromDyeColor(DyeColor color) {
         return dyeColorToChatColorMap.get(color);
     }
-    
+
     public static DyeColor getDyeColorFromMaterial(Material mat) {
         return materialToColorsConversionMap.get(mat);
     }
-    
+
     public static ChatColor getChatColorFromMaterial(Material mat) {
         return getChatColorFromDyeColor(getDyeColorFromMaterial(mat));
     }
-    
+
     public static Material getMaterialFromDyeColor(DyeColor dye) {
         return dyeColorToMaterialColorsConversionMap.get(dye);
     }

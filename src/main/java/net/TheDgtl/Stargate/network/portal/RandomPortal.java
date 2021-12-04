@@ -7,9 +7,6 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.EnumSet;
 import java.util.Random;
