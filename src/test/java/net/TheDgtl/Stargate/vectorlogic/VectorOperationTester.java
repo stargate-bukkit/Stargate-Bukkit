@@ -133,36 +133,14 @@ public class VectorOperationTester {
         }
     }
 
-    public void rotateEastFlipZTest(IVectorOperation operation) {
-        for (Vector vector : testVectors) {
-            Vector newVector = operation.performOperation(vector);
-            Vector rotatedVector = new Vector(vector.getX(), vector.getY(), -vector.getZ());
-            Assertions.assertEquals(rotatedVector, newVector);
+    public void flipTest(IVectorOperation operation) {
+        for(Vector vector: testVectors) {
+            Vector flippedVector = new Vector(vector.getX(),vector.getY(),-vector.getZ());
+            operation.setFlipZAxis(false);
+            Vector operatedVector = operation.performInverseOperation(flippedVector);
+            operation.setFlipZAxis(true);
+            Vector inverseOperatedVector = operation.performOperation(operatedVector);
+            Assertions.assertEquals(vector, inverseOperatedVector);
         }
     }
-
-    public void rotateWestFlipZTest(IVectorOperation operation) {
-        for (Vector vector : testVectors) {
-            Vector newVector = operation.performOperation(vector);
-            Vector rotatedVector = new Vector(-vector.getX(), vector.getY(), vector.getZ());
-            Assertions.assertEquals(rotatedVector, newVector);
-        }
-    }
-
-    public void rotateNorthFlipZTest(IVectorOperation operation) {
-        for (Vector vector : testVectors) {
-            Vector newVector = operation.performOperation(vector);
-            Vector rotatedVector = new Vector(-vector.getZ(), vector.getY(), -vector.getX());
-            Assertions.assertEquals(rotatedVector, newVector);
-        }
-    }
-
-    public void rotateSouthFlipZTest(IVectorOperation operation) {
-        for (Vector vector : testVectors) {
-            Vector newVector = operation.performOperation(vector);
-            Vector rotatedVector = new Vector(vector.getZ(), vector.getY(), vector.getX());
-            Assertions.assertEquals(rotatedVector, newVector);
-        }
-    }
-
 }

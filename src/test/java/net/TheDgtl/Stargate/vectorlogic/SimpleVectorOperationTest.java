@@ -112,29 +112,25 @@ public class SimpleVectorOperationTest {
     @Test
     public void rotateEastFlipZTest() throws InvalidStructureException {
         IVectorOperation operation = new SimpleVectorOperation(BlockFace.EAST);
-        operation.setFlipZAxis(true);
-        vectorOperationTester.rotateEastFlipZTest(operation);
+        vectorOperationTester.flipTest(operation);
     }
 
     @Test
     public void rotateWestFlipZTest() throws InvalidStructureException {
         IVectorOperation operation = new SimpleVectorOperation(BlockFace.WEST);
-        operation.setFlipZAxis(true);
-        vectorOperationTester.rotateWestFlipZTest(operation);
+        vectorOperationTester.flipTest(operation);
     }
 
     @Test
     public void rotateNorthFlipZTest() throws InvalidStructureException {
         IVectorOperation operation = new SimpleVectorOperation(BlockFace.NORTH);
-        operation.setFlipZAxis(true);
-        vectorOperationTester.rotateNorthFlipZTest(operation);
+        vectorOperationTester.flipTest(operation);
     }
 
     @Test
     public void rotateSouthFlipZTest() throws InvalidStructureException {
         IVectorOperation operation = new SimpleVectorOperation(BlockFace.SOUTH);
-        operation.setFlipZAxis(true);
-        vectorOperationTester.rotateSouthFlipZTest(operation);
+        vectorOperationTester.flipTest(operation);
     }
 
 }

@@ -101,29 +101,25 @@ public class VectorOperationTest {
     @Test
     public void rotateEastFlipZTest() throws InvalidStructureException {
         IVectorOperation operation = new VectorOperation(BlockFace.EAST, new FakeStargate());
-        operation.setFlipZAxis(true);
-        vectorOperationTester.rotateEastFlipZTest(operation);
+        vectorOperationTester.flipTest(operation);
     }
 
     @Test
     public void rotateWestFlipZTest() throws InvalidStructureException {
         IVectorOperation operation = new VectorOperation(BlockFace.WEST, new FakeStargate());
-        operation.setFlipZAxis(true);
-        vectorOperationTester.rotateWestFlipZTest(operation);
+        vectorOperationTester.flipTest(operation);
     }
 
     @Test
     public void rotateNorthFlipZTest() throws InvalidStructureException {
         IVectorOperation operation = new VectorOperation(BlockFace.NORTH, new FakeStargate());
-        operation.setFlipZAxis(true);
-        vectorOperationTester.rotateNorthFlipZTest(operation);
+        vectorOperationTester.flipTest(operation);
     }
 
     @Test
     public void rotateSouthFlipZTest() throws InvalidStructureException {
         IVectorOperation operation = new VectorOperation(BlockFace.SOUTH, new FakeStargate());
-        operation.setFlipZAxis(true);
-        vectorOperationTester.rotateSouthFlipZTest(operation);
+        vectorOperationTester.flipTest(operation);
     }
 
 }
