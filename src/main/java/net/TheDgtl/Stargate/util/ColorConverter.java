@@ -29,9 +29,12 @@ public class ColorConverter {
     }
     
     private static final EnumMap<Material,DyeColor> materialToColorsConversionMap = new EnumMap<>(Material.class);
+    private static EnumMap<DyeColor, Material> dyeColorToMaterialColorsConversionMap = new EnumMap<>(DyeColor.class);
     static {
         for(DyeColor color:DyeColor.values()) {
-            materialToColorsConversionMap.put(Material.getMaterial(color + "_DYE"),color);
+            Material dye = Material.getMaterial(color + "_DYE");
+            materialToColorsConversionMap.put(dye,color);
+            dyeColorToMaterialColorsConversionMap.put(color,dye);
         }
     }
     
@@ -45,5 +48,9 @@ public class ColorConverter {
     
     public static ChatColor getChatColorFromMaterial(Material mat) {
         return getChatColorFromDyeColor(getDyeColorFromMaterial(mat));
+    }
+    
+    public static Material getMaterialFromDyeColor(DyeColor dye) {
+        return dyeColorToMaterialColorsConversionMap.get(dye);
     }
 }
