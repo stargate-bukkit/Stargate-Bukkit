@@ -14,7 +14,7 @@ import java.util.logging.Level;
  *
  * <p>Vector operations keeps vectors immutable.</p>
  */
-public class VectorOperation {
+public class VectorOperation implements IVectorOperation {
 
     private final Axis irisNormal;
     private boolean flipZAxis = false;
@@ -63,44 +63,22 @@ public class VectorOperation {
         logger.logMessage(Level.FINER, "Chose a format rotation of " + rotation + " radians");
     }
 
-    /**
-     * Gets the block face of a sign given upon instantiation
-     *
-     * @return <p>The block face of a sign given upon instantiation</p>
-     */
+    @Override
     public BlockFace getFacing() {
         return facing;
     }
 
-    /**
-     * Gets the normal axis orthogonal to the iris plane
-     *
-     * <p>Said another way, get the axis going directly towards or away from a stargate's entrance.</p>
-     *
-     * @return <p>The normal axis orthogonal to the iris plane</p>
-     */
+    @Override
     public Axis getIrisNormal() {
         return irisNormal;
     }
 
-    /**
-     * Sets whether to flip the Z- axis
-     *
-     * @param flipZAxis <p>Whether to flip the z-axis</p>
-     */
+    @Override
     public void setFlipZAxis(boolean flipZAxis) {
         this.flipZAxis = flipZAxis;
     }
 
-    /**
-     * Performs this vector operation on the given vector
-     *
-     * <p>Inverse operation of doInverse; A vector operation that rotates around the origin, and flips the z-axis.
-     * Does not permute input vector</p>
-     *
-     * @param vector <p>The vector to perform the operation on</p>
-     * @return vector <p>A new vector with the operation applied</p>
-     */
+    @Override
     public Vector performOperation(Vector vector) {
         Vector output = matrixRotation.performOperation(vector);
         if (flipZAxis) {
@@ -109,15 +87,7 @@ public class VectorOperation {
         return output;
     }
 
-    /**
-     * Performs the reverse of this vector operation on the given vector
-     *
-     * <p>Inverse operation of doOperation; A vector operation that rotates around
-     * the origin and flips the z-axis. Does not permute input vector</p>
-     *
-     * @param vector <p>The vector to perform the inverse operation on</p>
-     * @return vector <p>A new vector with the inverse operation applied</p>
-     */
+    @Override
     public Vector performInverseOperation(Vector vector) {
         Vector output = vector.clone();
         if (flipZAxis) {
@@ -126,15 +96,7 @@ public class VectorOperation {
         return matrixInverseRotation.performOperation(output);
     }
 
-    /**
-     * Performs the reverse of this vector operation on the given vector
-     *
-     * <p>Inverse operation of doOperation; A vector operation that rotates around
-     * the origin and flips the z-axis. Does not permute input vector</p>
-     *
-     * @param vector <p>The vector to perform the inverse operation on</p>
-     * @return vector <p>A new vector with the inverse operation applied</p>
-     */
+    @Override
     public BlockVector performInverseOperation(BlockVector vector) {
         return performInverseOperation((Vector) vector).toBlockVector();
     }
