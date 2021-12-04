@@ -155,13 +155,17 @@ public enum Setting {
      */
     BUNGEE_USE_SSL("bungee.remoteDatabaseSettings.useSSL"),
 
+
+    /**
+     * When using remote database, what should the name if the proxy be?
+     */
+    BUNGEE_INSTANCE_NAME("bungee.instanceName"),
     /**
      * TODO: These are never used
      * TODO This needs to be updated per Discussion Two.
      */
     HANDLE_VEHICLES("handleVehicles"),
     CHECK_PORTAL_VALIDITY("checkPortalValidity"),
-    BUNGEE_INSTANCE_NAME("bungee.instanceName"),
     REMEMBER_LAST_DESTINATION("rememberLastDestination"),
     ALPHABETIC_NETWORKS("alphabeticNetworks"),
     CHECK_TRAVERSABLES("checkTraversables"),

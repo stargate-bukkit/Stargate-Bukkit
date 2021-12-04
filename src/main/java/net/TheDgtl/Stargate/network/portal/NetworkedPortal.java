@@ -15,6 +15,7 @@ import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -51,7 +52,8 @@ public class NetworkedPortal extends Portal {
      * @param actor
      */
     @Override
-    public void onSignClick(Action action, Player actor) {
+    public void onSignClick(PlayerInteractEvent event) {
+        Player actor = event.getPlayer();
         if (!actor.getUniqueId().equals(this.getOwnerUUID()) || this.isOpen())
             return;
         activate(actor);
@@ -59,11 +61,12 @@ public class NetworkedPortal extends Portal {
             return;
         if (selectedDestination == NO_DESTINATION_SELECTED || destinations.size() < 2) {
             selectedDestination = getNextDestination(1, -1);
-        } else if (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK) {
-            int step = (action == Action.RIGHT_CLICK_BLOCK) ? 1 : -1;
+        } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            int step = (event.getAction() == Action.RIGHT_CLICK_BLOCK) ? 1 : -1;
             selectedDestination = getNextDestination(step, selectedDestination);
         }
         drawControlMechanism();
+        return;
     }
 
     @Override

@@ -6,8 +6,10 @@ import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
+import net.TheDgtl.Stargate.actions.BlockSetAction;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.SupplierAction;
+import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
@@ -17,6 +19,10 @@ import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.util.ColorConverter;
+
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -26,9 +32,11 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.EnumSet;
@@ -93,7 +101,7 @@ public abstract class Portal implements IPortal {
             throw new NameErrorException(TranslatableMessage.ALREADY_EXIST);
         }
 
-        this.colorDrawer = new PortalColorParser((Sign) getSignPos().getBlock().getState());
+        setSignColor(null);
 
         if (gate.getFormat().isIronDoorBlockable) {
             flags.add(PortalFlag.IRON_DOOR);
@@ -145,6 +153,21 @@ public abstract class Portal implements IPortal {
         return gate.getSignLocation();
     }
 
+    /**
+     * Replacement function for {@link Sign#setColor(org.bukkit.DyeColor)}, as the portal sign is an interface
+     * that is using a combination of various colors; more has to be processed
+     * @param color <p> Color to change the sign text to. If nulled, then default color will be used </p>
+     */
+    public void setSignColor(DyeColor color) {
+        Sign sign = (Sign) this.getSignPos().getBlock().getState();
+        if (color != null) {
+            sign.setColor(color);
+            Stargate.syncTickPopulator.addAction(new BlockSetAction(sign, true));
+        }
+        
+        colorDrawer = new PortalColorParser(sign.getColor(),sign.getType());
+        this.drawControlMechanism();
+    }
 
     @Override
     public void update() {
@@ -154,7 +177,7 @@ public abstract class Portal implements IPortal {
         drawControlMechanism();
     }
 
-    public abstract void onSignClick(Action action, Player actor);
+    public void onSignClick(PlayerInteractEvent event) {}
 
     public abstract void drawControlMechanism();
 
