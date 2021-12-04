@@ -33,12 +33,10 @@ public class MatrixYRotation {
      * @return <p>A new vector with the changes applied</p>
      */
     public Vector performOperation(Vector vector) {
-        Vector newVector = new Vector();
-
-        newVector.setX(sinTheta * vector.getZ() + cosTheta * vector.getX());
-        newVector.setY(vector.getY());
-        newVector.setZ(cosTheta * vector.getZ() - sinTheta * vector.getX());
-        return newVector;
+        return new Vector(
+                sinTheta * vector.getZ() + cosTheta * vector.getX(),
+                vector.getY(),
+                cosTheta * vector.getZ() - sinTheta * vector.getX());
     }
 
     /**
