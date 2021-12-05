@@ -18,7 +18,7 @@ public class SimpleVectorOperationTest {
     public static void setUp() {
         List<Vector> testVectors = new ArrayList<>();
         Random random = new Random();
-        int maxBound = 20;
+        int maxBound = 2000;
         for (int i = 0; i < 10000; i++) {
             testVectors.add(new Vector(random.nextInt(maxBound), -random.nextInt(maxBound), random.nextInt(maxBound)));
         }
