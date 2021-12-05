@@ -18,6 +18,7 @@ public class SimpleVectorOperation implements IVectorOperation {
 
     private static final Map<BlockFace, Double> rotationAngles = new HashMap<>();
     private static final Map<BlockFace, Vector> rotationAxes = new HashMap<>();
+    private static final Map<BlockFace, Axis> irisNormalAxes = new HashMap<>();
 
     private final Axis irisNormal;
     private boolean flipZAxis = false;
@@ -31,22 +32,17 @@ public class SimpleVectorOperation implements IVectorOperation {
      * given sign face.</p>
      *
      * @param signFace <p>The sign face of a gate's sign</p>
-     * @throws InvalidStructureException <p>If given a sign face which is not one of EAST, SOUTH, WEST or NORTH</p>
      */
     public SimpleVectorOperation(BlockFace signFace) throws InvalidStructureException {
-        if (signFace == BlockFace.EAST || signFace == BlockFace.WEST) {
-            irisNormal = Axis.Z;
-        } else if (signFace == BlockFace.NORTH || signFace == BlockFace.SOUTH) {
-            irisNormal = Axis.X;
-        } else if (signFace == BlockFace.UP || signFace == BlockFace.DOWN) {
-            irisNormal = Axis.Y;
-        } else {
-            throw new InvalidStructureException();
+        if (irisNormalAxes.isEmpty()) {
+            initializeOperations();
+            initializeIrisNormalAxes();
         }
 
         this.facing = signFace;
-        if (rotationAxes.isEmpty()) {
-            initializeOperations();
+        this.irisNormal = irisNormalAxes.get(signFace);
+        if (irisNormal == null) {
+            throw new InvalidStructureException();
         }
     }
 
@@ -95,13 +91,14 @@ public class SimpleVectorOperation implements IVectorOperation {
     private static void initializeOperations() {
         Vector yAxis = new Vector(0, 1, 0);
         Vector zAxis = new Vector(0, 0, 1);
-        double quarterRotation = Math.PI / 2;
+        double halfRotation = Math.PI;
+        double quarterRotation = halfRotation / 2;
 
         rotationAxes.put(BlockFace.EAST, yAxis);
         rotationAngles.put(BlockFace.EAST, 0d);
 
         rotationAxes.put(BlockFace.WEST, yAxis);
-        rotationAngles.put(BlockFace.WEST, Math.PI);
+        rotationAngles.put(BlockFace.WEST, halfRotation);
 
         rotationAxes.put(BlockFace.SOUTH, yAxis);
         rotationAngles.put(BlockFace.SOUTH, quarterRotation);
@@ -114,6 +111,18 @@ public class SimpleVectorOperation implements IVectorOperation {
 
         rotationAxes.put(BlockFace.DOWN, zAxis);
         rotationAngles.put(BlockFace.DOWN, -quarterRotation);
+    }
+
+    /**
+     * Initializes the iris normal axes corresponding to each block face
+     */
+    private static void initializeIrisNormalAxes() {
+        irisNormalAxes.put(BlockFace.EAST, Axis.Z);
+        irisNormalAxes.put(BlockFace.WEST, Axis.Z);
+        irisNormalAxes.put(BlockFace.NORTH, Axis.X);
+        irisNormalAxes.put(BlockFace.SOUTH, Axis.X);
+        irisNormalAxes.put(BlockFace.UP, Axis.Y);
+        irisNormalAxes.put(BlockFace.DOWN, Axis.Y);
     }
 
 }
