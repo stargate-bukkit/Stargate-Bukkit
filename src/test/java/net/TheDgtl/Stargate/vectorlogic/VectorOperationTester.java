@@ -72,7 +72,7 @@ public class VectorOperationTester {
     public void rotateUpTest(IVectorOperation operation) {
         for (Vector vector : testVectors) {
             Vector newVector = operation.performOperation(vector);
-            Vector rotatedVector = new Vector(vector.getX(), -vector.getZ(), vector.getY());
+            Vector rotatedVector = new Vector(-vector.getY(), vector.getX(), vector.getZ());
             Assertions.assertEquals(rotatedVector, newVector);
         }
     }
@@ -80,7 +80,7 @@ public class VectorOperationTester {
     public void rotateDownTest(IVectorOperation operation) {
         for (Vector vector : testVectors) {
             Vector newVector = operation.performOperation(vector);
-            Vector rotatedVector = new Vector(vector.getX(), vector.getZ(), -vector.getY());
+            Vector rotatedVector = new Vector(vector.getY(), -vector.getX(), vector.getZ());
             Assertions.assertEquals(rotatedVector, newVector);
         }
     }
