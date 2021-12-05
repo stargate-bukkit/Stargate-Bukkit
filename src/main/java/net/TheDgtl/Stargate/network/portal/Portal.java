@@ -32,9 +32,9 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -60,7 +60,7 @@ public abstract class Portal implements IPortal {
      */
     final int openDelay = 20; // seconds
     private Gate gate;
-    private final EnumSet<PortalFlag> flags;
+    private final Set<PortalFlag> flags;
     final String name;
     UUID openFor;
     IPortal destination = null;
@@ -69,7 +69,7 @@ public abstract class Portal implements IPortal {
     protected PortalColorParser colorDrawer;
 
 
-    Portal(Network network, String name, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
+    Portal(Network network, String name, Block sign, Set<PortalFlag> flags, UUID ownerUUID)
             throws NameErrorException, NoFormatFoundException, GateConflictException {
         this.ownerUUID = ownerUUID;
         this.network = network;
@@ -182,7 +182,7 @@ public abstract class Portal implements IPortal {
         return getGate().isOpen();
     }
 
-    public EnumSet<PortalFlag> getFlags() {
+    public Set<PortalFlag> getFlags() {
         return flags;
     }
 
@@ -298,7 +298,7 @@ public abstract class Portal implements IPortal {
         }
         PermissionManager permissionManager = new PermissionManager(player);
         StargateOpenEvent oEvent = new StargateOpenEvent(player, this, false);
-        if (!permissionManager.hasPerm(oEvent) || oEvent.isCancelled())
+        if (!permissionManager.hasPermission(oEvent) || oEvent.isCancelled())
             return;
 
         this.destination = destination;
@@ -368,7 +368,7 @@ public abstract class Portal implements IPortal {
         close(false);
     }
 
-    public static IPortal createPortalFromSign(Network net, String[] lines, Block block, EnumSet<PortalFlag> flags, UUID ownerUUID)
+    public static IPortal createPortalFromSign(Network net, String[] lines, Block block, Set<PortalFlag> flags, UUID ownerUUID)
             throws NameErrorException, NoFormatFoundException, GateConflictException {
         if (flags.contains(PortalFlag.BUNGEE))
             return new BungeePortal(net, lines[0], lines[1], lines[2], block, flags, ownerUUID);

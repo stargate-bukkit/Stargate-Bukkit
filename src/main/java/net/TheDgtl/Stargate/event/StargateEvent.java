@@ -30,9 +30,9 @@ import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public abstract class StargateEvent extends Event implements Cancellable {
     // old name = StargateEvent
@@ -66,7 +66,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
 
     protected List<Permission> compileFlagPerms(String permIdentifier) {
         List<Permission> permList = new ArrayList<>();
-        EnumSet<PortalFlag> flags = PortalFlag.parseFlags(portal.getAllFlagsString());
+        Set<PortalFlag> flags = PortalFlag.parseFlags(portal.getAllFlagsString());
         for (PortalFlag flag : flags) {
             String identifier;
             switch (flag) {

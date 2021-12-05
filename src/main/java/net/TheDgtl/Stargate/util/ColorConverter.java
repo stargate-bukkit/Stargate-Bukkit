@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import java.util.EnumMap;
 
 public class ColorConverter {
-    
+
     private static final EnumMap<DyeColor, ChatColor> dyeColorToChatColorMap = new EnumMap<>(DyeColor.class);
 
     static {

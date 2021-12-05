@@ -8,7 +8,6 @@ import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.block.Block;
 
-import java.util.EnumSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -17,7 +16,7 @@ public class RandomPortal extends Portal {
 
     private final Random randomizer = new Random();
 
-    RandomPortal(Network network, String name, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID) throws NameErrorException, NoFormatFoundException, GateConflictException {
+    RandomPortal(Network network, String name, Block sign, Set<PortalFlag> flags, UUID ownerUUID) throws NameErrorException, NoFormatFoundException, GateConflictException {
         super(network, name, sign, flags, ownerUUID);
     }
 

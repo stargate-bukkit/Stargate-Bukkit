@@ -40,7 +40,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.EnumSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -161,7 +161,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
         String network = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
         String server = json.get(StargateProtocolProperty.SERVER.toString()).getAsString();
-        EnumSet<PortalFlag> flags = PortalFlag.parseFlags(json.get(StargateProtocolProperty.PORTAL_FLAG.toString()).getAsString());
+        Set<PortalFlag> flags = PortalFlag.parseFlags(json.get(StargateProtocolProperty.PORTAL_FLAG.toString()).getAsString());
         UUID ownerUUID = UUID.fromString(json.get(StargateProtocolProperty.OWNER.toString()).getAsString());
 
         try {

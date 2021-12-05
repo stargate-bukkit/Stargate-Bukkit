@@ -35,82 +35,127 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
-import java.util.EnumSet;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
+/**
+ * A listener for detecting any relevant block events
+ */
 public class BlockEventListener implements Listener {
+
+    /**
+     * Detects relevant block break events
+     *
+     * <p>Protects a portal's control blocks and iris from destruction and destroys the attached portal if the entity
+     * is allowed.</p>
+     *
+     * @param event <p>The triggered block break event</p>
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-
-        Location loc = event.getBlock().getLocation();
-        Portal portal = Network.getPortal(loc, GateStructureType.FRAME);
+        Location location = event.getBlock().getLocation();
+        Portal portal = Network.getPortal(location, GateStructureType.FRAME);
         if (portal != null) {
-            int cost = Settings.getInteger(Setting.DESTROY_COST);
-            StargateDestroyEvent dEvent = new StargateDestroyEvent(portal, event.getPlayer(), cost);
-            Bukkit.getPluginManager().callEvent(dEvent);
-            PermissionManager permissionManager = new PermissionManager(event.getPlayer());
-            if (permissionManager.hasPerm(dEvent) && !dEvent.isCancelled()) {
-                /*
-                 * If setting charge free destination is false, destination portal is PortalFlag.Free and portal is of Fixed type
-                 * or if player has override cost permission, do not collect money
-                 */
-                if (shouldChargePlayer(event.getPlayer(), portal) && !Stargate.economyManager.chargeAndTax(event.getPlayer(), dEvent.getCost())) {
-                    event.getPlayer().sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
-                    event.setCancelled(true);
-                    return;
-                }
+            Supplier<Boolean> destroyAction = () -> {
+                String msg = Stargate.languageManager.getMessage(TranslatableMessage.DESTROY, false);
+                event.getPlayer().sendMessage(msg);
 
-                Supplier<Boolean> action = () -> {
-                    String msg = Stargate.languageManager.getMessage(TranslatableMessage.DESTROY, false);
-                    event.getPlayer().sendMessage(msg);
+                portal.destroy();
+                Stargate.log(Level.FINEST, "Broke the portal");
+                return true;
+            };
 
-                    portal.destroy();
-                    Stargate.log(Level.FINEST, "Broke the portal");
-                    return true;
-                };
-                Stargate.syncTickPopulator.addAction(new SupplierAction(action));
-                return;
-            }
-            event.setCancelled(true);
-            return;
-        }
-        if (Network.getPortal(loc, new GateStructureType[]{GateStructureType.CONTROL_BLOCK, GateStructureType.IRIS}) != null) {
+            destroyPortalIfHasPermissionAndCanPay(event, portal, destroyAction);
+        } else if (Network.getPortal(location, new GateStructureType[]{GateStructureType.CONTROL_BLOCK,
+                GateStructureType.IRIS}) != null) {
             event.setCancelled(true);
         }
     }
 
-    private boolean shouldChargePlayer(Player player, IPortal portal) {
-        if (player.hasPermission(BypassPermission.COST_CREATE.getPermissionString()))
+    /**
+     * Destroys a portal if the entity has permission and can pay any fees
+     *
+     * @param event         <p>The block break event triggering the destruction</p>
+     * @param portal        <p>The portal to destroy</p>
+     * @param destroyAction <p>The action to run when destroying a portal</p>
+     */
+    private void destroyPortalIfHasPermissionAndCanPay(BlockBreakEvent event, Portal portal,
+                                                       Supplier<Boolean> destroyAction) {
+        int cost = Settings.getInteger(Setting.DESTROY_COST);
+        StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, event.getPlayer(), cost);
+        Bukkit.getPluginManager().callEvent(stargateDestroyEvent);
+        PermissionManager permissionManager = new PermissionManager(event.getPlayer());
+        if (permissionManager.hasPermission(stargateDestroyEvent) && !stargateDestroyEvent.isCancelled()) {
+            /*
+             * If setting charge free destination is false, destination portal is PortalFlag.Free and portal is of Fixed type
+             * or if player has override cost permission, do not collect money
+             */
+            if (shouldChargePlayer(event.getPlayer(), portal, BypassPermission.COST_DESTROY) &&
+                    !Stargate.economyManager.chargeAndTax(event.getPlayer(),
+                            stargateDestroyEvent.getCost())) {
+                event.getPlayer().sendMessage(
+                        Stargate.languageManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
+                event.setCancelled(true);
+                return;
+            }
+            Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
+        } else {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * Checks whether the given player should be charged for destroying a portal
+     *
+     * @param player           <p>The player to check</p>
+     * @param portal           <p>The portal the player is trying to do something with</p>
+     * @param bypassPermission <p>The bypass permission that would let the player avoid payment</p>
+     * @return <p>True if the player should be charged</p>
+     */
+    private boolean shouldChargePlayer(Player player, IPortal portal, BypassPermission bypassPermission) {
+        if (player.hasPermission(bypassPermission.getPermissionString())) {
             return false;
+        }
 
         return Settings.getBoolean(Setting.CHARGE_FREE_DESTINATION)
                 || !portal.hasFlag(PortalFlag.FIXED)
                 || !((Portal) portal).loadDestination().hasFlag(PortalFlag.FREE);
     }
 
+    /**
+     * Checks for and blocks any block placement in a stargate's iris
+     *
+     * @param event <p>The triggered block place event</p>
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Location loc = event.getBlock().getLocation();
         Portal portal = Network.getPortal(loc, GateStructureType.IRIS);
-        if (portal != null)
+        if (portal != null) {
             event.setCancelled(true);
+        }
     }
 
+    /**
+     * Checks for any sign change events that may result in the creation of a stargate
+     *
+     * @param event <p>The triggered sign change event</p>
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSignChange(SignChangeEvent event) {
         Block block = event.getBlock();
-        if (!(block.getBlockData() instanceof WallSign))
+        if (!(block.getBlockData() instanceof WallSign)) {
             return;
+        }
 
         String[] lines = event.getLines();
         String network = lines[2];
         int cost = Settings.getInteger(Setting.CREATION_COST);
         Player player = event.getPlayer();
-        EnumSet<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
+        Set<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
         PermissionManager permissionManager = new PermissionManager(player);
         TranslatableMessage errorMessage = null;
-
 
         if (lines[1].trim().isEmpty()) {
             flags.add(PortalFlag.NETWORKED);
@@ -118,90 +163,121 @@ public class BlockEventListener implements Listener {
 
         flags = permissionManager.returnAllowedFlags(flags);
         String finalNetworkName;
-        Network selectedNet = null;
+        Network selectedNetwork = null;
         try {
-            finalNetworkName = compileNetworkName(network, flags, player, permissionManager);
-            selectedNet = selectNetwork(finalNetworkName, flags);
-        } catch (NameErrorException e2) {
-            errorMessage = e2.getErrorMessage();
+            finalNetworkName = interpretNetworkName(network, flags, player, permissionManager);
+            selectedNetwork = selectNetwork(finalNetworkName, flags);
+        } catch (NameErrorException nameErrorException) {
+            errorMessage = nameErrorException.getErrorMessage();
         }
 
         try {
-            IPortal portal = Portal.createPortalFromSign(selectedNet, lines, block, flags, event.getPlayer().getUniqueId());
-            StargateCreateEvent sEvent = new StargateCreateEvent(event.getPlayer(), portal, lines, cost);
-
-
-            Bukkit.getPluginManager().callEvent(sEvent);
-
-            boolean hasPerm = permissionManager.hasPerm(sEvent);
-            Stargate.log(Level.CONFIG, " player has perm = " + hasPerm);
-
-
-            if (errorMessage != null) {
-                player.sendMessage(Stargate.languageManager.getMessage(errorMessage, true));
-                return;
-            }
-
-            if (sEvent.isCancelled() || !hasPerm) {
-                Stargate.log(Level.CONFIG, " Event was cancelled due to perm or external cancellation");
-                player.sendMessage(Stargate.languageManager.getMessage(permissionManager.getDenyMsg(), true));
-                return;
-            }
-
-            if (shouldChargePlayer(player, portal) && !Stargate.economyManager.chargeAndTax(player, sEvent.getCost())) {
-                player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
-                return;
-            }
-            selectedNet.addPortal(portal, true);
-            selectedNet.updatePortals();
-            Stargate.log(Level.FINE, "A Gate format matches");
-            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE, false));
-        } catch (NoFormatFoundException e) {
+            tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost, permissionManager, errorMessage);
+        } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINE, "No Gate format matches");
-        } catch (GateConflictException e) {
+        } catch (GateConflictException gateConflictException) {
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.GATE_CONFLICT, true));
-        } catch (NameErrorException e) {
-            player.sendMessage(Stargate.languageManager.getMessage(e.getErrorMessage(), true));
+        } catch (NameErrorException nameErrorException) {
+            player.sendMessage(Stargate.languageManager.getMessage(nameErrorException.getErrorMessage(), true));
         }
     }
 
     /**
-     * Goes through some scenarios where the initial network name would need to be changed, and returns the modified network name
+     * Tries to create a new stargate
      *
-     * @param initialNetworkName
-     * @param flags              all the flags of the portal, this code has some side effects and might add some more flags
-     * @param player
-     * @param permissionManager
-     * @return
-     * @throws NameErrorException
+     * @param selectedNetwork   <p>The network selected on the stargate's sign</p>
+     * @param lines             <p>The lines on the stargate's sign</p>
+     * @param signLocation      <p>The location of the changed sign</p>
+     * @param flags             <p>The flags selected by the player</p>
+     * @param player            <p>The player that changed the sign</p>
+     * @param cost              <p>The cost of creating the new stargate</p>
+     * @param permissionManager <p>The permission manager to use for checking the player's permissions</p>
+     * @param errorMessage      <p>The error message to display to the player</p>
+     * @throws NameErrorException     <p>If the name of the stargate does not follow set rules</p>
+     * @throws GateConflictException  <p>If the gate's physical structure is in conflict with another</p>
+     * @throws NoFormatFoundException <p>If no known format matches the built stargate</p>
      */
-    private String compileNetworkName(String initialNetworkName, EnumSet<PortalFlag> flags, Player player, PermissionManager permissionManager) throws NameErrorException {
+    private void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation, Set<PortalFlag> flags,
+                                   Player player, int cost, PermissionManager permissionManager, TranslatableMessage errorMessage)
+            throws NameErrorException, GateConflictException, NoFormatFoundException {
+        IPortal portal = Portal.createPortalFromSign(selectedNetwork, lines, signLocation, flags, player.getUniqueId());
+        StargateCreateEvent sEvent = new StargateCreateEvent(player, portal, lines, cost);
+
+
+        Bukkit.getPluginManager().callEvent(sEvent);
+
+        boolean hasPerm = permissionManager.hasPermission(sEvent);
+        Stargate.log(Level.CONFIG, " player has perm = " + hasPerm);
+
+        if (errorMessage != null) {
+            player.sendMessage(Stargate.languageManager.getMessage(errorMessage, true));
+            return;
+        }
+
+        if (sEvent.isCancelled() || !hasPerm) {
+            Stargate.log(Level.CONFIG, " Event was cancelled due to perm or external cancellation");
+            player.sendMessage(Stargate.languageManager.getMessage(permissionManager.getDenyMessage(), true));
+            return;
+        }
+
+        if (shouldChargePlayer(player, portal, BypassPermission.COST_CREATE) &&
+                !Stargate.economyManager.chargeAndTax(player, sEvent.getCost())) {
+            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
+            return;
+        }
+        selectedNetwork.addPortal(portal, true);
+        selectedNetwork.updatePortals();
+        Stargate.log(Level.FINE, "A Gate format matches");
+        player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE, false));
+    }
+
+    /**
+     * Interprets a network name and removes any characters with special behavior
+     *
+     * <p>Goes through some scenarios where the initial network name would need to be changed, and returns the
+     * modified network name. Some special characters given in a network name may be interpreted as special flags.</p>
+     *
+     * @param initialNetworkName <p>The initial network name written on the sign</p>
+     * @param flags              <p>All the flags of the portal</p>
+     * @param player             <p>The player that wrote the network name</p>
+     * @param permissionManager  <p>The permission manager to use for checking the player's permissions</p>
+     * @return <p>The interpreted network name</p>
+     * @throws NameErrorException <p>If the network name does not follow all rules</p>
+     */
+    private String interpretNetworkName(String initialNetworkName, Set<PortalFlag> flags, Player player,
+                                        PermissionManager permissionManager) throws NameErrorException {
+        //Force a network name surrounded by square brackets to force an inter-server portal
+        //TODO: This bypasses network permission checks. Is this intentional?
         if (initialNetworkName.endsWith("]") && initialNetworkName.startsWith("[")) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
             return initialNetworkName.substring(1, initialNetworkName.length() - 1);
         }
 
+        //Force a network name surrounded by curly braces to be treated as a personal network
         if (initialNetworkName.endsWith("}") && initialNetworkName.startsWith("{")) {
             String possiblePlayerName = initialNetworkName.substring(1, initialNetworkName.length() - 1);
-
             flags.add(PortalFlag.PERSONAL_NETWORK);
             Player possiblePlayer = Bukkit.getPlayer(possiblePlayerName);
-            if (possiblePlayer != null)
+            if (possiblePlayer != null) {
                 return possiblePlayer.getUniqueId().toString();
+            }
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         }
 
+        /* Try to fall back to the default or a personal network if no network is given, or the player is missing
+         * the necessary permissions */
         if (!permissionManager.canCreateInNetwork(initialNetworkName) || initialNetworkName.trim().isEmpty()) {
             Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to default...");
-            String defaultNet = Settings.getString(Setting.DEFAULT_NET);
-            if (!permissionManager.canCreateInNetwork(defaultNet)) {
+            String defaultNetwork = Settings.getString(Setting.DEFAULT_NET);
+            if (!permissionManager.canCreateInNetwork(defaultNetwork)) {
                 Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to private...");
                 flags.add(PortalFlag.PERSONAL_NETWORK);
                 return player.getUniqueId().toString();
             }
-            return defaultNet;
+            return defaultNetwork;
         }
 
+        //Moves any private stargates to the player's personal network
         @SuppressWarnings("deprecation")
         OfflinePlayer possiblePersonalNetworkTarget = Bukkit.getOfflinePlayer(initialNetworkName);
         if (flags.contains(PortalFlag.PRIVATE)) {
@@ -209,60 +285,96 @@ public class BlockEventListener implements Listener {
             return possiblePersonalNetworkTarget.getUniqueId().toString();
         }
 
+        //Move the legacy bungee stargates to their own network
         if (flags.contains(PortalFlag.BUNGEE)) {
             return "§§§§§§#BUNGEE#§§§§§§";
         }
         return initialNetworkName;
     }
 
-    private Network selectNetwork(String name, EnumSet<PortalFlag> flags) throws NameErrorException {
+    /**
+     * Gets the network with the given name, and creates it if it doesn't already exist
+     *
+     * @param name  <p>The name of the network to get</p>
+     * @param flags <p>The flags of the portal that should belong to this network</p>
+     * @return <p>The network the portal should be connected to</p>
+     * @throws NameErrorException <p>If the network name is invalid</p>
+     */
+    private Network selectNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {
         try {
             Stargate.factory.createNetwork(name, flags);
-        } catch (NameErrorException e1) {
-            TranslatableMessage msg = e1.getErrorMessage();
-            if (msg != null) {
-                throw e1;
+        } catch (NameErrorException nameErrorException) {
+            TranslatableMessage translatableMessage = nameErrorException.getErrorMessage();
+            if (translatableMessage != null) {
+                throw nameErrorException;
             }
         }
         return Stargate.factory.getNetwork(name, flags.contains(PortalFlag.FANCY_INTER_SERVER));
     }
 
+    /**
+     * Listens to and cancels any piston extend events that may break a stargate
+     *
+     * @param event <p>The triggered piston extend event</p>
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        // check if portal is affected, if so cancel
-        if (Network.isInPortal(event.getBlocks(), GateStructureType.values()))
+        if (Network.isInPortal(event.getBlocks(), GateStructureType.values())) {
             event.setCancelled(true);
+        }
     }
 
+    /**
+     * Listens to and cancels any piston retract events that may break a stargate
+     *
+     * @param event <p>The triggered piston retract event</p>
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        // check if portal is affected, if so cancel
-        if (Network.isInPortal(event.getBlocks(), GateStructureType.values()))
+        if (Network.isInPortal(event.getBlocks(), GateStructureType.values())) {
             event.setCancelled(true);
+        }
     }
 
+    /**
+     * Listens to and cancels any explosion events that may break a stargate
+     *
+     * @param event <p>The triggered explosion event</p>
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        if (Network.isInPortal(event.blockList(), GateStructureType.values()))
+        if (Network.isInPortal(event.blockList(), GateStructureType.values())) {
             event.setCancelled(true);
+        }
     }
 
+    /**
+     * Listens to and cancels any water or lava flowing from or into a stargate's entrance
+     *
+     * @param event <p>The triggered block from to event</p>
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockFromTo(BlockFromToEvent event) {
-        // check if water or lava is flowing into a gate entrance?
-        // if so, cancel
-        Block to = event.getToBlock();
-        Block from = event.getBlock();
-        if ((Network.getPortal(to.getLocation(), GateStructureType.IRIS) != null)
-                || (Network.getPortal(from.getLocation(), GateStructureType.IRIS) != null))
+        Block toBlock = event.getToBlock();
+        Block fromBlock = event.getBlock();
+        if ((Network.getPortal(toBlock.getLocation(), GateStructureType.IRIS) != null)
+                || (Network.getPortal(fromBlock.getLocation(), GateStructureType.IRIS) != null)) {
             event.setCancelled(true);
+        }
     }
 
+    /**
+     * Listens to and cancels any blocks from forming in a stargate's entrance
+     *
+     * @param event <p>The triggered block form event</p>
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockFormEvent(BlockFormEvent event) {
-        Location loc = event.getBlock().getLocation();
-        Portal portal = Network.getPortal(loc, GateStructureType.IRIS);
-        if (portal != null)
+        Location location = event.getBlock().getLocation();
+        Portal portal = Network.getPortal(location, GateStructureType.IRIS);
+        if (portal != null) {
             event.setCancelled(true);
+        }
     }
+
 }

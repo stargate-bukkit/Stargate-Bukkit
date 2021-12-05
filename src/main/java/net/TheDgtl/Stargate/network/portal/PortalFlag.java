@@ -5,6 +5,7 @@ import net.TheDgtl.Stargate.exception.NoFlagFoundException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Represents a portal flag which defines an enabled behavior for a stargate
@@ -119,8 +120,8 @@ public enum PortalFlag {
      * @param line <p>The string to search for portal flags</p>
      * @return <p>A set of all found portal flags</p>
      */
-    public static EnumSet<PortalFlag> parseFlags(String line) {
-        EnumSet<PortalFlag> foundFlags = EnumSet.noneOf(PortalFlag.class);
+    public static Set<PortalFlag> parseFlags(String line) {
+        Set<PortalFlag> foundFlags = EnumSet.noneOf(PortalFlag.class);
         char[] charArray = line.toUpperCase().toCharArray();
         for (char character : charArray) {
             try {

@@ -14,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.EnumSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -29,10 +29,10 @@ public class VirtualPortal implements IPortal {
     protected final String server;
     private final String name;
     private Network network;
-    private final EnumSet<PortalFlag> flags;
+    private final Set<PortalFlag> flags;
     private final UUID ownerUUID;
 
-    public VirtualPortal(String server, String name, Network net, EnumSet<PortalFlag> flags, UUID ownerUUID) {
+    public VirtualPortal(String server, String name, Network net, Set<PortalFlag> flags, UUID ownerUUID) {
         this.server = server;
         this.name = name;
         this.network = net;

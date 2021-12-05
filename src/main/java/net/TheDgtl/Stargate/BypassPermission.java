@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate;
 import org.bukkit.entity.Player;
 
 import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * This enum represents the different permissions used to bypass various protections
@@ -57,9 +58,9 @@ public enum BypassPermission {
      * @param player <p>The player to check</p>
      * @return <p>All protection the player can bypass</p>
      */
-    public EnumSet<BypassPermission> getProtectionBypasses(Player player) {
+    public Set<BypassPermission> getProtectionBypasses(Player player) {
         //TODO: Use or remove this method
-        EnumSet<BypassPermission> allowedBypassPermissions = EnumSet.noneOf(BypassPermission.class);
+        Set<BypassPermission> allowedBypassPermissions = EnumSet.noneOf(BypassPermission.class);
         for (BypassPermission bypassPermission : values()) {
             if (player.hasPermission(bypassPermission.permissionString)) {
                 allowedBypassPermissions.add(bypassPermission);

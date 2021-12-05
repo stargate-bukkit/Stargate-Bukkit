@@ -28,9 +28,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -198,7 +198,7 @@ public class StargateFactory {
             String flagsMsg = set.getString("flags");
             UUID ownerUUID = UUID.fromString(set.getString("ownerUUID"));
 
-            EnumSet<PortalFlag> flags = PortalFlag.parseFlags(flagsMsg);
+            Set<PortalFlag> flags = PortalFlag.parseFlags(flagsMsg);
 
             boolean isBungee = flags.contains(PortalFlag.FANCY_INTER_SERVER);
             Stargate.log(Level.FINEST, "Trying to add portal " + name + ", on network " + netName + ",isInterServer = " + isBungee);
@@ -290,7 +290,7 @@ public class StargateFactory {
         }
     }
 
-    public void createNetwork(String netName, EnumSet<PortalFlag> flags) throws NameErrorException {
+    public void createNetwork(String netName, Set<PortalFlag> flags) throws NameErrorException {
         if (netExists(netName, flags.contains(PortalFlag.FANCY_INTER_SERVER)))
             throw new NameErrorException(null);
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {

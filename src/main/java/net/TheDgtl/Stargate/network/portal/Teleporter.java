@@ -174,7 +174,7 @@ public class Teleporter {
         StargatePortalEvent event = new StargatePortalEvent(target, origin);
         Bukkit.getPluginManager().callEvent(event);
         PermissionManager permissionManager = new PermissionManager(target);
-        return (permissionManager.hasPerm(event) && !event.isCancelled());
+        return (permissionManager.hasPermission(event) && !event.isCancelled());
     }
 
     /**

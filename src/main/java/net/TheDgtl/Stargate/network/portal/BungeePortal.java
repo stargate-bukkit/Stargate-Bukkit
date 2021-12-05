@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -38,7 +39,7 @@ public class BungeePortal extends Portal {
     private final LegacyVirtualPortal targetPortal;
     private final String serverDestination;
 
-    BungeePortal(Network network, String name, String destination, String serverDestination, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
+    BungeePortal(Network network, String name, String destination, String serverDestination, Block sign, Set<PortalFlag> flags, UUID ownerUUID)
             throws NameErrorException, NoFormatFoundException, GateConflictException {
         super(network, name, sign, flags, ownerUUID);
 
@@ -79,7 +80,7 @@ public class BungeePortal extends Portal {
 
     class LegacyVirtualPortal extends VirtualPortal {
 
-        public LegacyVirtualPortal(String server, String name, Network net, EnumSet<PortalFlag> flags, UUID ownerUUID) {
+        public LegacyVirtualPortal(String server, String name, Network net, Set<PortalFlag> flags, UUID ownerUUID) {
             super(server, name, net, flags, ownerUUID);
         }
 

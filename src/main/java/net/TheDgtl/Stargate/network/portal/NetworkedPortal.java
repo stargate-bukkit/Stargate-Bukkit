@@ -19,9 +19,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -39,7 +39,7 @@ public class NetworkedPortal extends Portal {
     private final List<IPortal> destinations = new ArrayList<>();
     private static final int ACTIVE_DELAY = 15; // seconds
 
-    public NetworkedPortal(Network network, String name, Block sign, EnumSet<PortalFlag> flags, UUID ownerUUID)
+    public NetworkedPortal(Network network, String name, Block sign, Set<PortalFlag> flags, UUID ownerUUID)
             throws NoFormatFoundException, GateConflictException, NameErrorException {
         super(network, name, sign, flags, ownerUUID);
     }
@@ -178,7 +178,7 @@ public class NetworkedPortal extends Portal {
         StargateActivateEvent event = new StargateActivateEvent(this, actor, destinations);
         Bukkit.getPluginManager().callEvent(event);
         PermissionManager permissionManager = new PermissionManager(actor);
-        if (event.isCancelled() || !permissionManager.hasPerm(event)) {
+        if (event.isCancelled() || !permissionManager.hasPermission(event)) {
             this.destinations.clear();
             selectedDestination = NO_DESTINATION_SELECTED;
         }

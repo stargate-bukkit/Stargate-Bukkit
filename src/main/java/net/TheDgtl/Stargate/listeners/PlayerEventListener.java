@@ -81,7 +81,7 @@ public class PlayerEventListener implements Listener {
     /**
      * Will dye the text of a portals sign if the player is holding a dye and has enough permissions
      *
-     * @param event <p>The interact event causing this method to be triggered</p>
+     * @param event  <p>The interact event causing this method to be triggered</p>
      * @param portal <p> Portal to dye <p>
      * @return Whether the portal should be dyed
      */
@@ -90,7 +90,7 @@ public class PlayerEventListener implements Listener {
         PermissionManager permissionManager = new PermissionManager(event.getPlayer());
         StargateCreateEvent colorSignPermission = new StargateCreateEvent(event.getPlayer(), portal, new String[]{""},
                 0);
-        if (!itemIsColor(item) || !permissionManager.hasPerm(colorSignPermission)) {
+        if (!itemIsColor(item) || !permissionManager.hasPermission(colorSignPermission)) {
             return false;
         }
         return true;
