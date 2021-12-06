@@ -322,7 +322,7 @@ public class SQLQueryGenerator {
     }
 
 
-    public PreparedStatement generateUpdateServerInfoStatus(Connection conn, String serverName, UUID serverUUID, String prefix) throws SQLException {
+    public PreparedStatement generateUpdateServerInfoStatus(Connection conn, String serverName, UUID serverUUID) throws SQLException {
         String statementString = "REPLACE INTO {ServerInfo}(serverId, serverName)"
                 + " VALUES(?,?);";
         String statementMessage = replaceKnownTableNames(statementString);
@@ -330,7 +330,6 @@ public class SQLQueryGenerator {
         PreparedStatement statement = conn.prepareStatement(statementMessage);
         statement.setString(1, serverUUID.toString());
         statement.setString(2, serverName);
-        statement.setString(3, prefix);
         return statement;
     }
 
