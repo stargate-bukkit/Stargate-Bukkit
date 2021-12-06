@@ -101,7 +101,7 @@ public class Teleporter {
         }
 
         if (!hasPerm(target)) {
-            target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.DENY, true));
+            target.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.DENY));
             //For non math guys: teleport entity to the exit of the portal it entered. Also turn the entity around 180 degrees
             teleport(target, origin.getExit(), Math.PI);
             return;
@@ -109,7 +109,7 @@ public class Teleporter {
 
 
         if (target instanceof Player && !charge((Player) target)) {
-            target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
+            target.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             teleport(target, origin.getExit(), 180);
             Player player = (Player) target;
             nearbyLeashedEntityTeleport(player, rotation);
@@ -151,7 +151,7 @@ public class Teleporter {
 
     private void teleport(Entity target, Location exitpoint) {
         target.teleport(exitpoint);
-        target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT, false));
+        target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT));
     }
 
     private boolean charge(Player target) {

@@ -38,7 +38,7 @@ public class LanguageManager {
         translatedStrings = loadLanguage(language);
         backupStrings = loadLanguage(defaultLanguage);
     }
-
+    
     /**
      * Gets a translated message
      *
@@ -48,14 +48,18 @@ public class LanguageManager {
      * @param isError <p>Whether the message should be formatted as an error message</p>
      * @return <p>A translated and formatted message</p>
      */
-    public String getMessage(TranslatableMessage key, boolean isError) {
+    private String compileMessage(TranslatableMessage key, boolean isError) {
         String prefix = (isError ? ChatColor.RED : ChatColor.GREEN) + getString(TranslatableMessage.PREFIX);
         String message = getString(key).replaceAll("(&([a-f0-9]))", "\u00A7$2");
         return prefix + ChatColor.WHITE + message;
     }
     
     public String getErrorMessage(TranslatableMessage key) {
-        return getMessage(key,true);
+        return compileMessage(key,true);
+    }
+    
+    public String getMessage(TranslatableMessage key) {
+        return compileMessage(key,false);
     }
 
     /**

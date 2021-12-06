@@ -293,7 +293,7 @@ public abstract class Portal implements IPortal {
 
         IPortal destination = loadDestination();
         if (destination == null) {
-            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.INVALID, true));
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID));
             return;
         }
         PermissionManager permissionManager = new PermissionManager(player);
@@ -363,7 +363,7 @@ public abstract class Portal implements IPortal {
     public void doTeleport(Entity target) {
         IPortal destination = getFinalDestination();
         if (destination == null) {
-            target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.INVALID, true));
+            target.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID));
             teleportHere(target, this);
             return;
         }

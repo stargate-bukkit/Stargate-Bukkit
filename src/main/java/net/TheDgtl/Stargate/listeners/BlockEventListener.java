@@ -58,7 +58,7 @@ public class BlockEventListener implements Listener {
         Portal portal = Network.getPortal(location, GateStructureType.FRAME);
         if (portal != null) {
             Supplier<Boolean> destroyAction = () -> {
-                String msg = Stargate.languageManager.getMessage(TranslatableMessage.DESTROY, false);
+                String msg = Stargate.languageManager.getErrorMessage(TranslatableMessage.DESTROY);
                 event.getPlayer().sendMessage(msg);
 
                 portal.destroy();
@@ -95,7 +95,7 @@ public class BlockEventListener implements Listener {
                     !Stargate.economyManager.chargeAndTax(event.getPlayer(),
                             stargateDestroyEvent.getCost())) {
                 event.getPlayer().sendMessage(
-                        Stargate.languageManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
+                        Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
                 event.setCancelled(true);
                 return;
             }
@@ -176,9 +176,9 @@ public class BlockEventListener implements Listener {
         } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINE, "No Gate format matches");
         } catch (GateConflictException gateConflictException) {
-            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.GATE_CONFLICT, true));
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
         } catch (NameErrorException nameErrorException) {
-            player.sendMessage(Stargate.languageManager.getMessage(nameErrorException.getErrorMessage(), true));
+            player.sendMessage(Stargate.languageManager.getErrorMessage(nameErrorException.getErrorMessage()));
         }
     }
 
@@ -210,7 +210,7 @@ public class BlockEventListener implements Listener {
         Stargate.log(Level.CONFIG, " player has perm = " + hasPerm);
 
         if (errorMessage != null) {
-            player.sendMessage(Stargate.languageManager.getMessage(errorMessage, true));
+            player.sendMessage(Stargate.languageManager.getErrorMessage(errorMessage));
             return;
         }
 
@@ -227,13 +227,13 @@ public class BlockEventListener implements Listener {
 
         if (shouldChargePlayer(player, portal, BypassPermission.COST_CREATE) &&
                 !Stargate.economyManager.chargeAndTax(player, sEvent.getCost())) {
-            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.LACKING_FUNDS, true));
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return;
         }
         selectedNetwork.addPortal(portal, true);
         selectedNetwork.updatePortals();
         Stargate.log(Level.FINE, "A Gate format matches");
-        player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE, false));
+        player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE));
     }
 
     /**
