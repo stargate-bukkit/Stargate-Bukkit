@@ -98,15 +98,15 @@ public class VirtualPortal implements IPortal {
     }
 
     @Override
-    public void setNetwork(Network targetNet) {
-        this.network = targetNet;
+    public void setNetwork(Network targetNetwork) {
+        this.network = targetNetwork;
     }
 
     /**
      * TODO Not implemented
      */
     @Override
-    public void setOverrideDestination(IPortal destination) {
+    public void overrideDestination(IPortal destination) {
     }
 
     @Override
@@ -151,7 +151,7 @@ public class VirtualPortal implements IPortal {
     }
 
     @Override
-    public Location getSignPos() {
+    public Location getSignLocation() {
         return null;
     }
 
