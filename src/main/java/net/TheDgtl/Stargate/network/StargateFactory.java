@@ -269,6 +269,18 @@ public class StargateFactory {
         PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn, Stargate.serverName, Stargate.serverUUID, PREFIX);
         statement.execute();
         statement.close();
+        
+        for (InterServerNetwork net : bungeeNetList.values()) {
+            for (IPortal portal : net.getAllPortals()) {
+                /*
+                 * Virtual portal = portals on other servers
+                 */
+                if (portal instanceof VirtualPortal)
+                    continue;
+
+                setInterServerPortalOnlineStatus(portal, true);
+            }
+        }
         conn.close();
     }
 
