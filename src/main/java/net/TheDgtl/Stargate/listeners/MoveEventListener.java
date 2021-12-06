@@ -17,75 +17,96 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A listener for relevant move events, such as a player entering a stargate
+ */
 public class MoveEventListener implements Listener {
+
+    /**
+     * Listens for and cancels any default vehicle portal events caused by stargates
+     *
+     * @param event <p>The triggered entity portal event</p>
+     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityPortalTeleport(@NotNull EntityPortalEvent event) {
-        if (!(event.getEntity() instanceof Vehicle))
+        if (!(event.getEntity() instanceof Vehicle)) {
             return;
+        }
 
         if (Network.isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
             event.setCancelled(true);
         }
     }
 
+    /**
+     * Listens for and cancels any default player teleportation events caused by stargates
+     *
+     * @param event <p>The triggered player teleportation event</p>
+     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
-        // cancel portal and end-gateway teleportation if it's from a Stargate entrance
         PlayerTeleportEvent.TeleportCause cause = event.getCause();
+        World world = event.getFrom().getWorld();
 
-        /*
-         * A refactor of the legacy version, I don't know the exact purpose of the
-         * end_gateway logic, but it's there now, This is done to avoid players from
-         * teleporting in the vanilla way:
-         *
-         * Check if the cause is one of the critical scenarios, if not the case return.
-         */
-
-        switch (cause) {
-            case END_GATEWAY:
-                World world = event.getFrom().getWorld();
-                if (world != null && World.Environment.THE_END == world.getEnvironment()) {
-                    break;
-                }
-                return;
-            case NETHER_PORTAL:
-                break;
-            default:
-                return;
+        if (cause != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL &&
+                (cause != PlayerTeleportEvent.TeleportCause.END_GATEWAY || world == null ||
+                        world.getEnvironment() != World.Environment.THE_END)) {
+            return;
         }
+
         if (Network.isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
             event.setCancelled(true);
         }
     }
 
+    /**
+     * Listens for any player movement and teleports the player if entering a stargate
+     *
+     * @param event <p>The triggered player move event</p>
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerMove(@NotNull PlayerMoveEvent event) {
         onAnyMove(event.getPlayer(), event.getTo(), event.getFrom());
     }
 
+    /**
+     * Listens for any vehicle movement and teleports the vehicle if entering a stargate
+     *
+     * @param event <p>The triggered vehicle move event</p>
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleMove(VehicleMoveEvent event) {
-        //TODO: not currently implemented
-        if (event.getVehicle() instanceof PoweredMinecart)
+        //TODO: Find a proper way of handling powered minecarts
+        if (event.getVehicle() instanceof PoweredMinecart) {
             return;
+        }
         onAnyMove(event.getVehicle(), event.getTo(), event.getFrom());
     }
 
-    private void onAnyMove(Entity target, Location to, Location from) {
+    /**
+     * Checks if a move event causes the target to enter a stargate, and teleports the target if necessary
+     *
+     * @param target       <p>The target that moved</p>
+     * @param toLocation   <p>The location the target moved to</p>
+     * @param fromLocation <p>The location the target moved from</p>
+     */
+    private void onAnyMove(Entity target, Location toLocation, Location fromLocation) {
         // Check if entity moved one block (its only possible to have entered a portal if that's the case)
-        if (to == null || from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY()
-                && from.getBlockZ() == to.getBlockZ()) {
+        if (toLocation == null ||
+                fromLocation.getBlockX() == toLocation.getBlockX() &&
+                        fromLocation.getBlockY() == toLocation.getBlockY() &&
+                        fromLocation.getBlockZ() == toLocation.getBlockZ()) {
             return;
         }
 
-        Portal portal = Network.getPortal(to, GateStructureType.IRIS);
-        if (portal == null || !portal.isOpen())
+        Portal portal = Network.getPortal(toLocation, GateStructureType.IRIS);
+        if (portal == null || !portal.isOpen()) {
             return;
+        }
 
-        /*
-         * Real velocity does not seem to work
-         */
-        target.setVelocity(to.toVector().subtract(from.toVector()));
+        //Real velocity does not seem to work
+        target.setVelocity(toLocation.toVector().subtract(fromLocation.toVector()));
         portal.onIrisEntrance(target);
     }
+
 }
