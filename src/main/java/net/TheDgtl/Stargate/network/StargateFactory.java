@@ -52,13 +52,15 @@ public class StargateFactory {
 
     public StargateFactory(Stargate stargate) throws SQLException {
         database = loadDatabase(stargate);
-        useInterServerNetworks = (Settings.getBoolean(Setting.USING_REMOTE_DATABASE) && Settings.getBoolean(Setting.USING_BUNGEE));
+        useInterServerNetworks = (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)
+                && Settings.getBoolean(Setting.USING_BUNGEE));
         PREFIX = Settings.getString(Setting.BUNGEE_INSTANCE_NAME);
-        TableNameConfig config = new TableNameConfig("SG_", "");
-        DriverEnum databaseEnum = Settings.getBoolean(Setting.USING_REMOTE_DATABASE) ? DriverEnum.MYSQL : DriverEnum.SQLITE;
+        String serverPrefix = Settings.getBoolean(Setting.USING_REMOTE_DATABASE) ? Stargate.serverUUID.toString() : "";
+        TableNameConfig config = new TableNameConfig(PREFIX, serverPrefix);
+        DriverEnum databaseEnum = Settings.getBoolean(Setting.USING_REMOTE_DATABASE) ? DriverEnum.MYSQL
+                : DriverEnum.SQLITE;
         this.sqlMaker = new SQLQueryGenerator(config, Stargate.getInstance(), databaseEnum);
         createTables();
-
 
         Stargate.log(Level.FINER, "Loading portals from base database");
         loadAllPortals(database, PortalType.LOCAL);
@@ -264,13 +266,19 @@ public class StargateFactory {
 
     public void startInterServerConnection() throws SQLException {
         Connection conn = database.getConnection();
-        for (Network net : bungeeNetList.values()) {
+        PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn, Stargate.serverName, Stargate.serverUUID);
+        statement.execute();
+        statement.close();
+        
+        for (InterServerNetwork net : bungeeNetList.values()) {
             for (IPortal portal : net.getAllPortals()) {
+                /*
+                 * Virtual portal = portals on other servers
+                 */
                 if (portal instanceof VirtualPortal)
                     continue;
-                PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn, Stargate.serverName, Stargate.serverUUID, PREFIX);
-                statement.execute();
-                statement.close();
+
+                setInterServerPortalOnlineStatus(portal, true);
             }
         }
         conn.close();
