@@ -209,7 +209,8 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                 IPortal destinationPortal = network.getPortal(portalName);
                 destinationPortal.teleportHere(player, null);
             } catch (NullPointerException e) {
-                player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_EMPTY));
+                //TODO messaging: this message is misleading
+                player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_EMPTY)); 
             }
         }
     }
