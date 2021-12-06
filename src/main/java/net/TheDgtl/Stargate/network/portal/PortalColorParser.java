@@ -111,7 +111,7 @@ public class PortalColorParser {
 
     private ChatColor getNameColor(IPortal portal, boolean isLightSign) {
         Stargate.log(Level.FINEST, " Gate " + portal.getName() + " has flags: " + portal.getAllFlagsString());
-        ChatColor[] colors = new ChatColor[]{getDefaultColor(true), getDefaultColor(false)};
+        ChatColor[] colors = new ChatColor[]{getColor(true), getColor(false)};
 
         if (portal.hasFlag(PortalFlag.BACKWARDS)) {
             colors = new ChatColor[]{ChatColor.of("#240023"), ChatColor.of("#b3baff")};
