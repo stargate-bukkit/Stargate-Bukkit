@@ -2,14 +2,9 @@ package net.TheDgtl.Stargate.listeners;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import net.TheDgtl.Stargate.PermissionManager;
-import net.TheDgtl.Stargate.PluginChannel;
-import net.TheDgtl.Stargate.Setting;
-import net.TheDgtl.Stargate.Settings;
-import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.*;
+import net.TheDgtl.Stargate.actions.ConditionalDelayedAction;
 import net.TheDgtl.Stargate.actions.ConditionalRepeatedTask;
-import net.TheDgtl.Stargate.actions.SimpleAction;
-import net.TheDgtl.Stargate.actions.SupplierAction;
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
@@ -34,19 +29,27 @@ import java.sql.SQLException;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
+/**
+ * A listener for relevant player events such as right- or left-clicking
+ */
 public class PlayerEventListener implements Listener {
+
     private static long eventTime;
     private static PlayerInteractEvent previousEvent;
 
+    /**
+     * Listens for and handles any relevant interaction events such as sign or button interaction
+     *
+     * @param event <p>The triggered player interact event</p>
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
-        if (block == null)
+        if (block == null) {
             return;
+        }
         Action action = event.getAction();
-        if (action == Action.RIGHT_CLICK_BLOCK && event.getPlayer().isSneaking())
-            return;
-        if (this.clickIsBug(event, block)) {
+        if ((action == Action.RIGHT_CLICK_BLOCK && event.getPlayer().isSneaking()) || this.clickIsBug(event)) {
             return;
         }
 
@@ -55,65 +58,81 @@ public class PlayerEventListener implements Listener {
         if (portal == null) {
             return;
         }
-        Material blockMat = block.getType();
+
+        handleRelevantClickEvent(block, portal, event);
+    }
+
+    /**
+     * Handles a right-click event that is known to be relevant
+     *
+     * @param block  <p>The block that was interacted with</p>
+     * @param portal <p>The portal the block belongs to</p>
+     * @param event  <p>The player interact event to handle</p>
+     */
+    private void handleRelevantClickEvent(Block block, Portal portal, PlayerInteractEvent event) {
+        Material blockMaterial = block.getType();
         Player player = event.getPlayer();
 
-        if (Tag.WALL_SIGNS.isTagged(blockMat)) {
+        if (Tag.WALL_SIGNS.isTagged(blockMaterial)) {
             if (portal.isOpenFor(player)) {
                 Stargate.log(Level.FINEST, "Player name=" + player.getName());
                 portal.onSignClick(event);
             }
-            if (isDyePortalSignText(event, portal)) {
+            if (dyePortalSignText(event, portal)) {
                 portal.setSignColor(ColorConverter.getDyeColorFromMaterial(event.getMaterial()));
             } else {
                 event.setUseInteractedBlock(Event.Result.DENY);
             }
-            return;
-        }
-        if (Tag.BUTTONS.isTagged(blockMat) || (blockMat == Material.DEAD_TUBE_CORAL_WALL_FAN)) {
+        } else if (Tag.BUTTONS.isTagged(blockMaterial) || (blockMaterial == Material.DEAD_TUBE_CORAL_WALL_FAN)) {
             portal.onButtonClick(event);
-            return;
+        } else {
+            Stargate.log(Level.WARNING, "This should never be triggered, an unknown glitch is occurring");
         }
-
-        Stargate.log(Level.WARNING, "This should never be triggered, an unknown glitch is occurring");
     }
 
     /**
-     * Will dye the text of a portals sign if the player is holding a dye and has enough permissions
+     * Tries to dye the text of a portals sign if the player is holding a dye and has enough permissions
      *
      * @param event  <p>The interact event causing this method to be triggered</p>
-     * @param portal <p> Portal to dye <p>
-     * @return Whether the portal should be dyed
+     * @param portal <p>The portal whose sign to apply dye to<p>
+     * @return <p>True if the dye should be applied</p>
      */
-    private boolean isDyePortalSignText(PlayerInteractEvent event, Portal portal) {
+    private boolean dyePortalSignText(PlayerInteractEvent event, Portal portal) {
         ItemStack item = event.getItem();
         PermissionManager permissionManager = new PermissionManager(event.getPlayer());
         StargateCreateEvent colorSignPermission = new StargateCreateEvent(event.getPlayer(), portal, new String[]{""},
                 0);
-        if (!itemIsColor(item) || !permissionManager.hasPermission(colorSignPermission)) {
-            return false;
-        }
-        return true;
+        return itemIsDye(item) && permissionManager.hasPermission(colorSignPermission);
     }
 
-
-    private boolean itemIsColor(ItemStack item) {
-        if (item == null)
+    /**
+     * Checks if the given item stack is a type of dye
+     *
+     * @param item <p>The item to check</p>
+     * @return <p>True if the item stack is a type of dye</p>
+     */
+    private boolean itemIsDye(ItemStack item) {
+        if (item == null) {
             return false;
-
+        }
         String itemName = item.getType().toString();
         return (itemName.contains("DYE") || itemName.contains("GLOW_INK_SAC"));
     }
 
+    /**
+     * Listens for any player join events that might be relevant for BungeeCord
+     *
+     * @param event <p>The triggered player join event</p>
+     */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (!Settings.getBoolean(Setting.USING_BUNGEE))
             return;
 
+        //Gets the name of this server if it's still unknown
         if (!Stargate.knowsServerName) {
             Stargate.log(Level.FINEST, "First time player join");
             getBungeeServerName();
-            updateInterServerPortals();
         }
 
         Player player = event.getPlayer();
@@ -130,9 +149,7 @@ public class PlayerEventListener implements Listener {
      * this stupid solution
      */
     private void getBungeeServerName() {
-        /*
-         * Action for loading bungee server id
-         */
+        //Action for loading bungee server id
         Supplier<Boolean> action = (() -> {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF(PluginChannel.GET_SERVER.getChannel());
@@ -141,22 +158,26 @@ public class PlayerEventListener implements Listener {
             return true;
         });
 
-        /*
-         * Repeatedly try to load bungee server id until either the id is known, or no player is able to send bungee messages.
-         */
+        //Repeatedly try to load bungee server id until either the id is known, or no player is able to send bungee messages.
         Stargate.syncSecPopulator.addAction(new ConditionalRepeatedTask(action,
                 () -> !((Stargate.knowsServerName) || (1 > Bukkit.getServer().getOnlinePlayers().size()))));
+
+        //Update the server name in the database once it's known
+        updateServerName();
     }
 
-    private void updateInterServerPortals() {
-        SimpleAction action = new SupplierAction(() -> {
+    /**
+     * Updates this server's name in the database if necessary
+     */
+    private void updateServerName() {
+        ConditionalDelayedAction action = new ConditionalDelayedAction(() -> {
             try {
                 Stargate.factory.startInterServerConnection();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
             return true;
-        });
+        }, () -> Stargate.knowsServerName);
         Stargate.syncSecPopulator.addAction(action, true);
 
     }
@@ -169,10 +190,9 @@ public class PlayerEventListener implements Listener {
      * clicking once the bug is fixed.</p>
      *
      * @param event <p>The event causing the right click</p>
-     * @param block <p>The block to check</p>
      * @return <p>True if the click is a bug and should be cancelled</p>
      */
-    private boolean clickIsBug(PlayerInteractEvent event, Block block) {
+    private boolean clickIsBug(PlayerInteractEvent event) {
         if (previousEvent != null &&
                 event.getPlayer() == previousEvent.getPlayer() && eventTime + 15 > System.currentTimeMillis()) {
             previousEvent = null;
@@ -183,4 +203,5 @@ public class PlayerEventListener implements Listener {
         eventTime = System.currentTimeMillis();
         return false;
     }
+
 }
