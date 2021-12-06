@@ -266,15 +266,9 @@ public class StargateFactory {
 
     public void startInterServerConnection() throws SQLException {
         Connection conn = database.getConnection();
-        for (Network net : bungeeNetList.values()) {
-            for (IPortal portal : net.getAllPortals()) {
-                if (portal instanceof VirtualPortal)
-                    continue;
-                PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn, Stargate.serverName, Stargate.serverUUID, PREFIX);
-                statement.execute();
-                statement.close();
-            }
-        }
+        PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn, Stargate.serverName, Stargate.serverUUID, PREFIX);
+        statement.execute();
+        statement.close();
         conn.close();
     }
 
