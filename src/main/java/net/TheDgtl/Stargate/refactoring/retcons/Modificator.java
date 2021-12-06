@@ -8,7 +8,7 @@ public abstract class Modificator {
      * @param oldSetting a string where index 0 is the key, and index 1 is the value
      * @return new setting where index 0 is the key, and index 1 is the value
      */
-    protected Object[] getNewSetting(Object[] oldSetting) {
+    protected SettingSet getNewSetting(SettingSet oldSetting) {
         return oldSetting;
     }
 
@@ -18,21 +18,21 @@ public abstract class Modificator {
      */
     public Map<String, Object> run(Map<String, Object> oldConfig) {
 
-        return recursiveConfigScroller(oldConfig);
+        return configScroller(oldConfig);
     }
 
     public abstract int getConfigNumber();
 
-    private Map<String, Object> recursiveConfigScroller(Map<String, Object> config) {
+    private Map<String, Object> configScroller(Map<String, Object> config) {
         Map<String, Object> replacementConfig = new HashMap<>();
         for (String key : config.keySet()) {
-            Object[] oldSetting = new Object[]{key, config.get(key)};
+            SettingSet oldSetting = new SettingSet(key, config.get(key));
 
-            Object[] newSetting = getNewSetting(oldSetting);
+            SettingSet newSetting = getNewSetting(oldSetting);
             if (newSetting == null) {
-                newSetting = oldSetting;
+                continue;
             }
-            replacementConfig.put((String) newSetting[0], newSetting[1]);
+            replacementConfig.put(newSetting.key, newSetting.value);
         }
         return replacementConfig;
     }

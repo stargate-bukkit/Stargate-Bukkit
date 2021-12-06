@@ -385,17 +385,6 @@ public abstract class Portal implements IPortal {
         close(false);
     }
 
-    public static IPortal createPortalFromSign(Network net, String[] lines, Block block, Set<PortalFlag> flags, UUID ownerUUID)
-            throws NameErrorException, NoFormatFoundException, GateConflictException {
-        if (flags.contains(PortalFlag.BUNGEE))
-            return new BungeePortal(net, lines[0], lines[1], lines[2], block, flags, ownerUUID);
-        if (flags.contains(PortalFlag.RANDOM))
-            return new RandomPortal(net, lines[0], block, flags, ownerUUID);
-        if (flags.contains(PortalFlag.NETWORKED))
-            return new NetworkedPortal(net, lines[0], block, flags, ownerUUID);
-        return new FixedPortal(net, lines[0], lines[1], block, flags, ownerUUID);
-    }
-
     @Override
     public String getName() {
         return name;

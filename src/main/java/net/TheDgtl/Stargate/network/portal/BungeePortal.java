@@ -39,7 +39,7 @@ public class BungeePortal extends Portal {
     private final LegacyVirtualPortal targetPortal;
     private final String serverDestination;
 
-    BungeePortal(Network network, String name, String destination, String serverDestination, Block sign, Set<PortalFlag> flags, UUID ownerUUID)
+    public BungeePortal(Network network, String name, String destination, String serverDestination, Block sign, Set<PortalFlag> flags, UUID ownerUUID)
             throws NameErrorException, NoFormatFoundException, GateConflictException {
         super(network, name, sign, flags, ownerUUID);
 

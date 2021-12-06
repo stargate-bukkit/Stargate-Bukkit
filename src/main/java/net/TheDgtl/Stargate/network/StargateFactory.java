@@ -17,6 +17,7 @@ import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
+import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -241,7 +242,7 @@ public class StargateFactory {
 
 
             try {
-                IPortal portal = Portal.createPortalFromSign(net, virtualSign, block, flags, ownerUUID);
+                IPortal portal = PortalCreationHelper.createPortalFromSign(net, virtualSign, block, flags, ownerUUID);
                 net.addPortal(portal, false);
                 Stargate.log(Level.FINEST, "Added as normal portal");
                 if (isBungee) {

@@ -17,6 +17,8 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.util.PortalCreationHelper;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -200,7 +202,7 @@ public class BlockEventListener implements Listener {
     private void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation, Set<PortalFlag> flags,
                                    Player player, int cost, PermissionManager permissionManager, TranslatableMessage errorMessage)
             throws NameErrorException, GateConflictException, NoFormatFoundException {
-        IPortal portal = Portal.createPortalFromSign(selectedNetwork, lines, signLocation, flags, player.getUniqueId());
+        IPortal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, signLocation, flags, player.getUniqueId());
         StargateCreateEvent sEvent = new StargateCreateEvent(player, portal, lines, cost);
 
 

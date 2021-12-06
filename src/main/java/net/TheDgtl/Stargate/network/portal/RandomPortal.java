@@ -16,7 +16,7 @@ public class RandomPortal extends Portal {
 
     private final Random randomizer = new Random();
 
-    RandomPortal(Network network, String name, Block sign, Set<PortalFlag> flags, UUID ownerUUID) throws NameErrorException, NoFormatFoundException, GateConflictException {
+    public RandomPortal(Network network, String name, Block sign, Set<PortalFlag> flags, UUID ownerUUID) throws NameErrorException, NoFormatFoundException, GateConflictException {
         super(network, name, sign, flags, ownerUUID);
     }
 

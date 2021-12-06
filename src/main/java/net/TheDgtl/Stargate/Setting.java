@@ -15,7 +15,7 @@ public enum Setting {
     /**
      * The language used for all translatable messages
      */
-    LANGUAGE("lang"),
+    LANGUAGE("language"),
 
     /**
      * Whether BungeeCord functionality is enabled

@@ -26,7 +26,7 @@
 #
 # If SG isn't yet available in your language, please consider becoming a translator:
 # https://dev.bukkit.org/projects/stargate10/localization
-lang: en
+language: en
 
 bungee:
   # Are you connected to a bungee-compatible proxy?
@@ -96,6 +96,9 @@ networkLimit: -1
 #   [minecarts, boats, & saddled mobs = vehicles | players & mobs = passengers]
 handleVehicles: true
 
+
+handleLeashedCreatures: true
+
 # Will the server re-verify all existing portals on startup?
 # 
 # This checks that the expected gates are both present and using a valid layout.
@@ -104,13 +107,6 @@ handleVehicles: true
 # …««»»…  If you set this to true, you should ensure checkTraversables (below) is set to false!
 # “NOTE”  Otherwise, disallowed players, block updates, and snowmen can invalidate your portals!
 checkPortalValidity: false
-
-# Should the portal verification process account for 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 (open/closed) materials?
-# i.e. will a gate still validate if its portal-closed material isn't present?
-# 
-# When enabled, this setting makes gate validation more comprehensive;
-# 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 blocks will no longer be able to overwrite existing blocks.
-checkTraversables: false
 
 # SG protects gate 𝑓𝑟𝑎𝑚𝑒 materials; should it also protect gate 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 (open/closed) materials?
 # ex. in nether.gate, should nether_portal be protected?
@@ -176,8 +172,6 @@ signStyle:
   pointer: 4
   # [1: selected gates coloured, 2: all gates coloured, 3: no gates coloured]
   listing: 3
-# When scrolling through a networked portal's destination list, will free gates be shown in GREEN?
-highlightFreeGates: false
 
 # For networked gates, are destinations listed alphabetically instead of chronologically?
 # (This applies to all gates that are neither fixed, random, nor terminals)
