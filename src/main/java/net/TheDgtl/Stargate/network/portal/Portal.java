@@ -32,6 +32,7 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -45,6 +46,14 @@ import java.util.logging.Level;
  * @author Thorin
  */
 public abstract class Portal implements IPortal {
+    /**
+     * Used in bstats metrics
+     */
+    public static int portalCount = 0;
+    /**
+     * Used for bstats metrics, this is every flag that has been used by all portals
+     */
+    public static EnumSet<PortalFlag> allUsedFlags = EnumSet.noneOf(PortalFlag.class);
     /**
      *
      */
@@ -108,6 +117,9 @@ public abstract class Portal implements IPortal {
 
         if (hasFlag(PortalFlag.ALWAYS_ON))
             this.open(null);
+        
+        Portal.portalCount++;
+        Portal.allUsedFlags.addAll(flags);
     }
 
     /**

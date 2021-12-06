@@ -33,6 +33,7 @@ public class GateFormat {
 
     public final String name;
     public final boolean isIronDoorBlockable;
+    public static int formatAmount = 0;
 
     /**
      * Instantiates a new gate format
@@ -50,6 +51,7 @@ public class GateFormat {
         portalParts.put(GateStructureType.CONTROL_BLOCK, controlBlocks);
         this.name = name;
         this.isIronDoorBlockable = isIronDoorBlockable;
+        GateFormat.formatAmount++;
     }
 
     /**

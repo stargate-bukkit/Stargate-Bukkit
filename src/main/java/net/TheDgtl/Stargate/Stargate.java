@@ -27,6 +27,7 @@ import net.TheDgtl.Stargate.listeners.WorldEventListener;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.util.BStatsHelper;
 import net.TheDgtl.Stargate.util.FileHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bstats.bukkit.Metrics;
@@ -108,9 +109,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     @Override
     public void onEnable() {
         instance = this;
-        // Registers bstats metrics
-        int pluginId = 10451;
-        new Metrics(this, pluginId);
 
         loadConfig();
         loadColors();
@@ -135,6 +133,11 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         BukkitScheduler scheduler = getServer().getScheduler();
         scheduler.scheduleSyncRepeatingTask(this, syncTickPopulator, 0L, 1L);
         scheduler.scheduleSyncRepeatingTask(this, syncSecPopulator, 0L, 20L);
+        
+
+        // Registers bstats metrics
+        int pluginId = 10451;
+        Metrics metrics = BStatsHelper.getMetrics(pluginId, this);
     }
 
     private void loadBungeeServerName() {
