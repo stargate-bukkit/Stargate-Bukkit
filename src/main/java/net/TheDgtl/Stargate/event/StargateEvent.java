@@ -22,6 +22,7 @@ import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -102,9 +103,9 @@ public abstract class StargateEvent extends Event implements Cancellable {
         return custom;
     }
 
-    protected Permission compileWorldPerm(String permissionIdentifier) {
+    protected Permission compileWorldPerm(String permissionIdentifier, Location loc) {
         Permission parent = pm.getPermission(permissionIdentifier + ".world");
-        World world = portal.getSignPos().getWorld();
+        World world = loc.getWorld();
         if (world == null) {
             return null;
         }
@@ -128,7 +129,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
 
     protected List<Permission> defaultPermCompile(String permIdentifier, String activatorUUID) {
         List<Permission> permList = new ArrayList<>(compileFlagPerms(permIdentifier));
-        permList.add(compileWorldPerm(permIdentifier));
+        permList.add(compileWorldPerm(permIdentifier,portal.getSignPos()));
         permList.add(compileNetworkPerm(permIdentifier, activatorUUID));
         permList.add(compileDesignPerm(permIdentifier));
         return permList;

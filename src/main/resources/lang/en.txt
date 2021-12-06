@@ -18,7 +18,7 @@ createPersonal=Creating gate on personal network
 createNameLength=Name too short or too long.
 createExists=A gate by that name already exists
 createFull=This network is full
-createWorldDeny=You do not have access to that world
+createWorldDeny=You do not have access to the %world% world
 createConflict=Gate conflicts with existing gate
 
 signRightClick=Right click

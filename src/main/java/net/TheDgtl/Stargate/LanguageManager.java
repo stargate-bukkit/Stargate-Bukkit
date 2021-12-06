@@ -53,6 +53,10 @@ public class LanguageManager {
         String message = getString(key).replaceAll("(&([a-f0-9]))", "\u00A7$2");
         return prefix + ChatColor.WHITE + message;
     }
+    
+    public String getErrorMessage(TranslatableMessage key) {
+        return getMessage(key,true);
+    }
 
     /**
      * Gets a translated string

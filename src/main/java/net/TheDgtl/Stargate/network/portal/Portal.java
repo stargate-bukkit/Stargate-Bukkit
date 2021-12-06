@@ -298,8 +298,13 @@ public abstract class Portal implements IPortal {
         }
         PermissionManager permissionManager = new PermissionManager(player);
         StargateOpenEvent oEvent = new StargateOpenEvent(player, this, false);
-        if (!permissionManager.hasPermission(oEvent) || oEvent.isCancelled())
+        if (!permissionManager.hasPermission(oEvent)) {
+            event.getPlayer().sendMessage(permissionManager.getDenyMessage());
             return;
+        }
+        if (oEvent.isCancelled()) {
+            return;
+        }
 
         this.destination = destination;
         open(player);

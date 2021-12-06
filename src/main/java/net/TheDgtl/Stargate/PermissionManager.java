@@ -4,6 +4,7 @@ import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateEvent;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -26,9 +27,10 @@ import java.util.logging.Level;
 public class PermissionManager {
 
     private final Entity target;
-    private TranslatableMessage denyMessage;
+    private String denyMessage;
     private Chat metadataProvider;
     private final boolean canProcessMetaData;
+    private LanguageManager languageManager;
 
     private final static String FLAG_PERMISSION = "sg.create.type.";
     private final static String CREATE_PERMISSION = "sg.create.network";
@@ -39,8 +41,13 @@ public class PermissionManager {
      * @param target <p>The entity to check permissions for</p>
      */
     public PermissionManager(Entity target) {
+        this(target, Stargate.languageManager);
+    }
+    
+    public PermissionManager(Entity target, LanguageManager languageManager) {
         this.target = target;
         canProcessMetaData = setupMetadataProvider();
+        this.languageManager = languageManager;
     }
 
     /**
@@ -96,25 +103,51 @@ public class PermissionManager {
             Stargate.log(Level.FINEST, " checking permission " + ((relatedPermission != null) ?
                     relatedPermission.getName() : "null"));
             if (relatedPermission != null && !target.hasPermission(relatedPermission)) {
-                denyMessage = TranslatableMessage.NET_DENY;
+                denyMessage = determineTranslatableMessageFromPermission(relatedPermission);
                 return false;
             }
         }
 
         if ((event instanceof StargateCreateEvent) && event.getPortal().hasFlag(PortalFlag.PERSONAL_NETWORK) &&
                 canProcessMetaData && target instanceof Player) {
-            return !checkIfNetworkIsFull(event.getPortal().getNetwork());
+            return !isNetworkFull(event.getPortal().getNetwork());
         }
         return true;
     }
 
+    public String determineTranslatableMessageFromPermission(Permission permission) {
+        String permissionNode = permission.getName();
+        if(permissionNode.contains("create") || permissionNode.contains("use")) {
+            if(permissionNode.contains("world")) {
+                String unformattedMessage = languageManager.getErrorMessage(TranslatableMessage.WORLD_DENY);
+                String worldName = permissionNode.split(".world.")[1];
+                return TranslatableMessageFormatter.compileWorld(unformattedMessage,worldName);
+            }
+            if(permissionNode.contains("network"))
+                return languageManager.getErrorMessage(TranslatableMessage.NET_DENY);
+        }
+        
+        if(permissionNode.contains("create")) {
+            if(permissionNode.contains("design"))
+                return languageManager.getErrorMessage(TranslatableMessage.GATE_DENY);
+            if(permissionNode.contains("type")) {
+                PortalFlag flag =  PortalFlag.valueOf(permissionNode.split(".type.")[1]);
+                if(flag == PortalFlag.BUNGEE || flag == PortalFlag.FANCY_INTER_SERVER) {
+                    return languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DENY);
+                }
+            }
+        }
+        return languageManager.getErrorMessage( TranslatableMessage.DENY );
+        
+    }
+    
     /**
      * Checks if the network given in a stargate create event is full
      *
      * @param network <p>The network to check</p>
      * @return <p>True if the network is full</p>
      */
-    private boolean checkIfNetworkIsFull(Network network) {
+    private boolean isNetworkFull(Network network) {
         Player player = (Player) target;
 
         int maxGates = metadataProvider.getPlayerInfoInteger(target.getWorld().getName(), player,
@@ -131,7 +164,7 @@ public class PermissionManager {
             int existingGatesInNetwork = network.size();
 
             if (existingGatesInNetwork >= maxGates) {
-                denyMessage = TranslatableMessage.NET_FULL;
+                denyMessage = languageManager.getErrorMessage(TranslatableMessage.NET_FULL);
                 return true;
             }
         }
@@ -159,7 +192,7 @@ public class PermissionManager {
             hasPermission = target.hasPermission(CREATE_PERMISSION + ".custom." + network);
         }
         if (!hasPermission) {
-            denyMessage = TranslatableMessage.NET_DENY;
+            denyMessage = languageManager.getErrorMessage(TranslatableMessage.NET_DENY);
         }
         return hasPermission;
     }
@@ -169,7 +202,7 @@ public class PermissionManager {
      *
      * @return <p>The message to display when telling the player the action has been denied</p>
      */
-    public TranslatableMessage getDenyMessage() {
+    public String getDenyMessage() {
         return denyMessage;
     }
 

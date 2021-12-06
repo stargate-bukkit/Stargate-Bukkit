@@ -20,6 +20,8 @@ package net.TheDgtl.Stargate.event;
 
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
+
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
@@ -75,6 +77,10 @@ public class StargateOpenEvent extends StargateEvent {
     @Override
     public List<Permission> getRelatedPerms() {
         String identifier = "sg.use";
-        return super.defaultPermCompile(identifier, player.getUniqueId().toString());
+        List<Permission> permList = super.defaultPermCompile(identifier, player.getUniqueId().toString());
+        Location destinationLoc = destination.getSignPos();
+        if (destinationLoc != null)
+            permList.add(super.compileWorldPerm(identifier, destinationLoc));
+        return permList;
     }
 }

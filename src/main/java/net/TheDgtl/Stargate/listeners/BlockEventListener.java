@@ -214,9 +214,14 @@ public class BlockEventListener implements Listener {
             return;
         }
 
-        if (sEvent.isCancelled() || !hasPerm) {
-            Stargate.log(Level.CONFIG, " Event was cancelled due to perm or external cancellation");
-            player.sendMessage(Stargate.languageManager.getMessage(permissionManager.getDenyMessage(), true));
+        if (!hasPerm) {
+            Stargate.log(Level.CONFIG, " Event was cancelled due to lack of permission");
+            player.sendMessage(permissionManager.getDenyMessage());
+            return;
+        }
+        if(sEvent.isCancelled()){
+            Stargate.log(Level.CONFIG, " Event was cancelled due an external cancellation");
+            player.sendMessage(sEvent.getDenyReason());
             return;
         }
 

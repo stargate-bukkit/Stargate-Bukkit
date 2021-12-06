@@ -63,7 +63,16 @@ public enum TranslatableMessage {
      * The message to display when a player is lacking the permission to access a network
      */
     NET_DENY("createNetDeny"),
-
+    
+    /**
+     * The message to display when a player is lacking permission to create a gateDesign
+     */
+    GATE_DENY("createGateDeny"),
+    
+    /**
+     * The message to display when a player does not have access to a world
+     */
+    WORLD_DENY("createWorldDeny"),
     /**
      * The message to display when a portal or network name exceeds the max length
      */
@@ -107,7 +116,17 @@ public enum TranslatableMessage {
     /**
      * The message to display when a BungeeCord portal if missing a destination or a network
      */
-    BUNGEE_EMPTY("bungeeEmpty");
+    BUNGEE_EMPTY("bungeeEmpty"), 
+    
+    /**
+     * The message to display when a player is lacking permissions to create a bungee or interserver network
+     */
+    BUNGEE_DENY("bungeeDeny"),
+    
+    /**
+     * The message to display when a player tries to interact / create / enter a bungee or interserver gate.
+     */
+    BUNGEE_DISABLED("bungeeDisabled");
 
     private final String key;
     private static final HashMap<String, TranslatableMessage> map = new HashMap<>();

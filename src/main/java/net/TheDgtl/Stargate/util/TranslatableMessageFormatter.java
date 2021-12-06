@@ -9,6 +9,7 @@ public class TranslatableMessageFormatter {
 
     static private final String COST_INSERTION_IDENTIFIER = "%cost%";
     static private final String PORTAL_INSERTION_IDENTIFIER = "%portal%";
+    static private final String WORLD_INSERTION_IDENTIFIER = "%world%";
 
     /**
      * Replaces the %cost% in a translatable message with the actual cost
@@ -30,6 +31,10 @@ public class TranslatableMessageFormatter {
      */
     public static String compilePortal(String unformattedMessage, String portalName) {
         return unformattedMessage.replace(PORTAL_INSERTION_IDENTIFIER, portalName);
+    }
+
+    public static String compileWorld(String unformattedMessage, String worldName) {
+        return unformattedMessage.replace(WORLD_INSERTION_IDENTIFIER, worldName);
     }
 
 }
