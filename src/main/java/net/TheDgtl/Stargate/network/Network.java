@@ -11,7 +11,7 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.IPortal;
-import net.TheDgtl.Stargate.network.portal.NameSurround;
+import net.TheDgtl.Stargate.network.portal.HighlightingStyle;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.md_5.bungee.api.ChatColor;
@@ -298,7 +298,7 @@ public class Network {
     }
 
     public String concatName() {
-        return NameSurround.NETWORK.getSurround(getName());
+        return HighlightingStyle.NETWORK.getHighlightedName(getName());
     }
 
     /**

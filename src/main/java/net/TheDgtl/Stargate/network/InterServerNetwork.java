@@ -12,7 +12,7 @@ import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.portal.IPortal;
-import net.TheDgtl.Stargate.network.portal.NameSurround;
+import net.TheDgtl.Stargate.network.portal.HighlightingStyle;
 import org.bukkit.Bukkit;
 
 import java.io.ByteArrayOutputStream;
@@ -98,7 +98,7 @@ public class InterServerNetwork extends Network {
 
     @Override
     public String concatName() {
-        return NameSurround.BUNGEE.getSurround(getName());
+        return HighlightingStyle.BUNGEE.getHighlightedName(getName());
     }
 
     @Override

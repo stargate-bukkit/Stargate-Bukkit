@@ -36,7 +36,7 @@ public class PortalColorParser {
      * @param portal
      * @return
      */
-    public String parseName(NameSurround surround, IPortal portal) {
+    public String parseName(HighlightingStyle surround, IPortal portal) {
         String name = portal.getName();
 
         ChatColor nameColor;
@@ -68,7 +68,7 @@ public class PortalColorParser {
         }
 
         String coloredName = nameColor + name + selectorColor;
-        return selectorColor + surround.getSurround(coloredName);
+        return selectorColor + surround.getHighlightedName(coloredName);
 
     }
 
@@ -76,8 +76,8 @@ public class PortalColorParser {
         return getColor(isLightSign) + line;
     }
 
-    public String parseError(String error, NameSurround surround) {
-        return getColor(isLightSign) + surround.getSurround(ERROR_COLOR + error + getColor(isLightSign));
+    public String parseError(String error, HighlightingStyle surround) {
+        return getColor(isLightSign) + surround.getHighlightedName(ERROR_COLOR + error + getColor(isLightSign));
     }
 
     static protected boolean isLightSign(Material signMaterial) {
