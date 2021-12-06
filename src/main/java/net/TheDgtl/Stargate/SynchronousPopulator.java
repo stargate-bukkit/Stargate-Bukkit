@@ -38,7 +38,7 @@ public class SynchronousPopulator implements Runnable {
     }
 
     /**
-     * Adds a non-bungee populator action to the queue
+     * Adds a populator action to the queue
      *
      * @param action <p>The action to add</p>
      */
@@ -49,8 +49,11 @@ public class SynchronousPopulator implements Runnable {
     /**
      * Adds a populator action to the queue
      *
+     * <p>Actions in the Bungee queue are only performed once the server name is known. If you need this behavior, use
+     * isBungee = true. If not, don't use isBungee.</p>
+     *
      * @param action   <p>The action to add</p>
-     * @param isBungee <p>Whether the action is to be performed on a BungeeCord portal</p>
+     * @param isBungee <p>Whether the action relies on the server name being known and should be put in the bungee queue</p>
      */
     public void addAction(SimpleAction action, boolean isBungee) {
         if (action != null) {

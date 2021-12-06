@@ -151,6 +151,7 @@ public class PlayerEventListener implements Listener {
     private void getBungeeServerName() {
         //Action for loading bungee server id
         Supplier<Boolean> action = (() -> {
+            //TODO: Replace this with a stable method
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF(PluginChannel.GET_SERVER.getChannel());
             Bukkit.getServer().sendPluginMessage(Stargate.getPlugin(Stargate.class), PluginChannel.BUNGEE.getChannel(),
@@ -179,7 +180,6 @@ public class PlayerEventListener implements Listener {
             return true;
         }, () -> Stargate.knowsServerName);
         Stargate.syncSecPopulator.addAction(action, true);
-
     }
 
     /**
