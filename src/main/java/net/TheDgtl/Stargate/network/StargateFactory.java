@@ -266,7 +266,7 @@ public class StargateFactory {
 
     public void startInterServerConnection() throws SQLException {
         Connection conn = database.getConnection();
-        PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn, Stargate.serverName, Stargate.serverUUID, PREFIX);
+        PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn, Stargate.serverName, Stargate.serverUUID);
         statement.execute();
         statement.close();
         

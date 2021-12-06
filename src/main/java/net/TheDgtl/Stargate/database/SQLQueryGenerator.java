@@ -125,7 +125,7 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateCreateServerInfoTableStatement(Connection connection) throws SQLException {
         String statementMessage = "CREATE TABLE IF NOT EXISTS {ServerInfo} (serverId VARCHAR(36), serverName NVARCHAR(255), " +
-                "serverPrefix VARCHAR(50), PRIMARY KEY (serverId));";
+                " PRIMARY KEY (serverId));";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -323,8 +323,8 @@ public class SQLQueryGenerator {
 
 
     public PreparedStatement generateUpdateServerInfoStatus(Connection conn, String serverName, UUID serverUUID, String prefix) throws SQLException {
-        String statementString = "REPLACE INTO {ServerInfo}(serverId, serverName,serverPrefix)"
-                + " VALUES(?,?,?);";
+        String statementString = "REPLACE INTO {ServerInfo}(serverId, serverName)"
+                + " VALUES(?,?);";
         String statementMessage = replaceKnownTableNames(statementString);
         logger.logMessage(Level.FINEST, statementMessage);
         PreparedStatement statement = conn.prepareStatement(statementMessage);
