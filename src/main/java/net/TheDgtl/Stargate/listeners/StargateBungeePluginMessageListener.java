@@ -47,6 +47,8 @@ import java.util.logging.Level;
 /**
  * Listens for and handles any received plugin messages
  *
+ * <p>Sends plugin enable message to all servers. Sends all loaded bungee-portals to all servers.</p>
+ *
  * @author Thorin
  */
 public class StargateBungeePluginMessageListener implements PluginMessageListener {
@@ -55,9 +57,6 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
     /**
      * Instantiates a new stargate bungee plugin message listener
-     *
-     * <p>- Send plugin enable message to all servers
-     * - Send all loaded bungee-portals to all servers</p>
      *
      * @param stargate <p>A stargate instance</p>
      */
@@ -68,13 +67,15 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
     /**
      * Handles relevant received plugin messages
      *
-     * <p>Types of messages that can be received and their response
-     * - All loaded portals messages - add all loaded portals as "virtual portals"
-     * - Plugin enabled message - send all loaded portals message to specific server
-     * - portal destroyed message - remove virtual portal from specific network
-     * - portal added message - add virtual portal from specific network
-     * - plugin disable message - remove all virtual portals given in message
-     * - portal open message - open selected portal. Too much ?</p>
+     * <p>Types of messages that can be received and their response:
+     * <ul>
+     *  <li>All loaded portals messages - add all loaded portals as "virtual portals"</li>
+     *  <li>Plugin enabled message - send all loaded portals message to specific server</li>
+     *  <li>portal destroyed message - remove virtual portal from specific network</li>
+     *  <li>portal added message - add virtual portal from specific network</li>
+     *  <li>plugin disable message - remove all virtual portals given in message</li>
+     *  <li>portal open message - open selected portal. Too much ?</li>
+     * </ul></p>
      */
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {
@@ -114,7 +115,6 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             Stargate.log(Level.SEVERE, "[Stargate] Error receiving BungeeCord message");
             ex.printStackTrace();
         }
-
     }
 
     /**
@@ -166,7 +166,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
         try {
             Stargate.factory.createNetwork(network, flags);
-        } catch (NameErrorException e) {
+        } catch (NameErrorException ignored) {
         }
 
         InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.factory.getNetwork(network, true);
@@ -210,7 +210,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                 destinationPortal.teleportHere(player, null);
             } catch (NullPointerException e) {
                 //TODO messaging: this message is misleading
-                player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_EMPTY)); 
+                player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_EMPTY));
             }
         }
     }

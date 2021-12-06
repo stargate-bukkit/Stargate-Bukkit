@@ -154,7 +154,7 @@ public abstract class Portal implements IPortal {
     }
 
     @Override
-    public Location getSignPos() {
+    public Location getSignLocation() {
         return gate.getSignLocation();
     }
 
@@ -165,7 +165,7 @@ public abstract class Portal implements IPortal {
      * @param color <p> Color to change the sign text to. If nulled, then default color will be used </p>
      */
     public void setSignColor(DyeColor color) {
-        Sign sign = (Sign) this.getSignPos().getBlock().getState();
+        Sign sign = (Sign) this.getSignLocation().getBlock().getState();
         if (color != null) {
             sign.setColor(color);
             Stargate.syncTickPopulator.addAction(new BlockSetAction(sign, true));
@@ -271,7 +271,7 @@ public abstract class Portal implements IPortal {
         return gate.getExit();
     }
 
-    public void setOverrideDestination(IPortal destination) {
+    public void overrideDestination(IPortal destination) {
         this.destination = destination;
     }
 
@@ -279,8 +279,8 @@ public abstract class Portal implements IPortal {
         return this.network;
     }
 
-    public void setNetwork(Network net) {
-        this.network = net;
+    public void setNetwork(Network targetNetwork) {
+        this.network = targetNetwork;
         this.drawControlMechanism();
     }
 

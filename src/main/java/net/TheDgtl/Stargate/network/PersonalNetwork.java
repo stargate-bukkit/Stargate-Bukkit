@@ -4,7 +4,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameErrorException;
-import net.TheDgtl.Stargate.network.portal.NameSurround;
+import net.TheDgtl.Stargate.network.portal.HighlightingStyle;
 import org.bukkit.Bukkit;
 
 import java.util.UUID;
@@ -22,6 +22,6 @@ public class PersonalNetwork extends Network {
 
     @Override
     public String concatName() {
-        return NameSurround.PERSONAL.getSurround(playerName);
+        return HighlightingStyle.PERSONAL.getHighlightedName(playerName);
     }
 }

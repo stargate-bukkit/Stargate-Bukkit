@@ -260,7 +260,7 @@ public class SQLQueryGenerator {
             }
         }
         statement.setString(3, destinationString);
-        Location signLocation = portal.getSignPos();
+        Location signLocation = portal.getSignLocation();
         World signWorld = signLocation.getWorld();
         statement.setString(4, signWorld != null ? signWorld.getName() : "");
         statement.setInt(5, signLocation.getBlockX());

@@ -120,7 +120,7 @@ public class NetworkedPortal extends Portal {
     @Override
     public void drawControlMechanism() {
         String[] lines = new String[4];
-        lines[0] = super.colorDrawer.parseName(NameSurround.PORTAL, this);
+        lines[0] = super.colorDrawer.parseName(HighlightingStyle.PORTAL, this);
         if (!isActive) {
             lines[1] = super.colorDrawer.parseLine(Stargate.languageManager.getString(TranslatableMessage.RIGHT_CLICK));
             lines[2] = super.colorDrawer.parseLine(Stargate.languageManager.getString(TranslatableMessage.TO_USE));
@@ -136,18 +136,18 @@ public class NetworkedPortal extends Portal {
 
                 if (Settings.getInteger(Setting.NAME_STYLE) == 1) {
                     if (destinationIndex == i) {
-                        lines[i + 1] = super.colorDrawer.parseName(NameSurround.DESTINATION, this.getDestination(destination));
+                        lines[i + 1] = super.colorDrawer.parseName(HighlightingStyle.DESTINATION, this.getDestination(destination));
                     } else {
                         lines[i + 1] = super.colorDrawer.parseLine(this.getDestination(destination).getName());
                     }
                     continue;
                 }
 
-                NameSurround surround;
+                HighlightingStyle surround;
                 if (destinationIndex == i) {
-                    surround = NameSurround.DESTINATION;
+                    surround = HighlightingStyle.DESTINATION;
                 } else {
-                    surround = NameSurround.NOTHING;
+                    surround = HighlightingStyle.NOTHING;
                 }
                 lines[i + 1] = super.colorDrawer.parseName(surround, this.getDestination(destination));
             }

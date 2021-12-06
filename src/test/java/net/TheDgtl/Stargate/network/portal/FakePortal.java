@@ -65,12 +65,12 @@ public class FakePortal implements IPortal {
     }
 
     @Override
-    public void setNetwork(Network targetNet) {
+    public void setNetwork(Network targetNetwork) {
 
     }
 
     @Override
-    public void setOverrideDestination(IPortal destination) {
+    public void overrideDestination(IPortal destination) {
 
     }
 
@@ -94,7 +94,7 @@ public class FakePortal implements IPortal {
     }
 
     @Override
-    public Location getSignPos() {
+    public Location getSignLocation() {
         return this.signLocation;
     }
 

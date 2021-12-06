@@ -23,8 +23,8 @@ public class RandomPortal extends Portal {
     @Override
     public void drawControlMechanism() {
         String[] lines = {
-                super.colorDrawer.parseName(NameSurround.PORTAL, this),
-                super.colorDrawer.parseLine(NameSurround.DESTINATION.getSurround(Stargate.languageManager.getString(TranslatableMessage.RANDOM))),
+                super.colorDrawer.parseName(HighlightingStyle.PORTAL, this),
+                super.colorDrawer.parseLine(HighlightingStyle.DESTINATION.getHighlightedName(Stargate.languageManager.getString(TranslatableMessage.RANDOM))),
                 super.colorDrawer.parseLine(network.concatName()),
                 ""
         };

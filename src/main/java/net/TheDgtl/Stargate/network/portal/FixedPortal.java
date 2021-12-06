@@ -26,14 +26,14 @@ public class FixedPortal extends Portal {
     @Override
     public void drawControlMechanism() {
         String[] lines = new String[4];
-        lines[0] = super.colorDrawer.parseName(NameSurround.PORTAL, this);
+        lines[0] = super.colorDrawer.parseName(HighlightingStyle.PORTAL, this);
         lines[2] = super.colorDrawer.parseLine(this.network.concatName());
         IPortal destination = loadDestination();
         if (destination != null)
-            lines[1] = super.colorDrawer.parseName(NameSurround.DESTINATION, loadDestination());
+            lines[1] = super.colorDrawer.parseName(HighlightingStyle.DESTINATION, loadDestination());
         else {
             lines[1] = super.colorDrawer.parseLine(destinationName);
-            lines[3] = super.colorDrawer.parseError(Stargate.languageManager.getString(TranslatableMessage.DISCONNECTED), NameSurround.BUNGEE);
+            lines[3] = super.colorDrawer.parseError(Stargate.languageManager.getString(TranslatableMessage.DISCONNECTED), HighlightingStyle.BUNGEE);
         }
         getGate().drawControlMechanism(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }
