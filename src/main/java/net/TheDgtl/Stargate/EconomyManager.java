@@ -6,7 +6,9 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
 import java.util.logging.Level;
@@ -14,7 +16,7 @@ import java.util.logging.Level;
 public class EconomyManager {
 
     private Economy econ;
-    private final boolean hasVault;
+    private boolean hasVault;
 
     public EconomyManager() {
         if (!Settings.getBoolean(Setting.USE_ECONOMY)) {
@@ -107,5 +109,17 @@ public class EconomyManager {
             return true;
         }
         return false;
+    }
+    
+    public Plugin getEconomyPlugin() {
+        return Bukkit.getPluginManager().getPlugin("Vault");
+    }
+
+    public boolean isValidEconomyPlugin(Plugin plugin) {
+        return Bukkit.getPluginManager().getPlugin("Vault").equals(plugin);
+    }
+
+    public void setEconomy(Plugin plugin) {
+        hasVault = setupEconomy();
     }
 }
