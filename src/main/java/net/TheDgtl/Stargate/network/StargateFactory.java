@@ -52,13 +52,15 @@ public class StargateFactory {
 
     public StargateFactory(Stargate stargate) throws SQLException {
         database = loadDatabase(stargate);
-        useInterServerNetworks = (Settings.getBoolean(Setting.USING_REMOTE_DATABASE) && Settings.getBoolean(Setting.USING_BUNGEE));
+        useInterServerNetworks = (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)
+                && Settings.getBoolean(Setting.USING_BUNGEE));
         PREFIX = Settings.getString(Setting.BUNGEE_INSTANCE_NAME);
-        TableNameConfig config = new TableNameConfig("SG_", "");
-        DriverEnum databaseEnum = Settings.getBoolean(Setting.USING_REMOTE_DATABASE) ? DriverEnum.MYSQL : DriverEnum.SQLITE;
+        String serverPrefix = Settings.getBoolean(Setting.USING_REMOTE_DATABASE) ? Stargate.serverUUID.toString() : "";
+        TableNameConfig config = new TableNameConfig(PREFIX, serverPrefix);
+        DriverEnum databaseEnum = Settings.getBoolean(Setting.USING_REMOTE_DATABASE) ? DriverEnum.MYSQL
+                : DriverEnum.SQLITE;
         this.sqlMaker = new SQLQueryGenerator(config, Stargate.getInstance(), databaseEnum);
         createTables();
-
 
         Stargate.log(Level.FINER, "Loading portals from base database");
         loadAllPortals(database, PortalType.LOCAL);
