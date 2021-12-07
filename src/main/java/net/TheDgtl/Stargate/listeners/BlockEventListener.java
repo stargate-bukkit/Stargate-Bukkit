@@ -350,6 +350,9 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
+        if(Settings.getBoolean(Setting.DESTROY_ON_EXPLOSION))
+            return;
+        
         if (Network.isInPortal(event.blockList(), GateStructureType.values())) {
             event.setCancelled(true);
         }
