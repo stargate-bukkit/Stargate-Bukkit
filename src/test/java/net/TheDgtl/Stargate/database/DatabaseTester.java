@@ -340,8 +340,7 @@ public class DatabaseTester {
      * @throws SQLException <p>If a database error occurs</p>
      */
     public void updateServerInfoTest() throws SQLException {
-        PreparedStatement statement = generator.generateUpdateServerInfoStatus(connection, serverName, serverUUID,
-                serverPrefix);
+        PreparedStatement statement = generator.generateUpdateServerInfoStatus(connection, serverName, serverUUID);
         finishStatement(statement);
     }
 
