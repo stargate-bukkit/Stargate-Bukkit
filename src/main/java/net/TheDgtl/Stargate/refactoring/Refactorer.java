@@ -76,7 +76,8 @@ public class Refactorer {
                         isSkippingComment = false;
                     continue;
                 }
-                String possibleComment = line.strip();
+                //TODO: Create a custom method with Java 11's String.strip() if necessary
+                String possibleComment = line.trim();
                 if (possibleComment.startsWith(STARTOFCOMMENT)) {
                     int indent = countSpaces(line);
                     String key = possibleComment.split(":")[0];
@@ -88,7 +89,7 @@ public class Refactorer {
                      * ENDOFCOMMENT identifier
                      */
                     for (int i = 0; i < commentLines.length - 1; i++) {
-                        line = line + "\n" + " ".repeat(indent) + "# " + commentLines[i];
+                        line = line + "\n" + repeat(" ", indent) + "# " + commentLines[i];
                     }
                     isSkippingComment = true;
                 }
@@ -104,14 +105,26 @@ public class Refactorer {
             OutputStreamWriter writer = new OutputStreamWriter(writerStream);
             writer.write(finalText);
             writer.close();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * Repeats the given string the given amount of times
+     * 
+     * @param repeatingString <p>The string to repeat</p>
+     * @param repetitions <p>The number of times to repeat the string</p>
+     * @return <p>The string repeated the given amount of times</p>
+     */
+    private String repeat(String repeatingString, int repetitions) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < repetitions; i++) {
+            builder.append(repeatingString);
+        }
+        return builder.toString();
     }
 
     /**
