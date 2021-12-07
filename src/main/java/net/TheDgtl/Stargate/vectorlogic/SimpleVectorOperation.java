@@ -19,6 +19,8 @@ public class SimpleVectorOperation implements IVectorOperation {
     private static final Map<BlockFace, Double> rotationAngles = new HashMap<>();
     private static final Map<BlockFace, Vector> rotationAxes = new HashMap<>();
     private static final Map<BlockFace, Axis> irisNormalAxes = new HashMap<>();
+    private static final BlockFace defaultDirection = BlockFace.EAST;
+    private static final Axis defaultVerticalAxis = Axis.Y;
 
     private final Axis irisNormal;
     private boolean flipZAxis = false;
@@ -35,8 +37,8 @@ public class SimpleVectorOperation implements IVectorOperation {
      */
     public SimpleVectorOperation(BlockFace signFace) throws InvalidStructureException {
         if (irisNormalAxes.isEmpty()) {
-            initializeOperations();
             initializeIrisNormalAxes();
+            initializeOperations();
         }
 
         this.facing = signFace;
@@ -89,28 +91,55 @@ public class SimpleVectorOperation implements IVectorOperation {
      * Initializes the operations used for rotating to each block-face
      */
     private static void initializeOperations() {
-        Vector yAxis = new Vector(0, 1, 0);
-        Vector zAxis = new Vector(0, 0, 1);
+        Map<Axis, Vector> axisVectors = new HashMap<>();
+        axisVectors.put(Axis.Y, new Vector(0, 1, 0));
+        axisVectors.put(Axis.X, new Vector(1, 0, 0));
+        axisVectors.put(Axis.Z, new Vector(0, 0, 1));
+
+        //Use the cross product to find the correct axis
+        for (BlockFace face : irisNormalAxes.keySet()) {
+            Vector crossProduct = face.getDirection().crossProduct(defaultDirection.getDirection());
+            if (face == defaultDirection || face == defaultDirection.getOppositeFace()) {
+                rotationAxes.put(face, axisVectors.get(defaultVerticalAxis));
+            } else if (Math.abs(crossProduct.getZ()) > 0) {
+                rotationAxes.put(face, axisVectors.get(Axis.Z));
+            } else if (Math.abs(crossProduct.getY()) > 0) {
+                rotationAxes.put(face, axisVectors.get(Axis.Y));
+            } else {
+                rotationAxes.put(face, axisVectors.get(Axis.X));
+            }
+        }
+
+        calculateRotations();
+    }
+
+    /**
+     * Calculates the required rotations based on the default rotation
+     */
+    private static void calculateRotations() {
         double halfRotation = Math.PI;
         double quarterRotation = halfRotation / 2;
 
-        rotationAxes.put(BlockFace.EAST, yAxis);
-        rotationAngles.put(BlockFace.EAST, 0d);
+        Vector defaultDirectionVector = defaultDirection.getDirection();
+        boolean defaultDirectionPositive = defaultDirectionVector.getX() + defaultDirectionVector.getY() +
+                defaultDirectionVector.getZ() > 0;
 
-        rotationAxes.put(BlockFace.WEST, yAxis);
-        rotationAngles.put(BlockFace.WEST, halfRotation);
-
-        rotationAxes.put(BlockFace.SOUTH, yAxis);
-        rotationAngles.put(BlockFace.SOUTH, quarterRotation);
-
-        rotationAxes.put(BlockFace.NORTH, yAxis);
-        rotationAngles.put(BlockFace.NORTH, -quarterRotation);
-
-        rotationAxes.put(BlockFace.UP, zAxis);
-        rotationAngles.put(BlockFace.UP, quarterRotation);
-
-        rotationAxes.put(BlockFace.DOWN, zAxis);
-        rotationAngles.put(BlockFace.DOWN, -quarterRotation);
+        for (BlockFace blockFace : irisNormalAxes.keySet()) {
+            if (defaultDirection == blockFace) {
+                //The default direction requires no rotation
+                rotationAngles.put(blockFace, 0d);
+            } else if (defaultDirection.getOppositeFace() == blockFace) {
+                //The opposite direction requires a half rotation
+                rotationAngles.put(blockFace, halfRotation);
+            } else {
+                //All the other used directions require a quarter rotation
+                Vector faceDirectionVector = blockFace.getDirection();
+                boolean faceDirectionPositive = faceDirectionVector.getX() + faceDirectionVector.getY() +
+                        faceDirectionVector.getZ() > 0;
+                double rotation = defaultDirectionPositive && faceDirectionPositive ? quarterRotation : -quarterRotation;
+                rotationAngles.put(blockFace, rotation);
+            }
+        }
     }
 
     /**
