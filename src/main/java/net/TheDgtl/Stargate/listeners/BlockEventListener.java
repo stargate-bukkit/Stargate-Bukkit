@@ -140,7 +140,7 @@ public class BlockEventListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Location loc = event.getBlock().getLocation();
         Portal portal = Network.getPortal(loc, GateStructureType.IRIS);
-        if (portal != null) {
+        if (portal != null && Settings.getBoolean(Setting.PROTECT_ENTRANCE)) {
             event.setCancelled(true);
         }
     }
