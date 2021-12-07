@@ -45,7 +45,7 @@ import java.util.logging.Level;
  * A listener for detecting any relevant block events
  */
 public class BlockEventListener implements Listener {
-
+    
     /**
      * Detects relevant block break events
      *
@@ -69,9 +69,15 @@ public class BlockEventListener implements Listener {
             };
 
             destroyPortalIfHasPermissionAndCanPay(event, portal, destroyAction);
-        } else if (Network.getPortal(location, new GateStructureType[]{GateStructureType.CONTROL_BLOCK,
-                GateStructureType.IRIS}) != null) {
+            return;
+        }
+        if (Network.getPortal(location, GateStructureType.CONTROL_BLOCK) != null) {
             event.setCancelled(true);
+            return;
+        }
+        if(Network.getPortal(location, GateStructureType.IRIS) != null && Settings.getBoolean(Setting.PROTECT_ENTRANCE)) {
+            event.setCancelled(true);
+            return;
         }
     }
 
@@ -350,7 +356,6 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        
         Portal portal = Network.getPortal(event.getLocation(), new GateStructureType[] {GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK});
         if (portal != null) {
             if(Settings.getBoolean(Setting.DESTROY_ON_EXPLOSION)) {
@@ -389,6 +394,9 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockFormEvent(BlockFormEvent event) {
+        if(!Settings.getBoolean(Setting.PROTECT_ENTRANCE))
+            return;
+        
         Location location = event.getBlock().getLocation();
         Portal portal = Network.getPortal(location, GateStructureType.IRIS);
         if (portal != null) {
