@@ -53,7 +53,7 @@ public class Network {
     }
 
     public boolean portalExists(String name) {
-        return (getPortal(name) != null);
+        return (getPortal(this.compilePortalHash(name)) != null);
     }
 
     public IPortal getPortal(String name) {
@@ -79,7 +79,7 @@ public class Network {
     }
 
     public void removePortal(IPortal portal, boolean saveToDatabase) {
-        portalList.remove(portal.getName());
+        portalList.remove(this.compilePortalHash(portal.getName()));
         if (!saveToDatabase) {
             return;
         }
