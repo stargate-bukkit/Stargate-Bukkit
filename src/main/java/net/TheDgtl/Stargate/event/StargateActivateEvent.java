@@ -82,6 +82,17 @@ public class StargateActivateEvent extends StargateEvent {
         if (portal.hasFlag(PortalFlag.PRIVATE) && !player.getUniqueId().equals(portal.getOwnerUUID())) {
             permsList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
         }
+        Permission baseTypePermission = Bukkit.getPluginManager().getPermission(identifier + ".type");
+        if(portal.hasFlag(PortalFlag.FIXED)) {
+            Permission fixedPerm =  new Permission(identifier + ".type.fixed");
+            fixedPerm.addParent(baseTypePermission, true);
+            permsList.add(fixedPerm);
+        }
+        if(portal.hasFlag(PortalFlag.NETWORKED)) {
+            Permission fixedPerm =  new Permission(identifier + ".type.non-fixed");
+            fixedPerm.addParent(baseTypePermission, true);
+            permsList.add(fixedPerm);
+        }
         return permsList;
     }
 }

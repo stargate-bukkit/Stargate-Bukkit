@@ -72,11 +72,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
             String identifier;
             switch (flag) {
                 case FIXED:
-                    identifier = "fixed";
-                    break;
                 case NETWORKED:
-                    identifier = "non-fixed";
-                    break;
                 case PERSONAL_NETWORK:
                 case IRON_DOOR:
                     continue;

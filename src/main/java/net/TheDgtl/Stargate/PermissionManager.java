@@ -58,7 +58,7 @@ public class PermissionManager {
      */
     public Set<PortalFlag> returnAllowedFlags(Set<PortalFlag> flags) {
         for (PortalFlag flag : flags) {
-            if (flag == PortalFlag.PERSONAL_NETWORK || flag == PortalFlag.IRON_DOOR) {
+            if (flag == PortalFlag.PERSONAL_NETWORK || flag == PortalFlag.IRON_DOOR || flag == PortalFlag.FIXED || flag == PortalFlag.NETWORKED) {
                 continue;
             }
 
