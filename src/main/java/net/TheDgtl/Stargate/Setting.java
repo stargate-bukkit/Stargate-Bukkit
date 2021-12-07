@@ -170,16 +170,22 @@ public enum Setting {
      * Allow vehicles to teleport without any player inside
      */
     HANDLE_VEHICLES("handleVehicles"),
+
+    /**
+     * Protect the entrance of a portal from entity based events
+     */
+    PROTECT_ENTRANCE("protectEntrance"),
+    
     
     /**
      * TODO: These are never used
      * TODO This needs to be updated per Discussion Two.
      */
-    CHECK_PORTAL_VALIDITY("checkPortalValidity"),
     REMEMBER_LAST_DESTINATION("rememberLastDestination"),
+    //TODO not implemented
+    UPKEEP_COST("economy.upkeepCost"),
     CHECK_TRAVERSABLES("checkTraversables"),
-    PROTECT_ENTRANCE("protectEntrance"),
-    UPKEEP_COST("economy.upkeepCost");
+    CHECK_PORTAL_VALIDITY("checkPortalValidity");
 
     private final String configNode;
 

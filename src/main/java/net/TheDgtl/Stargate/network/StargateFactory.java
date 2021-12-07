@@ -57,7 +57,7 @@ public class StargateFactory {
                 && Settings.getBoolean(Setting.USING_BUNGEE));
         PREFIX = Settings.getString(Setting.BUNGEE_INSTANCE_NAME);
         String serverPrefix = Settings.getBoolean(Setting.USING_REMOTE_DATABASE) ? Stargate.serverUUID.toString() : "";
-        TableNameConfig config = new TableNameConfig(PREFIX, serverPrefix);
+        TableNameConfig config = new TableNameConfig(PREFIX, serverPrefix.replace("-", ""));
         DriverEnum databaseEnum = Settings.getBoolean(Setting.USING_REMOTE_DATABASE) ? DriverEnum.MYSQL
                 : DriverEnum.SQLITE;
         this.sqlMaker = new SQLQueryGenerator(config, Stargate.getInstance(), databaseEnum);

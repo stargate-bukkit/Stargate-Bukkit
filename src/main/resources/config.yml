@@ -173,10 +173,6 @@ signStyle:
   # [1: selected gates coloured, 2: all gates coloured, 3: no gates coloured]
   listing: 3
 
-# For networked gates, are destinations listed alphabetically instead of chronologically?
-# (This applies to all gates that are neither fixed, random, nor terminals)
-alphabeticNetworks: false
-
 # Will the destination a networked portal last connected to be listed first in its scroll menu?
 rememberLastDestination: false
 
@@ -185,6 +181,7 @@ rememberLastDestination: false
 gateExitSpeedMultiplier: 1
 
 # TODO: write a description
+# Aproximate behavior
 disableCustomColoredNames: true
 
 # +----------------------------------------------------------------------------------------------+ #

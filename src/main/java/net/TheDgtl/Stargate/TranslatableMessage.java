@@ -24,6 +24,11 @@ public enum TranslatableMessage {
      * The message to display when a stargate has been destroyed
      */
     DESTROY("destroyMsg"),
+    
+    /**
+     * The message to display when a networked portal does not have any destinations
+     */
+    DESTINATION_EMPTY("destEmpty"),
 
     /**
      * The message to display if a stargate doesn't have a valid destination
