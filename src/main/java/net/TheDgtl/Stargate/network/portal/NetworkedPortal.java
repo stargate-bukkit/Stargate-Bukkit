@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.logging.Level;
 
 public class NetworkedPortal extends Portal {
     /**
@@ -36,7 +37,7 @@ public class NetworkedPortal extends Portal {
     private long activateTiming;
     private UUID activator;
 
-    private final List<IPortal> destinations = new ArrayList<>();
+    private List<IPortal> destinations = new ArrayList<>();
     private static final int ACTIVE_DELAY = 15; // seconds
 
     public NetworkedPortal(Network network, String name, Block sign, Set<PortalFlag> flags, UUID ownerUUID)
@@ -52,14 +53,29 @@ public class NetworkedPortal extends Portal {
     @Override
     public void onSignClick(PlayerInteractEvent event) {
         Player actor = event.getPlayer();
-        if (!actor.getUniqueId().equals(this.getOwnerUUID()) || this.isOpen())
+        if ((this.activator != null && !actor.getUniqueId().equals(this.activator)) || this.isOpen())
             return;
+        if (!hasActivatePerms(actor)) {
+            Stargate.log(Level.CONFIG, "Player did not have permission to activate portal");
+            return;
+        }
+        boolean previuslyActivated = this.isActive;
         activate(actor);
-        if (destinations.size() < 1)
+        if (destinations.size() < 1) {
+            String message = Stargate.languageManager.getErrorMessage(TranslatableMessage.DESTINATION_EMPTY);
+            event.getPlayer().sendMessage(message);
+            this.isActive = false;
             return;
-        if (selectedDestination == NO_DESTINATION_SELECTED || destinations.size() < 2) {
-            selectedDestination = getNextDestination(1, -1);
-        } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+        }
+        
+        if(!previuslyActivated) {
+            if(!Settings.getBoolean(Setting.REMEMBER_LAST_DESTINATION))
+                selectedDestination = 0;
+            drawControlMechanism();
+            return;
+        }
+        
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
             int step = (event.getAction() == Action.RIGHT_CLICK_BLOCK) ? 1 : -1;
             selectedDestination = getNextDestination(step, selectedDestination);
         }
@@ -78,15 +94,52 @@ public class NetworkedPortal extends Portal {
         return destinations.get(index);
     }
 
-    private String[] getDestinations(Player actor) {
+    private List<IPortal> getDestinations(Player actor) {
+        if(actor == null)
+            return new ArrayList<>();
+        
         HashSet<String> tempPortalList = network.getAvailablePortals(actor, this);
-        return tempPortalList.toArray(new String[0]);
+        tempPortalList.toArray(new String[0]);
+        List<IPortal> destinations = new ArrayList<>();
+        for (String name : tempPortalList) {
+            destinations.add(network.getPortal(name));
+        }
+        return destinations;
     }
 
     public IPortal loadDestination() {
-        if (selectedDestination == NO_DESTINATION_SELECTED)
+        if (selectedDestination == NO_DESTINATION_SELECTED || selectedDestination >= destinations.size())
             return null;
         return destinations.get(selectedDestination);
+    }
+    
+    /**
+     * Check if it's referencing to a destroyed portal, and in that case
+     * change what portal it is selecting
+     */
+    @Override
+    public void update() {
+        if(!isActive) {
+            return;
+        }
+        IPortal destination = this.destinations.get(this.selectedDestination);
+        destinations = getDestinations(Bukkit.getPlayer(activator));
+        if(destinations.contains(destination)) {
+            this.selectedDestination = destinations.indexOf(destination);
+            super.update();
+            return;
+        }
+        /*
+         * If the previously selected destination has been removed...
+         */
+        int aPossibleDestination = getNextDestination(0,this.selectedDestination);
+        if(aPossibleDestination == NO_DESTINATION_SELECTED) {
+            this.deactivate();
+            super.update();
+            return;
+        }
+        selectedDestination = aPossibleDestination;
+        super.update();
     }
 
     /**
@@ -113,7 +166,6 @@ public class NetworkedPortal extends Portal {
         if (hasFlag(PortalFlag.ALWAYS_ON) && !force)
             return;
         super.close(force);
-        this.selectedDestination = NO_DESTINATION_SELECTED;
         deactivate();
     }
 
@@ -154,6 +206,13 @@ public class NetworkedPortal extends Portal {
         }
         getGate().drawControlMechanism(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }
+    
+    private boolean hasActivatePerms(Player actor) {
+        StargateActivateEvent event = new StargateActivateEvent(this, actor, destinations);
+        Bukkit.getPluginManager().callEvent(event);
+        PermissionManager permissionManager = new PermissionManager(actor);
+        return (!event.isCancelled() && permissionManager.hasPermission(event));
+    }
 
     private void activate(Player actor) {
         /*
@@ -171,18 +230,8 @@ public class NetworkedPortal extends Portal {
         if (isActive)
             return;
 
-        String[] destinationNames = getDestinations(actor);
-        for (String name : destinationNames) {
-            destinations.add(network.getPortal(name));
-        }
-        StargateActivateEvent event = new StargateActivateEvent(this, actor, destinations);
-        Bukkit.getPluginManager().callEvent(event);
-        PermissionManager permissionManager = new PermissionManager(actor);
-        if (event.isCancelled() || !permissionManager.hasPermission(event)) {
-            this.destinations.clear();
-            selectedDestination = NO_DESTINATION_SELECTED;
-        }
-        this.isActive = (destinations.size() > 0);
+        this.destinations = getDestinations(actor);
+        this.isActive = true;
     }
 
     /**
@@ -203,7 +252,6 @@ public class NetworkedPortal extends Portal {
             return;
         this.destinations.clear();
         this.isActive = false;
-        selectedDestination = NO_DESTINATION_SELECTED;
         drawControlMechanism();
     }
 }
