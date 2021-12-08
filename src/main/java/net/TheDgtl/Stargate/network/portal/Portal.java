@@ -168,7 +168,7 @@ public abstract class Portal implements IPortal {
         Sign sign = (Sign) this.getSignLocation().getBlock().getState();
         if (color != null) {
             sign.setColor(color);
-            Stargate.syncTickPopulator.addAction(new BlockSetAction(sign, true));
+            sign.update();
         }
 
         colorDrawer = new PortalColorParser(sign.getColor(), sign.getType());
