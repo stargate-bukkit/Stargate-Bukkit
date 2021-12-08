@@ -49,7 +49,6 @@ public enum PortalFlag {
 
     /**
      * A stargate with its network name hidden
-     * TODO: This is unused
      */
     HIDE_NETWORK('N'),
 

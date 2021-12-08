@@ -151,7 +151,9 @@ public class Teleporter {
 
     private void teleport(Entity target, Location exitpoint) {
         target.teleport(exitpoint);
-        target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT));
+        if(origin != null && !origin.hasFlag(PortalFlag.SILENT))
+            target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT));
+        
     }
 
     private boolean charge(Player target) {
