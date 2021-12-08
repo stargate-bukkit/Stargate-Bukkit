@@ -2,7 +2,9 @@ package net.TheDgtl.Stargate;
 
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateEvent;
+import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import net.milkbowl.vault.chat.Chat;
@@ -112,6 +114,12 @@ public class PermissionManager {
                 canProcessMetaData && target instanceof Player) {
             return !isNetworkFull(event.getPortal().getNetwork());
         }
+        
+        if ((event instanceof StargatePortalEvent) && canProcessMetaData) {
+            StargatePortalEvent sPEvent = (StargatePortalEvent) event;
+            if (!sPEvent.getEntity().getUniqueId().equals(sPEvent.getPortal().getOwnerUUID()))
+                return canFollow();
+        }
         return true;
     }
 
@@ -149,12 +157,12 @@ public class PermissionManager {
      */
     private boolean isNetworkFull(Network network) {
         Player player = (Player) target;
+        String metaString = "gate-limit";
 
-        int maxGates = metadataProvider.getPlayerInfoInteger(target.getWorld().getName(), player,
-                "gate-limit", -1);
+        int maxGates = metadataProvider.getPlayerInfoInteger(target.getWorld().getName(), player, metaString, -1);
         if (maxGates == -1) {
             metadataProvider.getGroupInfoInteger(target.getWorld(),
-                    metadataProvider.getPrimaryGroup(player), "gate-limit", -1);
+                    metadataProvider.getPrimaryGroup(player), metaString, -1);
         }
         if (maxGates == -1) {
             maxGates = Settings.getInteger(Setting.GATE_LIMIT);
@@ -169,6 +177,14 @@ public class PermissionManager {
             }
         }
         return false;
+    }
+    
+    private boolean canFollow() {
+        String metaString = "can-followthrough";
+        Player player = (Player) target;
+        String group = metadataProvider.getPrimaryGroup(metaString, player);
+        return metadataProvider.getPlayerInfoBoolean(target.getWorld().getName(), player, metaString, true) &&
+                metadataProvider.getGroupInfoBoolean(target.getWorld().getName(), group, metaString, true);
     }
 
     /**

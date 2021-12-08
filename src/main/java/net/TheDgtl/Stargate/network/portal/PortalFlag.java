@@ -64,9 +64,13 @@ public enum PortalFlag {
 
     /**
      * A silent stargate which doesn't output a teleportation message
-     * TODO: This is unused
      */
     SILENT('Q'),
+    
+    /**
+     * A stargate without a sign
+     */
+    NO_SIGN('V'),
 
     /* ***************
      * Internal flags *

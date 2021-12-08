@@ -184,7 +184,7 @@ public abstract class Portal implements IPortal {
 
     public void onSignClick(PlayerInteractEvent event) {
     }
-
+    
     public abstract void drawControlMechanism();
 
     public abstract IPortal loadDestination();
