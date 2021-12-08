@@ -74,20 +74,24 @@ public class PlayerEventListener implements Listener {
         Player player = event.getPlayer();
 
         if (Tag.WALL_SIGNS.isTagged(blockMaterial)) {
+            if (dyePortalSignText(event, portal)) {
+                portal.setSignColor(ColorConverter.getDyeColorFromMaterial(event.getMaterial()));
+                event.setUseInteractedBlock(Event.Result.ALLOW);
+                return;
+            }
+            event.setUseInteractedBlock(Event.Result.DENY);
             if (portal.isOpenFor(player)) {
                 Stargate.log(Level.FINEST, "Player name=" + player.getName());
                 portal.onSignClick(event);
+                return;
             }
-            if (dyePortalSignText(event, portal)) {
-                portal.setSignColor(ColorConverter.getDyeColorFromMaterial(event.getMaterial()));
-            } else {
-                event.setUseInteractedBlock(Event.Result.DENY);
-            }
-        } else if (Tag.BUTTONS.isTagged(blockMaterial) || (blockMaterial == Material.DEAD_TUBE_CORAL_WALL_FAN)) {
-            portal.onButtonClick(event);
-        } else {
-            Stargate.log(Level.WARNING, "This should never be triggered, an unknown glitch is occurring");
         }
+        if (Tag.BUTTONS.isTagged(blockMaterial) || (blockMaterial == Material.DEAD_TUBE_CORAL_WALL_FAN)) {
+            portal.onButtonClick(event);
+            return;
+        }
+        Stargate.log(Level.WARNING, "This should never be triggered, an unknown glitch is occurring");
+
     }
 
     /**
