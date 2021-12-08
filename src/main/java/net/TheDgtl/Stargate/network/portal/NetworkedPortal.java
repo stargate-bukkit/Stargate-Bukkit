@@ -176,7 +176,7 @@ public class NetworkedPortal extends Portal {
         if (!isActive) {
             lines[1] = super.colorDrawer.parseLine(Stargate.languageManager.getString(TranslatableMessage.RIGHT_CLICK));
             lines[2] = super.colorDrawer.parseLine(Stargate.languageManager.getString(TranslatableMessage.TO_USE));
-            lines[3] = super.colorDrawer.parseLine(network.concatName());
+            lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.parseLine(network.concatName()) : "";
         } else {
             int destinationIndex = selectedDestination % 3;
             int firstDestination = selectedDestination - destinationIndex;

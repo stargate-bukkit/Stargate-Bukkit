@@ -25,7 +25,7 @@ public class RandomPortal extends Portal {
         String[] lines = {
                 super.colorDrawer.parseName(HighlightingStyle.PORTAL, this),
                 super.colorDrawer.parseLine(HighlightingStyle.DESTINATION.getHighlightedName(Stargate.languageManager.getString(TranslatableMessage.RANDOM))),
-                super.colorDrawer.parseLine(network.concatName()),
+                !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.parseLine(network.concatName()) : "",
                 ""
         };
         getGate().drawControlMechanism(lines, !hasFlag(PortalFlag.ALWAYS_ON));
