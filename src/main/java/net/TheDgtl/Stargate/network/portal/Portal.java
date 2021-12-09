@@ -361,7 +361,8 @@ public abstract class Portal implements IPortal {
             useCost = shouldCharge ? Settings.getInteger(Setting.USE_COST) : 0;
         }
 
-        Teleporter teleporter = new Teleporter(getExit(), origin, portalFacing, enterFacing, useCost);
+        Teleporter teleporter = new Teleporter(getExit(), origin, portalFacing, enterFacing, useCost,
+                TranslatableMessage.TELEPORT, true);
 
         Supplier<Boolean> action = () -> {
             teleporter.teleport(target);
@@ -375,8 +376,8 @@ public abstract class Portal implements IPortal {
     public void doTeleport(Entity target) {
         IPortal destination = getDestination();
         if (destination == null) {
-            target.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID));
-            teleportHere(target, this);
+            Teleporter teleporter = new Teleporter(this.getExit(),this,gate.getFacing(),gate.getFacing(),0,TranslatableMessage.INVALID,false);
+            teleporter.teleport(target);
             return;
         }
 

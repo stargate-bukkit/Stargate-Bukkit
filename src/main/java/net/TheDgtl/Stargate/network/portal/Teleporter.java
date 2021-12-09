@@ -29,9 +29,12 @@ public class Teleporter {
     private final int cost;
     private final double rotation;
     private final BlockFace destinationFace;
+    private TranslatableMessage teleportMessage;
+    private boolean checkPerms;
 
     /**
-     * Instantiate a manager for advanced teleportation between a portal and a location
+     * Instantiate a manager for advanced teleportation between a portal and a
+     * location
      *
      * @param destination     location
      * @param origin          Portal origin
@@ -39,13 +42,16 @@ public class Teleporter {
      * @param entranceFace    The facing that the player entered
      * @param cost            of the teleportation for any players
      */
-    public Teleporter(Location destination, Portal origin, BlockFace destinationFace, BlockFace entranceFace, int cost) {
-        //compensate so that the teleportation is centred in block
+    public Teleporter(Location destination, Portal origin, BlockFace destinationFace, BlockFace entranceFace, int cost,
+            TranslatableMessage teleportMessage, boolean checkPerms) {
+        // compensate so that the teleportation is centred in block
         this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
         this.origin = origin;
         this.rotation = calculateAngleChange(entranceFace, destinationFace);
         this.cost = cost;
+        this.teleportMessage = teleportMessage;
+        this.checkPerms = checkPerms;
     }
 
     public void teleport(Entity target) {
@@ -100,8 +106,9 @@ public class Teleporter {
             return;
         }
 
-        if (!hasPerm(target)) {
-            target.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.DENY));
+        PermissionManager permissionManager = new PermissionManager(target);
+        if (!hasPerm(target, permissionManager) && checkPerms) {
+            target.sendMessage(permissionManager.getDenyMessage());
             //For non math guys: teleport entity to the exit of the portal it entered. Also turn the entity around 180 degrees
             teleport(target, origin.getExit(), Math.PI);
             return;
@@ -117,7 +124,7 @@ public class Teleporter {
         }
 
         if (target instanceof PoweredMinecart) {
-            // TODO: NOT Currently implemented, does not seem to be an accessible way to fix this using spigot api
+            // TODO: NOT Currently implemented, does not seem to be an accessible way to rotate powered minecarts using spigot api
             return;
         }
 
@@ -152,30 +159,27 @@ public class Teleporter {
     private void teleport(Entity target, Location exitpoint) {
         target.teleport(exitpoint);
         if(origin != null && !origin.hasFlag(PortalFlag.SILENT))
-            target.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT));
+            target.sendMessage(Stargate.languageManager.getMessage(teleportMessage));
         
     }
 
     private boolean charge(Player target) {
         if (origin.hasFlag(PortalFlag.PERSONAL_NETWORK))
             return Stargate.economyManager.chargePlayer(target, origin, cost);
-        else
-            return Stargate.economyManager.chargeAndTax(target, cost);
+        return Stargate.economyManager.chargeAndTax(target, cost);
     }
 
     private double calculateAngleChange(BlockFace originFacing, BlockFace destinationFacing) {
         if (originFacing != null) {
             Vector originGateDirection = originFacing.getDirection();
             return directionalAngleOperator(originGateDirection, destinationFacing.getDirection());
-        } else {
-            return -directionalAngleOperator(BlockFace.EAST.getDirection(), destinationFacing.getDirection());
         }
+        return -directionalAngleOperator(BlockFace.EAST.getDirection(), destinationFacing.getDirection());
     }
 
-    private boolean hasPerm(Entity target) {
+    private boolean hasPerm(Entity target, PermissionManager permissionManager) {
         StargatePortalEvent event = new StargatePortalEvent(target, origin);
         Bukkit.getPluginManager().callEvent(event);
-        PermissionManager permissionManager = new PermissionManager(target);
         return (permissionManager.hasPermission(event) && !event.isCancelled());
     }
 
