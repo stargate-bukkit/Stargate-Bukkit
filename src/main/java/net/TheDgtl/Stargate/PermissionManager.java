@@ -117,7 +117,7 @@ public class PermissionManager {
         
         if ((event instanceof StargatePortalEvent) && canProcessMetaData) {
             StargatePortalEvent sPEvent = (StargatePortalEvent) event;
-            if (!sPEvent.getEntity().getUniqueId().equals(sPEvent.getPortal().getOwnerUUID()))
+            if (!sPEvent.getEntity().getUniqueId().equals(sPEvent.getPortal().getOwnerUUID()) && sPEvent.getEntity() instanceof Player)
                 return canFollow();
         }
         return true;
