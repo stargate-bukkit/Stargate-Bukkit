@@ -40,7 +40,7 @@ public class Network {
     final static EnumMap<GateStructureType, HashMap<BlockLocation, Portal>> portalFromPartsMap = new EnumMap<>(GateStructureType.class);
 
     public Network(String name, Database database, SQLQueryGenerator sqlMaker) throws NameErrorException {
-        if (name.trim().isEmpty() || (name.length() == Stargate.MAX_TEXT_LENGTH))
+        if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH))
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         this.name = name;
         this.database = database;

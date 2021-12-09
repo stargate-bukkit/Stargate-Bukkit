@@ -100,7 +100,7 @@ public abstract class Portal implements IPortal {
         List<GateFormat> gateFormats = GateFormat.getPossibleGateFormatsFromControlBlockMaterial(behind.getType());
         setGate(FindMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing()));
 
-        if (name.trim().isEmpty() || (name.length() == Stargate.MAX_TEXT_LENGTH))
+        if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH))
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         if (this.network.isPortalNameTaken(name)) {
             throw new NameErrorException(TranslatableMessage.ALREADY_EXIST);
