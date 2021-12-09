@@ -172,11 +172,11 @@ public class NetworkedPortal extends Portal {
     @Override
     public void drawControlMechanism() {
         String[] lines = new String[4];
-        lines[0] = super.colorDrawer.parseName(HighlightingStyle.PORTAL, this);
+        lines[0] = super.colorDrawer.compilePortalName(HighlightingStyle.PORTAL, this);
         if (!isActive) {
-            lines[1] = super.colorDrawer.parseLine(Stargate.languageManager.getString(TranslatableMessage.RIGHT_CLICK));
-            lines[2] = super.colorDrawer.parseLine(Stargate.languageManager.getString(TranslatableMessage.TO_USE));
-            lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.parseLine(network.concatName()) : "";
+            lines[1] = super.colorDrawer.compileLine(Stargate.languageManager.getString(TranslatableMessage.RIGHT_CLICK));
+            lines[2] = super.colorDrawer.compileLine(Stargate.languageManager.getString(TranslatableMessage.TO_USE));
+            lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.compileLine(network.concatName()) : "";
         } else {
             int destinationIndex = selectedDestination % 3;
             int firstDestination = selectedDestination - destinationIndex;
@@ -188,9 +188,9 @@ public class NetworkedPortal extends Portal {
 
                 if (Settings.getInteger(Setting.NAME_STYLE) == 1) {
                     if (destinationIndex == i) {
-                        lines[i + 1] = super.colorDrawer.parseName(HighlightingStyle.DESTINATION, this.getDestination(destination));
+                        lines[i + 1] = super.colorDrawer.compilePortalName(HighlightingStyle.DESTINATION, this.getDestination(destination));
                     } else {
-                        lines[i + 1] = super.colorDrawer.parseLine(this.getDestination(destination).getName());
+                        lines[i + 1] = super.colorDrawer.compileLine(this.getDestination(destination).getName());
                     }
                     continue;
                 }
@@ -201,7 +201,7 @@ public class NetworkedPortal extends Portal {
                 } else {
                     surround = HighlightingStyle.NOTHING;
                 }
-                lines[i + 1] = super.colorDrawer.parseName(surround, this.getDestination(destination));
+                lines[i + 1] = super.colorDrawer.compilePortalName(surround, this.getDestination(destination));
             }
         }
         getGate().drawControlMechanism(lines, !hasFlag(PortalFlag.ALWAYS_ON));

@@ -11,7 +11,7 @@ import org.bukkit.block.Sign;
 
 import java.util.logging.Level;
 
-public class PortalColorParser {
+public class LineColorCompiler implements ILineCompiler{
 
     private final DyeColor signColor;
     private final boolean isLightSign;
@@ -19,12 +19,12 @@ public class PortalColorParser {
     static private final ChatColor ERROR_COLOR = ChatColor.RED;
 
 
-    public PortalColorParser(Sign sign) {
+    public LineColorCompiler(Sign sign) {
         this.signColor = sign.getColor();
         this.isLightSign = isLightSign(sign.getType());
     }
 
-    public PortalColorParser(DyeColor signColor, Material signMaterial) {
+    public LineColorCompiler(DyeColor signColor, Material signMaterial) {
         this.signColor = signColor;
         this.isLightSign = isLightSign(signMaterial);
     }
@@ -36,7 +36,8 @@ public class PortalColorParser {
      * @param portal
      * @return
      */
-    public String parseName(HighlightingStyle surround, IPortal portal) {
+    @Override
+    public String compilePortalName(HighlightingStyle surround, IPortal portal) {
         String name = portal.getName();
 
         ChatColor nameColor;
@@ -72,11 +73,13 @@ public class PortalColorParser {
 
     }
 
-    public String parseLine(String line) {
+    @Override
+    public String compileLine(String line) {
         return getColor(isLightSign) + line;
     }
 
-    public String parseError(String error, HighlightingStyle surround) {
+    @Override
+    public String compileErrorLine(String error, HighlightingStyle surround) {
         return getColor(isLightSign) + surround.getHighlightedName(ERROR_COLOR + error + getColor(isLightSign));
     }
 

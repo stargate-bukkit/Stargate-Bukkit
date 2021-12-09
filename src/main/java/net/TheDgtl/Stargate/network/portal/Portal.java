@@ -17,6 +17,9 @@ import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.util.VersionParser;
+
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -75,7 +78,7 @@ public abstract class Portal implements IPortal {
     IPortal overRideDestination = null;
     private long openTime = -1;
     private final UUID ownerUUID;
-    protected PortalColorParser colorDrawer;
+    protected ILineCompiler colorDrawer;
 
 
     Portal(Network network, String name, Block sign, Set<PortalFlag> flags, UUID ownerUUID)
@@ -170,8 +173,11 @@ public abstract class Portal implements IPortal {
             sign.setColor(color);
             sign.update();
         }
-
-        colorDrawer = new PortalColorParser(sign.getColor(), sign.getType());
+        if(!VersionParser.bukkitIsNewerThan(VersionParser.ImportantVersion.NO_CHATCOLOR_IMPLEMENTED))
+            colorDrawer = new NoLineColorCompiler();
+        else {
+            colorDrawer = new LineColorCompiler(sign.getColor(), sign.getType());
+        }
         this.drawControlMechanism();
     }
 
