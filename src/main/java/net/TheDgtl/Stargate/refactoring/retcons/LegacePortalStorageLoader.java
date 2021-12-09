@@ -40,6 +40,9 @@ public class LegacePortalStorageLoader {
         LEGACY_FLAGS_POS_MAP.put(PortalFlag.HIDE_NETWORK, 18);
         LEGACY_FLAGS_POS_MAP.put(PortalFlag.RANDOM, 19);
         LEGACY_FLAGS_POS_MAP.put(PortalFlag.BUNGEE, 20);
+        LEGACY_FLAGS_POS_MAP.put(PortalFlag.SILENT, 21);
+        LEGACY_FLAGS_POS_MAP.put(PortalFlag.SILENT, 22);
+        
     }
     
     /**
@@ -80,7 +83,8 @@ public class LegacePortalStorageLoader {
                 Double.valueOf(coordinates[2]));
         String destination = (splitedLine.length > 8) ? splitedLine[8] : "";
         String networkName = (splitedLine.length > 9) ? splitedLine[9] : Settings.getString(Setting.DEFAULT_NET);
-        String ownerUUIDString = (splitedLine.length > 10) ? splitedLine[10] : "";
+        String ownerString = (splitedLine.length > 10) ? splitedLine[10] : "";
+        UUID ownerUUID = getPlayerUUID(ownerString);
         EnumSet<PortalFlag> flags = parseFlags(splitedLine);
         
         try {
@@ -90,9 +94,16 @@ public class LegacePortalStorageLoader {
 
         
         String[] virtualSign = {name,destination,networkName,""};
-        return PortalCreationHelper.createPortalFromSign(network, virtualSign, signLocation.getBlock(), flags, UUID.fromString(ownerUUIDString));
+        return PortalCreationHelper.createPortalFromSign(network, virtualSign, signLocation.getBlock(), flags, ownerUUID);
     }
     
+    @SuppressWarnings("deprecation")
+    private static UUID getPlayerUUID(String ownerString) {
+        if(ownerString.length() > 16)
+                return UUID.fromString(ownerString);
+        return Bukkit.getOfflinePlayer(ownerString).getUniqueId();
+    }
+
     static private EnumSet<PortalFlag> parseFlags(String[] splitedLine){
         EnumSet<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
         for (PortalFlag flag : LEGACY_FLAGS_POS_MAP.keySet()) {
