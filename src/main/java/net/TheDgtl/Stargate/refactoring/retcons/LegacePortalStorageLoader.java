@@ -41,8 +41,7 @@ public class LegacePortalStorageLoader {
         LEGACY_FLAGS_POS_MAP.put(PortalFlag.RANDOM, 19);
         LEGACY_FLAGS_POS_MAP.put(PortalFlag.BUNGEE, 20);
         LEGACY_FLAGS_POS_MAP.put(PortalFlag.SILENT, 21);
-        LEGACY_FLAGS_POS_MAP.put(PortalFlag.SILENT, 22);
-        
+        LEGACY_FLAGS_POS_MAP.put(PortalFlag.NO_SIGN, 22);
     }
     
     /**
@@ -52,7 +51,6 @@ public class LegacePortalStorageLoader {
      * @throws IOException
      */
     static public List<Portal> loadPortalsFromStorage(String portalSaveLocation) throws IOException{
-
         List<Portal> portals = new ArrayList<>();
         for (World world : Bukkit.getWorlds()) {
             File file = new File(portalSaveLocation, world.getName() + ".db");

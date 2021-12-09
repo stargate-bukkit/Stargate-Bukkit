@@ -50,9 +50,14 @@ public class Refactorer {
                 configVersion = retConConfigNumber;
             }
         }
+        for(String settingKey : config.keySet()) {
+            defaultConfig.set(settingKey, config.get(settingKey));
+        }
+        
         defaultConfig.set("configVersion", Stargate.CURRENT_CONFIG_VERSION);
         try {
             defaultConfig.save(new File(stargate.getDataFolder(), "config.yml"));
+            addComments();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -27,6 +27,7 @@ import net.TheDgtl.Stargate.listeners.WorldEventListener;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.refactoring.Refactorer;
 import net.TheDgtl.Stargate.util.BStatsHelper;
 import net.TheDgtl.Stargate.util.FileHelper;
 import net.md_5.bungee.api.ChatColor;
@@ -219,8 +220,10 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         saveDefaultConfig();
         reloadConfig();
         if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
-            // TODO refactoring
+            Refactorer middas = new Refactorer(this.getConfig(),this);
+            middas.run();
         }
+            
     }
 
     @Override
