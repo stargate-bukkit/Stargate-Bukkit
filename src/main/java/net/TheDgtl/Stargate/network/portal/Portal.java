@@ -72,6 +72,7 @@ public abstract class Portal implements IPortal {
     final String name;
     UUID openFor;
     IPortal destination = null;
+    IPortal overRideDestination = null;
     private long openTime = -1;
     private final UUID ownerUUID;
     protected PortalColorParser colorDrawer;
@@ -176,7 +177,7 @@ public abstract class Portal implements IPortal {
 
     @Override
     public void update() {
-        if (isOpen() && loadDestination() == null) {
+        if (isOpen() && this.overRideDestination == null && network.getPortal(getDestination().getName()) == null) {
             close(false);
         }
         drawControlMechanism();
@@ -271,7 +272,7 @@ public abstract class Portal implements IPortal {
     }
 
     public void overrideDestination(IPortal destination) {
-        this.destination = destination;
+        this.overRideDestination = destination;
     }
 
     public Network getNetwork() {
@@ -283,10 +284,10 @@ public abstract class Portal implements IPortal {
         this.drawControlMechanism();
     }
 
-    protected IPortal getFinalDestination() {
-        if (destination == null)
-            destination = loadDestination();
-        return destination;
+    protected IPortal getDestination() {
+        if (overRideDestination == null)
+            return destination;
+        return overRideDestination;
     }
 
     public void onButtonClick(PlayerInteractEvent event) {
@@ -372,7 +373,7 @@ public abstract class Portal implements IPortal {
 
     @Override
     public void doTeleport(Entity target) {
-        IPortal destination = getFinalDestination();
+        IPortal destination = getDestination();
         if (destination == null) {
             target.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID));
             teleportHere(target, this);
