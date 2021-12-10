@@ -23,9 +23,9 @@ public class RandomPortal extends Portal {
     @Override
     public void drawControlMechanism() {
         String[] lines = {
-                super.colorDrawer.compilePortalName(HighlightingStyle.PORTAL, this),
-                super.colorDrawer.compileLine(HighlightingStyle.DESTINATION.getHighlightedName(Stargate.languageManager.getString(TranslatableMessage.RANDOM))),
-                !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.compileLine(network.concatName()) : "",
+                super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL),
+                super.colorDrawer.formatLine(HighlightingStyle.DESTINATION.getHighlightedName(Stargate.languageManager.getString(TranslatableMessage.RANDOM))),
+                !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(network.concatName()) : "",
                 ""
         };
         getGate().drawControlMechanism(lines, !hasFlag(PortalFlag.ALWAYS_ON));

@@ -172,11 +172,11 @@ public class NetworkedPortal extends Portal {
     @Override
     public void drawControlMechanism() {
         String[] lines = new String[4];
-        lines[0] = super.colorDrawer.compilePortalName(HighlightingStyle.PORTAL, this);
+        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
         if (!isActive) {
-            lines[1] = super.colorDrawer.compileLine(Stargate.languageManager.getString(TranslatableMessage.RIGHT_CLICK));
-            lines[2] = super.colorDrawer.compileLine(Stargate.languageManager.getString(TranslatableMessage.TO_USE));
-            lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.compileLine(network.concatName()) : "";
+            lines[1] = super.colorDrawer.formatLine(Stargate.languageManager.getString(TranslatableMessage.RIGHT_CLICK));
+            lines[2] = super.colorDrawer.formatLine(Stargate.languageManager.getString(TranslatableMessage.TO_USE));
+            lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(network.concatName()) : "";
         } else {
             int destinationIndex = selectedDestination % 3;
             int firstDestination = selectedDestination - destinationIndex;
@@ -188,20 +188,21 @@ public class NetworkedPortal extends Portal {
 
                 if (Settings.getInteger(Setting.NAME_STYLE) == 1) {
                     if (destinationIndex == i) {
-                        lines[i + 1] = super.colorDrawer.compilePortalName(HighlightingStyle.DESTINATION, this.getDestination(destination));
+                        lines[i + 1] = super.colorDrawer.formatPortalName(this.getDestination(destination), 
+                                HighlightingStyle.DESTINATION);
                     } else {
-                        lines[i + 1] = super.colorDrawer.compileLine(this.getDestination(destination).getName());
+                        lines[i + 1] = super.colorDrawer.formatLine(this.getDestination(destination).getName());
                     }
                     continue;
                 }
 
-                HighlightingStyle surround;
+                HighlightingStyle highlightingStyle;
                 if (destinationIndex == i) {
-                    surround = HighlightingStyle.DESTINATION;
+                    highlightingStyle = HighlightingStyle.DESTINATION;
                 } else {
-                    surround = HighlightingStyle.NOTHING;
+                    highlightingStyle = HighlightingStyle.NOTHING;
                 }
-                lines[i + 1] = super.colorDrawer.compilePortalName(surround, this.getDestination(destination));
+                lines[i + 1] = super.colorDrawer.formatPortalName(this.getDestination(destination), highlightingStyle);
             }
         }
         getGate().drawControlMechanism(lines, !hasFlag(PortalFlag.ALWAYS_ON));
