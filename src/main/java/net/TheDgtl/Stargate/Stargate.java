@@ -264,6 +264,11 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     @Override
+    public void saveDefaultConfig() {
+        super.saveResource("config.yml", true);
+    }
+
+    @Override
     public void onLoad() {
         // TODO Economy (issue #88)
         //economyHandler = new EconomyHandler(this);
