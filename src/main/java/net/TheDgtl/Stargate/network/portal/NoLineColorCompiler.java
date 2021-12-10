@@ -2,10 +2,10 @@ package net.TheDgtl.Stargate.network.portal;
 
 /**
  * Used for backwards compatibility when ChatColor was not a thing
- * @author Thorin
  *
+ * @author Thorin
  */
-public class NoLineColorCompiler implements ILineCompiler{
+public class NoLineColorCompiler implements ILineCompiler {
 
     @Override
     public String compilePortalName(HighlightingStyle surround, IPortal portal) {

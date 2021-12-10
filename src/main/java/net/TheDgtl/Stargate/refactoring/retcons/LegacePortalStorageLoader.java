@@ -1,19 +1,5 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
@@ -21,15 +7,27 @@ import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.util.FileHelper;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.UUID;
 
 public class LegacePortalStorageLoader {
-    
-    static private final EnumMap<PortalFlag,Integer> LEGACY_FLAGS_POS_MAP= new EnumMap<PortalFlag, Integer>(PortalFlag.class);
+
+    static private final EnumMap<PortalFlag, Integer> LEGACY_FLAGS_POS_MAP = new EnumMap<PortalFlag, Integer>(PortalFlag.class);
+
     static {
         LEGACY_FLAGS_POS_MAP.put(PortalFlag.HIDDEN, 11);
         LEGACY_FLAGS_POS_MAP.put(PortalFlag.ALWAYS_ON, 12);
@@ -43,18 +41,17 @@ public class LegacePortalStorageLoader {
         LEGACY_FLAGS_POS_MAP.put(PortalFlag.SILENT, 21);
         LEGACY_FLAGS_POS_MAP.put(PortalFlag.NO_SIGN, 22);
     }
-    
+
     /**
-     * 
      * @param portalSaveLocation <p> Filename</p>
      * @return
      * @throws IOException
      */
-    static public List<Portal> loadPortalsFromStorage(String portalSaveLocation) throws IOException{
+    static public List<Portal> loadPortalsFromStorage(String portalSaveLocation) throws IOException {
         List<Portal> portals = new ArrayList<>();
         for (World world : Bukkit.getWorlds()) {
             File file = new File(portalSaveLocation, world.getName() + ".db");
-            if(!file.exists())
+            if (!file.exists())
                 continue;
             BufferedReader reader = FileHelper.getBufferedReader(file);
             String line = reader.readLine();
@@ -64,12 +61,13 @@ public class LegacePortalStorageLoader {
                 }
                 try {
                     portals.add(readPortal(line, world));
-                } catch (NameErrorException | NoFormatFoundException | GateConflictException e) {}
+                } catch (NameErrorException | NoFormatFoundException | GateConflictException e) {
+                }
             }
         }
         return portals;
     }
-    
+
     static private Portal readPortal(String line, World world) throws NameErrorException, NoFormatFoundException, GateConflictException {
         String[] splitedLine = line.split(":");
         String name = splitedLine[0];
@@ -84,25 +82,26 @@ public class LegacePortalStorageLoader {
         String ownerString = (splitedLine.length > 10) ? splitedLine[10] : "";
         UUID ownerUUID = getPlayerUUID(ownerString);
         EnumSet<PortalFlag> flags = parseFlags(splitedLine);
-        
+
         try {
             Stargate.factory.createNetwork(networkName, flags);
-        } catch (NameErrorException e) {}
+        } catch (NameErrorException e) {
+        }
         Network network = Stargate.factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
-        
-        String[] virtualSign = {name,destination,networkName,""};
+
+        String[] virtualSign = {name, destination, networkName, ""};
         return PortalCreationHelper.createPortalFromSign(network, virtualSign, signLocation.getBlock(), flags, ownerUUID);
     }
-    
+
     @SuppressWarnings("deprecation")
     private static UUID getPlayerUUID(String ownerString) {
-        if(ownerString.length() > 16)
-                return UUID.fromString(ownerString);
+        if (ownerString.length() > 16)
+            return UUID.fromString(ownerString);
         return Bukkit.getOfflinePlayer(ownerString).getUniqueId();
     }
 
-    static private EnumSet<PortalFlag> parseFlags(String[] splitedLine){
+    static private EnumSet<PortalFlag> parseFlags(String[] splitedLine) {
         EnumSet<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
         for (PortalFlag flag : LEGACY_FLAGS_POS_MAP.keySet()) {
             int position = LEGACY_FLAGS_POS_MAP.get(flag);
@@ -110,7 +109,7 @@ public class LegacePortalStorageLoader {
                 flags.add(flag);
             }
         }
-        
+
         return flags;
     }
 }

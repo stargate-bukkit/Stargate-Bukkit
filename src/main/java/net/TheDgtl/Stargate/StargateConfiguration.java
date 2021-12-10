@@ -3,7 +3,7 @@ package net.TheDgtl.Stargate;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class StargateConfiguration extends YamlConfiguration{
+public class StargateConfiguration extends YamlConfiguration {
 
     private String contents;
 

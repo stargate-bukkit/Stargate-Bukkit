@@ -11,7 +11,7 @@ import org.bukkit.block.Sign;
 
 import java.util.logging.Level;
 
-public class LineColorCompiler implements ILineCompiler{
+public class LineColorCompiler implements ILineCompiler {
 
     private final DyeColor signColor;
     private final boolean isLightSign;

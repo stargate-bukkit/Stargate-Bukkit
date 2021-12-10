@@ -140,7 +140,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         BukkitScheduler scheduler = getServer().getScheduler();
         scheduler.scheduleSyncRepeatingTask(this, syncTickPopulator, 0L, 1L);
         scheduler.scheduleSyncRepeatingTask(this, syncSecPopulator, 0L, 20L);
-        
+
 
         // Registers bstats metrics
         int pluginId = 10451;

@@ -18,7 +18,6 @@ import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -45,7 +44,7 @@ import java.util.logging.Level;
  * A listener for detecting any relevant block events
  */
 public class BlockEventListener implements Listener {
-    
+
     /**
      * Detects relevant block break events
      *
@@ -75,7 +74,7 @@ public class BlockEventListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if(Network.getPortal(location, GateStructureType.IRIS) != null && Settings.getBoolean(Setting.PROTECT_ENTRANCE)) {
+        if (Network.getPortal(location, GateStructureType.IRIS) != null && Settings.getBoolean(Setting.PROTECT_ENTRANCE)) {
             event.setCancelled(true);
             return;
         }
@@ -227,7 +226,7 @@ public class BlockEventListener implements Listener {
             player.sendMessage(permissionManager.getDenyMessage());
             return;
         }
-        if(sEvent.isCancelled()){
+        if (sEvent.isCancelled()) {
             Stargate.log(Level.CONFIG, " Event was cancelled due an external cancellation");
             player.sendMessage(sEvent.getDenyReason());
             return;
@@ -356,9 +355,9 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        Portal portal = Network.getPortal(event.getLocation(), new GateStructureType[] {GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK});
+        Portal portal = Network.getPortal(event.getLocation(), new GateStructureType[]{GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK});
         if (portal != null) {
-            if(Settings.getBoolean(Setting.DESTROY_ON_EXPLOSION)) {
+            if (Settings.getBoolean(Setting.DESTROY_ON_EXPLOSION)) {
                 portal.destroy();
                 Supplier<Boolean> destroyAction = () -> {
                     portal.destroy();
@@ -394,9 +393,9 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockFormEvent(BlockFormEvent event) {
-        if(!Settings.getBoolean(Setting.PROTECT_ENTRANCE))
+        if (!Settings.getBoolean(Setting.PROTECT_ENTRANCE))
             return;
-        
+
         Location location = event.getBlock().getLocation();
         Portal portal = Network.getPortal(location, GateStructureType.IRIS);
         if (portal != null) {

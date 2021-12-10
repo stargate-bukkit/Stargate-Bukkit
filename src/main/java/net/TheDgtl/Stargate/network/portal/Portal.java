@@ -18,8 +18,6 @@ import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.util.VersionParser;
-
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -120,7 +118,7 @@ public abstract class Portal implements IPortal {
 
         if (hasFlag(PortalFlag.ALWAYS_ON))
             this.open(null);
-        
+
         Portal.portalCount++;
         Portal.allUsedFlags.addAll(flags);
     }
@@ -173,7 +171,7 @@ public abstract class Portal implements IPortal {
             sign.setColor(color);
             sign.update();
         }
-        if(!VersionParser.bukkitIsNewerThan(VersionParser.ImportantVersion.NO_CHATCOLOR_IMPLEMENTED))
+        if (!VersionParser.bukkitIsNewerThan(VersionParser.ImportantVersion.NO_CHATCOLOR_IMPLEMENTED))
             colorDrawer = new NoLineColorCompiler();
         else {
             colorDrawer = new LineColorCompiler(sign.getColor(), sign.getType());
@@ -191,7 +189,7 @@ public abstract class Portal implements IPortal {
 
     public void onSignClick(PlayerInteractEvent event) {
     }
-    
+
     public abstract void drawControlMechanism();
 
     public abstract IPortal loadDestination();
@@ -382,7 +380,7 @@ public abstract class Portal implements IPortal {
     public void doTeleport(Entity target) {
         IPortal destination = getDestination();
         if (destination == null) {
-            Teleporter teleporter = new Teleporter(this.getExit(),this,gate.getFacing(),gate.getFacing(),0,TranslatableMessage.INVALID,false);
+            Teleporter teleporter = new Teleporter(this.getExit(), this, gate.getFacing(), gate.getFacing(), 0, TranslatableMessage.INVALID, false);
             teleporter.teleport(target);
             return;
         }

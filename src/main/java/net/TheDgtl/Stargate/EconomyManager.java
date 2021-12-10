@@ -109,7 +109,7 @@ public class EconomyManager {
         }
         return false;
     }
-    
+
     public Plugin getEconomyPlugin() {
         return Bukkit.getPluginManager().getPlugin("Vault");
     }

@@ -14,7 +14,6 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.IPortal;
-import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
@@ -270,7 +269,7 @@ public class StargateFactory {
         PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn, Stargate.serverName, Stargate.serverUUID);
         statement.execute();
         statement.close();
-        
+
         for (InterServerNetwork net : bungeeNetList.values()) {
             for (IPortal portal : net.getAllPortals()) {
                 /*

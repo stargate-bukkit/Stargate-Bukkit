@@ -5,7 +5,6 @@ import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.refactoring.retcons.Modificator;
 import net.TheDgtl.Stargate.refactoring.retcons.RetCon1_0_0;
 import net.TheDgtl.Stargate.util.FileHelper;
-
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -64,14 +63,15 @@ public class Refactorer {
         }
         return config;
     }
-    
+
     /**
      * Reads a file with comments, and recreates them into yaml mappings.
-     * A mapping follows this format: comment_{CommentNumber}: "The comment" 
+     * A mapping follows this format: comment_{CommentNumber}: "The comment"
      * <p>
      * This needs to be done as comments otherwise get removed using
      * the {@link FileConfiguration#save(File)} method. The config
      * needs to be saved if a config value has changed.
+     *
      * @throws IOException
      */
     public void convertCommentsToYAMLMappings() throws IOException {
@@ -80,7 +80,7 @@ public class Refactorer {
         String newText = "";
         /*
          * A list of each stored comment (which is an list of comment lines)
-         * A comment is defined as a set of lines that start with #, this set 
+         * A comment is defined as a set of lines that start with #, this set
          * can not contain an empty line.
          */
         List<List<String>> comments = new ArrayList<>();
@@ -116,9 +116,9 @@ public class Refactorer {
         } finally {
             bReader.close();
         }
-        
+
         File oldFile = new File(configFile.getAbsolutePath() + ".old");
-        if(oldFile.exists())
+        if (oldFile.exists())
             oldFile.delete();
         configFile.renameTo(oldFile);
         configFile.createNewFile();
@@ -128,13 +128,13 @@ public class Refactorer {
         } finally {
             bWriter.close();
         }
-        
+
     }
-    
+
     private String compileCommentMapping(List<String> commentLines, int counter, int indent) {
         String commentYamlMapping = this.repeat(" ", indent) + START_OF_COMMENT + counter + ": |\n";
         commentLines.add(this.repeat(" ", indent + 2) + END_OF_COMMENT);
-        for(String commentLine : commentLines) {
+        for (String commentLine : commentLines) {
             commentYamlMapping = commentYamlMapping + this.repeat(" ", indent + 2) + commentLine + "\n";
         }
         return commentYamlMapping;
@@ -170,8 +170,8 @@ public class Refactorer {
                     String lastKeyName = possibleComment.split(":")[0];
                     Set<String> keys = fileConfig.getKeys(true);
                     String key = "";
-                    for(String possibleKey : keys) {
-                        if(possibleKey.contains(lastKeyName))
+                    for (String possibleKey : keys) {
+                        if (possibleKey.contains(lastKeyName))
                             key = possibleKey;
                     }
                     String comment = fileConfig.getString(key);
@@ -202,9 +202,9 @@ public class Refactorer {
 
     /**
      * Repeats the given string the given amount of times
-     * 
+     *
      * @param repeatingString <p>The string to repeat</p>
-     * @param repetitions <p>The number of times to repeat the string</p>
+     * @param repetitions     <p>The number of times to repeat the string</p>
      * @return <p>The string repeated the given amount of times</p>
      */
     private String repeat(String repeatingString, int repetitions) {
@@ -244,9 +244,9 @@ public class Refactorer {
         bReader = FileHelper.getBufferedReader(configFile);
 
         try {
-            logger.logMessage(Level.FINEST, String.format("Current config from file %s:",configFile.getName()));
+            logger.logMessage(Level.FINEST, String.format("Current config from file %s:", configFile.getName()));
             String line;
-            while ((line = bReader.readLine())!= null) {
+            while ((line = bReader.readLine()) != null) {
                 logger.logMessage(Level.FINEST, line);
             }
         } finally {

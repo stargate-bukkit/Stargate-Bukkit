@@ -67,14 +67,14 @@ public class NetworkedPortal extends Portal {
             this.isActive = false;
             return;
         }
-        
-        if(!previuslyActivated) {
-            if(!Settings.getBoolean(Setting.REMEMBER_LAST_DESTINATION))
+
+        if (!previuslyActivated) {
+            if (!Settings.getBoolean(Setting.REMEMBER_LAST_DESTINATION))
                 selectedDestination = 0;
             drawControlMechanism();
             return;
         }
-        
+
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
             int step = (event.getAction() == Action.RIGHT_CLICK_BLOCK) ? 1 : -1;
             selectedDestination = getNextDestination(step, selectedDestination);
@@ -95,9 +95,9 @@ public class NetworkedPortal extends Portal {
     }
 
     private List<IPortal> getDestinations(Player actor) {
-        if(actor == null)
+        if (actor == null)
             return new ArrayList<>();
-        
+
         HashSet<String> tempPortalList = network.getAvailablePortals(actor, this);
         tempPortalList.toArray(new String[0]);
         List<IPortal> destinations = new ArrayList<>();
@@ -112,19 +112,19 @@ public class NetworkedPortal extends Portal {
             return null;
         return destinations.get(selectedDestination);
     }
-    
+
     /**
      * Check if it's referencing to a destroyed portal, and in that case
      * change what portal it is selecting
      */
     @Override
     public void update() {
-        if(!isActive) {
+        if (!isActive) {
             return;
         }
         IPortal destination = this.destinations.get(this.selectedDestination);
         destinations = getDestinations(Bukkit.getPlayer(activator));
-        if(destinations.contains(destination)) {
+        if (destinations.contains(destination)) {
             this.selectedDestination = destinations.indexOf(destination);
             super.update();
             return;
@@ -132,8 +132,8 @@ public class NetworkedPortal extends Portal {
         /*
          * If the previously selected destination has been removed...
          */
-        int aPossibleDestination = getNextDestination(0,this.selectedDestination);
-        if(aPossibleDestination == NO_DESTINATION_SELECTED) {
+        int aPossibleDestination = getNextDestination(0, this.selectedDestination);
+        if (aPossibleDestination == NO_DESTINATION_SELECTED) {
             this.deactivate();
             super.update();
             return;
@@ -206,7 +206,7 @@ public class NetworkedPortal extends Portal {
         }
         getGate().drawControlMechanism(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }
-    
+
     private boolean hasActivatePerms(Player actor) {
         StargateActivateEvent event = new StargateActivateEvent(this, actor, destinations);
         Bukkit.getPluginManager().callEvent(event);

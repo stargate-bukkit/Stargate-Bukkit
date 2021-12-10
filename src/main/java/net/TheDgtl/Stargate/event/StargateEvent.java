@@ -125,7 +125,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
 
     protected List<Permission> defaultPermCompile(String permIdentifier, String activatorUUID) {
         List<Permission> permList = new ArrayList<>(compileFlagPerms(permIdentifier));
-        permList.add(compileWorldPerm(permIdentifier,portal.getSignLocation()));
+        permList.add(compileWorldPerm(permIdentifier, portal.getSignLocation()));
         permList.add(compileNetworkPerm(permIdentifier, activatorUUID));
         permList.add(compileDesignPerm(permIdentifier));
         return permList;

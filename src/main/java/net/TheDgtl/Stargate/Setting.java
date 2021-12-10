@@ -160,12 +160,12 @@ public enum Setting {
      * When using remote database, what should the name if the proxy be?
      */
     BUNGEE_INSTANCE_NAME("bungee.instanceName"),
-    
+
     /**
      * Allow explosions to destroy portals
      */
     DESTROY_ON_EXPLOSION("destroyOnExplosion"),
-    
+
     /**
      * Allow vehicles to teleport without any player inside
      */
@@ -175,7 +175,7 @@ public enum Setting {
      * Protect the entrance of a portal from entity based events
      */
     PROTECT_ENTRANCE("protectEntrance"),
-    
+
     /**
      * Remember the last destination a networked portal was connected to
      */

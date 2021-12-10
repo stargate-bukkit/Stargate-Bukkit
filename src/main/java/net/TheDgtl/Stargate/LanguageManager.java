@@ -38,7 +38,7 @@ public class LanguageManager {
         translatedStrings = loadLanguage(language);
         backupStrings = loadLanguage(defaultLanguage);
     }
-    
+
     /**
      * Gets a translated message
      *
@@ -53,13 +53,13 @@ public class LanguageManager {
         String message = getString(key).replaceAll("(&([a-f0-9]))", "\u00A7$2");
         return prefix + ChatColor.WHITE + message;
     }
-    
+
     public String getErrorMessage(TranslatableMessage key) {
-        return compileMessage(key,true);
+        return compileMessage(key, true);
     }
-    
+
     public String getMessage(TranslatableMessage key) {
-        return compileMessage(key,false);
+        return compileMessage(key, false);
     }
 
     /**

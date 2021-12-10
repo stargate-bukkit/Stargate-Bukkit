@@ -14,9 +14,9 @@ public class RetCon1_0_0 extends Modificator {
     static {
         /*
          *  Dinnerbone
-         *  TODO: convert old ass database 
+         *  TODO: convert old ass database
          */
-        CONFIG_CONVERSIONS.put("portal-save-location", null); 
+        CONFIG_CONVERSIONS.put("portal-save-location", null);
         CONFIG_CONVERSIONS.put("teleportMessage", null);
         CONFIG_CONVERSIONS.put("registerMessage", null);
         CONFIG_CONVERSIONS.put("destroyzMessage", null);
@@ -34,28 +34,27 @@ public class RetCon1_0_0 extends Modificator {
         CONFIG_CONVERSIONS.put("cost-to-create", "creationCost");
         CONFIG_CONVERSIONS.put("cost-to-activate", null);
         CONFIG_CONVERSIONS.put("cost-destination", "chargeFreeDestination");
-        
-        
-        
+
+
         // Drakia
-        CONFIG_CONVERSIONS.put("lang", "language"); 
-        CONFIG_CONVERSIONS.put("enableBungee", "bungee.usingBungee"); 
-        CONFIG_CONVERSIONS.put("default-gate-network", "defaultGateNetwork"); 
-        CONFIG_CONVERSIONS.put("maxgates", "networkLimit"); 
-        CONFIG_CONVERSIONS.put("ignoreEntrance", null); 
-        CONFIG_CONVERSIONS.put("destroyexplosion", "destroyOnExplosion"); 
-        CONFIG_CONVERSIONS.put("useiconomy", "useEconomy"); 
-        CONFIG_CONVERSIONS.put("createcost", "creationCost"); 
-        CONFIG_CONVERSIONS.put("destroycost", "destructionCost"); 
-        CONFIG_CONVERSIONS.put("usecost", "usageCost"); 
-        CONFIG_CONVERSIONS.put("toowner", "gateOwnerRevenue"); 
-        CONFIG_CONVERSIONS.put("chargefreedestination", "chargeFreeDestination"); 
-        CONFIG_CONVERSIONS.put("signColor", null); 
-        CONFIG_CONVERSIONS.put("freegatesgreen", "signStyle.listing"); 
-        CONFIG_CONVERSIONS.put("sortLists", "alphabeticNetworks"); 
-        CONFIG_CONVERSIONS.put("portal-folder", null); 
-        CONFIG_CONVERSIONS.put("gate-folder", null); 
-        CONFIG_CONVERSIONS.put("debug", null); 
+        CONFIG_CONVERSIONS.put("lang", "language");
+        CONFIG_CONVERSIONS.put("enableBungee", "bungee.usingBungee");
+        CONFIG_CONVERSIONS.put("default-gate-network", "defaultGateNetwork");
+        CONFIG_CONVERSIONS.put("maxgates", "networkLimit");
+        CONFIG_CONVERSIONS.put("ignoreEntrance", null);
+        CONFIG_CONVERSIONS.put("destroyexplosion", "destroyOnExplosion");
+        CONFIG_CONVERSIONS.put("useiconomy", "useEconomy");
+        CONFIG_CONVERSIONS.put("createcost", "creationCost");
+        CONFIG_CONVERSIONS.put("destroycost", "destructionCost");
+        CONFIG_CONVERSIONS.put("usecost", "usageCost");
+        CONFIG_CONVERSIONS.put("toowner", "gateOwnerRevenue");
+        CONFIG_CONVERSIONS.put("chargefreedestination", "chargeFreeDestination");
+        CONFIG_CONVERSIONS.put("signColor", null);
+        CONFIG_CONVERSIONS.put("freegatesgreen", "signStyle.listing");
+        CONFIG_CONVERSIONS.put("sortLists", "alphabeticNetworks");
+        CONFIG_CONVERSIONS.put("portal-folder", null);
+        CONFIG_CONVERSIONS.put("gate-folder", null);
+        CONFIG_CONVERSIONS.put("debug", null);
         CONFIG_CONVERSIONS.put("permdebug", null);
         CONFIG_CONVERSIONS.put("destMemory", "rememberLastDestination");
 
@@ -103,19 +102,20 @@ public class RetCon1_0_0 extends Modificator {
             String[] possiblePortalFolders = {
                     "portal-folder",
                     "folders.portalFolder"};
-            for(String portalFolder:possiblePortalFolders) {
-                if(oldConfig.get(portalFolder) != null) {
-                    LegacePortalStorageLoader.loadPortalsFromStorage((String)oldConfig.get(portalFolder));
+            for (String portalFolder : possiblePortalFolders) {
+                if (oldConfig.get(portalFolder) != null) {
+                    LegacePortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder));
                     break;
                 }
             }
-            
-        } catch (IOException e) {}
-        
+
+        } catch (IOException e) {
+        }
+
         Level logLevel = Level.INFO;
-        if( (boolean) oldConfig.get("permdebug") || (boolean) oldConfig.get("debugging.permdebug"))
+        if ((boolean) oldConfig.get("permdebug") || (boolean) oldConfig.get("debugging.permdebug"))
             logLevel = Level.CONFIG;
-        if( (boolean) oldConfig.get("debug") || (boolean) oldConfig.get("debugging.debug"))
+        if ((boolean) oldConfig.get("debug") || (boolean) oldConfig.get("debugging.debug"))
             logLevel = Level.FINE;
         Map<String, Object> newConfig = super.run(oldConfig);
         newConfig.put("loggingLevel", logLevel.toString());
