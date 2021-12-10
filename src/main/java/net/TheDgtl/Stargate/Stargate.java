@@ -35,6 +35,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
@@ -108,6 +109,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     public static ChatColor defaultLightSignColor = ChatColor.BLACK;
 
     public static ChatColor defaultDarkColor = ChatColor.WHITE;
+    
+    FileConfiguration config;
 
     @Override
     public void onEnable() {
@@ -230,11 +233,34 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             Map<String, Object> newConfig = middas.calculateNewConfig();
             this.saveResource("config.yml", true);
             this.reloadConfig();
-            middas.convertCommentsToYAMLMappings();
-            middas.insertNewValues(newConfig);
-            middas.convertYAMLMappingsToComments();
         }
-
+    }
+    
+    @Override
+    public FileConfiguration getConfig() {
+        if(config == null) {
+            reloadConfig();
+        }
+        return config;
+    }
+    
+    @Override
+    public void reloadConfig() {
+        config = new StargateConfiguration();
+        try {
+            config.load(new File(this.getDataFolder(),"config.yml"));
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void saveConfig() {
+        try {
+            config.save(new File(this.getDataFolder(),"config.yml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

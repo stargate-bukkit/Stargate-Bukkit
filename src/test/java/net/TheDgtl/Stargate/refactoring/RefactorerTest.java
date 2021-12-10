@@ -23,55 +23,10 @@ import net.TheDgtl.Stargate.StargateLogger;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RefactorerTest {
-
-    static private List<Refactorer> refactorers = new ArrayList<>();
-    static private File[] configFiles;
-    @BeforeAll
-    public static void setUp() throws FileNotFoundException, IOException, InvalidConfigurationException {
-        StargateLogger logger = new FakeStargate();
-        String configFolder = "src/test/resources/configurations";
-        configFiles = new File[] {
-                new File(configFolder, "testConfig.yml"),
-                new File("src/main/resources","config.yml")
-                };
-        for(File configFile : configFiles) {
-            FileConfiguration config = new YamlConfiguration();
-            config.load(configFile);
-            refactorers.add(new Refactorer(configFile,logger));
-        }
-    }
-
-    @AfterAll
-    public static void tearDown() {
-        for(File configFile : configFiles) {
-            File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
-            configFile.delete();
-            oldConfigFile.renameTo(configFile);
-        }
-    }
-    
     @Test
     @Order(0)
     public void loadConfigTest() {
         
-    }
-    
-    @Test
-    @Order(2)
-    public void convertCommentsTest() throws IOException {
-        for(Refactorer refactorer : refactorers) {
-            refactorer.convertCommentsToYAMLMappings();
-            refactorer.dispConfig();
-        }
-    }
-    
-    @Test
-    @Order(4)
-    public void reAddCommentsTest() throws IOException, InvalidConfigurationException {
-        for(Refactorer refactorer : refactorers) {
-            refactorer.convertYAMLMappingsToComments();
-            refactorer.dispConfig();
-        }
     }
 
 }
