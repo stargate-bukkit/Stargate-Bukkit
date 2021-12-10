@@ -1,6 +1,5 @@
 package net.TheDgtl.Stargate.network.portal.formatting;
 
-import net.TheDgtl.Stargate.network.portal.HighlightingStyle;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 
 /**

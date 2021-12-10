@@ -12,6 +12,7 @@ import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -188,7 +189,7 @@ public class NetworkedPortal extends Portal {
 
                 if (Settings.getInteger(Setting.NAME_STYLE) == 1) {
                     if (destinationIndex == i) {
-                        lines[i + 1] = super.colorDrawer.formatPortalName(this.getDestination(destination), 
+                        lines[i + 1] = super.colorDrawer.formatPortalName(this.getDestination(destination),
                                 HighlightingStyle.DESTINATION);
                     } else {
                         lines[i + 1] = super.colorDrawer.formatLine(this.getDestination(destination).getName());

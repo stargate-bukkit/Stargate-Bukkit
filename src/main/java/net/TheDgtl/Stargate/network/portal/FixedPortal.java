@@ -6,6 +6,7 @@ import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import org.bukkit.block.Block;
 
 import java.util.Set;

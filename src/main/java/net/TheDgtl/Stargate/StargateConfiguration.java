@@ -1,20 +1,20 @@
 package net.TheDgtl.Stargate;
 
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-
 /**
  * A configuration that supports comments
- * @author Thorin
  *
+ * @author Thorin
  */
-public class StargateConfiguration extends YamlConfiguration{
+public class StargateConfiguration extends YamlConfiguration {
 
     static private String END_OF_COMMENT = "_endOfComment_";
     static private String START_OF_COMMENT = "comment_";
@@ -41,11 +41,12 @@ public class StargateConfiguration extends YamlConfiguration{
 
     /**
      * Reads a file with comments, and recreates them into yaml mappings.
-     * A mapping follows this format: comment_{CommentNumber}: "The comment" 
+     * A mapping follows this format: comment_{CommentNumber}: "The comment"
      * <p>
      * This needs to be done as comments otherwise get removed using
      * the {@link FileConfiguration#save(File)} method. The config
      * needs to be saved if a config value has changed.
+     *
      * @throws IOException
      */
     public String convertCommentsToYAMLMappings(String yamlString) {
@@ -86,11 +87,11 @@ public class StargateConfiguration extends YamlConfiguration{
         }
         return newText;
     }
-    
+
     private String compileCommentMapping(List<String> commentLines, int counter, int indent) {
         String commentYamlMapping = this.repeat(" ", indent) + START_OF_COMMENT + counter + ": |\n";
         commentLines.add(this.repeat(" ", indent + 2) + END_OF_COMMENT);
-        for(String commentLine : commentLines) {
+        for (String commentLine : commentLines) {
             commentYamlMapping = commentYamlMapping + this.repeat(" ", indent + 2) + commentLine + "\n";
         }
         return commentYamlMapping;
@@ -134,9 +135,9 @@ public class StargateConfiguration extends YamlConfiguration{
 
     /**
      * Repeats the given string the given amount of times
-     * 
+     *
      * @param repeatingString <p>The string to repeat</p>
-     * @param repetitions <p>The number of times to repeat the string</p>
+     * @param repetitions     <p>The number of times to repeat the string</p>
      * @return <p>The string repeated the given amount of times</p>
      */
     private String repeat(String repeatingString, int repetitions) {
@@ -146,8 +147,6 @@ public class StargateConfiguration extends YamlConfiguration{
         }
         return builder.toString();
     }
-    
-
 
 
     /**
