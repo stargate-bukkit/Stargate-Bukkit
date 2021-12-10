@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import net.TheDgtl.Stargate.FakeStargate;
+import net.TheDgtl.Stargate.StargateLogger;
+
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RefactorerTest {
     static private File[] configFiles;
