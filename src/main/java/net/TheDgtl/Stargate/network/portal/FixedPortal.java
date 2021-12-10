@@ -26,8 +26,8 @@ public class FixedPortal extends Portal {
      * @param name            <p>The name of the portal</p>
      * @param destinationName <p>The name of the destination portal</p>
      * @param signBlock       <p>The block this portal's sign is located at</p>
-     * @param flags           <p>The flags enabled for this portal</p>
-     * @param ownerUUID       <p>The UUID of this portal's owner</p>
+     * @param flags           <p>The flags enabled for the portal</p>
+     * @param ownerUUID       <p>The UUID of the portal's owner</p>
      * @throws NameErrorException     <p>If the portal name is invalid</p>
      * @throws NoFormatFoundException <p>If no gate format matches the portal</p>
      * @throws GateConflictException  <p>If the portal's gate conflicts with an existing one</p>

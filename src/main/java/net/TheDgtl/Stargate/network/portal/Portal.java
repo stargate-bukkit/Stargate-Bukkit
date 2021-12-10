@@ -20,6 +20,7 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.LineColorFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.LineFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.NoLineColorFormatter;
+import net.TheDgtl.Stargate.ImportantVersion;
 import net.TheDgtl.Stargate.util.VersionParser;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -174,7 +175,7 @@ public abstract class Portal implements IPortal {
             sign.setColor(color);
             sign.update();
         }
-        if (!VersionParser.bukkitIsNewerThan(VersionParser.ImportantVersion.NO_CHATCOLOR_IMPLEMENTED))
+        if (!VersionParser.bukkitIsNewerThan(ImportantVersion.NO_CHAT_COLOR_IMPLEMENTED))
             colorDrawer = new NoLineColorFormatter();
         else {
             colorDrawer = new LineColorFormatter(sign.getColor(), sign.getType());
