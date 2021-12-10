@@ -1,27 +1,28 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import net.TheDgtl.Stargate.PluginChannel;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
+/**
+ * A portal representing a legacy BungeeCord portal
+ *
+ * <p>This portal type uses several cheats to make the legacy BungeeCord logic work with the new database.</p>
+ */
 public class BungeePortal extends Portal {
 
     private static Network LEGACY_NETWORK;
+    private final Network cheatNetwork;
+    private final LegacyVirtualPortal targetPortal;
+    private final String serverDestination;
 
     static {
         try {
@@ -32,16 +33,23 @@ public class BungeePortal extends Portal {
     }
 
     /**
-     * CHEATS! we love cheats. This one helps to save the legacy bungee gate into sql table so that the
-     * target server is stored as a replacement to network.
+     * Instantiates a new Bungee Portal
+     *
+     * @param network           <p>The network the portal belongs to</p>
+     * @param name              <p>The name of the portal</p>
+     * @param destination       <p>The destination of the portal</p>
+     * @param destinationServer <p>The destination server to connect to</p>
+     * @param signBlock         <p>The block this portal's sign is located at</p>
+     * @param flags             <p>The flags enabled for this portal</p>
+     * @param ownerUUID         <p>The UUID of this portal's owner</p>
+     * @throws NameErrorException     <p>If the portal name is invalid</p>
+     * @throws NoFormatFoundException <p>If no gate format matches the portal</p>
+     * @throws GateConflictException  <p>If the portal's gate conflicts with an existing one</p>
      */
-    private final Network cheatNet;
-    private final LegacyVirtualPortal targetPortal;
-    private final String serverDestination;
-
-    public BungeePortal(Network network, String name, String destination, String serverDestination, Block sign, Set<PortalFlag> flags, UUID ownerUUID)
-            throws NameErrorException, NoFormatFoundException, GateConflictException {
-        super(network, name, sign, flags, ownerUUID);
+    public BungeePortal(Network network, String name, String destination, String destinationServer, Block signBlock,
+                        Set<PortalFlag> flags, UUID ownerUUID) throws NameErrorException, NoFormatFoundException,
+            GateConflictException {
+        super(network, name, signBlock, flags, ownerUUID);
 
         /*
          * Create a virtual portal that handles everything related
@@ -51,9 +59,14 @@ public class BungeePortal extends Portal {
          * Note that this is only used locally inside this portal
          * and can not be found (should not) in any network anywhere.
          */
-        targetPortal = new LegacyVirtualPortal(serverDestination, destination, LEGACY_NETWORK, EnumSet.noneOf(PortalFlag.class), ownerUUID);
-        this.serverDestination = serverDestination;
-        cheatNet = new Network(serverDestination, null, null);
+        targetPortal = new LegacyVirtualPortal(this, destinationServer, destination, LEGACY_NETWORK,
+                EnumSet.noneOf(PortalFlag.class), ownerUUID);
+        this.serverDestination = destinationServer;
+        /*
+         * CHEATS! we love cheats. This one helps to save the legacy bungee gate into sql table so that the
+         * target server is stored as a replacement to network.
+         */
+        cheatNetwork = new Network(destinationServer, null, null);
     }
 
     @Override
@@ -75,49 +88,7 @@ public class BungeePortal extends Portal {
 
     @Override
     public Network getNetwork() {
-        return cheatNet;
+        return cheatNetwork;
     }
 
-    class LegacyVirtualPortal extends VirtualPortal {
-
-        public LegacyVirtualPortal(String server, String name, Network net, Set<PortalFlag> flags, UUID ownerUUID) {
-            super(server, name, net, flags, ownerUUID);
-        }
-
-        @Override
-        public void teleportHere(Entity target, Portal origin) {
-            Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
-            if (!(target instanceof Player)) {
-                return;
-            }
-            Player player = (Player) target;
-            try {
-                ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                DataOutputStream msgData = new DataOutputStream(bao);
-                msgData.writeUTF(PluginChannel.FORWARD.getChannel());
-                msgData.writeUTF(server);
-                msgData.writeUTF(PluginChannel.LEGACY_BUNGEE.getChannel());
-                String msg = player.getName() + "#@#" + destination.getName();
-                msgData.writeUTF(msg);
-                Stargate.log(Level.FINEST, bao.toString());
-                player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), bao.toByteArray());
-            } catch (IOException ex) {
-                Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord teleport packet");
-                ex.printStackTrace();
-                return;
-            }
-
-            try {
-                ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                DataOutputStream msgData = new DataOutputStream(bao);
-                msgData.writeUTF(PluginChannel.PLAYER_CONNECT.getChannel());
-                msgData.writeUTF(server);
-                player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), bao.toByteArray());
-            } catch (IOException ex) {
-                Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord connect packet");
-                ex.printStackTrace();
-            }
-
-        }
-    }
 }
