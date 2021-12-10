@@ -23,7 +23,7 @@ public class SQLiteDatabaseTest {
     public static void setUp() throws SQLException {
         System.out.println("Setting up test data");
 
-        database = new SQLiteDatabase(new File("test.db"));
+        database = new SQLiteDatabase(new File("src/test/resources", "test.db"));
         nameConfig = new TableNameConfig("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DriverEnum.SQLITE);
         tester = new DatabaseTester(database, nameConfig, generator, false);

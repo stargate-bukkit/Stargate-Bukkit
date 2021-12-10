@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -220,8 +221,17 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         saveDefaultConfig();
         reloadConfig();
         if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
-            Refactorer middas = new Refactorer(this.getConfig(),this);
-            middas.run();
+            Refactorer middas = new Refactorer(this.getConfig(), new File( this.getDataFolder(), "config.yml"), this);
+            Map<String, Object> newConfig = middas.calculateNewConfig();
+            try {
+                this.saveResource("config.yml",true);
+                this.reloadConfig();
+                middas.convertCommentsToYAMLMappings();
+                middas.insertNewValues(newConfig, getConfigStatic());
+                middas.convertYAMLMappingsToComments();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
             
     }

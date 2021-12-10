@@ -1,0 +1,4 @@
+#Should not be read
+
+# should be
+option: "an option"
