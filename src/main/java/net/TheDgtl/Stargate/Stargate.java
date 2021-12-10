@@ -230,8 +230,9 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         reloadConfig();
         if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
             Refactorer middas = new Refactorer(new File(this.getDataFolder(), "config.yml"), this);
-            Map<String, Object> newConfig = middas.calculateNewConfig();
+            Map<String, Object> newConfig = middas.run();
             this.saveResource("config.yml", true);
+            middas.insertNewValues(newConfig);
             this.reloadConfig();
         }
     }

@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 
 class StargateConfigurationTest {
 
-    static private List<FileConfiguration> configs = new ArrayList<>();
     static private File[] configFiles;
     static private StargateLogger logger;
     @BeforeAll
