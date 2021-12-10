@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.network.portal;
+package net.TheDgtl.Stargate.network.portal.formatting;
 
 /**
  * The highlighting characters to use around a portal or network name

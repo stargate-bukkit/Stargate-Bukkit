@@ -12,7 +12,7 @@ import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.portal.IPortal;
-import net.TheDgtl.Stargate.network.portal.HighlightingStyle;
+import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import org.bukkit.Bukkit;
 
 import java.io.ByteArrayOutputStream;

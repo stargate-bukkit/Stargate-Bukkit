@@ -6,13 +6,17 @@ import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.refactoring.retcons.Modificator;
 import net.TheDgtl.Stargate.refactoring.retcons.RetCon1_0_0;
 
+import net.TheDgtl.Stargate.util.FileHelper;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
+
+import java.util.logging.Level;
 
 public class Refactorer {
     /*

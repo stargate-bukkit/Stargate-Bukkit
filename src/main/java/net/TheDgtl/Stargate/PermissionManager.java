@@ -4,7 +4,6 @@ import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateEvent;
 import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import net.milkbowl.vault.chat.Chat;
@@ -45,7 +44,7 @@ public class PermissionManager {
     public PermissionManager(Entity target) {
         this(target, Stargate.languageManager);
     }
-    
+
     public PermissionManager(Entity target, LanguageManager languageManager) {
         this.target = target;
         canProcessMetaData = setupMetadataProvider();
@@ -114,7 +113,7 @@ public class PermissionManager {
                 canProcessMetaData && target instanceof Player) {
             return !isNetworkFull(event.getPortal().getNetwork());
         }
-        
+
         if ((event instanceof StargatePortalEvent) && canProcessMetaData) {
             StargatePortalEvent sPEvent = (StargatePortalEvent) event;
             if (!sPEvent.getEntity().getUniqueId().equals(sPEvent.getPortal().getOwnerUUID()) && sPEvent.getEntity() instanceof Player)
@@ -125,30 +124,30 @@ public class PermissionManager {
 
     public String determineTranslatableMessageFromPermission(Permission permission) {
         String permissionNode = permission.getName();
-        if(permissionNode.contains("create") || permissionNode.contains("use")) {
-            if(permissionNode.contains("world")) {
+        if (permissionNode.contains("create") || permissionNode.contains("use")) {
+            if (permissionNode.contains("world")) {
                 String unformattedMessage = languageManager.getErrorMessage(TranslatableMessage.WORLD_DENY);
                 String worldName = permissionNode.split(".world.")[1];
-                return TranslatableMessageFormatter.compileWorld(unformattedMessage,worldName);
+                return TranslatableMessageFormatter.compileWorld(unformattedMessage, worldName);
             }
-            if(permissionNode.contains("network"))
+            if (permissionNode.contains("network"))
                 return languageManager.getErrorMessage(TranslatableMessage.NET_DENY);
         }
-        
-        if(permissionNode.contains("create")) {
-            if(permissionNode.contains("design"))
+
+        if (permissionNode.contains("create")) {
+            if (permissionNode.contains("design"))
                 return languageManager.getErrorMessage(TranslatableMessage.GATE_DENY);
-            if(permissionNode.contains("type")) {
-                PortalFlag flag =  PortalFlag.valueOf(permissionNode.split(".type.")[1]);
-                if(flag == PortalFlag.BUNGEE || flag == PortalFlag.FANCY_INTER_SERVER) {
+            if (permissionNode.contains("type")) {
+                PortalFlag flag = PortalFlag.valueOf(permissionNode.split(".type.")[1]);
+                if (flag == PortalFlag.BUNGEE || flag == PortalFlag.FANCY_INTER_SERVER) {
                     return languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DENY);
                 }
             }
         }
-        return languageManager.getErrorMessage( TranslatableMessage.DENY );
-        
+        return languageManager.getErrorMessage(TranslatableMessage.DENY);
+
     }
-    
+
     /**
      * Checks if the network given in a stargate create event is full
      *
@@ -178,7 +177,7 @@ public class PermissionManager {
         }
         return false;
     }
-    
+
     private boolean canFollow() {
         String metaString = "can-followthrough";
         Player player = (Player) target;

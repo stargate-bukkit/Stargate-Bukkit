@@ -17,9 +17,11 @@ import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.formatting.LineColorFormatter;
+import net.TheDgtl.Stargate.network.portal.formatting.LineFormatter;
+import net.TheDgtl.Stargate.network.portal.formatting.NoLineColorFormatter;
+import net.TheDgtl.Stargate.ImportantVersion;
 import net.TheDgtl.Stargate.util.VersionParser;
-
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -78,7 +80,7 @@ public abstract class Portal implements IPortal {
     IPortal overRideDestination = null;
     private long openTime = -1;
     private final UUID ownerUUID;
-    protected ILineCompiler colorDrawer;
+    protected LineFormatter colorDrawer;
 
 
     Portal(Network network, String name, Block sign, Set<PortalFlag> flags, UUID ownerUUID)
@@ -120,7 +122,7 @@ public abstract class Portal implements IPortal {
 
         if (hasFlag(PortalFlag.ALWAYS_ON))
             this.open(null);
-        
+
         Portal.portalCount++;
         Portal.allUsedFlags.addAll(flags);
     }
@@ -173,10 +175,10 @@ public abstract class Portal implements IPortal {
             sign.setColor(color);
             sign.update();
         }
-        if(!VersionParser.bukkitIsNewerThan(VersionParser.ImportantVersion.NO_CHATCOLOR_IMPLEMENTED))
-            colorDrawer = new NoLineColorCompiler();
+        if (!VersionParser.bukkitIsNewerThan(ImportantVersion.NO_CHAT_COLOR_IMPLEMENTED))
+            colorDrawer = new NoLineColorFormatter();
         else {
-            colorDrawer = new LineColorCompiler(sign.getColor(), sign.getType());
+            colorDrawer = new LineColorFormatter(sign.getColor(), sign.getType());
         }
         this.drawControlMechanism();
     }
@@ -191,7 +193,7 @@ public abstract class Portal implements IPortal {
 
     public void onSignClick(PlayerInteractEvent event) {
     }
-    
+
     public abstract void drawControlMechanism();
 
     public abstract IPortal loadDestination();
@@ -382,7 +384,7 @@ public abstract class Portal implements IPortal {
     public void doTeleport(Entity target) {
         IPortal destination = getDestination();
         if (destination == null) {
-            Teleporter teleporter = new Teleporter(this.getExit(),this,gate.getFacing(),gate.getFacing(),0,TranslatableMessage.INVALID,false);
+            Teleporter teleporter = new Teleporter(this.getExit(), this, gate.getFacing(), gate.getFacing(), 0, TranslatableMessage.INVALID, false);
             teleporter.teleport(target);
             return;
         }

@@ -43,7 +43,7 @@ public class Teleporter {
      * @param cost            of the teleportation for any players
      */
     public Teleporter(Location destination, Portal origin, BlockFace destinationFace, BlockFace entranceFace, int cost,
-            TranslatableMessage teleportMessage, boolean checkPerms) {
+                      TranslatableMessage teleportMessage, boolean checkPerms) {
         // compensate so that the teleportation is centred in block
         this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
@@ -158,9 +158,9 @@ public class Teleporter {
 
     private void teleport(Entity target, Location exitpoint) {
         target.teleport(exitpoint);
-        if(origin != null && !origin.hasFlag(PortalFlag.SILENT))
+        if (origin != null && !origin.hasFlag(PortalFlag.SILENT))
             target.sendMessage(Stargate.languageManager.getMessage(teleportMessage));
-        
+
     }
 
     private boolean charge(Player target) {
