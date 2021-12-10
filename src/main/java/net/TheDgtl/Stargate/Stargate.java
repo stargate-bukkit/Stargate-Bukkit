@@ -33,6 +33,7 @@ import net.TheDgtl.Stargate.util.FileHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -112,7 +113,11 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     public void onEnable() {
         instance = this;
 
-        loadConfig();
+        try {
+            loadConfig();
+        } catch (IOException | InvalidConfigurationException e1) {
+            e1.printStackTrace();
+        }
         loadColors();
 
         if (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
@@ -217,23 +222,19 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
     }
 
-    private void loadConfig() {
+    private void loadConfig() throws IOException, InvalidConfigurationException {
         saveDefaultConfig();
         reloadConfig();
         if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
-            Refactorer middas = new Refactorer(this.getConfig(), new File( this.getDataFolder(), "config.yml"), this);
+            Refactorer middas = new Refactorer(new File(this.getDataFolder(), "config.yml"), this);
             Map<String, Object> newConfig = middas.calculateNewConfig();
-            try {
-                this.saveResource("config.yml",true);
-                this.reloadConfig();
-                middas.convertCommentsToYAMLMappings();
-                middas.insertNewValues(newConfig, getConfigStatic());
-                middas.convertYAMLMappingsToComments();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.saveResource("config.yml", true);
+            this.reloadConfig();
+            middas.convertCommentsToYAMLMappings();
+            middas.insertNewValues(newConfig);
+            middas.convertYAMLMappingsToComments();
         }
-            
+
     }
 
     @Override

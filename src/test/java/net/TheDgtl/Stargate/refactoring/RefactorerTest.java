@@ -37,7 +37,7 @@ class RefactorerTest {
         for(File configFile : configFiles) {
             FileConfiguration config = new YamlConfiguration();
             config.load(configFile);
-            refactorers.add(new Refactorer(config,configFile,logger));
+            refactorers.add(new Refactorer(configFile,logger));
         }
     }
 
@@ -67,7 +67,7 @@ class RefactorerTest {
     
     @Test
     @Order(4)
-    public void reAddCommentsTest() throws IOException {
+    public void reAddCommentsTest() throws IOException, InvalidConfigurationException {
         for(Refactorer refactorer : refactorers) {
             refactorer.convertYAMLMappingsToComments();
             refactorer.dispConfig();

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 public class Refactorer {
@@ -166,8 +167,14 @@ public class Refactorer {
                 String possibleComment = line.trim();
                 if (possibleComment.startsWith(START_OF_COMMENT)) {
                     int indent = countSpaces(line);
-                    String key = possibleComment.split(":")[0];
-                    String comment = defaultConfig.getString(key);
+                    String lastKeyName = possibleComment.split(":")[0];
+                    Set<String> keys = fileConfig.getKeys(true);
+                    String key = "";
+                    for(String possibleKey : keys) {
+                        if(possibleKey.contains(lastKeyName))
+                            key = possibleKey;
+                    }
+                    String comment = fileConfig.getString(key);
                     String[] commentLines = comment.split("\n");
                     line = "";
                     /*
@@ -236,11 +243,11 @@ public class Refactorer {
         BufferedReader bReader;
         bReader = FileHelper.getBufferedReader(configFile);
 
-        String line;
         try {
-            line = bReader.readLine();
-            while (line != null) {
-                line = bReader.readLine();
+            logger.logMessage(Level.FINEST, String.format("Current config from file %s:",configFile.getName()));
+            String line;
+            while ((line = bReader.readLine())!= null) {
+                logger.logMessage(Level.FINEST, line);
             }
         } finally {
             bReader.close();
