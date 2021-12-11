@@ -108,7 +108,8 @@ public class RetCon1_0_0 extends Modificator {
                     break;
                 }
             }
-        } catch (IOException e) {}
+        } catch (IOException ignored) {
+        }
 
         Level logLevel = Level.INFO;
         if ((oldConfig.get("permdebug") != null && (boolean) oldConfig.get("permdebug"))

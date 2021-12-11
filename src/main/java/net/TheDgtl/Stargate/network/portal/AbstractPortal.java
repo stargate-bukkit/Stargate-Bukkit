@@ -56,7 +56,7 @@ public abstract class AbstractPortal implements RealPortal {
     /**
      * Used for bstats metrics, this is every flag that has been used by all portals
      */
-    public static Set<PortalFlag> allUsedFlags = EnumSet.noneOf(PortalFlag.class);
+    public static final Set<PortalFlag> allUsedFlags = EnumSet.noneOf(PortalFlag.class);
 
     protected final int openDelay = 20;
     protected Network network;

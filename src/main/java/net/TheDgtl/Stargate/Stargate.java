@@ -23,7 +23,6 @@ import net.TheDgtl.Stargate.listeners.MoveEventListener;
 import net.TheDgtl.Stargate.listeners.PlayerEventListener;
 import net.TheDgtl.Stargate.listeners.PluginEventListener;
 import net.TheDgtl.Stargate.listeners.StargateBungeePluginMessageListener;
-import net.TheDgtl.Stargate.listeners.WorldEventListener;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -39,6 +38,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -205,7 +205,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         pm.registerEvents(new MoveEventListener(), this);
         pm.registerEvents(new PlayerEventListener(), this);
         pm.registerEvents(new PluginEventListener(), this);
-        pm.registerEvents(new WorldEventListener(), this);
         if (Settings.getBoolean(Setting.USING_BUNGEE)) {
             Messenger msgr = Bukkit.getMessenger();
 
@@ -237,7 +236,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     @Override
-    public FileConfiguration getConfig() {
+    public @NotNull FileConfiguration getConfig() {
         if (config == null) {
             reloadConfig();
         }

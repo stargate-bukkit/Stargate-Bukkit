@@ -76,7 +76,6 @@ public class BlockEventListener implements Listener {
         }
         if (Network.getPortal(location, GateStructureType.IRIS) != null && Settings.getBoolean(Setting.PROTECT_ENTRANCE)) {
             event.setCancelled(true);
-            return;
         }
     }
 

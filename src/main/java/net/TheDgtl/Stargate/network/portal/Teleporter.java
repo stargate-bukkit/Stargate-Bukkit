@@ -29,8 +29,8 @@ public class Teleporter {
     private final int cost;
     private final double rotation;
     private final BlockFace destinationFace;
-    private TranslatableMessage teleportMessage;
-    private boolean checkPerms;
+    private final TranslatableMessage teleportMessage;
+    private final boolean checkPerms;
 
     /**
      * Instantiate a manager for advanced teleportation between a portal and a
