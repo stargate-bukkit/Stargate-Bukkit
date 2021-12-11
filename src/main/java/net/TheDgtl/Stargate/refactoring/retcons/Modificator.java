@@ -3,6 +3,8 @@ package net.TheDgtl.Stargate.refactoring.retcons;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 public abstract class Modificator {
     /**
      * @param oldSetting a string where index 0 is the key, and index 1 is the value
@@ -26,7 +28,10 @@ public abstract class Modificator {
     private Map<String, Object> configScroller(Map<String, Object> config) {
         Map<String, Object> replacementConfig = new HashMap<>();
         for (String key : config.keySet()) {
-            SettingSet oldSetting = new SettingSet(key, config.get(key));
+            Object value = config.get(key);
+            if(value instanceof ConfigurationSection)
+                continue;
+            SettingSet oldSetting = new SettingSet(key, value);
 
             SettingSet newSetting = getNewSetting(oldSetting);
             if (newSetting == null) {

@@ -8,6 +8,8 @@ import java.util.logging.Level;
 
 import org.bukkit.Server;
 
+import jdk.jfr.internal.Logger;
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -58,12 +60,12 @@ public class RetCon1_0_0 extends Modificator {
         CONFIG_CONVERSIONS.put("chargefreedestination", "chargeFreeDestination");
         CONFIG_CONVERSIONS.put("signColor", null);
         CONFIG_CONVERSIONS.put("freegatesgreen", "signStyle.listing");
-        CONFIG_CONVERSIONS.put("sortLists", "alphabeticNetworks");
         CONFIG_CONVERSIONS.put("portal-folder", null);
         CONFIG_CONVERSIONS.put("gate-folder", null);
         CONFIG_CONVERSIONS.put("debug", null);
         CONFIG_CONVERSIONS.put("permdebug", null);
         CONFIG_CONVERSIONS.put("destMemory", "rememberLastDestination");
+        CONFIG_CONVERSIONS.put("sortLists", null);
 
         // PseudoKnight
         CONFIG_CONVERSIONS.put("verifyPortals", "checkPortalValidity");
@@ -75,10 +77,12 @@ public class RetCon1_0_0 extends Modificator {
         // EpicKnarvik97
         CONFIG_CONVERSIONS.put("adminUpdateAlert", null);
         CONFIG_CONVERSIONS.put("folders.portalFolder", null);
+        CONFIG_CONVERSIONS.put("folders.gateFolder", null);
         CONFIG_CONVERSIONS.put("gates.maxGatesEachNetwork", "networkLimit");
         CONFIG_CONVERSIONS.put("gates.defaultGateNetwork", "defaultGateNetwork");
         CONFIG_CONVERSIONS.put("gates.cosmetic.rememberDestination", "rememberLastDestination");
-        CONFIG_CONVERSIONS.put("gates.cosmetic.sortNetworkDestinations", "alphabeticNetworks");
+        CONFIG_CONVERSIONS.put("gates.cosmetic.sortNetworkDestinations", null);
+        CONFIG_CONVERSIONS.put("gates.cosmetic.signColor", null);
         CONFIG_CONVERSIONS.put("gates.cosmetic.mainSignColor", "signStyle.defaultForeground");
         CONFIG_CONVERSIONS.put("gates.cosmetic.highlightSignColor", "signStyle.defaultBackground");
         CONFIG_CONVERSIONS.put("gates.integrity.destroyedByExplosion", "destroyOnExplosion");
@@ -90,6 +94,7 @@ public class RetCon1_0_0 extends Modificator {
         CONFIG_CONVERSIONS.put("gates.functionality.handleCreatureTransportation", null);
         CONFIG_CONVERSIONS.put("gates.functionality.handleNonPlayerVehicles", null);
         CONFIG_CONVERSIONS.put("gates.functionality.handleLeashedCreatures", "handleLeashedCreatures");
+        CONFIG_CONVERSIONS.put("usevault", null);
         CONFIG_CONVERSIONS.put("economy.useEconomy", "useEconomy");
         CONFIG_CONVERSIONS.put("economy.createCost", "creationCost");
         CONFIG_CONVERSIONS.put("economy.destroyCost", "destructionCost");
@@ -98,6 +103,8 @@ public class RetCon1_0_0 extends Modificator {
         CONFIG_CONVERSIONS.put("economy.chargeFreeDestination", "chargeFreeDestination");
         CONFIG_CONVERSIONS.put("economy.freeGatesColor", null);
         CONFIG_CONVERSIONS.put("economy.freeGatesColored", "signStyle.listing");
+        CONFIG_CONVERSIONS.put("debugging.permissionDebug", null);
+        CONFIG_CONVERSIONS.put("debugging.debug", null);
 
         // cybertiger
         CONFIG_CONVERSIONS.put("enableEconomy", "useEconomy");
@@ -105,10 +112,12 @@ public class RetCon1_0_0 extends Modificator {
 
     private Server server;
     private StargateFactory factory;
+    private StargateLogger logger;
 
-    public RetCon1_0_0(Server server, StargateFactory factory) {
+    public RetCon1_0_0(Server server, StargateFactory factory, StargateLogger logger) {
         this.server = server;
         this.factory = factory;
+        this.logger = logger;
     }
     
     @Override
@@ -121,6 +130,7 @@ public class RetCon1_0_0 extends Modificator {
                 if (oldConfig.get(portalFolder) != null) {
                     List<Portal> portalList = LegacyPortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder),server,factory);
                     for(Portal portal : portalList) {
+                        logger.logMessage(Level.FINEST, portal.getName());
                         Network network = portal.getNetwork();
                         network.addPortal(portal, true);
                     }

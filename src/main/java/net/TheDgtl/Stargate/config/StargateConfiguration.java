@@ -17,8 +17,8 @@ import java.util.List;
  */
 public class StargateConfiguration extends YamlConfiguration {
 
-    static private final String END_OF_COMMENT = "_endOfComment_";
-    static private final String START_OF_COMMENT = "comment_";
+    static public final String END_OF_COMMENT = "_endOfComment_";
+    static public final String START_OF_COMMENT = "comment_";
 
     @Override
     public @NotNull String saveToString() {

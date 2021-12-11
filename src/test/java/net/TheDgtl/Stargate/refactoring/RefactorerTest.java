@@ -5,9 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.logging.Level;
 
-import org.apache.commons.io.FileUtils;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -21,6 +23,7 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.network.StargateFactory;
@@ -30,8 +33,10 @@ public class RefactorerTest {
     static private File[] configFiles;
     static private StargateLogger logger;
     static private File defaultConfigFile;
+    static private Database sqlDatabase;
 
     static private StargateFactory factory;
+    static private ServerMock server;
     @BeforeAll
     public static void setUp() throws FileNotFoundException, IOException, InvalidConfigurationException, SQLException {
         String configFolder = "src/test/resources/configurations";
@@ -45,11 +50,11 @@ public class RefactorerTest {
         logger = new FakeStargate();
         defaultConfigFile = new File("src/main/resources","config.yml");
         File databaseFile = new File("src/test/resources", "test.db");
-        Database sqlDatabase = new SQLiteDatabase(databaseFile);
+        sqlDatabase = new SQLiteDatabase(databaseFile);
         factory = new StargateFactory(sqlDatabase,false,false,logger);
         
         defaultConfigFile = new File("src/main/resources", "config.yml");
-        MockBukkit.mock();
+        server = MockBukkit.mock();
     }
 
     @AfterAll
@@ -67,17 +72,31 @@ public class RefactorerTest {
     @Test
     @Order(0)
     public void loadConfigTest() throws FileNotFoundException, IOException, InvalidConfigurationException {
-        ServerMock server = MockBukkit.mock();
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
-            if (oldConfigFile.exists()) {
+            if (oldConfigFile.exists())
                 oldConfigFile.delete();
-                Refactorer middas = new Refactorer(configFile, logger, server, factory);
-                configFile.renameTo(oldConfigFile);
-                Map<String, Object> config = middas.run();
-                Files.copy(defaultConfigFile, configFile);
-                middas.insertNewValues(config);
+            Refactorer middas = new Refactorer(configFile, logger, server, factory);
+            configFile.renameTo(oldConfigFile);
+            Map<String, Object> config = middas.run();
+            Files.copy(defaultConfigFile, configFile);
+            FileConfiguration fileConfig = new StargateConfiguration();
+            fileConfig.load(configFile);
+            for (String key : config.keySet()) {
+                Assert.assertTrue(
+                        String.format("The key %s was added to the new config of %s", key, configFile.getName()),
+                        fileConfig.getKeys(true).contains(key) || key.contains(StargateConfiguration.START_OF_COMMENT));
             }
+
+            middas.insertNewValues(config);
+            fileConfig.load(configFile);
+            logger.logMessage(Level.FINEST, String.format("\n\n New modified config from '%s': \n %s", configFile.getName() ,fileConfig.saveToString()));
         }
+    }
+    
+    @Test
+    @Order(1)
+    public void checkIfPortalsWereAddedTest() {
+        
     }
 }

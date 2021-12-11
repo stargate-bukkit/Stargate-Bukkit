@@ -2,7 +2,7 @@
 # Main Stargate config
 portal-folder: plugins/Stargate/portals/
 gate-folder: plugins/Stargate/gates/
-default-gate-network: central
+default-gate-network: pseudoknight
 destroyexplosion: false
 maxgates: 0
 lang: en

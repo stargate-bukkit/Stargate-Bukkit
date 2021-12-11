@@ -56,7 +56,7 @@ public class LegacyPortalStorageLoader {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".db")) : new File[0];
-        for (File file :files) {
+        for (File file : files) {
             String worldName = file.getName().replaceAll("\\.db$", "");
             BufferedReader reader = FileHelper.getBufferedReader(file);
             String line = reader.readLine();
