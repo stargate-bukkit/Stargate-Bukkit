@@ -7,8 +7,8 @@ import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.util.FileHelper;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import org.bukkit.Bukkit;
@@ -24,7 +24,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
-public class LegacePortalStorageLoader {
+public class LegacyPortalStorageLoader {
 
     static private final EnumMap<PortalFlag, Integer> LEGACY_FLAGS_POS_MAP = new EnumMap<PortalFlag, Integer>(PortalFlag.class);
 
@@ -47,8 +47,8 @@ public class LegacePortalStorageLoader {
      * @return
      * @throws IOException
      */
-    static public List<Portal> loadPortalsFromStorage(String portalSaveLocation) throws IOException {
-        List<Portal> portals = new ArrayList<>();
+    static public List<RealPortal> loadPortalsFromStorage(String portalSaveLocation) throws IOException {
+        List<RealPortal> portals = new ArrayList<>();
         for (World world : Bukkit.getWorlds()) {
             File file = new File(portalSaveLocation, world.getName() + ".db");
             if (!file.exists())
@@ -68,20 +68,20 @@ public class LegacePortalStorageLoader {
         return portals;
     }
 
-    static private Portal readPortal(String line, World world) throws NameErrorException, NoFormatFoundException, GateConflictException {
-        String[] splitedLine = line.split(":");
-        String name = splitedLine[0];
-        String[] coordinates = splitedLine[1].split(",");
+    static private RealPortal readPortal(String line, World world) throws NameErrorException, NoFormatFoundException, GateConflictException {
+        String[] splitLine = line.split(":");
+        String name = splitLine[0];
+        String[] coordinates = splitLine[1].split(",");
         Location signLocation = new Location(
                 world,
                 Double.valueOf(coordinates[0]),
                 Double.valueOf(coordinates[1]),
                 Double.valueOf(coordinates[2]));
-        String destination = (splitedLine.length > 8) ? splitedLine[8] : "";
-        String networkName = (splitedLine.length > 9) ? splitedLine[9] : Settings.getString(Setting.DEFAULT_NET);
-        String ownerString = (splitedLine.length > 10) ? splitedLine[10] : "";
+        String destination = (splitLine.length > 8) ? splitLine[8] : "";
+        String networkName = (splitLine.length > 9) ? splitLine[9] : Settings.getString(Setting.DEFAULT_NET);
+        String ownerString = (splitLine.length > 10) ? splitLine[10] : "";
         UUID ownerUUID = getPlayerUUID(ownerString);
-        EnumSet<PortalFlag> flags = parseFlags(splitedLine);
+        EnumSet<PortalFlag> flags = parseFlags(splitLine);
 
         try {
             Stargate.factory.createNetwork(networkName, flags);

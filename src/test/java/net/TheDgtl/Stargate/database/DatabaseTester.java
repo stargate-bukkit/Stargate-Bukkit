@@ -8,7 +8,7 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.FakePortalGenerator;
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
@@ -36,11 +36,11 @@ public class DatabaseTester {
     private static String serverName;
     private static UUID serverUUID;
     private static String serverPrefix;
-    private static IPortal testPortal;
+    private static Portal testPortal;
     private static final String INTER_PORTAL_NAME = "iPortal";
     private static final String LOCAL_PORTAL_NAME = "portal";
-    private final Map<String, IPortal> interServerPortals;
-    private final Map<String, IPortal> localPortals;
+    private final Map<String, Portal> interServerPortals;
+    private final Map<String, Portal> localPortals;
 
     /**
      * Instantiates a new database tester
@@ -150,7 +150,7 @@ public class DatabaseTester {
     }
 
     void addPortalTest() throws SQLException {
-        for (IPortal portal : localPortals.values()) {
+        for (Portal portal : localPortals.values()) {
             connection.setAutoCommit(false);
             try {
                 finishStatement(generator.generateAddPortalStatement(connection, portal, PortalType.LOCAL));
@@ -170,7 +170,7 @@ public class DatabaseTester {
     }
 
     void addInterPortalTest() throws SQLException {
-        for (IPortal portal : interServerPortals.values()) {
+        for (Portal portal : interServerPortals.values()) {
             connection.setAutoCommit(false);
             try {
                 finishStatement(
@@ -197,7 +197,7 @@ public class DatabaseTester {
      * @param portal           <p>The portal to add the flags of</p>
      * @throws SQLException <p>If unable to set the flags</p>
      */
-    private void addFlags(PreparedStatement addFlagStatement, IPortal portal) throws SQLException {
+    private void addFlags(PreparedStatement addFlagStatement, Portal portal) throws SQLException {
         for (Character character : portal.getAllFlagsString().toCharArray()) {
             System.out.println("Adding flag " + character + " to portal: " + portal);
             addFlagStatement.setString(1, portal.getName());
@@ -222,7 +222,7 @@ public class DatabaseTester {
      * @param portals    <p>The portals available for testing</p>
      * @throws SQLException <p>If a database error occurs</p>
      */
-    private void getPortals(PortalType portalType, Map<String, IPortal> portals) throws SQLException {
+    private void getPortals(PortalType portalType, Map<String, Portal> portals) throws SQLException {
         String tableName = portalType == PortalType.LOCAL ? nameConfig.getPortalViewName() :
                 nameConfig.getInterPortalTableName();
         printTableInfo(tableName);
@@ -238,7 +238,7 @@ public class DatabaseTester {
                 System.out.print(metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
 
                 String portalName = set.getString("name");
-                IPortal targetPortal = portals.get(portalName);
+                Portal targetPortal = portals.get(portalName);
                 Assertions.assertEquals(targetPortal.getOwnerUUID().toString(), set.getString("ownerUUID"));
                 Assertions.assertEquals(PortalFlag.parseFlags(targetPortal.getAllFlagsString()),
                         PortalFlag.parseFlags(set.getString("flags")));
@@ -254,13 +254,13 @@ public class DatabaseTester {
     }
 
     void destroyPortalTest() throws SQLException {
-        for (IPortal portal : localPortals.values()) {
+        for (Portal portal : localPortals.values()) {
             destroyPortal(portal, PortalType.LOCAL);
         }
     }
 
     void destroyInterPortalTest() throws SQLException {
-        for (IPortal portal : interServerPortals.values()) {
+        for (Portal portal : interServerPortals.values()) {
             destroyPortal(portal, PortalType.INTER_SERVER);
         }
     }
@@ -307,7 +307,7 @@ public class DatabaseTester {
      * @param portalType <p>The type of the portal to destroy</p>
      * @throws SQLException <p>If a database error occurs</p>
      */
-    private void destroyPortal(IPortal portal, PortalType portalType) throws SQLException {
+    private void destroyPortal(Portal portal, PortalType portalType) throws SQLException {
         connection.setAutoCommit(false);
 
         try {

@@ -18,7 +18,7 @@
 
 package net.TheDgtl.Stargate.event;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -31,7 +31,7 @@ import java.util.Objects;
 
 public class StargateActivateEvent extends StargateEvent {
     private final Player player;
-    private List<IPortal> destinations;
+    private List<Portal> destinations;
     private String destination;
 
     private static final HandlerList handlers = new HandlerList();
@@ -46,7 +46,7 @@ public class StargateActivateEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateActivateEvent(@NotNull IPortal portal, @NotNull Player player, @NotNull List<IPortal> destinations) {
+    public StargateActivateEvent(@NotNull Portal portal, @NotNull Player player, @NotNull List<Portal> destinations) {
         super(Objects.requireNonNull(portal));
         this.player = Objects.requireNonNull(player);
         this.destinations = Objects.requireNonNull(destinations);
@@ -58,11 +58,11 @@ public class StargateActivateEvent extends StargateEvent {
     }
 
     @NotNull
-    public List<IPortal> getDestinations() {
+    public List<Portal> getDestinations() {
         return destinations;
     }
 
-    public void setDestinations(@NotNull List<IPortal> destinations) {
+    public void setDestinations(@NotNull List<Portal> destinations) {
         this.destinations = Objects.requireNonNull(destinations);
     }
 

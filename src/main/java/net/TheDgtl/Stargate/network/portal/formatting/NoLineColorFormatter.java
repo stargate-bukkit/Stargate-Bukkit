@@ -1,6 +1,6 @@
 package net.TheDgtl.Stargate.network.portal.formatting;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 
 /**
  * A line formatter used for backwards compatibility before ChatColor was a thing
@@ -10,7 +10,7 @@ import net.TheDgtl.Stargate.network.portal.IPortal;
 public class NoLineColorFormatter implements LineFormatter {
 
     @Override
-    public String formatPortalName(IPortal portal, HighlightingStyle highlightingStyle) {
+    public String formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
         return highlightingStyle.getHighlightedName(portal.getName());
     }
 

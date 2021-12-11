@@ -7,8 +7,8 @@ import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
-import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -43,7 +43,7 @@ public class Gate {
     private BlockVector buttonPosition;
     private final BlockFace facing;
     private boolean isOpen = false;
-    private final Portal portal;
+    private final RealPortal portal;
 
     private static final Material DEFAULT_BUTTON = Material.STONE_BUTTON;
     private static final Material DEFAULT_WATER_BUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
@@ -58,7 +58,7 @@ public class Gate {
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
-    public Gate(GateFormat format, Location signLocation, BlockFace signFace, Portal portal)
+    public Gate(GateFormat format, Location signLocation, BlockFace signFace, RealPortal portal)
             throws InvalidStructureException, GateConflictException {
         this.setFormat(format);
         facing = signFace;
@@ -82,7 +82,7 @@ public class Gate {
      *
      * @param signLines an array with 4 elements, representing each line of a sign
      */
-    public void drawControlMechanism(String[] signLines, boolean drawButton) {
+    public void drawControlMechanisms(String[] signLines, boolean drawButton) {
         drawSign(signLines);
         if (drawButton) {
             drawButton();

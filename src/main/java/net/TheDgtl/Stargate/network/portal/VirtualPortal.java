@@ -24,7 +24,7 @@ import java.util.logging.Level;
  *
  * @author Thorin
  */
-public class VirtualPortal implements IPortal {
+public class VirtualPortal implements Portal {
 
     protected final String server;
     private final String name;
@@ -42,7 +42,7 @@ public class VirtualPortal implements IPortal {
     }
 
     @Override
-    public void teleportHere(Entity target, Portal origin) {
+    public void teleportHere(Entity target, RealPortal origin) {
         //TODO: implement vehicle compatibility.
         Stargate.log(Level.FINEST, "");
         Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
@@ -106,7 +106,7 @@ public class VirtualPortal implements IPortal {
      * TODO Not implemented
      */
     @Override
-    public void overrideDestination(IPortal destination) {
+    public void overrideDestination(Portal destination) {
     }
 
     @Override

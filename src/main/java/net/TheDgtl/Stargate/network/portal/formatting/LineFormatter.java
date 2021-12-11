@@ -1,6 +1,6 @@
 package net.TheDgtl.Stargate.network.portal.formatting;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 
 /**
  * A formatter for formatting a line on a sign
@@ -14,7 +14,7 @@ public interface LineFormatter {
      * @param highlightingStyle <p>The highlighting style to use when formatting</p>
      * @return <p>The formatted name</p>
      */
-    String formatPortalName(IPortal portal, HighlightingStyle highlightingStyle);
+    String formatPortalName(Portal portal, HighlightingStyle highlightingStyle);
 
     /**
      * Formats a line using the default behavior

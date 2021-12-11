@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.listeners;
 
+import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -16,6 +17,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.logging.Level;
 
 /**
  * A listener for relevant move events, such as a player entering a stargate
@@ -106,7 +109,8 @@ public class MoveEventListener implements Listener {
 
         //Real velocity does not seem to work
         target.setVelocity(toLocation.toVector().subtract(fromLocation.toVector()));
-        portal.onIrisEntrance(target);
+        Stargate.log(Level.FINEST, "Trying to teleport entity, initial velocity: " + target.getVelocity());
+        portal.doTeleport(target);
     }
 
 }

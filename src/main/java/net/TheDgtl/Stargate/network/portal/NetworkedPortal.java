@@ -30,13 +30,13 @@ import java.util.logging.Level;
  *
  * <p>For a networked portal, all portals in its network are its destinations</p>
  */
-public class NetworkedPortal extends Portal {
+public class NetworkedPortal extends AbstractPortal {
 
     private static final int NO_DESTINATION_SELECTED = -1;
     private static final int ACTIVE_DELAY = 15;
 
     private int selectedDestination = NO_DESTINATION_SELECTED;
-    private List<IPortal> destinations = new ArrayList<>();
+    private List<Portal> destinations = new ArrayList<>();
     private boolean isActive;
     private long activatedTime;
     private UUID activator;
@@ -58,7 +58,11 @@ public class NetworkedPortal extends Portal {
         super(network, name, signBlock, flags, ownerUUID);
     }
 
-    @Override
+    /**
+     * The action to be triggered if this portal sign is interacted with
+     *
+     * @param event <p>The triggered player interact event</p>
+     */
     public void onSignClick(PlayerInteractEvent event) {
         //TODO have this individual for each player?
 
@@ -82,7 +86,7 @@ public class NetworkedPortal extends Portal {
         if (!previouslyActivated) {
             if (!Settings.getBoolean(Setting.REMEMBER_LAST_DESTINATION))
                 selectedDestination = 0;
-            drawControlMechanism();
+            drawControlMechanisms();
             return;
         }
 
@@ -90,7 +94,7 @@ public class NetworkedPortal extends Portal {
             int step = (event.getAction() == Action.RIGHT_CLICK_BLOCK) ? 1 : -1;
             selectedDestination = getNextDestination(step, selectedDestination);
         }
-        drawControlMechanism();
+        drawControlMechanisms();
     }
 
     @Override
@@ -107,7 +111,7 @@ public class NetworkedPortal extends Portal {
         if (!isActive) {
             return;
         }
-        IPortal destination = this.destinations.get(this.selectedDestination);
+        Portal destination = this.destinations.get(this.selectedDestination);
         destinations = getDestinations(Bukkit.getPlayer(activator));
         if (destinations.contains(destination)) {
             this.selectedDestination = destinations.indexOf(destination);
@@ -135,7 +139,7 @@ public class NetworkedPortal extends Portal {
     }
 
     @Override
-    public void drawControlMechanism() {
+    public void drawControlMechanisms() {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
         if (!isActive) {
@@ -145,11 +149,11 @@ public class NetworkedPortal extends Portal {
         } else {
             drawActiveSign(lines);
         }
-        getGate().drawControlMechanism(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+        getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }
 
     @Override
-    public IPortal loadDestination() {
+    public Portal loadDestination() {
         if (selectedDestination == NO_DESTINATION_SELECTED || selectedDestination >= destinations.size()) {
             return null;
         }
@@ -208,14 +212,14 @@ public class NetworkedPortal extends Portal {
      * @param player <p>The player to get destinations for</p>
      * @return <p>The destinations available to the player</p>
      */
-    private List<IPortal> getDestinations(Player player) {
+    private List<Portal> getDestinations(Player player) {
         if (player == null) {
             return new ArrayList<>();
         }
 
         Set<String> availablePortals = network.getAvailablePortals(player, this);
         availablePortals.toArray(new String[0]);
-        List<IPortal> destinations = new ArrayList<>();
+        List<Portal> destinations = new ArrayList<>();
         for (String name : availablePortals) {
             destinations.add(network.getPortal(name));
         }
@@ -307,7 +311,7 @@ public class NetworkedPortal extends Portal {
         }
         this.destinations.clear();
         this.isActive = false;
-        drawControlMechanism();
+        drawControlMechanisms();
     }
 
 }

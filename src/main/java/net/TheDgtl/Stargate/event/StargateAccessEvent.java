@@ -18,7 +18,7 @@
 
 package net.TheDgtl.Stargate.event;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
@@ -47,7 +47,7 @@ public class StargateAccessEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateAccessEvent(@NotNull Player player, @NotNull IPortal portal, boolean deny) {
+    public StargateAccessEvent(@NotNull Player player, @NotNull Portal portal, boolean deny) {
         super(Objects.requireNonNull(portal));
         this.player = Objects.requireNonNull(player);
         this.deny = deny;

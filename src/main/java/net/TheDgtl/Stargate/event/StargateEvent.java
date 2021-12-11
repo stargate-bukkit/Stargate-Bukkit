@@ -19,7 +19,7 @@ package net.TheDgtl.Stargate.event;
 
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Settings;
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -37,18 +37,18 @@ import java.util.Set;
 
 public abstract class StargateEvent extends Event implements Cancellable {
     // old name = StargateEvent
-    protected final IPortal portal;
+    protected final Portal portal;
     protected boolean cancelled;
     private final PluginManager pm;
 
 
-    public StargateEvent(@NotNull IPortal portal) {
+    public StargateEvent(@NotNull Portal portal) {
         this.portal = Objects.requireNonNull(portal);
         this.cancelled = false;
         this.pm = Bukkit.getPluginManager();
     }
 
-    public IPortal getPortal() {
+    public Portal getPortal() {
         return portal;
     }
 

@@ -18,7 +18,7 @@
 
 package net.TheDgtl.Stargate.event;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +42,7 @@ public class StargateCloseEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateCloseEvent(@NotNull IPortal portal, boolean force) {
+    public StargateCloseEvent(@NotNull Portal portal, boolean force) {
         super(Objects.requireNonNull(portal));
         this.force = force;
     }

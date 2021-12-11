@@ -3,7 +3,7 @@ package net.TheDgtl.Stargate.network.portal.formatting;
 import net.TheDgtl.Stargate.Setting;
 import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import net.TheDgtl.Stargate.util.ColorConverter;
@@ -58,7 +58,7 @@ public class LineColorFormatter implements LineFormatter {
     }
 
     @Override
-    public String formatPortalName(IPortal portal, HighlightingStyle highlightingStyle) {
+    public String formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
         String name = portal.getName();
 
         ChatColor nameColor;
@@ -148,7 +148,7 @@ public class LineColorFormatter implements LineFormatter {
      * @param isLightSign <p>Whether the sign is a light color as opposed to a dark color</p>
      * @return <p>The color to use for displaying the portal's name</p>
      */
-    private ChatColor getNameColor(IPortal portal, boolean isLightSign) {
+    private ChatColor getNameColor(Portal portal, boolean isLightSign) {
         Stargate.log(Level.FINEST, " Gate " + portal.getName() + " has flags: " + portal.getAllFlagsString());
         ChatColor[] colors = getNameColors(portal);
         if (isLightSign) {
@@ -164,7 +164,7 @@ public class LineColorFormatter implements LineFormatter {
      * @param portal <p>The portal to get colors for</p>
      * @return <p>The colors used to draw the portal's name</p>
      */
-    private ChatColor[] getNameColors(IPortal portal) {
+    private ChatColor[] getNameColors(Portal portal) {
         if (portal instanceof VirtualPortal) {
             return flagColors.get(PortalFlag.FANCY_INTER_SERVER);
         } else if (portal.hasFlag(PortalFlag.PRIVATE)) {

@@ -3,8 +3,8 @@ package net.TheDgtl.Stargate.database;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.network.PortalType;
-import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -239,7 +239,7 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateAddPortalStatement(Connection conn, IPortal portal,
+    public PreparedStatement generateAddPortalStatement(Connection conn, Portal portal,
                                                         PortalType portalType) throws SQLException {
         boolean isInterServer = (portalType == PortalType.INTER_SERVER);
         String extraKeys = (isInterServer ? ", homeServerId, isOnline" : "");
@@ -253,8 +253,8 @@ public class SQLQueryGenerator {
         statement.setString(1, portal.getNetwork().getName());
         statement.setString(2, portal.getName());
         String destinationString = null;
-        if (portal instanceof Portal) {
-            IPortal destination = ((Portal) portal).loadDestination();
+        if (portal instanceof RealPortal) {
+            Portal destination = ((RealPortal) portal).loadDestination();
             if (destination != null) {
                 destinationString = destination.getName();
             }
@@ -287,7 +287,7 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateRemovePortalStatement(Connection conn, IPortal portal,
+    public PreparedStatement generateRemovePortalStatement(Connection conn, Portal portal,
                                                            PortalType portalType) throws SQLException {
         String statementMessage = "DELETE FROM {Portal} WHERE name = ? AND network = ?";
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
@@ -311,7 +311,7 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateSetPortalOnlineStatusStatement(Connection conn, IPortal portal, boolean isOnline) throws SQLException {
+    public PreparedStatement generateSetPortalOnlineStatusStatement(Connection conn, Portal portal, boolean isOnline) throws SQLException {
         String statementString = "UPDATE {InterPortal} SET isOnline = ? WHERE network = ? AND name = ?;";
         String statementMessage = replaceKnownTableNames(statementString);
         PreparedStatement statement = conn.prepareStatement(statementMessage);

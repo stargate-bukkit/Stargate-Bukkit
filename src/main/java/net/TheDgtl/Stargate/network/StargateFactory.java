@@ -13,7 +13,7 @@ import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.portal.BungeePortal;
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
@@ -216,7 +216,7 @@ public class StargateFactory {
             }
             Network net = getNetwork(targetNet, isBungee);
 
-            for (IPortal logPortal : net.getAllPortals()) {
+            for (Portal logPortal : net.getAllPortals()) {
                 Stargate.log(Level.FINEST, logPortal.getName());
             }
 
@@ -225,7 +225,7 @@ public class StargateFactory {
                 Stargate.log(Level.FINEST, "serverUUID = " + serverUUID);
                 if (!serverUUID.equals(Stargate.serverUUID.toString())) {
                     String serverName = set.getString("serverName");
-                    IPortal virtualPortal = new VirtualPortal(serverName, name, net, flags, ownerUUID);
+                    Portal virtualPortal = new VirtualPortal(serverName, name, net, flags, ownerUUID);
                     net.addPortal(virtualPortal, false);
                     Stargate.log(Level.FINEST, "Added as virtual portal");
                     continue;
@@ -241,7 +241,7 @@ public class StargateFactory {
 
 
             try {
-                IPortal portal = PortalCreationHelper.createPortalFromSign(net, virtualSign, block, flags, ownerUUID);
+                Portal portal = PortalCreationHelper.createPortalFromSign(net, virtualSign, block, flags, ownerUUID);
                 net.addPortal(portal, false);
                 Stargate.log(Level.FINEST, "Added as normal portal");
                 if (isBungee) {
@@ -256,7 +256,7 @@ public class StargateFactory {
         connection.close();
     }
 
-    private void setInterServerPortalOnlineStatus(IPortal portal, boolean isOnline) throws SQLException {
+    private void setInterServerPortalOnlineStatus(Portal portal, boolean isOnline) throws SQLException {
         Connection conn = database.getConnection();
         PreparedStatement statement = sqlMaker.generateSetPortalOnlineStatusStatement(conn, portal, isOnline);
         statement.execute();
@@ -271,7 +271,7 @@ public class StargateFactory {
         statement.close();
 
         for (InterServerNetwork net : bungeeNetList.values()) {
-            for (IPortal portal : net.getAllPortals()) {
+            for (Portal portal : net.getAllPortals()) {
                 /*
                  * Virtual portal = portals on other servers
                  */
@@ -286,7 +286,7 @@ public class StargateFactory {
 
     public void endInterServerConnection() throws SQLException {
         for (InterServerNetwork net : bungeeNetList.values()) {
-            for (IPortal portal : net.getAllPortals()) {
+            for (Portal portal : net.getAllPortals()) {
                 /*
                  * Virtual portal = portals on other servers
                  */
@@ -348,7 +348,7 @@ public class StargateFactory {
      * @param str
      * @return
      */
-    public IPortal createFromString(String str) {
+    public Portal createFromString(String str) {
         return null;
     }
 }

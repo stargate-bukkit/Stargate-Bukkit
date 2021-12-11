@@ -26,7 +26,7 @@ import net.TheDgtl.Stargate.listeners.StargateBungeePluginMessageListener;
 import net.TheDgtl.Stargate.listeners.WorldEventListener;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.refactoring.Refactorer;
 import net.TheDgtl.Stargate.util.BStatsHelper;
 import net.TheDgtl.Stargate.util.FileHelper;
@@ -99,7 +99,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     /*
      * Used in bungee / waterfall
      */
-    private final HashMap<String, IPortal> bungeeQueue = new HashMap<>();
+    private final HashMap<String, Portal> bungeeQueue = new HashMap<>();
     public static String serverName;
     public static boolean knowsServerName = false;
 
@@ -339,7 +339,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             String msg = String.format("Inter-server network ''%s'' could not be found", netName);
             Stargate.log(Level.WARNING, msg);
         }
-        IPortal portal = network == null ? null : network.getPortal(portalName);
+        Portal portal = network == null ? null : network.getPortal(portalName);
         if (portal == null) {
             // Error: This bungee portal's %type% has been removed from the destination server instance.
             //(See Discussion One) %type% = gate.
@@ -350,7 +350,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         instance.bungeeQueue.put(playerName, portal);
     }
 
-    public static IPortal pullFromQueue(String playerName) {
+    public static Portal pullFromQueue(String playerName) {
         return instance.bungeeQueue.remove(playerName);
     }
 

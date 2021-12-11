@@ -104,7 +104,7 @@ public class RetCon1_0_0 extends Modificator {
                     "folders.portalFolder"};
             for (String portalFolder : possiblePortalFolders) {
                 if (oldConfig.get(portalFolder) != null) {
-                    LegacePortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder));
+                    LegacyPortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder));
                     break;
                 }
             }

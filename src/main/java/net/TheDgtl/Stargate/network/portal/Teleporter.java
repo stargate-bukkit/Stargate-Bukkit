@@ -25,7 +25,7 @@ public class Teleporter {
 
     private static final double LOOK_FOR_LEASHED_RADIUS = 15;
     private final Location destination;
-    private final Portal origin;
+    private final RealPortal origin;
     private final int cost;
     private final double rotation;
     private final BlockFace destinationFace;
@@ -42,7 +42,7 @@ public class Teleporter {
      * @param entranceFace    The facing that the player entered
      * @param cost            of the teleportation for any players
      */
-    public Teleporter(Location destination, Portal origin, BlockFace destinationFace, BlockFace entranceFace, int cost,
+    public Teleporter(Location destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace, int cost,
                       TranslatableMessage teleportMessage, boolean checkPerms) {
         // compensate so that the teleportation is centred in block
         this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));

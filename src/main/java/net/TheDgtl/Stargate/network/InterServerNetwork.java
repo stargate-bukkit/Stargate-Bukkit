@@ -11,7 +11,7 @@ import net.TheDgtl.Stargate.actions.SupplierAction;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameErrorException;
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import org.bukkit.Bukkit;
 
@@ -31,15 +31,15 @@ public class InterServerNetwork extends Network {
         super(netName, database, sqlMaker);
     }
 
-    public InterServerNetwork(String netName, Database database, SQLQueryGenerator sqlMaker, List<IPortal> portals) throws NameErrorException {
+    public InterServerNetwork(String netName, Database database, SQLQueryGenerator sqlMaker, List<Portal> portals) throws NameErrorException {
         super(netName, database, sqlMaker);
-        for (IPortal portal : portals) {
+        for (Portal portal : portals) {
             addPortal(portal, false);
         }
     }
 
     @Override
-    public void removePortal(IPortal portal, boolean saveToDatabase) {
+    public void removePortal(Portal portal, boolean saveToDatabase) {
         super.removePortal(portal, saveToDatabase);
 
 
@@ -61,7 +61,7 @@ public class InterServerNetwork extends Network {
     /**
      * Tries to update the inter-server network globally on every connected server
      */
-    private void updateInterServerNetwork(IPortal portal, StargateProtocolRequestType type) {
+    private void updateInterServerNetwork(Portal portal, StargateProtocolRequestType type) {
         Stargate stargate = Stargate.getPlugin(Stargate.class);
 
         Function<Boolean, Boolean> action = (forceEnd) -> {
@@ -92,7 +92,7 @@ public class InterServerNetwork extends Network {
         Stargate.syncSecPopulator.addAction(new ForcibleFunctionAction(action), true);
     }
 
-    public void unregisterFromInterServer(IPortal portal) throws SQLException {
+    public void unregisterFromInterServer(Portal portal) throws SQLException {
 
     }
 
@@ -102,7 +102,7 @@ public class InterServerNetwork extends Network {
     }
 
     @Override
-    protected void savePortal(IPortal portal) {
+    protected void savePortal(Portal portal) {
         /*
          * Save one local partition of every bungee gate on this server
          * Also save it to the inter-server database, so that it can be

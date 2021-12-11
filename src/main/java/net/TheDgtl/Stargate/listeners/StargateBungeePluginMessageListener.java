@@ -30,7 +30,7 @@ import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.InterServerNetwork;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import org.bukkit.entity.Player;
@@ -140,7 +140,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             Stargate.addToQueue(playerName, destination, bungeeNetwork, false);
         } else {
             Network network = Stargate.factory.getNetwork(bungeeNetwork, false);
-            IPortal destinationPortal = network.getPortal(destination);
+            Portal destinationPortal = network.getPortal(destination);
             destinationPortal.teleportHere(player, null);
         }
     }
@@ -206,7 +206,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                 Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
                 Network network = Stargate.factory.getNetwork(networkName, true);
 
-                IPortal destinationPortal = network.getPortal(portalName);
+                Portal destinationPortal = network.getPortal(portalName);
                 destinationPortal.teleportHere(player, null);
             } catch (NullPointerException e) {
                 //TODO messaging: this message is misleading

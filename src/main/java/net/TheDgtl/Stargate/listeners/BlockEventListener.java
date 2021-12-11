@@ -14,9 +14,9 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -120,14 +120,14 @@ public class BlockEventListener implements Listener {
      * @param bypassPermission <p>The bypass permission that would let the player avoid payment</p>
      * @return <p>True if the player should be charged</p>
      */
-    private boolean shouldChargePlayer(Player player, IPortal portal, BypassPermission bypassPermission) {
+    private boolean shouldChargePlayer(Player player, Portal portal, BypassPermission bypassPermission) {
         if (player.hasPermission(bypassPermission.getPermissionString())) {
             return false;
         }
 
         return Settings.getBoolean(Setting.CHARGE_FREE_DESTINATION)
                 || !portal.hasFlag(PortalFlag.FIXED)
-                || !((Portal) portal).loadDestination().hasFlag(PortalFlag.FREE);
+                || !((RealPortal) portal).loadDestination().hasFlag(PortalFlag.FREE);
     }
 
     /**
@@ -207,7 +207,7 @@ public class BlockEventListener implements Listener {
     private void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation, Set<PortalFlag> flags,
                                    Player player, int cost, PermissionManager permissionManager, TranslatableMessage errorMessage)
             throws NameErrorException, GateConflictException, NoFormatFoundException {
-        IPortal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, signLocation, flags, player.getUniqueId());
+        Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, signLocation, flags, player.getUniqueId());
         StargateCreateEvent sEvent = new StargateCreateEvent(player, portal, lines, cost);
 
 

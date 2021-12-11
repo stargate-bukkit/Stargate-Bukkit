@@ -17,9 +17,9 @@
  */
 package net.TheDgtl.Stargate.event;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -45,7 +45,7 @@ public class StargatePortalEvent extends StargateEvent {
 
 
     private final Entity target;
-    private final IPortal destination;
+    private final Portal destination;
     private Location exit;
 
     private static final HandlerList handlers = new HandlerList();
@@ -60,13 +60,13 @@ public class StargatePortalEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargatePortalEvent(@NotNull Entity target, @NotNull IPortal portal) {
+    public StargatePortalEvent(@NotNull Entity target, @NotNull Portal portal) {
         super(Objects.requireNonNull(portal));
 
         this.target = Objects.requireNonNull(target);
-        this.destination = ((Portal) portal).loadDestination();
-        if (destination instanceof Portal)
-            this.exit = ((Portal) destination).getExit();
+        this.destination = ((RealPortal) portal).loadDestination();
+        if (destination instanceof RealPortal)
+            this.exit = ((RealPortal) destination).getExit();
     }
 
     /**
@@ -88,17 +88,16 @@ public class StargatePortalEvent extends StargateEvent {
      * @return destination gate
      */
     @NotNull
-    public IPortal getDestination() {
+    public Portal getDestination() {
         return destination;
     }
 
     /**
      * @return Location players exit point
      */
-    @NotNull
     public Location getExit() {
-        if (destination instanceof Portal)
-            return ((Portal) destination).getExit();
+        if (destination instanceof RealPortal)
+            return ((RealPortal) destination).getExit();
         return null;
     }
 

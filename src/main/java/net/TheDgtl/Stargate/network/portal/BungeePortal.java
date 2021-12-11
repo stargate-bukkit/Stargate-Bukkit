@@ -18,7 +18,7 @@ import java.util.logging.Level;
  *
  * <p>This portal type uses several cheats to make the legacy BungeeCord logic work with the new database.</p>
  */
-public class BungeePortal extends Portal {
+public class BungeePortal extends AbstractPortal {
 
     private static Network LEGACY_NETWORK;
     private final Network cheatNetwork;
@@ -71,7 +71,7 @@ public class BungeePortal extends Portal {
     }
 
     @Override
-    public void drawControlMechanism() {
+    public void drawControlMechanisms() {
         Stargate.log(Level.FINEST, "serverDestination = " + serverDestination);
 
         String[] lines = new String[4];
@@ -79,11 +79,11 @@ public class BungeePortal extends Portal {
         lines[1] = super.colorDrawer.formatPortalName(loadDestination(), HighlightingStyle.DESTINATION);
         lines[2] = super.colorDrawer.formatLine(serverDestination);
         lines[3] = "";
-        getGate().drawControlMechanism(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+        getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }
 
     @Override
-    public IPortal loadDestination() {
+    public Portal loadDestination() {
         return targetPortal;
     }
 

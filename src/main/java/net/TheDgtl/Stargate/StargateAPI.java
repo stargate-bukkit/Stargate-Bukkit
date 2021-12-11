@@ -3,7 +3,7 @@ package net.TheDgtl.Stargate;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
@@ -26,7 +26,7 @@ public class StargateAPI {
      * @param portalBlock <p>The location to search for a portal</p>
      * @return <p>A portal, or null if no portal was found</p>
      */
-    public IPortal getPortal(Location portalBlock) {
+    public Portal getPortal(Location portalBlock) {
         return Network.getPortal(portalBlock, GateStructureType.values());
     }
 
@@ -40,7 +40,7 @@ public class StargateAPI {
      * @param structureType <p>The type of gate structure to look for</p>
      * @return <p>A portal, or null if no portal was found</p>
      */
-    public IPortal getPortal(Location portalBlock, GateStructureType structureType) {
+    public Portal getPortal(Location portalBlock, GateStructureType structureType) {
         return Network.getPortal(portalBlock, structureType);
     }
 
@@ -54,7 +54,7 @@ public class StargateAPI {
      * @param structureTypes <p>The types of gate structures to look for</p>
      * @return <p>A portal, or null if no portal was found</p>
      */
-    public IPortal getPortal(Location portalBlock, GateStructureType[] structureTypes) {
+    public Portal getPortal(Location portalBlock, GateStructureType[] structureTypes) {
         return Network.getPortal(portalBlock, structureTypes);
     }
 
@@ -65,7 +65,7 @@ public class StargateAPI {
      * @param portalName <p>The name of the portal</p>
      * @return <p>A portal, or null if no portal was found</p>
      */
-    public IPortal getPortal(Network network, String portalName) {
+    public Portal getPortal(Network network, String portalName) {
         return network.getPortal(portalName);
     }
 
@@ -77,7 +77,7 @@ public class StargateAPI {
      * @param isBungee    <p>Whether to search for a BungeeCord-connected portal</p>
      * @return <p>A portal, or null if no portal was found</p>
      */
-    public IPortal getPortal(String networkName, String portalName, boolean isBungee) {
+    public Portal getPortal(String networkName, String portalName, boolean isBungee) {
         Network network = Stargate.factory.getNetwork(networkName, isBungee);
         if (network == null) {
             return null;
@@ -92,7 +92,7 @@ public class StargateAPI {
      * @param portal <p>A portal within the target network</p>
      * @return <p>The network the portal belongs to</p>
      */
-    public Network getNetwork(IPortal portal) {
+    public Network getNetwork(Portal portal) {
         return portal.getNetwork();
     }
 
@@ -117,7 +117,7 @@ public class StargateAPI {
      * @param portal        <p>The portal to change the network of</p>
      * @param targetNetwork <p>The target network the portal should be moved to</p>
      */
-    public void changeNetwork(IPortal portal, Network targetNetwork) {
+    public void changeNetwork(Portal portal, Network targetNetwork) {
         portal.setNetwork(targetNetwork);
     }
 
@@ -141,7 +141,7 @@ public class StargateAPI {
      * @param target      <p>The portal to change the destination of</p>
      * @param destination <p>The portal's new destination</p>
      */
-    public void forceConnect(IPortal target, IPortal destination) {
+    public void forceConnect(Portal target, Portal destination) {
         target.overrideDestination(destination);
     }
 

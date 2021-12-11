@@ -12,8 +12,9 @@ import net.TheDgtl.Stargate.actions.ConditionalRepeatedTask;
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.util.ColorConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -63,7 +64,7 @@ public class PlayerEventListener implements Listener {
             return;
         }
 
-        handleRelevantClickEvent(block, portal, event);
+        handleRelevantClickEvent(block, (RealPortal) portal, event);
     }
 
     /**
@@ -73,7 +74,7 @@ public class PlayerEventListener implements Listener {
      * @param portal <p>The portal the block belongs to</p>
      * @param event  <p>The player interact event to handle</p>
      */
-    private void handleRelevantClickEvent(Block block, Portal portal, PlayerInteractEvent event) {
+    private void handleRelevantClickEvent(Block block, RealPortal portal, PlayerInteractEvent event) {
         Material blockMaterial = block.getType();
         Player player = event.getPlayer();
 
@@ -86,7 +87,9 @@ public class PlayerEventListener implements Listener {
             event.setUseInteractedBlock(Event.Result.DENY);
             if (portal.isOpenFor(player)) {
                 Stargate.log(Level.FINEST, "Player name=" + player.getName());
-                portal.onSignClick(event);
+                if (portal instanceof NetworkedPortal) {
+                    ((NetworkedPortal) portal).onSignClick(event);
+                }
                 return;
             }
         }
@@ -144,7 +147,7 @@ public class PlayerEventListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        IPortal destination = Stargate.pullFromQueue(player.getName());
+        Portal destination = Stargate.pullFromQueue(player.getName());
 
         if (destination == null) {
             return;
