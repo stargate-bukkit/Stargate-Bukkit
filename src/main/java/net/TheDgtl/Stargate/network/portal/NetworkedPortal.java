@@ -1,11 +1,11 @@
 package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.PermissionManager;
-import net.TheDgtl.Stargate.Setting;
-import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
+import net.TheDgtl.Stargate.config.setting.Setting;
+import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.event.StargateActivateEvent;
 import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
 import net.TheDgtl.Stargate.exception.GateConflictException;
@@ -13,6 +13,7 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
+
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

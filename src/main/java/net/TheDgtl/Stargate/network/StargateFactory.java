@@ -1,14 +1,15 @@
 package net.TheDgtl.Stargate.network;
 
-import net.TheDgtl.Stargate.Setting;
-import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.config.TableNameConfig;
+import net.TheDgtl.Stargate.config.setting.Setting;
+import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.DriverEnum;
 import net.TheDgtl.Stargate.database.MySqlDatabase;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
-import net.TheDgtl.Stargate.database.TableNameConfig;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
@@ -46,26 +47,31 @@ public class StargateFactory {
     final String tableName = "local";
 
     private final Database database;
-
+    
     private final SQLQueryGenerator sqlMaker;
     private final boolean useInterServerNetworks;
+    private StargateLogger logger;
 
     public StargateFactory(Stargate stargate) throws SQLException {
-        database = loadDatabase(stargate);
-        useInterServerNetworks = (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)
-                && Settings.getBoolean(Setting.USING_BUNGEE));
-        PREFIX = Settings.getString(Setting.BUNGEE_INSTANCE_NAME);
-        String serverPrefix = Settings.getBoolean(Setting.USING_REMOTE_DATABASE) ? Stargate.serverUUID.toString() : "";
+        this(loadDatabase(stargate), Settings.getBoolean(Setting.USING_BUNGEE),
+                Settings.getBoolean(Setting.USING_REMOTE_DATABASE),stargate);
+    }
+    
+    public StargateFactory(Database database, boolean usingBungee, boolean usingRemoteDatabase,StargateLogger logger) throws SQLException {
+        this.logger = logger;
+        this.database = database;
+        useInterServerNetworks = usingRemoteDatabase && usingBungee;
+        PREFIX = usingRemoteDatabase ? Settings.getString(Setting.BUNGEE_INSTANCE_NAME) : "";
+        String serverPrefix = usingRemoteDatabase ? Stargate.serverUUID.toString() : "";
         TableNameConfig config = new TableNameConfig(PREFIX, serverPrefix.replace("-", ""));
-        DriverEnum databaseEnum = Settings.getBoolean(Setting.USING_REMOTE_DATABASE) ? DriverEnum.MYSQL
-                : DriverEnum.SQLITE;
-        this.sqlMaker = new SQLQueryGenerator(config, Stargate.getInstance(), databaseEnum);
+        DriverEnum databaseEnum = usingRemoteDatabase ? DriverEnum.MYSQL : DriverEnum.SQLITE;
+        this.sqlMaker = new SQLQueryGenerator(config, logger, databaseEnum);
         createTables();
 
-        Stargate.log(Level.FINER, "Loading portals from base database");
+        logger.logMessage(Level.FINER, "Loading portals from base database");
         loadAllPortals(database, PortalType.LOCAL);
         if (useInterServerNetworks) {
-            Stargate.log(Level.FINER, "Loading portals from inter-server bungee database");
+            logger.logMessage(Level.FINER, "Loading portals from inter-server bungee database");
             loadAllPortals(database, PortalType.INTER_SERVER);
         }
 
@@ -73,7 +79,7 @@ public class StargateFactory {
         refreshPortals(bungeeNetList);
     }
 
-    private Database loadDatabase(Stargate stargate) throws SQLException {
+    private static Database loadDatabase(Stargate stargate) throws SQLException {
         if (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
             if (Settings.getBoolean(Setting.SHOW_HIKARI_CONFIG))
                 return new MySqlDatabase(stargate);
@@ -124,8 +130,6 @@ public class StargateFactory {
         runStatement(flagStatement);
         addMissingFlags(connection, sqlMaker);
 
-        PreparedStatement serverInfoStatement = sqlMaker.generateCreateServerInfoTableStatement(connection);
-        runStatement(serverInfoStatement);
 
         PreparedStatement lastKnownNameStatement = sqlMaker.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);
@@ -139,6 +143,8 @@ public class StargateFactory {
             return;
         }
 
+        PreparedStatement serverInfoStatement = sqlMaker.generateCreateServerInfoTableStatement(connection);
+        runStatement(serverInfoStatement);
         PreparedStatement interServerPortalsStatement = sqlMaker.generateCreatePortalTableStatement(connection, PortalType.INTER_SERVER);
         runStatement(interServerPortalsStatement);
         PreparedStatement interServerRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(connection, PortalType.INTER_SERVER);
@@ -203,7 +209,7 @@ public class StargateFactory {
             Set<PortalFlag> flags = PortalFlag.parseFlags(flagsMsg);
 
             boolean isBungee = flags.contains(PortalFlag.FANCY_INTER_SERVER);
-            Stargate.log(Level.FINEST, "Trying to add portal " + name + ", on network " + netName + ",isInterServer = " + isBungee);
+            logger.logMessage(Level.FINEST, "Trying to add portal " + name + ", on network " + netName + ",isInterServer = " + isBungee);
 
             String targetNet = netName;
             if (flags.contains(PortalFlag.BUNGEE)) {
@@ -217,17 +223,17 @@ public class StargateFactory {
             Network net = getNetwork(targetNet, isBungee);
 
             for (IPortal logPortal : net.getAllPortals()) {
-                Stargate.log(Level.FINEST, logPortal.getName());
+                logger.logMessage(Level.FINEST, logPortal.getName());
             }
 
             if (tablePortalType == PortalType.INTER_SERVER) {
                 String serverUUID = set.getString("homeServerId");
-                Stargate.log(Level.FINEST, "serverUUID = " + serverUUID);
+                logger.logMessage(Level.FINEST, "serverUUID = " + serverUUID);
                 if (!serverUUID.equals(Stargate.serverUUID.toString())) {
                     String serverName = set.getString("serverName");
                     IPortal virtualPortal = new VirtualPortal(serverName, name, net, flags, ownerUUID);
                     net.addPortal(virtualPortal, false);
-                    Stargate.log(Level.FINEST, "Added as virtual portal");
+                    logger.logMessage(Level.FINEST, "Added as virtual portal");
                     continue;
                 }
             }
@@ -243,7 +249,7 @@ public class StargateFactory {
             try {
                 IPortal portal = PortalCreationHelper.createPortalFromSign(net, virtualSign, block, flags, ownerUUID);
                 net.addPortal(portal, false);
-                Stargate.log(Level.FINEST, "Added as normal portal");
+                logger.logMessage(Level.FINEST, "Added as normal portal");
                 if (isBungee) {
                     setInterServerPortalOnlineStatus(portal, true);
                 }

@@ -1,12 +1,15 @@
 package net.TheDgtl.Stargate.refactoring;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.StargateConfiguration;
 import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.config.StargateConfiguration;
+import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.refactoring.retcons.Modificator;
 import net.TheDgtl.Stargate.refactoring.retcons.RetCon1_0_0;
 
 import net.TheDgtl.Stargate.util.FileHelper;
+
+import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -29,15 +32,13 @@ public class Refactorer {
     private Map<String, Object> config;
     private StargateLogger logger;
     private FileConfiguration fileConfig;
-    private static final Modificator[] RETCONS;
+    private final Modificator[] RETCONS;
 
-    static {
+    public Refactorer(File configFile, StargateLogger logger, Server server, StargateFactory factory) throws FileNotFoundException, IOException, InvalidConfigurationException {
         RETCONS = new Modificator[]{
-                new RetCon1_0_0()
+                new RetCon1_0_0(server, factory)
         };
-    }
-
-    public Refactorer(File configFile, StargateLogger logger) throws FileNotFoundException, IOException, InvalidConfigurationException {
+        
         FileConfiguration fileConfig = new StargateConfiguration();
         fileConfig.load(configFile);
         this.fileConfig = fileConfig;

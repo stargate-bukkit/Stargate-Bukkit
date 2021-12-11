@@ -1,4 +1,6 @@
-package net.TheDgtl.Stargate;
+package net.TheDgtl.Stargate.config.setting;
+
+import net.TheDgtl.Stargate.Stargate;
 
 /**
  * Contains various methods for getting values of current settings

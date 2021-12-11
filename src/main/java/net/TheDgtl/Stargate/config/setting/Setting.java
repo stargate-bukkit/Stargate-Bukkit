@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate;
+package net.TheDgtl.Stargate.config.setting;
 
 /**
  * An enum containing all available settings/configuration options

@@ -4,6 +4,7 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.config.TableNameConfig;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PortalType;

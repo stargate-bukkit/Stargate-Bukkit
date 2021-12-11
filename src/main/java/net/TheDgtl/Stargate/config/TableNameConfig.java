@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.database;
+package net.TheDgtl.Stargate.config;
 
 /**
  * A config for keeping track of the names of all database tables in use

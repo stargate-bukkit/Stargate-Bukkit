@@ -1,18 +1,20 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
-import net.TheDgtl.Stargate.Setting;
-import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.config.setting.Setting;
+import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.util.FileHelper;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.World;
 
 import java.io.BufferedReader;
@@ -47,12 +49,12 @@ public class LegacePortalStorageLoader {
      * @return
      * @throws IOException
      */
-    static public List<Portal> loadPortalsFromStorage(String portalSaveLocation) throws IOException {
+    static public List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, StargateFactory factory) throws IOException {
         List<Portal> portals = new ArrayList<>();
-        for (World world : Bukkit.getWorlds()) {
-            File file = new File(portalSaveLocation, world.getName() + ".db");
-            if (!file.exists())
-                continue;
+        File dir = new File(portalSaveLocation);
+        File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".db")) : new File[0];
+        for (File file :files) {
+            String worldName = file.getName().replaceAll("\\.db$", "");
             BufferedReader reader = FileHelper.getBufferedReader(file);
             String line = reader.readLine();
             while (line != null) {
@@ -60,7 +62,7 @@ public class LegacePortalStorageLoader {
                     continue;
                 }
                 try {
-                    portals.add(readPortal(line, world));
+                    portals.add(readPortal(line, server.getWorld(worldName),factory));
                 } catch (NameErrorException | NoFormatFoundException | GateConflictException e) {
                 }
             }
@@ -68,7 +70,7 @@ public class LegacePortalStorageLoader {
         return portals;
     }
 
-    static private Portal readPortal(String line, World world) throws NameErrorException, NoFormatFoundException, GateConflictException {
+    static private Portal readPortal(String line, World world, StargateFactory factory) throws NameErrorException, NoFormatFoundException, GateConflictException {
         String[] splitedLine = line.split(":");
         String name = splitedLine[0];
         String[] coordinates = splitedLine[1].split(",");
@@ -84,10 +86,10 @@ public class LegacePortalStorageLoader {
         EnumSet<PortalFlag> flags = parseFlags(splitedLine);
 
         try {
-            Stargate.factory.createNetwork(networkName, flags);
+            factory.createNetwork(networkName, flags);
         } catch (NameErrorException e) {
         }
-        Network network = Stargate.factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
+        Network network = factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
 
         String[] virtualSign = {name, destination, networkName, ""};

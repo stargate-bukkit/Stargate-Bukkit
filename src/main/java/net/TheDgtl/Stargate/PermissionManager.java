@@ -1,5 +1,7 @@
 package net.TheDgtl.Stargate;
 
+import net.TheDgtl.Stargate.config.setting.Setting;
+import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateEvent;
 import net.TheDgtl.Stargate.event.StargatePortalEvent;

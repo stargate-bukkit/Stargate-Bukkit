@@ -1,10 +1,11 @@
 package net.TheDgtl.Stargate.util;
 
-import net.TheDgtl.Stargate.Setting;
-import net.TheDgtl.Stargate.Settings;
+import net.TheDgtl.Stargate.config.setting.Setting;
+import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;

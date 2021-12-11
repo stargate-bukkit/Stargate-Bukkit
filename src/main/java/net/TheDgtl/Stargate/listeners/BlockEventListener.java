@@ -2,11 +2,11 @@ package net.TheDgtl.Stargate.listeners;
 
 import net.TheDgtl.Stargate.BypassPermission;
 import net.TheDgtl.Stargate.PermissionManager;
-import net.TheDgtl.Stargate.Setting;
-import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.SupplierAction;
+import net.TheDgtl.Stargate.config.setting.Setting;
+import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateDestroyEvent;
 import net.TheDgtl.Stargate.exception.GateConflictException;

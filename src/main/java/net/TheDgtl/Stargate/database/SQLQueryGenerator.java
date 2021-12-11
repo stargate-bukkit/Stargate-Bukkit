@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.database;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.config.TableNameConfig;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;

@@ -1,8 +1,8 @@
 package net.TheDgtl.Stargate.network.portal.formatting;
 
-import net.TheDgtl.Stargate.Setting;
-import net.TheDgtl.Stargate.Settings;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.config.setting.Setting;
+import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;

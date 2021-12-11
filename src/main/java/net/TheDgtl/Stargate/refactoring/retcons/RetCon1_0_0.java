@@ -2,8 +2,15 @@ package net.TheDgtl.Stargate.refactoring.retcons;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+
+import org.bukkit.Server;
+
+import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.StargateFactory;
+import net.TheDgtl.Stargate.network.portal.Portal;
 
 public class RetCon1_0_0 extends Modificator {
     /**
@@ -96,6 +103,14 @@ public class RetCon1_0_0 extends Modificator {
         CONFIG_CONVERSIONS.put("enableEconomy", "useEconomy");
     }
 
+    private Server server;
+    private StargateFactory factory;
+
+    public RetCon1_0_0(Server server, StargateFactory factory) {
+        this.server = server;
+        this.factory = factory;
+    }
+    
     @Override
     public Map<String, Object> run(Map<String, Object> oldConfig) {
         try {
@@ -104,7 +119,11 @@ public class RetCon1_0_0 extends Modificator {
                     "folders.portalFolder"};
             for (String portalFolder : possiblePortalFolders) {
                 if (oldConfig.get(portalFolder) != null) {
-                    LegacePortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder));
+                    List<Portal> portalList = LegacePortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder),server,factory);
+                    for(Portal portal : portalList) {
+                        Network network = portal.getNetwork();
+                        network.addPortal(portal, true);
+                    }
                     break;
                 }
             }

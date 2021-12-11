@@ -17,6 +17,9 @@
  */
 package net.TheDgtl.Stargate;
 
+import net.TheDgtl.Stargate.config.StargateConfiguration;
+import net.TheDgtl.Stargate.config.setting.Setting;
+import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.listeners.BlockEventListener;
 import net.TheDgtl.Stargate.listeners.MoveEventListener;
@@ -114,12 +117,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     @Override
     public void onEnable() {
         instance = this;
-
-        try {
-            loadConfig();
-        } catch (IOException | InvalidConfigurationException e1) {
-            e1.printStackTrace();
-        }
         loadColors();
 
         if (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
@@ -136,6 +133,14 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+        
+        if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
+            try {
+                this.refactor();
+            } catch (IOException | InvalidConfigurationException e) {
+                e.printStackTrace();
+            }
         }
         pm = getServer().getPluginManager();
         registerListeners();
@@ -224,16 +229,13 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
     }
 
-    private void loadConfig() throws IOException, InvalidConfigurationException {
-        saveDefaultConfig();
-        reloadConfig();
-        if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
-            Refactorer middas = new Refactorer(new File(this.getDataFolder(), "config.yml"), this);
-            Map<String, Object> newConfig = middas.run();
-            this.saveResource("config.yml", true);
-            middas.insertNewValues(newConfig);
-            this.reloadConfig();
-        }
+    private void refactor() throws FileNotFoundException, IOException, InvalidConfigurationException {
+        Refactorer middas = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(),
+                this.factory);
+        Map<String, Object> newConfig = middas.run();
+        this.saveResource("config.yml", true);
+        middas.insertNewValues(newConfig);
+        this.reloadConfig();
     }
 
     @Override
