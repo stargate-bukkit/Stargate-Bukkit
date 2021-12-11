@@ -3,7 +3,6 @@ package net.TheDgtl.Stargate.refactoring;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -25,6 +24,7 @@ import com.google.common.io.Files;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import net.TheDgtl.Stargate.FakeStargate;
+import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.database.Database;
@@ -62,6 +62,10 @@ public class RefactorerTest {
         
         defaultConfigFile = new File("src/main/resources", "config.yml");
         server = MockBukkit.mock();
+        server.addSimpleWorld("epicknarvik");
+        server.addSimpleWorld("lclo");
+        server.addSimpleWorld("pseudoknigth");
+        Stargate.getConfigStatic().load(defaultConfigFile);
     }
     
     private static HashMap<String,RefactoringChecker> getSettingTestMaps(){
@@ -166,7 +170,7 @@ public class RefactorerTest {
                 Network net = factory.getNetwork(netName, false);
                 Assert.assertNotNull(String.format("Network %s for portal %s was null", netName,portalName),net);
                 Portal portal = net.getPortal(portalName);
-                Assert.assertNotNull(String.format("Portal %s was null",portalName),portal);
+                Assert.assertNotNull(String.format("Portal %s in network %s was null",portalName,netName),portal);
             }
             
         }

@@ -72,5 +72,5 @@ debugging:
   permissionDebug: false
   debug: false
 folders:
-  portalFolder: plugins/Stargate/portals/
+  portalFolder: src/test/resources/oldsaves/epicknarvik/
   gateFolder: plugins/Stargate/gates/

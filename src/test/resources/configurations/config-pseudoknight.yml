@@ -1,6 +1,6 @@
 # Stargate Configuration File
 # Main Stargate config
-portal-folder: plugins/Stargate/portals/
+portal-folder: src/test/resources/oldsaves/pseudoknight/
 gate-folder: plugins/Stargate/gates/
 default-gate-network: pseudoknight
 destroyexplosion: true

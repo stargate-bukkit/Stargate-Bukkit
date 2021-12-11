@@ -109,10 +109,10 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     public static UUID serverUUID;
 
     public static ChatColor defaultLightSignColor = ChatColor.BLACK;
-
     public static ChatColor defaultDarkColor = ChatColor.WHITE;
 
-    FileConfiguration config;
+    private FileConfiguration config;
+    private static FileConfiguration staticConfig = new StargateConfiguration();
 
     @Override
     public void onEnable() {
@@ -324,6 +324,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     public static FileConfiguration getConfigStatic() {
+        if(instance == null)
+            return staticConfig;
         return instance.getConfig();
     }
 

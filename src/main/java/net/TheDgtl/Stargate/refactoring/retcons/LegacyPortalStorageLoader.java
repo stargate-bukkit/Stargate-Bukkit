@@ -55,17 +55,22 @@ public class LegacyPortalStorageLoader {
     static public List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, StargateFactory factory) throws IOException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
+        System.out.println(portalSaveLocation);
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".db")) : new File[0];
+        System.out.println("ping 1");
         for (File file : files) {
             String worldName = file.getName().replaceAll("\\.db$", "");
+            System.out.println("ping 2");
             BufferedReader reader = FileHelper.getBufferedReader(file);
             String line = reader.readLine();
             while (line != null) {
+                System.out.println("ping 3");
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
                 try {
                     portals.add(readPortal(line, server.getWorld(worldName),factory));
+                    System.out.println("ping 4");
                 } catch (NameErrorException | NoFormatFoundException | GateConflictException ignored) {
                 }
                 line = reader.readLine();
