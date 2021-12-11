@@ -1,0 +1,174 @@
+# 
+# +--------------▄▄▄-- ‚——. -▄--▄-▄--▄-▄-▄▄▄▄▄---------------------------------------------------+ #
+# |              █▄▄▀ (“‡‡”) █▄▄▀ █▄▄▀ █   █         Support available at: discord.gg/mTaHuK6BVa | #
+# |              █▄▄█  \__/  █  █ █  █ █   █                    ‚-.                              | #
+# |         —————————————————————————————————————————————————— ((_)) ——————————————————          | #
+# |                                                             ‘-’                              | #
+# |         .|'''.|  |''||''|     |     '||''|.    ..|'''.|      |     |''||''| '||''''|         | #
+# |         ||..  '     ||       |||     ||   ||  .|'     '     |||       ||     ||  .           | #
+# |          ''|||.     ||      |  ||    ||''|'   ||    ....   |  ||      ||     ||''|           | #
+# |        .     '||    ||     .''''|.   ||   |.  '|.    ||   ;’   |.     ||     ||              | #
+# |         '....|'    .||.   .|.  .||. .||.  '|'  ''|...'|  .|.  .||.   .||.   .||.....|        | #
+# +----------------------------------------------------------------------------------------------+ #
+# |                        https://spigotmc.org/resources/stargate.87978/                        | #
+# +----------------------------------------------+-----------------------------------------------+ #
+# |      Documentation: https://git.io/Jc6jZ     |       Bug Reports: https://git.io/Jc6jW       | #
+# +----------------------------------------------+-----------------------------------------------+ #
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                      General Preferences                                     | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# What language will stargate use when communicating with your users?
+# Supported values: [en, de, es, fr, hu, it, nl, pt, ru, sv, zh-CN, & zh-HK]
+#  
+# If SG isn't yet available in your language, please consider a 
+# PR: https://git.io/JcixA 
+# For more information on language codes, see ISO 639-1: https://git.io/JcwaI
+lang: en
+
+# Are you connected to a bungee-compatible proxy?
+# Set this value to true if you intend on building gates with the 'u' flag.
+enableBungee: false
+
+# What network will be used when none has been specified? (Max length 12 characters)
+# 
+# Note that this primarily applies to users with the stargate.create.network node.
+# Generally, that node is given to staff (we recommend stargate.create.personal for users).
+default-gate-network: central
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                        Gate Behaviour                                        | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# What is the maximum number of gates a single network may contain? (0 for unlimited)
+maxgates: 0
+
+# Will vehicles and their passengers be able to travel through StarGate portals?
+#  [minecarts, boats, & saddled mobs = vehicles | players & mobs = passengers]
+# 
+# …««»»…  This feature is partially incompatible with MineCraft 1.9+.
+# “NOTE”  There is a planned fix for this in the upcoming SG rewrite (for MC 1.18+).
+handleVehicles: true
+
+# Will the server reverify all existing portals on startup?
+# 
+# This checks that the expected gates are both present and using a valid layout.
+# Designed to catch .gate file modifications, world changes, and terrain regeneration.
+# 
+# …««»»…  If you set this to true, you should also set ignoreEntrance (below) to true!
+# “NOTE”  Otherwise, disallowed players, block updates, and snowmen can invalidate your portals!
+verifyPortals: false
+
+# Should the portal verification process account for 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 (open/closed) materials?
+# ie. will a gate still validate if its portal-open material isn't present?
+# 
+# When disabled, this setting makes gate validation more comprehensive;
+# 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 blocks will no longer be able to overwrite existing blocks.
+ignoreEntrance: false
+
+# SG protects gate 𝑓𝑟𝑎𝑚𝑒 materials; should it also protect gate 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 (open/closed) materials?
+# ex. in nether.gate, should nether_portal be protected?
+# 
+# …««»»…  This feature can be somewhat resource intensive when active!
+# “NOTE”  Only enable this if you use breakable 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 materials.
+protectEntrance: false
+
+# Can StarGates be broken via an explosion?
+#  [tnt, creepers, etc.]
+destroyexplosion: false
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                            Economy                                           | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# Will StarGate interact with your server's economy?
+# 
+# …««»»…  For these features, StarGate depends on the Vault plugin.
+# “NOTE”  https://www.spigotmc.org/resources/vault.34315/
+useeconomy: false
+
+# How much will be deducted from players' accounts when creating a new gate?
+createcost: 0
+
+# How much will be deducted from players' accounts when destroying an existing gate?
+destroycost: 0
+
+# How much will be deducted from players' accounts when using a stargate to teleport?
+# This does not apply to stargates with the 'f' flag.
+usecost: 0
+
+# Will fees collected for ‘usecost’ be paid to whomever created (owns) the applicable stargate?
+# If false, collected funds will be deleted.
+toowner: false
+
+# Does your server have a tax account (closed economy)?
+# If so, please provide the name of your tax account (collected money will be sent to it).
+# If not, leave this section blank (collected money will be deleted).
+# 
+# Note that usecost money is excluded from this system when toowner is true.
+
+# Will ‘createcost’ still be charged if the new gate's destination is a gate with the 'f' flag?
+# Note that this only applies to fixed gates.
+chargefreedestination: true
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                       Aesthetic Tweaks                                       | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# What colour will StarGate use for all text when formatting gate signs?
+# Note that players can override this with DYE and/or GLOW_INK_SAC
+# 
+# All colour names should follow this format:
+# https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Color.html#field.summary
+signColor: BLACK
+
+# When scrolling through a networked portal's destination list, will free gates be shown in GREEN?
+freegatesgreen: false
+
+# For networked gates, are destinations listed alphabetically instead of chronologically?
+# (This applies to all non-fixed and non-random gates).
+sortLists: false
+
+# Will the destination a networked portal last connected to be listed first in its scroll menu?
+# 
+# …««»»…  This feature is incompatible with MineCraft 1.6+.
+# “NOTE”  There is a planned fix for this in the upcoming SG rewrite (for MC 1.18+).
+destMemory: false
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                           Technical                                          | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# |                                       [ Compatibility ]                                      | #
+# |__      These settings are provided to improve SG 10's interactions with other plugins.     __| #
+
+# Currently, all valid gates, their details, and their owners, are stored in a flatfile database
+# Where should that flatfile be stored?
+# 
+# This option is provided as a patch to allow data to be imported from some older forks.
+portal-folder: plugins/Stargate/portals/
+
+# Currently, on startup, a folder is checked for gate layouts stored as ‘.gate’ files.
+# Where is that folder?
+# 
+# This option is provided as a patch to allow data to be imported from some older forks.
+gate-folder: plugins/Stargate/gates/
+
+# |                                           [ Debug ]                                          | #
+# |__     These settings are provided to help developers diagnose issues with this plugin.     __| #
+# 
+# Should SG spam console with A LOT of technical information?
+# This includes checks, events, etc.
+debug: false
+
+# Should SG spam console with A LOT of permission-based information?
+# This visualises how stargate determines what players can do.
+# 
+# Note that (regardless of this setting), permdebug is always hidden when ‘debug’ is false.
+permdebug: false
+
+# An internal value used by the plugin to determine how old your config is.
+# Please do not change this.
+configVersion: 4
+

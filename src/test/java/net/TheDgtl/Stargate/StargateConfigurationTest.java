@@ -16,7 +16,6 @@ import java.util.logging.Level;
 
 class StargateConfigurationTest {
 
-    static private List<FileConfiguration> configs = new ArrayList<>();
     static private File[] configFiles;
     static private StargateLogger logger;
 

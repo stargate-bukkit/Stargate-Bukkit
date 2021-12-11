@@ -108,14 +108,14 @@ public class RetCon1_0_0 extends Modificator {
                     break;
                 }
             }
-
-        } catch (IOException e) {
-        }
+        } catch (IOException e) {}
 
         Level logLevel = Level.INFO;
-        if ((boolean) oldConfig.get("permdebug") || (boolean) oldConfig.get("debugging.permdebug"))
+        if ((oldConfig.get("permdebug") != null && (boolean) oldConfig.get("permdebug"))
+                || (oldConfig.get("debugging.permdebug") != null) && (boolean) oldConfig.get("debugging.permdebug"))
             logLevel = Level.CONFIG;
-        if ((boolean) oldConfig.get("debug") || (boolean) oldConfig.get("debugging.debug"))
+        if ((oldConfig.get("debug") != null && (boolean) oldConfig.get("debug"))
+                || (oldConfig.get("debugging.debug") != null && (boolean) oldConfig.get("debugging.debug")))
             logLevel = Level.FINE;
         Map<String, Object> newConfig = super.run(oldConfig);
         newConfig.put("loggingLevel", logLevel.toString());

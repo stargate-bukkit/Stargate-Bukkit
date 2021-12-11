@@ -1,0 +1,25 @@
+# Stargate Configuration File
+# Main Stargate config
+portal-folder: plugins/Stargate/portals/
+gate-folder: plugins/Stargate/gates/
+default-gate-network: central
+destroyexplosion: false
+maxgates: 0
+lang: en
+destMemory: false
+ignoreEntrance: false
+handleVehicles: true
+sortLists: false
+protectEntrance: false
+signColor: BLACK
+useeconomy: false
+createcost: 0
+destroycost: 0
+usecost: 0
+toowner: false
+chargefreedestination: true
+freegatesgreen: false
+debug: false
+permdebug: false
+enableBungee: false
+verifyPortals: false

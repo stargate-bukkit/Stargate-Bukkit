@@ -1,4 +1,4 @@
-#Should not be read
+# A header
 
-# should be
-option: "an option"
+# A comment
+option: "a value for a option"
