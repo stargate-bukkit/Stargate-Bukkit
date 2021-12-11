@@ -3,7 +3,10 @@ package net.TheDgtl.Stargate.refactoring;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -26,39 +29,82 @@ import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
+import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
+import net.TheDgtl.Stargate.network.portal.Portal;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class RefactorerTest {
+    private static File sqlDatabaseFile;
     static private File[] configFiles;
     static private StargateLogger logger;
     static private File defaultConfigFile;
     static private Database sqlDatabase;
+    static private HashMap<String,RefactoringChecker> configTestMap;
 
     static private StargateFactory factory;
     static private ServerMock server;
     @BeforeAll
     public static void setUp() throws FileNotFoundException, IOException, InvalidConfigurationException, SQLException {
         String configFolder = "src/test/resources/configurations";
-        configFiles = new File[]{
-                new File(configFolder, "config-epicknarvik.yml")
-                , new File(configFolder, "config-lclo.yml")
-                , new File(configFolder, "config-pseudoknight.yml")
-                //,new File(configFolder, "config-dinnerbone.yml")
-                //,new File(configFolder, "config-drakia.yml")
-        };
+        configTestMap = getSettingTestMaps();
+        configFiles = new File[configTestMap.size()];
+        int i = 0;
+        for(String key : configTestMap.keySet()) {
+            configFiles[i++] = new File(configFolder, key);
+        }
+        
         logger = new FakeStargate();
         defaultConfigFile = new File("src/main/resources","config.yml");
-        File databaseFile = new File("src/test/resources", "test.db");
-        sqlDatabase = new SQLiteDatabase(databaseFile);
+        sqlDatabaseFile = new File("src/test/resources", "test.db");
+        sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);
         factory = new StargateFactory(sqlDatabase,false,false,logger);
         
         defaultConfigFile = new File("src/main/resources", "config.yml");
         server = MockBukkit.mock();
     }
+    
+    private static HashMap<String,RefactoringChecker> getSettingTestMaps(){
+        HashMap<String,RefactoringChecker> output = new HashMap<>();
+        
+        RefactoringChecker knarvikChecker = new RefactoringChecker();
+        HashMap<String,Object> knarvikConfigChecker = new HashMap<>();
+        knarvikConfigChecker.put("defaultGateNetwork", "knarvik");
+        knarvikConfigChecker.put("handleVehicles", false);
+        knarvikChecker.settingCheckers = knarvikConfigChecker;
+        HashMap<String,String> knarvikPortalChecker = new HashMap<>();
+        knarvikPortalChecker.put("knarvik1", "knarvik");
+        knarvikPortalChecker.put("knarvik2", "knarvik");
+        knarvikPortalChecker.put("knarvik3", "knarvik");
+        knarvikChecker.portalChecker = knarvikPortalChecker;
+        output.put("config-epicknarvik.yml", knarvikChecker);
+        
+        RefactoringChecker pseudoChecker = new RefactoringChecker();
+        HashMap<String,Object> pseudoConfigChecker = new HashMap<>();
+        pseudoConfigChecker.put("defaultGateNetwork", "pseudoknight");
+        pseudoConfigChecker.put("destroyOnExplosion", true);
+        pseudoChecker.settingCheckers = pseudoConfigChecker;
+        HashMap<String,String> pseudoPortalChecker = new HashMap<>();
+        pseudoPortalChecker.put("pseudo1", "pseudo");
+        pseudoPortalChecker.put("pseudo2", "pseudo");
+        pseudoChecker.portalChecker = pseudoPortalChecker;
+        output.put("config-pseudoknight.yml", pseudoChecker);
+        
+        RefactoringChecker lcloChecker = new RefactoringChecker();
+        HashMap<String,Object> lcloConfigChecker = new HashMap<>();
+        lcloConfigChecker.put("defaultGateNetwork", "lclco");
+        lcloChecker.settingCheckers = lcloConfigChecker;
+        HashMap<String,String> lcloPortalChecker = new HashMap<>();
+        lcloPortalChecker.put("lclo1", "lclo");
+        lcloPortalChecker.put("lclo2", "lclo");
+        pseudoChecker.portalChecker = lcloPortalChecker;
+        output.put("config-lclo.yml", lcloChecker);
+        
+        return output;
+    }
 
     @AfterAll
-    public static void tearDown() {
+    public static void tearDown() throws SQLException {
         MockBukkit.unmock();
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
@@ -67,10 +113,11 @@ public class RefactorerTest {
             }
             oldConfigFile.renameTo(configFile);
         }
+        sqlDatabaseFile.delete();
     }
 
     @Test
-    @Order(0)
+    @Order(1)
     public void loadConfigTest() throws FileNotFoundException, IOException, InvalidConfigurationException {
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
@@ -78,6 +125,7 @@ public class RefactorerTest {
                 oldConfigFile.delete();
             Refactorer middas = new Refactorer(configFile, logger, server, factory);
             configFile.renameTo(oldConfigFile);
+            
             Map<String, Object> config = middas.run();
             Files.copy(defaultConfigFile, configFile);
             FileConfiguration fileConfig = new StargateConfiguration();
@@ -95,8 +143,37 @@ public class RefactorerTest {
     }
     
     @Test
-    @Order(1)
-    public void checkIfPortalsWereAddedTest() {
-        
+    @Order(2)
+    public void configDoubleCheck() throws FileNotFoundException, IOException, InvalidConfigurationException {
+        for(File configFile : configFiles) {
+            HashMap<String, Object> testMap = configTestMap.get(configFile.getName()).settingCheckers;
+            FileConfiguration config = new StargateConfiguration();
+            config.load(configFile);
+            for(String settingKey : testMap.keySet()) {
+                Object value = testMap.get(settingKey);
+                Assert.assertEquals(value, config.get(settingKey));
+            }
+        }
+    }
+    
+    @Test
+    @Order(2)
+    public void portalLoadCheck() throws FileNotFoundException, IOException, InvalidConfigurationException {
+        for(String key : configTestMap.keySet()) {
+            HashMap<String, String> testMap = configTestMap.get(key).portalChecker;
+            for(String portalName : testMap.keySet()) {
+                String netName = testMap.get(portalName);
+                Network net = factory.getNetwork(netName, false);
+                Assert.assertNotNull(String.format("Network %s for portal %s was null", netName,portalName),net);
+                Portal portal = net.getPortal(portalName);
+                Assert.assertNotNull(String.format("Portal %s was null",portalName),portal);
+            }
+            
+        }
+    }
+    
+    static void finishStatement(PreparedStatement statement) throws SQLException {
+        statement.execute();
+        statement.close();
     }
 }

@@ -3,7 +3,7 @@
 portal-folder: plugins/Stargate/portals/
 gate-folder: plugins/Stargate/gates/
 default-gate-network: pseudoknight
-destroyexplosion: false
+destroyexplosion: true
 maxgates: 0
 lang: en
 destMemory: false

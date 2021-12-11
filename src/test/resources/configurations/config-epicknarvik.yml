@@ -44,7 +44,7 @@ gates:
     handleCreatureTransportation: true
     handleNonPlayerVehicles: true
     handleLeashedCreatures: true
-    handleVehicles: true
+    handleVehicles: false
     enableBungee: false
   cosmetic:
     mainSignColor: BLACK
@@ -57,7 +57,7 @@ gates:
     protectEntrance: false
     destroyedByExplosion: false
   maxGatesEachNetwork: 0
-  defaultGateNetwork: central
+  defaultGateNetwork: knarvik
 economy:
   useEconomy: false
   freeGatesColor: DARK_GREEN

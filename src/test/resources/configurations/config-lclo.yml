@@ -35,7 +35,7 @@ enableBungee: false
 # 
 # Note that this primarily applies to users with the stargate.create.network node.
 # Generally, that node is given to staff (we recommend stargate.create.personal for users).
-default-gate-network: central
+default-gate-network: lclco
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                        Gate Behaviour                                        | #
