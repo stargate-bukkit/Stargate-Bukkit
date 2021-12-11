@@ -10,9 +10,9 @@ import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
-import net.TheDgtl.Stargate.network.portal.IPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
@@ -28,16 +28,18 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class Network {
-    protected HashMap<String, IPortal> portalList;
+
+    protected Map<String, Portal> portalList;
     protected Database database;
     protected String name;
     protected SQLQueryGenerator sqlMaker;
 
 
-    final static EnumMap<GateStructureType, HashMap<BlockLocation, Portal>> portalFromPartsMap = new EnumMap<>(GateStructureType.class);
+    final static Map<GateStructureType, Map<BlockLocation, Portal>> portalFromPartsMap = new EnumMap<>(GateStructureType.class);
 
     public Network(String name, Database database, SQLQueryGenerator sqlMaker) throws NameErrorException {
         if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH))
@@ -48,7 +50,7 @@ public class Network {
         portalList = new HashMap<>();
     }
 
-    public Collection<IPortal> getAllPortals() {
+    public Collection<Portal> getAllPortals() {
         return portalList.values();
     }
 
@@ -56,13 +58,13 @@ public class Network {
         return (getPortal(this.compilePortalHash(name)) != null);
     }
 
-    public IPortal getPortal(String name) {
+    public Portal getPortal(String name) {
         if (name == null)
             return null;
         return portalList.get(this.compilePortalHash(name));
     }
 
-    public void registerLocations(GateStructureType type, HashMap<BlockLocation, Portal> locationsMap) {
+    public void registerLocations(GateStructureType type, Map<BlockLocation, Portal> locationsMap) {
         if (!portalFromPartsMap.containsKey(type)) {
             portalFromPartsMap.put(type, new HashMap<>());
         }
@@ -70,7 +72,7 @@ public class Network {
     }
 
     public void unRegisterLocation(GateStructureType type, BlockLocation loc) {
-        HashMap<BlockLocation, Portal> map = portalFromPartsMap.get(type);
+        Map<BlockLocation, Portal> map = portalFromPartsMap.get(type);
         if (map != null) {
             Stargate.log(Level.FINEST, "Unregistering portal " + map.get(loc).getName() + " with structType " + type
                     + " at location " + loc.toString());
@@ -78,7 +80,7 @@ public class Network {
         }
     }
 
-    public void removePortal(IPortal portal, boolean saveToDatabase) {
+    public void removePortal(Portal portal, boolean saveToDatabase) {
         portalList.remove(this.compilePortalHash(portal.getName()));
         if (!saveToDatabase) {
             return;
@@ -98,7 +100,7 @@ public class Network {
      * @param portalType <p>The type of portal to remove</p>
      * @throws SQLException <p>If a database error occurs</p>
      */
-    protected void removePortalFromDatabase(IPortal portal, PortalType portalType) throws SQLException {
+    protected void removePortalFromDatabase(Portal portal, PortalType portalType) throws SQLException {
         Connection conn = null;
         try {
             conn = database.getConnection();
@@ -127,7 +129,7 @@ public class Network {
         }
     }
 
-    protected void savePortal(Database database, IPortal portal, PortalType portalType) {
+    protected void savePortal(Database database, Portal portal, PortalType portalType) {
 
         Connection connection = null;
         try {
@@ -162,7 +164,7 @@ public class Network {
      * @param portal           <p>The portal to add the flags of</p>
      * @throws SQLException <p>If unable to set the flags</p>
      */
-    private void addFlags(PreparedStatement addFlagStatement, IPortal portal) throws SQLException {
+    private void addFlags(PreparedStatement addFlagStatement, Portal portal) throws SQLException {
         for (Character character : portal.getAllFlagsString().toCharArray()) {
             Stargate.log(Level.FINER, "Adding flag " + character + " to portal: " + portal);
             addFlagStatement.setString(1, portal.getName());
@@ -172,22 +174,37 @@ public class Network {
         }
     }
 
-    protected void savePortal(IPortal portal) {
+    protected void savePortal(Portal portal) {
         savePortal(database, portal, PortalType.LOCAL);
     }
 
-    public void addPortal(IPortal portal, boolean saveToDatabase) {
-        if (portal instanceof Portal) {
-            Portal physicalPortal = (Portal) portal;
+    public void addPortal(Portal portal, boolean saveToDatabase) {
+        if (portal instanceof RealPortal) {
+            RealPortal physicalPortal = (RealPortal) portal;
             for (GateStructureType key : physicalPortal.getGate().getFormat().portalParts.keySet()) {
                 List<BlockLocation> locations = physicalPortal.getGate().getLocations(key);
-                this.registerLocations(key, physicalPortal.generateLocationHashMap(locations));
+                this.registerLocations(key, generateLocationMap(locations, portal));
             }
         }
         if (saveToDatabase) {
             savePortal(portal);
         }
         portalList.put(compilePortalHash(portal.getName()), portal);
+    }
+
+    /**
+     * Gets a map between the given block locations and the given portal
+     *
+     * @param locations <p>The locations related to the portal</p>
+     * @param portal    <p>The portal with blocks at the given locations</p>
+     * @return <p>The resulting location to portal mapping</p>
+     */
+    private Map<BlockLocation, Portal> generateLocationMap(List<BlockLocation> locations, Portal portal) {
+        Map<BlockLocation, Portal> output = new HashMap<>();
+        for (BlockLocation location : locations) {
+            output.put(location, portal);
+        }
+        return output;
     }
 
     private String compilePortalHash(String portalName) {
@@ -208,13 +225,13 @@ public class Network {
         }
     }
 
-    public HashSet<String> getAvailablePortals(Player actor, IPortal requester) {
+    public HashSet<String> getAvailablePortals(Player actor, Portal requester) {
         HashSet<String> tempPortalList = new HashSet<>(portalList.keySet());
         tempPortalList.remove(compilePortalHash(requester.getName()));
         if (!requester.hasFlag(PortalFlag.FORCE_SHOW)) {
             HashSet<String> removeList = new HashSet<>();
             for (String portalName : tempPortalList) {
-                IPortal target = getPortal(portalName);
+                Portal target = getPortal(portalName);
                 if (target.hasFlag(PortalFlag.HIDDEN)
                         && (actor != null && !actor.hasPermission(BypassPermission.HIDDEN.getPermissionString())))
                     removeList.add(portalName);
@@ -306,7 +323,7 @@ public class Network {
      */
     public void destroy() {
         for (String portalName : portalList.keySet()) {
-            IPortal portal = portalList.get(portalName);
+            Portal portal = portalList.get(portalName);
             portal.destroy();
         }
         portalList.clear();

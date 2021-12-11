@@ -18,7 +18,7 @@
 
 package net.TheDgtl.Stargate.event;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -48,7 +48,7 @@ public class StargateCreateEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateCreateEvent(@NotNull Player player, @NotNull IPortal portal, @NotNull String[] lines, int cost) {
+    public StargateCreateEvent(@NotNull Player player, @NotNull Portal portal, @NotNull String[] lines, int cost) {
         super(Objects.requireNonNull(portal));
         this.player = Objects.requireNonNull(player);
         this.lines = Objects.requireNonNull(lines);

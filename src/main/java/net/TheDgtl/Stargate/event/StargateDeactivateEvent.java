@@ -18,7 +18,7 @@
 
 package net.TheDgtl.Stargate.event;
 
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +45,7 @@ public class StargateDeactivateEvent extends StargateEvent {
         return handlers;
     }
 
-    public StargateDeactivateEvent(@NotNull IPortal portal) {
+    public StargateDeactivateEvent(@NotNull Portal portal) {
         super(Objects.requireNonNull(portal));
     }
 

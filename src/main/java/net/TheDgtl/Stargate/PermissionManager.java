@@ -33,7 +33,7 @@ public class PermissionManager {
     private String denyMessage;
     private Chat metadataProvider;
     private final boolean canProcessMetaData;
-    private LanguageManager languageManager;
+    private final LanguageManager languageManager;
 
     private final static String FLAG_PERMISSION = "sg.create.type.";
     private final static String CREATE_PERMISSION = "sg.create.network";

@@ -13,13 +13,10 @@ import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
-
-import java.util.logging.Level;
 
 public class Refactorer {
     /*
@@ -28,7 +25,7 @@ public class Refactorer {
      */
 
     private int configVersion;
-    private File configFile;
+    private final File configFile;
     private Map<String, Object> config;
     private StargateLogger logger;
     private FileConfiguration fileConfig;
@@ -38,7 +35,7 @@ public class Refactorer {
         RETCONS = new Modificator[]{
                 new RetCon1_0_0(server, factory)
         };
-        
+
         FileConfiguration fileConfig = new StargateConfiguration();
         fileConfig.load(configFile);
         this.fileConfig = fileConfig;
@@ -49,7 +46,6 @@ public class Refactorer {
     }
 
     /**
-     * 
      * @return every configuration mapping that could be transfered over to this version
      */
     public Map<String, Object> run() {

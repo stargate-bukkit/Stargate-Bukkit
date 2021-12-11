@@ -13,7 +13,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-public class RandomPortal extends Portal {
+public class RandomPortal extends AbstractPortal {
 
     private final Random randomizer = new Random();
 
@@ -22,18 +22,18 @@ public class RandomPortal extends Portal {
     }
 
     @Override
-    public void drawControlMechanism() {
+    public void drawControlMechanisms() {
         String[] lines = {
                 super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL),
                 super.colorDrawer.formatLine(HighlightingStyle.DESTINATION.getHighlightedName(Stargate.languageManager.getString(TranslatableMessage.RANDOM))),
                 !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(network.concatName()) : "",
                 ""
         };
-        getGate().drawControlMechanism(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+        getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }
 
     @Override
-    public IPortal loadDestination() {
+    public Portal loadDestination() {
         Set<String> allPortalNames = network.getAvailablePortals(null, this);
         String[] destinations = allPortalNames.toArray(new String[0]);
         if (destinations.length < 1) {

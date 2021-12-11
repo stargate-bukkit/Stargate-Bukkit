@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 import java.util.UUID;
 
-public class FakePortal implements IPortal {
+public class FakePortal implements Portal {
 
     private final Location signLocation;
     private final String portalName;
@@ -40,7 +40,7 @@ public class FakePortal implements IPortal {
     }
 
     @Override
-    public void teleportHere(Entity target, Portal origin) {
+    public void teleportHere(Entity target, RealPortal origin) {
 
     }
 
@@ -70,7 +70,7 @@ public class FakePortal implements IPortal {
     }
 
     @Override
-    public void overrideDestination(IPortal destination) {
+    public void overrideDestination(Portal destination) {
 
     }
 

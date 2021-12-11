@@ -26,10 +26,9 @@ import net.TheDgtl.Stargate.listeners.MoveEventListener;
 import net.TheDgtl.Stargate.listeners.PlayerEventListener;
 import net.TheDgtl.Stargate.listeners.PluginEventListener;
 import net.TheDgtl.Stargate.listeners.StargateBungeePluginMessageListener;
-import net.TheDgtl.Stargate.listeners.WorldEventListener;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
-import net.TheDgtl.Stargate.network.portal.IPortal;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.refactoring.Refactorer;
 import net.TheDgtl.Stargate.util.BStatsHelper;
 import net.TheDgtl.Stargate.util.FileHelper;
@@ -42,6 +41,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -102,7 +102,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     /*
      * Used in bungee / waterfall
      */
-    private final HashMap<String, IPortal> bungeeQueue = new HashMap<>();
+    private final HashMap<String, Portal> bungeeQueue = new HashMap<>();
     public static String serverName;
     public static boolean knowsServerName = false;
 
@@ -210,7 +210,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         pm.registerEvents(new MoveEventListener(), this);
         pm.registerEvents(new PlayerEventListener(), this);
         pm.registerEvents(new PluginEventListener(), this);
-        pm.registerEvents(new WorldEventListener(), this);
         if (Settings.getBoolean(Setting.USING_BUNGEE)) {
             Messenger msgr = Bukkit.getMessenger();
 
@@ -239,7 +238,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     @Override
-    public FileConfiguration getConfig() {
+    public @NotNull FileConfiguration getConfig() {
         if (config == null) {
             reloadConfig();
         }
@@ -342,7 +341,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             String msg = String.format("Inter-server network ''%s'' could not be found", netName);
             Stargate.log(Level.WARNING, msg);
         }
-        IPortal portal = network == null ? null : network.getPortal(portalName);
+        Portal portal = network == null ? null : network.getPortal(portalName);
         if (portal == null) {
             // Error: This bungee portal's %type% has been removed from the destination server instance.
             //(See Discussion One) %type% = gate.
@@ -353,7 +352,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         instance.bungeeQueue.put(playerName, portal);
     }
 
-    public static IPortal pullFromQueue(String playerName) {
+    public static Portal pullFromQueue(String playerName) {
         return instance.bungeeQueue.remove(playerName);
     }
 

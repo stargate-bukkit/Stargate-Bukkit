@@ -9,7 +9,9 @@ import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.Portal;
+
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.util.FileHelper;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import org.bukkit.Bukkit;
@@ -24,11 +26,12 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-public class LegacePortalStorageLoader {
+public class LegacyPortalStorageLoader {
 
-    static private final EnumMap<PortalFlag, Integer> LEGACY_FLAGS_POS_MAP = new EnumMap<PortalFlag, Integer>(PortalFlag.class);
+    private final static Map<PortalFlag, Integer> LEGACY_FLAGS_POS_MAP = new EnumMap<>(PortalFlag.class);
 
     static {
         LEGACY_FLAGS_POS_MAP.put(PortalFlag.HIDDEN, 11);
@@ -63,31 +66,32 @@ public class LegacePortalStorageLoader {
                 }
                 try {
                     portals.add(readPortal(line, server.getWorld(worldName),factory));
-                } catch (NameErrorException | NoFormatFoundException | GateConflictException e) {
+                } catch (NameErrorException | NoFormatFoundException | GateConflictException ignored) {
                 }
+                line = reader.readLine();
             }
         }
         return portals;
     }
 
     static private Portal readPortal(String line, World world, StargateFactory factory) throws NameErrorException, NoFormatFoundException, GateConflictException {
-        String[] splitedLine = line.split(":");
-        String name = splitedLine[0];
-        String[] coordinates = splitedLine[1].split(",");
+        String[] splitLine = line.split(":");
+        String name = splitLine[0];
+        String[] coordinates = splitLine[1].split(",");
         Location signLocation = new Location(
                 world,
-                Double.valueOf(coordinates[0]),
-                Double.valueOf(coordinates[1]),
-                Double.valueOf(coordinates[2]));
-        String destination = (splitedLine.length > 8) ? splitedLine[8] : "";
-        String networkName = (splitedLine.length > 9) ? splitedLine[9] : Settings.getString(Setting.DEFAULT_NET);
-        String ownerString = (splitedLine.length > 10) ? splitedLine[10] : "";
+                Double.parseDouble(coordinates[0]),
+                Double.parseDouble(coordinates[1]),
+                Double.parseDouble(coordinates[2]));
+        String destination = (splitLine.length > 8) ? splitLine[8] : "";
+        String networkName = (splitLine.length > 9) ? splitLine[9] : Settings.getString(Setting.DEFAULT_NET);
+        String ownerString = (splitLine.length > 10) ? splitLine[10] : "";
         UUID ownerUUID = getPlayerUUID(ownerString);
-        EnumSet<PortalFlag> flags = parseFlags(splitedLine);
+        EnumSet<PortalFlag> flags = parseFlags(splitLine);
 
         try {
             factory.createNetwork(networkName, flags);
-        } catch (NameErrorException e) {
+        } catch (NameErrorException ignored) {
         }
         Network network = factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
@@ -103,7 +107,7 @@ public class LegacePortalStorageLoader {
         return Bukkit.getOfflinePlayer(ownerString).getUniqueId();
     }
 
-    static private EnumSet<PortalFlag> parseFlags(String[] splitedLine) {
+    private static EnumSet<PortalFlag> parseFlags(String[] splitedLine) {
         EnumSet<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
         for (PortalFlag flag : LEGACY_FLAGS_POS_MAP.keySet()) {
             int position = LEGACY_FLAGS_POS_MAP.get(flag);
@@ -114,4 +118,5 @@ public class LegacePortalStorageLoader {
 
         return flags;
     }
+
 }

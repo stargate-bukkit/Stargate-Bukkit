@@ -9,10 +9,7 @@ import org.junit.jupiter.api.Test;
 import net.TheDgtl.Stargate.config.StargateConfiguration;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 
@@ -22,7 +19,7 @@ class StargateConfigurationTest {
     static private StargateLogger logger;
 
     @BeforeAll
-    public static void setUp() throws FileNotFoundException, IOException, InvalidConfigurationException {
+    public static void setUp() {
         String configFolder = "src/test/resources/configurations";
         configFiles = new File[]{
                 new File(configFolder, "testConfig.yml")
@@ -42,7 +39,7 @@ class StargateConfigurationTest {
 
 
     @Test
-    public void theTest() throws FileNotFoundException, IOException, InvalidConfigurationException {
+    public void theTest() throws IOException, InvalidConfigurationException {
         for (File configFile : configFiles) {
             FileConfiguration config = new StargateConfiguration();
             config.load(configFile);

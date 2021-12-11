@@ -2,7 +2,8 @@ package net.TheDgtl.Stargate;
 
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
-import net.TheDgtl.Stargate.network.portal.IPortal;
+
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -88,7 +89,7 @@ public class EconomyManager {
         return chargePlayer(player, amount);
     }
 
-    public boolean chargePlayer(OfflinePlayer player, IPortal origin, int amount) {
+    public boolean chargePlayer(OfflinePlayer player, Portal origin, int amount) {
         if (Settings.getBoolean(Setting.GATE_OWNER_REVENUE)) {
             if (chargeAndDepositPlayer(player, Bukkit.getServer().getOfflinePlayer(origin.getOwnerUUID()), amount)) {
                 if (player.getPlayer() != null) {

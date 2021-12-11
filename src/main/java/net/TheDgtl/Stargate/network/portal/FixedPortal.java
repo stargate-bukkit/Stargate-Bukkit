@@ -15,7 +15,7 @@ import java.util.UUID;
 /**
  * A portal with a fixed destination
  */
-public class FixedPortal extends Portal {
+public class FixedPortal extends AbstractPortal {
 
     private final String destinationName;
 
@@ -39,11 +39,11 @@ public class FixedPortal extends Portal {
     }
 
     @Override
-    public void drawControlMechanism() {
+    public void drawControlMechanisms() {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
         lines[2] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(this.network.concatName()) : "";
-        IPortal destination = loadDestination();
+        Portal destination = loadDestination();
         if (destination != null)
             lines[1] = super.colorDrawer.formatPortalName(loadDestination(), HighlightingStyle.DESTINATION);
         else {
@@ -51,11 +51,11 @@ public class FixedPortal extends Portal {
             lines[3] = super.colorDrawer.formatErrorLine(Stargate.languageManager.getString(
                     TranslatableMessage.DISCONNECTED), HighlightingStyle.BUNGEE);
         }
-        getGate().drawControlMechanism(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+        getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }
 
     @Override
-    public IPortal loadDestination() {
+    public Portal loadDestination() {
         return this.network.getPortal(destinationName);
     }
 

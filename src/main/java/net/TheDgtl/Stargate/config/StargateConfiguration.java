@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.config;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,25 +17,22 @@ import java.util.List;
  */
 public class StargateConfiguration extends YamlConfiguration {
 
-    static private String END_OF_COMMENT = "_endOfComment_";
-    static private String START_OF_COMMENT = "comment_";
+    static private final String END_OF_COMMENT = "_endOfComment_";
+    static private final String START_OF_COMMENT = "comment_";
 
     @Override
-    public String saveToString() {
-        try {
-            return this.convertYAMLMappingsToComments(super.saveToString());
-        } catch (InvalidConfigurationException e) {
-            return null;
-        }
+    public @NotNull String saveToString() {
+        return this.convertYAMLMappingsToComments(super.saveToString());
+
     }
 
     @Override
-    public void loadFromString(String contents) throws InvalidConfigurationException {
+    public void loadFromString(@NotNull String contents) throws InvalidConfigurationException {
         super.loadFromString(this.convertCommentsToYAMLMappings(contents));
     }
 
     @Override
-    protected String buildHeader() {
+    protected @NotNull String buildHeader() {
         return "";
     }
 
@@ -50,7 +48,7 @@ public class StargateConfiguration extends YamlConfiguration {
      * @throws IOException
      */
     public String convertCommentsToYAMLMappings(String yamlString) {
-        String newText = "";
+        StringBuilder newText = new StringBuilder();
         /*
          * A list of each stored comment (which is an list of comment lines) A comment
          * is defined as a set of lines that start with #, this set can not contain an
@@ -77,28 +75,28 @@ public class StargateConfiguration extends YamlConfiguration {
             if (!comments.isEmpty()) {
                 indent = this.countSpaces(line);
                 for (List<String> comment : comments)
-                    newText = newText + compileCommentMapping(comment, commentNameCounter++, indent);
-                newText = newText + line + "\n";
+                    newText.append(compileCommentMapping(comment, commentNameCounter++, indent));
+                newText.append(line).append("\n");
                 comments.clear();
                 counter = 0;
                 continue;
             }
-            newText = newText + line + "\n";
+            newText.append(line).append("\n");
         }
-        return newText;
+        return newText.toString();
     }
 
     private String compileCommentMapping(List<String> commentLines, int counter, int indent) {
-        String commentYamlMapping = this.repeat(" ", indent) + START_OF_COMMENT + counter + ": |\n";
+        StringBuilder commentYamlMapping = new StringBuilder(this.repeat(" ", indent) + START_OF_COMMENT + counter + ": |\n");
         commentLines.add(this.repeat(" ", indent + 2) + END_OF_COMMENT);
         for (String commentLine : commentLines) {
-            commentYamlMapping = commentYamlMapping + this.repeat(" ", indent + 2) + commentLine + "\n";
+            commentYamlMapping.append(this.repeat(" ", indent + 2)).append(commentLine).append("\n");
         }
-        return commentYamlMapping;
+        return commentYamlMapping.toString();
     }
 
-    public String convertYAMLMappingsToComments(String yamlString) throws InvalidConfigurationException {
-        String finalText = "";
+    public String convertYAMLMappingsToComments(String yamlString) {
+        StringBuilder finalText = new StringBuilder();
         boolean isSkippingComment = false;
         for (String line : yamlString.split("\n")) {
             if (isSkippingComment) {
@@ -118,19 +116,20 @@ public class StargateConfiguration extends YamlConfiguration {
                 }
                 String comment = getString(key);
                 String[] commentLines = comment.split("\n");
-                line = "";
                 /*
                  * Go through every line, except the last one, which is just going to be a
                  * END_OF_COMMENT identifier
                  */
+                StringBuilder lineBuilder = new StringBuilder();
                 for (int i = 0; i < commentLines.length - 1; i++) {
-                    line = line + "\n" + repeat(" ", indent) + "# " + commentLines[i];
+                    lineBuilder.append("\n").append(repeat(" ", indent)).append("# ").append(commentLines[i]);
                 }
+                line = lineBuilder.toString();
                 isSkippingComment = true;
             }
-            finalText = finalText + line + "\n";
+            finalText.append(line).append("\n");
         }
-        return finalText;
+        return finalText.toString();
     }
 
     /**

@@ -38,9 +38,9 @@ public class FakePortalGenerator {
      * @param numberOfPortals          <p>The number of fake portals to generate</p>
      * @return <p>A map from the portal's name to the portal's object</p>
      */
-    public Map<String, IPortal> generateFakePortals(World world, Network portalNetwork,
-                                                    boolean createInterServerPortals, int numberOfPortals) {
-        Map<String, IPortal> output = new HashMap<>();
+    public Map<String, Portal> generateFakePortals(World world, Network portalNetwork,
+                                                   boolean createInterServerPortals, int numberOfPortals) {
+        Map<String, Portal> output = new HashMap<>();
         String baseName;
         if (createInterServerPortals) {
             baseName = interPortalDefaultName;
@@ -50,7 +50,7 @@ public class FakePortalGenerator {
 
         for (int portalNumber = 0; portalNumber < numberOfPortals; portalNumber++) {
             String name = baseName + portalNumber;
-            IPortal portal = generateFakePortal(world, portalNetwork, name, createInterServerPortals);
+            Portal portal = generateFakePortal(world, portalNetwork, name, createInterServerPortals);
             output.put(portal.getName(), portal);
         }
         return output;
@@ -65,7 +65,7 @@ public class FakePortalGenerator {
      * @param createInterServerPortal <p>Whether to generate a fake inter-server portal</p>
      * @return <p>A fake portal</p>
      */
-    public IPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal) {
+    public Portal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal) {
         Set<PortalFlag> flags = generateRandomFlags();
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);

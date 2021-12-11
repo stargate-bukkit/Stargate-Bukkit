@@ -7,9 +7,9 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.FixedPortal;
 import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
-import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RandomPortal;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import org.bukkit.block.Block;
 
 import java.util.Set;
@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class PortalCreationHelper {
 
-    public static Portal createPortalFromSign(Network net, String[] lines, Block block, Set<PortalFlag> flags, UUID ownerUUID)
+    public static RealPortal createPortalFromSign(Network net, String[] lines, Block block, Set<PortalFlag> flags, UUID ownerUUID)
             throws NameErrorException, NoFormatFoundException, GateConflictException {
         if (flags.contains(PortalFlag.BUNGEE))
             return new BungeePortal(net, lines[0], lines[1], lines[2], block, flags, ownerUUID);
