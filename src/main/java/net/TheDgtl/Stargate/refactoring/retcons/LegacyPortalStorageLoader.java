@@ -57,22 +57,20 @@ public class LegacyPortalStorageLoader {
         File dir = new File(portalSaveLocation);
         System.out.println(portalSaveLocation);
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".db")) : new File[0];
-        System.out.println("ping 1");
         for (File file : files) {
             String worldName = file.getName().replaceAll("\\.db$", "");
-            System.out.println("ping 2");
             BufferedReader reader = FileHelper.getBufferedReader(file);
             String line = reader.readLine();
             while (line != null) {
-                System.out.println("ping 3");
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
-                try {
-                    portals.add(readPortal(line, server.getWorld(worldName),factory));
-                    System.out.println("ping 4");
-                } catch (NameErrorException | NoFormatFoundException | GateConflictException ignored) {
-                }
+                    try {
+                        portals.add(readPortal(line, server.getWorld(worldName),factory));
+                    } catch (NameErrorException | NoFormatFoundException | GateConflictException e) {
+                        e.printStackTrace();
+                    }
+                
                 line = reader.readLine();
             }
         }
@@ -99,10 +97,11 @@ public class LegacyPortalStorageLoader {
         } catch (NameErrorException ignored) {
         }
         Network network = factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
-
-
         String[] virtualSign = {name, destination, networkName, ""};
-        return PortalCreationHelper.createPortalFromSign(network, virtualSign, signLocation.getBlock(), flags, ownerUUID);
+        Portal portal = PortalCreationHelper.createPortalFromSign(network, virtualSign, signLocation.getBlock(), flags, ownerUUID);
+        network.addPortal(portal, true);
+
+        return portal;
     }
 
     @SuppressWarnings("deprecation")

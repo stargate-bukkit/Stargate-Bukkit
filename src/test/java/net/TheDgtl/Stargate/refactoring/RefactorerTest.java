@@ -3,7 +3,10 @@ package net.TheDgtl.Stargate.refactoring;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -117,7 +120,7 @@ public class RefactorerTest {
             }
             oldConfigFile.renameTo(configFile);
         }
-        sqlDatabaseFile.delete();
+        //sqlDatabaseFile.delete();
     }
 
     @Test
@@ -142,7 +145,6 @@ public class RefactorerTest {
 
             middas.insertNewValues(config);
             fileConfig.load(configFile);
-            logger.logMessage(Level.FINEST, String.format("\n\n New modified config from '%s': \n %s", configFile.getName() ,fileConfig.saveToString()));
         }
     }
     
@@ -162,6 +164,24 @@ public class RefactorerTest {
     
     @Test
     @Order(2)
+    public void portalPrintCheck() throws SQLException {
+        Connection conn = sqlDatabase.getConnection();
+        PreparedStatement statement = conn.prepareStatement("SELECT * FROM Portal;");
+        ResultSet set = statement.executeQuery();
+        ResultSetMetaData meta = set.getMetaData();
+        int count = 0;
+        while(set.next()) {
+            count++;
+            for(int i = 1; i <= meta.getColumnCount(); i++) {
+                System.out.print(meta.getColumnLabel(i) + ":" + set.getObject(i) + ",");
+            }
+            System.out.println();
+        }
+        Assert.assertTrue("There was no portals loaded from old database",count > 0);
+    }
+    
+    @Test
+    @Order(2)
     public void portalLoadCheck() throws FileNotFoundException, IOException, InvalidConfigurationException {
         for(String key : configTestMap.keySet()) {
             HashMap<String, String> testMap = configTestMap.get(key).portalChecker;
@@ -174,10 +194,5 @@ public class RefactorerTest {
             }
             
         }
-    }
-    
-    static void finishStatement(PreparedStatement statement) throws SQLException {
-        statement.execute();
-        statement.close();
     }
 }

@@ -191,7 +191,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         try {
             Stargate.defaultLightSignColor = loadColor(Settings.getString(Setting.DEFAULT_LIGHT_SIGN_COLOR));
             Stargate.defaultDarkColor = loadColor(Settings.getString(Setting.DEFAULT_DARK_SIGN_COLOR));
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             Stargate.log(Level.WARNING, "Invalid colors for sign texts, chosing default colors...");
             Stargate.defaultLightSignColor = ChatColor.BLACK;
             Stargate.defaultDarkColor = ChatColor.WHITE;
