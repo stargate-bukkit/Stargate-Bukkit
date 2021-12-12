@@ -173,18 +173,18 @@ signStyle:
   # [1: selected gates coloured, 2: all gates coloured, 3: no gates coloured]
   listing: 3
 
+# By default, SG allows users to specify coloured names for their gates via external plugins.
+# Such names override the colours specified for signStyle (above).
+#
+# Should SG disable this behaviour by forcing the game to display exactly what was written?
+disableCustomColoredNames: false
+
 # Will the destination a networked portal last connected to be listed first in its scroll menu?
 rememberLastDestination: false
 
 # At what speed should players be sent out of portals?
 # When exiting a gate, players retain their original movement velocity, multiplied by this value.
 gateExitSpeedMultiplier: 1
-
-# By default, SG allows users to specify coloured names for their gates via external plugins.
-# Such names override the colours specified for signStyle (above).
-#
-# Should SG disable this behaviour by forcing the game to display exactly what was written?
-disableCustomColoredNames: false
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                           Technical                                          | #
