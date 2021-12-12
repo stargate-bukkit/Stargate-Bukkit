@@ -12,7 +12,7 @@
 # +----------------------------------------------------------------------------------------------+ #
 # |                        https://spigotmc.org/resources/stargate.87978/                        | #
 # +----------------------------------------------+-----------------------------------------------+ #
-# |      Documentation: https://git.io/Jc6jZ     |       Bug Reports: https://git.io/Jc6jW       | #
+# |      Documentation: https://git.io/JDclf     |       Bug Reports: https://git.io/Jc6jW       | #
 # +----------------------------------------------+-----------------------------------------------+ #
 ####################################################################################################
 
@@ -25,7 +25,7 @@
 # Supported values: [en, de, es, fr, hu, it, nl, pt, ru, sv, zh-CN, & zh-HK]
 #
 # If SG isn't yet available in your language, please consider becoming a translator:
-# https://dev.bukkit.org/projects/stargate10/localization
+# https://crowdin.com/project/stargate-bukkit
 language: en
 
 bungee:
@@ -82,6 +82,9 @@ defaultGateNetwork: central
 #
 # Generally, this feature is used to make a group of portals in spawn known as a 'Terminal'.
 # Using this network, players can pay to connect their towns/bases/shops/etc. to the terminal.
+#
+# …««»»…  Not yet implemented!
+# “NOTE”  Terminal support is slated for 1.1.0.0!
 defaultTerminalNetwork: terminal
 
 
@@ -92,11 +95,11 @@ defaultTerminalNetwork: terminal
 # What is the maximum number of gates a single network may contain? (-1 for unlimited)
 networkLimit: -1
 
-#  Will vehicles and their passengers be able to travel through StarGate portals?
-#   [minecarts, boats, & saddled mobs = vehicles | players & mobs = passengers]
+# Will vehicles and their passengers be able to travel through StarGate portals?
+#  [minecarts, boats, & saddled mobs = vehicles | players & mobs = passengers]
 handleVehicles: true
 
-
+# If a player teleports while attached with a lead to an entity, should SG also teleport the entity?
 handleLeashedCreatures: true
 
 # Will the server re-verify all existing portals on startup?
@@ -104,16 +107,13 @@ handleLeashedCreatures: true
 # This checks that the expected gates are both present and using a valid layout.
 # Designed to catch .gate file modifications, world changes, and terrain regeneration.
 # 
-# …««»»…  If you set this to true, you should ensure checkTraversables (below) is set to false!
+# …««»»…  If you set this to true, you should ensure protectEntrance (below) is set to true!
 # “NOTE”  Otherwise, disallowed players, block updates, and snowmen can invalidate your portals!
-checkPortalValidity: false
+checkPortalValidity: true
 
-# SG protects gate 𝑓𝑟𝑎𝑚𝑒 materials; should it also protect gate 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 (open/closed) materials?
+# SG protects gate 𝑓𝑟𝑎𝑚𝑒 materials; should it also protect gate 𝑎𝑝𝑒𝑟𝑡𝑢𝑟𝑒 (open/closed) materials?
 # ex. in nether.gate, should nether_portal be protected?
-# 
-# …««»»…  This feature can be somewhat resource intensive when active!
-# “NOTE”  Only enable this if you use breakable 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 materials.
-protectEntrance: false
+protectEntrance: true
 
 # Can StarGates be broken via an explosion?
 #  [tnt, creepers, etc.]
@@ -134,7 +134,7 @@ useEconomy: false
 # If so, please provide the name of your tax account (collected money will be sent to it).
 # If not, leave this section blank (collected money will be deleted).
 # 
-# Note that usageCost money is excluded from this system when toowner is true.
+# Note that usageCost money is excluded from this system when gateOwnerRevenue is true.
 taxAccount: ""
 
 # How much will be deducted from players' accounts when creating a new gate?
@@ -148,7 +148,7 @@ destructionCost: 0
 usageCost: 0
 
 # Will fees collected for ‘usecost’ be paid to whomever created (owns) the applicable stargate?
-# If false, collected funds will be deleted.
+# If false, collected funds will be deleted (or sent to the taxAccount).
 gateOwnerRevenue: false
 
 # Will ‘createcost’ still be charged if the new gate's destination is a gate with the 'f' flag?
@@ -180,9 +180,11 @@ rememberLastDestination: false
 # When exiting a gate, players retain their original movement velocity, multiplied by this value.
 gateExitSpeedMultiplier: 1
 
-# TODO: write a description
-# Aproximate behavior
-disableCustomColoredNames: true
+# By default, SG allows users to specify coloured names for their gates via external plugins.
+# Such names override the colours specified for signStyle (above).
+#
+# Should SG disable this behaviour by forcing the game to display exactly what was written?
+disableCustomColoredNames: false
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                           Technical                                          | #
@@ -194,10 +196,6 @@ disableCustomColoredNames: true
 # When useRemoteDatabase is false, Stargate stores all of its portal data in a flatfile.
 # Where should this flatfile be stored?
 portalFile: stargate
-
-# Currently, on startup, a folder is checked for gate layouts stored as ‘.gate’ files.
-# Where can that folder be found?
-gateFolder: plugins/Stargate/gates/
 
 # |                                          [ Logging ]                                         | #
 # |__                   How much information should stargate send to console?                  __| #
@@ -217,7 +215,7 @@ gateFolder: plugins/Stargate/gates/
 #   |   - 𝐏𝐫𝐢𝐧𝐭 𝐦𝐨𝐬𝐭 𝐝𝐞𝐛𝐮𝐠 𝐢𝐧𝐟𝐨. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑚𝑒𝑠𝑠𝑎𝑔𝑒𝑠 𝑑𝑒𝑡𝑎𝑖𝑙𝑖𝑛𝑔 𝑡ℎ𝑒 𝑝𝑙𝑢𝑔𝑖𝑛'𝑠 𝑙𝑜𝑔𝑖𝑐 𝑎𝑛𝑑 𝑏𝑒ℎ𝑎𝑣𝑖𝑜𝑢𝑟.
 #   |=> FINEST (Only used by StarGate's core development team).
 #   |   - 𝐏𝐫𝐢𝐧𝐭 𝐞𝐯𝐞𝐫𝐲𝐭𝐡𝐢𝐧𝐠. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑙𝑖𝑡𝑒𝑟𝑎𝑙𝑙𝑦 𝑒𝑣𝑒𝑟𝑦𝑡ℎ𝑖𝑛𝑔, 𝑖𝑛𝑐𝑙𝑢𝑑𝑖𝑛𝑔 𝑛𝑢𝑚𝑒𝑟𝑜𝑢𝑠 𝑠𝑡𝑎𝑐𝑘 𝑡𝑟𝑎𝑐𝑒𝑠.
-loggingLevel: FINEST
+loggingLevel: INFO
 
 # |                                           [ Debug ]                                          | #
 # |__     These settings are provided to help developers diagnose issues with this plugin.     __| #
