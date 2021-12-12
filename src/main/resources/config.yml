@@ -194,7 +194,7 @@ gateExitSpeedMultiplier: 1
 # |__      These settings are provided to improve SG 10's interactions with other plugins.     __| #
 
 # When useRemoteDatabase is false, Stargate stores all of its portal data in a flatfile.
-# Where should this flatfile be stored?
+# Where should this flatfile be named?
 portalFile: stargate
 
 # |                                          [ Logging ]                                         | #
