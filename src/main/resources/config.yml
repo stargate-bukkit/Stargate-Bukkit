@@ -151,7 +151,7 @@ usageCost: 0
 # If false, collected funds will be deleted (or sent to the taxAccount).
 gateOwnerRevenue: false
 
-# Will ‘createcost’ still be charged if the new gate's destination is a gate with the 'f' flag?
+# Will ‘creationCost’ still be charged if the new gate's destination is a gate with the 'f' flag?
 # Note that this only applies to fixed gates.
 chargeFreeDestination: true
 
