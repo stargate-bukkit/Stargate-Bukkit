@@ -18,17 +18,17 @@ public enum TranslatableMessage {
     /**
      * The message to display when a player is being teleported
      */
-    TELEPORT("teleportMsg"),
+    TELEPORT("tpSuccess"),
 
     /**
      * The message to display when a stargate has been destroyed
      */
-    DESTROY("destroyMsg"),
+    DESTROY("gateDestroy"),
 
     /**
      * The message to display when a networked portal does not have any destinations
      */
-    DESTINATION_EMPTY("destEmpty"),
+    DESTINATION_EMPTY("tpEmptyNet"),
 
     /**
      * The message to display if a stargate doesn't have a valid destination
@@ -36,17 +36,17 @@ public enum TranslatableMessage {
      * <p>This is triggered when a stargate's button is clicked and it's missing a valid destination. It's also
      * triggered when trying to teleport if the destination is missing.</p>
      */
-    INVALID("invalidMsg"),
+    INVALID("tpDestiInvalid"),
 
     /**
      * The message to be displayed when a player is missing the required permissions to teleport to a destination
      */
-    DENY("denyMsg"),
+    DENY("conflictPerms"),
 
     /**
      * The message to be displayed if a player is missing the sufficient funds to perform an action
      */
-    LACKING_FUNDS("ecoInFunds"),
+    LACKING_FUNDS("ecoInsolvent"),
 
 
     /**
@@ -62,51 +62,52 @@ public enum TranslatableMessage {
     /**
      * The message to be displayed when a stargate has been successfully created
      */
-    CREATE("createMsg"),
+    CREATE("gateCreatePersonal"),
+//TODO: This is if it is a personal network, otherwise it is gateCreateSpecified
 
     /**
      * The message to display when a player is lacking the permission to access a network
      */
-    NET_DENY("createNetDeny"),
+    NET_DENY("faultNetwork"),
 
     /**
      * The message to display when a player is lacking permission to create a gateDesign
      */
-    GATE_DENY("createGateDeny"),
+    GATE_DENY("faultLayout"),
 
     /**
      * The message to display when a player does not have access to a world
      */
-    WORLD_DENY("createWorldDeny"),
+    WORLD_DENY("faultWorldDeny"),
     /**
      * The message to display when a portal or network name exceeds the max length
      */
-    INVALID_NAME("createNameLength"),
+    INVALID_NAME("faultLength"),
 
     /**
      * The message to display when a new stargate's name is already in use
      */
-    ALREADY_EXIST("createExists"),
+    ALREADY_EXIST("faultExists"),
 
     /**
      * The message to display when a network is already full
      */
-    NET_FULL("createFull"),
+    NET_FULL("faultFull"),
 
     /**
      * The message to display if a new stargate conflicts with an existing one
      */
-    GATE_CONFLICT("createConflict"),
+    GATE_CONFLICT("faultConflict"),
 
     /**
      * The first line of the right-click prompt to display on signs
      */
-    RIGHT_CLICK("signRightClick"),
+    RIGHT_CLICK("signNonFixedL2"),
 
     /**
      * The second line of the right-click prompt to display on signs
      */
-    TO_USE("signToUse"),
+    TO_USE("signNonFixedL3"),
 
     /**
      * The sign text to use for marking a stargate as random
@@ -121,17 +122,40 @@ public enum TranslatableMessage {
     /**
      * The message to display when a BungeeCord portal if missing a destination or a network
      */
-    BUNGEE_EMPTY("bungeeEmpty"),
+    BUNGEE_EMPTY("bungeeInvalidExitNetwork"),
+//TODO: for networks only; otherwise, it is bungeeInvalidExitGate
 
     /**
      * The message to display when a player is lacking permissions to create a bungee or interserver network
      */
-    BUNGEE_DENY("bungeeDeny"),
+    BUNGEE_DENY("bungeePerms"),
 
     /**
      * The message to display when a player tries to interact / create / enter a bungee or interserver gate.
      */
     BUNGEE_DISABLED("bungeeDisabled");
+//TODO: bungeeLocal distinction
+
+/**
+signLegacyBungee
+signTerminalL2
+gateCreateSpecified
+gateTerminalSold
+gateTerminalSale
+faultFlag
+bungeeLocal
+bungeeLegacySyntax
+bungeeInvalidExitNetwork
+bungeeInvalidExitGate
+bungeeProxyOffline
+bungeeTargetOffline
+tpDestiBlocked
+conflictSpawn
+ecoRefund
+adminReload
+adminInfo
+adminHelp
+*/
 
     private final String key;
     private static final HashMap<String, TranslatableMessage> map = new HashMap<>();
