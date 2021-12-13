@@ -252,11 +252,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public String getAllFlagsString() {
-        StringBuilder out = new StringBuilder();
-        for (PortalFlag flag : flags) {
-            out.append(flag.getCharacterRepresentation());
-        }
-        return out.toString();
+        return Portal.flagsToString(flags);
     }
 
     @Override

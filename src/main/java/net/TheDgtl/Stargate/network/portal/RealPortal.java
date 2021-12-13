@@ -19,13 +19,6 @@ public interface RealPortal extends Portal {
     void drawControlMechanisms();
 
     /**
-     * Gets the currently selected destination portal
-     *
-     * @return <p>The currently selected destination portal</p>
-     */
-    Portal loadDestination();
-
-    /**
      * Updates the color of this portal's sign
      *
      * <p>Replacement function for {@link Sign#setColor(org.bukkit.DyeColor)}, as the portal sign is an interface that

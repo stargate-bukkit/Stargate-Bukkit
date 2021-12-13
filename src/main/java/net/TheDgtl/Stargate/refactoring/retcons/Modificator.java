@@ -18,10 +18,11 @@ public abstract class Modificator {
      * @param oldConfig
      * @return a new configuration
      */
-    public Map<String, Object> run(Map<String, Object> oldConfig) {
-
+    public Map<String, Object> getConfigModifications(Map<String, Object> oldConfig) {
         return configScroller(oldConfig);
     }
+    
+    public abstract void run();
 
     public abstract int getConfigNumber();
 

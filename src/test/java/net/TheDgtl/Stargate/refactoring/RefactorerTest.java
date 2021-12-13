@@ -10,7 +10,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -120,7 +119,7 @@ public class RefactorerTest {
             }
             oldConfigFile.renameTo(configFile);
         }
-        //sqlDatabaseFile.delete();
+        sqlDatabaseFile.delete();
     }
 
     @Test
@@ -133,7 +132,7 @@ public class RefactorerTest {
             Refactorer middas = new Refactorer(configFile, logger, server, factory);
             configFile.renameTo(oldConfigFile);
             
-            Map<String, Object> config = middas.run();
+            Map<String, Object> config = middas.getConfigModificatinos();
             Files.copy(defaultConfigFile, configFile);
             FileConfiguration fileConfig = new StargateConfiguration();
             fileConfig.load(configFile);
@@ -177,6 +176,7 @@ public class RefactorerTest {
             }
             System.out.println();
         }
+        conn.close();
         Assert.assertTrue("There was no portals loaded from old database",count > 0);
     }
     

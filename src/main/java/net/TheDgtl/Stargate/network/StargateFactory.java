@@ -57,7 +57,7 @@ public class StargateFactory {
                 Settings.getBoolean(Setting.USING_REMOTE_DATABASE),stargate);
     }
     
-    public StargateFactory(Database database, boolean usingBungee, boolean usingRemoteDatabase,StargateLogger logger) throws SQLException {
+    public StargateFactory(Database database, boolean usingBungee, boolean usingRemoteDatabase, StargateLogger logger) throws SQLException {
         this.logger = logger;
         this.database = database;
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
@@ -67,7 +67,9 @@ public class StargateFactory {
         DriverEnum databaseEnum = usingRemoteDatabase ? DriverEnum.MYSQL : DriverEnum.SQLITE;
         this.sqlMaker = new SQLQueryGenerator(config, logger, databaseEnum);
         createTables();
-
+    }
+    
+    public void loadFromDatabase() throws SQLException {
         logger.logMessage(Level.FINER, "Loading portals from base database");
         loadAllPortals(database, PortalType.LOCAL);
         if (useInterServerNetworks) {
@@ -222,10 +224,6 @@ public class StargateFactory {
             }
             Network net = getNetwork(targetNet, isBungee);
 
-            for (Portal logPortal : net.getAllPortals()) {
-                logger.logMessage(Level.FINEST, logPortal.getName());
-            }
-
             if (tablePortalType == PortalType.INTER_SERVER) {
                 String serverUUID = set.getString("homeServerId");
                 logger.logMessage(Level.FINEST, "serverUUID = " + serverUUID);
@@ -244,7 +242,9 @@ public class StargateFactory {
             }
             Block block = world.getBlockAt(x, y, z);
             String[] virtualSign = {name, destination, netName};
-
+            
+            if(destination == null || destination.trim().isEmpty())
+                flags.add(PortalFlag.NETWORKED);
 
             try {
                 Portal portal = PortalCreationHelper.createPortalFromSign(net, virtualSign, block, flags, ownerUUID);

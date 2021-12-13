@@ -31,9 +31,9 @@ public class Refactorer {
     private FileConfiguration fileConfig;
     private final Modificator[] RETCONS;
 
-    public Refactorer(File configFile, StargateLogger logger, Server server, StargateFactory factory) throws FileNotFoundException, IOException, InvalidConfigurationException {
+    public Refactorer(File configFile, StargateLogger logger, Server server,StargateFactory factory) throws FileNotFoundException, IOException, InvalidConfigurationException {
         RETCONS = new Modificator[]{
-                new RetCon1_0_0(server, factory, logger)
+                new RetCon1_0_0(server, logger,factory)
         };
 
         FileConfiguration fileConfig = new StargateConfiguration();
@@ -48,15 +48,24 @@ public class Refactorer {
     /**
      * @return every configuration mapping that could be transfered over to this version
      */
-    public Map<String, Object> run() {
+    public Map<String, Object> getConfigModificatinos() {
         for (Modificator retCon : RETCONS) {
             int retConConfigNumber = retCon.getConfigNumber();
             if (retConConfigNumber >= configVersion) {
-                config = retCon.run(config);
-                configVersion = retConConfigNumber;
+                config = retCon.getConfigModifications(config);
             }
         }
         return config;
+    }
+    
+    public void run() {
+        for(Modificator retCon : RETCONS) {
+            int retConConfigNumber = retCon.getConfigNumber();
+            if (retConConfigNumber >= configVersion) {
+                retCon.run();
+                configVersion = retConConfigNumber;
+            }
+        }
     }
 
     public void insertNewValues(Map<String, Object> config) throws IOException, InvalidConfigurationException {

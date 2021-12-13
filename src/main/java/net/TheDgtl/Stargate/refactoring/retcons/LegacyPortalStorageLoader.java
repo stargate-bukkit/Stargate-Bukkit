@@ -8,6 +8,7 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
+import net.TheDgtl.Stargate.network.portal.PlaceholderPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -86,6 +87,7 @@ public class LegacyPortalStorageLoader {
                 Double.parseDouble(coordinates[0]),
                 Double.parseDouble(coordinates[1]),
                 Double.parseDouble(coordinates[2]));
+        String gateFormatName = splitLine[7];
         String destination = (splitLine.length > 8) ? splitLine[8] : "";
         String networkName = (splitLine.length > 9) ? splitLine[9] : Settings.getString(Setting.DEFAULT_NET);
         String ownerString = (splitLine.length > 10) ? splitLine[10] : "";
@@ -97,8 +99,7 @@ public class LegacyPortalStorageLoader {
         } catch (NameErrorException ignored) {
         }
         Network network = factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
-        String[] virtualSign = {name, destination, networkName, ""};
-        Portal portal = PortalCreationHelper.createPortalFromSign(network, virtualSign, signLocation.getBlock(), flags, ownerUUID);
+        Portal portal = new PlaceholderPortal(name,network,destination,flags,signLocation,gateFormatName,ownerUUID);
         network.addPortal(portal, true);
 
         return portal;

@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,8 @@ import org.bukkit.Server;
 
 import jdk.jfr.internal.Logger;
 import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.database.Database;
+import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -111,29 +114,24 @@ public class RetCon1_0_0 extends Modificator {
     }
 
     private Server server;
-    private StargateFactory factory;
     private StargateLogger logger;
+    private StargateFactory factory;
+    private Map<String, Object> oldConfig;
 
-    public RetCon1_0_0(Server server, StargateFactory factory, StargateLogger logger) {
+    public RetCon1_0_0(Server server, StargateLogger logger,StargateFactory factory) {
         this.server = server;
-        this.factory = factory;
         this.logger = logger;
+        this.factory = factory;
     }
     
+    /**
+     * @param oldConfig
+     * @return a new configuration
+     */
     @Override
-    public Map<String, Object> run(Map<String, Object> oldConfig) {
-        try {
-            String[] possiblePortalFolders = {
-                    "portal-folder",
-                    "folders.portalFolder"};
-            for (String portalFolder : possiblePortalFolders) {
-                if (oldConfig.get(portalFolder) != null) {
-                    LegacyPortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder),server,factory);
-                    break;
-                }
-            }
-        } catch (IOException ignored) {
-        }
+    public Map<String, Object> getConfigModifications(Map<String, Object> oldConfig) {
+        Map<String, Object> newConfig = super.getConfigModifications(oldConfig);
+        this.oldConfig = oldConfig;
 
         Level logLevel = Level.INFO;
         if ((oldConfig.get("permdebug") != null && (boolean) oldConfig.get("permdebug"))
@@ -142,9 +140,23 @@ public class RetCon1_0_0 extends Modificator {
         if ((oldConfig.get("debug") != null && (boolean) oldConfig.get("debug"))
                 || (oldConfig.get("debugging.debug") != null && (boolean) oldConfig.get("debugging.debug")))
             logLevel = Level.FINE;
-        Map<String, Object> newConfig = super.run(oldConfig);
         newConfig.put("loggingLevel", logLevel.toString());
         return newConfig;
+    }
+    
+    @Override
+    public void run() {
+        try {
+            String[] possiblePortalFoldersSetting = { "portal-folder", "folders.portalFolder" };
+            for (String portalFolder : possiblePortalFoldersSetting) {
+                if (oldConfig.get(portalFolder) != null) {
+                    LegacyPortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder),server,factory);
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

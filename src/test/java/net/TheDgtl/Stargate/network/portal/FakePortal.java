@@ -112,4 +112,10 @@ public class FakePortal implements Portal {
     public void update() {
     }
 
+    @Override
+    public Portal loadDestination() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

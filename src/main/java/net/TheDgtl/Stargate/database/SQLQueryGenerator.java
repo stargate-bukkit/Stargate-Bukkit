@@ -254,11 +254,9 @@ public class SQLQueryGenerator {
         statement.setString(1, portal.getNetwork().getName());
         statement.setString(2, portal.getName());
         String destinationString = null;
-        if (portal instanceof RealPortal) {
-            Portal destination = ((RealPortal) portal).loadDestination();
-            if (destination != null) {
-                destinationString = destination.getName();
-            }
+        Portal destination = portal.loadDestination();
+        if (destination != null) {
+            destinationString = destination.getName();
         }
         statement.setString(3, destinationString);
         Location signLocation = portal.getSignLocation();

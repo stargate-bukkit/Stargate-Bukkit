@@ -169,4 +169,9 @@ public class VirtualPortal implements Portal {
     public void update() {
     }
 
+    @Override
+    public Portal loadDestination() {
+        return null;
+    }
+
 }

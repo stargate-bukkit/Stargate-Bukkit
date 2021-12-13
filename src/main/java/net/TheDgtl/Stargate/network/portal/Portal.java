@@ -9,8 +9,10 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -143,6 +145,13 @@ public interface Portal {
     void update();
 
     /**
+     * Gets the currently selected destination portal
+     *
+     * @return <p>The currently selected destination portal</p>
+     */
+    Portal loadDestination();
+
+    /**
      * Gets a string representation of the given portal
      *
      * <p>Convert a portal into a string, would look like this: Classname{key1=data1,key2=data2 ... }</p>
@@ -169,6 +178,14 @@ public interface Portal {
                 endMsg.append(",");
         }
         return endMsg + "}";
+    }
+    
+    public static String flagsToString(Set<PortalFlag> flags) {
+        StringBuilder out = new StringBuilder();
+        for (PortalFlag flag : flags) {
+            out.append(flag.getCharacterRepresentation());
+        }
+        return out.toString();
     }
 
 }

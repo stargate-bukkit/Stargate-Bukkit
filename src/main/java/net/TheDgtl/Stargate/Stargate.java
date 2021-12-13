@@ -20,6 +20,8 @@ package net.TheDgtl.Stargate;
 import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
+import net.TheDgtl.Stargate.database.Database;
+import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.listeners.BlockEventListener;
 import net.TheDgtl.Stargate.listeners.MoveEventListener;
@@ -118,30 +120,37 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     public void onEnable() {
         instance = this;
         loadColors();
-
+        
+        if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
+            try {
+                this.refactor();
+            } catch (IOException | InvalidConfigurationException | SQLException e) {
+                e.printStackTrace();
+            }
+        }
         if (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
             loadBungeeServerName();
         }
         economyManager = new EconomyManager();
-        lowestMsgLevel = Level.parse(Settings.getString(Setting.DEBUG_LEVEL));
+        String debugLevelStr = Settings.getString(Setting.DEBUG_LEVEL);
+        if(debugLevelStr == null)
+            lowestMsgLevel = Level.INFO;
+        else
+            lowestMsgLevel = Level.parse(debugLevelStr);
         languageManager = new LanguageManager(this, DATA_FOLDER + "/" + LANGUAGE_FOLDER, Settings.getString(Setting.LANGUAGE));
         saveDefaultGates();
 
         GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATA_FOLDER + "/" + GATE_FOLDER);
+        
+        
         try {
             factory = new StargateFactory(this);
+            factory.loadFromDatabase();
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         
-        if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
-            try {
-                this.refactor();
-            } catch (IOException | InvalidConfigurationException e) {
-                e.printStackTrace();
-            }
-        }
         pm = getServer().getPluginManager();
         registerListeners();
         BukkitScheduler scheduler = getServer().getScheduler();
@@ -228,13 +237,17 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
     }
 
-    private void refactor() throws FileNotFoundException, IOException, InvalidConfigurationException {
-        Refactorer middas = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(),
-                this.factory);
-        Map<String, Object> newConfig = middas.run();
+    private void refactor() throws FileNotFoundException, IOException, InvalidConfigurationException, SQLException {
+        File file = new File(this.getDataFolder(),"stargate.db");
+        Database database = new SQLiteDatabase(file);
+        StargateFactory factory = new StargateFactory(database,false,false,this);
+        
+        Refactorer middas = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(),factory);
+        Map<String, Object> newConfig = middas.getConfigModificatinos();
         this.saveResource("config.yml", true);
         middas.insertNewValues(newConfig);
         this.reloadConfig();
+        middas.run();
     }
 
     @Override
@@ -301,7 +314,11 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     public static void log(Level priorityLevel, String msg) {
-        instance.logMessage(priorityLevel, msg);
+        if(instance != null) {
+            instance.logMessage(priorityLevel, msg);
+            return;
+        }
+        System.out.println(msg);
     }
 
     /**
