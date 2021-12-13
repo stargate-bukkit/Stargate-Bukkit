@@ -1,7 +1,7 @@
 > **Documentation:** [Link](https://github.com/stargate-bukkit/Stargate-Bukkit/wiki)<br>
 > **Support Discord** [Link](https://discord.gg/mTaHuK6BVa)
 
-![Stargate Banner](https://imgur.com/7Ji4jrr)
+![Stargate Banner](https://i.imgur.com/7Ji4jrr.png)
 
 Stargate-Bukkit is the original MineCraft portal plugin; it existed for as long as MineCraft server modding has been feasible!
 
