@@ -202,18 +202,22 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         if (player == null) {
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
             Stargate.addToQueue(playerName, portalName, networkName, true);
-        } else {
-            try {
-                Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
-                Network network = Stargate.factory.getNetwork(networkName, true);
-
-                Portal destinationPortal = network.getPortal(portalName);
-                destinationPortal.teleportHere(player, null);
-            } catch (NullPointerException e) {
-                //TODO messaging: this message is misleading
-                player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_EMPTY));
-            }
+            return;
         }
+
+        Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
+        Network network = Stargate.factory.getNetwork(networkName, true);
+        if(network == null) {
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_NETWORK));
+            return;
+        }
+        Portal destinationPortal = network.getPortal(portalName);
+        if(destinationPortal == null) {
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_GATE));
+            return;
+        }
+        destinationPortal.teleportHere(player, null);
+
     }
 
 }

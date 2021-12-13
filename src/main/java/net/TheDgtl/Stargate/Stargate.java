@@ -37,6 +37,8 @@ import net.TheDgtl.Stargate.util.FileHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
@@ -370,6 +372,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
         instance.bungeeQueue.put(playerName, portal);
     }
+    
+    
 
     public static Portal pullFromQueue(String playerName) {
         return instance.bungeeQueue.remove(playerName);

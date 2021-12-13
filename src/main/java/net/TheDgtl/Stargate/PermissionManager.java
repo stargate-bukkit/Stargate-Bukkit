@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -59,17 +60,18 @@ public class PermissionManager {
      * @param flags <p>The flags to check if the entity can use</p>
      * @return <p>The flags usable by the entity</p>
      */
-    public Set<PortalFlag> returnAllowedFlags(Set<PortalFlag> flags) {
+    public Set<PortalFlag> returnDissallowedFlags(Set<PortalFlag> flags) {
+        Set<PortalFlag> dissallowed = EnumSet.noneOf(PortalFlag.class);
         for (PortalFlag flag : flags) {
             if (flag == PortalFlag.PERSONAL_NETWORK || flag == PortalFlag.IRON_DOOR || flag == PortalFlag.FIXED || flag == PortalFlag.NETWORKED) {
                 continue;
             }
 
             if (!target.hasPermission((FLAG_PERMISSION + flag.getCharacterRepresentation()).toLowerCase())) {
-                flags.remove(flag);
+                dissallowed.add(flag);
             }
         }
-        return flags;
+        return dissallowed;
     }
 
     /**

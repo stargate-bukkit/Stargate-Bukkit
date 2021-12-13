@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
@@ -24,6 +25,7 @@ public class BungeePortal extends AbstractPortal {
     private final Network cheatNetwork;
     private final LegacyVirtualPortal targetPortal;
     private final String serverDestination;
+    private String bungeeString;
 
     static {
         try {
@@ -52,6 +54,12 @@ public class BungeePortal extends AbstractPortal {
             GateConflictException {
         super(network, name, signBlock, flags, ownerUUID);
 
+        
+        if(destination == null || destination.trim().isEmpty() || destinationServer == null || destinationServer.trim().isEmpty()) {
+            throw new NameErrorException(TranslatableMessage.BUNGEE_LACKING_SIGN_INFORMATION);
+        }
+        
+        
         /*
          * Create a virtual portal that handles everything related
          * to moving the player to a different server. This is set
@@ -68,6 +76,7 @@ public class BungeePortal extends AbstractPortal {
          * target server is stored as a replacement to network.
          */
         cheatNetwork = new Network(destinationServer, null, null);
+        bungeeString = Stargate.languageManager.getString(TranslatableMessage.BUNGEE_SIGN_LINE_4);
     }
 
     @Override
@@ -77,8 +86,8 @@ public class BungeePortal extends AbstractPortal {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
         lines[1] = super.colorDrawer.formatPortalName(loadDestination(), HighlightingStyle.DESTINATION);
-        lines[2] = super.colorDrawer.formatLine(serverDestination);
-        lines[3] = "";
+        lines[2] = super.colorDrawer.formatLine(HighlightingStyle.BUNGEE.getHighlightedName(serverDestination));
+        lines[3] = super.colorDrawer.formatLine(bungeeString);
         getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }
 

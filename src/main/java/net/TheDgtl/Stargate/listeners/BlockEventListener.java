@@ -18,6 +18,8 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
+import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -35,6 +37,7 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.util.Vector;
 
 import java.util.Set;
 import java.util.function.Supplier;
@@ -167,7 +170,23 @@ public class BlockEventListener implements Listener {
             flags.add(PortalFlag.NETWORKED);
         }
 
-        flags = permissionManager.returnAllowedFlags(flags);
+        Set<PortalFlag> dissallowedFlags = permissionManager.returnDissallowedFlags(flags);
+
+        if (dissallowedFlags.size() > 0) {
+            String unformatedMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FLAGS_PERM);
+            player.sendMessage(TranslatableMessageFormatter.compileFlags(unformatedMessage,dissallowedFlags));
+        }
+        flags.removeAll(dissallowedFlags);
+        if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
+                && !Settings.getBoolean(Setting.USING_BUNGEE)) {
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
+            return;
+        }
+        if (flags.contains(PortalFlag.FANCY_INTER_SERVER) && !Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INTERSERVER_DISABLED));
+            return;
+        }
+        
         String finalNetworkName;
         Network selectedNetwork = null;
         try {
@@ -236,10 +255,27 @@ public class BlockEventListener implements Listener {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return;
         }
+        
+        if(isInSpawn(signLocation.getLocation())) {
+            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.SPAWNCHUNKS_CONFLICTING));
+        }
+        
         selectedNetwork.addPortal(portal, true);
         selectedNetwork.updatePortals();
         Stargate.log(Level.FINE, "A Gate format matches");
-        player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE));
+        if(flags.contains(PortalFlag.PERSONAL_NETWORK)) 
+            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE_PERSONAL));
+        else {
+            String unformatedMessage = Stargate.languageManager.getMessage(TranslatableMessage.CREATE);
+            player.sendMessage(TranslatableMessageFormatter.compileNetwork(unformatedMessage,selectedNetwork.getName()));
+        }
+    }
+    
+    private boolean isInSpawn(Location loc) {
+        Location spawnpoint = loc.getWorld().getSpawnLocation();
+        Vector vec = loc.subtract(spawnpoint).toVector();
+        int spawnProtWidth =  Bukkit.getServer().getSpawnRadius();
+        return (Math.abs(vec.getBlockX()) < spawnProtWidth && Math.abs(vec.getBlockZ()) < spawnProtWidth);
     }
 
     /**

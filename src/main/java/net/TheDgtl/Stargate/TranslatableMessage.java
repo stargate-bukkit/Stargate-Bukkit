@@ -62,9 +62,12 @@ public enum TranslatableMessage {
     /**
      * The message to be displayed when a stargate has been successfully created
      */
-    CREATE("gateCreatePersonal"),
-//TODO: This is if it is a personal network, otherwise it is gateCreateSpecified
-
+    CREATE("gateCreateSpecified"),
+    
+    /**
+     * The message to be display when a a portal has successfully been created on a personal network
+     */
+    CREATE_PERSONAL("gateCreatePersonal"),
     /**
      * The message to display when a player is lacking the permission to access a network
      */
@@ -120,38 +123,48 @@ public enum TranslatableMessage {
     DISCONNECTED("signDisconnected"),
 
     /**
-     * The message to display when a BungeeCord portal if missing a destination or a network
-     */
-    BUNGEE_EMPTY("bungeeInvalidExitNetwork"),
-//TODO: for networks only; otherwise, it is bungeeInvalidExitGate
-
-    /**
      * The message to display when a player is lacking permissions to create a bungee or interserver network
      */
     BUNGEE_DENY("bungeePerms"),
 
+    BUNGEE_INVALID_NETWORK("bungeeInvalidExitNetwork"),
+    
+    BUNGEE_INVALID_GATE("bungeeInvalidExitGate"),
+    
     /**
      * The message to display when a player tries to interact / create / enter a bungee or interserver gate.
      */
-    BUNGEE_DISABLED("bungeeDisabled");
-//TODO: bungeeLocal distinction
+    BUNGEE_DISABLED("bungeeDisabled"),
+    
+    /**
+     * The message to display when a Fancy_Interserver type portal is created, but server is on a local database
+     */
+    INTERSERVER_DISABLED("bungeeLocal"), 
+    
+    /**
+     * The last line on a sign for legacy bungee portals
+     */
+    BUNGEE_SIGN_LINE_4("signLegacyBungee"),
+    
+    /**
+     * The message to display
+     */
+    LACKING_FLAGS_PERM("faultFlag"),
+    
+    
+    BUNGEE_LACKING_SIGN_INFORMATION("bungeeLegacySyntax"),
+    
+    SPAWNCHUNKS_CONFLICTING("conflictSpawn");
+    
+    
 
 /**
-signLegacyBungee
 signTerminalL2
-gateCreateSpecified
 gateTerminalSold
 gateTerminalSale
-faultFlag
-bungeeLocal
-bungeeLegacySyntax
-bungeeInvalidExitNetwork
-bungeeInvalidExitGate
 bungeeProxyOffline
 bungeeTargetOffline
 tpDestiBlocked
-conflictSpawn
-ecoRefund
 adminReload
 adminInfo
 adminHelp
