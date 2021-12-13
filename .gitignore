@@ -1,0 +1,7 @@
+target/
+.idea/
+/bin/
+*.prefs
+.classpath
+.project
+test.db

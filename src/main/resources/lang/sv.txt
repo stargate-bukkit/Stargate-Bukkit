@@ -1,0 +1,33 @@
+author=Thorinwasher
+prefix=[Stargate] 
+teleportMsg=Teleportade
+destroyMsg=Port Förstörd
+invalidMsg=Invalid Destination
+blockMsg=Destination Blockerad
+destEmpty=Destinationslista Är Tom
+denyMsg=Du Saknar Tillstånd
+
+ecoDeduct=Drog Bort %cost%
+ecoRefund=La Till %cost%
+ecoObtain=Du Fick %cost% Från Stargate %portal%
+ecoInFunds=Du Är Pank
+
+createMsg=Port Skapad
+createNetDeny=Du Har Inte Tillgång Till Det Här Nätverket
+createGateDeny=Du Har Inte Tillgång Till Den Där Port Typen
+createPersonal=Skapar Port På Personligt Nätverk
+createNameLength=För Kort Eller Långt Namn.
+createExists=En Port Med Det Namnet Finns Redan
+createFull=Nätvärket Är Fullt
+createWorldDeny=Du Har Inte Tillgång Till Den Där Världen
+createConflict=Port Är I Konflict Med Existerande Port
+
+signRightClick=Högerklicka
+signToUse=För Att Använda
+signRandom=Random
+signDisconnected=Bortkopplad
+
+bungeeDisabled=Stöd För BungeeCord Saknas
+bungeeDeny=Du Saknar Tillstånd Att Skapa BungeeCoord-Portar.
+bungeeEmpty=BungeeCord-Portar Behöver Destination Och Nätverk.
+bungeeSign=Teleportera till

@@ -1,0 +1,76 @@
+# stargate Configuration File
+# Main stargate config
+# I----------I----------I #
+# portalFolder -  The folder for storing portals
+# gateFolder - The folder for storing gate layouts
+# defaultGateNetwork - The default gate network
+# destroyedByExplosion - Whether to destroy gates with explosions (Creeper, TNT, etc.)
+# maxGatesEachNetwork - The maximum number of gates allowed on a network - 0 for unlimited
+# language - The language file to load for messages
+# rememberDestination - Whether to remember the cursor location between uses
+# handleVehicles - Whether to allow vehicles through gates. This overrides other vehicle settings
+# handleEmptyVehicles - Whether to allow empty vehicles through gates (chest/hopper/tnt/furnace minecarts included)
+# handleCreatureTransportation - Whether to allow players to transport creatures by sending vehicles (minecarts, boats) through gates
+# handleNonPlayerVehicles - Whether to allow vehicles with a passenger which is not a player through gates. handleCreatureTransportation must be enabled
+# handleLeashedCreatures - Whether to allow creatures lead by a player to teleport with the player
+# sortNetworkDestinations - Whether to sort network lists alphabetically
+# protectEntrance - Whether to protect gate entrance material (More resource intensive. Only enable if using destroyable open/closed material)
+# mainSignColor - The color used for drawing signs (Default: BLACK).
+# highlightSignColor - The color used for sign markings (Default: WHITE)
+# verifyPortals - Whether all the non-sign blocks are checked to match the gate layout when a stargate is loaded.
+# adminUpdateAlert - Whether to alert admins about new plugin updates
+# I------------I-------------I #
+# stargate economy options #
+# I------------I-------------I #
+# useEconomy - Whether to use an economy plugin
+# createCost - The cost to create a gate
+# destroyCost - The cost to destroy a gate
+# useCost - The cost to use a gate
+# toOwner - Whether the charge for using a gate goes to the gate's owner
+# chargeFreeDestination - Whether a gate whose destination is a free gate is still charged
+# freeGatesColored - Whether a free gate in the destination list is marked with a color
+# freeGatesColor - The color to use for marking free gates
+# I-------I-------I #
+# Debug options #
+# I-------I-------I #
+# debug - Debug -- Only enable if you have issues, massive console output
+# permissionDebug - This will output any and all Permissions checks to console, used for permissions debugging (Requires debug: true)
+
+adminUpdateAlert: true
+usevault: false
+gates:
+  functionality:
+    handleEmptyVehicles: true
+    handleCreatureTransportation: true
+    handleNonPlayerVehicles: true
+    handleLeashedCreatures: true
+    handleVehicles: false
+    enableBungee: false
+  cosmetic:
+    mainSignColor: BLACK
+    highlightSignColor: WHITE
+    rememberDestination: false
+    sortNetworkDestinations: false
+    signColor: BLACK
+  integrity:
+    verifyPortals: false
+    protectEntrance: false
+    destroyedByExplosion: false
+  maxGatesEachNetwork: 0
+  defaultGateNetwork: knarvik
+economy:
+  useEconomy: false
+  freeGatesColor: DARK_GREEN
+  toOwner: false
+  destroyCost: 0
+  freeGatesColored: false
+  useCost: 0
+  chargeFreeDestination: true
+  createCost: 0
+language: en
+debugging:
+  permissionDebug: false
+  debug: false
+folders:
+  portalFolder: src/test/resources/oldsaves/epicknarvik/
+  gateFolder: plugins/Stargate/gates/
