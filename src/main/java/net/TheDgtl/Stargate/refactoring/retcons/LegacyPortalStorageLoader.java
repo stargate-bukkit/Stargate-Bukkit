@@ -93,7 +93,8 @@ public class LegacyPortalStorageLoader {
         String ownerString = (splitLine.length > 10) ? splitLine[10] : "";
         UUID ownerUUID = getPlayerUUID(ownerString);
         EnumSet<PortalFlag> flags = parseFlags(splitLine);
-
+        if(destination == null || destination.trim().isEmpty())
+            flags.add(PortalFlag.NETWORKED);
         try {
             factory.createNetwork(networkName, flags);
         } catch (NameErrorException ignored) {
