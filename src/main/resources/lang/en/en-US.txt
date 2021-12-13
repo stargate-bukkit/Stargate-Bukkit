@@ -2,7 +2,7 @@
 prefix=[Stargate] 
 
 # Sign Formatting
-signLegacyBungee=Legacy Bungee
+signLegacyBungee=LEGACY BUNGEE
 signNonFixedL2=Right click
 signNonFixedL3=to use gate
 signRandom=Random
@@ -22,25 +22,25 @@ faultLayout=You do not have access to that gate layout\!
 faultLength=Name too short or too long\!
 faultExists=A gate by that name already exists\!
 faultFull=There is no space on that network\!
-faultWorldDeny=You do not have access to world %world%!
+faultWorldDeny=You do not have access to world %world%\!
 faultConflict=This gate conflicts with an existing gate.
-faultFlag=You lack permission to use the %flags% flags; your portal has been created without them!
+faultFlag=You lack permission to use the %flags% flags; your portal has been created without them\!
 
 # Bungee Problems
-bungeePerms=You do not have permission to make bungee gates!
+bungeePerms=You do not have permission to make bungee gates\!
 bungeeDisabled=Bungeecord support is not enabled.
 bungeeLocal=Modern bungee gates are not enabled.
 bungeeLegacySyntax=Legacy bungee gates require you to specify a destination gate and server.
-bungeeInvalidExitNetwork=This portal's network no longer exists on the target sever.
+bungeeInvalidExitNetwork=This portal's network no longer exists on the target server.
 bungeeInvalidExitGate=This portal's exit no longer exists on the target server.
-bungeeProxyOffline=This portal exits on a server that is currently unavailable.
+bungeeProxyOffline=This portal exists on a server that is currently unavailable.
 bungeeTargetOffline=The proxy is currently down; bungee portals are temporarily disabled.
 
 # Gate Usage
 tpSuccess=Teleported\!
 tpDestiInvalid=Invalid destination\!
 tpDestiBlocked=Destination obstructed\!
-tpEmptyNet=Destination list empty\!
+tpEmptyNet=Access denied\!
 
 # Access
 conflictPerms=Access denied\!
@@ -48,9 +48,8 @@ conflictSpawn=Spawn chunks are interfering with this portal\!
 
 # Economy
 ecoDeduct=Deducted %cost%.
-ecoRefund=Refunded %cost%\!
 ecoObtain=Obtained %cost% from StarGate %portal%\!
-ecoInsolvent=Insufficient Funds\!
+ecoInsolvent=Insufficient funds\!
 
 #Admin
 adminReload=Configuration reloaded\!
