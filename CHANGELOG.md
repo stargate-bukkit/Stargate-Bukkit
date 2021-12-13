@@ -1,4 +1,48 @@
 # Changes
+#### [Version 1.0.0.0] Stargate-Revived
+ - Rewrote entire codebase and reached parity with legacy's features.
+ - Majorly refactored all aspects of the backend; drastically more efficient and far easier to maintain.
+ - Converted the entire backend to a purely vector-based approach.
+ - Added preliminary javadocs
+ - Added server UUID management system
+ - Implemented new system in the config retcon to handle comments.
+ - Added unit tests.
+ - Added direct support for logging levels.
+  - Improved bstats implementation.
+ - Added support for networked A gates
+ - Added a new protocol to implement advanced cross-server gates; see the `i` flag.
+ - Added backwards compatibility to minecraft 1.15.1
+ - Tested on miencraft 1.18.1 with no known issues.
+ - Added documentation; redid the [wiki](https://github.com/stargate-bukkit/Stargate-Bukkit/wiki).
+ - Added a new default gate to help explain advanced gate formats.
+ - Redid the plugin's entire permission system; see [this link](https://github.com/stargate-bukkit/Stargate-Bukkit/wiki/Permissions-List) for documentation.
+ - Added java docs and added API framework.
+ - Added support for material arrays.
+ - Switched native storage to sqlite.
+ - Added support for remote relational databases; completely restructured databases.
+ - Redid language files and messages; see [this page](crowdin.com/project/stargate-bukkit/) for the new translations.
+ - Players now keep momentum when using a portal
+ - Entities and passengers can now use gates (re-added minecart support)
+ - Leashed entities can now go through gates.
+ - Completely overhauled the config files.
+ - Added optional advanced_config and hikari config
+ - Added an automatic importer for old stargate instances (entire drakia ecosystem tested; sponge and hmod untested).
+ - Added a meta tag for individuals' portal limits
+ - Added support for button variants (sg will no longer overwrite valid activators)
+ - Added a vault softdepend and updated protocol to avoid console warnings on startup
+ - Added system of coloured gates highlighting based on portal type and configuration.
+ - Added checks for destination portal validity
+ - Addressed possible sign-length errors
+ - Protected entrances to make a fix in legacy redundant
+ - Added the silent (q) flag to suppress the chat output of portals.
+ - Added a canfollowthrough meta and added a permission node.
+ - Fixed some loading issues with vault.
+ - Fixed some persistence issues
+ - Fixed the possibility of players clipping when teleporting
+ - Fixed some rare configuration encoding problems
+ - Fixed a bug wherein some warnings were printing under incorrect circumstances.
+ - Fixed a bug wherein tags could be empty.
+ - Discovered GHSA-64r2-hfr9-849j and pushed fix upstream.
 #### [Version 0.10.8.1] LCLO Fork
  - Fixed a compilation error impacting fresh installs.
 #### [Version 0.10.8.0] LCLO Fork
