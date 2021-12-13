@@ -1,5 +1,5 @@
 # Changes
-#### [Version 1.0.0.0] Stargate-Revived
+#### [Version 1.0.0.0] Stargate-Rewritten
  - Rewrote entire codebase and reached parity with legacy's features.
  - Majorly refactored all aspects of the backend; drastically more efficient and far easier to maintain.
  - Converted the entire backend to a purely vector-based approach.
