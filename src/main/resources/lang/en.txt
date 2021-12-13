@@ -48,7 +48,6 @@ conflictSpawn=Spawn chunks are interfering with this portal!
 
 # Economy
 ecoDeduct=Deducted %cost%.
-ecoRefund=Refunded %cost%!
 ecoObtain=Obtained %cost% from StarGate %portal%!
 ecoInsolvent=Insufficient Funds!
 
