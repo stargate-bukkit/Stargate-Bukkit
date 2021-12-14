@@ -36,7 +36,7 @@ public class MoveEventListener implements Listener {
             return;
         }
 
-        if (Network.isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
+        if (Stargate.factory.isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
             event.setCancelled(true);
         }
     }
@@ -57,7 +57,7 @@ public class MoveEventListener implements Listener {
             return;
         }
 
-        if (Network.isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
+        if (Stargate.factory.isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
             event.setCancelled(true);
         }
     }
@@ -102,7 +102,7 @@ public class MoveEventListener implements Listener {
             return;
         }
 
-        Portal portal = Network.getPortal(toLocation, GateStructureType.IRIS);
+        Portal portal = Stargate.factory.getPortal(toLocation, GateStructureType.IRIS);
         if (portal == null || !portal.isOpen()) {
             return;
         }

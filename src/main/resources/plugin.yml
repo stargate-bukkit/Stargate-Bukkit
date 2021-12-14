@@ -10,7 +10,7 @@ commands:
   stargate:
     description: Used to reload the plugin. Console use only.
     usage: /<command> reload - Used to reload the plugin. Console use only.
-    aliases: [sg,stargate:sg]
+    aliases: [sg]
 permissions:
   sg:
     children:

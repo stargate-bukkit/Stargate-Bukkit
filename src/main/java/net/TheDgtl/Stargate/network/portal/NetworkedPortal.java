@@ -70,7 +70,11 @@ public class NetworkedPortal extends AbstractPortal {
         if ((this.activator != null && !actor.getUniqueId().equals(this.activator)) || this.isOpen()) {
             return;
         }
-        if (!hasActivatePermissions(actor)) {
+
+        PermissionManager permissionManager = new PermissionManager(event.getPlayer());
+        if (!hasActivatePermissions(actor,permissionManager)) {
+            if(permissionManager.getDenyMessage() != null)
+                actor.sendMessage(permissionManager.getDenyMessage());
             Stargate.log(Level.CONFIG, "Player did not have permission to activate portal");
             return;
         }
@@ -253,10 +257,9 @@ public class NetworkedPortal extends AbstractPortal {
      * @param player <p>The player to check permissions of</p>
      * @return <p>True if the given player is allowed to activate this portal</p>
      */
-    private boolean hasActivatePermissions(Player player) {
+    private boolean hasActivatePermissions(Player player, PermissionManager permissionManager) {
         StargateActivateEvent event = new StargateActivateEvent(this, player, destinations);
         Bukkit.getPluginManager().callEvent(event);
-        PermissionManager permissionManager = new PermissionManager(player);
         return (!event.isCancelled() && permissionManager.hasPermission(event));
     }
 

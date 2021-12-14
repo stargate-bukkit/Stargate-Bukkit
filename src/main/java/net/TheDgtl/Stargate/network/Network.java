@@ -42,9 +42,6 @@ public class Network {
     protected String name;
     protected SQLQueryGenerator sqlMaker;
 
-    private final static Map<GateStructureType, Map<BlockLocation, Portal>> portalFromStructureTypeMap =
-            new EnumMap<>(GateStructureType.class);
-
     /**
      * Instantiates a new network
      *
@@ -86,37 +83,6 @@ public class Network {
     }
 
     /**
-     * Registers the existence of the given structure type in the given locations
-     *
-     * <p>Basically stores the portals that exist at the given locations, but using the structure type as the key to be
-     * able to check locations for the given structure type.</p>
-     *
-     * @param structureType <p>The structure type to register</p>
-     * @param locationsMap  <p>The locations and the corresponding portals to register</p>
-     */
-    public void registerLocations(GateStructureType structureType, Map<BlockLocation, Portal> locationsMap) {
-        if (!portalFromStructureTypeMap.containsKey(structureType)) {
-            portalFromStructureTypeMap.put(structureType, new HashMap<>());
-        }
-        portalFromStructureTypeMap.get(structureType).putAll(locationsMap);
-    }
-
-    /**
-     * Un-registers all portal blocks with the given structure type, at the given block location
-     *
-     * @param structureType <p>The type of structure to un-register</p>
-     * @param blockLocation <p>The location to un-register</p>
-     */
-    public void unRegisterLocation(GateStructureType structureType, BlockLocation blockLocation) {
-        Map<BlockLocation, Portal> map = portalFromStructureTypeMap.get(structureType);
-        if (map != null) {
-            Stargate.log(Level.FINEST, "Unregistering portal " + map.get(blockLocation).getName() +
-                    " with structType " + structureType + " at location " + blockLocation.toString());
-            map.remove(blockLocation);
-        }
-    }
-
-    /**
      * Removes the given portal from this network
      *
      * @param portal             <p>The portal to remove</p>
@@ -146,7 +112,7 @@ public class Network {
             RealPortal physicalPortal = (RealPortal) portal;
             for (GateStructureType key : physicalPortal.getGate().getFormat().portalParts.keySet()) {
                 List<BlockLocation> locations = physicalPortal.getGate().getLocations(key);
-                this.registerLocations(key, generateLocationMap(locations, portal));
+                Stargate.factory.registerLocations(key, generateLocationMap(locations, portal));
             }
         }
         if (saveToDatabase) {
@@ -239,95 +205,6 @@ public class Network {
      */
     public int size() {
         return this.getAllPortals().size();
-    }
-
-    /**
-     * Gets the portal with the given structure type at the given location
-     *
-     * @param location      <p>The location to check for portal structures</p>
-     * @param structureType <p>The structure type to look for</p>
-     * @return <p>The found portal, or null if no portal was found</p>
-     */
-    public static Portal getPortal(Location location, GateStructureType structureType) {
-        return getPortal(new BlockLocation(location), structureType);
-    }
-
-    /**
-     * Gets the portal with any of the given structure types at the given location
-     *
-     * @param location       <p>The location to check for portal structures</p>
-     * @param structureTypes <p>The structure types to look for</p>
-     * @return <p>The found portal, or null if no portal was found</p>
-     */
-    public static Portal getPortal(Location location, GateStructureType[] structureTypes) {
-        return getPortal(new BlockLocation(location), structureTypes);
-    }
-
-    /**
-     * Checks if any of the given blocks belong to a portal
-     *
-     * @param blocks <p>The blocks to check</p>
-     * @return <p>True if any of the given blocks belong to a portal</p>
-     */
-    public static boolean isInPortal(List<Block> blocks) {
-        for (Block block : blocks) {
-            if (getPortal(block.getLocation(), GateStructureType.values()) != null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks one block away from the given location to check if it's adjacent to a portal structure
-     *
-     * <p>Checks North, west, south, east direction. Not up / down, as it is currently
-     * not necessary and a waste of resources.</p>
-     *
-     * @param location      <p>The location to check for adjacency</p>
-     * @param structureType <p>The structure type to look for</p>
-     * @return <p>True if the given location is adjacent to a location containing the given structure type</p>
-     */
-    public static boolean isNextToPortal(Location location, GateStructureType structureType) {
-        BlockVector adjacentVector = new BlockVector(1, 0, 0);
-        for (int i = 0; i < 4; i++) {
-            Location adjacentLocation = location.clone().add(adjacentVector);
-            if (getPortal(adjacentLocation, structureType) != null) {
-                return true;
-            }
-            adjacentVector.rotateAroundY(Math.PI / 2);
-        }
-        return false;
-    }
-
-    /**
-     * Get the portal with the given structure type at the given location
-     *
-     * @param blockLocation <p>The location the portal is located at</p>
-     * @param structureType <p>The structure type to look for</p>
-     * @return <p>The found portal, or null if no such portal exists</p>
-     */
-    static public Portal getPortal(BlockLocation blockLocation, GateStructureType structureType) {
-        if (!(portalFromStructureTypeMap.containsKey(structureType))) {
-            return null;
-        }
-        return portalFromStructureTypeMap.get(structureType).get(blockLocation);
-    }
-
-    /**
-     * Get the portal with any of the given structure types at the given location
-     *
-     * @param blockLocation  <p>The location the portal is located at</p>
-     * @param structureTypes <p>The structure types to look for</p>
-     * @return <p>The found portal, or null if no such portal exists</p>
-     */
-    static public Portal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
-        for (GateStructureType key : structureTypes) {
-            Portal portal = getPortal(blockLocation, key);
-            if (portal != null)
-                return portal;
-        }
-        return null;
     }
 
     /**

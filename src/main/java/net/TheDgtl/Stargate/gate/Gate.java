@@ -357,7 +357,7 @@ public class Gate {
     private boolean isGateConflict() {
         List<BlockLocation> locations = this.getLocations(GateStructureType.FRAME);
         for (BlockLocation loc : locations) {
-            if (Network.getPortal(loc, GateStructureType.values()) != null) {
+            if (Stargate.factory.getPortal(loc, GateStructureType.values()) != null) {
                 return true;
             }
         }

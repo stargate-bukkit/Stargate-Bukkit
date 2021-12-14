@@ -27,7 +27,7 @@ public class StargateAPI {
      * @return <p>A portal, or null if no portal was found</p>
      */
     public Portal getPortal(Location portalBlock) {
-        return Network.getPortal(portalBlock, GateStructureType.values());
+        return Stargate.factory.getPortal(portalBlock, GateStructureType.values());
     }
 
     /**
@@ -41,7 +41,7 @@ public class StargateAPI {
      * @return <p>A portal, or null if no portal was found</p>
      */
     public Portal getPortal(Location portalBlock, GateStructureType structureType) {
-        return Network.getPortal(portalBlock, structureType);
+        return Stargate.factory.getPortal(portalBlock, structureType);
     }
 
     /**
@@ -55,7 +55,7 @@ public class StargateAPI {
      * @return <p>A portal, or null if no portal was found</p>
      */
     public Portal getPortal(Location portalBlock, GateStructureType[] structureTypes) {
-        return Network.getPortal(portalBlock, structureTypes);
+        return Stargate.factory.getPortal(portalBlock, structureTypes);
     }
 
     /**

@@ -45,19 +45,13 @@ public class LanguageManager {
      *
      * @param stargate       <p>A reference to an instance of the main Stargate class</p>
      * @param languageFolder <p>The folder containing all language files</p>
-     * @param language       <p>The language to use for all strings</p>
      */
-    public LanguageManager(Stargate stargate, String languageFolder, String language) {
+    public LanguageManager(Stargate stargate, File languageFolder) {
         String defaultLanguage = "en-US";
-        this.languageFolder = new File(languageFolder);
+        this.languageFolder = languageFolder;
 
         this.stargate = stargate;
-
         
-        if(LANGUAGE_EDGE_CASES.get(language) != null)
-            language = LANGUAGE_EDGE_CASES.get(language);
-        
-        translatedStrings = loadLanguage(language);
         backupStrings = loadLanguage(defaultLanguage);
     }
     /**
@@ -130,6 +124,8 @@ public class LanguageManager {
      * @param language <p>The language to change to</p>
      */
     public void setLanguage(String language) {
+        if(LANGUAGE_EDGE_CASES.get(language) != null)
+            language = LANGUAGE_EDGE_CASES.get(language);
         this.language = language;
         translatedStrings = loadLanguage(language);
     }

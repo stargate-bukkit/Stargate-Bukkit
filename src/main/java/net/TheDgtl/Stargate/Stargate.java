@@ -39,8 +39,6 @@ import net.TheDgtl.Stargate.util.FileHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -134,7 +132,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
         
         saveDefaultGates();
-
+        
+        languageManager = new LanguageManager(this, new File(DATA_FOLDER,LANGUAGE_FOLDER));
         load();
         
         pm = getServer().getPluginManager();
@@ -284,8 +283,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             lowestMsgLevel = Level.INFO;
         else
             lowestMsgLevel = Level.parse(debugLevelStr);
-        languageManager = new LanguageManager(this, DATA_FOLDER + "/" + LANGUAGE_FOLDER,
-                Settings.getString(Setting.LANGUAGE));
+        languageManager.setLanguage(Settings.getString(Setting.LANGUAGE));
         GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATA_FOLDER + "/" + GATE_FOLDER);
 
         try {
