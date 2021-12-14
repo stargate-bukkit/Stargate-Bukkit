@@ -47,7 +47,7 @@ public enum TranslatableMessage {
      * The message to be displayed if a player is missing the sufficient funds to perform an action
      */
     LACKING_FUNDS("ecoInsolvent"),
-    
+
     /**
      * The message to be displayed when a player successfully is charged money
      */
@@ -128,16 +128,16 @@ public enum TranslatableMessage {
 
     /**
      * The message to display if a BungeeCord exit network is invalid
-     * 
-     * <p>The message to display if a player is teleporting through BungeeCord and the player cannot be teleported to 
+     *
+     * <p>The message to display if a player is teleporting through BungeeCord and the player cannot be teleported to
      * the destination portal because the network given in the teleportation message is invalid.</p>
      */
     BUNGEE_INVALID_NETWORK("bungeeInvalidExitNetwork"),
 
     /**
      * The message to display if a BungeeCord exit gate is invalid
-     * 
-     * <p>The message to display if a player is teleporting through BungeeCord and the player cannot be teleported to 
+     *
+     * <p>The message to display if a player is teleporting through BungeeCord and the player cannot be teleported to
      * the destination portal because the gate given in the teleportation message is invalid.</p>
      */
     BUNGEE_INVALID_GATE("bungeeInvalidExitGate"),

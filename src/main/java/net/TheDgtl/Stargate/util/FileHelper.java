@@ -19,7 +19,6 @@ import java.util.Map;
  */
 public class FileHelper {
 
-
     /**
      * Gets a buffered reader for reading the given file
      *
@@ -80,15 +79,8 @@ public class FileHelper {
     public static Map<String, String> readKeyValuePairs(BufferedReader bufferedReader) throws IOException {
         Map<String, String> readPairs = new HashMap<>();
 
-        String line = bufferedReader.readLine();
-        boolean firstLine = true;
+        String line = removeUTF8BOM(bufferedReader.readLine());
         while (line != null) {
-            //Strip UTF BOM from the first line
-            if (firstLine) {
-                line = removeUTF8BOM(line);
-                firstLine = false;
-            }
-
             //Skip comment lines
             if (line.startsWith("#")) {
                 line = bufferedReader.readLine();
@@ -120,13 +112,12 @@ public class FileHelper {
      * @param string <p>The string to remove the BOM from</p>
      * @return <p>A string guaranteed without a BOM</p>
      */
-    private static String removeUTF8BOM(String string) {
+    public static String removeUTF8BOM(String string) {
         String UTF8_BOM = "\uFEFF";
         if (string.startsWith(UTF8_BOM)) {
             string = string.substring(1);
         }
         return string;
     }
-
 
 }
