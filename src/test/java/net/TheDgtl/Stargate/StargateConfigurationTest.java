@@ -11,8 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
-
-class StargateConfigurationTest {
+public class StargateConfigurationTest {
 
     static private File[] configFiles;
     static private StargateLogger logger;
@@ -28,28 +27,35 @@ class StargateConfigurationTest {
     }
 
     @AfterAll
-    public static void tearDown() {
+    public static void tearDown() throws IOException {
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
-            configFile.delete();
-            oldConfigFile.renameTo(configFile);
+            if (!configFile.delete()) {
+                throw new IOException("Unable to delete test config file");
+            }
+            if (!oldConfigFile.renameTo(configFile)) {
+                throw new IOException("Unable to rename backup config file");
+            }
         }
     }
 
-
     @Test
-    public void theTest() throws IOException, InvalidConfigurationException {
+    public void configurationLoadReplaceEditAndSaveTest() throws IOException, InvalidConfigurationException {
         for (File configFile : configFiles) {
             FileConfiguration config = new StargateConfiguration();
             config.load(configFile);
             logger.logMessage(Level.FINEST, " Current config:\n " + config.saveToString());
             File oldFile = new File(configFile.getAbsolutePath() + ".old");
-            if (oldFile.exists())
-                oldFile.delete();
-            configFile.renameTo(oldFile);
+            if (oldFile.exists() && !oldFile.delete()) {
+                throw new IOException("Unable to delete config file backup");
+            }
+            if (!configFile.renameTo(oldFile)) {
+                throw new IOException("Unable to rename config file");
+            }
             config.set("option", "Another value");
             config.save(configFile);
             logger.logMessage(Level.FINEST, " Current config:\n " + config.saveToString());
         }
     }
+
 }

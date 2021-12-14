@@ -36,7 +36,6 @@ public class DatabaseTester {
     private static boolean isMySQL;
     private static String serverName;
     private static UUID serverUUID;
-    private static String serverPrefix;
     private static Portal testPortal;
     private static final String INTER_PORTAL_NAME = "iPortal";
     private static final String LOCAL_PORTAL_NAME = "portal";
@@ -68,7 +67,6 @@ public class DatabaseTester {
         DatabaseTester.serverName = "aServerName";
         DatabaseTester.serverUUID = UUID.randomUUID();
         Stargate.serverUUID = serverUUID;
-        DatabaseTester.serverPrefix = "aPrefix";
 
         Network testNetwork = null;
         try {
