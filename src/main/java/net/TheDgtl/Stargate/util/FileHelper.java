@@ -70,6 +70,30 @@ public class FileHelper {
     }
 
     /**
+     * Reads key, value pairs in an internal file to the given map
+     * 
+     * @param file <p>The path of the internal file to read</p>
+     * @param targetMap <p>The map to store all found values to</p>
+     */
+    public static void readInternalFileToMap(String file, Map<String, String> targetMap) {
+        Map<String, String> readPairs;
+        try {
+            readPairs = FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(
+                    FileHelper.getInputStreamForInternalFile(file)));
+            for (String key : readPairs.keySet()) {
+                String value = readPairs.get(key);
+                if (value.trim().isEmpty()) {
+                    targetMap.put(key, null);
+                } else {
+                    targetMap.put(key, readPairs.get(key));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Reads key/value pairs from an input stream
      *
      * @param bufferedReader <p>The buffered reader to read</p>

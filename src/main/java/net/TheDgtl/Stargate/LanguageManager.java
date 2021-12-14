@@ -22,23 +22,12 @@ public class LanguageManager {
     private final Map<TranslatableMessage, String> backupStrings;
 
     private final Stargate stargate;
-    
-    private static final Map<String,String> LANGUAGE_EDGE_CASES = new HashMap<>();
-    
+
+    private static final Map<String, String> LANGUAGE_EDGE_CASES = new HashMap<>();
+
     static {
-        //Read all language edge cases
-        Map<String, String> languageEdgeCases;
-        try {
-            languageEdgeCases = FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(
-                    FileHelper.getInputStreamForInternalFile("/language-edge-cases.txt")));
-            for (String key : languageEdgeCases.keySet()) {
-                LANGUAGE_EDGE_CASES.put(key, languageEdgeCases.get(key));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        FileHelper.readInternalFileToMap("/language-edge-cases.txt", LANGUAGE_EDGE_CASES);
     }
-    
 
     /**
      * Instantiates a new language manager
@@ -50,16 +39,16 @@ public class LanguageManager {
     public LanguageManager(Stargate stargate, String languageFolder, String language) {
         String defaultLanguage = "en-US";
         this.languageFolder = new File(languageFolder);
-
         this.stargate = stargate;
 
-        
-        if(LANGUAGE_EDGE_CASES.get(language) != null)
+        if (LANGUAGE_EDGE_CASES.get(language) != null) {
             language = LANGUAGE_EDGE_CASES.get(language);
-        
+        }
+
         translatedStrings = loadLanguage(language);
         backupStrings = loadLanguage(defaultLanguage);
     }
+
     /**
      * Gets a formatted error message
      *
@@ -173,7 +162,7 @@ public class LanguageManager {
                     break;
                 } catch (IllegalArgumentException ignored) {
                     continue;
-                } 
+                }
 
             }
             endFile = possibleLanguageFiles[i];
@@ -215,10 +204,10 @@ public class LanguageManager {
 
         File[] possibleFiles = new File[possibleNames.length * possibleNames.length];
         int i = 0;
-        for(String pathName : possibleNames) {
-            File dir = new File(path,pathName);
-            for(String fileName : possibleNames) {
-                possibleFiles[i++] = new File(dir,fileName + ".txt");
+        for (String pathName : possibleNames) {
+            File dir = new File(path, pathName);
+            for (String fileName : possibleNames) {
+                possibleFiles[i++] = new File(dir, fileName + ".txt");
             }
         }
         return possibleFiles;

@@ -18,22 +18,7 @@ public class RetCon1_0_0 extends Modifier {
     static private final HashMap<String, String> CONFIG_CONVERSIONS = new HashMap<>();
 
     static {
-        //Read all config migrations
-        Map<String, String> migrationFields;
-        try {
-            migrationFields = FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(
-                    FileHelper.getInputStreamForInternalFile("/migration/config-migrations-1_0_0.txt")));
-            for (String key : migrationFields.keySet()) {
-                String value = migrationFields.get(key);
-                if (value.trim().isEmpty()) {
-                    CONFIG_CONVERSIONS.put(key, null);
-                } else {
-                    CONFIG_CONVERSIONS.put(key, value);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        FileHelper.readInternalFileToMap("/migration/config-migrations-1_0_0.txt", CONFIG_CONVERSIONS);
     }
 
     private final Server server;
