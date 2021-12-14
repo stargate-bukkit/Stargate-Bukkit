@@ -29,60 +29,102 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
+/**
+ * A network of portals
+ */
 public class Network {
 
-    protected Map<String, Portal> portalList;
+    protected Map<String, Portal> nameToPortalMap;
     protected Database database;
     protected String name;
     protected SQLQueryGenerator sqlMaker;
 
+    private final static Map<GateStructureType, Map<BlockLocation, Portal>> portalFromStructureTypeMap =
+            new EnumMap<>(GateStructureType.class);
 
-    final static Map<GateStructureType, Map<BlockLocation, Portal>> portalFromPartsMap = new EnumMap<>(GateStructureType.class);
-
-    public Network(String name, Database database, SQLQueryGenerator sqlMaker) throws NameErrorException {
-        if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH))
+    /**
+     * Instantiates a new network
+     *
+     * @param name           <p>The name of the new network</p>
+     * @param database       <p>The database to use for saving network data</p>
+     * @param queryGenerator <p>The generator to use for generating SQL queries</p>
+     * @throws NameErrorException <p>If the network name is invalid</p>
+     */
+    public Network(String name, Database database, SQLQueryGenerator queryGenerator) throws NameErrorException {
+        if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH)) {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
+        }
         this.name = name;
         this.database = database;
-        this.sqlMaker = sqlMaker;
-        portalList = new HashMap<>();
+        this.sqlMaker = queryGenerator;
+        nameToPortalMap = new HashMap<>();
     }
 
+    /**
+     * Gets all portals belonging to this network
+     *
+     * @return <p>All portals belonging to this network</p>
+     */
     public Collection<Portal> getAllPortals() {
-        return portalList.values();
+        return nameToPortalMap.values();
     }
 
-    public boolean portalExists(String name) {
-        return (getPortal(this.compilePortalHash(name)) != null);
-    }
-
+    /**
+     * Gets the portal with the given name
+     *
+     * @param name <p>The name of the portal to get</p>
+     * @return <p>The portal with the given name, or null if not found</p>
+     */
     public Portal getPortal(String name) {
-        if (name == null)
+        if (name == null) {
             return null;
-        return portalList.get(this.compilePortalHash(name));
-    }
-
-    public void registerLocations(GateStructureType type, Map<BlockLocation, Portal> locationsMap) {
-        if (!portalFromPartsMap.containsKey(type)) {
-            portalFromPartsMap.put(type, new HashMap<>());
         }
-        portalFromPartsMap.get(type).putAll(locationsMap);
+        return nameToPortalMap.get(this.getPortalHash(name));
     }
 
-    public void unRegisterLocation(GateStructureType type, BlockLocation loc) {
-        Map<BlockLocation, Portal> map = portalFromPartsMap.get(type);
+    /**
+     * Registers the existence of the given structure type in the given locations
+     *
+     * <p>Basically stores the portals that exist at the given locations, but using the structure type as the key to be
+     * able to check locations for the given structure type.</p>
+     *
+     * @param structureType <p>The structure type to register</p>
+     * @param locationsMap  <p>The locations and the corresponding portals to register</p>
+     */
+    public void registerLocations(GateStructureType structureType, Map<BlockLocation, Portal> locationsMap) {
+        if (!portalFromStructureTypeMap.containsKey(structureType)) {
+            portalFromStructureTypeMap.put(structureType, new HashMap<>());
+        }
+        portalFromStructureTypeMap.get(structureType).putAll(locationsMap);
+    }
+
+    /**
+     * Un-registers all portal blocks with the given structure type, at the given block location
+     *
+     * @param structureType <p>The type of structure to un-register</p>
+     * @param blockLocation <p>The location to un-register</p>
+     */
+    public void unRegisterLocation(GateStructureType structureType, BlockLocation blockLocation) {
+        Map<BlockLocation, Portal> map = portalFromStructureTypeMap.get(structureType);
         if (map != null) {
-            Stargate.log(Level.FINEST, "Unregistering portal " + map.get(loc).getName() + " with structType " + type
-                    + " at location " + loc.toString());
-            map.remove(loc);
+            Stargate.log(Level.FINEST, "Unregistering portal " + map.get(blockLocation).getName() +
+                    " with structType " + structureType + " at location " + blockLocation.toString());
+            map.remove(blockLocation);
         }
     }
 
-    public void removePortal(Portal portal, boolean saveToDatabase) {
-        portalList.remove(this.compilePortalHash(portal.getName()));
-        if (!saveToDatabase) {
+    /**
+     * Removes the given portal from this network
+     *
+     * @param portal             <p>The portal to remove</p>
+     * @param removeFromDatabase <p>Whether to also remove the portal from the database</p>
+     */
+    public void removePortal(Portal portal, boolean removeFromDatabase) {
+        nameToPortalMap.remove(this.getPortalHash(portal.getName()));
+        if (!removeFromDatabase) {
             return;
         }
 
@@ -94,43 +136,218 @@ public class Network {
     }
 
     /**
-     * Removes a portal and its associated data from the database
+     * Adds the given portal to this network
      *
-     * @param portal     <p>The portal to remove</p>
-     * @param portalType <p>The type of portal to remove</p>
-     * @throws SQLException <p>If a database error occurs</p>
+     * @param portal         <p>The portal to add</p>
+     * @param saveToDatabase <p>Whether to also save the portal to the database</p>
      */
-    protected void removePortalFromDatabase(Portal portal, PortalType portalType) throws SQLException {
-        Connection conn = null;
-        try {
-            conn = database.getConnection();
-            conn.setAutoCommit(false);
-
-            PreparedStatement removeFlagsStatement = sqlMaker.generateRemoveFlagStatement(conn, portalType);
-            removeFlagsStatement.setString(1, portal.getName());
-            removeFlagsStatement.setString(2, portal.getNetwork().getName());
-            removeFlagsStatement.execute();
-            removeFlagsStatement.close();
-
-            PreparedStatement statement = sqlMaker.generateRemovePortalStatement(conn, portal, portalType);
-            statement.execute();
-            statement.close();
-
-
-            conn.commit();
-            conn.setAutoCommit(true);
-            conn.close();
-        } catch (SQLException e) {
-            if (conn != null) {
-                conn.rollback();
-                conn.setAutoCommit(false);
-                conn.close();
+    public void addPortal(Portal portal, boolean saveToDatabase) {
+        if (portal instanceof RealPortal) {
+            RealPortal physicalPortal = (RealPortal) portal;
+            for (GateStructureType key : physicalPortal.getGate().getFormat().portalParts.keySet()) {
+                List<BlockLocation> locations = physicalPortal.getGate().getLocations(key);
+                this.registerLocations(key, generateLocationMap(locations, portal));
             }
+        }
+        if (saveToDatabase) {
+            savePortal(portal);
+        }
+        nameToPortalMap.put(getPortalHash(portal.getName()), portal);
+    }
+
+    /**
+     * Checks whether there is already a portal in this network with the given name
+     *
+     * @param name <p>The name to check for</p>
+     * @return <p>True if an existing portal is already using the given name</p>
+     */
+    public boolean isPortalNameTaken(String name) {
+        return nameToPortalMap.containsKey(name);
+    }
+
+    /**
+     * Updates all portals in this network
+     */
+    public void updatePortals() {
+        for (String portal : nameToPortalMap.keySet()) {
+            getPortal(portal).update();
         }
     }
 
-    protected void savePortal(Database database, Portal portal, PortalType portalType) {
+    /**
+     * Gets names of all portals available to the given player from the given portal
+     *
+     * @param player    <p>The player to get portals </p>
+     * @param requester <p>The portal the player is viewing other portals from</p>
+     * @return <p>The names of all portals the player is allowed to see</p>
+     */
+    public Set<String> getAvailablePortals(Player player, Portal requester) {
+        Set<String> tempPortalList = new HashSet<>(nameToPortalMap.keySet());
+        tempPortalList.remove(getPortalHash(requester.getName()));
+        if (!requester.hasFlag(PortalFlag.FORCE_SHOW)) {
+            Set<String> removeList = new HashSet<>();
+            for (String portalName : tempPortalList) {
+                Portal target = getPortal(portalName);
+                if (target.hasFlag(PortalFlag.HIDDEN) &&
+                        (player != null && !player.hasPermission(BypassPermission.HIDDEN.getPermissionString()))) {
+                    removeList.add(portalName);
+                }
+                if (target.hasFlag(PortalFlag.PRIVATE) && player != null &&
+                        !player.hasPermission(BypassPermission.PRIVATE.getPermissionString()) &&
+                        !player.getUniqueId().equals(target.getOwnerUUID())) {
+                    removeList.add(portalName);
+                }
+            }
+            tempPortalList.removeAll(removeList);
+        }
+        return tempPortalList;
+    }
 
+    /**
+     * Gets the highlighted name of this network
+     *
+     * @return <p>The highlighted name of this network</p>
+     */
+    public String getHighlightedName() {
+        return HighlightingStyle.NETWORK.getHighlightedName(getName());
+    }
+
+    /**
+     * Destroys this network and every portal contained in it
+     */
+    public void destroy() {
+        for (String portalName : nameToPortalMap.keySet()) {
+            Portal portal = nameToPortalMap.get(portalName);
+            portal.destroy();
+        }
+        nameToPortalMap.clear();
+    }
+
+    /**
+     * Gets the name of this network
+     *
+     * @return <p>The name of this network</p>
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Gets the current number of portals in this network
+     *
+     * @return <p>The size of this network</p>
+     */
+    public int size() {
+        return this.getAllPortals().size();
+    }
+
+    /**
+     * Gets the portal with the given structure type at the given location
+     *
+     * @param location      <p>The location to check for portal structures</p>
+     * @param structureType <p>The structure type to look for</p>
+     * @return <p>The found portal, or null if no portal was found</p>
+     */
+    public static Portal getPortal(Location location, GateStructureType structureType) {
+        return getPortal(new BlockLocation(location), structureType);
+    }
+
+    /**
+     * Gets the portal with any of the given structure types at the given location
+     *
+     * @param location       <p>The location to check for portal structures</p>
+     * @param structureTypes <p>The structure types to look for</p>
+     * @return <p>The found portal, or null if no portal was found</p>
+     */
+    public static Portal getPortal(Location location, GateStructureType[] structureTypes) {
+        return getPortal(new BlockLocation(location), structureTypes);
+    }
+
+    /**
+     * Checks if any of the given blocks belong to a portal
+     *
+     * @param blocks <p>The blocks to check</p>
+     * @return <p>True if any of the given blocks belong to a portal</p>
+     */
+    public static boolean isInPortal(List<Block> blocks) {
+        for (Block block : blocks) {
+            if (getPortal(block.getLocation(), GateStructureType.values()) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks one block away from the given location to check if it's adjacent to a portal structure
+     *
+     * <p>Checks North, west, south, east direction. Not up / down, as it is currently
+     * not necessary and a waste of resources.</p>
+     *
+     * @param location      <p>The location to check for adjacency</p>
+     * @param structureType <p>The structure type to look for</p>
+     * @return <p>True if the given location is adjacent to a location containing the given structure type</p>
+     */
+    public static boolean isNextToPortal(Location location, GateStructureType structureType) {
+        BlockVector adjacentVector = new BlockVector(1, 0, 0);
+        for (int i = 0; i < 4; i++) {
+            Location adjacentLocation = location.clone().add(adjacentVector);
+            if (getPortal(adjacentLocation, structureType) != null) {
+                return true;
+            }
+            adjacentVector.rotateAroundY(Math.PI / 2);
+        }
+        return false;
+    }
+
+    /**
+     * Get the portal with the given structure type at the given location
+     *
+     * @param blockLocation <p>The location the portal is located at</p>
+     * @param structureType <p>The structure type to look for</p>
+     * @return <p>The found portal, or null if no such portal exists</p>
+     */
+    static public Portal getPortal(BlockLocation blockLocation, GateStructureType structureType) {
+        if (!(portalFromStructureTypeMap.containsKey(structureType))) {
+            return null;
+        }
+        return portalFromStructureTypeMap.get(structureType).get(blockLocation);
+    }
+
+    /**
+     * Get the portal with any of the given structure types at the given location
+     *
+     * @param blockLocation  <p>The location the portal is located at</p>
+     * @param structureTypes <p>The structure types to look for</p>
+     * @return <p>The found portal, or null if no such portal exists</p>
+     */
+    static public Portal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
+        for (GateStructureType key : structureTypes) {
+            Portal portal = getPortal(blockLocation, key);
+            if (portal != null)
+                return portal;
+        }
+        return null;
+    }
+
+    /**
+     * Saves the given portal to the database
+     *
+     * @param portal <p>The portal to save</p>
+     */
+    protected void savePortal(Portal portal) {
+        savePortal(database, portal, PortalType.LOCAL);
+    }
+
+    /**
+     * Saves the given portal to the database
+     *
+     * @param database   <p>The database to save to</p>
+     * @param portal     <p>The portal to save</p>
+     * @param portalType <p>The type of portal to save</p>
+     */
+    protected void savePortal(Database database, Portal portal, PortalType portalType) {
+        /* An SQL transaction is used here to make sure partial data is never added to the database. */
         Connection connection = null;
         try {
             connection = database.getConnection();
@@ -158,38 +375,39 @@ public class Network {
     }
 
     /**
-     * Adds flags for the given portal to the database
+     * Removes a portal and its associated data from the database
      *
-     * @param addFlagStatement <p>The statement used to add flags</p>
-     * @param portal           <p>The portal to add the flags of</p>
-     * @throws SQLException <p>If unable to set the flags</p>
+     * @param portal     <p>The portal to remove</p>
+     * @param portalType <p>The type of portal to remove</p>
+     * @throws SQLException <p>If a database error occurs</p>
      */
-    private void addFlags(PreparedStatement addFlagStatement, Portal portal) throws SQLException {
-        for (Character character : portal.getAllFlagsString().toCharArray()) {
-            Stargate.log(Level.FINER, "Adding flag " + character + " to portal: " + portal);
-            addFlagStatement.setString(1, portal.getName());
-            addFlagStatement.setString(2, portal.getNetwork().getName());
-            addFlagStatement.setString(3, String.valueOf(character));
-            addFlagStatement.execute();
-        }
-    }
+    protected void removePortalFromDatabase(Portal portal, PortalType portalType) throws SQLException {
+        /* An SQL transaction is used here to make sure portals are never partially removed from the database. */
+        Connection conn = null;
+        try {
+            conn = database.getConnection();
+            conn.setAutoCommit(false);
 
-    protected void savePortal(Portal portal) {
-        savePortal(database, portal, PortalType.LOCAL);
-    }
+            PreparedStatement removeFlagsStatement = sqlMaker.generateRemoveFlagStatement(conn, portalType);
+            removeFlagsStatement.setString(1, portal.getName());
+            removeFlagsStatement.setString(2, portal.getNetwork().getName());
+            removeFlagsStatement.execute();
+            removeFlagsStatement.close();
 
-    public void addPortal(Portal portal, boolean saveToDatabase) {
-        if (portal instanceof RealPortal) {
-            RealPortal physicalPortal = (RealPortal) portal;
-            for (GateStructureType key : physicalPortal.getGate().getFormat().portalParts.keySet()) {
-                List<BlockLocation> locations = physicalPortal.getGate().getLocations(key);
-                this.registerLocations(key, generateLocationMap(locations, portal));
+            PreparedStatement statement = sqlMaker.generateRemovePortalStatement(conn, portal, portalType);
+            statement.execute();
+            statement.close();
+
+            conn.commit();
+            conn.setAutoCommit(true);
+            conn.close();
+        } catch (SQLException e) {
+            if (conn != null) {
+                conn.rollback();
+                conn.setAutoCommit(false);
+                conn.close();
             }
         }
-        if (saveToDatabase) {
-            savePortal(portal);
-        }
-        portalList.put(compilePortalHash(portal.getName()), portal);
     }
 
     /**
@@ -207,7 +425,16 @@ public class Network {
         return output;
     }
 
-    private String compilePortalHash(String portalName) {
+    /**
+     * Gets a "hash" of a portal's name
+     *
+     * <p>This basically just lower-cases the name, and strips color if enabled. This is to make portal names
+     * case-agnostic and optionally color-agnostic.</p>
+     *
+     * @param portalName <p>The name to "hash"</p>
+     * @return <p>The "hashed" name</p>
+     */
+    private String getPortalHash(String portalName) {
         String portalHash = portalName.toLowerCase();
         if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
             portalHash = ChatColor.stripColor(portalHash);
@@ -215,126 +442,21 @@ public class Network {
         return portalHash;
     }
 
-    public boolean isPortalNameTaken(String name) {
-        return portalList.containsKey(name);
-    }
-
-    public void updatePortals() {
-        for (String portal : portalList.keySet()) {
-            getPortal(portal).update();
-        }
-    }
-
-    public HashSet<String> getAvailablePortals(Player actor, Portal requester) {
-        HashSet<String> tempPortalList = new HashSet<>(portalList.keySet());
-        tempPortalList.remove(compilePortalHash(requester.getName()));
-        if (!requester.hasFlag(PortalFlag.FORCE_SHOW)) {
-            HashSet<String> removeList = new HashSet<>();
-            for (String portalName : tempPortalList) {
-                Portal target = getPortal(portalName);
-                if (target.hasFlag(PortalFlag.HIDDEN)
-                        && (actor != null && !actor.hasPermission(BypassPermission.HIDDEN.getPermissionString())))
-                    removeList.add(portalName);
-                if (target.hasFlag(PortalFlag.PRIVATE) && actor != null
-                        && !actor.hasPermission(BypassPermission.PRIVATE.getPermissionString())
-                        && !actor.getUniqueId().equals(target.getOwnerUUID()))
-                    removeList.add(portalName);
-            }
-            tempPortalList.removeAll(removeList);
-        }
-        return tempPortalList;
-    }
-
-    static public Portal getPortal(Location loc, GateStructureType key) {
-        return getPortal(new BlockLocation(loc), key);
-    }
-
-    public static Portal getPortal(Location loc, GateStructureType[] keys) {
-
-        return getPortal(new BlockLocation(loc), keys);
-    }
-
     /**
-     * Get a portal from location and the type of gateStructure targeted
+     * Adds flags for the given portal to the database
      *
-     * @param loc
-     * @param key
-     * @return
+     * @param addFlagStatement <p>The statement used to add flags</p>
+     * @param portal           <p>The portal to add the flags of</p>
+     * @throws SQLException <p>If unable to set the flags</p>
      */
-    static public Portal getPortal(BlockLocation loc, GateStructureType key) {
-        if (!(portalFromPartsMap.containsKey(key))) {
-            return null;
+    private void addFlags(PreparedStatement addFlagStatement, Portal portal) throws SQLException {
+        for (Character character : portal.getAllFlagsString().toCharArray()) {
+            Stargate.log(Level.FINER, "Adding flag " + character + " to portal: " + portal);
+            addFlagStatement.setString(1, portal.getName());
+            addFlagStatement.setString(2, portal.getNetwork().getName());
+            addFlagStatement.setString(3, String.valueOf(character));
+            addFlagStatement.execute();
         }
-        return portalFromPartsMap.get(key).get(loc);
-    }
-
-    /**
-     * Get a portal from location and the types of gateStructures targeted
-     *
-     * @param loc
-     * @param keys
-     * @return
-     */
-    static public Portal getPortal(BlockLocation loc, GateStructureType[] keys) {
-        for (GateStructureType key : keys) {
-            Portal portal = getPortal(loc, key);
-            if (portal != null)
-                return portal;
-        }
-        return null;
-    }
-
-
-    public static boolean isInPortal(List<Block> blocks, GateStructureType[] keys) {
-        for (Block block : blocks) {
-            if (getPortal(block.getLocation(), GateStructureType.values()) != null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks North, west, south, east direction. Not up / down, as it is currently
-     * not necessary and a waste of resources
-     *
-     * @param loc The location to check for adjacency
-     * @param key
-     * @return Is adjacent to specified type of gateStructure.
-     */
-    public static boolean isNextToPortal(Location loc, GateStructureType key) {
-        BlockVector adjacentVec = new BlockVector(1, 0, 0);
-        for (int i = 0; i < 4; i++) {
-            Location adjacentLoc = loc.clone().add(adjacentVec);
-            if (getPortal(adjacentLoc, key) != null) {
-                return true;
-            }
-            adjacentVec.rotateAroundY(Math.PI / 2);
-        }
-        return false;
-    }
-
-    public String concatName() {
-        return HighlightingStyle.NETWORK.getHighlightedName(getName());
-    }
-
-    /**
-     * Destroy network and every portal contained in it
-     */
-    public void destroy() {
-        for (String portalName : portalList.keySet()) {
-            Portal portal = portalList.get(portalName);
-            portal.destroy();
-        }
-        portalList.clear();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int size() {
-        return this.getAllPortals().size();
     }
 
 }
