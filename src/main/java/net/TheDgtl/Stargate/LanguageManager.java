@@ -14,7 +14,7 @@ import java.util.logging.Level;
  */
 public class LanguageManager {
 
-    private final String languageFolder;
+    private final File languageFolder;
     private String language;
     private EnumMap<TranslatableMessage, String> translatedStrings;
     private final EnumMap<TranslatableMessage, String> backupStrings;
@@ -30,13 +30,20 @@ public class LanguageManager {
      * @param language       <p>The language to use for all strings</p>
      */
     public LanguageManager(Stargate stargate, String languageFolder, String language) {
-        this.languageFolder = languageFolder;
-        String defaultLanguage = "en";
+        String defaultLanguage = "en-US";
 
         this.stargate = stargate;
 
         translatedStrings = loadLanguage(language);
         backupStrings = loadLanguage(defaultLanguage);
+        this.languageFolder = new File(languageFolder);
+    }
+    
+    private File findTargetFile(String language) {
+        File dir = new File(languageFolder,language.split("-")[0]);
+        File file = new File(dir,language);
+        Stargate.log(Level.FINER, String.format("Looking for language file in pat ''%s''", file.getAbsolutePath()));
+        return file;
     }
 
     /**
@@ -124,10 +131,12 @@ public class LanguageManager {
      * @throws IOException <p>If unable to read the language file</p>
      */
     private EnumMap<TranslatableMessage, String> loadLanguageFile(String language) throws IOException {
-        File languageFile = new File(languageFolder, language + ".txt");
+        File languageFile = findTargetFile(language);
         if (!languageFile.exists()) {
             try {
-                stargate.saveResource("lang/" + language + ".txt", false);
+                String path = String.format("lang\\%s.txt" , languageFile.getPath());
+                Stargate.log(Level.FINE, String.format("Saving languagefile from internal path %s",path));
+                stargate.saveResource(path, false);
             } catch (IllegalArgumentException ignored) {
                 Stargate.log(Level.SEVERE, String.format("The selected language, \"%s\", is not supported, and no " +
                         "custom language file exists. Falling back to English.", language));
