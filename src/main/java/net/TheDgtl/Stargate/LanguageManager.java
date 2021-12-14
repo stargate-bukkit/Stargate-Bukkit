@@ -23,36 +23,20 @@ public class LanguageManager {
 
     private final Stargate stargate;
     
-    private static final Map<String,String> LANGUAGE_EDGE_CASES = new HashMap<>(); 
+    private static final Map<String,String> LANGUAGE_EDGE_CASES = new HashMap<>();
+    
     static {
-        LANGUAGE_EDGE_CASES.put("zh", "ch-CN");
-        LANGUAGE_EDGE_CASES.put("pt", "pt-PT");
-        LANGUAGE_EDGE_CASES.put("af", "af-ZA");
-        LANGUAGE_EDGE_CASES.put("ar", "ar-SA");
-        LANGUAGE_EDGE_CASES.put("ca", "ca-ES");
-        LANGUAGE_EDGE_CASES.put("da", "da-DK");
-        LANGUAGE_EDGE_CASES.put("de", "de-DE");
-        LANGUAGE_EDGE_CASES.put("el", "el-GR");
-        LANGUAGE_EDGE_CASES.put("en", "en-US");
-        LANGUAGE_EDGE_CASES.put("es", "es-ES");
-        LANGUAGE_EDGE_CASES.put("fi", "fi-FI");
-        LANGUAGE_EDGE_CASES.put("fr", "fr-FR");
-        LANGUAGE_EDGE_CASES.put("he", "he-IL");
-        LANGUAGE_EDGE_CASES.put("hu", "hu-HU");
-        LANGUAGE_EDGE_CASES.put("it", "it-IT");
-        LANGUAGE_EDGE_CASES.put("ja", "ja-JP");
-        LANGUAGE_EDGE_CASES.put("ko", "ko-KR");
-        LANGUAGE_EDGE_CASES.put("nl", "nl-NL");
-        LANGUAGE_EDGE_CASES.put("pl", "pl-PL");
-        LANGUAGE_EDGE_CASES.put("pt", "pt-PT");
-        LANGUAGE_EDGE_CASES.put("ro", "ro-RO");
-        LANGUAGE_EDGE_CASES.put("ru", "ru-RU");
-        LANGUAGE_EDGE_CASES.put("sr", "sr-SP");
-        LANGUAGE_EDGE_CASES.put("sv", "sv-SE");
-        LANGUAGE_EDGE_CASES.put("tr", "tr-TR");
-        LANGUAGE_EDGE_CASES.put("uk", "uk-UA");
-        LANGUAGE_EDGE_CASES.put("vi", "vi-VN");
-        LANGUAGE_EDGE_CASES.put("zh", "zh-CN");
+        //Read all language edge cases
+        Map<String, String> languageEdgeCases;
+        try {
+            languageEdgeCases = FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(
+                    FileHelper.getInputStreamForInternalFile("/language-edge-cases.txt")));
+            for (String key : languageEdgeCases.keySet()) {
+                LANGUAGE_EDGE_CASES.put(key, languageEdgeCases.get(key));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
 
