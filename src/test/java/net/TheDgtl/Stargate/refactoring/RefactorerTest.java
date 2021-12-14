@@ -6,6 +6,7 @@ import com.google.common.io.Files;
 import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.TwoTuple;
 import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
@@ -40,8 +41,8 @@ public class RefactorerTest {
     static private StargateLogger logger;
     static private File defaultConfigFile;
     static private Database sqlDatabase;
-    static private HashMap<String,Refactorer> refactorerMap = new HashMap<>();
-    static private Map<String, RefactoringCheckContainer> configTestMap;
+    static private final Map<String, Refactorer> refactorerMap = new HashMap<>();
+    static private Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> configTestMap;
 
     static private StargateFactory factory;
     static private ServerMock server;
@@ -70,8 +71,8 @@ public class RefactorerTest {
         Stargate.getConfigStatic().load(defaultConfigFile);
     }
 
-    private static Map<String, RefactoringCheckContainer> getSettingTestMaps() {
-        Map<String, RefactoringCheckContainer> output = new HashMap<>();
+    private static Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> getSettingTestMaps() {
+        Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> output = new HashMap<>();
 
         Map<String, Object> knarvikConfigChecks = new HashMap<>();
         knarvikConfigChecks.put("defaultGateNetwork", "knarvik");
@@ -80,8 +81,9 @@ public class RefactorerTest {
         knarvikPortalChecks.put("knarvik1", "knarvik");
         knarvikPortalChecks.put("knarvik2", "knarvik");
         knarvikPortalChecks.put("knarvik3", "knarvik");
-        RefactoringCheckContainer knarvikChecker = new RefactoringCheckContainer(knarvikConfigChecks, knarvikPortalChecks);
-        output.put("config-epicknarvik.yml", knarvikChecker);
+        TwoTuple<Map<String, Object>, Map<String, String>> knarvikChecks = new TwoTuple<>(knarvikConfigChecks,
+                knarvikPortalChecks);
+        output.put("config-epicknarvik.yml", knarvikChecks);
 
         Map<String, Object> pseudoConfigChecks = new HashMap<>();
         pseudoConfigChecks.put("defaultGateNetwork", "pseudoknight");
@@ -89,16 +91,18 @@ public class RefactorerTest {
         Map<String, String> pseudoPortalChecks = new HashMap<>();
         pseudoPortalChecks.put("pseudo1", "pseudo");
         pseudoPortalChecks.put("pseudo2", "pseudo");
-        RefactoringCheckContainer pseudoChecker = new RefactoringCheckContainer(pseudoConfigChecks, pseudoPortalChecks);
-        output.put("config-pseudoknight.yml", pseudoChecker);
+        TwoTuple<Map<String, Object>, Map<String, String>> pseudoChecks = new TwoTuple<>(pseudoConfigChecks,
+                pseudoPortalChecks);
+        output.put("config-pseudoknight.yml", pseudoChecks);
 
         Map<String, Object> lcloConfigChecks = new HashMap<>();
         lcloConfigChecks.put("defaultGateNetwork", "lclco");
         Map<String, String> lcloPortalChecks = new HashMap<>();
         lcloPortalChecks.put("lclo1", "lclo");
         lcloPortalChecks.put("lclo2", "lclo");
-        RefactoringCheckContainer lcloChecker = new RefactoringCheckContainer(lcloConfigChecks, lcloPortalChecks);
-        output.put("config-lclo.yml", lcloChecker);
+        TwoTuple<Map<String, Object>, Map<String, String>> lcloChecks = new TwoTuple<>(lcloConfigChecks,
+                lcloPortalChecks);
+        output.put("config-lclo.yml", lcloChecks);
 
         return output;
     }
@@ -151,16 +155,16 @@ public class RefactorerTest {
     @Test
     @Order(2)
     public void doOtherRefactorCheck() {
-        for(Refactorer refactorer : refactorerMap.values()) {
+        for (Refactorer refactorer : refactorerMap.values()) {
             refactorer.run();
         }
     }
-    
+
     @Test
     @Order(3)
     public void configDoubleCheck() throws IOException, InvalidConfigurationException {
         for (File configFile : configFiles) {
-            Map<String, Object> testMap = configTestMap.get(configFile.getName()).getSettingChecks();
+            Map<String, Object> testMap = configTestMap.get(configFile.getName()).getFirstValue();
             FileConfiguration config = new StargateConfiguration();
             config.load(configFile);
             for (String settingKey : testMap.keySet()) {
@@ -193,7 +197,7 @@ public class RefactorerTest {
     @Order(3)
     public void portalLoadCheck() {
         for (String key : configTestMap.keySet()) {
-            Map<String, String> testMap = configTestMap.get(key).getPortalChecks();
+            Map<String, String> testMap = configTestMap.get(key).getSecondValue();
             for (String portalName : testMap.keySet()) {
                 String netName = testMap.get(portalName);
                 Network net = factory.getNetwork(netName, false);

@@ -4,7 +4,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.network.StargateFactory;
-import net.TheDgtl.Stargate.refactoring.retcons.Modificator;
+import net.TheDgtl.Stargate.refactoring.retcons.Modifier;
 import net.TheDgtl.Stargate.refactoring.retcons.RetCon1_0_0;
 import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -26,11 +26,11 @@ public class Refactorer {
     private Map<String, Object> config;
     private StargateLogger logger;
     private FileConfiguration fileConfig;
-    private final Modificator[] RETCONS;
+    private final Modifier[] RETCONS;
 
     public Refactorer(File configFile, StargateLogger logger, Server server, StargateFactory factory) throws FileNotFoundException, IOException, InvalidConfigurationException {
-        RETCONS = new Modificator[]{
-                new RetCon1_0_0(server, logger, factory)
+        RETCONS = new Modifier[]{
+                new RetCon1_0_0(server, factory)
         };
 
         FileConfiguration fileConfig = new StargateConfiguration();
@@ -46,8 +46,8 @@ public class Refactorer {
      * @return every configuration mapping that could be transfered over to this version
      */
     public Map<String, Object> getConfigModificatinos() {
-        for (Modificator retCon : RETCONS) {
-            int retConConfigNumber = retCon.getConfigNumber();
+        for (Modifier retCon : RETCONS) {
+            int retConConfigNumber = retCon.getConfigVersion();
             if (retConConfigNumber >= configVersion) {
                 config = retCon.getConfigModifications(config);
             }
@@ -56,8 +56,8 @@ public class Refactorer {
     }
 
     public void run() {
-        for (Modificator retCon : RETCONS) {
-            int retConConfigNumber = retCon.getConfigNumber();
+        for (Modifier retCon : RETCONS) {
+            int retConConfigNumber = retCon.getConfigVersion();
             if (retConConfigNumber >= configVersion) {
                 retCon.run();
                 configVersion = retConConfigNumber;

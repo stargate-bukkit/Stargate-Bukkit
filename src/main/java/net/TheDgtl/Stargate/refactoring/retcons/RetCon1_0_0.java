@@ -1,7 +1,8 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
-import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.TwoTuple;
 import net.TheDgtl.Stargate.network.StargateFactory;
+import net.TheDgtl.Stargate.util.FileHelper;
 import org.bukkit.Server;
 
 import java.io.IOException;
@@ -9,129 +10,61 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class RetCon1_0_0 extends Modificator {
+public class RetCon1_0_0 extends Modifier {
+
     /**
-     * A list of every old settingname and what it changed to in this retcon
+     * A list of every old setting-name and what it changed to in this ret-con
      */
     static private final HashMap<String, String> CONFIG_CONVERSIONS = new HashMap<>();
 
     static {
-        /*
-         *  Dinnerbone
-         *  TODO: convert old ass database
-         */
-        CONFIG_CONVERSIONS.put("portal-save-location", null);
-        CONFIG_CONVERSIONS.put("teleportMessage", null);
-        CONFIG_CONVERSIONS.put("registerMessage", null);
-        CONFIG_CONVERSIONS.put("destroyzMessage", null);
-        CONFIG_CONVERSIONS.put("noownersMessage", null);
-        CONFIG_CONVERSIONS.put("unselectMessage", null);
-        CONFIG_CONVERSIONS.put("collisinMessage", null);
-        CONFIG_CONVERSIONS.put("cantAffordToUse", null);
-        CONFIG_CONVERSIONS.put("cantAffordToNew", null);
-        CONFIG_CONVERSIONS.put("defaultNetwork", "defaultGateNetwork");
-        CONFIG_CONVERSIONS.put("use-mysql", "useRemoteDatabase");
-        CONFIG_CONVERSIONS.put("portal-open", null);
-        CONFIG_CONVERSIONS.put("portal-closed", null);
-        CONFIG_CONVERSIONS.put("cost-type", null);
-        CONFIG_CONVERSIONS.put("cost-to-use", "usageCost");
-        CONFIG_CONVERSIONS.put("cost-to-create", "creationCost");
-        CONFIG_CONVERSIONS.put("cost-to-activate", null);
-        CONFIG_CONVERSIONS.put("cost-destination", "chargeFreeDestination");
-
-
-        // Drakia
-        CONFIG_CONVERSIONS.put("lang", "language");
-        CONFIG_CONVERSIONS.put("enableBungee", "bungee.usingBungee");
-        CONFIG_CONVERSIONS.put("default-gate-network", "defaultGateNetwork");
-        CONFIG_CONVERSIONS.put("maxgates", "networkLimit");
-        CONFIG_CONVERSIONS.put("ignoreEntrance", null);
-        CONFIG_CONVERSIONS.put("destroyexplosion", "destroyOnExplosion");
-        CONFIG_CONVERSIONS.put("useiconomy", "useEconomy");
-        CONFIG_CONVERSIONS.put("createcost", "creationCost");
-        CONFIG_CONVERSIONS.put("destroycost", "destructionCost");
-        CONFIG_CONVERSIONS.put("usecost", "usageCost");
-        CONFIG_CONVERSIONS.put("toowner", "gateOwnerRevenue");
-        CONFIG_CONVERSIONS.put("chargefreedestination", "chargeFreeDestination");
-        CONFIG_CONVERSIONS.put("signColor", null);
-        CONFIG_CONVERSIONS.put("freegatesgreen", "signStyle.listing");
-        CONFIG_CONVERSIONS.put("portal-folder", null);
-        CONFIG_CONVERSIONS.put("gate-folder", null);
-        CONFIG_CONVERSIONS.put("debug", null);
-        CONFIG_CONVERSIONS.put("permdebug", null);
-        CONFIG_CONVERSIONS.put("destMemory", "rememberLastDestination");
-        CONFIG_CONVERSIONS.put("sortLists", null);
-
-        // PseudoKnight
-        CONFIG_CONVERSIONS.put("verifyPortals", "checkPortalValidity");
-        CONFIG_CONVERSIONS.put("useeconomy", "useEconomy");
-
-        // LCLO
-        CONFIG_CONVERSIONS.put("taxaccount", "taxAccount");
-
-        // EpicKnarvik97
-        CONFIG_CONVERSIONS.put("adminUpdateAlert", null);
-        CONFIG_CONVERSIONS.put("folders.portalFolder", null);
-        CONFIG_CONVERSIONS.put("folders.gateFolder", null);
-        CONFIG_CONVERSIONS.put("gates.maxGatesEachNetwork", "networkLimit");
-        CONFIG_CONVERSIONS.put("gates.defaultGateNetwork", "defaultGateNetwork");
-        CONFIG_CONVERSIONS.put("gates.cosmetic.rememberDestination", "rememberLastDestination");
-        CONFIG_CONVERSIONS.put("gates.cosmetic.sortNetworkDestinations", null);
-        CONFIG_CONVERSIONS.put("gates.cosmetic.signColor", null);
-        CONFIG_CONVERSIONS.put("gates.cosmetic.mainSignColor", "signStyle.defaultForeground");
-        CONFIG_CONVERSIONS.put("gates.cosmetic.highlightSignColor", "signStyle.defaultBackground");
-        CONFIG_CONVERSIONS.put("gates.integrity.destroyedByExplosion", "destroyOnExplosion");
-        CONFIG_CONVERSIONS.put("gates.integrity.verifyPortals", "checkPortalValidity");
-        CONFIG_CONVERSIONS.put("gates.integrity.protectEntrance", "protectEntrance");
-        CONFIG_CONVERSIONS.put("gates.functionality.enableBungee", "bungee.usingBungee");
-        CONFIG_CONVERSIONS.put("gates.functionality.handleVehicles", "handleVehicles");
-        CONFIG_CONVERSIONS.put("gates.functionality.handleEmptyVehicles", null);
-        CONFIG_CONVERSIONS.put("gates.functionality.handleCreatureTransportation", null);
-        CONFIG_CONVERSIONS.put("gates.functionality.handleNonPlayerVehicles", null);
-        CONFIG_CONVERSIONS.put("gates.functionality.handleLeashedCreatures", "handleLeashedCreatures");
-        CONFIG_CONVERSIONS.put("usevault", null);
-        CONFIG_CONVERSIONS.put("economy.useEconomy", "useEconomy");
-        CONFIG_CONVERSIONS.put("economy.createCost", "creationCost");
-        CONFIG_CONVERSIONS.put("economy.destroyCost", "destructionCost");
-        CONFIG_CONVERSIONS.put("economy.useCost", "usageCost");
-        CONFIG_CONVERSIONS.put("economy.toOwner", "gateOwnerRevenue");
-        CONFIG_CONVERSIONS.put("economy.chargeFreeDestination", "chargeFreeDestination");
-        CONFIG_CONVERSIONS.put("economy.freeGatesColor", null);
-        CONFIG_CONVERSIONS.put("economy.freeGatesColored", "signStyle.listing");
-        CONFIG_CONVERSIONS.put("debugging.permissionDebug", null);
-        CONFIG_CONVERSIONS.put("debugging.debug", null);
-
-        // cybertiger
-        CONFIG_CONVERSIONS.put("enableEconomy", "useEconomy");
+        //Read all config migrations
+        Map<String, String> migrationFields;
+        try {
+            migrationFields = FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(
+                    FileHelper.getInputStreamForInternalFile("/migration/config-migrations-1_0_0.txt")));
+            for (String key : migrationFields.keySet()) {
+                String value = migrationFields.get(key);
+                if (value.trim().isEmpty()) {
+                    CONFIG_CONVERSIONS.put(key, null);
+                } else {
+                    CONFIG_CONVERSIONS.put(key, value);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private Server server;
-    private StargateLogger logger;
-    private StargateFactory factory;
+    private final Server server;
+    private final StargateFactory factory;
     private Map<String, Object> oldConfig;
 
-    public RetCon1_0_0(Server server, StargateLogger logger, StargateFactory factory) {
+    /**
+     * Instantiates a new Ret-Con 1.0.0
+     *
+     * @param server  <p>The server to use for loading legacy portals</p>
+     * @param factory <p>The stargate factory to use for loading legacy portals</p>
+     */
+    public RetCon1_0_0(Server server, StargateFactory factory) {
         this.server = server;
-        this.logger = logger;
         this.factory = factory;
     }
 
-    /**
-     * @param oldConfig
-     * @return a new configuration
-     */
     @Override
     public Map<String, Object> getConfigModifications(Map<String, Object> oldConfig) {
         Map<String, Object> newConfig = super.getConfigModifications(oldConfig);
         this.oldConfig = oldConfig;
 
         Level logLevel = Level.INFO;
-        if ((oldConfig.get("permdebug") != null && (boolean) oldConfig.get("permdebug"))
-                || (oldConfig.get("debugging.permdebug") != null) && (boolean) oldConfig.get("debugging.permdebug"))
+        if ((oldConfig.get("permdebug") != null && (boolean) oldConfig.get("permdebug")) ||
+                (oldConfig.get("debugging.permdebug") != null) && (boolean) oldConfig.get("debugging.permdebug")) {
             logLevel = Level.CONFIG;
-        if ((oldConfig.get("debug") != null && (boolean) oldConfig.get("debug"))
-                || (oldConfig.get("debugging.debug") != null && (boolean) oldConfig.get("debugging.debug")))
+        }
+        if ((oldConfig.get("debug") != null && (boolean) oldConfig.get("debug")) ||
+                (oldConfig.get("debugging.debug") != null && (boolean) oldConfig.get("debugging.debug"))) {
             logLevel = Level.FINE;
+        }
         newConfig.put("loggingLevel", logLevel.toString());
         return newConfig;
     }
@@ -152,23 +85,24 @@ public class RetCon1_0_0 extends Modificator {
     }
 
     @Override
-    protected SettingSet getNewSetting(SettingSet oldSetting) {
-        if (!CONFIG_CONVERSIONS.containsKey(oldSetting.key)) {
+    protected TwoTuple<String, Object> getNewSetting(TwoTuple<String, Object> oldSetting) {
+        if (!CONFIG_CONVERSIONS.containsKey(oldSetting.getFirstValue())) {
             return oldSetting;
         }
-        String newKey = CONFIG_CONVERSIONS.get(oldSetting.key);
+        String newKey = CONFIG_CONVERSIONS.get(oldSetting.getFirstValue());
 
         if (newKey == null)
             return null;
 
-        if (oldSetting.key.equals("freegatesgreen") || oldSetting.key.equals("economy.freeGatesColored"))
-            return new SettingSet(newKey, 2);
+        if (oldSetting.getFirstValue().equals("freegatesgreen") ||
+                oldSetting.getFirstValue().equals("economy.freeGatesColored"))
+            return new TwoTuple<>(newKey, 2);
 
-        return new SettingSet(newKey, oldSetting.value);
+        return new TwoTuple<>(newKey, oldSetting.getSecondValue());
     }
 
     @Override
-    public int getConfigNumber() {
+    public int getConfigVersion() {
         return 6;
     }
 

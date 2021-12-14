@@ -39,8 +39,8 @@ public class InterServerNetwork extends Network {
     }
 
     @Override
-    public void removePortal(Portal portal, boolean saveToDatabase) {
-        super.removePortal(portal, saveToDatabase);
+    public void removePortal(Portal portal, boolean removeFromDatabase) {
+        super.removePortal(portal, removeFromDatabase);
 
 
         try {
@@ -49,7 +49,7 @@ public class InterServerNetwork extends Network {
             e.printStackTrace();
         }
         updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
-        if (!saveToDatabase)
+        if (!removeFromDatabase)
             return;
         unregisterFromInterServer(portal);
     }
@@ -93,7 +93,7 @@ public class InterServerNetwork extends Network {
     }
 
     @Override
-    public String concatName() {
+    public String getHighlightedName() {
         return HighlightingStyle.BUNGEE.getHighlightedName(getName());
     }
 

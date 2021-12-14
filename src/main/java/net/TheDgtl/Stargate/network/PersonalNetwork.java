@@ -21,7 +21,7 @@ public class PersonalNetwork extends Network {
     }
 
     @Override
-    public String concatName() {
+    public String getHighlightedName() {
         return HighlightingStyle.PERSONAL.getHighlightedName(playerName);
     }
 }

@@ -28,7 +28,7 @@ faultFlag=You lack permission to use the %flags% flags; your portal has been cre
 
 # Bungee Problems
 bungeePerms=You do not have permission to make bungee gates\!
-bungeeDisabled=Bungeecord support is not enabled.
+bungeeDisabled=BungeeCord support is not enabled.
 bungeeLocal=Modern bungee gates are not enabled.
 bungeeLegacySyntax=Legacy bungee gates require you to specify a destination gate and server.
 bungeeInvalidExitNetwork=This portal's network no longer exists on the target server.
@@ -38,8 +38,8 @@ bungeeTargetOffline=The proxy is currently down; bungee portals are temporarily 
 
 # Gate Usage
 tpSuccess=Teleported\!
-tpDestiInvalid=Invalid destination\!
-tpDestiBlocked=Destination obstructed\!
+tpDestInvalid=Invalid destination\!
+tpDestBlocked=Destination obstructed\!
 tpEmptyNet=Access denied\!
 
 # Access
