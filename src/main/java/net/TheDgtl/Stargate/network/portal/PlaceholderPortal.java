@@ -1,53 +1,71 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import java.util.EnumSet;
-import java.util.UUID;
-
-import org.bukkit.DyeColor;
+import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
 
-import net.TheDgtl.Stargate.gate.Gate;
-import net.TheDgtl.Stargate.network.Network;
+import java.util.EnumSet;
+import java.util.UUID;
 
 /**
  * A placeholder portal that can be given values and then saved into the
  * database. Does not have any other function
- * 
- * @author Thorin
  *
+ * @author Thorin
  */
-public class PlaceholderPortal implements Portal{
-    private String name;
+public class PlaceholderPortal implements Portal {
+
+    private final String name;
     private Network network;
     private String destination = "";
     private EnumSet<PortalFlag> flags;
-    private Location signLoc;
+    private Location signLocation;
     private String gateFileName;
     private UUID ownerUUID;
 
-    public PlaceholderPortal(String name, Network network, String destination, EnumSet<PortalFlag> flags, Location signLoc, String gateFileName, UUID ownerUUID) {
+    /**
+     * Instantiates a new placeholder portal
+     *
+     * @param name         <p>The name of the portal</p>
+     * @param network      <p>The network the portal belongs to</p>
+     * @param destination  <p>The fixed destination of this portal, or null</p>
+     * @param flags        <p>The flags enabled for the portal</p>
+     * @param signLocation <p>The location of this portal's sign</p>
+     * @param gateFileName <p>The file name of this portal's gate format</p>
+     * @param ownerUUID    <p>The UUID of the portal's owner</p>
+     */
+    public PlaceholderPortal(String name, Network network, String destination, EnumSet<PortalFlag> flags,
+                             Location signLocation, String gateFileName, UUID ownerUUID) {
         this.name = name;
-        if(destination != null)
+        if (destination != null) {
             this.destination = destination;
+        }
         this.flags = flags;
-        this.signLoc = signLoc;
+        this.signLocation = signLocation;
         this.network = network;
         this.gateFileName = gateFileName;
         this.ownerUUID = ownerUUID;
     }
-    
+
+    /**
+     * Instantiates a new placeholder portal
+     *
+     * @param name         <p>The name of the portal</p>
+     * @param network      <p>The network the portal belongs to</p>
+     * @param destination  <p>The fixed destination of this portal, or null</p>
+     */
     public PlaceholderPortal(String name, Network network, String destination) {
         this.name = name;
-        if(destination != null)
+        if (destination != null) {
             this.destination = destination;
+        }
         this.network = network;
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+    }
 
     @Override
     public boolean isOpen() {
@@ -60,16 +78,20 @@ public class PlaceholderPortal implements Portal{
     }
 
     @Override
-    public void teleportHere(Entity target, RealPortal origin) {}
+    public void teleportHere(Entity target, RealPortal origin) {
+    }
 
     @Override
-    public void doTeleport(Entity target) {}
+    public void doTeleport(Entity target) {
+    }
 
     @Override
-    public void close(boolean forceClose) {}
+    public void close(boolean forceClose) {
+    }
 
     @Override
-    public void open(Player player) {}
+    public void open(Player player) {
+    }
 
     @Override
     public String getName() {
@@ -77,7 +99,8 @@ public class PlaceholderPortal implements Portal{
     }
 
     @Override
-    public void overrideDestination(Portal destination) {}
+    public void overrideDestination(Portal destination) {
+    }
 
     @Override
     public Network getNetwork() {
@@ -101,7 +124,7 @@ public class PlaceholderPortal implements Portal{
 
     @Override
     public Location getSignLocation() {
-        return signLoc;
+        return signLocation;
     }
 
     @Override
@@ -115,13 +138,16 @@ public class PlaceholderPortal implements Portal{
     }
 
     @Override
-    public void update() {}
+    public void update() {
+    }
 
     @Override
     public Portal loadDestination() {
         Portal destination = network.getPortal(this.destination);
-        if(destination != null)
+        if (destination != null) {
             return destination;
-        return new PlaceholderPortal(this.destination,network,"");
+        }
+        return new PlaceholderPortal(this.destination, network, "");
     }
+
 }
