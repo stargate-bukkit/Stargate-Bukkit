@@ -225,7 +225,6 @@ permissions:
 
       sg.preset:
         description: Premade groupings for convenience.
-        default: false
         children:
           sg.preset.user:
             description: A permission set intended to be given to players who will be using -- but not making -- stargates.
