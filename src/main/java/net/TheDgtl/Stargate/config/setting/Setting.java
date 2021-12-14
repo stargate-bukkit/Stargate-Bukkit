@@ -10,7 +10,7 @@ public enum Setting {
     /**
      * The default network if no network is specified
      */
-    DEFAULT_NET("defaultGateNetwork"),
+    DEFAULT_NETWORK("defaultGateNetwork"),
 
     /**
      * The language used for all translatable messages

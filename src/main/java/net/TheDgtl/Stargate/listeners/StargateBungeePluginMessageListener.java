@@ -33,7 +33,6 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
-
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
@@ -207,12 +206,12 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
         Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
         Network network = Stargate.factory.getNetwork(networkName, true);
-        if(network == null) {
+        if (network == null) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_NETWORK));
             return;
         }
         Portal destinationPortal = network.getPortal(portalName);
-        if(destinationPortal == null) {
+        if (destinationPortal == null) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_GATE));
             return;
         }

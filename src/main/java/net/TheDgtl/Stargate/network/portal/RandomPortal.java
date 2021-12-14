@@ -13,22 +13,38 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * A portal that always chooses a random destination within its own network
+ */
 public class RandomPortal extends AbstractPortal {
 
     private final Random randomizer = new Random();
 
-    public RandomPortal(Network network, String name, Block sign, Set<PortalFlag> flags, UUID ownerUUID) throws NameErrorException, NoFormatFoundException, GateConflictException {
-        super(network, name, sign, flags, ownerUUID);
+    /**
+     * Instantiates a new random portal
+     *
+     * @param network   <p>The network the portal belongs to</p>
+     * @param name      <p>The name of the portal</p>
+     * @param signBlock <p>The block this portal's sign is located at</p>
+     * @param flags     <p>The flags enabled for the portal</p>
+     * @param ownerUUID <p>The UUID of the portal's owner</p>
+     * @throws NameErrorException     <p>If the portal name is invalid</p>
+     * @throws NoFormatFoundException <p>If no gate format matches the portal</p>
+     * @throws GateConflictException  <p>If the portal's gate conflicts with an existing one</p>
+     */
+    public RandomPortal(Network network, String name, Block signBlock, Set<PortalFlag> flags, UUID ownerUUID)
+            throws NameErrorException, NoFormatFoundException, GateConflictException {
+        super(network, name, signBlock, flags, ownerUUID);
     }
 
     @Override
     public void drawControlMechanisms() {
-        String[] lines = {
-                super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL),
-                super.colorDrawer.formatLine(HighlightingStyle.DESTINATION.getHighlightedName(Stargate.languageManager.getString(TranslatableMessage.RANDOM))),
-                !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(network.concatName()) : "",
-                ""
-        };
+        String[] lines = new String[4];
+        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
+        lines[1] = super.colorDrawer.formatLine(HighlightingStyle.DESTINATION.getHighlightedName(
+                Stargate.languageManager.getString(TranslatableMessage.RANDOM)));
+        lines[2] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(network.concatName()) : "";
+        lines[3] = "";
         getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }
 
@@ -40,9 +56,8 @@ public class RandomPortal extends AbstractPortal {
             return null;
         }
         int randomNumber = randomizer.nextInt(destinations.length);
-        String dest = destinations[randomNumber];
-
-        return network.getPortal(dest);
+        String destination = destinations[randomNumber];
+        return network.getPortal(destination);
     }
 
     @Override
@@ -50,5 +65,6 @@ public class RandomPortal extends AbstractPortal {
         super.close(force);
         destination = null;
     }
+
 }
 

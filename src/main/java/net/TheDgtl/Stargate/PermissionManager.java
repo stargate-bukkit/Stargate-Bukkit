@@ -205,7 +205,7 @@ public class PermissionManager {
 
         if (target.getName().equals(network)) {
             hasPermission = target.hasPermission(CREATE_PERMISSION + ".personal");
-        } else if (network.equals(Settings.getString(Setting.DEFAULT_NET))) {
+        } else if (network.equals(Settings.getString(Setting.DEFAULT_NETWORK))) {
             hasPermission = target.hasPermission(CREATE_PERMISSION + ".default");
         } else {
             hasPermission = target.hasPermission(CREATE_PERMISSION + ".custom." + network);

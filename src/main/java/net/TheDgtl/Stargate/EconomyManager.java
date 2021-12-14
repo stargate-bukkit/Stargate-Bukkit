@@ -2,7 +2,6 @@ package net.TheDgtl.Stargate;
 
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
-
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import net.milkbowl.vault.economy.Economy;

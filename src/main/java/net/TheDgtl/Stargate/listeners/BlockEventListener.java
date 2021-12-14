@@ -19,7 +19,6 @@ import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -174,7 +173,7 @@ public class BlockEventListener implements Listener {
 
         if (dissallowedFlags.size() > 0) {
             String unformatedMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FLAGS_PERM);
-            player.sendMessage(TranslatableMessageFormatter.compileFlags(unformatedMessage,dissallowedFlags));
+            player.sendMessage(TranslatableMessageFormatter.compileFlags(unformatedMessage, dissallowedFlags));
         }
         flags.removeAll(dissallowedFlags);
         if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
@@ -186,7 +185,7 @@ public class BlockEventListener implements Listener {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INTERSERVER_DISABLED));
             return;
         }
-        
+
         String finalNetworkName;
         Network selectedNetwork = null;
         try {
@@ -255,26 +254,26 @@ public class BlockEventListener implements Listener {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return;
         }
-        
-        if(isInSpawn(signLocation.getLocation())) {
+
+        if (isInSpawn(signLocation.getLocation())) {
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.SPAWNCHUNKS_CONFLICTING));
         }
-        
+
         selectedNetwork.addPortal(portal, true);
         selectedNetwork.updatePortals();
         Stargate.log(Level.FINE, "A Gate format matches");
-        if(flags.contains(PortalFlag.PERSONAL_NETWORK)) 
+        if (flags.contains(PortalFlag.PERSONAL_NETWORK))
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE_PERSONAL));
         else {
             String unformatedMessage = Stargate.languageManager.getMessage(TranslatableMessage.CREATE);
-            player.sendMessage(TranslatableMessageFormatter.compileNetwork(unformatedMessage,selectedNetwork.getName()));
+            player.sendMessage(TranslatableMessageFormatter.compileNetwork(unformatedMessage, selectedNetwork.getName()));
         }
     }
-    
+
     private boolean isInSpawn(Location loc) {
         Location spawnpoint = loc.getWorld().getSpawnLocation();
         Vector vec = loc.subtract(spawnpoint).toVector();
-        int spawnProtWidth =  Bukkit.getServer().getSpawnRadius();
+        int spawnProtWidth = Bukkit.getServer().getSpawnRadius();
         return (Math.abs(vec.getBlockX()) < spawnProtWidth && Math.abs(vec.getBlockZ()) < spawnProtWidth);
     }
 
@@ -315,7 +314,7 @@ public class BlockEventListener implements Listener {
          * the necessary permissions */
         if (!permissionManager.canCreateInNetwork(initialNetworkName) || initialNetworkName.trim().isEmpty()) {
             Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to default...");
-            String defaultNetwork = Settings.getString(Setting.DEFAULT_NET);
+            String defaultNetwork = Settings.getString(Setting.DEFAULT_NETWORK);
             if (!permissionManager.canCreateInNetwork(defaultNetwork)) {
                 Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to private...");
                 flags.add(PortalFlag.PERSONAL_NETWORK);

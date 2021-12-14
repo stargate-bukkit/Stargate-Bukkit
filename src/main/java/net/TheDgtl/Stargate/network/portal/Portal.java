@@ -1,18 +1,10 @@
 package net.TheDgtl.Stargate.network.portal;
 
-
-import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -150,42 +142,5 @@ public interface Portal {
      * @return <p>The currently selected destination portal</p>
      */
     Portal loadDestination();
-
-    /**
-     * Gets a string representation of the given portal
-     *
-     * <p>Convert a portal into a string, would look like this: Classname{key1=data1,key2=data2 ... }</p>
-     *
-     * @param portal <p>The portal to convert to a string</p>
-     * @return <p>A string representing the given portal</p>
-     */
-    static String getString(Portal portal) {
-        String type = portal.getClass().getName();
-
-        HashMap<String, String> data = new HashMap<>();
-        data.put("flags", portal.getAllFlagsString());
-        data.put("name", portal.getName());
-        data.put("net", portal.getNetwork().getName());
-        if (Settings.getBoolean(Setting.USING_BUNGEE)) {
-            data.put("server", Stargate.serverName);
-        }
-        StringBuilder endMsg = new StringBuilder(type + "{");
-        Iterator<String> it = data.keySet().iterator();
-        while (it.hasNext()) {
-            String key = it.next();
-            endMsg.append(key).append("=").append(data.get(key));
-            if (it.hasNext())
-                endMsg.append(",");
-        }
-        return endMsg + "}";
-    }
-    
-    public static String flagsToString(Set<PortalFlag> flags) {
-        StringBuilder out = new StringBuilder();
-        for (PortalFlag flag : flags) {
-            out.append(flag.getCharacterRepresentation());
-        }
-        return out.toString();
-    }
 
 }

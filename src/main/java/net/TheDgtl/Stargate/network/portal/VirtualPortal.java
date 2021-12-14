@@ -19,8 +19,10 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * A virtual portal, which does not exist. Symbolises a portal that is outside
- * this server and acts as an interface to send relevant inter-server packets.
+ * A virtual representation of a portal on a different server
+ *
+ * <p>A virtual portal, which does not exist. Symbolises a portal that is outside this server and acts as an interface
+ * to send relevant inter-server packets.</p>
  *
  * @author Thorin
  */
@@ -32,13 +34,22 @@ public class VirtualPortal implements Portal {
     private final Set<PortalFlag> flags;
     private final UUID ownerUUID;
 
-    public VirtualPortal(String server, String name, Network net, Set<PortalFlag> flags, UUID ownerUUID) {
+    /**
+     * Instantiates a new virtual portal
+     *
+     * @param server    <p>The name of the server this portal belongs to</p>
+     * @param name      <p>The name of this portal</p>
+     * @param network   <p>The network this virtual portal belongs to</p>
+     * @param flags     <p>The portal flags enabled for this virtual portal</p>
+     * @param ownerUUID <p>The UUID of this virtual portal's owner</p>
+     */
+    public VirtualPortal(String server, String name, Network network, Set<PortalFlag> flags, UUID ownerUUID) {
         this.server = server;
         this.name = name;
-        this.network = net;
+        this.network = network;
         this.flags = flags;
         this.ownerUUID = ownerUUID;
-        network.addPortal(this, false);
+        this.network.addPortal(this, false);
     }
 
     @Override
@@ -52,44 +63,16 @@ public class VirtualPortal implements Portal {
         Player player = (Player) target;
 
         try {
-            ByteArrayOutputStream bao = new ByteArrayOutputStream();
-            DataOutputStream msgData = new DataOutputStream(bao);
-            msgData.writeUTF(PluginChannel.FORWARD.getChannel());
-            msgData.writeUTF(server);
-            msgData.writeUTF(PluginChannel.PLAYER_TELEPORT.getChannel());
-            JsonObject data = new JsonObject();
-            data.add(StargateProtocolProperty.PLAYER.toString(), new JsonPrimitive(player.getName()));
-            data.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(this.name));
-            data.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(network.getName()));
-            String dataMsg = data.toString();
-            msgData.writeUTF(dataMsg);
-            Stargate.log(Level.FINEST, bao.toString());
-            player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), bao.toByteArray());
-        } catch (IOException ex) {
-            Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord teleport packet");
-            ex.printStackTrace();
-            return;
+            sendTeleportMessage(plugin, player);
+            sendConnectMessage(plugin, player);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-
-        try {
-            ByteArrayOutputStream bao = new ByteArrayOutputStream();
-            DataOutputStream msgData = new DataOutputStream(bao);
-            msgData.writeUTF(PluginChannel.PLAYER_CONNECT.getChannel());
-            msgData.writeUTF(server);
-            player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), bao.toByteArray());
-        } catch (IOException ex) {
-            Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord connect packet");
-            ex.printStackTrace();
-        }
-
     }
 
-    /**
-     * TODO not implemented, probably never will / as it would be overusing much needed BungeeCord message data
-     */
     @Override
     public void close(boolean force) {
+        // TODO: not implemented, probably never will / as it would be overusing much needed BungeeCord message data
     }
 
     @Override
@@ -102,11 +85,9 @@ public class VirtualPortal implements Portal {
         this.network = targetNetwork;
     }
 
-    /**
-     * TODO Not implemented
-     */
     @Override
     public void overrideDestination(Portal destination) {
+        //TODO: Not implemented
     }
 
     @Override
@@ -114,11 +95,9 @@ public class VirtualPortal implements Portal {
         return network;
     }
 
-    /**
-     * TODO not implemented
-     */
     @Override
     public void open(Player player) {
+        //TODO: not implemented
     }
 
     @Override
@@ -172,6 +151,57 @@ public class VirtualPortal implements Portal {
     @Override
     public Portal loadDestination() {
         return null;
+    }
+
+    /**
+     * Sends a BungeeCord connect message to make the player change server
+     *
+     * @param plugin <p>A Stargate plugin reference</p>
+     * @param player <p>The player to teleport</p>
+     * @throws IOException <p>If the plugin message cannot be sent</p>
+     */
+    private void sendConnectMessage(Stargate plugin, Player player) throws IOException {
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+            dataOutputStream.writeUTF(PluginChannel.PLAYER_CONNECT.getChannel());
+            dataOutputStream.writeUTF(server);
+            player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
+        } catch (IOException exception) {
+            Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord connect packet");
+            throw exception;
+        }
+    }
+
+    /**
+     * Sends a message to the target server about the incoming player
+     *
+     * <p>Sends a message to this portal's target server telling the server to teleport the incoming player to this
+     * virtual portal's real portal equivalent.</p>
+     *
+     * @param plugin <p>A Stargate plugin reference</p>
+     * @param player <p>The player to teleport</p>
+     * @throws IOException <p>If the plugin message cannot be sent</p>
+     */
+    private void sendTeleportMessage(Stargate plugin, Player player) throws IOException {
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+            dataOutputStream.writeUTF(PluginChannel.FORWARD.getChannel());
+            dataOutputStream.writeUTF(server);
+            dataOutputStream.writeUTF(PluginChannel.PLAYER_TELEPORT.getChannel());
+            JsonObject JsonData = new JsonObject();
+            JsonData.add(StargateProtocolProperty.PLAYER.toString(), new JsonPrimitive(player.getName()));
+            JsonData.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(this.name));
+            JsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(network.getName()));
+            String dataMsg = JsonData.toString();
+            dataOutputStream.writeUTF(dataMsg);
+            Stargate.log(Level.FINEST, byteArrayOutputStream.toString());
+            player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
+        } catch (IOException exception) {
+            Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord teleport packet");
+            throw exception;
+        }
     }
 
 }

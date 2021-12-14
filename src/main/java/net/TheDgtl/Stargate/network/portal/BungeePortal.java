@@ -54,12 +54,12 @@ public class BungeePortal extends AbstractPortal {
             GateConflictException {
         super(network, name, signBlock, flags, ownerUUID);
 
-        
-        if(destination == null || destination.trim().isEmpty() || destinationServer == null || destinationServer.trim().isEmpty()) {
+
+        if (destination == null || destination.trim().isEmpty() || destinationServer == null || destinationServer.trim().isEmpty()) {
             throw new NameErrorException(TranslatableMessage.BUNGEE_LACKING_SIGN_INFORMATION);
         }
-        
-        
+
+
         /*
          * Create a virtual portal that handles everything related
          * to moving the player to a different server. This is set

@@ -21,6 +21,7 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.LineColorFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.LineFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.NoLineColorFormatter;
+import net.TheDgtl.Stargate.util.PortalHelper;
 import net.TheDgtl.Stargate.util.VersionParser;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -252,7 +253,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public String getAllFlagsString() {
-        return Portal.flagsToString(flags);
+        return PortalHelper.flagsToString(flags);
     }
 
     @Override

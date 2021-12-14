@@ -38,7 +38,7 @@ permissions:
                 description: Can see hidden gates on a network.
               sg.admin.bypass.gatelimit:
                 description: Can bypass the networkLimit specified in the config.
-#                 Note: the gate-limit meta can be used to specify a per-player/per-group network limit.
+              #                 Note: the gate-limit meta can be used to specify a per-player/per-group network limit.
               sg.admin.bypass.cost:
                 description: Can bypass any and all costs specified in the config.
                 children:
@@ -57,13 +57,13 @@ permissions:
             description: Even if they would otherwise lack perms, users can use any gate that has been opened by a player with the perms needed to do so.
           sg.use.world:
             description: Can use portals, regardless of the dimension within which they exit.
-#                 sg.use.world.<NAME> is a sub-node that allows for portals that exit in a specified dimension to be used.
+          #                 sg.use.world.<NAME> is a sub-node that allows for portals that exit in a specified dimension to be used.
           sg.use.network:
             description: Can use portals, regardless of their network.
             children:
               sg.use.network.custom:
                 description: Can use portals if they are on any custom network.
-#                 sg.use.network.custom.<NAME> is a sub-node that allows for portals on a specific (specified) custom network to be used.
+              #                 sg.use.network.custom.<NAME> is a sub-node that allows for portals on a specific (specified) custom network to be used.
               sg.use.network.personal:
                 description: Can use portals if they are on one's personal (username) network.
               sg.use.network.default:
@@ -83,27 +83,27 @@ permissions:
                 description: Can use modern interserver gates.
               sg.use.type.n:
                 description: Can use hidden-network gates.
-#NOT IMPL.    sg.use.type.o:
-#NOT IMPL.      description: Can use toggle gates.
+              #NOT IMPL.    sg.use.type.o:
+              #NOT IMPL.      description: Can use toggle gates.
               sg.use.type.p:
                 description: Can use private gates.
               sg.use.type.r:
                 description: Can use random gates.
               sg.use.type.s:
                 description: Can use force-shown gates.
-#NOT IMPL.    sg.use.type.t:
-#NOT IMPL.      description: Can use terminal gates.
+              #NOT IMPL.    sg.use.type.t:
+              #NOT IMPL.      description: Can use terminal gates.
               sg.use.type.u:
                 description: Can use legacy bungee gates.
-#NOT IMPL.    sg.use.type.v:
-#NOT IMPL.      description: Can use gates with invisible signs.
+              #NOT IMPL.    sg.use.type.v:
+              #NOT IMPL.      description: Can use gates with invisible signs.
               sg.use.type.fixed:
                 description: Can use gates with a specified destination.
               sg.use.type.non-fixed:
                 description: Can use gates without a specified destination (networked gates).
           sg.use.design:
             description: Can use any portal, regardless of its portal's design (gatefile).
-#             sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gatefile design to be used.
+      #             sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gatefile design to be used.
 
       sg.create:
         default: op
@@ -112,13 +112,13 @@ permissions:
           sg.create.world:
             default: true
             description: Can create portals in any dimension.
-#             sg.create.world.<NAME> is a sub-node that allows for portals to be created in a specific dimension.
+          #             sg.create.world.<NAME> is a sub-node that allows for portals to be created in a specific dimension.
           sg.create.network:
             description: Can create portals on any network.
             children:
               sg.create.network.custom:
                 description: Create portal on any custom network.
-#                 sg.create.network.custom.<NAME> is a sub-node that allows for portals to be created on a specific (specified) custom network.
+              #                 sg.create.network.custom.<NAME> is a sub-node that allows for portals to be created on a specific (specified) custom network.
               sg.create.network.personal:
                 default: true
                 description: Can create portals if they are on one's personal (username) network.
@@ -139,35 +139,35 @@ permissions:
                 description: Can create gates with the modern interserver flag.
               sg.create.type.n:
                 description: Can create gates with the hidden-network flag.
-#NOT IMPL.    sg.create.type.o:
-#NOT IMPL.      description: Can create gates with the toggle flag.
+              #NOT IMPL.    sg.create.type.o:
+              #NOT IMPL.      description: Can create gates with the toggle flag.
               sg.create.type.p:
                 description: Can create gates with the private flag.
               sg.create.type.r:
                 description: Can create gates with the random flag.
               sg.create.type.s:
                 description: Can create gates with the force-shown flag.
-#NOT IMPL.    sg.create.type.t:
-#NOT IMPL.      description: Can create terminal portals (be they in the terminal, or connecting to it)
-#NOT IMPL.      children:
-#NOT IMPL.        sg.create.type.t.new:
-#NOT IMPL.          description: Can create (sell) a new terminal gate on any network they have access to.
-#NOT IMPL.          children:
-#NOT IMPL.            sg.create.type.t.new.default:
-#NOT IMPL.              description: Can create (sell) a new terminal gate on the default terminal network.
-#NOT IMPL.        sg.create.type.t.connect:
-#NOT IMPL.          description: Can create a gate connecting to any existing, available (for sale) terminal gate. !!(BYPASSES stargate.create.network)!!
-#NOT IMPL.          children:
-#NOT IMPL.            sg.create.type.t.connect.default:
-#NOT IMPL.              description: Can create a gate connecting to any existing, available (for sale) terminal gate on the default network.              
+              #NOT IMPL.    sg.create.type.t:
+              #NOT IMPL.      description: Can create terminal portals (be they in the terminal, or connecting to it)
+              #NOT IMPL.      children:
+              #NOT IMPL.        sg.create.type.t.new:
+              #NOT IMPL.          description: Can create (sell) a new terminal gate on any network they have access to.
+              #NOT IMPL.          children:
+              #NOT IMPL.            sg.create.type.t.new.default:
+              #NOT IMPL.              description: Can create (sell) a new terminal gate on the default terminal network.
+              #NOT IMPL.        sg.create.type.t.connect:
+              #NOT IMPL.          description: Can create a gate connecting to any existing, available (for sale) terminal gate. !!(BYPASSES stargate.create.network)!!
+              #NOT IMPL.          children:
+              #NOT IMPL.            sg.create.type.t.connect.default:
+              #NOT IMPL.              description: Can create a gate connecting to any existing, available (for sale) terminal gate on the default network.              
               sg.create.type.u:
                 description: Can create gates with the legacy bungee flag.
-#NOT IMPL.    sg.create.type.v:
-#NOT IMPL.      description: Can create gates with invisible signs.
+          #NOT IMPL.    sg.create.type.v:
+          #NOT IMPL.      description: Can create gates with invisible signs.
           sg.create.design:
             description: Can create any portal, regardless of the design (gatefile)
             children:
-#             sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gatefile design to be created.
+              #             sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gatefile design to be created.
               sg.create.design.nether.gate: true
               sg.create.design.water.gate: true
               sg.create.design.wool.gate: true
@@ -180,7 +180,7 @@ permissions:
           sg.destroy.world:
             description: Can destroy portals, regardless of dimension
             default: true
-#             sg.destroy.world.<NAME> is a sub-node that allows for portals in a specific dimension to be destroyed.
+          #             sg.destroy.world.<NAME> is a sub-node that allows for portals in a specific dimension to be destroyed.
           sg.destroy.network:
             description: Can destroy portals, regardless of network
             children:
@@ -205,23 +205,23 @@ permissions:
                 description: Can destroy modern interserver gates.
               sg.destroy.type.n:
                 description: Can destroy hidden-network gates.
-#NOT IMPL.    sg.destroy.type.o:
-#NOT IMPL.      description: Can destroy toggle gates.
+              #NOT IMPL.    sg.destroy.type.o:
+              #NOT IMPL.      description: Can destroy toggle gates.
               sg.destroy.type.p:
                 description: Can destroy private gates.
               sg.destroy.type.r:
                 description: Can destroy random gates.
               sg.destroy.type.s:
                 description: Can destroy force-shown gates.
-#Not          sg.destroy.type.t:
-#NOT IMPL.      description: Can destroy terminal gates.
+              #Not          sg.destroy.type.t:
+              #NOT IMPL.      description: Can destroy terminal gates.
               sg.destroy.type.u:
                 description: Can destroy legacy bungee gates.
-#NOT IMPL.    sg.destroy.type.v:
-#NOT IMPL.      description: Can destroy gates with invisible signs.
+          #NOT IMPL.    sg.destroy.type.v:
+          #NOT IMPL.      description: Can destroy gates with invisible signs.
           sg.destroy.design:
             description: Can destroy portals, regardless of design (gatefile).
-#             sg.destroy.design.<NAME>.gate is a sub-node that allows for portals of a specific gatefile design to be destroyed.
+      #             sg.destroy.design.<NAME>.gate is a sub-node that allows for portals of a specific gatefile design to be destroyed.
 
       sg.preset:
         description: Premade groupings for convenience.
@@ -243,18 +243,18 @@ permissions:
               sg.destroy.type.p: true
               sg.create.design: true
               sg.destroy.design: true
-#NOT IMPL.    sg.create.type.o: true
-#NOT IMPL.    sg.destroy.type.o: true
-#NOT IMPL.sg.preset.terminaluser:
-#NOT IMPL.  description: A permission set intended to be given to players who may wish to connect to an already-made terminal.
-#NOT IMPL.  children:
-#NOT IMPL.    sg.preset.gatemaker: true
-#NOT IMPL.    sg.create.type.t.connect.default: true
-#NOT IMPL.sg.preset.terminalmaker:
-#NOT IMPL.  description: A permission set intended to be given to any staff who will be involved in making / administrating a terminal system in spawn.
-#NOT IMPL.  children:
-#NOT IMPL.    sg.preset.terminaluser: true
-#NOT IMPL.    sg.preset.type.t.new.default: true
+          #NOT IMPL.    sg.create.type.o: true
+          #NOT IMPL.    sg.destroy.type.o: true
+          #NOT IMPL.sg.preset.terminaluser:
+          #NOT IMPL.  description: A permission set intended to be given to players who may wish to connect to an already-made terminal.
+          #NOT IMPL.  children:
+          #NOT IMPL.    sg.preset.gatemaker: true
+          #NOT IMPL.    sg.create.type.t.connect.default: true
+          #NOT IMPL.sg.preset.terminalmaker:
+          #NOT IMPL.  description: A permission set intended to be given to any staff who will be involved in making / administrating a terminal system in spawn.
+          #NOT IMPL.  children:
+          #NOT IMPL.    sg.preset.terminaluser: true
+          #NOT IMPL.    sg.preset.type.t.new.default: true
           sg.preset.builder:
             description: A set of permissions intended to be given to staff who will be making advanced stargates for server usage.
             children:
@@ -266,14 +266,14 @@ permissions:
               sg.create.type.s: true
               sg.create.type.u: true
               sg.create.type.i: true
-#NOT IMPL.    sg.create.type.v: true
+              #NOT IMPL.    sg.create.type.v: true
               sg.destroy.type.a: true
               sg.destroy.type.b: true
               sg.destroy.type.n: true
               sg.destroy.type.s: true
               sg.destroy.type.u: true
               sg.destroy.type.i: true
-#NOT IMPL.    sg.destroy.type.v: true
+          #NOT IMPL.    sg.destroy.type.v: true
           sg.preset.moderator:
             description: A set of permissions intended to be given to staff who will be moderating stargate usage amongst players.
             children:
