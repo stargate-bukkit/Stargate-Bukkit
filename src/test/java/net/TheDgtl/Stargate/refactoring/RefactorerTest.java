@@ -40,6 +40,7 @@ public class RefactorerTest {
     static private StargateLogger logger;
     static private File defaultConfigFile;
     static private Database sqlDatabase;
+    static private HashMap<String,Refactorer> refactorerMap = new HashMap<>();
     static private Map<String, RefactoringCheckContainer> configTestMap;
 
     static private StargateFactory factory;
@@ -121,7 +122,7 @@ public class RefactorerTest {
 
     @Test
     @Order(1)
-    public void loadConfigTest() throws IOException, InvalidConfigurationException {
+    public void convertConfigCheck() throws IOException, InvalidConfigurationException {
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
             if (oldConfigFile.exists() && !oldConfigFile.delete()) {
@@ -142,12 +143,21 @@ public class RefactorerTest {
             }
 
             middas.insertNewValues(config);
+            refactorerMap.put(configFile.getName(), middas);
             fileConfig.load(configFile);
         }
     }
 
     @Test
     @Order(2)
+    public void doOtherRefactorCheck() {
+        for(Refactorer refactorer : refactorerMap.values()) {
+            refactorer.run();
+        }
+    }
+    
+    @Test
+    @Order(3)
     public void configDoubleCheck() throws IOException, InvalidConfigurationException {
         for (File configFile : configFiles) {
             Map<String, Object> testMap = configTestMap.get(configFile.getName()).getSettingChecks();
@@ -161,7 +171,7 @@ public class RefactorerTest {
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     public void portalPrintCheck() throws SQLException {
         Connection conn = sqlDatabase.getConnection();
         PreparedStatement statement = conn.prepareStatement("SELECT * FROM Portal;");
@@ -180,7 +190,7 @@ public class RefactorerTest {
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     public void portalLoadCheck() {
         for (String key : configTestMap.keySet()) {
             Map<String, String> testMap = configTestMap.get(key).getPortalChecks();
