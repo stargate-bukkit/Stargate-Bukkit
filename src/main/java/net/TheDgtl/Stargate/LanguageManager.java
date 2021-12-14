@@ -97,15 +97,6 @@ public class LanguageManager {
     }
 
     /**
-     * Gets the currently used/loaded language
-     *
-     * @return <p>The currently used language</p>
-     */
-    public String getLanguage() {
-        return language;
-    }
-
-    /**
      * Sets the currently used language
      *
      * <p>Sets the language and loads everything from the language file</p>
@@ -113,10 +104,14 @@ public class LanguageManager {
      * @param language <p>The language to change to</p>
      */
     public void setLanguage(String language) {
-        if(LANGUAGE_EDGE_CASES.get(language) != null)
+        if (LANGUAGE_EDGE_CASES.get(language) != null) {
             language = LANGUAGE_EDGE_CASES.get(language);
-        this.language = language;
-        translatedStrings = loadLanguage(language);
+        }
+        // Only update language if it has actually changed
+        if (!language.equals(this.language)) {
+            this.language = language;
+            translatedStrings = loadLanguage(language);
+        }
     }
 
     /**
