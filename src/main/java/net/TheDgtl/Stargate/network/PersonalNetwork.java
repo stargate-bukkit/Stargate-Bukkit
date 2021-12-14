@@ -10,18 +10,31 @@ import org.bukkit.Bukkit;
 import java.util.UUID;
 import java.util.logging.Level;
 
+/**
+ * A network that belongs to a certain player and uses the player's name
+ */
 public class PersonalNetwork extends Network {
+    
     private final String playerName;
 
-    public PersonalNetwork(UUID id, Database database, SQLQueryGenerator sqlMaker) throws NameErrorException {
-        super(id.toString(), database, sqlMaker);
-        Stargate.log(Level.FINE, "Initialized personal network with UUID" + id);
-        Stargate.log(Level.FINE, "Matching player name: " + Bukkit.getOfflinePlayer(id).getName());
-        playerName = Bukkit.getOfflinePlayer(id).getName();
+    /**
+     * Instantiates a new personal network
+     *
+     * @param uuid           <p>The UUID of the player this network belongs to</p>
+     * @param database       <p>The database to use for saving network data</p>
+     * @param queryGenerator <p>The generator to use for generating SQL queries</p>
+     * @throws NameErrorException <p>If the network name is invalid</p>
+     */
+    public PersonalNetwork(UUID uuid, Database database, SQLQueryGenerator queryGenerator) throws NameErrorException {
+        super(uuid.toString(), database, queryGenerator);
+        Stargate.log(Level.FINE, "Initialized personal network with UUID" + uuid);
+        Stargate.log(Level.FINE, "Matching player name: " + Bukkit.getOfflinePlayer(uuid).getName());
+        playerName = Bukkit.getOfflinePlayer(uuid).getName();
     }
 
     @Override
     public String getHighlightedName() {
         return HighlightingStyle.PERSONAL.getHighlightedName(playerName);
     }
+
 }

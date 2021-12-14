@@ -19,29 +19,29 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 
-
+/**
+ * A network containing portals across servers
+ */
 public class InterServerNetwork extends Network {
 
-    public InterServerNetwork(String netName, Database database, SQLQueryGenerator sqlMaker) throws NameErrorException {
-        super(netName, database, sqlMaker);
-    }
-
-    public InterServerNetwork(String netName, Database database, SQLQueryGenerator sqlMaker, List<Portal> portals) throws NameErrorException {
-        super(netName, database, sqlMaker);
-        for (Portal portal : portals) {
-            addPortal(portal, false);
-        }
+    /**
+     * Instantiates a new inter-server network
+     *
+     * @param networkName    <p>The name of the new inter-server network</p>
+     * @param database       <p>The database to use for saving network data</p>
+     * @param queryGenerator <p>The generator to use for generating SQL queries</p>
+     * @throws NameErrorException <p>If the network name is invalid</p>
+     */
+    public InterServerNetwork(String networkName, Database database, SQLQueryGenerator queryGenerator)
+            throws NameErrorException {
+        super(networkName, database, queryGenerator);
     }
 
     @Override
     public void removePortal(Portal portal, boolean removeFromDatabase) {
         super.removePortal(portal, removeFromDatabase);
-
 
         try {
             removePortalFromDatabase(portal, PortalType.INTER_SERVER);
@@ -49,42 +49,7 @@ public class InterServerNetwork extends Network {
             e.printStackTrace();
         }
         updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
-        if (!removeFromDatabase)
-            return;
-    }
 
-    /**
-     * Tries to update the inter-server network globally on every connected server
-     */
-    private void updateInterServerNetwork(Portal portal, StargateProtocolRequestType type) {
-        Stargate stargate = Stargate.getPlugin(Stargate.class);
-
-        Function<Boolean, Boolean> action = (forceEnd) -> {
-            if (stargate.getServer().getOnlinePlayers().size() > 0 || forceEnd) {
-                try {
-                    ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                    DataOutputStream msgData = new DataOutputStream(bao);
-                    msgData.writeUTF(PluginChannel.FORWARD.getChannel());
-                    msgData.writeUTF("ALL");
-                    msgData.writeUTF(PluginChannel.NETWORK_CHANGED.getChannel());
-                    JsonObject data = new JsonObject();
-                    data.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(type.toString()));
-                    data.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getName()));
-                    data.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(portal.getName()));
-                    data.add(StargateProtocolProperty.SERVER.toString(), new JsonPrimitive(Stargate.serverName));
-                    data.add(StargateProtocolProperty.PORTAL_FLAG.toString(), new JsonPrimitive(portal.getAllFlagsString()));
-                    data.add(StargateProtocolProperty.OWNER.toString(), new JsonPrimitive(portal.getOwnerUUID().toString()));
-                    msgData.writeUTF(data.toString());
-                    Bukkit.getServer().sendPluginMessage(stargate, PluginChannel.BUNGEE.getChannel(), bao.toByteArray());
-                } catch (IOException ex) {
-                    Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord connect packet");
-                    ex.printStackTrace();
-                }
-                return true;
-            }
-            return false;
-        };
-        Stargate.syncSecPopulator.addAction(new ForcibleFunctionAction(action), true);
     }
 
     @Override
@@ -95,15 +60,53 @@ public class InterServerNetwork extends Network {
     @Override
     protected void savePortal(Portal portal) {
         /*
-         * Save one local partition of every bungee gate on this server
-         * Also save it to the inter-server database, so that it can be
-         * seen on other servers
+         * Save one local partition of every bungee gate on this server. Also save it to the inter-server database, so
+         * that it can be seen on other servers
          */
-        Supplier<Boolean> action = () -> {
+        Stargate.syncSecPopulator.addAction(new SupplierAction(() -> {
             savePortal(database, portal, PortalType.INTER_SERVER);
             return true;
-        };
-        Stargate.syncSecPopulator.addAction(new SupplierAction(action), true);
+        }), true);
         updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_ADD);
     }
+
+    /**
+     * Tries to update a portal the inter-server network globally on every connected server
+     *
+     * <p>Basically tells all connected servers to either add or remove the given portal.</p>
+     *
+     * @param portal      <p>The portal to send to all servers</p>
+     * @param requestType <p>The type request to send to the server</p>
+     */
+    private void updateInterServerNetwork(Portal portal, StargateProtocolRequestType requestType) {
+        Stargate stargate = Stargate.getPlugin(Stargate.class);
+
+        Stargate.syncSecPopulator.addAction(new ForcibleFunctionAction((forceEnd) -> {
+            if (stargate.getServer().getOnlinePlayers().size() > 0 || forceEnd) {
+                try {
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+                    dataOutputStream.writeUTF(PluginChannel.FORWARD.getChannel());
+                    dataOutputStream.writeUTF("ALL");
+                    dataOutputStream.writeUTF(PluginChannel.NETWORK_CHANGED.getChannel());
+                    JsonObject jsonData = new JsonObject();
+                    jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(requestType.toString()));
+                    jsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getName()));
+                    jsonData.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(portal.getName()));
+                    jsonData.add(StargateProtocolProperty.SERVER.toString(), new JsonPrimitive(Stargate.serverName));
+                    jsonData.add(StargateProtocolProperty.PORTAL_FLAG.toString(), new JsonPrimitive(portal.getAllFlagsString()));
+                    jsonData.add(StargateProtocolProperty.OWNER.toString(), new JsonPrimitive(portal.getOwnerUUID().toString()));
+                    dataOutputStream.writeUTF(jsonData.toString());
+                    Bukkit.getServer().sendPluginMessage(stargate, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
+                } catch (IOException ex) {
+                    Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord connect packet");
+                    ex.printStackTrace();
+                }
+                return true;
+            }
+            return false;
+
+        }), true);
+    }
+
 }
