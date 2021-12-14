@@ -149,7 +149,7 @@ usageCost: 0
 
 # Will fees collected for ‘usecost’ be paid to whomever created (owns) the applicable stargate?
 # If false, collected funds will be deleted (or sent to the taxAccount).
-gateOwnerRevenue: false
+gateOwnerRevenue: true
 
 # Will ‘creationCost’ still be charged if the new gate's destination is a gate with the 'f' flag?
 # Note that this only applies to fixed gates.
@@ -169,9 +169,9 @@ signStyle:
   defaultForeground: BLACK
   defaultBackground: WHITE
   # [1: foreground, 2: gate type, 3: grey, 4: background]
-  pointer: 4
+  pointer: 2
   # [1: selected gates coloured, 2: all gates coloured, 3: no gates coloured]
-  listing: 3
+  listing: 1
 
 # By default, SG allows users to specify coloured names for their gates via external plugins.
 # Such names override the colours specified for signStyle (above).
