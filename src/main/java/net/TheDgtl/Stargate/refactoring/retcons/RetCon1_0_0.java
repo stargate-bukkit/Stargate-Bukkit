@@ -18,7 +18,7 @@ public class RetCon1_0_0 extends Modifier {
     static private final HashMap<String, String> CONFIG_CONVERSIONS = new HashMap<>();
 
     static {
-        FileHelper.readInternalFileToMap("/migration/config-migrations-1_0_0.txt", CONFIG_CONVERSIONS);
+        FileHelper.readInternalFileToMap("/migration/config-migrations-1_0_0.properties", CONFIG_CONVERSIONS);
     }
 
     private final Server server;

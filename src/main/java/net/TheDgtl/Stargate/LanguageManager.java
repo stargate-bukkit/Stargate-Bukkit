@@ -26,7 +26,7 @@ public class LanguageManager {
     private static final Map<String, String> LANGUAGE_EDGE_CASES = new HashMap<>();
 
     static {
-        FileHelper.readInternalFileToMap("/language-edge-cases.txt", LANGUAGE_EDGE_CASES);
+        FileHelper.readInternalFileToMap("/language-edge-cases.properties", LANGUAGE_EDGE_CASES);
     }
 
     /**

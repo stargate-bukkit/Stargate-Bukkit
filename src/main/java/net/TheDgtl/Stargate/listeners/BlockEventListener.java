@@ -39,6 +39,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
@@ -194,6 +195,8 @@ public class BlockEventListener implements Listener {
         } catch (NameErrorException nameErrorException) {
             errorMessage = nameErrorException.getErrorMessage();
         }
+        
+
 
         try {
             tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost, permissionManager, errorMessage);
@@ -224,7 +227,9 @@ public class BlockEventListener implements Listener {
     private void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation, Set<PortalFlag> flags,
                                    Player player, int cost, PermissionManager permissionManager, TranslatableMessage errorMessage)
             throws NameErrorException, GateConflictException, NoFormatFoundException {
-        Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, signLocation, flags, player.getUniqueId());
+
+        UUID ownerUUID = flags.contains(PortalFlag.PERSONAL_NETWORK) ? UUID.fromString(selectedNetwork.getName()) : player.getUniqueId();
+        Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, signLocation, flags, ownerUUID);
         StargateCreateEvent sEvent = new StargateCreateEvent(player, portal, lines, cost);
 
 

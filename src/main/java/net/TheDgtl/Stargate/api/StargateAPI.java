@@ -1,5 +1,6 @@
-package net.TheDgtl.Stargate;
+package net.TheDgtl.Stargate.api;
 
+import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
@@ -14,7 +15,6 @@ import org.bukkit.util.Vector;
  *
  * @author Thorin
  */
-@SuppressWarnings("unused")
 public class StargateAPI {
 
     /**
