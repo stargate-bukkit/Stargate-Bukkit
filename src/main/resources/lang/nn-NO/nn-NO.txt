@@ -1,0 +1,58 @@
+# General Styling
+prefix=[Stjerneport] 
+
+# Sign Formatting
+signLegacyBungee=Forelda Bungee
+signNonFixedL2=Høgre-klikk
+signNonFixedL3=for å bruka port
+signRandom=Tilfeldig
+signDisconnected=Fråkopla
+signTerminalL2=Til sals
+
+# Gate Actions
+gateDestroy=Port Øydelagd!
+gateCreateSpecified=Port oppretta på %network% nettverket!
+gateCreatePersonal=Opprettar port på personleg nettverk.
+gateTerminalSold=Kjøpte port %gateName% i %terminalName% for %cost%.
+gateTerminalSale=Lista port %gateName% til sals i %terminalName% for %cost%.
+
+# Gate Construction Problems
+faultNetwork=Du har ikkje tilgang til det nettverket!
+faultLayout=Du har ikkje tilgang til det port-formatet!
+faultLength=Namnet er for kort eller for langt!
+faultExists=Ein port ved det namnet eksisterer allereie!
+faultFull=Det nettverket er fullt!
+faultWorldDeny=Du har ikkje tilgang til verd %world%!
+faultConflict=Denne porten er i konflikt med ein eksisterande port.
+faultFlag=Du har ikkje tilgang til å bruka %flags% alternativa; portalen din vart laga uten dei.
+
+# Bungee Problems
+bungeePerms=Du har ikkje tilgang til å oppretta bungee-portar!
+bungeeDisabled=BungeeCord støtte er ikkje skrudd på.
+bungeeLocal=Moderne bungee portar er ikkje skrudd på.
+bungeeLegacySyntax=Forelda bungee portar krev at du spesifiserer ein destinasjons-port og ein tenarmaskin.
+bungeeInvalidExitNetwork=Denne porten sitt nettverk eksisterer ikkje på måltenarmaskina.
+bungeeInvalidExitGate=Denne porten sin utgang eksisterer ikkje lenger på måltenarmaskina.
+bungeeProxyOffline=Denne portalen sin utgang er på ei tenermaskin som ikkje er tilgjengeleg akkurat no.
+bungeeTargetOffline=Mellomtenarmaskina er nede akkurat no; bungee portalar er mellombels avslått.
+
+# Gate Usage
+tpSuccess=Teleporterte!
+tpDestiInvalid=Ugyldig mål!
+tpDestiBlocked=Målet er blokkert!
+tpEmptyNet=Det finnast ingen tilgjengelege mål!
+
+# Access
+conflictPerms=Tilgang avslått!
+conflictSpawn="Spawn-chunks" forstyrrar denne portalen!
+
+# Economy
+ecoDeduct=%cost% vart trekt frå din konto.
+ecoObtain=%cost% vart tilført din konto frå Stjerne-port %portal%!
+ecoInsolvent=Manglande midlar!
+
+#Admin
+adminReload=Konfigurasjonen vart lasta inn på nytt!
+adminInfo=Køyrer versjon %version%. Endringslogg: https://git.io/JD4Qo
+adminHelp=Stjerne-port sin dokumentasjon kan bli funnen på https://git.io/JDclf
+translatedBy=EpicKnarvik97 (Kristian Knarvik)

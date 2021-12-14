@@ -1,0 +1,58 @@
+# General Styling
+prefix=[STARGATE] 
+
+# Sign Formatting
+signLegacyBungee=OLD BUNGEE
+signNonFixedL2=RITE CLICK
+signNonFixedL3=2 USE GATE
+signRandom=RANDOM
+signDisconnected=DISCONNECTD
+signTerminalL2=4 SALE
+
+# Gate Actions
+gateDestroy=GATE DESTROYD!
+gateCreateSpecified=GATE CREATD ON %network% NETWORK!
+gateCreatePersonal=CREATIN GATE ON PERSONAL NETWORK.
+gateTerminalSold=PURCHASD GATE %gateName% IN %terminalName% 4 %cost%.
+gateTerminalSale=LISTD GATE %gateName% 4 SALE IN %terminalName% 4 %cost%.
+
+# Gate Construction Problems
+faultNetwork=U NO HAV ACCES 2 DAT NETWORK!
+faultLayout=U NO HAV ACCES 2 DAT GATE LAYOUT!
+faultLength=NAYM 2 SHORT OR 2 LONG!
+faultExists=A GATE BY DAT NAYM ALREADY EXISTS!
+faultFull=DAT NETWORK IZ FULL!
+faultWorldDeny=U NO HAV ACCES 2 WURLD %world%!
+faultConflict=DIS GATE CONFLICTS WIF AN EXISTIN GATE.
+faultFlag=U LACK PERMISHUN 2 USE TEH %flags% FLAGS; UR PORTAL HAS BEEN CREATD WITHOUT THEM!
+
+# Bungee Problems
+bungeePerms=U NO HAV PERMISHUN 2 MAK BUNGEE GATEZ!
+bungeeDisabled=BUNGEECORD SUPPORT IZ NOT ENABLD.
+bungeeLocal=MODERN BUNGEE GATEZ R NOT ENABLD.
+bungeeLegacySyntax=OLD BUNGEE GATEZ REQUIRE U 2 SPECIFY DESTINASHUN GATE AN SERVR.
+bungeeInvalidExitNetwork=DIS PORTALS NETWORK NO LONGR EXISTS ON TEH TARGET SEVR.
+bungeeInvalidExitGate=DIS PORTALS EXIT NO LONGR EXISTS ON TEH TARGET SERVR.
+bungeeProxyOffline=DIS PORTAL EXITS ON SERVR DAT IZ GONE
+bungeeTargetOffline=TEH PROXY IZ CURRENTLY GONE; BUNGEE PORTALS R TEMPORARILY DISABLD.
+
+# Gate Usage
+tpSuccess=POOFD!
+tpDestiInvalid=BAD DESTINASHUN!
+tpDestiBlocked=DESTINASHUN OBSTRUCTD!
+tpEmptyNet=DESTINASHUN LIST EMPTY!
+
+# Access
+conflictPerms=ACCES DENID!
+conflictSpawn=SPAWN CHUNKZ BORKD DIS PORTAL!
+
+# Economy
+ecoDeduct=I TOOK %cost%.
+ecoObtain=U GOT %cost% FRUM %portal%!
+ecoInsolvent=U BROKE!
+
+#Admin
+adminReload=CONFIGURASHUN RELOADD!
+adminInfo=U HAV SG %version%. CHANGELOG: https://git.io/JD4Qo
+adminHelp=U CAN FIND TEH DOCS AT https://git.io/JDclf
+translatedBy=A KAT
