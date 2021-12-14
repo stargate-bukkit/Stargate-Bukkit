@@ -159,7 +159,7 @@ public enum Setting {
     /**
      * When using remote database, what should the name if the proxy be?
      */
-    BUNGEE_INSTANCE_NAME("bungee.instanceName"),
+    BUNGEE_INSTANCE_NAME("customRemoteDatabasePrefix"),
 
     /**
      * Allow explosions to destroy portals
