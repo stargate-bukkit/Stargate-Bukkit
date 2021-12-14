@@ -38,13 +38,6 @@ public class LanguageManager {
         backupStrings = loadLanguage(defaultLanguage);
         this.languageFolder = new File(languageFolder);
     }
-    
-    private File findTargetFile(String language) {
-        File dir = new File(languageFolder,language.split("-")[0]);
-        File file = new File(dir,language);
-        Stargate.log(Level.FINER, String.format("Looking for language file in pat ''%s''", file.getAbsolutePath()));
-        return file;
-    }
 
     /**
      * Gets a translated message
@@ -126,25 +119,50 @@ public class LanguageManager {
     /**
      * Loads the language file of the given language
      *
-     * @param language <p>The language to load</p>
-     * @return <p>The translatable messages found in the language file</p>
-     * @throws IOException <p>If unable to read the language file</p>
+     * @param language
+     *                 <p>
+     *                 The language to load
+     *                 </p>
+     * @return
+     *         <p>
+     *         The translatable messages found in the language file
+     *         </p>
+     * @throws IOException
+     *                     <p>
+     *                     If unable to read the language file
+     *                     </p>
      */
     private EnumMap<TranslatableMessage, String> loadLanguageFile(String language) throws IOException {
-        File languageFile = findTargetFile(language);
-        if (!languageFile.exists()) {
-            try {
-                String path = String.format("lang\\%s.txt" , languageFile.getPath());
-                Stargate.log(Level.FINE, String.format("Saving languagefile from internal path %s",path));
-                stargate.saveResource(path, false);
-            } catch (IllegalArgumentException ignored) {
-                Stargate.log(Level.SEVERE, String.format("The selected language, \"%s\", is not supported, and no " +
-                        "custom language file exists. Falling back to English.", language));
-                return new EnumMap<>(TranslatableMessage.class);
+        File[] possibleLanguageFiles = findTargetFiles(language, this.languageFolder);
+
+        File endFile = null;
+
+        for (int i = 0; i < possibleLanguageFiles.length; i++) {
+            if (!possibleLanguageFiles[i].exists()) {
+                try {
+                    File path = new File("lang");
+                    File internalLanguageFile = findTargetFiles(language, path)[i];
+                    Stargate.log(Level.FINE,
+                            String.format("Saving languagefile from internal path %s", internalLanguageFile.getPath()));
+                    stargate.saveResource(internalLanguageFile.getPath(), false);
+                    endFile = possibleLanguageFiles[i];
+                    break;
+                } catch (IllegalArgumentException ignored) {
+                    continue;
+                }
+
             }
+            endFile = possibleLanguageFiles[i];
+
         }
 
-        BufferedReader bufferedReader = FileHelper.getBufferedReader(languageFile);
+        if (endFile == null) {
+            Stargate.log(Level.SEVERE, String.format("The selected language, \"%s\", is not supported, and no "
+                    + "custom language file exists. Falling back to English.", language));
+            return new EnumMap<>(TranslatableMessage.class);
+        }
+
+        BufferedReader bufferedReader = FileHelper.getBufferedReader(endFile);
         EnumMap<TranslatableMessage, String> output = readLanguageReader(bufferedReader);
         try {
             bufferedReader.close();
@@ -152,6 +170,28 @@ public class LanguageManager {
         }
 
         return output;
+    }
+    
+    
+    
+    private File[] findTargetFiles(String language, File path) {
+        String[] langSplited = language.split("-");
+        
+        String[] possibleNames;
+        if(langSplited.length > 1)
+            possibleNames = new String[]{language, langSplited[0]};
+        else
+            possibleNames = new String[]{language};
+        
+        File[] possibleFiles = new File[possibleNames.length*possibleNames.length];
+        int i = 0;
+        for(String pathName : possibleNames) {
+            File dir = new File(path,pathName);
+            for(String fileName : possibleNames) {
+                possibleFiles[i++] = new File(dir,fileName);
+            }
+        }
+        return possibleFiles;
     }
 
     /**
