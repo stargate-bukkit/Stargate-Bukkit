@@ -6,9 +6,6 @@ import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.refactoring.retcons.Modificator;
 import net.TheDgtl.Stargate.refactoring.retcons.RetCon1_0_0;
-
-import net.TheDgtl.Stargate.util.FileHelper;
-
 import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -31,9 +28,9 @@ public class Refactorer {
     private FileConfiguration fileConfig;
     private final Modificator[] RETCONS;
 
-    public Refactorer(File configFile, StargateLogger logger, Server server,StargateFactory factory) throws FileNotFoundException, IOException, InvalidConfigurationException {
+    public Refactorer(File configFile, StargateLogger logger, Server server, StargateFactory factory) throws FileNotFoundException, IOException, InvalidConfigurationException {
         RETCONS = new Modificator[]{
-                new RetCon1_0_0(server, logger,factory)
+                new RetCon1_0_0(server, logger, factory)
         };
 
         FileConfiguration fileConfig = new StargateConfiguration();
@@ -57,9 +54,9 @@ public class Refactorer {
         }
         return config;
     }
-    
+
     public void run() {
-        for(Modificator retCon : RETCONS) {
+        for (Modificator retCon : RETCONS) {
             int retConConfigNumber = retCon.getConfigNumber();
             if (retConConfigNumber >= configVersion) {
                 retCon.run();

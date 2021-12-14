@@ -37,8 +37,6 @@ import net.TheDgtl.Stargate.util.FileHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
@@ -122,7 +120,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     public void onEnable() {
         instance = this;
         loadColors();
-        
+
         if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
             try {
                 this.refactor();
@@ -135,7 +133,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
         economyManager = new EconomyManager();
         String debugLevelStr = Settings.getString(Setting.DEBUG_LEVEL);
-        if(debugLevelStr == null)
+        if (debugLevelStr == null)
             lowestMsgLevel = Level.INFO;
         else
             lowestMsgLevel = Level.parse(debugLevelStr);
@@ -143,8 +141,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         saveDefaultGates();
 
         GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATA_FOLDER + "/" + GATE_FOLDER);
-        
-        
+
+
         try {
             factory = new StargateFactory(this);
             factory.loadFromDatabase();
@@ -152,7 +150,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         pm = getServer().getPluginManager();
         registerListeners();
         BukkitScheduler scheduler = getServer().getScheduler();
@@ -240,11 +238,11 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     private void refactor() throws FileNotFoundException, IOException, InvalidConfigurationException, SQLException {
-        File file = new File(this.getDataFolder(),"stargate.db");
+        File file = new File(this.getDataFolder(), "stargate.db");
         Database database = new SQLiteDatabase(file);
-        StargateFactory factory = new StargateFactory(database,false,false,this);
-        
-        Refactorer middas = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(),factory);
+        StargateFactory factory = new StargateFactory(database, false, false, this);
+
+        Refactorer middas = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(), factory);
         Map<String, Object> newConfig = middas.getConfigModificatinos();
         this.saveResource("config.yml", true);
         middas.insertNewValues(newConfig);
@@ -316,7 +314,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     public static void log(Level priorityLevel, String msg) {
-        if(instance != null) {
+        if (instance != null) {
             instance.logMessage(priorityLevel, msg);
             return;
         }
@@ -343,7 +341,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     public static FileConfiguration getConfigStatic() {
-        if(instance == null)
+        if (instance == null)
             return staticConfig;
         return instance.getConfig();
     }
@@ -372,8 +370,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
         instance.bungeeQueue.put(playerName, portal);
     }
-    
-    
+
 
     public static Portal pullFromQueue(String playerName) {
         return instance.bungeeQueue.remove(playerName);

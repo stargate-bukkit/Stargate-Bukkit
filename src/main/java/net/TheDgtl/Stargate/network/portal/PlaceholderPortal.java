@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.util.PortalHelper;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -51,9 +52,9 @@ public class PlaceholderPortal implements Portal {
     /**
      * Instantiates a new placeholder portal
      *
-     * @param name         <p>The name of the portal</p>
-     * @param network      <p>The network the portal belongs to</p>
-     * @param destination  <p>The fixed destination of this portal, or null</p>
+     * @param name        <p>The name of the portal</p>
+     * @param network     <p>The network the portal belongs to</p>
+     * @param destination <p>The fixed destination of this portal, or null</p>
      */
     public PlaceholderPortal(String name, Network network, String destination) {
         this.name = name;
@@ -119,7 +120,7 @@ public class PlaceholderPortal implements Portal {
 
     @Override
     public String getAllFlagsString() {
-        return Portal.flagsToString(flags);
+        return PortalHelper.flagsToString(flags);
     }
 
     @Override

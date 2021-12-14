@@ -5,7 +5,6 @@ import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.portal.AbstractPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
-
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;

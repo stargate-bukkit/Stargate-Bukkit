@@ -1,21 +1,13 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-
+import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.network.StargateFactory;
 import org.bukkit.Server;
 
-import jdk.jfr.internal.Logger;
-import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.database.Database;
-import net.TheDgtl.Stargate.database.SQLiteDatabase;
-import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.StargateFactory;
-import net.TheDgtl.Stargate.network.portal.Portal;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 
 public class RetCon1_0_0 extends Modificator {
     /**
@@ -118,12 +110,12 @@ public class RetCon1_0_0 extends Modificator {
     private StargateFactory factory;
     private Map<String, Object> oldConfig;
 
-    public RetCon1_0_0(Server server, StargateLogger logger,StargateFactory factory) {
+    public RetCon1_0_0(Server server, StargateLogger logger, StargateFactory factory) {
         this.server = server;
         this.logger = logger;
         this.factory = factory;
     }
-    
+
     /**
      * @param oldConfig
      * @return a new configuration
@@ -143,14 +135,14 @@ public class RetCon1_0_0 extends Modificator {
         newConfig.put("loggingLevel", logLevel.toString());
         return newConfig;
     }
-    
+
     @Override
     public void run() {
         try {
-            String[] possiblePortalFoldersSetting = { "portal-folder", "folders.portalFolder" };
+            String[] possiblePortalFoldersSetting = {"portal-folder", "folders.portalFolder"};
             for (String portalFolder : possiblePortalFoldersSetting) {
                 if (oldConfig.get(portalFolder) != null) {
-                    LegacyPortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder),server,factory);
+                    LegacyPortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder), server, factory);
                     break;
                 }
             }

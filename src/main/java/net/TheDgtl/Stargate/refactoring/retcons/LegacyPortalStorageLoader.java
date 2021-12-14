@@ -1,6 +1,5 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
-import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.exception.GateConflictException;
@@ -10,11 +9,8 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.PlaceholderPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
-
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.util.FileHelper;
-import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -66,12 +62,12 @@ public class LegacyPortalStorageLoader {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
-                    try {
-                        portals.add(readPortal(line, server.getWorld(worldName),factory));
-                    } catch (NameErrorException | NoFormatFoundException | GateConflictException e) {
-                        e.printStackTrace();
-                    }
-                
+                try {
+                    portals.add(readPortal(line, server.getWorld(worldName), factory));
+                } catch (NameErrorException | NoFormatFoundException | GateConflictException e) {
+                    e.printStackTrace();
+                }
+
                 line = reader.readLine();
             }
         }
@@ -89,18 +85,18 @@ public class LegacyPortalStorageLoader {
                 Double.parseDouble(coordinates[2]));
         String gateFormatName = splitLine[7];
         String destination = (splitLine.length > 8) ? splitLine[8] : "";
-        String networkName = (splitLine.length > 9) ? splitLine[9] : Settings.getString(Setting.DEFAULT_NET);
+        String networkName = (splitLine.length > 9) ? splitLine[9] : Settings.getString(Setting.DEFAULT_NETWORK);
         String ownerString = (splitLine.length > 10) ? splitLine[10] : "";
         UUID ownerUUID = getPlayerUUID(ownerString);
         EnumSet<PortalFlag> flags = parseFlags(splitLine);
-        if(destination == null || destination.trim().isEmpty())
+        if (destination == null || destination.trim().isEmpty())
             flags.add(PortalFlag.NETWORKED);
         try {
             factory.createNetwork(networkName, flags);
         } catch (NameErrorException ignored) {
         }
         Network network = factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
-        Portal portal = new PlaceholderPortal(name,network,destination,flags,signLocation,gateFormatName,ownerUUID);
+        Portal portal = new PlaceholderPortal(name, network, destination, flags, signLocation, gateFormatName, ownerUUID);
         network.addPortal(portal, true);
 
         return portal;

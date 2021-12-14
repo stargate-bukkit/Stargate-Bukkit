@@ -1,12 +1,11 @@
 package net.TheDgtl.Stargate;
 
+import net.TheDgtl.Stargate.config.StargateConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import net.TheDgtl.Stargate.config.StargateConfiguration;
 
 import java.io.File;
 import java.io.IOException;

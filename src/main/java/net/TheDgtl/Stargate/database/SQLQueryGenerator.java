@@ -5,7 +5,6 @@ import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.TableNameConfig;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.Portal;
-import net.TheDgtl.Stargate.network.portal.RealPortal;
 import org.bukkit.Location;
 import org.bukkit.World;
 

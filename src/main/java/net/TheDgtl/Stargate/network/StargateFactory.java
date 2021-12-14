@@ -47,16 +47,16 @@ public class StargateFactory {
     final String tableName = "local";
 
     private final Database database;
-    
+
     private final SQLQueryGenerator sqlMaker;
     private final boolean useInterServerNetworks;
     private StargateLogger logger;
 
     public StargateFactory(Stargate stargate) throws SQLException {
         this(loadDatabase(stargate), Settings.getBoolean(Setting.USING_BUNGEE),
-                Settings.getBoolean(Setting.USING_REMOTE_DATABASE),stargate);
+                Settings.getBoolean(Setting.USING_REMOTE_DATABASE), stargate);
     }
-    
+
     public StargateFactory(Database database, boolean usingBungee, boolean usingRemoteDatabase, StargateLogger logger) throws SQLException {
         this.logger = logger;
         this.database = database;
@@ -68,7 +68,7 @@ public class StargateFactory {
         this.sqlMaker = new SQLQueryGenerator(config, logger, databaseEnum);
         createTables();
     }
-    
+
     public void loadFromDatabase() throws SQLException {
         logger.logMessage(Level.FINER, "Loading portals from base database");
         loadAllPortals(database, PortalType.LOCAL);
@@ -242,8 +242,8 @@ public class StargateFactory {
             }
             Block block = world.getBlockAt(x, y, z);
             String[] virtualSign = {name, destination, netName};
-            
-            if(destination == null || destination.trim().isEmpty())
+
+            if (destination == null || destination.trim().isEmpty())
                 flags.add(PortalFlag.NETWORKED);
 
             try {

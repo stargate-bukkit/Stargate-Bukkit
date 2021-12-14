@@ -63,7 +63,7 @@ public enum TranslatableMessage {
      * The message to be displayed when a stargate has been successfully created
      */
     CREATE("gateCreateSpecified"),
-    
+
     /**
      * The message to be display when a a portal has successfully been created on a personal network
      */
@@ -128,47 +128,46 @@ public enum TranslatableMessage {
     BUNGEE_DENY("bungeePerms"),
 
     BUNGEE_INVALID_NETWORK("bungeeInvalidExitNetwork"),
-    
+
     BUNGEE_INVALID_GATE("bungeeInvalidExitGate"),
-    
+
     /**
      * The message to display when a player tries to interact / create / enter a bungee or interserver gate.
      */
     BUNGEE_DISABLED("bungeeDisabled"),
-    
+
     /**
      * The message to display when a Fancy_Interserver type portal is created, but server is on a local database
      */
-    INTERSERVER_DISABLED("bungeeLocal"), 
-    
+    INTERSERVER_DISABLED("bungeeLocal"),
+
     /**
      * The last line on a sign for legacy bungee portals
      */
     BUNGEE_SIGN_LINE_4("signLegacyBungee"),
-    
+
     /**
      * The message to display
      */
     LACKING_FLAGS_PERM("faultFlag"),
-    
-    
-    BUNGEE_LACKING_SIGN_INFORMATION("bungeeLegacySyntax"),
-    
-    SPAWNCHUNKS_CONFLICTING("conflictSpawn");
-    
-    
 
-/**
-signTerminalL2
-gateTerminalSold
-gateTerminalSale
-bungeeProxyOffline
-bungeeTargetOffline
-tpDestiBlocked
-adminReload
-adminInfo
-adminHelp
-*/
+
+    BUNGEE_LACKING_SIGN_INFORMATION("bungeeLegacySyntax"),
+
+    SPAWNCHUNKS_CONFLICTING("conflictSpawn");
+
+
+    /**
+     * signTerminalL2
+     * gateTerminalSold
+     * gateTerminalSale
+     * bungeeProxyOffline
+     * bungeeTargetOffline
+     * tpDestiBlocked
+     * adminReload
+     * adminInfo
+     * adminHelp
+     */
 
     private final String key;
     private static final HashMap<String, TranslatableMessage> map = new HashMap<>();
