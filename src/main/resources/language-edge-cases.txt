@@ -26,3 +26,5 @@ tr=tr-TR
 uk=uk-UA
 vi=vi-VN
 zh=zh-CN
+nn=nn-NO
+nb=nb-NO

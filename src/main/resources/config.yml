@@ -22,7 +22,7 @@
 # +----------------------------------------------------------------------------------------------+ #
 
 # What language will stargate use when communicating with your users?
-# Supported values: [en,de,nb,nl,nn,sv]
+# Supported values: [en,de,nl,no,nn,sv]
 #
 # If SG isn't yet available in your language, please consider becoming a translator:
 # https://crowdin.com/project/stargate-bukkit
@@ -33,15 +33,13 @@ bungee:
   # Set this to true if you intend on building gates with the 'u' flag.
   usingBungee: false
 
-  # If you are running multiple instances (i.e. bungee), what is this one's name?
-  # (i.e. hub, smp, pvp, etc.).
-  instanceName: example
 
   # By default, StarGate uses a local SQLite database to store its data.
   #
   # If you are running a large server, we recommend using a remote database.
   # Note that such a database is required if you intend on building gates with the 'i' flag.
   useRemoteDatabase: false
+  
 
   # Only applicable if useRemoteDatabase is true.
   remoteDatabaseSettings:
@@ -196,6 +194,10 @@ gateExitSpeedMultiplier: 1
 # When useRemoteDatabase is false, Stargate stores all of its portal data in a flatfile.
 # Where should this flatfile be named?
 portalFile: stargate
+
+# By default SG will preface its remote database tables with `SG_`.
+# If this conflicts with another plugin, you can change that prefix here.
+customRemoteDatabasePrefix: SG_
 
 # |                                          [ Logging ]                                         | #
 # |__                   How much information should stargate send to console?                  __| #
