@@ -22,7 +22,7 @@
 # +----------------------------------------------------------------------------------------------+ #
 
 # What language will stargate use when communicating with your users?
-# Supported values: [en]
+# Supported values: [en,de,nb,nl,nn,sv]
 #
 # If SG isn't yet available in your language, please consider becoming a translator:
 # https://crowdin.com/project/stargate-bukkit
