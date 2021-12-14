@@ -51,7 +51,6 @@ public class InterServerNetwork extends Network {
         updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
         if (!removeFromDatabase)
             return;
-        unregisterFromInterServer(portal);
     }
 
     /**
@@ -86,10 +85,6 @@ public class InterServerNetwork extends Network {
             return false;
         };
         Stargate.syncSecPopulator.addAction(new ForcibleFunctionAction(action), true);
-    }
-
-    public void unregisterFromInterServer(Portal portal) {
-        //TODO: Not implemented yet
     }
 
     @Override

@@ -17,6 +17,8 @@
  */
 package net.TheDgtl.Stargate;
 
+import net.TheDgtl.Stargate.command.CommandStargate;
+import net.TheDgtl.Stargate.command.StargateTabCompleter;
 import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
@@ -37,6 +39,9 @@ import net.TheDgtl.Stargate.util.FileHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
@@ -156,7 +161,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         BukkitScheduler scheduler = getServer().getScheduler();
         scheduler.scheduleSyncRepeatingTask(this, syncTickPopulator, 0L, 1L);
         scheduler.scheduleSyncRepeatingTask(this, syncSecPopulator, 0L, 20L);
-
+        registerCommands();
 
         // Registers bstats metrics
         int pluginId = 10451;
@@ -345,6 +350,17 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             return staticConfig;
         return instance.getConfig();
     }
+    
+    /**
+     * Registers a command for this plugin
+     */
+    private void registerCommands() {
+        PluginCommand stargateCommand = this.getCommand("stargate");
+        if (stargateCommand != null) {
+            stargateCommand.setExecutor(new CommandStargate());
+            stargateCommand.setTabCompleter(new StargateTabCompleter());
+        }
+    }
 
     public static void addToQueue(String playerName, String portalName, String netName, boolean isInterServer) {
         Network network = factory.getNetwork(netName, isInterServer);
@@ -367,7 +383,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             String msg = String.format("Inter-server portal ''%s'' in network ''%s'' could not be found", portalName, netName);
             Stargate.log(Level.WARNING, msg);
         }
-
         instance.bungeeQueue.put(playerName, portal);
     }
 

@@ -7,9 +7,10 @@ website: https://discord.gg/mTaHuK6BVa
 api-version: 1.15
 softdepend: [ Vault ]
 commands:
-  sg:
+  stargate:
     description: Used to reload the plugin. Console use only.
     usage: /<command> reload - Used to reload the plugin. Console use only.
+    aliases: [sg,stargate:sg]
 permissions:
   sg:
     children:
