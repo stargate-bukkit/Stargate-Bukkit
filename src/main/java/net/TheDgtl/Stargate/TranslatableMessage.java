@@ -36,7 +36,7 @@ public enum TranslatableMessage {
      * <p>This is triggered when a stargate's button is clicked and it's missing a valid destination. It's also
      * triggered when trying to teleport if the destination is missing.</p>
      */
-    INVALID("tpDestiInvalid"),
+    INVALID("tpDestInvalid"),
 
     /**
      * The message to be displayed when a player is missing the required permissions to teleport to a destination
@@ -47,8 +47,7 @@ public enum TranslatableMessage {
      * The message to be displayed if a player is missing the sufficient funds to perform an action
      */
     LACKING_FUNDS("ecoInsolvent"),
-
-
+    
     /**
      * The message to be displayed when a player successfully is charged money
      */
@@ -123,23 +122,35 @@ public enum TranslatableMessage {
     DISCONNECTED("signDisconnected"),
 
     /**
-     * The message to display when a player is lacking permissions to create a bungee or interserver network
+     * The message to display when a player is lacking permissions to create a bungee or inter-server network
      */
     BUNGEE_DENY("bungeePerms"),
 
+    /**
+     * The message to display if a BungeeCord exit network is invalid
+     * 
+     * <p>The message to display if a player is teleporting through BungeeCord and the player cannot be teleported to 
+     * the destination portal because the network given in the teleportation message is invalid.</p>
+     */
     BUNGEE_INVALID_NETWORK("bungeeInvalidExitNetwork"),
 
+    /**
+     * The message to display if a BungeeCord exit gate is invalid
+     * 
+     * <p>The message to display if a player is teleporting through BungeeCord and the player cannot be teleported to 
+     * the destination portal because the gate given in the teleportation message is invalid.</p>
+     */
     BUNGEE_INVALID_GATE("bungeeInvalidExitGate"),
 
     /**
-     * The message to display when a player tries to interact / create / enter a bungee or interserver gate.
+     * The message to display when a player tries to interact / create / enter a bungee or inter-server gate.
      */
     BUNGEE_DISABLED("bungeeDisabled"),
 
     /**
-     * The message to display when a Fancy_Interserver type portal is created, but server is on a local database
+     * The message to display when a Fancy Inter-server type portal is created, but server is on a local database
      */
-    INTERSERVER_DISABLED("bungeeLocal"),
+    INTER_SERVER_DISABLED("bungeeLocal"),
 
     /**
      * The last line on a sign for legacy bungee portals
@@ -149,21 +160,27 @@ public enum TranslatableMessage {
     /**
      * The message to display
      */
-    LACKING_FLAGS_PERM("faultFlag"),
-
-
-    BUNGEE_LACKING_SIGN_INFORMATION("bungeeLegacySyntax"),
-
-    SPAWNCHUNKS_CONFLICTING("conflictSpawn");
-
+    LACKING_FLAGS_PERMISSION("faultFlag"),
 
     /**
+     * The message to display if creating a legacy BungeeCord portal and the sign is missing information
+     */
+    BUNGEE_LACKING_SIGN_INFORMATION("bungeeLegacySyntax"),
+
+    /**
+     * The message to display if a stargate is created within the spawn area
+     */
+    SPAWN_CHUNKS_CONFLICTING("conflictSpawn");
+
+
+    /*
+     * Available additional strings:
      * signTerminalL2
      * gateTerminalSold
      * gateTerminalSale
      * bungeeProxyOffline
      * bungeeTargetOffline
-     * tpDestiBlocked
+     * tpDestBlocked
      * adminReload
      * adminInfo
      * adminHelp
