@@ -31,12 +31,12 @@ public class LanguageManager {
      */
     public LanguageManager(Stargate stargate, String languageFolder, String language) {
         String defaultLanguage = "en-US";
+        this.languageFolder = new File(languageFolder);
 
         this.stargate = stargate;
 
         translatedStrings = loadLanguage(language);
         backupStrings = loadLanguage(defaultLanguage);
-        this.languageFolder = new File(languageFolder);
     }
 
     /**
@@ -135,10 +135,12 @@ public class LanguageManager {
     private EnumMap<TranslatableMessage, String> loadLanguageFile(String language) throws IOException {
         File[] possibleLanguageFiles = findTargetFiles(language, this.languageFolder);
 
+        Stargate.log(Level.FINE, "Languagefolder:" + languageFolder);
         File endFile = null;
 
         for (int i = 0; i < possibleLanguageFiles.length; i++) {
             if (!possibleLanguageFiles[i].exists()) {
+                Stargate.log(Level.FINEST, String.format("%s did not exist, checking if there's an internal file with this name", possibleLanguageFiles[i].getPath()));
                 try {
                     File path = new File("lang");
                     File internalLanguageFile = findTargetFiles(language, path)[i];
@@ -149,7 +151,7 @@ public class LanguageManager {
                     break;
                 } catch (IllegalArgumentException ignored) {
                     continue;
-                }
+                } 
 
             }
             endFile = possibleLanguageFiles[i];
@@ -167,6 +169,7 @@ public class LanguageManager {
         try {
             bufferedReader.close();
         } catch (IOException ignored) {
+            ignored.printStackTrace();
         }
 
         return output;
@@ -188,7 +191,7 @@ public class LanguageManager {
         for(String pathName : possibleNames) {
             File dir = new File(path,pathName);
             for(String fileName : possibleNames) {
-                possibleFiles[i++] = new File(dir,fileName);
+                possibleFiles[i++] = new File(dir,fileName + ".txt");
             }
         }
         return possibleFiles;
