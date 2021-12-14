@@ -168,8 +168,8 @@ public class LanguageManager {
         Map<TranslatableMessage, String> output = readLanguageReader(bufferedReader);
         try {
             bufferedReader.close();
-        } catch (IOException ignored) {
-            ignored.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
 
         return output;
