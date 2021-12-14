@@ -16,7 +16,6 @@ import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import org.bukkit.Bukkit;
@@ -38,6 +37,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -126,9 +126,9 @@ public class BlockEventListener implements Listener {
             return false;
         }
 
-        return Settings.getBoolean(Setting.CHARGE_FREE_DESTINATION)
-                || !portal.hasFlag(PortalFlag.FIXED)
-                || !((RealPortal) portal).loadDestination().hasFlag(PortalFlag.FREE);
+        return Settings.getBoolean(Setting.CHARGE_FREE_DESTINATION) ||
+                !portal.hasFlag(PortalFlag.FIXED) ||
+                !portal.loadDestination().hasFlag(PortalFlag.FREE);
     }
 
     /**
@@ -169,20 +169,20 @@ public class BlockEventListener implements Listener {
             flags.add(PortalFlag.NETWORKED);
         }
 
-        Set<PortalFlag> dissallowedFlags = permissionManager.returnDissallowedFlags(flags);
+        Set<PortalFlag> disallowedFlags = permissionManager.returnDissallowedFlags(flags);
 
-        if (dissallowedFlags.size() > 0) {
-            String unformatedMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FLAGS_PERM);
-            player.sendMessage(TranslatableMessageFormatter.compileFlags(unformatedMessage, dissallowedFlags));
+        if (disallowedFlags.size() > 0) {
+            String unformattedMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
+            player.sendMessage(TranslatableMessageFormatter.compileFlags(unformattedMessage, disallowedFlags));
         }
-        flags.removeAll(dissallowedFlags);
+        flags.removeAll(disallowedFlags);
         if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
                 && !Settings.getBoolean(Setting.USING_BUNGEE)) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
             return;
         }
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER) && !Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INTERSERVER_DISABLED));
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INTER_SERVER_DISABLED));
             return;
         }
 
@@ -256,25 +256,31 @@ public class BlockEventListener implements Listener {
         }
 
         if (isInSpawn(signLocation.getLocation())) {
-            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.SPAWNCHUNKS_CONFLICTING));
+            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
 
         selectedNetwork.addPortal(portal, true);
         selectedNetwork.updatePortals();
         Stargate.log(Level.FINE, "A Gate format matches");
-        if (flags.contains(PortalFlag.PERSONAL_NETWORK))
+        if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE_PERSONAL));
-        else {
-            String unformatedMessage = Stargate.languageManager.getMessage(TranslatableMessage.CREATE);
-            player.sendMessage(TranslatableMessageFormatter.compileNetwork(unformatedMessage, selectedNetwork.getName()));
+        } else {
+            String unformattedMessage = Stargate.languageManager.getMessage(TranslatableMessage.CREATE);
+            player.sendMessage(TranslatableMessageFormatter.compileNetwork(unformattedMessage, selectedNetwork.getName()));
         }
     }
 
-    private boolean isInSpawn(Location loc) {
-        Location spawnpoint = loc.getWorld().getSpawnLocation();
-        Vector vec = loc.subtract(spawnpoint).toVector();
-        int spawnProtWidth = Bukkit.getServer().getSpawnRadius();
-        return (Math.abs(vec.getBlockX()) < spawnProtWidth && Math.abs(vec.getBlockZ()) < spawnProtWidth);
+    /**
+     * Checks whether the given location is located within the location's world's spawn
+     *
+     * @param location <p>The location to check</p>
+     * @return <p>True if the location is located within the spawn area</p>
+     */
+    private boolean isInSpawn(Location location) {
+        Location spawnPoint = Objects.requireNonNull(location.getWorld()).getSpawnLocation();
+        Vector vec = location.subtract(spawnPoint).toVector();
+        int spawnProtectionWidth = Bukkit.getServer().getSpawnRadius();
+        return (Math.abs(vec.getBlockX()) < spawnProtectionWidth && Math.abs(vec.getBlockZ()) < spawnProtectionWidth);
     }
 
     /**
@@ -365,7 +371,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        if (Network.isInPortal(event.getBlocks(), GateStructureType.values())) {
+        if (Network.isInPortal(event.getBlocks())) {
             event.setCancelled(true);
         }
     }
@@ -377,7 +383,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        if (Network.isInPortal(event.getBlocks(), GateStructureType.values())) {
+        if (Network.isInPortal(event.getBlocks())) {
             event.setCancelled(true);
         }
     }
