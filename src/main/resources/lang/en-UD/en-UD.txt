@@ -1,0 +1,58 @@
+# General Styling
+prefix=[ǝʇɐƃɹɐʇS] 
+
+# Sign Formatting
+signLegacyBungee=ƎƎפN∩q ⅄Ɔ∀פƎ˥
+signNonFixedL2=ʞɔᴉlɔ ʇɥƃᴉɹ
+signNonFixedL3=ǝʇɐƃ ǝsn oʇ
+signRandom=ɯopuɐɹ
+signDisconnected=pǝʇɔǝuuoɔsᴉp
+signTerminalL2=ǝlɐS ɹoℲ
+
+# Gate Actions
+gateDestroy=¡pǝʎoɹʇsǝp ǝʇɐפ
+gateCreateSpecified=¡ʞɹoʍʇǝu %network% uo pǝʇɐǝɹɔ ǝʇɐפ
+gateCreatePersonal=˙ʞɹoʍʇǝu lɐuosɹǝd uo ǝʇɐƃ ƃuᴉʇɐǝɹƆ
+gateTerminalSold=%cost% ɹoɟ %terminalName% uᴉ %gateName% ǝʇɐƃ pǝsɐɥɔɹnԀ
+gateTerminalSale=%cost% ɹoɟ %terminalName% uᴉ ǝlɐs ɹoɟ %gateName% ǝʇɐƃ pǝʇsᴉ˥
+
+# Gate Construction Problems
+faultNetwork=¡ʞɹoʍʇǝu ʇɐɥʇ oʇ ssǝɔɔɐ ǝʌɐɥ ʇou op no⅄
+faultLayout=¡ʇnoʎɐl ǝʇɐƃ ʇɐɥʇ oʇ ssǝɔɔɐ ǝʌɐɥ ʇou op no⅄
+faultLength=¡ƃuol ooʇ ɹo ʇɹoɥs ooʇ ǝɯɐN
+faultExists=¡sʇsᴉxǝ ʎpɐǝɹlɐ ǝɯɐu ʇɐɥʇ ʎq ǝʇɐƃ ∀
+faultFull=¡llnɟ sᴉ ʞɹoʍʇǝu ʇɐɥ┴
+faultWorldDeny=¡%world% plɹoʍ oʇ ssǝɔɔɐ ǝʌɐɥ ʇou op no⅄
+faultConflict=˙ǝʇɐƃ ƃuᴉʇsᴉxǝ uɐ ɥʇᴉʍ sʇɔᴉlɟuoɔ ǝʇɐƃ sᴉɥ┴
+faultFlag=¡ɯǝɥʇ ʇnoɥʇᴉʍ pǝʇɐǝɹɔ uǝǝq sɐɥ lɐʇɹod ɹnoʎ ;sƃɐlɟ %flags% ǝɥʇ ǝsn oʇ uoᴉssᴉɯɹǝd ʞɔɐl no⅄
+
+# Bungee Problems
+bungeePerms=¡sǝʇɐƃ ǝǝƃunq ǝʞɐɯ oʇ uoᴉssᴉɯɹǝd ǝʌɐɥ ʇou op no⅄
+bungeeDisabled=˙pǝlqɐuǝ ʇou sᴉ ʇɹoddns pɹoɔǝǝƃunq
+bungeeLocal=˙pǝlqɐuǝ ʇou ǝɹɐ sǝʇɐƃ ǝǝƃunq uɹǝpoW
+bungeeLegacySyntax=˙ɹǝʌɹǝs puɐ ǝʇɐƃ uoᴉʇɐuᴉʇsǝp ɐ ʎɟᴉɔǝds oʇ noʎ ǝɹᴉnbǝɹ sǝʇɐƃ ǝǝƃunq ʎɔɐƃǝ˥
+bungeeInvalidExitNetwork=˙ɹǝʌǝs ʇǝƃɹɐʇ ǝɥʇ uo sʇsᴉxǝ ɹǝƃuol ou ʞɹoʍʇǝu s,lɐʇɹod sᴉɥ┴
+bungeeInvalidExitGate=˙ɹǝʌɹǝs ʇǝƃɹɐʇ ǝɥʇ uo sʇsᴉxǝ ɹǝƃuol ou ʇᴉxǝ s,lɐʇɹod sᴉɥ┴
+bungeeProxyOffline=˙ǝlqɐlᴉɐʌɐun ʎlʇuǝɹɹnɔ sᴉ ʇɐɥʇ ɹǝʌɹǝs ɐ uo sʇᴉxǝ lɐʇɹod sᴉɥ┴
+bungeeTargetOffline=˙pǝlqɐsᴉp ʎlᴉɹɐɹodɯǝʇ ǝɹɐ slɐʇɹod ǝǝƃunq ;uʍop ʎlʇuǝɹɹnɔ sᴉ ʎxoɹd ǝɥ┴
+
+# Gate Usage
+tpSuccess=¡pǝʇɹodǝlǝ┴
+tpDestiInvalid=¡uoᴉʇɐuᴉʇsǝp pᴉlɐʌuI
+tpDestiBlocked=¡pǝʇɔnɹʇsqo uoᴉʇɐuᴉʇsǝp
+tpEmptyNet=¡ʎʇdɯǝ ʇsᴉl uoᴉʇɐuᴉʇsǝp
+
+# Access
+conflictPerms=¡pǝᴉuǝp ssǝɔɔ∀
+conflictSpawn=¡lɐʇɹod sᴉɥʇ ɥʇᴉʍ ƃuᴉɹǝɟɹǝʇuᴉ ǝɹɐ sʞunɥɔ uʍɐdS
+
+# Economy
+ecoDeduct=˙%cost% pǝʇɔnpǝp
+ecoObtain=¡%portal% ǝʇɐפɹɐʇS ɯoɹɟ %cost% pǝuᴉɐʇqO
+ecoInsolvent=¡spunℲ ʇuǝᴉɔᴉɟɟnsuI
+
+#Admin
+adminReload=¡pǝpɐolǝɹ uoᴉʇɐɹnƃᴉɟuoƆ
+adminInfo=https://git.io/JD4Qo :ƃolǝƃuɐɥƆ ˙%version% uoᴉsɹǝʌ ƃuᴉuunɹ
+adminHelp=https://git.io/JDclf ʇɐ punoɟ ǝq uɐɔ uoᴉʇɐʇuǝɯnɔop s,ǝʇɐפɹɐʇS
+translatedBy=sᴉʇoǝɥԀ

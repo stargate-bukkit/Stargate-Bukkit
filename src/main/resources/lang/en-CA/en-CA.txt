@@ -10,24 +10,24 @@ signDisconnected=Disconnected
 signTerminalL2=For Sale
 
 # Gate Actions
-gateDestroy=Gate destroyed\!
-gateCreateSpecified=Gate created on %network% network\!
+gateDestroy=Gate destroyed!
+gateCreateSpecified=Gate created on %network% network!
 gateCreatePersonal=Creating gate on personal network.
 gateTerminalSold=Purchased gate %gateName% in %terminalName% for %cost%.
 gateTerminalSale=Listed gate %gateName% for sale in %terminalName% for %cost%.
 
 # Gate Construction Problems
-faultNetwork=You do not have access to that network\!
-faultLayout=You do not have access to that gate layout\!
-faultLength=Name too short or too long\!
-faultExists=A gate by that name already exists\!
-faultFull=There is no space on that network\!
-faultWorldDeny=You do not have access to world %world%\!
+faultNetwork=You do not have access to that network!
+faultLayout=You do not have access to that gate layout!
+faultLength=Name too short or too long!
+faultExists=A gate by that name already exists!
+faultFull=That network is full!
+faultWorldDeny=You do not have access to world %world%!
 faultConflict=This gate conflicts with an existing gate.
-faultFlag=You lack permission to use the %flags% flags; your portal has been created without them\!
+faultFlag=You lack permission to use the %flags% flags; your portal has been created without them!
 
 # Bungee Problems
-bungeePerms=You do not have permission to make bungee gates\!
+bungeePerms=You do not have permission to make bungee gates!
 bungeeDisabled=BungeeCord support is not enabled.
 bungeeLocal=Modern bungee gates are not enabled.
 bungeeLegacySyntax=Legacy bungee gates require you to specify a destination gate and server.
@@ -37,21 +37,22 @@ bungeeProxyOffline=This portal exists on a server that is currently unavailable.
 bungeeTargetOffline=The proxy is currently down; bungee portals are temporarily disabled.
 
 # Gate Usage
-tpSuccess=Teleported\!
-tpDestInvalid=Invalid destination\!
-tpDestBlocked=Destination obstructed\!
-tpEmptyNet=Access denied\!
+tpSuccess=Teleported!
+tpDestiInvalid=Invalid destination!
+tpDestiBlocked=Destination obstructed!
+tpEmptyNet=Access denied!
 
 # Access
-conflictPerms=Access denied\!
-conflictSpawn=Spawn chunks are interfering with this portal\!
+conflictPerms=Access denied!
+conflictSpawn=Spawn chunks are interfering with this portal!
 
 # Economy
 ecoDeduct=Deducted %cost%.
-ecoObtain=Obtained %cost% from StarGate %portal%\!
-ecoInsolvent=Insufficient funds\!
+ecoObtain=Obtained %cost% from StarGate %portal%!
+ecoInsolvent=Insufficient funds!
 
 #Admin
-adminReload=Configuration reloaded\!
-adminInfo=Running version %version%. Changelog\: https\://git.io/JD4Qo
-adminHelp=StarGate's documentation can be found at https\://git.io/JDclf
+adminReload=Configuration reloaded!
+adminInfo=Running version %version%. Changelog: https://git.io/JD4Qo
+adminHelp=StarGate's documentation can be found at https://git.io/JDclf
+translatedBy=Pheotis

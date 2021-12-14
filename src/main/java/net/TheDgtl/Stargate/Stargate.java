@@ -124,7 +124,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     @Override
     public void onEnable() {
         instance = this;
-        loadColors();
 
         if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
             try {
@@ -133,29 +132,11 @@ public class Stargate extends JavaPlugin implements StargateLogger {
                 e.printStackTrace();
             }
         }
-        if (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
-            loadBungeeServerName();
-        }
-        economyManager = new EconomyManager();
-        String debugLevelStr = Settings.getString(Setting.DEBUG_LEVEL);
-        if (debugLevelStr == null)
-            lowestMsgLevel = Level.INFO;
-        else
-            lowestMsgLevel = Level.parse(debugLevelStr);
-        languageManager = new LanguageManager(this, DATA_FOLDER + "/" + LANGUAGE_FOLDER, Settings.getString(Setting.LANGUAGE));
+        
         saveDefaultGates();
 
-        GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATA_FOLDER + "/" + GATE_FOLDER);
-
-
-        try {
-            factory = new StargateFactory(this);
-            factory.loadFromDatabase();
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        load();
+        
         pm = getServer().getPluginManager();
         registerListeners();
         BukkitScheduler scheduler = getServer().getScheduler();
@@ -255,6 +236,11 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         middas.run();
     }
 
+    public void reload() {
+        this.reloadConfig();
+        load();
+    }
+    
     @Override
     public @NotNull FileConfiguration getConfig() {
         if (config == null) {
@@ -287,10 +273,27 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         super.saveResource("config.yml", true);
     }
 
-    @Override
-    public void onLoad() {
-        // TODO Economy (issue #88)
-        //economyHandler = new EconomyHandler(this);
+    public void load() {
+        loadColors();
+        if (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
+            loadBungeeServerName();
+        }
+        economyManager = new EconomyManager();
+        String debugLevelStr = Settings.getString(Setting.DEBUG_LEVEL);
+        if (debugLevelStr == null)
+            lowestMsgLevel = Level.INFO;
+        else
+            lowestMsgLevel = Level.parse(debugLevelStr);
+        languageManager = new LanguageManager(this, DATA_FOLDER + "/" + LANGUAGE_FOLDER,
+                Settings.getString(Setting.LANGUAGE));
+        GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATA_FOLDER + "/" + GATE_FOLDER);
+
+        try {
+            factory = new StargateFactory(this);
+            factory.loadFromDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

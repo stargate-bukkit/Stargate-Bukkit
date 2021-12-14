@@ -1,17 +1,58 @@
 # General Styling
+prefix=[Stargate] 
 
 # Sign Formatting
+signLegacyBungee=Legacy Bungee
+signNonFixedL2=Rechtsklick
+signNonFixedL3=um Tor zu benutzen
+signRandom=Willkürlich
+signDisconnected=Verbindung getrennt
+signTerminalL2=Zu verkaufen
 
 # Gate Actions
+gateDestroy=Tor zerstört
+gateCreateSpecified=Tor erstellt im %network% Netzwerk!
+gateCreatePersonal=Erstelle Tor im persönlichen Netzwerk.
+gateTerminalSold=Portal %gateName% in %terminalName% für %cost% gekauft.
+gateTerminalSale=Aufgelistetes Portal %gateName% zum Verkauf in %terminalName% für %cost%.
 
 # Gate Construction Problems
+faultNetwork=Du hast kein Zugang zu dieses Netzwerk!
+faultLayout=Du hast kein Zugang zu dieses Portal format!
+faultLength=Name zu kurz oder zu lang!
+faultExists=Es existiert schon ein Portal mit diesem Namen.
+faultFull=Dieses Netzwerk ist voll !
+faultWorldDeny=Du hast keinen Zugrand auf die Welt %world%!
+faultConflict=Dieses Tor steht im Widerspruch zu einem bestehenden Tor.
+faultFlag=Dir fehlt den zugang zu den %flags% markierungen; dein Portal wurde ohne diese markierungen erstehlt!
 
 # Bungee Problems
+bungeePerms=Du hast keine Berechtigung, Bungee-Tore zu erstellen!
+bungeeDisabled=Bungeecord-Unterstützung ist nicht aktiviert.
+bungeeLocal=Moderne Bungee Tore sind nicht aktiviert.
+bungeeLegacySyntax=Legacy-Bungee-Gates erfordern, dass Sie ein Zieltor und einen Server angeben.
+bungeeInvalidExitNetwork=Das Netzwerk dieses Portals existiert nicht mehr auf dem Ziel-server
+bungeeInvalidExitGate=Der Ausgang dieses Portals existiert nicht mehr auf dem Zielserver.
+bungeeProxyOffline=Dieser Portal ausgang befindet sich auf einem Server, der derzeit nicht verfügbar ist.
+bungeeTargetOffline=Der Proxy ist momentan nicht verfügbar; Bungee-Portale sind vorübergehend deaktiviert.
 
 # Gate Usage
+tpSuccess=Teleportiert!
+tpDestiInvalid=Ungültiger Ziel!
+tpDestiBlocked=Ziel ist blockiert
+tpEmptyNet=Zielliste ist leer!
 
 # Access
+conflictPerms=Zugang verweigert!
+conflictSpawn=Spawn-Chunks stören dieses Portal!
 
 # Economy
+ecoDeduct=%cost% abgezogen .
+ecoObtain=%cost% von StarGate %portal% erhalten!
+ecoInsolvent=Unzureichende Mittel
 
 #Admin
+adminReload=Konfiguration wurde neu geladen!
+adminInfo=Version %version%wird ausgeführt. Changelog: https://git.io/JD4Q
+adminHelp=StarGate's Dokumentation finden Sie unter https://git.io/JDclf
+translatedBy=Matriarch!

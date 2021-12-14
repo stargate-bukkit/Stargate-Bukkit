@@ -1,17 +1,58 @@
 # General Styling
+prefix=[Stargate] 
 
 # Sign Formatting
+signLegacyBungee=Gammal Bungee
+signNonFixedL2=Högerklicka för
+signNonFixedL3=att aktivera port
+signRandom=Slumpad
+signDisconnected=Frånkopplad
+signTerminalL2=Till salu
 
 # Gate Actions
+gateDestroy=Port förstörd!
+gateCreateSpecified=Port skapad på %network% -nätverket!
+gateCreatePersonal=Port skapad på personligt nätverk.
+gateTerminalSold=Köpt gate %gateName% i %terminalName% för %cost%.
+gateTerminalSale=Listade port %gateName% till salu i %terminalName% för %cost%.
 
 # Gate Construction Problems
+faultNetwork=Du har inte tillgång till det nätverket!
+faultLayout=Du har inte tillgång till den port-sorten!
+faultLength=Namnet är för kort eller för långt!
+faultExists=En port med det namnet existerar redan.
+faultFull=Det nätverket är redan fullt!
+faultWorldDeny=Du har inte tillgång till världen %world%!
+faultConflict=Denna port står i konflikt med en befintlig port.
+faultFlag=Du saknar behörighet att använda markeringarna %flags%; din portal har skapats utan dem!
 
 # Bungee Problems
+bungeePerms=Du har inte behörighet att bygga bungee-portar!
+bungeeDisabled=Stöd för bungeecord är inte aktiverat.
+bungeeLocal=Moderna bungee-portar är inte aktiverade.
+bungeeLegacySyntax=Äldre bungee gates kräver att du anger en destination gate och server.
+bungeeInvalidExitNetwork=Portalen och dess nätverk du skulle teleportera till finns inte längre.
+bungeeInvalidExitGate=Portalen du skulle teleportera till finns inte längre.
+bungeeProxyOffline=Den portalen finns på en server som för närvarande inte är tillgänglig.
+bungeeTargetOffline=Proxyn är för närvarande nere, bungee portals är tillfälligt inaktiverade.
 
 # Gate Usage
+tpSuccess=Teleporterad!
+tpDestiInvalid=Ogiltig destination!
+tpDestiBlocked=Destinationen är blockerad!
+tpEmptyNet=Destinationslistan är tom!
 
 # Access
+conflictPerms=Åtkomst nekad!
+conflictSpawn=Spawn-chunks stör denna portal!
 
 # Economy
+ecoDeduct=Avdrog %cost%.
+ecoObtain=Erhöll %cost% från StarGate %portal%!
+ecoInsolvent=Inte tillräckligt med pengar.
 
 #Admin
+adminReload=Konfigurationen laddades om!
+adminInfo=Kör version %version%. Ändringslogg: https://git.io/JD4Qo
+adminHelp=StarGates dokumentation finns på https://git.io/JDclf
+translatedBy=Thorinwasher

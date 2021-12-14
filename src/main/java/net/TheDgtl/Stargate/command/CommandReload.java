@@ -21,7 +21,8 @@ public class CommandReload implements CommandExecutor {
             commandSender.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.DENY));
             return true;
         }
-        Stargate.getInstance().reloadConfig();
+        Stargate.getInstance().load();
+        commandSender.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.COMMAND_RELOAD));
         return true;
     }
 
