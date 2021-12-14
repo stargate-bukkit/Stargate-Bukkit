@@ -1,16 +1,18 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
+import net.TheDgtl.Stargate.TwoTuple;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Modificator {
+public abstract class Modifier {
+
     /**
      * @param oldSetting a string where index 0 is the key, and index 1 is the value
      * @return new setting where index 0 is the key, and index 1 is the value
      */
-    protected SettingSet getNewSetting(SettingSet oldSetting) {
+    protected TwoTuple<String, Object> getNewSetting(TwoTuple<String, Object> oldSetting) {
         return oldSetting;
     }
 
@@ -24,7 +26,7 @@ public abstract class Modificator {
 
     public abstract void run();
 
-    public abstract int getConfigNumber();
+    public abstract int getConfigVersion();
 
     private Map<String, Object> configScroller(Map<String, Object> config) {
         Map<String, Object> replacementConfig = new HashMap<>();
@@ -32,14 +34,15 @@ public abstract class Modificator {
             Object value = config.get(key);
             if (value instanceof ConfigurationSection)
                 continue;
-            SettingSet oldSetting = new SettingSet(key, value);
+            TwoTuple<String, Object> oldSetting = new TwoTuple<>(key, value);
 
-            SettingSet newSetting = getNewSetting(oldSetting);
+            TwoTuple<String, Object> newSetting = getNewSetting(oldSetting);
             if (newSetting == null) {
                 continue;
             }
-            replacementConfig.put(newSetting.key, newSetting.value);
+            replacementConfig.put(newSetting.getFirstValue(), newSetting.getSecondValue());
         }
         return replacementConfig;
     }
+
 }
