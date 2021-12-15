@@ -177,15 +177,6 @@ public class BlockEventListener implements Listener {
             player.sendMessage(TranslatableMessageFormatter.compileFlags(unformattedMessage, disallowedFlags));
         }
         flags.removeAll(disallowedFlags);
-        if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
-                && !Settings.getBoolean(Setting.USING_BUNGEE)) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
-            return;
-        }
-        if (flags.contains(PortalFlag.FANCY_INTER_SERVER) && !Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INTER_SERVER_DISABLED));
-            return;
-        }
 
         String finalNetworkName;
         Network selectedNetwork = null;
@@ -259,11 +250,21 @@ public class BlockEventListener implements Listener {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return;
         }
+        
+        if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
+                && !Settings.getBoolean(Setting.USING_BUNGEE)) {
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
+            return;
+        }
+        if (flags.contains(PortalFlag.FANCY_INTER_SERVER) && !Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INTER_SERVER_DISABLED));
+            return;
+        }
 
         if (isInSpawn(signLocation.getLocation())) {
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
-
+        
         selectedNetwork.addPortal(portal, true);
         selectedNetwork.updatePortals();
         Stargate.log(Level.FINE, "A Gate format matches");
