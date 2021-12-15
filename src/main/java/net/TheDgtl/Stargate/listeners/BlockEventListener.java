@@ -322,6 +322,12 @@ public class BlockEventListener implements Listener {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         }
 
+        //Moves any private stargates to the player's personal network
+        if (flags.contains(PortalFlag.PRIVATE)) {
+            flags.add(PortalFlag.PERSONAL_NETWORK);
+            return player.getUniqueId().toString();
+        }
+        
         /* Try to fall back to the default or a personal network if no network is given, or the player is missing
          * the necessary permissions */
         if (!permissionManager.canCreateInNetwork(initialNetworkName) || initialNetworkName.trim().isEmpty()) {
@@ -335,13 +341,7 @@ public class BlockEventListener implements Listener {
             return defaultNetwork;
         }
 
-        //Moves any private stargates to the player's personal network
-        @SuppressWarnings("deprecation")
-        OfflinePlayer possiblePersonalNetworkTarget = Bukkit.getOfflinePlayer(initialNetworkName);
-        if (flags.contains(PortalFlag.PRIVATE)) {
-            flags.add(PortalFlag.PERSONAL_NETWORK);
-            return possiblePersonalNetworkTarget.getUniqueId().toString();
-        }
+        
 
         //Move the legacy bungee stargates to their own network
         if (flags.contains(PortalFlag.BUNGEE)) {
