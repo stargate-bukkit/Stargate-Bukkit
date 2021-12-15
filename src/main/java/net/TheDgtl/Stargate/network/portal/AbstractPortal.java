@@ -230,7 +230,7 @@ public abstract class AbstractPortal implements RealPortal {
     public void doTeleport(Entity target) {
         Portal destination = getDestination();
         if (destination == null) {
-            Teleporter teleporter = new Teleporter(this.getExit(), this, gate.getFacing(), gate.getFacing(),
+            Teleporter teleporter = new Teleporter(this.getExit(), this, gate.getFacing().getOppositeFace(), gate.getFacing(),
                     0, TranslatableMessage.INVALID, false);
             teleporter.teleport(target);
             return;

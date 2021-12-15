@@ -16,6 +16,7 @@ import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -67,7 +68,8 @@ public class NetworkedPortal extends AbstractPortal {
         //TODO have this individual for each player?
 
         Player actor = event.getPlayer();
-        if ((this.activator != null && !actor.getUniqueId().equals(this.activator)) || this.isOpen()) {
+        if ((this.activator != null && !actor.getUniqueId().equals(this.activator))
+                || (this.isOpen() && !hasFlag(PortalFlag.ALWAYS_ON))) {
             return;
         }
 
@@ -78,6 +80,7 @@ public class NetworkedPortal extends AbstractPortal {
             Stargate.log(Level.CONFIG, "Player did not have permission to activate portal");
             return;
         }
+        
         boolean previouslyActivated = this.isActive;
         activate(actor);
         if (destinations.size() < 1) {
@@ -87,18 +90,25 @@ public class NetworkedPortal extends AbstractPortal {
             return;
         }
 
+        selectedDestination = selectNewDestination(event.getAction(),previouslyActivated);
+        drawControlMechanisms();
+        if (hasFlag(PortalFlag.ALWAYS_ON))
+            super.destination = loadDestination();
+    }
+    
+    
+    public int selectNewDestination(Action action, boolean previouslyActivated) {
         if (!previouslyActivated) {
             if (!Settings.getBoolean(Setting.REMEMBER_LAST_DESTINATION))
-                selectedDestination = 0;
-            drawControlMechanisms();
-            return;
+                return 0;
+            return selectedDestination;
         }
 
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            int step = (event.getAction() == Action.RIGHT_CLICK_BLOCK) ? 1 : -1;
-            selectedDestination = getNextDestination(step, selectedDestination);
+        if (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK) {
+            int step = (action == Action.RIGHT_CLICK_BLOCK) ? 1 : -1;
+            return getNextDestination(step, selectedDestination);
         }
-        drawControlMechanisms();
+        return selectedDestination;
     }
 
     @Override
