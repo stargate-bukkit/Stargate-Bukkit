@@ -305,6 +305,7 @@ public class BlockEventListener implements Listener {
                                         PermissionManager permissionManager) throws NameErrorException {
         //Force a network name surrounded by square brackets to force an inter-server portal
         //TODO: This bypasses network permission checks. Is this intentional?
+        // Answer: it does not. There is a secondary permission check using the StargateCreateEvent
         if (initialNetworkName.endsWith("]") && initialNetworkName.startsWith("[")) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
             return initialNetworkName.substring(1, initialNetworkName.length() - 1);

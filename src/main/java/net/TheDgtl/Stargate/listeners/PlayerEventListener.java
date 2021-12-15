@@ -29,6 +29,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -161,12 +164,17 @@ public class PlayerEventListener implements Listener {
     private void getBungeeServerName() {
         //Action for loading bungee server id
         Supplier<Boolean> action = (() -> {
-            //TODO: Replace this with a stable method
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF(PluginChannel.GET_SERVER.getChannel());
-            Bukkit.getServer().sendPluginMessage(Stargate.getPlugin(Stargate.class), PluginChannel.BUNGEE.getChannel(),
-                    out.toByteArray());
-            return true;
+            try {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+                dataOutputStream.writeUTF(PluginChannel.GET_SERVER.getChannel());
+                Bukkit.getServer().sendPluginMessage(Stargate.getPlugin(Stargate.class), PluginChannel.BUNGEE.getChannel(),
+                        byteArrayOutputStream.toByteArray());
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
         });
 
         //Repeatedly try to load bungee server id until either the id is known, or no player is able to send bungee messages.

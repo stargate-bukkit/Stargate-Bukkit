@@ -27,7 +27,6 @@ import java.util.logging.Level;
  * @author Pheotis
  */
 
-// TODO See Discussion Three
 public class PermissionManager {
 
     private final Entity target;

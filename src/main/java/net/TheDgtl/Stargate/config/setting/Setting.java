@@ -180,13 +180,8 @@ public enum Setting {
      * Remember the last destination a networked portal was connected to
      */
     REMEMBER_LAST_DESTINATION("rememberLastDestination"),
-    /**
-     * TODO: These are never used
-     * TODO This needs to be updated per Discussion Two.
-     */
-    //TODO not implemented
+
     UPKEEP_COST("economy.upkeepCost"),
-    CHECK_TRAVERSABLES("checkTraversables"),
     CHECK_PORTAL_VALIDITY("checkPortalValidity");
 
     private final String configNode;

@@ -18,6 +18,7 @@ public class TranslatableMessageFormatter {
     static private final String WORLD_INSERTION_IDENTIFIER = "%world%";
     static private final String NET_NAME_IDENTIFIER = "%network%";
     static private final String FLAGS_NAME_IDENTIFIER = "%flags%";
+    static private final String VERSION_IDENTIFIER = "%version%";
 
     /**
      * Replaces the %cost% in a translatable message with the actual cost
@@ -61,6 +62,10 @@ public class TranslatableMessageFormatter {
         if (dissallowedFlags.size() == 2)
             return chracterRepresentation + "&" + compileFlagsString(dissallowedFlags.subList(1, dissallowedFlags.size()));
         return chracterRepresentation + "," + compileFlagsString(dissallowedFlags.subList(1, dissallowedFlags.size()));
+    }
+    
+    public static String compileVersion(String unformatedMessage, String version) {
+        return unformatedMessage.replace(VERSION_IDENTIFIER, version);
     }
 
 }
