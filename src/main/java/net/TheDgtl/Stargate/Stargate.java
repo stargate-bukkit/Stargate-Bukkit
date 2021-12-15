@@ -122,6 +122,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     @Override
     public void onEnable() {
         instance = this;
+        if(!new File(this.getDataFolder(),"config.yml").exists())
+            super.saveDefaultConfig();
 
         if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
             try {
@@ -130,6 +132,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
                 e.printStackTrace();
             }
         }
+        
         
         saveDefaultGates();
         
@@ -265,11 +268,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void saveDefaultConfig() {
-        super.saveResource("config.yml", true);
     }
 
     public void load() {

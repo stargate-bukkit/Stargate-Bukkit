@@ -1,9 +1,11 @@
 package net.TheDgtl.Stargate.command;
 
+import java.io.File;
+import java.util.logging.Level;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import net.TheDgtl.Stargate.Stargate;
@@ -21,8 +23,13 @@ public class CommandReload implements CommandExecutor {
             commandSender.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.DENY));
             return true;
         }
-        Stargate.getInstance().reloadConfig();
-        Stargate.getInstance().load();
+
+        Stargate stargate = Stargate.getInstance();
+        if(!new File(stargate.getDataFolder(),"config.yml").exists())
+            stargate.saveDefaultConfig();
+        stargate.reloadConfig();
+        stargate.load();
+        Stargate.log(Level.INFO, "Reloaded stargate.");
         commandSender.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.COMMAND_RELOAD));
         return true;
     }
