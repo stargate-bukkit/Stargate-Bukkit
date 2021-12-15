@@ -65,7 +65,6 @@ public class GateIris extends GateStructure {
      * @return <p>One of the usable materials</p>
      */
     public Material getMaterial(boolean isOpen) {
-        //TODO a bit lazy
         return (isOpen ? irisOpen : irisClosed).iterator().next();
     }
 

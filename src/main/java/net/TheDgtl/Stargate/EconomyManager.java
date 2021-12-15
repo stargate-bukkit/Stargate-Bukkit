@@ -25,7 +25,6 @@ public class EconomyManager {
             return;
         }
         hasVault = setupEconomy();
-        // TODO wording, or maybe its fine?
         if (!hasVault)
             Stargate.log(Level.WARNING, "Dependency ''Vault'' is unavailable; economy features are disabled");
     }

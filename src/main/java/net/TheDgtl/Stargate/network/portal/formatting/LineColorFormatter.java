@@ -35,20 +35,6 @@ public class LineColorFormatter implements LineFormatter {
     /**
      * Instantiates a new line color formatter for a sign
      *
-     * <p>
-     *     TODO: This constructor is never used
-     * </p>
-     *
-     * @param sign <p>The sign to format lines for</p>
-     */
-    public LineColorFormatter(Sign sign) {
-        this.dyeColor = sign.getColor();
-        this.isLightSign = isLightSign(sign.getType());
-    }
-
-    /**
-     * Instantiates a new line color formatter for a sign
-     *
      * @param dyeColor     <p>The color of the dye applied to the sign</p>
      * @param signMaterial <p>The material used for the sign</p>
      */

@@ -68,7 +68,6 @@ public class StargateAccessEvent extends StargateEvent {
 
     @Override
     public List<Permission> getRelatedPerms() {
-        // TODO Auto-generated method stub
         return null;
     }
 

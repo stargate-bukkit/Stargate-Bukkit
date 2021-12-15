@@ -45,13 +45,6 @@ public enum PluginChannel {
 
     /**
      * Represents the custom forwarding sub-channel used for nothing ???
-     * <p>
-     * TODO: Figure out why this is never used or mentioned
-     */
-    PORTAL("SGPortal"),
-
-    /**
-     * Represents the custom forwarding sub-channel used for nothing ???
      */
     PLUGIN_ENABLE("SGPluginEnable"),
 

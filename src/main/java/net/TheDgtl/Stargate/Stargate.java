@@ -171,7 +171,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
                 writer.write(UUID.randomUUID().toString());
                 writer.close();
             } catch (IOException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
         }
@@ -366,8 +365,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
 
         /*
-         * TODO Error: When would errors like this appear?: Whenever a interserver server instance was
-         * deleted, but not cleared from the inter-server database, errors like this would occur
+         * In some cases, there might be issues with a portal being delited in a server, but still present in the interserver database.
+         * Therefore we have to check for that...
          */
         if (network == null) {
             // Error: This bungee portal's %type% has been removed from the destination server instance.

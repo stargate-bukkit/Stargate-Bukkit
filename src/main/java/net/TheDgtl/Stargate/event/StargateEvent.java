@@ -62,7 +62,6 @@ public abstract class StargateEvent extends Event implements Cancellable {
         this.cancelled = cancelled;
     }
 
-    //TODO temporary, this method should be abstract
     public abstract List<Permission> getRelatedPerms();
 
     protected List<Permission> compileFlagPerms(String permIdentifier) {

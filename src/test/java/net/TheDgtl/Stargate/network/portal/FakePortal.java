@@ -114,7 +114,6 @@ public class FakePortal implements Portal {
 
     @Override
     public Portal loadDestination() {
-        // TODO Auto-generated method stub
         return null;
     }
 

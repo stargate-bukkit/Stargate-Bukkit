@@ -113,7 +113,6 @@ public class StargatePortalEvent extends StargateEvent {
         String identifier = "sg.use";
         List<Permission> permList = new ArrayList<>();
         if (target instanceof Player) {
-            //TODO change this to meta instead
             if (!portal.isOpenFor(target))
                 permList.add(Bukkit.getPluginManager().getPermission(identifier + ".follow"));
             if (portal.hasFlag(PortalFlag.PRIVATE) && !portal.getOwnerUUID().equals(target.getUniqueId()))
