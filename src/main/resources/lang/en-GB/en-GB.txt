@@ -40,7 +40,7 @@ bungeeTargetOffline=The proxy is currently down; bungee portals are temporarily 
 tpSuccess=Teleported!
 tpDestiInvalid=Invalid destination!
 tpDestiBlocked=Destination obstructed!
-tpEmptyNet=Access denied!
+tpEmptyNet=Destination list empty!
 
 # Access
 conflictPerms=Access denied!
