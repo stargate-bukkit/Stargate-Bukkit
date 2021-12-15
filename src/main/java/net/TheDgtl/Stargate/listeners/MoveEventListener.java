@@ -109,7 +109,7 @@ public class MoveEventListener implements Listener {
 
         //Real velocity does not seem to work
         target.setVelocity(toLocation.toVector().subtract(fromLocation.toVector()));
-        Stargate.log(Level.FINEST, "Trying to teleport entity, initial velocity: " + target.getVelocity());
+        Stargate.log(Level.FINER, "Trying to teleport entity, initial velocity: " + target.getVelocity());
         portal.doTeleport(target);
     }
 

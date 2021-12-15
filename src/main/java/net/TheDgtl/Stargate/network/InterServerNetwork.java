@@ -99,7 +99,7 @@ public class InterServerNetwork extends Network {
                     dataOutputStream.writeUTF(jsonData.toString());
                     Bukkit.getServer().sendPluginMessage(stargate, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
                 } catch (IOException ex) {
-                    Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord connect packet");
+                    Stargate.log(Level.WARNING, "[Stargate] Error sending BungeeCord connect packet");
                     ex.printStackTrace();
                 }
                 return true;

@@ -66,7 +66,7 @@ public class BlockEventListener implements Listener {
                 event.getPlayer().sendMessage(msg);
 
                 portal.destroy();
-                Stargate.log(Level.FINEST, "Broke the portal");
+                Stargate.log(Level.FINE, "Broke portal " + portal.getName());
                 return true;
             };
 
@@ -201,7 +201,7 @@ public class BlockEventListener implements Listener {
         try {
             tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost, permissionManager, errorMessage);
         } catch (NoFormatFoundException noFormatFoundException) {
-            Stargate.log(Level.FINE, "No Gate format matches");
+            Stargate.log(Level.FINER, "No Gate format matches");
         } catch (GateConflictException gateConflictException) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
         } catch (NameErrorException nameErrorException) {

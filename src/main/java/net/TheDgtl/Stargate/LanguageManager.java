@@ -160,7 +160,7 @@ public class LanguageManager {
         }
 
         if (endFile == null) {
-            Stargate.log(Level.SEVERE, String.format("The selected language, \"%s\", is not supported, and no "
+            Stargate.log(Level.WARN, String.format("The selected language, \"%s\", is not supported, and no "
                     + "custom language file exists. Falling back to English.", language));
             return new EnumMap<>(TranslatableMessage.class);
         }
@@ -225,7 +225,7 @@ public class LanguageManager {
             }
             TranslatableMessage key = TranslatableMessage.parse(line.substring(0, equalsIndex));
             if (key == null) {
-                Stargate.log(Level.CONFIG, "Skipping line: " + line);
+                Stargate.log(Level.FINER, "Skipping language prompt: " + line);
                 line = bufferedReader.readLine();
                 continue;
             }

@@ -112,7 +112,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     break;
             }
         } catch (IOException ex) {
-            Stargate.log(Level.SEVERE, "[Stargate] Error receiving BungeeCord message");
+            Stargate.log(Level.WARNING, "[Stargate] Error receiving BungeeCord message");
             ex.printStackTrace();
         }
     }
@@ -131,7 +131,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         String playerName = parts[0];
         String destination = parts[1];
 
-        Stargate.log(Level.FINEST, "destination=" + destination + ",player=" + playerName);
+        Stargate.log(Level.FINER, "destination=" + destination + ",player=" + playerName);
 
         // Check if the player is online, if so, teleport, otherwise, queue
         Player player = stargate.getServer().getPlayer(playerName);

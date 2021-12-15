@@ -89,7 +89,7 @@ public class Teleporter {
     private void betterTeleport(Entity target, double rotation) {
         List<Entity> passengers = target.getPassengers();
         if (target.eject()) {
-            Stargate.log(Level.FINEST, "Ejected all passengers");
+            Stargate.log(Level.FINER, "Ejected all passengers");
             teleportPassengers(target, passengers);
         }
 

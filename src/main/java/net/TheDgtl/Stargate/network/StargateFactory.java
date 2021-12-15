@@ -480,7 +480,7 @@ public class StargateFactory {
     public void unRegisterLocation(GateStructureType structureType, BlockLocation blockLocation) {
         Map<BlockLocation, Portal> map = portalFromStructureTypeMap.get(structureType);
         if (map != null) {
-            Stargate.log(Level.FINEST, "Unregistering portal " + map.get(blockLocation).getName() +
+            Stargate.log(Level.FINER, "Unregistering portal " + map.get(blockLocation).getName() +
                     " with structType " + structureType + " at location " + blockLocation.toString());
             map.remove(blockLocation);
         }

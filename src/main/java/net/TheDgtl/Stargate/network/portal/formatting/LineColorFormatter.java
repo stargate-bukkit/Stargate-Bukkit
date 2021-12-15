@@ -149,7 +149,7 @@ public class LineColorFormatter implements LineFormatter {
      * @return <p>The color to use for displaying the portal's name</p>
      */
     private ChatColor getNameColor(Portal portal, boolean isLightSign) {
-        Stargate.log(Level.FINEST, " Gate " + portal.getName() + " has flags: " + portal.getAllFlagsString());
+        Stargate.log(Level.FINER, " Gate " + portal.getName() + " has flags: " + portal.getAllFlagsString());
         ChatColor[] colors = getNameColors(portal);
         if (isLightSign) {
             return colors[0];

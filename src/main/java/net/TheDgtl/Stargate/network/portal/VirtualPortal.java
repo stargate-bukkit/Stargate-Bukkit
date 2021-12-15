@@ -55,7 +55,7 @@ public class VirtualPortal implements Portal {
     @Override
     public void teleportHere(Entity target, RealPortal origin) {
         //TODO: implement vehicle compatibility.
-        Stargate.log(Level.FINEST, "");
+        //WHY?! Stargate.log(Level.FINEST, "");
         Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
         if (!(target instanceof Player)) {
             return;
@@ -168,7 +168,7 @@ public class VirtualPortal implements Portal {
             dataOutputStream.writeUTF(server);
             player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
         } catch (IOException exception) {
-            Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord connect packet");
+            Stargate.log(Level.WARNING, "[Stargate] Error sending BungeeCord connect packet");
             throw exception;
         }
     }
@@ -199,7 +199,7 @@ public class VirtualPortal implements Portal {
             Stargate.log(Level.FINEST, byteArrayOutputStream.toString());
             player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
         } catch (IOException exception) {
-            Stargate.log(Level.SEVERE, "[Stargate] Error sending BungeeCord teleport packet");
+            Stargate.log(Level.WARNING, "[Stargate] Error sending BungeeCord teleport packet");
             throw exception;
         }
     }

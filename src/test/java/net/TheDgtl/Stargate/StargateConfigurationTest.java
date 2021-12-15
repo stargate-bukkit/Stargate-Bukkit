@@ -44,7 +44,7 @@ public class StargateConfigurationTest {
         for (File configFile : configFiles) {
             FileConfiguration config = new StargateConfiguration();
             config.load(configFile);
-            logger.logMessage(Level.FINEST, " Current config:\n " + config.saveToString());
+            logger.logMessage(Level.FINER, " Current config:\n " + config.saveToString());
             File oldFile = new File(configFile.getAbsolutePath() + ".old");
             if (oldFile.exists() && !oldFile.delete()) {
                 throw new IOException("Unable to delete config file backup");

@@ -34,7 +34,7 @@ public class PluginEventListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPluginDisable(PluginDisableEvent event) {
         if (event.getPlugin().equals(Stargate.economyManager.getEconomyPlugin())) {
-            Stargate.log(Level.INFO, "Vault plugin lost.");
+            Stargate.log(Level.WARNING, "Vault plugin lost.");
         }
     }
 

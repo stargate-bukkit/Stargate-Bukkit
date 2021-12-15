@@ -101,11 +101,11 @@ public class PermissionManager {
         List<Permission> relatedPermissions = event.getRelatedPerms();
 
         if (target instanceof Player) {
-            Stargate.log(Level.FINEST, "checking permission for player " + target.getName());
+            Stargate.log(Level.CONFIG, "checking permission for player " + target.getName());
         }
 
         for (Permission relatedPermission : relatedPermissions) {
-            Stargate.log(Level.FINEST, " checking permission " + ((relatedPermission != null) ?
+            Stargate.log(Level.CONFIG, " checking permission " + ((relatedPermission != null) ?
                     relatedPermission.getName() : "null"));
             if (relatedPermission != null && !target.hasPermission(relatedPermission)) {
                 denyMessage = determineTranslatableMessageFromPermission(relatedPermission);

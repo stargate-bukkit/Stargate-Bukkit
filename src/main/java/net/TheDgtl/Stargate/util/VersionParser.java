@@ -19,7 +19,7 @@ public class VersionParser {
      */
     public static boolean bukkitIsNewerThan(ImportantVersion version) {
         String versionString = Bukkit.getServer().getBukkitVersion();
-        Stargate.log(Level.FINEST, versionString);
+        Stargate.log(Level.FINER, versionString);
         String[] splitVersion = versionString.split("\\.");
         if (splitVersion[1].contains("-")) {
             splitVersion[1] = splitVersion[1].split("-")[0];

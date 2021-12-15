@@ -65,7 +65,7 @@ public class GateFormat {
         for (GateStructureType structureType : portalParts.keySet()) {
             Stargate.log(Level.FINER, "---Validating " + structureType);
             if (!(portalParts.get(structureType).isValidState(converter, topLeft))) {
-                Stargate.log(Level.INFO, structureType + " returned negative");
+                Stargate.log(Level.FINER, structureType + " returned negative");
                 return false;
             }
         }
@@ -100,9 +100,9 @@ public class GateFormat {
      * @param controlToGateMap <p>The mapping between control blocks and gate formats to save to</p>
      */
     private static void loadGateFormat(File file, Map<Material, List<GateFormat>> controlToGateMap) {
-        Stargate.log(Level.FINE, "Reading gateFormat from " + file.getName());
+        Stargate.log(Level.CONFIG, "Loaded gate format " + file.getName());
         try (Scanner scanner = new Scanner(file)) {
-            Stargate.log(Level.FINEST, "fileSpace:" + file.length());
+            Stargate.log(Level.FINER, "Gate file size:" + file.length());
             if (file.length() > 65536L) {
                 throw new ParsingErrorException("Design is too large");
             }
@@ -111,7 +111,7 @@ public class GateFormat {
             GateFormat format = gateParser.parse();
             addGateFormat(controlToGateMap, format, gateParser.getControlBlockMaterials());
         } catch (FileNotFoundException | ParsingErrorException e) {
-            Stargate.log(Level.SEVERE, "Could not load Gate " + file.getName() + " - " + e.getMessage());
+            Stargate.log(Level.WARNING, "Could not load Gate " + file.getName() + " - " + e.getMessage());
         }
     }
 
