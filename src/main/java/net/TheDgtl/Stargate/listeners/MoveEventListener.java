@@ -2,7 +2,6 @@ package net.TheDgtl.Stargate.listeners;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
-import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.Location;
 import org.bukkit.World;

@@ -20,7 +20,6 @@ import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;

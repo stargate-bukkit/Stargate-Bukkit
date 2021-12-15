@@ -16,7 +16,6 @@ import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 

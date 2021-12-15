@@ -11,7 +11,6 @@ import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
-import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
