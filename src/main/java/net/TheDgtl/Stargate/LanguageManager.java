@@ -160,7 +160,7 @@ public class LanguageManager {
         }
 
         if (endFile == null) {
-            Stargate.log(Level.WARN, String.format("The selected language, \"%s\", is not supported, and no "
+            Stargate.log(Level.WARNING, String.format("The selected language, \"%s\", is not supported, and no "
                     + "custom language file exists. Falling back to English.", language));
             return new EnumMap<>(TranslatableMessage.class);
         }
