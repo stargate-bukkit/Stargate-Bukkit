@@ -86,6 +86,8 @@ permissions:
                 description: Can use hidden-network gates.
               #NOT IMPL.    sg.use.type.o:
               #NOT IMPL.      description: Can use toggle gates.
+              sg.use.type.q:
+                description: Can use silent gates.
               sg.use.type.p:
                 description: Can use private gates.
               sg.use.type.r:
@@ -144,6 +146,8 @@ permissions:
               #NOT IMPL.      description: Can create gates with the toggle flag.
               sg.create.type.p:
                 description: Can create gates with the private flag.
+              sg.create.type.q:
+                description: Can create silent gates.
               sg.create.type.r:
                 description: Can create gates with the random flag.
               sg.create.type.s:
@@ -210,6 +214,8 @@ permissions:
               #NOT IMPL.      description: Can destroy toggle gates.
               sg.destroy.type.p:
                 description: Can destroy private gates.
+              sg.destroy.type.q:
+                description: Can destroy silent gates.
               sg.destroy.type.r:
                 description: Can destroy random gates.
               sg.destroy.type.s:
@@ -264,6 +270,8 @@ permissions:
               sg.create.type.b: true
               sg.create.type.n: true
               sg.create.type.u: true
+              sg.create.type.q: true
+              sg.destroy.type.q: true
               sg.create.type.i: true
               #NOT IMPL.    sg.create.type.v: true
               sg.destroy.type.a: true
