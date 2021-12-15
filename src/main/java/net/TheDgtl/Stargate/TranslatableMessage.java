@@ -36,7 +36,7 @@ public enum TranslatableMessage {
      * <p>This is triggered when a stargate's button is clicked and it's missing a valid destination. It's also
      * triggered when trying to teleport if the destination is missing.</p>
      */
-    INVALID("tpDestInvalid"),
+    INVALID("tpDestiInvalid"),
 
     /**
      * The message to be displayed when a player is missing the required permissions to teleport to a destination
