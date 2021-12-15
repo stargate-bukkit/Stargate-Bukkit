@@ -267,11 +267,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
     }
 
-    @Override
-    public void saveDefaultConfig() {
-        super.saveResource("config.yml", true);
-    }
-
     public void load() {
         loadColors();
         if (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
