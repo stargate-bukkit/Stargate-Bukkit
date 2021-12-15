@@ -263,14 +263,12 @@ permissions:
               sg.create.type.a: true
               sg.create.type.b: true
               sg.create.type.n: true
-              sg.create.type.s: true
               sg.create.type.u: true
               sg.create.type.i: true
               #NOT IMPL.    sg.create.type.v: true
               sg.destroy.type.a: true
               sg.destroy.type.b: true
               sg.destroy.type.n: true
-              sg.destroy.type.s: true
               sg.destroy.type.u: true
               sg.destroy.type.i: true
           #NOT IMPL.    sg.destroy.type.v: true
@@ -285,6 +283,8 @@ permissions:
               sg.destroy.network: true
               sg.create.network: true
               sg.admin.bypass: true
+              sg.destroy.type.s: true
+              sg.create.type.s: true
           sg.preset.admin:
             description: A set of permissions intended to be given to admins tasked with configuring stargate and its permissions.
             children:
