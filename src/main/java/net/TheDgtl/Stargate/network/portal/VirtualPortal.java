@@ -55,7 +55,6 @@ public class VirtualPortal implements Portal {
     @Override
     public void teleportHere(Entity target, RealPortal origin) {
         //TODO: implement vehicle compatibility.
-        //WHY?! Stargate.log(Level.FINEST, "");
         Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
         if (!(target instanceof Player)) {
             return;
