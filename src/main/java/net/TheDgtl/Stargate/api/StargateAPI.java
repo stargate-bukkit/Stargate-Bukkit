@@ -26,7 +26,7 @@ public class StargateAPI {
      * @param portalBlock <p>The location to search for a portal</p>
      * @return <p>A portal, or null if no portal was found</p>
      */
-    public Portal getPortal(Location portalBlock) {
+    public static Portal getPortal(Location portalBlock) {
         return Stargate.factory.getPortal(portalBlock, GateStructureType.values());
     }
 
@@ -40,7 +40,7 @@ public class StargateAPI {
      * @param structureType <p>The type of gate structure to look for</p>
      * @return <p>A portal, or null if no portal was found</p>
      */
-    public Portal getPortal(Location portalBlock, GateStructureType structureType) {
+    public static Portal getPortal(Location portalBlock, GateStructureType structureType) {
         return Stargate.factory.getPortal(portalBlock, structureType);
     }
 
@@ -54,7 +54,7 @@ public class StargateAPI {
      * @param structureTypes <p>The types of gate structures to look for</p>
      * @return <p>A portal, or null if no portal was found</p>
      */
-    public Portal getPortal(Location portalBlock, GateStructureType[] structureTypes) {
+    public static Portal getPortal(Location portalBlock, GateStructureType[] structureTypes) {
         return Stargate.factory.getPortal(portalBlock, structureTypes);
     }
 
@@ -65,7 +65,7 @@ public class StargateAPI {
      * @param portalName <p>The name of the portal</p>
      * @return <p>A portal, or null if no portal was found</p>
      */
-    public Portal getPortal(Network network, String portalName) {
+    public static Portal getPortal(Network network, String portalName) {
         return network.getPortal(portalName);
     }
 
@@ -77,7 +77,7 @@ public class StargateAPI {
      * @param isBungee    <p>Whether to search for a BungeeCord-connected portal</p>
      * @return <p>A portal, or null if no portal was found</p>
      */
-    public Portal getPortal(String networkName, String portalName, boolean isBungee) {
+    public static Portal getPortal(String networkName, String portalName, boolean isBungee) {
         Network network = Stargate.factory.getNetwork(networkName, isBungee);
         if (network == null) {
             return null;
@@ -92,7 +92,7 @@ public class StargateAPI {
      * @param portal <p>A portal within the target network</p>
      * @return <p>The network the portal belongs to</p>
      */
-    public Network getNetwork(Portal portal) {
+    public static Network getNetwork(Portal portal) {
         return portal.getNetwork();
     }
 
@@ -103,7 +103,7 @@ public class StargateAPI {
      * @param isBungee    <p>Whether to search for a network across BungeeCord</p>
      * @return <p>The network, or null if no such network was found</p>
      */
-    public Network getNetwork(String networkName, boolean isBungee) {
+    public static Network getNetwork(String networkName, boolean isBungee) {
         return Stargate.factory.getNetwork(networkName, isBungee);
     }
 
@@ -117,7 +117,7 @@ public class StargateAPI {
      * @param portal        <p>The portal to change the network of</p>
      * @param targetNetwork <p>The target network the portal should be moved to</p>
      */
-    public void changeNetwork(Portal portal, Network targetNetwork) {
+    public static void changeNetwork(Portal portal, Network targetNetwork) {
         portal.setNetwork(targetNetwork);
     }
 
@@ -128,7 +128,7 @@ public class StargateAPI {
      * @param location   <p>???</p>
      * @param openFacing <p>???</p>
      */
-    public void createPortal(Gate gate, Location location, Vector openFacing) {
+    public static void createPortal(Gate gate, Location location, Vector openFacing) {
         //TODO Currently not implemented
     }
 
@@ -141,7 +141,7 @@ public class StargateAPI {
      * @param target      <p>The portal to change the destination of</p>
      * @param destination <p>The portal's new destination</p>
      */
-    public void forceConnect(Portal target, Portal destination) {
+    public static void forceConnect(Portal target, Portal destination) {
         target.overrideDestination(destination);
     }
 
