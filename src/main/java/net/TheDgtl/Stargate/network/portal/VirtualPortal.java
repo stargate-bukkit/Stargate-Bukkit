@@ -203,4 +203,9 @@ public class VirtualPortal implements Portal {
         }
     }
 
+    @Override
+    public void setOwner(UUID targetPlayer) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 }

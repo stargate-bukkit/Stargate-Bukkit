@@ -151,4 +151,9 @@ public class PlaceholderPortal implements Portal {
         return new PlaceholderPortal(this.destination, network, "");
     }
 
+    @Override
+    public void setOwner(UUID targetPlayer) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 }
