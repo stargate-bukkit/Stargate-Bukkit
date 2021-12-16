@@ -3,10 +3,14 @@ package net.TheDgtl.Stargate.database;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.TableNameConfig;
+import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
+
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -87,14 +91,20 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreatePortalTableStatement(Connection conn, PortalType portalType) throws SQLException {
-        String interServerExtraFields = (portalType == PortalType.INTER_SERVER) ?
-                " isOnline BOOLEAN, homeServerId VARCHAR(36)," : "";
-        String statementMessage = String.format("CREATE TABLE IF NOT EXISTS {Portal} (name NVARCHAR(180), network NVARCHAR(180), " +
-                "destination NVARCHAR(180), world NVARCHAR(255) NOT NULL, x INTEGER, y INTEGER, z INTEGER, ownerUUID VARCHAR(36),%s " +
-                "PRIMARY KEY (name, network));", interServerExtraFields);
+    public PreparedStatement generateCreatePortalTableStatement(Connection conn, PortalType portalType)
+            throws SQLException {
+        String interServerExtraFields = (portalType == PortalType.INTER_SERVER)
+                ? " isOnline BOOLEAN, homeServerId VARCHAR(36),"
+                : "";
+        String statementMessage = String
+                .format("CREATE TABLE IF NOT EXISTS {Portal} (name NVARCHAR(180), network NVARCHAR(180),"
+                        + " destination NVARCHAR(180), world NVARCHAR(255) NOT NULL, x INTEGER, y INTEGER,"
+                        + " z INTEGER, ownerUUID VARCHAR(36), gatefileName NVARCHAR(255), facing INTEGER,"
+                        + " zFlip BOOLEAN, %s"
+                        + " PRIMARY KEY (name, network));", interServerExtraFields);
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-        //TODO: Add CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci') equivalent for SQLite
+        // TODO: Add CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci') equivalent
+        // for SQLite
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return conn.prepareStatement(statementMessage);
     }
@@ -239,13 +249,14 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateAddPortalStatement(Connection conn, Portal portal,
-                                                        PortalType portalType) throws SQLException {
+    public PreparedStatement generateAddPortalStatement(Connection conn, RealPortal portal,
+            PortalType portalType) throws SQLException {
         boolean isInterServer = (portalType == PortalType.INTER_SERVER);
         String extraKeys = (isInterServer ? ", homeServerId, isOnline" : "");
         String extraValues = (isInterServer ? ", ?, ?" : "");
-        String statementMessage = String.format("INSERT INTO {Portal} (network, name, destination, world, x, y, z, " +
-                "ownerUUID%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?%s);", extraKeys, extraValues);
+        String statementMessage = String
+                .format("INSERT INTO {Portal} (network, name, destination, world, x, y, z, ownerUUID,"
+                        + "gatefileName, facing%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?%s);", extraKeys, extraValues);
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
 
         PreparedStatement statement = conn.prepareStatement(statementMessage);
@@ -258,17 +269,23 @@ public class SQLQueryGenerator {
             destinationString = destination.getName();
         }
         statement.setString(3, destinationString);
-        Location signLocation = portal.getSignLocation();
-        World signWorld = signLocation.getWorld();
+        Location topLeft = portal.getGate().getTopLeft();
+        World signWorld = topLeft.getWorld();
         statement.setString(4, signWorld != null ? signWorld.getName() : "");
-        statement.setInt(5, signLocation.getBlockX());
-        statement.setInt(6, signLocation.getBlockY());
-        statement.setInt(7, signLocation.getBlockZ());
+        statement.setInt(5, topLeft.getBlockX());
+        statement.setInt(6, topLeft.getBlockY());
+        statement.setInt(7, topLeft.getBlockZ());
         statement.setString(8, portal.getOwnerUUID().toString());
-
+        
+        Gate gate = portal.getGate();
+        
+        statement.setString(9, gate.getFormat().getFileName());
+        statement.setInt(10, gate.getFacing().ordinal());
+        
+        
         if (isInterServer) {
-            statement.setString(9, Stargate.serverUUID.toString());
-            statement.setBoolean(10, true);
+            statement.setString(11, Stargate.serverUUID.toString());
+            statement.setBoolean(12, true);
         }
 
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
