@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.exception.GateConflictException;
@@ -29,6 +30,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class LegacyPortalStorageLoader {
 
@@ -53,7 +55,7 @@ public class LegacyPortalStorageLoader {
      * @return
      * @throws IOException
      */
-    static public List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, StargateFactory factory)
+    static public List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, StargateFactory factory, StargateLogger logger)
             throws IOException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
@@ -68,7 +70,7 @@ public class LegacyPortalStorageLoader {
                     continue;
                 }
                 try {
-                    portals.add(readPortal(line, server.getWorld(worldName), factory));
+                    portals.add(readPortal(line, server.getWorld(worldName), factory, logger));
                 } catch (NameErrorException | NoFormatFoundException | GateConflictException | InvalidStructureException e) {
                     e.printStackTrace();
                 }
@@ -79,7 +81,7 @@ public class LegacyPortalStorageLoader {
         return portals;
     }
 
-    static private Portal readPortal(String line, World world, StargateFactory factory)
+    static private Portal readPortal(String line, World world, StargateFactory factory, StargateLogger logger)
             throws NameErrorException, NoFormatFoundException, GateConflictException, InvalidStructureException {
         String[] splitLine = line.split(":");
         String name = splitLine[0];
@@ -91,7 +93,12 @@ public class LegacyPortalStorageLoader {
                 Double.parseDouble(coordinates[2]));
         int modX = Integer.parseInt(splitLine[3]);
         int modZ = Integer.parseInt(splitLine[4]);
+        logger.logMessage(Level.FINEST, String.format("modX = %d, modZ = %d", modX, modZ));
         BlockFace facing = getFacing(modX,modZ);
+        if(facing == null)
+            facing = getFacing(Double.parseDouble(splitLine[5]));
+        
+        
         String gateFormatName = splitLine[7];
         String destination = (splitLine.length > 8) ? splitLine[8] : "";
         String networkName = (splitLine.length > 9) ? splitLine[9] : Settings.getString(Setting.DEFAULT_NETWORK);
@@ -105,13 +112,14 @@ public class LegacyPortalStorageLoader {
         } catch (NameErrorException ignored) {
         }
         Network network = factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
-        Gate gate = new Gate(topLeft, facing, false, gateFormatName, flags, Stargate.getInstance());
+        Gate gate = new Gate(topLeft, facing, false, gateFormatName, flags, logger);
         Portal portal = new PlaceholderPortal(name, network, destination, flags, ownerUUID, gate);
         network.addPortal(portal, true);
 
         return portal;
     }
 
+    
     @SuppressWarnings("deprecation")
     private static UUID getPlayerUUID(String ownerString) {
         if (ownerString.length() > 16)
@@ -141,6 +149,10 @@ public class LegacyPortalStorageLoader {
         if(modZ > 0)
             return BlockFace.EAST;
         return null;
+    }
+
+    private static BlockFace getFacing(double rot) {
+        return getFacing(-(int)Math.round(Math.cos(rot)),-(int)Math.round(Math.sin(rot)));
     }
 
 }

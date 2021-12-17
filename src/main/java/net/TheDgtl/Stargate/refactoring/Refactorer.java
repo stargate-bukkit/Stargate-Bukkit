@@ -30,7 +30,7 @@ public class Refactorer {
 
     public Refactorer(File configFile, StargateLogger logger, Server server, StargateFactory factory) throws FileNotFoundException, IOException, InvalidConfigurationException {
         RETCONS = new Modifier[]{
-                new RetCon1_0_0(server, factory)
+                new RetCon1_0_0(server, factory, logger)
         };
 
         FileConfiguration fileConfig = new StargateConfiguration();

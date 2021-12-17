@@ -23,6 +23,7 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -321,7 +322,7 @@ public class Gate {
      * @param vector <p>The vector defining a location</p>
      * @return <p>The location corresponding to the given vector</p>
      */
-    private Location getLocation(Vector vector) {
+    private Location getLocation(@NotNull Vector vector) {
         return topLeft.clone().add(converter.performInverseOperation(vector));
     }
 

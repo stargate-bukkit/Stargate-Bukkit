@@ -10,6 +10,7 @@ import net.TheDgtl.Stargate.TwoTuple;
 import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
+import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -43,6 +44,7 @@ public class RefactorerTest {
     static private Database sqlDatabase;
     static private final Map<String, Refactorer> refactorerMap = new HashMap<>();
     static private Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> configTestMap;
+    private static final File testGatesDir = new File("src/test/resources/gates");
 
     static private StargateFactory factory;
     static private ServerMock server;
@@ -69,6 +71,8 @@ public class RefactorerTest {
         server.addSimpleWorld("lclo");
         server.addSimpleWorld("pseudoknigth");
         Stargate.getConfigStatic().load(defaultConfigFile);
+        
+        GateFormat.setFormats(GateFormat.loadGateFormats(testGatesDir));
     }
 
     private static Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> getSettingTestMaps() {

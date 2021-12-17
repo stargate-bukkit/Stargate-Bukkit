@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.TwoTuple;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.util.FileHelper;
@@ -24,6 +25,7 @@ public class RetCon1_0_0 extends Modifier {
     private final Server server;
     private final StargateFactory factory;
     private Map<String, Object> oldConfig;
+    private StargateLogger logger;
 
     /**
      * Instantiates a new Ret-Con 1.0.0
@@ -31,9 +33,10 @@ public class RetCon1_0_0 extends Modifier {
      * @param server  <p>The server to use for loading legacy portals</p>
      * @param factory <p>The stargate factory to use for loading legacy portals</p>
      */
-    public RetCon1_0_0(Server server, StargateFactory factory) {
+    public RetCon1_0_0(Server server, StargateFactory factory, StargateLogger logger) {
         this.server = server;
         this.factory = factory;
+        this.logger = logger;
     }
 
     @Override
@@ -60,7 +63,7 @@ public class RetCon1_0_0 extends Modifier {
             String[] possiblePortalFoldersSetting = {"portal-folder", "folders.portalFolder"};
             for (String portalFolder : possiblePortalFoldersSetting) {
                 if (oldConfig.get(portalFolder) != null) {
-                    LegacyPortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder), server, factory);
+                    LegacyPortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder), server, factory, logger);
                     break;
                 }
             }

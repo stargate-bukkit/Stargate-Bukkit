@@ -80,7 +80,7 @@ public class DatabaseTester {
 
         Network testNetwork = null;
         try {
-            testNetwork = new Network("test", database, generator);
+            testNetwork = new Network("test", database, generator, null);
         } catch (NameErrorException e) {
             e.printStackTrace();
         }

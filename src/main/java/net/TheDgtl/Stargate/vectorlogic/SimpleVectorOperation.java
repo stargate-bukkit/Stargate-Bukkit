@@ -5,6 +5,7 @@ import org.bukkit.Axis;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class SimpleVectorOperation implements IVectorOperation {
     }
 
     @Override
-    public Vector performOperation(Vector vector) {
+    public Vector performOperation(@NotNull Vector vector) {
         Vector clone = vector.clone();
         clone.rotateAroundAxis(rotationAxes.get(facing), rotationAngles.get(facing));
         if (flipZAxis) {
@@ -74,7 +75,7 @@ public class SimpleVectorOperation implements IVectorOperation {
     }
 
     @Override
-    public Vector performInverseOperation(Vector vector) {
+    public Vector performInverseOperation(@NotNull Vector vector) {
         Vector clone = vector.clone();
         if (flipZAxis) {
             clone.setZ(-clone.getZ());
@@ -83,7 +84,7 @@ public class SimpleVectorOperation implements IVectorOperation {
     }
 
     @Override
-    public BlockVector performInverseOperation(BlockVector vector) {
+    public BlockVector performInverseOperation(@NotNull BlockVector vector) {
         return performInverseOperation((Vector) vector).toBlockVector();
     }
 

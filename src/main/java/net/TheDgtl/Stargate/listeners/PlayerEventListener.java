@@ -1,7 +1,5 @@
 package net.TheDgtl.Stargate.listeners;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.PluginChannel;
 import net.TheDgtl.Stargate.Stargate;

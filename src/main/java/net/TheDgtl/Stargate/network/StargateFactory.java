@@ -317,7 +317,7 @@ public class StargateFactory {
         if (netExists(netName, flags.contains(PortalFlag.FANCY_INTER_SERVER)))
             throw new NameErrorException(null);
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
-            InterServerNetwork net = new InterServerNetwork(netName, database, sqlMaker);
+            InterServerNetwork net = new InterServerNetwork(netName, database, sqlMaker,this);
             String netHash = net.getName().toLowerCase();
             if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
                 netHash = ChatColor.stripColor(netHash);
@@ -328,9 +328,9 @@ public class StargateFactory {
         Network net;
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
             UUID id = UUID.fromString(netName);
-            net = new PersonalNetwork(id, database, sqlMaker);
+            net = new PersonalNetwork(id, database, sqlMaker,this);
         } else {
-            net = new Network(netName, database, sqlMaker);
+            net = new Network(netName, database, sqlMaker,this);
         }
         networkList.put(netName, net);
     }

@@ -4,6 +4,7 @@ import org.bukkit.Axis;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 public interface IVectorOperation {
 
@@ -39,7 +40,7 @@ public interface IVectorOperation {
      * @param vector <p>The vector to perform the operation on</p>
      * @return vector <p>A new vector with the operation applied</p>
      */
-    Vector performOperation(Vector vector);
+    Vector performOperation(@NotNull Vector vector);
 
     /**
      * Performs the reverse of this vector operation on the given vector
@@ -50,7 +51,7 @@ public interface IVectorOperation {
      * @param vector <p>The vector to perform the inverse operation on</p>
      * @return vector <p>A new vector with the inverse operation applied</p>
      */
-    Vector performInverseOperation(Vector vector);
+    Vector performInverseOperation(@NotNull Vector vector);
 
     /**
      * Performs the reverse of this vector operation on the given vector
@@ -61,6 +62,6 @@ public interface IVectorOperation {
      * @param vector <p>The vector to perform the inverse operation on</p>
      * @return vector <p>A new vector with the inverse operation applied</p>
      */
-    BlockVector performInverseOperation(BlockVector vector);
+    BlockVector performInverseOperation(@NotNull BlockVector vector);
 
 }
