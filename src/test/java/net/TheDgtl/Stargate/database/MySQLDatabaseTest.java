@@ -3,6 +3,8 @@ package net.TheDgtl.Stargate.database;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.config.TableNameConfig;
+import net.TheDgtl.Stargate.exception.InvalidStructureException;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -20,7 +22,7 @@ public class MySQLDatabaseTest {
     private static Database database;
 
     @BeforeAll
-    public static void setUp() throws SQLException {
+    public static void setUp() throws SQLException, InvalidStructureException {
         System.out.println("Setting up test data");
         DriverEnum driver = DriverEnum.MARIADB;
         String address = "LOCALHOST";

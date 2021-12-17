@@ -1,7 +1,11 @@
 package net.TheDgtl.Stargate.network.portal;
 
+import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.exception.InvalidStructureException;
+import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -37,10 +41,11 @@ public class FakePortalGenerator {
      * @param createInterServerPortals <p>Whether to generate fake inter-server portals</p>
      * @param numberOfPortals          <p>The number of fake portals to generate</p>
      * @return <p>A map from the portal's name to the portal's object</p>
+     * @throws InvalidStructureException 
      */
-    public Map<String, Portal> generateFakePortals(World world, Network portalNetwork,
-                                                   boolean createInterServerPortals, int numberOfPortals) {
-        Map<String, Portal> output = new HashMap<>();
+    public Map<String, RealPortal> generateFakePortals(World world, Network portalNetwork,
+                                                   boolean createInterServerPortals, int numberOfPortals, StargateLogger logger) throws InvalidStructureException {
+        Map<String, RealPortal> output = new HashMap<>();
         String baseName;
         if (createInterServerPortals) {
             baseName = interPortalDefaultName;
@@ -50,7 +55,7 @@ public class FakePortalGenerator {
 
         for (int portalNumber = 0; portalNumber < numberOfPortals; portalNumber++) {
             String name = baseName + portalNumber;
-            Portal portal = generateFakePortal(world, portalNetwork, name, createInterServerPortals);
+            RealPortal portal = generateFakePortal(world, portalNetwork, name, createInterServerPortals, logger);
             output.put(portal.getName(), portal);
         }
         return output;
@@ -64,14 +69,15 @@ public class FakePortalGenerator {
      * @param name                    <p>The name of the generated portal</p>
      * @param createInterServerPortal <p>Whether to generate a fake inter-server portal</p>
      * @return <p>A fake portal</p>
+     * @throws InvalidStructureException 
      */
-    public Portal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal) {
+    public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal, StargateLogger logger) throws InvalidStructureException {
         Set<PortalFlag> flags = generateRandomFlags();
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
         }
-        return new FakePortal(world.getBlockAt(0, 0, 0).getLocation(), name, portalNetwork, UUID.randomUUID(),
-                flags);
+        Gate gate = new Gate(world.getBlockAt(0, 0, 0).getLocation(), BlockFace.EAST, false, "fileName.gate", flags, logger);
+        return new PlaceholderPortal(name, portalNetwork, "", flags, UUID.randomUUID(), gate);
     }
 
     /**

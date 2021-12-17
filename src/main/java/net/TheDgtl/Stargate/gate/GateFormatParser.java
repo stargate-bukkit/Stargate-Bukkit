@@ -68,15 +68,6 @@ public class GateFormatParser {
     }
 
     /**
-     * Gets the set of materials used for the parsed gate format's control blocks
-     *
-     * @return <p>The materials used for control blocks</p>
-     */
-    public Set<Material> getControlBlockMaterials() {
-        return controlMaterials;
-    }
-
-    /**
      * Parses the gate file given during instantiation
      *
      * @return <p>The parsed gate format</p>
@@ -98,7 +89,7 @@ public class GateFormatParser {
             throw new ParsingErrorException("Design requires at least 2 control blocks '-' ");
         }
 
-        return new GateFormat(iris, frame, controlBlocks, filename, canBeBlockedByIronDoor);
+        return new GateFormat(iris, frame, controlBlocks, filename, canBeBlockedByIronDoor, controlMaterials);
     }
 
 

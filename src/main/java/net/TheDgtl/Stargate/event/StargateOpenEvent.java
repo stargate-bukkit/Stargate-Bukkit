@@ -77,9 +77,7 @@ public class StargateOpenEvent extends StargateEvent {
     public List<Permission> getRelatedPerms() {
         String identifier = "sg.use";
         List<Permission> permList = super.defaultPermCompile(identifier, player.getUniqueId().toString());
-        Location destinationLoc = destination.getSignLocation();
-        if (destinationLoc != null)
-            permList.add(super.compileWorldPerm(identifier, destinationLoc));
+        permList.add(super.compileWorldPerm(identifier, portal));
         return permList;
     }
 }

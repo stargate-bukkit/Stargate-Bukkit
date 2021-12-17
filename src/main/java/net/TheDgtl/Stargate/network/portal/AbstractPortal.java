@@ -257,11 +257,6 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public String getDesignName() {
-        return gate.getFormat().name;
-    }
-
-    @Override
     public UUID getOwnerUUID() {
         return ownerUUID;
     }
@@ -384,9 +379,9 @@ public abstract class AbstractPortal implements RealPortal {
             throws NoFormatFoundException, GateConflictException {
         Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
         for (GateFormat gateFormat : gateFormats) {
-            Stargate.log(Level.FINE, "--------- " + gateFormat.name + " ---------");
+            Stargate.log(Level.FINE, "--------- " + gateFormat.getFileName() + " ---------");
             try {
-                return new Gate(gateFormat, signLocation, signFacing, this);
+                return new Gate(gateFormat, signLocation, signFacing, flags);
             } catch (InvalidStructureException ignored) {
             }
         }

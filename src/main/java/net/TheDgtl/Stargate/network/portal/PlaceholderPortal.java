@@ -1,12 +1,16 @@
 package net.TheDgtl.Stargate.network.portal;
 
+import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.util.PortalHelper;
+
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.EnumSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -15,15 +19,14 @@ import java.util.UUID;
  *
  * @author Thorin
  */
-public class PlaceholderPortal implements Portal {
+public class PlaceholderPortal implements RealPortal {
 
     private final String name;
     private Network network;
     private String destination = "";
-    private EnumSet<PortalFlag> flags;
-    private Location signLocation;
-    private String gateFileName;
+    private Set<PortalFlag> flags;
     private UUID ownerUUID;
+    private Gate gate;
 
     /**
      * Instantiates a new placeholder portal
@@ -32,21 +35,19 @@ public class PlaceholderPortal implements Portal {
      * @param network      <p>The network the portal belongs to</p>
      * @param destination  <p>The fixed destination of this portal, or null</p>
      * @param flags        <p>The flags enabled for the portal</p>
-     * @param signLocation <p>The location of this portal's sign</p>
-     * @param gateFileName <p>The file name of this portal's gate format</p>
      * @param ownerUUID    <p>The UUID of the portal's owner</p>
+     * @param gate         <p>The gate construct linked to the portal</p>
      */
-    public PlaceholderPortal(String name, Network network, String destination, EnumSet<PortalFlag> flags,
-                             Location signLocation, String gateFileName, UUID ownerUUID) {
+    public PlaceholderPortal(String name, Network network, String destination, Set<PortalFlag> flags,
+                             UUID ownerUUID, Gate gate) {
         this.name = name;
         if (destination != null) {
             this.destination = destination;
         }
         this.flags = flags;
-        this.signLocation = signLocation;
         this.network = network;
-        this.gateFileName = gateFileName;
         this.ownerUUID = ownerUUID;
+        this.gate = gate;
     }
 
     /**
@@ -124,16 +125,6 @@ public class PlaceholderPortal implements Portal {
     }
 
     @Override
-    public Location getSignLocation() {
-        return signLocation;
-    }
-
-    @Override
-    public String getDesignName() {
-        return gateFileName;
-    }
-
-    @Override
     public UUID getOwnerUUID() {
         return ownerUUID;
     }
@@ -149,6 +140,33 @@ public class PlaceholderPortal implements Portal {
             return destination;
         }
         return new PlaceholderPortal(this.destination, network, "");
+    }
+
+    @Override
+    public void drawControlMechanisms() {}
+
+    @Override
+    public void setSignColor(DyeColor color) {}
+
+    @Override
+    public void onButtonClick(PlayerInteractEvent event) {}
+
+    @Override
+    public Gate getGate() {
+        return this.gate;
+    }
+
+    @Override
+    public void close(long relatedOpenTime) {}
+
+    @Override
+    public Location getExit() {
+        return null;
+    }
+
+    @Override
+    public Location getSignLocation() {
+        return null;
     }
 
 }

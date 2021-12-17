@@ -1,14 +1,13 @@
 package net.TheDgtl.Stargate.gate;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.actions.BlockSetAction;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
-import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -27,6 +26,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -43,7 +43,7 @@ public class Gate {
     private BlockVector buttonPosition;
     private final BlockFace facing;
     private boolean isOpen = false;
-    private final RealPortal portal;
+    private Set<PortalFlag> flags;
 
     private static final Material DEFAULT_BUTTON = Material.STONE_BUTTON;
     private static final Material DEFAULT_WATER_BUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
@@ -58,12 +58,12 @@ public class Gate {
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
-    public Gate(GateFormat format, Location signLocation, BlockFace signFace, RealPortal portal)
+    public Gate(GateFormat format, Location signLocation, BlockFace signFace, Set<PortalFlag> flags)
             throws InvalidStructureException, GateConflictException {
         this.setFormat(format);
         facing = signFace;
-        this.portal = portal;
         converter = new VectorOperation(signFace, Stargate.getInstance());
+        this.flags = flags;
 
         //Allow mirroring for non-symmetrical gates
         if (matchesFormat(signLocation)) {
@@ -77,6 +77,27 @@ public class Gate {
         throw new InvalidStructureException();
     }
 
+    /**
+     * Instantiates a gate from already predetermined parameters, no checking is done to see if format matches
+     * 
+     * @param topLeft       <p>The location of the origin of the gate</p>
+     * @param facing        <p>The facing of the gate</p>
+     * @param zFlip         <p>If the gateFormat is fliped in the z-axis</p>
+     * @param gateDesignName    <p>The filename of the design for this gate</p>
+     * @param portal        <p>The portal using this gate</p>
+     * @throws InvalidStructureException    <p>If the facing is invalid</p>
+     */
+    public Gate(Location topLeft, BlockFace facing, boolean zFlip, String gateDesignName, Set<PortalFlag> flags, StargateLogger logger)
+            throws InvalidStructureException {
+        this.facing = facing;
+        this.topLeft = topLeft;
+        this.converter = new VectorOperation(facing, logger);
+        this.converter.setFlipZAxis(zFlip);
+        GateFormat format = GateFormat.getFormat(gateDesignName);
+        this.setFormat(format);
+        this.flags = flags;
+    }
+    
     /**
      * Set button and draw sign
      *
@@ -148,12 +169,12 @@ public class Gate {
     public List<BlockLocation> getLocations(GateStructureType structureType) {
         List<BlockLocation> output = new ArrayList<>();
 
-        for (BlockVector vec : getFormat().portalParts.get(structureType).getStructureTypePositions()) {
+        for (BlockVector vec : getFormat().getStructure(structureType).getStructureTypePositions()) {
             Location loc = getLocation(vec);
             output.add(new BlockLocation(loc));
         }
 
-        if (structureType == GateStructureType.CONTROL_BLOCK && portal.hasFlag(PortalFlag.ALWAYS_ON)) {
+        if (structureType == GateStructureType.CONTROL_BLOCK && flags.contains(PortalFlag.ALWAYS_ON)) {
             Location buttonLoc = getLocation(buttonPosition);
             output.remove(new BlockLocation(buttonLoc));
         }
@@ -373,6 +394,10 @@ public class Gate {
         Material newMaterial = getFormat().getIrisMaterial(open);
         setIrisMaterial(newMaterial);
         setOpen(open);
+    }
+
+    public Location getTopLeft() {
+        return this.topLeft;
     }
 
 }

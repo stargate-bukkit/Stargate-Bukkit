@@ -61,5 +61,14 @@ public interface RealPortal extends Portal {
      * @return <p>The exit location of this portal</p>
      */
     Location getExit();
+    
+
+
+    /**
+     * Gets the location of this portal's sign
+     *
+     * @return <p>The location of this portal's sign</p>
+     */
+    Location getSignLocation();
 
 }

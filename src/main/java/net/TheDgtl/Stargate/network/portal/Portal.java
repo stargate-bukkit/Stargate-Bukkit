@@ -1,7 +1,6 @@
 package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.network.Network;
-import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -107,20 +106,6 @@ public interface Portal {
      * @return <p>All of this portal's portal flags in the form of a string</p>
      */
     String getAllFlagsString();
-
-    /**
-     * Gets the location of this portal's sign
-     *
-     * @return <p>The location of this portal's sign</p>
-     */
-    Location getSignLocation();
-
-    /**
-     * Gets the name of this portal's used gate design
-     *
-     * @return <p>The name of this portal's used gate design</p>
-     */
-    String getDesignName();
 
     /**
      * Gets the UUID of this portal's owner

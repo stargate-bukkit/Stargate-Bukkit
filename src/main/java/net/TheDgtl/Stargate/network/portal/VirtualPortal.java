@@ -130,16 +130,6 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
-    public Location getSignLocation() {
-        return null;
-    }
-
-    @Override
-    public String getDesignName() {
-        return null;
-    }
-
-    @Override
     public UUID getOwnerUUID() {
         return ownerUUID;
     }

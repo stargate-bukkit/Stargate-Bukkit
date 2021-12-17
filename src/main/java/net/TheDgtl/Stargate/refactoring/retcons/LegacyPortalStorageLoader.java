@@ -1,10 +1,13 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
+import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.exception.GateConflictException;
+import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
+import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.PlaceholderPortal;
@@ -15,6 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -49,7 +53,8 @@ public class LegacyPortalStorageLoader {
      * @return
      * @throws IOException
      */
-    static public List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, StargateFactory factory) throws IOException {
+    static public List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, StargateFactory factory)
+            throws IOException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
         System.out.println(portalSaveLocation);
@@ -64,7 +69,7 @@ public class LegacyPortalStorageLoader {
                 }
                 try {
                     portals.add(readPortal(line, server.getWorld(worldName), factory));
-                } catch (NameErrorException | NoFormatFoundException | GateConflictException e) {
+                } catch (NameErrorException | NoFormatFoundException | GateConflictException | InvalidStructureException e) {
                     e.printStackTrace();
                 }
 
@@ -74,15 +79,19 @@ public class LegacyPortalStorageLoader {
         return portals;
     }
 
-    static private Portal readPortal(String line, World world, StargateFactory factory) throws NameErrorException, NoFormatFoundException, GateConflictException {
+    static private Portal readPortal(String line, World world, StargateFactory factory)
+            throws NameErrorException, NoFormatFoundException, GateConflictException, InvalidStructureException {
         String[] splitLine = line.split(":");
         String name = splitLine[0];
-        String[] coordinates = splitLine[1].split(",");
-        Location signLocation = new Location(
+        String[] coordinates = splitLine[6].split(",");
+        Location topLeft = new Location(
                 world,
                 Double.parseDouble(coordinates[0]),
                 Double.parseDouble(coordinates[1]),
                 Double.parseDouble(coordinates[2]));
+        int modX = Integer.parseInt(splitLine[3]);
+        int modZ = Integer.parseInt(splitLine[4]);
+        BlockFace facing = getFacing(modX,modZ);
         String gateFormatName = splitLine[7];
         String destination = (splitLine.length > 8) ? splitLine[8] : "";
         String networkName = (splitLine.length > 9) ? splitLine[9] : Settings.getString(Setting.DEFAULT_NETWORK);
@@ -96,7 +105,8 @@ public class LegacyPortalStorageLoader {
         } catch (NameErrorException ignored) {
         }
         Network network = factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
-        Portal portal = new PlaceholderPortal(name, network, destination, flags, signLocation, gateFormatName, ownerUUID);
+        Gate gate = new Gate(topLeft, facing, false, gateFormatName, flags, Stargate.getInstance());
+        Portal portal = new PlaceholderPortal(name, network, destination, flags, ownerUUID, gate);
         network.addPortal(portal, true);
 
         return portal;
@@ -119,6 +129,18 @@ public class LegacyPortalStorageLoader {
         }
 
         return flags;
+    }
+    
+    private static BlockFace getFacing(int modX, int modZ) {
+        if(modX < 0)
+            return BlockFace.WEST;
+        if(modX > 0)
+            return BlockFace.EAST;
+        if(modZ < 0)
+            return BlockFace.NORTH;
+        if(modZ > 0)
+            return BlockFace.EAST;
+        return null;
     }
 
 }

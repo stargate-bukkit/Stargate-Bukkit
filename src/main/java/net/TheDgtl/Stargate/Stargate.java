@@ -153,7 +153,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     private void loadBungeeServerName() {
         Stargate.log(Level.FINEST, DATA_FOLDER);
-        File path = new File(String.format("%s/%s", this.getDataFolder().getAbsolutePath(), INTERNAL_FOLDER));
+        File path = new File(this.getDataFolder(), INTERNAL_FOLDER);
         if (!path.exists() && path.mkdir()) {
             try {
                 Files.setAttribute(path.toPath(), "dos:hidden", true);
@@ -281,7 +281,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         else
             lowestMsgLevel = Level.parse(debugLevelStr);
         languageManager.setLanguage(Settings.getString(Setting.LANGUAGE));
-        GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATA_FOLDER + "/" + GATE_FOLDER);
+        
+        GateFormat.setFormats(GateFormat.loadGateFormats( new File(DATA_FOLDER,GATE_FOLDER) ));
 
         try {
             factory = new StargateFactory(this);

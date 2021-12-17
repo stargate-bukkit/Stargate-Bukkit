@@ -101,18 +101,20 @@ public class Network {
      * Adds the given portal to this network
      *
      * @param portal         <p>The portal to add</p>
-     * @param saveToDatabase <p>Whether to also save the portal to the database</p>
+     * @param saveToDatabase <p>Whether to also save the portal to the database, only instances of RealPortal can be saved</p>
      */
     public void addPortal(Portal portal, boolean saveToDatabase) {
         if (portal instanceof RealPortal) {
             RealPortal physicalPortal = (RealPortal) portal;
-            for (GateStructureType key : physicalPortal.getGate().getFormat().portalParts.keySet()) {
+            for (GateStructureType key : GateStructureType.values()) {
                 List<BlockLocation> locations = physicalPortal.getGate().getLocations(key);
+                if(locations == null)
+                    continue;
                 Stargate.factory.registerLocations(key, generateLocationMap(locations, portal));
             }
         }
-        if (saveToDatabase) {
-            savePortal(portal);
+        if (portal instanceof RealPortal && saveToDatabase) {
+            savePortal((RealPortal)portal);
         }
         nameToPortalMap.put(getPortalHash(portal.getName()), portal);
     }
@@ -208,7 +210,7 @@ public class Network {
      *
      * @param portal <p>The portal to save</p>
      */
-    protected void savePortal(Portal portal) {
+    protected void savePortal(RealPortal portal) {
         savePortal(database, portal, PortalType.LOCAL);
     }
 
@@ -219,7 +221,7 @@ public class Network {
      * @param portal     <p>The portal to save</p>
      * @param portalType <p>The type of portal to save</p>
      */
-    protected void savePortal(Database database, Portal portal, PortalType portalType) {
+    protected void savePortal(Database database, RealPortal portal, PortalType portalType) {
         /* An SQL transaction is used here to make sure partial data is never added to the database. */
         Connection connection = null;
         try {
