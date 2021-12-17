@@ -175,7 +175,7 @@ public class Gate {
             output.add(new BlockLocation(loc));
         }
 
-        if (structureType == GateStructureType.CONTROL_BLOCK && flags.contains(PortalFlag.ALWAYS_ON)) {
+        if (structureType == GateStructureType.CONTROL_BLOCK && flags.contains(PortalFlag.ALWAYS_ON) && buttonPosition != null) {
             Location buttonLoc = getLocation(buttonPosition);
             output.remove(new BlockLocation(buttonLoc));
         }
