@@ -37,7 +37,7 @@ import java.util.logging.Level;
  */
 public class Gate {
 
-    private GateFormat format;
+    private final GateFormat format;
     private final VectorOperation converter;
     private Location topLeft;
     private BlockVector signPosition;
@@ -61,7 +61,7 @@ public class Gate {
      */
     public Gate(GateFormat format, Location signLocation, BlockFace signFace, Set<PortalFlag> flags)
             throws InvalidStructureException, GateConflictException {
-        this.setFormat(format);
+        this.format = format;
         facing = signFace;
         converter = new VectorOperation(signFace, Stargate.getInstance());
         this.flags = flags;
@@ -95,7 +95,7 @@ public class Gate {
         this.converter = new VectorOperation(facing, logger);
         this.converter.setFlipZAxis(zFlip);
         GateFormat format = GateFormat.getFormat(gateDesignName);
-        this.setFormat(format);
+        this.format = format;
         this.flags = flags;
     }
     
@@ -234,15 +234,6 @@ public class Gate {
     }
 
     /**
-     * Sets the gate format used by this gate
-     *
-     * @param format <p>The gate format used by this gate</p>
-     */
-    public void setFormat(GateFormat format) {
-        this.format = format;
-    }
-
-    /**
      * Gets the block face defining this gate's direction
      *
      * @return <p>The block face defining this gate's direction</p>
@@ -337,7 +328,7 @@ public class Gate {
      * @return <p>True if the built stargate matches this format</p>
      * @throws GateConflictException <p>If the built stargate conflicts with another gate</p>
      */
-    private boolean matchesFormat(Location location) throws GateConflictException {
+    public boolean matchesFormat(@NotNull Location location) throws GateConflictException {
         List<BlockVector> controlBlocks = getFormat().getControlBlocks();
         for (BlockVector controlBlock : controlBlocks) {
             /*
