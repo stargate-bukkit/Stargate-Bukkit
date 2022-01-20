@@ -97,11 +97,10 @@ public class GateFormatParser {
      * Stores all configuration options to relevant variables/sets
      *
      * @param config <p>The configuration map to read</p>
-     * @return <p>The remaining configuration options after the known options have been taken care of</p>
      * @throws ParsingErrorException <p>If unable to parse one of the materials given in the options</p>
      */
-    private Map<String, String> setSettings(Map<String, String> config) throws ParsingErrorException {
-        Map<String, String> remaining = new HashMap<>();
+    private void setSettings(Map<String, String> config) throws ParsingErrorException {
+        //Map<String, String> remaining = new HashMap<>();
         for (String key : config.keySet()) {
             if (key.length() != 1) {
                 switch (key) {
@@ -112,7 +111,7 @@ public class GateFormatParser {
                         irisClosed = parseMaterial(config.get(key));
                         break;
                     default:
-                        remaining.put(key, config.get(key));
+                        //remaining.put(key, config.get(key));
                         break;
                 }
                 continue;
@@ -126,7 +125,7 @@ public class GateFormatParser {
             }
             frameMaterials.put(symbol, id);
         }
-        return remaining;
+        //return remaining;
     }
 
     /**

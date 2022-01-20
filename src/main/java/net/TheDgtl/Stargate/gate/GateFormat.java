@@ -103,7 +103,7 @@ public class GateFormat {
     /**
      * Loads the given gate format file
      *
-     * @param file             <p>The gate format file to load</p>
+     * @param file <p>The gate format file to load</p>
      * @throws ParsingErrorException <p>If unable to load the gate format</p>
      * @throws FileNotFoundException <p>If the gate file does not exist</p>
      */

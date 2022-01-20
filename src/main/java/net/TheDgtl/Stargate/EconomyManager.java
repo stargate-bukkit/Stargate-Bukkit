@@ -136,10 +136,9 @@ public class EconomyManager {
         }
 
         if (chargePlayer(player, amount)) {
-            depositPlayer(transactionTarget, amount);
-            return true;
+            return depositPlayer(transactionTarget, amount);
         }
         return false;
     }
-    
+
 }

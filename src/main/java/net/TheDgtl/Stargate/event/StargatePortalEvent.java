@@ -42,8 +42,6 @@ public class StargatePortalEvent extends StargateEvent {
     /*
      * An event which occurs every time players teleport?
      */
-
-
     private final Entity target;
     private final Portal destination;
     private Location exit;
@@ -56,6 +54,7 @@ public class StargatePortalEvent extends StargateEvent {
     }
 
     @NotNull
+    @SuppressWarnings("unused")
     public static HandlerList getHandlerList() {
         return handlers;
     }
@@ -72,11 +71,11 @@ public class StargatePortalEvent extends StargateEvent {
     /**
      * @return player that went through the gate
      */
-    @NotNull
     @Deprecated
     public Player getPlayer() {
-        if (target instanceof Player)
+        if (target instanceof Player) {
             return (Player) target;
+        }
         return null;
     }
 
@@ -96,8 +95,9 @@ public class StargatePortalEvent extends StargateEvent {
      * @return Location players exit point
      */
     public Location getExit() {
-        if (destination instanceof RealPortal)
+        if (destination instanceof RealPortal) {
             return ((RealPortal) destination).getExit();
+        }
         return null;
     }
 
@@ -105,6 +105,7 @@ public class StargatePortalEvent extends StargateEvent {
      * @param exitLocation
      */
     public void setExit(@NotNull Location exitLocation) {
+        //TODO: Exit variable is never used. Is this a bug?
         this.exit = Objects.requireNonNull(exitLocation);
     }
 

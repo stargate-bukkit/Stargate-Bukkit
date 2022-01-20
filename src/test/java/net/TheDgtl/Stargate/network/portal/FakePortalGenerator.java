@@ -43,8 +43,8 @@ public class FakePortalGenerator {
      * @return <p>A map from the portal's name to the portal's object</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      */
-    public Map<String, RealPortal> generateFakePortals(World world, Network portalNetwork, 
-                                                       boolean createInterServerPortals, int numberOfPortals, 
+    public Map<String, RealPortal> generateFakePortals(World world, Network portalNetwork,
+                                                       boolean createInterServerPortals, int numberOfPortals,
                                                        StargateLogger logger) throws InvalidStructureException {
         Map<String, RealPortal> output = new HashMap<>();
         String baseName;

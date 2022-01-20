@@ -111,10 +111,12 @@ public class StargateConfiguration extends YamlConfiguration {
                 String lastKeyName = possibleComment.split(":")[0];
                 String key = "";
                 for (String possibleKey : getKeys(true)) {
-                    if (possibleKey.contains(lastKeyName))
+                    if (possibleKey.contains(lastKeyName)) {
                         key = possibleKey;
+                    }
                 }
                 String comment = getString(key);
+                //TODO: Need to account for comment = null
                 String[] commentLines = comment.split("\n");
                 /*
                  * Go through every line, except the last one, which is just going to be a

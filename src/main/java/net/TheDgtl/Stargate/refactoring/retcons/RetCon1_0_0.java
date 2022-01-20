@@ -2,12 +2,15 @@ package net.TheDgtl.Stargate.refactoring.retcons;
 
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.TwoTuple;
+import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.network.StargateFactory;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.util.FileHelper;
 import org.bukkit.Server;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -63,11 +66,13 @@ public class RetCon1_0_0 extends Modifier {
             String[] possiblePortalFoldersSetting = {"portal-folder", "folders.portalFolder"};
             for (String portalFolder : possiblePortalFoldersSetting) {
                 if (oldConfig.get(portalFolder) != null) {
-                    LegacyPortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder), server, factory, logger);
+                    //TODO: Portals are loaded, but never used or converted
+                    List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(
+                            (String) oldConfig.get(portalFolder), server, factory, logger);
                     break;
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | InvalidStructureException e) {
             e.printStackTrace();
         }
     }

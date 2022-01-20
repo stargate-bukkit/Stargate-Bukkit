@@ -3,10 +3,8 @@ package net.TheDgtl.Stargate.refactoring.retcons;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
-import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
-import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
@@ -54,12 +52,16 @@ public class LegacyPortalStorageLoader {
      * @return
      * @throws IOException
      */
-    static public List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, StargateFactory factory, StargateLogger logger)
-            throws IOException {
+    static public List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, StargateFactory factory,
+                                                      StargateLogger logger) throws IOException, InvalidStructureException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
         System.out.println(portalSaveLocation);
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".db")) : new File[0];
+        if (files == null) {
+            return null;
+        }
+
         for (File file : files) {
             String worldName = file.getName().replaceAll("\\.db$", "");
             BufferedReader reader = FileHelper.getBufferedReader(file);
@@ -68,11 +70,7 @@ public class LegacyPortalStorageLoader {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
-                try {
-                    portals.add(readPortal(line, server.getWorld(worldName), factory, logger));
-                } catch (NameErrorException | NoFormatFoundException | GateConflictException | InvalidStructureException e) {
-                    e.printStackTrace();
-                }
+                portals.add(readPortal(line, server.getWorld(worldName), factory, logger));
 
                 line = reader.readLine();
             }
@@ -81,7 +79,7 @@ public class LegacyPortalStorageLoader {
     }
 
     static private Portal readPortal(String line, World world, StargateFactory factory, StargateLogger logger)
-            throws NameErrorException, NoFormatFoundException, GateConflictException, InvalidStructureException {
+            throws InvalidStructureException {
         String[] splitLine = line.split(":");
         String name = splitLine[0];
         String[] coordinates = splitLine[6].split(",");

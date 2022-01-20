@@ -42,7 +42,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public class StargateFactory {
-    
+
     private final HashMap<String, Network> networkList = new HashMap<>();
     private final HashMap<String, InterServerNetwork> bungeeNetList = new HashMap<>();
 

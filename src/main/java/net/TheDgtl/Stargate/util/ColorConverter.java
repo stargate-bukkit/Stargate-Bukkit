@@ -48,10 +48,6 @@ public class ColorConverter {
         return materialToColorsConversionMap.get(mat);
     }
 
-    public static ChatColor getChatColorFromMaterial(Material mat) {
-        return getChatColorFromDyeColor(getDyeColorFromMaterial(mat));
-    }
-
     public static Material getMaterialFromDyeColor(DyeColor dye) {
         return dyeColorToMaterialColorsConversionMap.get(dye);
     }

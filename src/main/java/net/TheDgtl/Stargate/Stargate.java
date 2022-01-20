@@ -217,14 +217,14 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     private void saveDefaultGates() {
         //TODO is there a way to check all files in a resource-folder? Possible solution seems unnecessarily complex
         String[] gateList = {"nether.gate", "water.gate", "wool.gate", "end.gate"};
-        boolean replace = false;
         for (String gateName : gateList) {
-            if (!(new File(DATA_FOLDER + "/" + GATE_FOLDER + "/" + gateName).exists()))
-                this.saveResource(GATE_FOLDER + "/" + gateName, replace);
+            if (!(new File(DATA_FOLDER + "/" + GATE_FOLDER + "/" + gateName).exists())) {
+                this.saveResource(GATE_FOLDER + "/" + gateName, false);
+            }
         }
     }
 
-    private void refactor() throws FileNotFoundException, IOException, InvalidConfigurationException, SQLException {
+    private void refactor() throws IOException, InvalidConfigurationException, SQLException {
         File file = new File(this.getDataFolder(), "stargate.db");
         Database database = new SQLiteDatabase(file);
         StargateFactory factory = new StargateFactory(database, false, false, this);
@@ -282,6 +282,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             lowestMsgLevel = Level.parse(debugLevelStr);
         languageManager.setLanguage(Settings.getString(Setting.LANGUAGE));
 
+        //TODO: Might cause a NullPointerException
         GateFormat.setFormats(GateFormat.loadGateFormats(new File(DATA_FOLDER, GATE_FOLDER)));
 
         try {
