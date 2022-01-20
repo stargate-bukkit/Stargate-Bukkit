@@ -41,16 +41,16 @@ public class SQLQueryGenerator {
     /**
      * Gets a prepared statement for selecting all portals in a table
      *
-     * @param conn       <p>The database connection to use</p>
+     * @param connection <p>The database connection to use</p>
      * @param portalType <p>The type of the portal (used to determine which table to select from)</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateGetAllPortalsStatement(Connection conn, PortalType portalType) throws SQLException {
+    public PreparedStatement generateGetAllPortalsStatement(Connection connection, PortalType portalType) throws SQLException {
         String statementMessage = "SELECT * FROM {PortalView};";
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
         logger.logMessage(Level.FINEST, statementMessage);
-        return conn.prepareStatement(statementMessage);
+        return connection.prepareStatement(statementMessage);
     }
 
     /**
@@ -84,12 +84,12 @@ public class SQLQueryGenerator {
     /**
      * Gets a prepared statement for creating a new portals table
      *
-     * @param conn       <p>The database connection to use</p>
+     * @param connection <p>The database connection to use</p>
      * @param portalType <p>The type of the portal (used to determine which table to create)</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreatePortalTableStatement(Connection conn, PortalType portalType) throws SQLException {
+    public PreparedStatement generateCreatePortalTableStatement(Connection connection, PortalType portalType) throws SQLException {
         String interServerExtraFields = (portalType == PortalType.INTER_SERVER)
                 ? " isOnline BOOLEAN, homeServerId VARCHAR(36),"
                 : "";
@@ -102,7 +102,41 @@ public class SQLQueryGenerator {
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
         // TODO: Add CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci') equivalent for SQLite
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return conn.prepareStatement(statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
+     * Gets a prepared statement for creating the portal position type table
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateCreatePortalPositionTypeTableStatement(Connection connection) throws SQLException {
+        String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalPositionType} (id INTEGER PRIMARY KEY " +
+                "AUTO_INCREMENT, positionName NVARCHAR(16));";
+        statementMessage = replaceKnownTableNames(statementMessage);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
+     * Gets a prepared statement for creating the portal position table
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateCreatePortalPositionTableStatement(Connection connection) throws SQLException {
+        String statementMessage = "CREATE TABLE {PortalPosition} (portalName NVARCHAR(180), networkName NVARCHAR(180), " +
+                "xCoordinate INTEGER, yCoordinate INTEGER, zCoordinate INTEGER, positionType INTEGER," +
+                "PRIMARY KEY (xCoordinate, yCoordinate, zCoordinate), " +
+                "FOREIGN KEY (portalName, networkName) REFERENCES Portal(portalName, networkName), " +
+                "FOREIGN KEY (positionType) REFERENCES PortalPositionType (id));" +
+                "CREATE INDEX {PortalPosition}PortalIndex ON {PortalPosition} (portalName, networkName);";
+        statementMessage = replaceKnownTableNames(statementMessage);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
     }
 
     /**
@@ -239,13 +273,13 @@ public class SQLQueryGenerator {
     /**
      * Gets a prepared statement for adding a portal
      *
-     * @param conn       <p>The database connection to use</p>
+     * @param connection <p>The database connection to use</p>
      * @param portal     <p>The portal to add</p>
      * @param portalType <p>The type of the portal (used to determine which table to update)</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateAddPortalStatement(Connection conn, RealPortal portal,
+    public PreparedStatement generateAddPortalStatement(Connection connection, RealPortal portal,
                                                         PortalType portalType) throws SQLException {
         boolean isInterServer = (portalType == PortalType.INTER_SERVER);
         String extraKeys = (isInterServer ? ", homeServerId, isOnline" : "");
@@ -255,7 +289,7 @@ public class SQLQueryGenerator {
                         + "gatefileName, facing%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?%s);", extraKeys, extraValues);
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
 
-        PreparedStatement statement = conn.prepareStatement(statementMessage);
+        PreparedStatement statement = connection.prepareStatement(statementMessage);
 
         statement.setString(1, portal.getNetwork().getName());
         statement.setString(2, portal.getName());
@@ -292,18 +326,18 @@ public class SQLQueryGenerator {
     /**
      * Gets a prepared statement for removing a portal
      *
-     * @param conn       <p>The database connection to use</p>
+     * @param connection <p>The database connection to use</p>
      * @param portal     <p>The portal to remove</p>
      * @param portalType <p>The type of the portal (used to determine which table to update)</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateRemovePortalStatement(Connection conn, Portal portal,
+    public PreparedStatement generateRemovePortalStatement(Connection connection, Portal portal,
                                                            PortalType portalType) throws SQLException {
         String statementMessage = "DELETE FROM {Portal} WHERE name = ? AND network = ?";
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
 
-        PreparedStatement statement = conn.prepareStatement(statementMessage);
+        PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, portal.getName());
         statement.setString(2, portal.getNetwork().getName());
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
@@ -316,16 +350,16 @@ public class SQLQueryGenerator {
      * <p>An online portal is one that can be teleported to, while an offline portal cannot be teleported to until it
      * comes online again.</p>
      *
-     * @param conn     <p>The database connection to use</p>
-     * @param portal   <p>The portal to update</p>
-     * @param isOnline <p>Whether the given portal is currently online</p>
+     * @param connection <p>The database connection to use</p>
+     * @param portal     <p>The portal to update</p>
+     * @param isOnline   <p>Whether the given portal is currently online</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateSetPortalOnlineStatusStatement(Connection conn, Portal portal, boolean isOnline) throws SQLException {
+    public PreparedStatement generateSetPortalOnlineStatusStatement(Connection connection, Portal portal, boolean isOnline) throws SQLException {
         String statementString = "UPDATE {InterPortal} SET isOnline = ? WHERE network = ? AND name = ?;";
         String statementMessage = replaceKnownTableNames(statementString);
-        PreparedStatement statement = conn.prepareStatement(statementMessage);
+        PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setBoolean(1, isOnline);
         statement.setString(2, portal.getNetwork().getName());
         statement.setString(3, portal.getName());
@@ -334,18 +368,18 @@ public class SQLQueryGenerator {
 
     /**
      * Gets a prepared statement for updating a server's name
-     * 
-     * @param conn <p>The database connection to use</p>
+     *
+     * @param connection <p>The database connection to use</p>
      * @param serverUUID <p>The UUID of the server to update</p>
      * @param serverName <p>The new name of the server</p>
      * @return <p>The prepared statement for updating the server info</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateUpdateServerInfoStatus(Connection conn, UUID serverUUID, String serverName) throws SQLException {
+    public PreparedStatement generateUpdateServerInfoStatus(Connection connection, UUID serverUUID, String serverName) throws SQLException {
         String statementString = "REPLACE INTO {ServerInfo} (serverId, serverName) VALUES(?, ?);";
         String statementMessage = replaceKnownTableNames(statementString);
         logger.logMessage(Level.FINEST, statementMessage);
-        PreparedStatement statement = conn.prepareStatement(statementMessage);
+        PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, serverUUID.toString());
         statement.setString(2, serverName);
         return statement;
@@ -374,12 +408,14 @@ public class SQLQueryGenerator {
     private String replaceKnownTableNames(String input) {
         return replaceTableNames(input,
                 new String[]{"{Portal}", "{PortalView}", "{Flag}", "{PortalFlagRelation}", "{InterPortal}",
-                        "{InterPortalView}", "{InterPortalFlagRelation}", "{LastKnownName}", "{ServerInfo}"},
+                        "{InterPortalView}", "{InterPortalFlagRelation}", "{LastKnownName}", "{ServerInfo}",
+                        "{PortalPositionType}", "{PortalPosition}"},
                 new String[]{tableNameConfig.getPortalTableName(), tableNameConfig.getPortalViewName(),
                         tableNameConfig.getFlagTableName(), tableNameConfig.getFlagRelationTableName(),
                         tableNameConfig.getInterPortalTableName(), tableNameConfig.getInterPortalViewName(),
                         tableNameConfig.getInterFlagRelationTableName(), tableNameConfig.getLastKnownNameTableName(),
-                        tableNameConfig.getServerInfoTableName()});
+                        tableNameConfig.getServerInfoTableName(), tableNameConfig.getPortalPositionTypeTableName(),
+                        tableNameConfig.getPortalPositionTableName()});
     }
 
     /**
