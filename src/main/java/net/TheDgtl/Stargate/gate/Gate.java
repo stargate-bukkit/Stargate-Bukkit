@@ -44,7 +44,7 @@ public class Gate {
     private BlockVector buttonPosition;
     private final BlockFace facing;
     private boolean isOpen = false;
-    private Set<PortalFlag> flags;
+    private final Set<PortalFlag> flags;
 
     private static final Material DEFAULT_BUTTON = Material.STONE_BUTTON;
     private static final Material DEFAULT_WATER_BUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
@@ -55,7 +55,7 @@ public class Gate {
      * @param format       <p>The gate format used by this gate</p>
      * @param signLocation <p>The location of this gate's sign</p>
      * @param signFace     <p>The direction this gate's sign is facing</p>
-     * @param portal       <p>The portal using this gate</p>
+     * @param flags       <p>The flags enabled for this gate</p>
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
@@ -85,7 +85,7 @@ public class Gate {
      * @param facing         <p>The facing of the gate</p>
      * @param zFlip          <p>If the gateFormat is fliped in the z-axis</p>
      * @param gateDesignName <p>The filename of the design for this gate</p>
-     * @param portal         <p>The portal using this gate</p>
+     * @param flags       <p>The flags enabled for this gate</p>
      * @throws InvalidStructureException <p>If the facing is invalid</p>
      */
     public Gate(Location topLeft, BlockFace facing, boolean zFlip, String gateDesignName, Set<PortalFlag> flags, StargateLogger logger)
@@ -94,8 +94,7 @@ public class Gate {
         this.topLeft = topLeft;
         this.converter = new VectorOperation(facing, logger);
         this.converter.setFlipZAxis(zFlip);
-        GateFormat format = GateFormat.getFormat(gateDesignName);
-        this.format = format;
+        this.format = GateFormat.getFormat(gateDesignName);
         this.flags = flags;
     }
 

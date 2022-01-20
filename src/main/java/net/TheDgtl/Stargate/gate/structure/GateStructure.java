@@ -32,7 +32,7 @@ public abstract class GateStructure {
         List<BlockVector> partsPos = getStructureTypePositions();
         World world = topLeft.getWorld();
         if (world == null) {
-            Stargate.log(Level.WARNING, "Unable to find the world of the portal at " + topLeft.toString());
+            Stargate.log(Level.WARNING, "Unable to find the world of the portal at " + topLeft);
             return false;
         }
         WorldBorder border = world.getWorldBorder();

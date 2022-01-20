@@ -25,7 +25,7 @@ public class RetCon1_0_0 extends Modifier {
     private final Server server;
     private final StargateFactory factory;
     private Map<String, Object> oldConfig;
-    private StargateLogger logger;
+    private final StargateLogger logger;
 
     /**
      * Instantiates a new Ret-Con 1.0.0

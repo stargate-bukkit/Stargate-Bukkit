@@ -33,6 +33,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class RefactorerTest {
@@ -72,7 +73,7 @@ public class RefactorerTest {
         server.addSimpleWorld("pseudoknigth");
         Stargate.getConfigStatic().load(defaultConfigFile);
 
-        GateFormat.setFormats(GateFormat.loadGateFormats(testGatesDir));
+        GateFormat.setFormats(Objects.requireNonNull(GateFormat.loadGateFormats(testGatesDir)));
     }
 
     private static Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> getSettingTestMaps() {

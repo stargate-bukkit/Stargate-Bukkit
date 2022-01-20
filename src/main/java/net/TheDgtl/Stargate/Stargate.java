@@ -117,7 +117,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     public static ChatColor defaultDarkColor = ChatColor.WHITE;
 
     private FileConfiguration config;
-    private static FileConfiguration staticConfig = new StargateConfiguration();
+    private static final FileConfiguration staticConfig = new StargateConfiguration();
 
     @Override
     public void onEnable() {

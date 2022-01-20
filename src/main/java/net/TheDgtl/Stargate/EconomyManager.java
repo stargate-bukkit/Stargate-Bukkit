@@ -29,28 +29,19 @@ public class EconomyManager {
             Stargate.log(Level.WARNING, "Dependency ''Vault'' is unavailable; economy features are disabled");
     }
 
-    private boolean setupEconomy() {
-        if (Bukkit.getPluginManager().getPlugin("Vault") == null)
-            return false;
-        RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            return false;
-        }
-        econ = rsp.getProvider();
-        return true;
-    }
-
     /**
      * @param player
      * @param amount
      * @return if player had enough money for transaction
      */
     public boolean chargePlayer(OfflinePlayer player, int amount) {
-        if (amount == 0)
+        if (amount == 0) {
             return true;
+        }
         Stargate.log(Level.FINE, "Charging player " + amount);
-        if (!hasVault)
+        if (!hasVault) {
             return true;
+        }
 
         EconomyResponse response = econ.withdrawPlayer(player, amount);
         if (player.getPlayer() != null) {
@@ -62,11 +53,13 @@ public class EconomyManager {
     }
 
     public boolean depositPlayer(OfflinePlayer player, int amount) {
-        if (amount == 0)
+        if (amount == 0) {
             return true;
+        }
         Stargate.log(Level.FINE, "Depositing player " + amount);
-        if (!hasVault)
+        if (!hasVault) {
             return true;
+        }
         EconomyResponse response = econ.depositPlayer(player, amount);
         if (!response.transactionSuccess()) {
             econ.createPlayerAccount(player);
@@ -94,8 +87,9 @@ public class EconomyManager {
     }
 
     public boolean chargePlayer(OfflinePlayer player, Portal origin, int amount) {
-        if (amount == 0)
+        if (amount == 0) {
             return true;
+        }
         if (Settings.getBoolean(Setting.GATE_OWNER_REVENUE)) {
             if (chargeAndDepositPlayer(player, Bukkit.getServer().getOfflinePlayer(origin.getOwnerUUID()), amount)) {
                 if (player.getPlayer() != null) {
@@ -111,9 +105,35 @@ public class EconomyManager {
         return chargeAndTax(player, amount);
     }
 
+    public Plugin getEconomyPlugin() {
+        return Bukkit.getPluginManager().getPlugin("Vault");
+    }
+
+    public boolean isValidEconomyPlugin(Plugin plugin) {
+        Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
+        return vault != null && vault.equals(plugin);
+    }
+
+    public void setEconomy() {
+        hasVault = setupEconomy();
+    }
+
+    private boolean setupEconomy() {
+        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServicesManager().getRegistration(Economy.class);
+        if (economyProvider == null) {
+            return false;
+        }
+        econ = economyProvider.getProvider();
+        return true;
+    }
+
     private boolean chargeAndDepositPlayer(OfflinePlayer player, OfflinePlayer transactionTarget, int amount) {
-        if (amount == 0)
+        if (amount == 0) {
             return true;
+        }
 
         if (chargePlayer(player, amount)) {
             depositPlayer(transactionTarget, amount);
@@ -121,16 +141,5 @@ public class EconomyManager {
         }
         return false;
     }
-
-    public Plugin getEconomyPlugin() {
-        return Bukkit.getPluginManager().getPlugin("Vault");
-    }
-
-    public boolean isValidEconomyPlugin(Plugin plugin) {
-        return Bukkit.getPluginManager().getPlugin("Vault").equals(plugin);
-    }
-
-    public void setEconomy(Plugin plugin) {
-        hasVault = setupEconomy();
-    }
+    
 }

@@ -41,7 +41,7 @@ public class StargateTabCompleter implements TabCompleter {
     private List<String> getAvailableCommands(CommandSender commandSender) {
         List<String> commands = new ArrayList<>();
         commands.add("about");
-        if (!(commandSender instanceof Player) || ((Player) commandSender).hasPermission("stargate.admin.reload")) {
+        if (!(commandSender instanceof Player) || commandSender.hasPermission("stargate.admin.reload")) {
             commands.add("reload");
         }
         return commands;

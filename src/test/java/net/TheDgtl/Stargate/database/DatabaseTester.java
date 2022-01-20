@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -56,7 +57,7 @@ public class DatabaseTester {
      * @param nameConfig <p>The config containing all table names</p>
      * @param generator  <p>The SQL Query generator to use for generating test queries</p>
      * @param isMySQL    <p>Whether this database tester is testing MySQL as opposed to SQLite</p>
-     * @throws InvalidStructureException
+     * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      */
     public DatabaseTester(Database database, TableNameConfig nameConfig, SQLQueryGenerator generator,
                           boolean isMySQL) throws SQLException, InvalidStructureException {
@@ -83,7 +84,7 @@ public class DatabaseTester {
         } catch (NameErrorException e) {
             e.printStackTrace();
         }
-        GateFormat.setFormats(GateFormat.loadGateFormats(testGatesDir));
+        GateFormat.setFormats(Objects.requireNonNull(GateFormat.loadGateFormats(testGatesDir)));
         FakePortalGenerator portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
 
         this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength, logger);
@@ -349,7 +350,7 @@ public class DatabaseTester {
      * @throws SQLException <p>If a database error occurs</p>
      */
     public void updateServerInfoTest() throws SQLException {
-        PreparedStatement statement = generator.generateUpdateServerInfoStatus(connection, serverName, serverUUID);
+        PreparedStatement statement = generator.generateUpdateServerInfoStatus(connection, serverUUID, serverName);
         finishStatement(statement);
     }
 

@@ -25,7 +25,7 @@ public class BungeePortal extends AbstractPortal {
     private final Network cheatNetwork;
     private final LegacyVirtualPortal targetPortal;
     private final String serverDestination;
-    private String bungeeString;
+    private final String bungeeString;
 
     static {
         try {

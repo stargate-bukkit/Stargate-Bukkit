@@ -42,21 +42,15 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public class StargateFactory {
-
-
-    private String PREFIX = "";
+    
     private final HashMap<String, Network> networkList = new HashMap<>();
     private final HashMap<String, InterServerNetwork> bungeeNetList = new HashMap<>();
-
-    final String sharedTableName = "interServer";
-    final String bungeeDataBaseName = "bungee";
-    final String tableName = "local";
 
     private final Database database;
 
     private final SQLQueryGenerator sqlMaker;
     private final boolean useInterServerNetworks;
-    private StargateLogger logger;
+    private final StargateLogger logger;
 
     private final Map<GateStructureType, Map<BlockLocation, Portal>> portalFromStructureTypeMap =
             new EnumMap<>(GateStructureType.class);
@@ -70,7 +64,7 @@ public class StargateFactory {
         this.logger = logger;
         this.database = database;
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
-        PREFIX = usingRemoteDatabase ? Settings.getString(Setting.BUNGEE_INSTANCE_NAME) : "";
+        String PREFIX = usingRemoteDatabase ? Settings.getString(Setting.BUNGEE_INSTANCE_NAME) : "";
         String serverPrefix = usingRemoteDatabase ? Stargate.serverUUID.toString() : "";
         TableNameConfig config = new TableNameConfig(PREFIX, serverPrefix.replace("-", ""));
         DriverEnum databaseEnum = usingRemoteDatabase ? DriverEnum.MYSQL : DriverEnum.SQLITE;
@@ -281,7 +275,7 @@ public class StargateFactory {
 
     public void startInterServerConnection() throws SQLException {
         Connection conn = database.getConnection();
-        PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn, Stargate.serverName, Stargate.serverUUID);
+        PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn, Stargate.serverUUID, Stargate.serverName);
         statement.execute();
         statement.close();
 

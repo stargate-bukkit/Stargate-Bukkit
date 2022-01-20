@@ -24,8 +24,8 @@ public class Refactorer {
     private int configVersion;
     private final File configFile;
     private Map<String, Object> config;
-    private StargateLogger logger;
-    private FileConfiguration fileConfig;
+    private final StargateLogger logger;
+    private final FileConfiguration fileConfig;
     private final Modifier[] RETCONS;
 
     public Refactorer(File configFile, StargateLogger logger, Server server, StargateFactory factory) throws FileNotFoundException, IOException, InvalidConfigurationException {

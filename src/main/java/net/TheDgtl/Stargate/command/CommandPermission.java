@@ -5,7 +5,7 @@ public enum CommandPermission {
 
     private final String permissionNode;
 
-    private CommandPermission(String permissionNode) {
+    CommandPermission(String permissionNode) {
         this.permissionNode = permissionNode;
     }
 

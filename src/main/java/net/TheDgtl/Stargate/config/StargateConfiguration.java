@@ -57,7 +57,7 @@ public class StargateConfiguration extends YamlConfiguration {
         List<List<String>> comments = new ArrayList<>();
         int counter = 0;
         int commentNameCounter = 0;
-        int indent = 0;
+        int indent;
         List<String> currentComment;
         for (String line : yamlString.split("\n")) {
             if (line.trim().isEmpty()) {

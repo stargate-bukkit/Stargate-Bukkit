@@ -79,7 +79,7 @@ public class GateFormat {
     /**
      * Loads all gate formats from the gate folder
      *
-     * @param gateFolder <p>The folder to load gates from</p>
+     * @param dir <p>The folder to load gates from</p>
      * @return <p>A map between a control block material and the corresponding gate format</p>
      */
     public static List<GateFormat> loadGateFormats(File dir) {
@@ -104,14 +104,12 @@ public class GateFormat {
      * Loads the given gate format file
      *
      * @param file             <p>The gate format file to load</p>
-     * @param controlToGateMap <p>The mapping between control blocks and gate formats to save to</p>
-     * @throws ParsingErrorException
-     * @throws FileNotFoundException
+     * @throws ParsingErrorException <p>If unable to load the gate format</p>
+     * @throws FileNotFoundException <p>If the gate file does not exist</p>
      */
     private static GateFormat loadGateFormat(File file) throws ParsingErrorException, FileNotFoundException {
         Stargate.log(Level.CONFIG, "Loaded gate format " + file.getName());
-        Scanner scanner = new Scanner(file);
-        try {
+        try (Scanner scanner = new Scanner(file)) {
             Stargate.log(Level.FINER, "Gate file size:" + file.length());
             if (file.length() > 65536L) {
                 throw new ParsingErrorException("Design is too large");
@@ -119,8 +117,6 @@ public class GateFormat {
 
             GateFormatParser gateParser = new GateFormatParser(scanner, file.getName());
             return gateParser.parse();
-        } finally {
-            scanner.close();
         }
     }
 

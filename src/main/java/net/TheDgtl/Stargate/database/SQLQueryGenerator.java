@@ -89,8 +89,7 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreatePortalTableStatement(Connection conn, PortalType portalType)
-            throws SQLException {
+    public PreparedStatement generateCreatePortalTableStatement(Connection conn, PortalType portalType) throws SQLException {
         String interServerExtraFields = (portalType == PortalType.INTER_SERVER)
                 ? " isOnline BOOLEAN, homeServerId VARCHAR(36),"
                 : "";
@@ -101,8 +100,7 @@ public class SQLQueryGenerator {
                         + " zFlip BOOLEAN, %s"
                         + " PRIMARY KEY (name, network));", interServerExtraFields);
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-        // TODO: Add CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci') equivalent
-        // for SQLite
+        // TODO: Add CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci') equivalent for SQLite
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return conn.prepareStatement(statementMessage);
     }
@@ -334,10 +332,17 @@ public class SQLQueryGenerator {
         return statement;
     }
 
-
-    public PreparedStatement generateUpdateServerInfoStatus(Connection conn, String serverName, UUID serverUUID) throws SQLException {
-        String statementString = "REPLACE INTO {ServerInfo}(serverId, serverName)"
-                + " VALUES(?,?);";
+    /**
+     * Gets a prepared statement for updating a server's name
+     * 
+     * @param conn <p>The database connection to use</p>
+     * @param serverUUID <p>The UUID of the server to update</p>
+     * @param serverName <p>The new name of the server</p>
+     * @return <p>The prepared statement for updating the server info</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateUpdateServerInfoStatus(Connection conn, UUID serverUUID, String serverName) throws SQLException {
+        String statementString = "REPLACE INTO {ServerInfo} (serverId, serverName) VALUES(?, ?);";
         String statementMessage = replaceKnownTableNames(statementString);
         logger.logMessage(Level.FINEST, statementMessage);
         PreparedStatement statement = conn.prepareStatement(statementMessage);
