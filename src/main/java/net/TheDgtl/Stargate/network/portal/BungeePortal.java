@@ -29,7 +29,7 @@ public class BungeePortal extends AbstractPortal {
 
     static {
         try {
-            LEGACY_NETWORK = new Network("§§§§§§#BUNGEE#§§§§§§", null, null,null);
+            LEGACY_NETWORK = new Network("§§§§§§#BUNGEE#§§§§§§", null, null, null);
         } catch (NameErrorException e) {
             e.printStackTrace();
         }
@@ -75,7 +75,7 @@ public class BungeePortal extends AbstractPortal {
          * CHEATS! we love cheats. This one helps to save the legacy bungee gate into sql table so that the
          * target server is stored as a replacement to network.
          */
-        cheatNetwork = new Network(destinationServer, null, null,null);
+        cheatNetwork = new Network(destinationServer, null, null, null);
         bungeeString = Stargate.languageManager.getString(TranslatableMessage.BUNGEE_SIGN_LINE_4);
     }
 

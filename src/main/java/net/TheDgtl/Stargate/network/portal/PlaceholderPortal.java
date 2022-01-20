@@ -3,7 +3,6 @@ package net.TheDgtl.Stargate.network.portal;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.util.PortalHelper;
-
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -31,12 +30,12 @@ public class PlaceholderPortal implements RealPortal {
     /**
      * Instantiates a new placeholder portal
      *
-     * @param name         <p>The name of the portal</p>
-     * @param network      <p>The network the portal belongs to</p>
-     * @param destination  <p>The fixed destination of this portal, or null</p>
-     * @param flags        <p>The flags enabled for the portal</p>
-     * @param ownerUUID    <p>The UUID of the portal's owner</p>
-     * @param gate         <p>The gate construct linked to the portal</p>
+     * @param name        <p>The name of the portal</p>
+     * @param network     <p>The network the portal belongs to</p>
+     * @param destination <p>The fixed destination of this portal, or null</p>
+     * @param flags       <p>The flags enabled for the portal</p>
+     * @param ownerUUID   <p>The UUID of the portal's owner</p>
+     * @param gate        <p>The gate construct linked to the portal</p>
      */
     public PlaceholderPortal(String name, Network network, String destination, Set<PortalFlag> flags,
                              UUID ownerUUID, Gate gate) {
@@ -143,13 +142,16 @@ public class PlaceholderPortal implements RealPortal {
     }
 
     @Override
-    public void drawControlMechanisms() {}
+    public void drawControlMechanisms() {
+    }
 
     @Override
-    public void setSignColor(DyeColor color) {}
+    public void setSignColor(DyeColor color) {
+    }
 
     @Override
-    public void onButtonClick(PlayerInteractEvent event) {}
+    public void onButtonClick(PlayerInteractEvent event) {
+    }
 
     @Override
     public Gate getGate() {
@@ -157,7 +159,8 @@ public class PlaceholderPortal implements RealPortal {
     }
 
     @Override
-    public void close(long relatedOpenTime) {}
+    public void close(long relatedOpenTime) {
+    }
 
     @Override
     public Location getExit() {

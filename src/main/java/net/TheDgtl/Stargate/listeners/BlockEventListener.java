@@ -185,7 +185,6 @@ public class BlockEventListener implements Listener {
         } catch (NameErrorException nameErrorException) {
             errorMessage = nameErrorException.getErrorMessage();
         }
-        
 
 
         try {
@@ -249,7 +248,7 @@ public class BlockEventListener implements Listener {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return;
         }
-        
+
         if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
                 && !Settings.getBoolean(Setting.USING_BUNGEE)) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
@@ -263,7 +262,7 @@ public class BlockEventListener implements Listener {
         if (isInSpawn(signLocation.getLocation())) {
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
-        
+
         selectedNetwork.addPortal(portal, true);
         selectedNetwork.updatePortals();
         Stargate.log(Level.FINE, "A Gate format matches");
@@ -327,7 +326,7 @@ public class BlockEventListener implements Listener {
             flags.add(PortalFlag.PERSONAL_NETWORK);
             return player.getUniqueId().toString();
         }
-        
+
         /* Try to fall back to the default or a personal network if no network is given, or the player is missing
          * the necessary permissions */
         if (!permissionManager.canCreateInNetwork(initialNetworkName) || initialNetworkName.trim().isEmpty()) {
@@ -341,7 +340,6 @@ public class BlockEventListener implements Listener {
             return defaultNetwork;
         }
 
-        
 
         //Move the legacy bungee stargates to their own network
         if (flags.contains(PortalFlag.BUNGEE)) {

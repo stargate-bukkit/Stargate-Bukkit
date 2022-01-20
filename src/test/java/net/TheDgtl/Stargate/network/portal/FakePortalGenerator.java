@@ -41,10 +41,10 @@ public class FakePortalGenerator {
      * @param createInterServerPortals <p>Whether to generate fake inter-server portals</p>
      * @param numberOfPortals          <p>The number of fake portals to generate</p>
      * @return <p>A map from the portal's name to the portal's object</p>
-     * @throws InvalidStructureException 
+     * @throws InvalidStructureException
      */
     public Map<String, RealPortal> generateFakePortals(World world, Network portalNetwork,
-                                                   boolean createInterServerPortals, int numberOfPortals, StargateLogger logger) throws InvalidStructureException {
+                                                       boolean createInterServerPortals, int numberOfPortals, StargateLogger logger) throws InvalidStructureException {
         Map<String, RealPortal> output = new HashMap<>();
         String baseName;
         if (createInterServerPortals) {
@@ -69,7 +69,7 @@ public class FakePortalGenerator {
      * @param name                    <p>The name of the generated portal</p>
      * @param createInterServerPortal <p>Whether to generate a fake inter-server portal</p>
      * @return <p>A fake portal</p>
-     * @throws InvalidStructureException 
+     * @throws InvalidStructureException
      */
     public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal, StargateLogger logger) throws InvalidStructureException {
         Set<PortalFlag> flags = generateRandomFlags();

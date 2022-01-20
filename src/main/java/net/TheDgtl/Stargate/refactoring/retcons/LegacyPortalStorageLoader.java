@@ -1,6 +1,5 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
-import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
@@ -94,11 +93,11 @@ public class LegacyPortalStorageLoader {
         int modX = Integer.parseInt(splitLine[3]);
         int modZ = Integer.parseInt(splitLine[4]);
         logger.logMessage(Level.FINEST, String.format("modX = %d, modZ = %d", modX, modZ));
-        BlockFace facing = getFacing(modX,modZ);
-        if(facing == null)
+        BlockFace facing = getFacing(modX, modZ);
+        if (facing == null)
             facing = getFacing(Double.parseDouble(splitLine[5]));
-        
-        
+
+
         String gateFormatName = splitLine[7];
         String destination = (splitLine.length > 8) ? splitLine[8] : "";
         String networkName = (splitLine.length > 9) ? splitLine[9] : Settings.getString(Setting.DEFAULT_NETWORK);
@@ -119,7 +118,7 @@ public class LegacyPortalStorageLoader {
         return portal;
     }
 
-    
+
     @SuppressWarnings("deprecation")
     private static UUID getPlayerUUID(String ownerString) {
         if (ownerString.length() > 16)
@@ -138,21 +137,21 @@ public class LegacyPortalStorageLoader {
 
         return flags;
     }
-    
+
     private static BlockFace getFacing(int modX, int modZ) {
-        if(modX < 0)
+        if (modX < 0)
             return BlockFace.WEST;
-        if(modX > 0)
+        if (modX > 0)
             return BlockFace.EAST;
-        if(modZ < 0)
+        if (modZ < 0)
             return BlockFace.NORTH;
-        if(modZ > 0)
+        if (modZ > 0)
             return BlockFace.EAST;
         return null;
     }
 
     private static BlockFace getFacing(double rot) {
-        return getFacing(-(int)Math.round(Math.cos(rot)),-(int)Math.round(Math.sin(rot)));
+        return getFacing(-(int) Math.round(Math.cos(rot)), -(int) Math.round(Math.sin(rot)));
     }
 
 }

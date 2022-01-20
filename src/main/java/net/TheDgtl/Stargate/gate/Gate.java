@@ -80,13 +80,13 @@ public class Gate {
 
     /**
      * Instantiates a gate from already predetermined parameters, no checking is done to see if format matches
-     * 
-     * @param topLeft       <p>The location of the origin of the gate</p>
-     * @param facing        <p>The facing of the gate</p>
-     * @param zFlip         <p>If the gateFormat is fliped in the z-axis</p>
-     * @param gateDesignName    <p>The filename of the design for this gate</p>
-     * @param portal        <p>The portal using this gate</p>
-     * @throws InvalidStructureException    <p>If the facing is invalid</p>
+     *
+     * @param topLeft        <p>The location of the origin of the gate</p>
+     * @param facing         <p>The facing of the gate</p>
+     * @param zFlip          <p>If the gateFormat is fliped in the z-axis</p>
+     * @param gateDesignName <p>The filename of the design for this gate</p>
+     * @param portal         <p>The portal using this gate</p>
+     * @throws InvalidStructureException <p>If the facing is invalid</p>
      */
     public Gate(Location topLeft, BlockFace facing, boolean zFlip, String gateDesignName, Set<PortalFlag> flags, StargateLogger logger)
             throws InvalidStructureException {
@@ -98,7 +98,7 @@ public class Gate {
         this.format = format;
         this.flags = flags;
     }
-    
+
     /**
      * Set button and draw sign
      *

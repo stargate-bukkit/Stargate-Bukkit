@@ -73,13 +73,13 @@ public class NetworkedPortal extends AbstractPortal {
         }
 
         PermissionManager permissionManager = new PermissionManager(event.getPlayer());
-        if (!hasActivatePermissions(actor,permissionManager)) {
-            if(permissionManager.getDenyMessage() != null)
+        if (!hasActivatePermissions(actor, permissionManager)) {
+            if (permissionManager.getDenyMessage() != null)
                 actor.sendMessage(permissionManager.getDenyMessage());
             Stargate.log(Level.CONFIG, "Player did not have permission to activate portal");
             return;
         }
-        
+
         boolean previouslyActivated = this.isActive;
         activate(actor);
         if (destinations.size() < 1) {
@@ -89,13 +89,13 @@ public class NetworkedPortal extends AbstractPortal {
             return;
         }
 
-        selectedDestination = selectNewDestination(event.getAction(),previouslyActivated);
+        selectedDestination = selectNewDestination(event.getAction(), previouslyActivated);
         drawControlMechanisms();
         if (hasFlag(PortalFlag.ALWAYS_ON))
             super.destination = loadDestination();
     }
-    
-    
+
+
     public int selectNewDestination(Action action, boolean previouslyActivated) {
         if (!previouslyActivated) {
             if (!Settings.getBoolean(Setting.REMEMBER_LAST_DESTINATION))

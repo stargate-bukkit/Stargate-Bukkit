@@ -46,7 +46,7 @@ public class EconomyManager {
      * @return if player had enough money for transaction
      */
     public boolean chargePlayer(OfflinePlayer player, int amount) {
-        if(amount == 0)
+        if (amount == 0)
             return true;
         Stargate.log(Level.FINE, "Charging player " + amount);
         if (!hasVault)
@@ -62,7 +62,7 @@ public class EconomyManager {
     }
 
     public boolean depositPlayer(OfflinePlayer player, int amount) {
-        if(amount == 0)
+        if (amount == 0)
             return true;
         Stargate.log(Level.FINE, "Depositing player " + amount);
         if (!hasVault)
@@ -83,7 +83,7 @@ public class EconomyManager {
      * @return
      */
     public boolean chargeAndTax(OfflinePlayer player, int amount) {
-        if(amount == 0)
+        if (amount == 0)
             return true;
         String bankUUIDStr = Settings.getString(Setting.TAX_DESTINATION);
         if (!bankUUIDStr.isEmpty()) {
@@ -94,7 +94,7 @@ public class EconomyManager {
     }
 
     public boolean chargePlayer(OfflinePlayer player, Portal origin, int amount) {
-        if(amount == 0)
+        if (amount == 0)
             return true;
         if (Settings.getBoolean(Setting.GATE_OWNER_REVENUE)) {
             if (chargeAndDepositPlayer(player, Bukkit.getServer().getOfflinePlayer(origin.getOwnerUUID()), amount)) {
@@ -112,9 +112,9 @@ public class EconomyManager {
     }
 
     private boolean chargeAndDepositPlayer(OfflinePlayer player, OfflinePlayer transactionTarget, int amount) {
-        if(amount == 0)
+        if (amount == 0)
             return true;
-        
+
         if (chargePlayer(player, amount)) {
             depositPlayer(transactionTarget, amount);
             return true;

@@ -122,7 +122,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     @Override
     public void onEnable() {
         instance = this;
-        if(!new File(this.getDataFolder(),"config.yml").exists())
+        if (!new File(this.getDataFolder(), "config.yml").exists())
             super.saveDefaultConfig();
 
         if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
@@ -132,13 +132,13 @@ public class Stargate extends JavaPlugin implements StargateLogger {
                 e.printStackTrace();
             }
         }
-        
-        
+
+
         saveDefaultGates();
-        
-        languageManager = new LanguageManager(this, new File(DATA_FOLDER,LANGUAGE_FOLDER));
+
+        languageManager = new LanguageManager(this, new File(DATA_FOLDER, LANGUAGE_FOLDER));
         load();
-        
+
         pm = getServer().getPluginManager();
         registerListeners();
         BukkitScheduler scheduler = getServer().getScheduler();
@@ -241,7 +241,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         this.reloadConfig();
         load();
     }
-    
+
     @Override
     public @NotNull FileConfiguration getConfig() {
         if (config == null) {
@@ -281,8 +281,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         else
             lowestMsgLevel = Level.parse(debugLevelStr);
         languageManager.setLanguage(Settings.getString(Setting.LANGUAGE));
-        
-        GateFormat.setFormats(GateFormat.loadGateFormats( new File(DATA_FOLDER,GATE_FOLDER) ));
+
+        GateFormat.setFormats(GateFormat.loadGateFormats(new File(DATA_FOLDER, GATE_FOLDER)));
 
         try {
             factory = new StargateFactory(this);
@@ -349,7 +349,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             return staticConfig;
         return instance.getConfig();
     }
-    
+
     /**
      * Registers a command for this plugin
      */

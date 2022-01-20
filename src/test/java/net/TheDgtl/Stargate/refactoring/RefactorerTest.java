@@ -71,7 +71,7 @@ public class RefactorerTest {
         server.addSimpleWorld("lclo");
         server.addSimpleWorld("pseudoknigth");
         Stargate.getConfigStatic().load(defaultConfigFile);
-        
+
         GateFormat.setFormats(GateFormat.loadGateFormats(testGatesDir));
     }
 

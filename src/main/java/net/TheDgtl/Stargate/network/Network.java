@@ -110,13 +110,13 @@ public class Network {
             RealPortal physicalPortal = (RealPortal) portal;
             for (GateStructureType key : GateStructureType.values()) {
                 List<BlockLocation> locations = physicalPortal.getGate().getLocations(key);
-                if(locations == null)
+                if (locations == null)
                     continue;
                 factory.registerLocations(key, generateLocationMap(locations, portal));
             }
         }
         if (portal instanceof RealPortal && saveToDatabase) {
-            savePortal((RealPortal)portal);
+            savePortal((RealPortal) portal);
         }
         nameToPortalMap.put(getPortalHash(portal.getName()), portal);
     }

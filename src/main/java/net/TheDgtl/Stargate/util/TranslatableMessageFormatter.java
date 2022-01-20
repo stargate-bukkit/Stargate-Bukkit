@@ -63,7 +63,7 @@ public class TranslatableMessageFormatter {
             return chracterRepresentation + "&" + compileFlagsString(dissallowedFlags.subList(1, dissallowedFlags.size()));
         return chracterRepresentation + "," + compileFlagsString(dissallowedFlags.subList(1, dissallowedFlags.size()));
     }
-    
+
     public static String compileVersion(String unformatedMessage, String version) {
         return unformatedMessage.replace(VERSION_IDENTIFIER, version);
     }

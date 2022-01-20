@@ -22,9 +22,7 @@ import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -101,9 +99,9 @@ public abstract class StargateEvent extends Event implements Cancellable {
     }
 
     protected Permission compileWorldPerm(String permissionIdentifier, Portal portal) {
-        if(!(portal instanceof RealPortal))
+        if (!(portal instanceof RealPortal))
             return null;
-        RealPortal realPortal = (RealPortal)portal;
+        RealPortal realPortal = (RealPortal) portal;
         Permission parent = pm.getPermission(permissionIdentifier + ".world");
         World world = realPortal.getGate().getTopLeft().getWorld();
         if (world == null) {
@@ -118,9 +116,9 @@ public abstract class StargateEvent extends Event implements Cancellable {
     }
 
     protected Permission compileDesignPerm(String permIdentifier) {
-        if(!(portal instanceof RealPortal))
+        if (!(portal instanceof RealPortal))
             return null;
-        RealPortal realPortal = (RealPortal)portal;
+        RealPortal realPortal = (RealPortal) portal;
         Permission parent = pm.getPermission(permIdentifier + ".design");
         String permNode = permIdentifier + ".design." + realPortal.getGate().getFormat().getFileName();
         Permission design = new Permission(permNode);

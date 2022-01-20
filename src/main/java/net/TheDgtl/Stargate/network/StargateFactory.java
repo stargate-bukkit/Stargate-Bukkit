@@ -60,7 +60,7 @@ public class StargateFactory {
 
     private final Map<GateStructureType, Map<BlockLocation, Portal>> portalFromStructureTypeMap =
             new EnumMap<>(GateStructureType.class);
-    
+
     public StargateFactory(Stargate stargate) throws SQLException {
         this(loadDatabase(stargate), Settings.getBoolean(Setting.USING_BUNGEE),
                 Settings.getBoolean(Setting.USING_REMOTE_DATABASE), stargate);
@@ -317,7 +317,7 @@ public class StargateFactory {
         if (netExists(netName, flags.contains(PortalFlag.FANCY_INTER_SERVER)))
             throw new NameErrorException(null);
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
-            InterServerNetwork net = new InterServerNetwork(netName, database, sqlMaker,this);
+            InterServerNetwork net = new InterServerNetwork(netName, database, sqlMaker, this);
             String netHash = net.getName().toLowerCase();
             if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
                 netHash = ChatColor.stripColor(netHash);
@@ -328,9 +328,9 @@ public class StargateFactory {
         Network net;
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
             UUID id = UUID.fromString(netName);
-            net = new PersonalNetwork(id, database, sqlMaker,this);
+            net = new PersonalNetwork(id, database, sqlMaker, this);
         } else {
-            net = new Network(netName, database, sqlMaker,this);
+            net = new Network(netName, database, sqlMaker, this);
         }
         networkList.put(netName, net);
     }
@@ -387,7 +387,6 @@ public class StargateFactory {
         }
         return null;
     }
-    
 
 
     /**
@@ -411,7 +410,6 @@ public class StargateFactory {
     public Portal getPortal(Location location, GateStructureType[] structureTypes) {
         return getPortal(new BlockLocation(location), structureTypes);
     }
-    
 
 
     /**
@@ -428,7 +426,6 @@ public class StargateFactory {
         }
         return false;
     }
-    
 
 
     /**
@@ -452,7 +449,6 @@ public class StargateFactory {
         }
         return false;
     }
-    
 
 
     /**

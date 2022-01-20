@@ -71,8 +71,8 @@ public class FileHelper {
 
     /**
      * Reads key, value pairs in an internal file to the given map
-     * 
-     * @param file <p>The path of the internal file to read</p>
+     *
+     * @param file      <p>The path of the internal file to read</p>
      * @param targetMap <p>The map to store all found values to</p>
      */
     public static void readInternalFileToMap(String file, Map<String, String> targetMap) {

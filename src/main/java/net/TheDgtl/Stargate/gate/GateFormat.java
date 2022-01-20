@@ -31,7 +31,7 @@ public class GateFormat {
     private static Map<Material, List<GateFormat>> controlMaterialFormatsMap;
     private static Map<String, GateFormat> gateFormatsMap;
     public static int formatAmount = 0;
-    
+
     private final Set<Material> controlMaterials;
     private final Map<GateStructureType, GateStructure> portalParts;
 
@@ -105,8 +105,8 @@ public class GateFormat {
      *
      * @param file             <p>The gate format file to load</p>
      * @param controlToGateMap <p>The mapping between control blocks and gate formats to save to</p>
-     * @throws ParsingErrorException 
-     * @throws FileNotFoundException 
+     * @throws ParsingErrorException
+     * @throws FileNotFoundException
      */
     private static GateFormat loadGateFormat(File file) throws ParsingErrorException, FileNotFoundException {
         Stargate.log(Level.CONFIG, "Loaded gate format " + file.getName());
@@ -123,6 +123,7 @@ public class GateFormat {
             scanner.close();
         }
     }
+
     /**
      * Adds a new gate format
      *
@@ -189,16 +190,17 @@ public class GateFormat {
     public String getFileName() {
         return name;
     }
-    
+
     /**
      * @return <p>The set of materials that this format can have a control on</p>
      */
-    public Set<Material> getControlMaterials(){
+    public Set<Material> getControlMaterials() {
         return controlMaterials;
     }
-    
+
     /**
      * Get the {@link GateStructure} of the specified type
+     *
      * @param type <p> The specified type of {@link GateStructure} </p>
      * @return
      */
@@ -213,7 +215,7 @@ public class GateFormat {
     public static void setFormats(List<GateFormat> gateFormats) {
         controlMaterialFormatsMap = new EnumMap<>(Material.class);
         gateFormatsMap = new HashMap<>();
-        for(GateFormat format : gateFormats) {
+        for (GateFormat format : gateFormats) {
             addGateFormat(controlMaterialFormatsMap, format, format.getControlMaterials());
             gateFormatsMap.put(format.getFileName(), format);
         }

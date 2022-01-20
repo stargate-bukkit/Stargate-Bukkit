@@ -61,7 +61,6 @@ public interface RealPortal extends Portal {
      * @return <p>The exit location of this portal</p>
      */
     Location getExit();
-    
 
 
     /**

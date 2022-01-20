@@ -13,8 +13,7 @@ Stargate-Bukkit is the original MineCraft portal plugin; it has existed for as l
 feasible!
 
 The project was originally conceived and developed by Dinnerbone, who eventually went on to develop for Bukkit and
-Mojang.<br> In 2011, Dinnerbone authorized the community to continue his work; since then, SG has been maintained
-by dozens of individual devs!
-
+Mojang.<br> In 2011, Dinnerbone authorized the community to continue his work; since then, SG has been maintained by
+dozens of individual devs!
 
 In 2021 the project was rewritten by Thorinwasher and EpicKnarvik97; this is that rewrite.

@@ -7,10 +7,8 @@ import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
-
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.BlockFace;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -250,7 +248,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateAddPortalStatement(Connection conn, RealPortal portal,
-            PortalType portalType) throws SQLException {
+                                                        PortalType portalType) throws SQLException {
         boolean isInterServer = (portalType == PortalType.INTER_SERVER);
         String extraKeys = (isInterServer ? ", homeServerId, isOnline" : "");
         String extraValues = (isInterServer ? ", ?, ?" : "");
@@ -276,13 +274,13 @@ public class SQLQueryGenerator {
         statement.setInt(6, topLeft.getBlockY());
         statement.setInt(7, topLeft.getBlockZ());
         statement.setString(8, portal.getOwnerUUID().toString());
-        
+
         Gate gate = portal.getGate();
-        
+
         statement.setString(9, gate.getFormat().getFileName());
         statement.setInt(10, gate.getFacing().ordinal());
-        
-        
+
+
         if (isInterServer) {
             statement.setString(11, Stargate.serverUUID.toString());
             statement.setBoolean(12, true);

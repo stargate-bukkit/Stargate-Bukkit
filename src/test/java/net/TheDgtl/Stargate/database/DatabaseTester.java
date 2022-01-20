@@ -16,7 +16,6 @@ import net.TheDgtl.Stargate.network.portal.FakePortalGenerator;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
-
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
 
@@ -57,7 +56,7 @@ public class DatabaseTester {
      * @param nameConfig <p>The config containing all table names</p>
      * @param generator  <p>The SQL Query generator to use for generating test queries</p>
      * @param isMySQL    <p>Whether this database tester is testing MySQL as opposed to SQLite</p>
-     * @throws InvalidStructureException 
+     * @throws InvalidStructureException
      */
     public DatabaseTester(Database database, TableNameConfig nameConfig, SQLQueryGenerator generator,
                           boolean isMySQL) throws SQLException, InvalidStructureException {
@@ -87,9 +86,9 @@ public class DatabaseTester {
         GateFormat.setFormats(GateFormat.loadGateFormats(testGatesDir));
         FakePortalGenerator portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
 
-        this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength,logger);
-        this.localPortals = portalGenerator.generateFakePortals(world, testNetwork, false, localPortalTestLength,logger);
-        DatabaseTester.testPortal = portalGenerator.generateFakePortal(world, testNetwork, "testPortal", false,logger);
+        this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength, logger);
+        this.localPortals = portalGenerator.generateFakePortals(world, testNetwork, false, localPortalTestLength, logger);
+        DatabaseTester.testPortal = portalGenerator.generateFakePortal(world, testNetwork, "testPortal", false, logger);
     }
 
     void addPortalTableTest() throws SQLException {

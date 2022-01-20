@@ -171,17 +171,17 @@ public enum TranslatableMessage {
      * The message to display if a stargate is created within the spawn area
      */
     SPAWN_CHUNKS_CONFLICTING("conflictSpawn"),
-    
+
     /**
      * The message to display whenever the reload command is executed
      */
     COMMAND_RELOAD("adminReload"),
-    
+
     /**
      * The message to display whenever the reload info is executed
      */
     COMMAND_INFO("adminInfo"),
-    
+
     /**
      * The message to display whenever the reload help is executed
      */
