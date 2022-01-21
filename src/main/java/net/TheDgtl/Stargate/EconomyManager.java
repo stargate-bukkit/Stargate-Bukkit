@@ -46,7 +46,7 @@ public class EconomyManager {
         EconomyResponse response = econ.withdrawPlayer(player, amount);
         if (player.getPlayer() != null) {
             String unformattedMessage = Stargate.languageManager.getMessage(TranslatableMessage.ECO_DEDUCT);
-            String message = TranslatableMessageFormatter.compileCost(unformattedMessage, amount);
+            String message = TranslatableMessageFormatter.formatCost(unformattedMessage, amount);
             player.getPlayer().sendMessage(message);
         }
         return response.transactionSuccess();
@@ -94,8 +94,8 @@ public class EconomyManager {
             if (chargeAndDepositPlayer(player, Bukkit.getServer().getOfflinePlayer(origin.getOwnerUUID()), amount)) {
                 if (player.getPlayer() != null) {
                     String unCompiledMessage = Stargate.languageManager.getMessage(TranslatableMessage.ECO_OBTAIN);
-                    String portalNameCompiledMessage = TranslatableMessageFormatter.compilePortal(unCompiledMessage, origin.getName());
-                    String message = TranslatableMessageFormatter.compileCost(portalNameCompiledMessage, amount);
+                    String portalNameCompiledMessage = TranslatableMessageFormatter.formatPortal(unCompiledMessage, origin.getName());
+                    String message = TranslatableMessageFormatter.formatCost(portalNameCompiledMessage, amount);
                     player.getPlayer().sendMessage(message);
                 }
                 return true;

@@ -131,7 +131,7 @@ public class PermissionManager {
             if (permissionNode.contains("world")) {
                 String unformattedMessage = languageManager.getErrorMessage(TranslatableMessage.WORLD_DENY);
                 String worldName = permissionNode.split(".world.")[1];
-                return TranslatableMessageFormatter.compileWorld(unformattedMessage, worldName);
+                return TranslatableMessageFormatter.formatWorld(unformattedMessage, worldName);
             }
             if (permissionNode.contains("network"))
                 return languageManager.getErrorMessage(TranslatableMessage.NET_DENY);

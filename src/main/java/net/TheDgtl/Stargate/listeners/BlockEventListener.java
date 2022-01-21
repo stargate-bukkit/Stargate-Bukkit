@@ -173,7 +173,7 @@ public class BlockEventListener implements Listener {
 
         if (disallowedFlags.size() > 0) {
             String unformattedMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
-            player.sendMessage(TranslatableMessageFormatter.compileFlags(unformattedMessage, disallowedFlags));
+            player.sendMessage(TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
         }
         flags.removeAll(disallowedFlags);
 
@@ -270,7 +270,7 @@ public class BlockEventListener implements Listener {
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE_PERSONAL));
         } else {
             String unformattedMessage = Stargate.languageManager.getMessage(TranslatableMessage.CREATE);
-            player.sendMessage(TranslatableMessageFormatter.compileNetwork(unformattedMessage, selectedNetwork.getName()));
+            player.sendMessage(TranslatableMessageFormatter.formatNetwork(unformattedMessage, selectedNetwork.getName()));
         }
     }
 

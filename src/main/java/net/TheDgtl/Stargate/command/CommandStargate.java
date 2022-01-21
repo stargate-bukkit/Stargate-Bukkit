@@ -28,7 +28,7 @@ public class CommandStargate implements CommandExecutor {
             return false;
         } else {
             String unformattedMessage = Stargate.languageManager.getMessage(TranslatableMessage.COMMAND_INFO);
-            commandSender.sendMessage(TranslatableMessageFormatter.compileVersion(unformattedMessage, Stargate.getInstance().getDescription().getVersion()));
+            commandSender.sendMessage(TranslatableMessageFormatter.formatVersion(unformattedMessage, Stargate.getInstance().getDescription().getVersion()));
             return true;
         }
     }
