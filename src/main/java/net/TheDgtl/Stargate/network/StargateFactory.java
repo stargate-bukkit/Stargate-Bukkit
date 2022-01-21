@@ -15,9 +15,9 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
-import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import net.md_5.bungee.api.ChatColor;
@@ -41,26 +41,44 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
+/**
+ * TODO: The StargateFactory class does more than one task which is terrible design. Need to refactor this class. Also,
+ *  it's not a factory, but rather a network+portal handler/registry.
+ */
 public class StargateFactory {
 
     private final HashMap<String, Network> networkList = new HashMap<>();
-    private final HashMap<String, InterServerNetwork> bungeeNetList = new HashMap<>();
+    private final HashMap<String, InterServerNetwork> bungeeNetworkList = new HashMap<>();
+    private final Map<GateStructureType, Map<BlockLocation, Portal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
 
     private final Database database;
-
-    private final SQLQueryGenerator sqlMaker;
+    private final SQLQueryGenerator sqlQueryGenerator;
     private final boolean useInterServerNetworks;
     private final StargateLogger logger;
 
-    private final Map<GateStructureType, Map<BlockLocation, Portal>> portalFromStructureTypeMap =
-            new EnumMap<>(GateStructureType.class);
 
+    /**
+     * Instantiates a new stargate factory
+     *
+     * @param stargate <p>The Stargate instance to use</p>
+     * @throws SQLException <p>If an SQL exception occurs</p>
+     */
     public StargateFactory(Stargate stargate) throws SQLException {
         this(loadDatabase(stargate), Settings.getBoolean(Setting.USING_BUNGEE),
                 Settings.getBoolean(Setting.USING_REMOTE_DATABASE), stargate);
     }
 
-    public StargateFactory(Database database, boolean usingBungee, boolean usingRemoteDatabase, StargateLogger logger) throws SQLException {
+    /**
+     * Instantiates a new stargate factory
+     *
+     * @param database            <p>The database used for storing portals</p>
+     * @param usingBungee         <p>Whether BungeeCord support is enabled</p>
+     * @param usingRemoteDatabase <p>Whether a remote database, not a flatfile database is used</p>
+     * @param logger              <p>The Stargate logger to use for logging</p>
+     * @throws SQLException <p>If an SQL exception occurs</p>
+     */
+    public StargateFactory(Database database, boolean usingBungee, boolean usingRemoteDatabase,
+                           StargateLogger logger) throws SQLException {
         this.logger = logger;
         this.database = database;
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
@@ -68,10 +86,15 @@ public class StargateFactory {
         String serverPrefix = usingRemoteDatabase ? Stargate.serverUUID.toString() : "";
         TableNameConfig config = new TableNameConfig(PREFIX, serverPrefix.replace("-", ""));
         DriverEnum databaseEnum = usingRemoteDatabase ? DriverEnum.MYSQL : DriverEnum.SQLITE;
-        this.sqlMaker = new SQLQueryGenerator(config, logger, databaseEnum);
+        this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
         createTables();
     }
 
+    /**
+     * Loads all portals from the database
+     *
+     * @throws SQLException <p>If an SQL exception occurs</p>
+     */
     public void loadFromDatabase() throws SQLException {
         logger.logMessage(Level.FINER, "Loading portals from base database");
         loadAllPortals(database, PortalType.LOCAL);
@@ -80,14 +103,253 @@ public class StargateFactory {
             loadAllPortals(database, PortalType.INTER_SERVER);
         }
 
-        refreshPortals(networkList);
-        refreshPortals(bungeeNetList);
+        updatePortals(networkList);
+        updatePortals(bungeeNetworkList);
     }
 
+    /**
+     * "Starts" the inter-server connection by setting this server's portals as online
+     *
+     * @throws SQLException <p>If an SQL exception occurs</p>
+     */
+    public void startInterServerConnection() throws SQLException {
+        Connection conn = database.getConnection();
+        PreparedStatement statement = sqlQueryGenerator.generateUpdateServerInfoStatus(conn, Stargate.serverUUID, Stargate.serverName);
+        statement.execute();
+        statement.close();
+
+        for (InterServerNetwork net : bungeeNetworkList.values()) {
+            for (Portal portal : net.getAllPortals()) {
+                //Virtual portal = portals on other servers
+                if (portal instanceof VirtualPortal)
+                    continue;
+
+                setInterServerPortalOnlineStatus(portal, true);
+            }
+        }
+        conn.close();
+    }
+
+    /**
+     * "Ends" the inter-server connection by setting this server's portals as offline
+     *
+     * @throws SQLException <p>If an SQL exception occurs</p>
+     */
+    public void endInterServerConnection() throws SQLException {
+        for (InterServerNetwork interServerNetwork : bungeeNetworkList.values()) {
+            for (Portal portal : interServerNetwork.getAllPortals()) {
+                //Virtual portal = portals on other servers
+                if (portal instanceof VirtualPortal) {
+                    continue;
+                }
+
+                setInterServerPortalOnlineStatus(portal, false);
+            }
+        }
+    }
+
+    /**
+     * Creates a new network
+     *
+     * @param networkName <p>The name of the new network</p>
+     * @param flags       <p>The flag set used to look for network flags</p>
+     * @throws NameErrorException <p>If the given network name is invalid</p>
+     */
+    public void createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
+        if (networkExists(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER))) {
+            throw new NameErrorException(null);
+        }
+        if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
+            InterServerNetwork interServerNetwork = new InterServerNetwork(networkName, database, sqlQueryGenerator, this);
+            String networkHash = interServerNetwork.getName().toLowerCase();
+            if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
+                networkHash = ChatColor.stripColor(networkHash);
+            }
+            bungeeNetworkList.put(networkHash, interServerNetwork);
+            return;
+        }
+        Network network;
+        if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
+            UUID uuid = UUID.fromString(networkName);
+            network = new PersonalNetwork(uuid, database, sqlQueryGenerator, this);
+        } else {
+            network = new Network(networkName, database, sqlQueryGenerator, this);
+        }
+        networkList.put(networkName, network);
+    }
+
+    /**
+     * Checks whether the given network name exists
+     *
+     * @param networkName <p>The network name to check</p>
+     * @param isBungee    <p>Whether to look for a BungeeCord network</p>
+     * @return <p>True if the network exists</p>
+     */
+    public boolean networkExists(String networkName, boolean isBungee) {
+        return getNetwork(networkName, isBungee) != null;
+    }
+
+    /**
+     * Gets the network with the given
+     *
+     * @param name     <p>The name of the network to get</p>
+     * @param isBungee <p>Whether the network is a BungeeCord network</p>
+     * @return <p>The network with the given name</p>
+     */
+    public Network getNetwork(String name, boolean isBungee) {
+        return getNetworkMap(isBungee).get(name);
+    }
+
+    /**
+     * Get the portal with the given structure type at the given location
+     *
+     * @param blockLocation <p>The location the portal is located at</p>
+     * @param structureType <p>The structure type to look for</p>
+     * @return <p>The found portal, or null if no such portal exists</p>
+     */
+    public Portal getPortal(BlockLocation blockLocation, GateStructureType structureType) {
+        if (!(portalFromStructureTypeMap.containsKey(structureType))) {
+            return null;
+        }
+        return portalFromStructureTypeMap.get(structureType).get(blockLocation);
+    }
+
+    /**
+     * Get the portal with any of the given structure types at the given location
+     *
+     * @param blockLocation  <p>The location the portal is located at</p>
+     * @param structureTypes <p>The structure types to look for</p>
+     * @return <p>The found portal, or null if no such portal exists</p>
+     */
+    public Portal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
+        for (GateStructureType key : structureTypes) {
+            Portal portal = getPortal(blockLocation, key);
+            if (portal != null)
+                return portal;
+        }
+        return null;
+    }
+
+    /**
+     * Gets the portal with the given structure type at the given location
+     *
+     * @param location      <p>The location to check for portal structures</p>
+     * @param structureType <p>The structure type to look for</p>
+     * @return <p>The found portal, or null if no portal was found</p>
+     */
+    public Portal getPortal(Location location, GateStructureType structureType) {
+        return getPortal(new BlockLocation(location), structureType);
+    }
+
+    /**
+     * Gets the portal with any of the given structure types at the given location
+     *
+     * @param location       <p>The location to check for portal structures</p>
+     * @param structureTypes <p>The structure types to look for</p>
+     * @return <p>The found portal, or null if no portal was found</p>
+     */
+    public Portal getPortal(Location location, GateStructureType[] structureTypes) {
+        return getPortal(new BlockLocation(location), structureTypes);
+    }
+
+
+    /**
+     * Checks if any of the given blocks belong to a portal
+     *
+     * @param blocks <p>The blocks to check</p>
+     * @return <p>True if any of the given blocks belong to a portal</p>
+     */
+    public boolean isPartOfPortal(List<Block> blocks) {
+        for (Block block : blocks) {
+            if (getPortal(block.getLocation(), GateStructureType.values()) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Checks one block away from the given location to check if it's adjacent to a portal structure
+     *
+     * <p>Checks North, west, south, east direction. Not up / down, as it is currently
+     * not necessary and a waste of resources.</p>
+     *
+     * @param location      <p>The location to check for adjacency</p>
+     * @param structureType <p>The structure type to look for</p>
+     * @return <p>True if the given location is adjacent to a location containing the given structure type</p>
+     */
+    public boolean isNextToPortal(Location location, GateStructureType structureType) {
+        BlockVector adjacentVector = new BlockVector(1, 0, 0);
+        for (int i = 0; i < 4; i++) {
+            Location adjacentLocation = location.clone().add(adjacentVector);
+            if (getPortal(adjacentLocation, structureType) != null) {
+                return true;
+            }
+            adjacentVector.rotateAroundY(Math.PI / 2);
+        }
+        return false;
+    }
+
+
+    /**
+     * Registers the existence of the given structure type in the given locations
+     *
+     * <p>Basically stores the portals that exist at the given locations, but using the structure type as the key to be
+     * able to check locations for the given structure type.</p>
+     *
+     * @param structureType <p>The structure type to register</p>
+     * @param locationsMap  <p>The locations and the corresponding portals to register</p>
+     */
+    public void registerLocations(GateStructureType structureType, Map<BlockLocation, Portal> locationsMap) {
+        if (!portalFromStructureTypeMap.containsKey(structureType)) {
+            portalFromStructureTypeMap.put(structureType, new HashMap<>());
+        }
+        portalFromStructureTypeMap.get(structureType).putAll(locationsMap);
+    }
+
+    /**
+     * Un-registers all portal blocks with the given structure type, at the given block location
+     *
+     * @param structureType <p>The type of structure to un-register</p>
+     * @param blockLocation <p>The location to un-register</p>
+     */
+    public void unRegisterLocation(GateStructureType structureType, BlockLocation blockLocation) {
+        Map<BlockLocation, Portal> map = portalFromStructureTypeMap.get(structureType);
+        if (map != null) {
+            Stargate.log(Level.FINER, "Unregistering portal " + map.get(blockLocation).getName() +
+                    " with structType " + structureType + " at location " + blockLocation.toString());
+            map.remove(blockLocation);
+        }
+    }
+
+    /**
+     * Gets the map storing all networks of the given type
+     *
+     * @param getBungee <p>Whether to get BungeeCord networks</p>
+     * @return <p>A network name -> network map</p>
+     */
+    private Map<String, ? extends Network> getNetworkMap(boolean getBungee) {
+        if (getBungee) {
+            return bungeeNetworkList;
+        } else {
+            return networkList;
+        }
+    }
+
+    /**
+     * Loads the database
+     *
+     * @param stargate <p>The Stargate instance to use for initialization</p>
+     * @return <p>The loaded database</p>
+     * @throws SQLException <p>If an SQL exception occurs</p>
+     */
     private static Database loadDatabase(Stargate stargate) throws SQLException {
+        //TODO: The StargateFactory should not be the class to load the database!
         if (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
-            if (Settings.getBoolean(Setting.SHOW_HIKARI_CONFIG))
+            if (Settings.getBoolean(Setting.SHOW_HIKARI_CONFIG)) {
                 return new MySqlDatabase(stargate);
+            }
 
             DriverEnum driver = DriverEnum.valueOf(Settings.getString(Setting.BUNGEE_DRIVER).toUpperCase());
             String bungeeDatabaseName = Settings.getString(Setting.BUNGEE_DATABASE);
@@ -111,12 +373,23 @@ public class StargateFactory {
         }
     }
 
-    private void refreshPortals(HashMap<String, ? extends Network> networksList) {
-        for (Network net : networksList.values()) {
-            net.updatePortals();
+    /**
+     * Updates all portals in the given networks
+     *
+     * @param networkMap <p>A map of networks</p>
+     */
+    private void updatePortals(Map<String, ? extends Network> networkMap) {
+        for (Network network : networkMap.values()) {
+            network.updatePortals();
         }
     }
 
+    /**
+     * Executes and closes the given statement
+     *
+     * @param statement <p>The statement to execute</p>
+     * @throws SQLException <p>If an SQL exception occurs</p>
+     */
     private void runStatement(PreparedStatement statement) throws SQLException {
         statement.execute();
         statement.close();
@@ -129,21 +402,22 @@ public class StargateFactory {
      */
     private void createTables() throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement localPortalsStatement = sqlMaker.generateCreatePortalTableStatement(connection, PortalType.LOCAL);
+        PreparedStatement localPortalsStatement = sqlQueryGenerator.generateCreatePortalTableStatement(connection, PortalType.LOCAL);
         runStatement(localPortalsStatement);
-        PreparedStatement flagStatement = sqlMaker.generateCreateFlagTableStatement(connection);
+        PreparedStatement flagStatement = sqlQueryGenerator.generateCreateFlagTableStatement(connection);
         runStatement(flagStatement);
-        addMissingFlags(connection, sqlMaker);
+        addMissingFlags(connection, sqlQueryGenerator);
+        addMissingPositionTypes(connection, sqlQueryGenerator);
 
-        PreparedStatement portalPositionTypesStatement = sqlMaker.generateCreatePortalPositionTypeTableStatement(connection);
+        PreparedStatement portalPositionTypesStatement = sqlQueryGenerator.generateCreatePortalPositionTypeTableStatement(connection);
         runStatement(portalPositionTypesStatement);
-        //TODO: Add portal position types (buttons, signs). Should probably create an enum for this
+        addMissingPositionTypes(connection, sqlQueryGenerator);
 
-        PreparedStatement lastKnownNameStatement = sqlMaker.generateCreateLastKnownNameTableStatement(connection);
+        PreparedStatement lastKnownNameStatement = sqlQueryGenerator.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);
-        PreparedStatement portalRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(connection, PortalType.LOCAL);
+        PreparedStatement portalRelationStatement = sqlQueryGenerator.generateCreateFlagRelationTableStatement(connection, PortalType.LOCAL);
         runStatement(portalRelationStatement);
-        PreparedStatement portalViewStatement = sqlMaker.generateCreatePortalViewStatement(connection, PortalType.LOCAL);
+        PreparedStatement portalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, PortalType.LOCAL);
         runStatement(portalViewStatement);
 
         if (!useInterServerNetworks) {
@@ -151,16 +425,16 @@ public class StargateFactory {
             return;
         }
 
-        PreparedStatement serverInfoStatement = sqlMaker.generateCreateServerInfoTableStatement(connection);
+        PreparedStatement serverInfoStatement = sqlQueryGenerator.generateCreateServerInfoTableStatement(connection);
         runStatement(serverInfoStatement);
-        PreparedStatement interServerPortalsStatement = sqlMaker.generateCreatePortalTableStatement(connection, PortalType.INTER_SERVER);
+        PreparedStatement interServerPortalsStatement = sqlQueryGenerator.generateCreatePortalTableStatement(connection, PortalType.INTER_SERVER);
         runStatement(interServerPortalsStatement);
-        PreparedStatement interServerRelationStatement = sqlMaker.generateCreateFlagRelationTableStatement(connection, PortalType.INTER_SERVER);
+        PreparedStatement interServerRelationStatement = sqlQueryGenerator.generateCreateFlagRelationTableStatement(connection, PortalType.INTER_SERVER);
         runStatement(interServerRelationStatement);
-        PreparedStatement interPortalViewStatement = sqlMaker.generateCreatePortalViewStatement(connection, PortalType.INTER_SERVER);
+        PreparedStatement interPortalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, PortalType.INTER_SERVER);
         runStatement(interPortalViewStatement);
 
-        PreparedStatement portalPositionsStatement = sqlMaker.generateCreatePortalPositionTableStatement(connection);
+        PreparedStatement portalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection);
         runStatement(portalPositionsStatement);
         connection.close();
     }
@@ -168,22 +442,48 @@ public class StargateFactory {
     /**
      * Adds any flags not already in the database
      *
-     * @param connection <p>The database connection to use</p>
-     * @param sqlMaker   <p>The SQL Query Generator to use for generating queries</p>
+     * @param connection        <p>The database connection to use</p>
+     * @param sqlQueryGenerator <p>The SQL Query Generator to use for generating queries</p>
      * @throws SQLException <p>If unable to get from, or update the database</p>
      */
-    private void addMissingFlags(Connection connection, SQLQueryGenerator sqlMaker) throws SQLException {
-        PreparedStatement statement = sqlMaker.generateGetAllFlagsStatement(connection);
-        PreparedStatement addStatement = sqlMaker.generateAddFlagStatement(connection);
+    private void addMissingFlags(Connection connection, SQLQueryGenerator sqlQueryGenerator) throws SQLException {
+        PreparedStatement statement = sqlQueryGenerator.generateGetAllFlagsStatement(connection);
+        PreparedStatement addStatement = sqlQueryGenerator.generateAddFlagStatement(connection);
 
-        ResultSet set = statement.executeQuery();
+        ResultSet resultSet = statement.executeQuery();
         List<String> knownFlags = new ArrayList<>();
-        while (set.next()) {
-            knownFlags.add(set.getString("character"));
+        while (resultSet.next()) {
+            knownFlags.add(resultSet.getString("character"));
         }
         for (PortalFlag flag : PortalFlag.values()) {
             if (!knownFlags.contains(String.valueOf(flag.getCharacterRepresentation()))) {
                 addStatement.setString(1, String.valueOf(flag.getCharacterRepresentation()));
+                addStatement.execute();
+            }
+        }
+        statement.close();
+        addStatement.close();
+    }
+
+    /**
+     * Adds any position types not already in the database
+     *
+     * @param connection        <p>The database connection to use</p>
+     * @param sqlQueryGenerator <p>The SQL Query Generator to use for generating queries</p>
+     * @throws SQLException <p>If unable to get from, or update the database</p>
+     */
+    private void addMissingPositionTypes(Connection connection, SQLQueryGenerator sqlQueryGenerator) throws SQLException {
+        PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalPositionTypesStatement(connection);
+        PreparedStatement addStatement = sqlQueryGenerator.generateAddPortalPositionTypeStatement(connection);
+
+        ResultSet resultSet = statement.executeQuery();
+        List<String> knownPositionTypes = new ArrayList<>();
+        while (resultSet.next()) {
+            knownPositionTypes.add(resultSet.getString("positionName"));
+        }
+        for (PositionType type : PositionType.values()) {
+            if (!knownPositionTypes.contains(type.toString())) {
+                addStatement.setString(1, type.toString());
                 addStatement.execute();
             }
         }
@@ -200,7 +500,7 @@ public class StargateFactory {
      */
     private void loadAllPortals(Database database, PortalType portalType) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement statement = sqlMaker.generateGetAllPortalsStatement(connection, portalType);
+        PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsStatement(connection, portalType);
 
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
@@ -282,214 +582,19 @@ public class StargateFactory {
         connection.close();
     }
 
+    /**
+     * Updates the online state of an inter-server portal
+     *
+     * @param portal   <p>The inter-server portal to update</p>
+     * @param isOnline <p>Whether the inter-server portal is currently online</p>
+     * @throws SQLException <p>If an SQL error occurs</p>
+     */
     private void setInterServerPortalOnlineStatus(Portal portal, boolean isOnline) throws SQLException {
         Connection conn = database.getConnection();
-        PreparedStatement statement = sqlMaker.generateSetPortalOnlineStatusStatement(conn, portal, isOnline);
+        PreparedStatement statement = sqlQueryGenerator.generateSetPortalOnlineStatusStatement(conn, portal, isOnline);
         statement.execute();
         statement.close();
         conn.close();
     }
 
-    public void startInterServerConnection() throws SQLException {
-        Connection conn = database.getConnection();
-        PreparedStatement statement = sqlMaker.generateUpdateServerInfoStatus(conn, Stargate.serverUUID, Stargate.serverName);
-        statement.execute();
-        statement.close();
-
-        for (InterServerNetwork net : bungeeNetList.values()) {
-            for (Portal portal : net.getAllPortals()) {
-                /*
-                 * Virtual portal = portals on other servers
-                 */
-                if (portal instanceof VirtualPortal)
-                    continue;
-
-                setInterServerPortalOnlineStatus(portal, true);
-            }
-        }
-        conn.close();
-    }
-
-    public void endInterServerConnection() throws SQLException {
-        for (InterServerNetwork net : bungeeNetList.values()) {
-            for (Portal portal : net.getAllPortals()) {
-                /*
-                 * Virtual portal = portals on other servers
-                 */
-                if (portal instanceof VirtualPortal)
-                    continue;
-
-                setInterServerPortalOnlineStatus(portal, false);
-            }
-        }
-    }
-
-    public void createNetwork(String netName, Set<PortalFlag> flags) throws NameErrorException {
-        if (netExists(netName, flags.contains(PortalFlag.FANCY_INTER_SERVER)))
-            throw new NameErrorException(null);
-        if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
-            InterServerNetwork net = new InterServerNetwork(netName, database, sqlMaker, this);
-            String netHash = net.getName().toLowerCase();
-            if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
-                netHash = ChatColor.stripColor(netHash);
-            }
-            bungeeNetList.put(netHash, net);
-            return;
-        }
-        Network net;
-        if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            UUID id = UUID.fromString(netName);
-            net = new PersonalNetwork(id, database, sqlMaker, this);
-        } else {
-            net = new Network(netName, database, sqlMaker, this);
-        }
-        networkList.put(netName, net);
-    }
-
-    public boolean netExists(String netName, boolean isBungee) {
-        return (getNetwork(netName, isBungee) != null);
-    }
-
-    public Network getNetwork(String name, boolean isBungee) {
-        return getNetMap(isBungee).get(name);
-    }
-
-    private HashMap<String, ? extends Network> getNetMap(boolean isBungee) {
-        if (isBungee) {
-            return bungeeNetList;
-        } else {
-            return networkList;
-        }
-    }
-
-    final HashMap<String, BungeePortal> bungeeList = new HashMap<>();
-
-    public BungeePortal getBungeeGate(String name) {
-        return bungeeList.get(name);
-    }
-
-
-    /**
-     * Get the portal with the given structure type at the given location
-     *
-     * @param blockLocation <p>The location the portal is located at</p>
-     * @param structureType <p>The structure type to look for</p>
-     * @return <p>The found portal, or null if no such portal exists</p>
-     */
-    public Portal getPortal(BlockLocation blockLocation, GateStructureType structureType) {
-        if (!(portalFromStructureTypeMap.containsKey(structureType))) {
-            return null;
-        }
-        return portalFromStructureTypeMap.get(structureType).get(blockLocation);
-    }
-
-    /**
-     * Get the portal with any of the given structure types at the given location
-     *
-     * @param blockLocation  <p>The location the portal is located at</p>
-     * @param structureTypes <p>The structure types to look for</p>
-     * @return <p>The found portal, or null if no such portal exists</p>
-     */
-    public Portal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
-        for (GateStructureType key : structureTypes) {
-            Portal portal = getPortal(blockLocation, key);
-            if (portal != null)
-                return portal;
-        }
-        return null;
-    }
-
-
-    /**
-     * Gets the portal with the given structure type at the given location
-     *
-     * @param location      <p>The location to check for portal structures</p>
-     * @param structureType <p>The structure type to look for</p>
-     * @return <p>The found portal, or null if no portal was found</p>
-     */
-    public Portal getPortal(Location location, GateStructureType structureType) {
-        return getPortal(new BlockLocation(location), structureType);
-    }
-
-    /**
-     * Gets the portal with any of the given structure types at the given location
-     *
-     * @param location       <p>The location to check for portal structures</p>
-     * @param structureTypes <p>The structure types to look for</p>
-     * @return <p>The found portal, or null if no portal was found</p>
-     */
-    public Portal getPortal(Location location, GateStructureType[] structureTypes) {
-        return getPortal(new BlockLocation(location), structureTypes);
-    }
-
-
-    /**
-     * Checks if any of the given blocks belong to a portal
-     *
-     * @param blocks <p>The blocks to check</p>
-     * @return <p>True if any of the given blocks belong to a portal</p>
-     */
-    public boolean isInPortal(List<Block> blocks) {
-        for (Block block : blocks) {
-            if (getPortal(block.getLocation(), GateStructureType.values()) != null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    /**
-     * Checks one block away from the given location to check if it's adjacent to a portal structure
-     *
-     * <p>Checks North, west, south, east direction. Not up / down, as it is currently
-     * not necessary and a waste of resources.</p>
-     *
-     * @param location      <p>The location to check for adjacency</p>
-     * @param structureType <p>The structure type to look for</p>
-     * @return <p>True if the given location is adjacent to a location containing the given structure type</p>
-     */
-    public boolean isNextToPortal(Location location, GateStructureType structureType) {
-        BlockVector adjacentVector = new BlockVector(1, 0, 0);
-        for (int i = 0; i < 4; i++) {
-            Location adjacentLocation = location.clone().add(adjacentVector);
-            if (getPortal(adjacentLocation, structureType) != null) {
-                return true;
-            }
-            adjacentVector.rotateAroundY(Math.PI / 2);
-        }
-        return false;
-    }
-
-
-    /**
-     * Registers the existence of the given structure type in the given locations
-     *
-     * <p>Basically stores the portals that exist at the given locations, but using the structure type as the key to be
-     * able to check locations for the given structure type.</p>
-     *
-     * @param structureType <p>The structure type to register</p>
-     * @param locationsMap  <p>The locations and the corresponding portals to register</p>
-     */
-    public void registerLocations(GateStructureType structureType, Map<BlockLocation, Portal> locationsMap) {
-        if (!portalFromStructureTypeMap.containsKey(structureType)) {
-            portalFromStructureTypeMap.put(structureType, new HashMap<>());
-        }
-        portalFromStructureTypeMap.get(structureType).putAll(locationsMap);
-    }
-
-    /**
-     * Un-registers all portal blocks with the given structure type, at the given block location
-     *
-     * @param structureType <p>The type of structure to un-register</p>
-     * @param blockLocation <p>The location to un-register</p>
-     */
-    public void unRegisterLocation(GateStructureType structureType, BlockLocation blockLocation) {
-        Map<BlockLocation, Portal> map = portalFromStructureTypeMap.get(structureType);
-        if (map != null) {
-            Stargate.log(Level.FINER, "Unregistering portal " + map.get(blockLocation).getName() +
-                    " with structType " + structureType + " at location " + blockLocation.toString());
-            map.remove(blockLocation);
-        }
-    }
 }

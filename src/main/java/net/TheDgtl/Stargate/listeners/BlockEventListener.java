@@ -375,7 +375,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        if (Stargate.factory.isInPortal(event.getBlocks())) {
+        if (Stargate.factory.isPartOfPortal(event.getBlocks())) {
             event.setCancelled(true);
         }
     }
@@ -387,7 +387,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        if (Stargate.factory.isInPortal(event.getBlocks())) {
+        if (Stargate.factory.isPartOfPortal(event.getBlocks())) {
             event.setCancelled(true);
         }
     }
