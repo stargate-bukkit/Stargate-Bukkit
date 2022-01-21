@@ -96,9 +96,8 @@ public class SQLQueryGenerator {
         String statementMessage = String
                 .format("CREATE TABLE IF NOT EXISTS {Portal} (name NVARCHAR(180), network NVARCHAR(180),"
                         + " destination NVARCHAR(180), world NVARCHAR(255) NOT NULL, x INTEGER, y INTEGER,"
-                        + " z INTEGER, ownerUUID VARCHAR(36), gatefileName NVARCHAR(255), facing INTEGER,"
-                        + " zFlip BOOLEAN, %s"
-                        + " PRIMARY KEY (name, network));", interServerExtraFields);
+                        + " z INTEGER, ownerUUID VARCHAR(36), gateFileName NVARCHAR(255), facing INTEGER,"
+                        + " zFlip BOOLEAN,%s PRIMARY KEY (name, network));", interServerExtraFields);
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
         // TODO: Add CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci') equivalent for SQLite
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
@@ -121,6 +120,20 @@ public class SQLQueryGenerator {
     }
 
     /**
+     * Gets a prepared statement for inserting a portal position type into the portal position type table
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateAddPortalPositionTypeStatement(Connection connection) throws SQLException {
+        String statementMessage = "INSERT INTO {PortalPositionType} (positionName) VALUES (?);";
+        statementMessage = replaceKnownTableNames(statementMessage);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
      * Gets a prepared statement for creating the portal position table
      *
      * @param connection <p>The database connection to use</p>
@@ -128,12 +141,27 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalPositionTableStatement(Connection connection) throws SQLException {
-        String statementMessage = "CREATE TABLE {PortalPosition} (portalName NVARCHAR(180), networkName NVARCHAR(180), " +
-                "xCoordinate INTEGER, yCoordinate INTEGER, zCoordinate INTEGER, positionType INTEGER," +
+        String statementMessage = "CREATE TABLE {PortalPosition} (xCoordinate INTEGER, yCoordinate INTEGER, " +
+                "zCoordinate INTEGER, portalName NVARCHAR(180), networkName NVARCHAR(180), positionType INTEGER," +
                 "PRIMARY KEY (xCoordinate, yCoordinate, zCoordinate), " +
                 "FOREIGN KEY (portalName, networkName) REFERENCES Portal(portalName, networkName), " +
                 "FOREIGN KEY (positionType) REFERENCES PortalPositionType (id));" +
                 "CREATE INDEX {PortalPosition}PortalIndex ON {PortalPosition} (portalName, networkName);";
+        statementMessage = replaceKnownTableNames(statementMessage);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
+     * Gets a prepared statement for inserting a portal position into the portal position table
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateAddPortalPositionStatement(Connection connection) throws SQLException {
+        String statementMessage = "INSERT INTO {PortalPosition} (xCoordinate, yCoordinate, zCoordinate, portalName, " +
+                "networkName, positionType) VALUES (?, ?, ?, ?, ?, ?);";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -234,7 +262,8 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateAddFlagStatement(Connection connection) throws SQLException {
-        String statementMessage = String.format("INSERT INTO %s (`character`) VALUES (?);", tableNameConfig.getFlagTableName());
+        String statementMessage = "INSERT INTO {Flag} (`character`) VALUES (?);";
+        statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
     }
@@ -286,7 +315,7 @@ public class SQLQueryGenerator {
         String extraValues = (isInterServer ? ", ?, ?" : "");
         String statementMessage = String
                 .format("INSERT INTO {Portal} (network, name, destination, world, x, y, z, ownerUUID,"
-                        + "gatefileName, facing%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?%s);", extraKeys, extraValues);
+                        + "gateFileName, facing%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?%s);", extraKeys, extraValues);
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
 
         PreparedStatement statement = connection.prepareStatement(statementMessage);
