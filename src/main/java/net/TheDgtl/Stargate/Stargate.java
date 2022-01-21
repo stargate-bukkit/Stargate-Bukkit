@@ -188,7 +188,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             Stargate.defaultLightSignColor = loadColor(Settings.getString(Setting.DEFAULT_LIGHT_SIGN_COLOR));
             Stargate.defaultDarkColor = loadColor(Settings.getString(Setting.DEFAULT_DARK_SIGN_COLOR));
         } catch (IllegalArgumentException | NullPointerException e) {
-            Stargate.log(Level.WARNING, "Invalid colors for sign texts, chosing default colors...");
+            Stargate.log(Level.WARNING, "Invalid colors for sign text. Using default colors instead...");
             Stargate.defaultLightSignColor = ChatColor.BLACK;
             Stargate.defaultDarkColor = ChatColor.WHITE;
         }
@@ -229,12 +229,12 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         Database database = new SQLiteDatabase(file);
         StargateFactory factory = new StargateFactory(database, false, false, this);
 
-        Refactorer middas = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(), factory);
-        Map<String, Object> newConfig = middas.getConfigModificatinos();
+        Refactorer refactorer = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(), factory);
+        Map<String, Object> newConfig = refactorer.getConfigModifications();
         this.saveResource("config.yml", true);
-        middas.insertNewValues(newConfig);
+        refactorer.insertNewValues(newConfig);
         this.reloadConfig();
-        middas.run();
+        refactorer.run();
     }
 
     public void reload() {
@@ -367,8 +367,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
 
         /*
-         * In some cases, there might be issues with a portal being delited in a server, but still present in the interserver database.
-         * Therefore we have to check for that...
+         * In some cases, there might be issues with a portal being deleted in a server, but still present in the
+         * inter-server database. Therefore, we have to check for that...
          */
         if (network == null) {
             // Error: This bungee portal's %type% has been removed from the destination server instance.

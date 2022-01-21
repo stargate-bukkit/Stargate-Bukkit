@@ -66,9 +66,20 @@ public class RetCon1_0_0 extends Modifier {
             String[] possiblePortalFoldersSetting = {"portal-folder", "folders.portalFolder"};
             for (String portalFolder : possiblePortalFoldersSetting) {
                 if (oldConfig.get(portalFolder) != null) {
-                    //TODO: Portals are loaded, but never used or converted
                     List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(
                             (String) oldConfig.get(portalFolder), server, factory, logger);
+                    if (portals == null) {
+                        logger.logMessage(Level.WARNING, "No portals migrated!");
+                    } else {
+                        logger.logMessage(Level.INFO, "The following portals have been migrated:");
+                        for (Portal portal : portals) {
+                            logger.logMessage(Level.INFO, String.format("Name: %s, Network: %s, Owner: %s, Flags: %s",
+                                    portal.getName(), portal.getNetwork(), portal.getOwnerUUID(),
+                                    portal.getAllFlagsString()));
+                        }
+                    }
+
+                    //Only check the first matching folder
                     break;
                 }
             }

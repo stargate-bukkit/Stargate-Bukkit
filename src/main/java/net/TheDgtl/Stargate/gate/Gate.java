@@ -83,7 +83,7 @@ public class Gate {
      *
      * @param topLeft        <p>The location of the origin of the gate</p>
      * @param facing         <p>The facing of the gate</p>
-     * @param zFlip          <p>If the gateFormat is fliped in the z-axis</p>
+     * @param zFlip          <p>If the gateFormat is flipped in the z-axis</p>
      * @param gateDesignName <p>The filename of the design for this gate</p>
      * @param flags          <p>The flags enabled for this gate</p>
      * @throws InvalidStructureException <p>If the facing is invalid</p>

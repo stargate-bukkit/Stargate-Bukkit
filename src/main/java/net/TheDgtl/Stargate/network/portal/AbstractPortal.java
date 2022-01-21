@@ -51,11 +51,11 @@ import java.util.logging.Level;
  */
 public abstract class AbstractPortal implements RealPortal {
     /**
-     * Used in bstats metrics
+     * Used in bStats metrics
      */
     public static int portalCount = 0;
     /**
-     * Used for bstats metrics, this is every flag that has been used by all portals
+     * Used for bStats metrics, this is every flag that has been used by all portals
      */
     public static final Set<PortalFlag> allUsedFlags = EnumSet.noneOf(PortalFlag.class);
 

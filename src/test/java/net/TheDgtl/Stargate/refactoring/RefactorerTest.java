@@ -142,7 +142,7 @@ public class RefactorerTest {
                 throw new IOException("Unable to rename existing config for backup");
             }
 
-            Map<String, Object> config = middas.getConfigModificatinos();
+            Map<String, Object> config = middas.getConfigModifications();
             Files.copy(defaultConfigFile, configFile);
             FileConfiguration fileConfig = new StargateConfiguration();
             fileConfig.load(configFile);

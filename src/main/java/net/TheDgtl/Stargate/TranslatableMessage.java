@@ -36,7 +36,7 @@ public enum TranslatableMessage {
      * <p>This is triggered when a stargate's button is clicked and it's missing a valid destination. It's also
      * triggered when trying to teleport if the destination is missing.</p>
      */
-    INVALID("tpDestiInvalid"),
+    INVALID("tpDestInvalid"),
 
     /**
      * The message to be displayed when a player is missing the required permissions to teleport to a destination
@@ -64,7 +64,7 @@ public enum TranslatableMessage {
     CREATE("gateCreateSpecified"),
 
     /**
-     * The message to be display when a a portal has successfully been created on a personal network
+     * The message to be display when a portal has successfully been created on a personal network
      */
     CREATE_PERSONAL("gateCreatePersonal"),
     /**
@@ -178,12 +178,12 @@ public enum TranslatableMessage {
     COMMAND_RELOAD("adminReload"),
 
     /**
-     * The message to display whenever the reload info is executed
+     * The message to display whenever the admin-info is executed
      */
     COMMAND_INFO("adminInfo"),
 
     /**
-     * The message to display whenever the reload help is executed
+     * The message to display whenever the admin-help is executed
      */
     COMMAND_HELP("adminHelp");
 

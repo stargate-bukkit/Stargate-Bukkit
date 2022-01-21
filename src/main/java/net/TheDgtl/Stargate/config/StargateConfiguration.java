@@ -50,7 +50,7 @@ public class StargateConfiguration extends YamlConfiguration {
     public String convertCommentsToYAMLMappings(String yamlString) {
         StringBuilder newText = new StringBuilder();
         /*
-         * A list of each stored comment (which is an list of comment lines) A comment
+         * A list of each stored comment (which is a list of comment lines) A comment
          * is defined as a set of lines that start with #, this set can not contain an
          * empty line.
          */
@@ -118,10 +118,7 @@ public class StargateConfiguration extends YamlConfiguration {
                 String comment = getString(key);
                 //TODO: Need to account for comment = null
                 String[] commentLines = comment.split("\n");
-                /*
-                 * Go through every line, except the last one, which is just going to be a
-                 * END_OF_COMMENT identifier
-                 */
+                //Go through every line, except the last one, which is just going to be an END_OF_COMMENT identifier
                 StringBuilder lineBuilder = new StringBuilder();
                 for (int i = 0; i < commentLines.length - 1; i++) {
                     lineBuilder.append("\n").append(repeat(" ", indent)).append("# ").append(commentLines[i]);

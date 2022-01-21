@@ -26,9 +26,13 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
+/**
+ * A helper tool for loading legacy portals from legacy storage
+ */
 public class LegacyPortalStorageLoader {
 
     private final static Map<PortalFlag, Integer> LEGACY_FLAGS_POS_MAP = new EnumMap<>(PortalFlag.class);
@@ -48,15 +52,20 @@ public class LegacyPortalStorageLoader {
     }
 
     /**
-     * @param portalSaveLocation <p> Filename</p>
-     * @return
-     * @throws IOException
+     * Loads legacy portals in .db files from the given folder
+     *
+     * @param portalSaveLocation <p>The folder containing legacy portals</p>
+     * @param server             <p>The server this plugin is running on</p>
+     * @param factory            <p>The stargate factory to save portals to</p>
+     * @param logger             <p>The logger used for logging</p>
+     * @return <p>The list of loaded and saved portals</p>
+     * @throws IOException               <p>If unable to read one or more .db files</p>
+     * @throws InvalidStructureException <p>If an encountered portal's structure is invalid</p>
      */
-    static public List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, StargateFactory factory,
+    public static List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, StargateFactory factory,
                                                       StargateLogger logger) throws IOException, InvalidStructureException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
-        System.out.println(portalSaveLocation);
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".db")) : new File[0];
         if (files == null) {
             return null;
@@ -78,8 +87,18 @@ public class LegacyPortalStorageLoader {
         return portals;
     }
 
-    static private Portal readPortal(String line, World world, StargateFactory factory, StargateLogger logger)
-            throws InvalidStructureException {
+    /**
+     * Reads a portal line from a legacy portal .db file
+     *
+     * @param line    <p>The line to read</p>
+     * @param world   <p>The world the portal belongs to</p>
+     * @param factory <p>The portal factory to save the portal to</p>
+     * @param logger  <p>The logger used for logging</p>
+     * @return <p>The loaded portal</p>
+     * @throws InvalidStructureException <p>If the portal's structure is invalid</p>
+     */
+    static private Portal readPortal(String line, World world, StargateFactory factory,
+                                     StargateLogger logger) throws InvalidStructureException {
         String[] splitLine = line.split(":");
         String name = splitLine[0];
         String[] coordinates = splitLine[6].split(",");
@@ -92,18 +111,19 @@ public class LegacyPortalStorageLoader {
         int modZ = Integer.parseInt(splitLine[4]);
         logger.logMessage(Level.FINEST, String.format("modX = %d, modZ = %d", modX, modZ));
         BlockFace facing = getFacing(modX, modZ);
-        if (facing == null)
+        if (facing == null) {
             facing = getFacing(Double.parseDouble(splitLine[5]));
-
+        }
 
         String gateFormatName = splitLine[7];
         String destination = (splitLine.length > 8) ? splitLine[8] : "";
         String networkName = (splitLine.length > 9) ? splitLine[9] : Settings.getString(Setting.DEFAULT_NETWORK);
         String ownerString = (splitLine.length > 10) ? splitLine[10] : "";
         UUID ownerUUID = getPlayerUUID(ownerString);
-        EnumSet<PortalFlag> flags = parseFlags(splitLine);
-        if (destination == null || destination.trim().isEmpty())
+        Set<PortalFlag> flags = parseFlags(splitLine);
+        if (destination == null || destination.trim().isEmpty()) {
             flags.add(PortalFlag.NETWORKED);
+        }
         try {
             factory.createNetwork(networkName, flags);
         } catch (NameErrorException ignored) {
@@ -111,24 +131,41 @@ public class LegacyPortalStorageLoader {
         Network network = factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
         Gate gate = new Gate(topLeft, facing, false, gateFormatName, flags, logger);
         Portal portal = new PlaceholderPortal(name, network, destination, flags, ownerUUID, gate);
+
+        //Add the portal to its network and store it to the database
         network.addPortal(portal, true);
 
         return portal;
     }
 
-
+    /**
+     * Gets the UUID from an owner string
+     *
+     * <p>An owner string might be a UUID or a username.</p>
+     *
+     * @param ownerString <p>The owner string to get a UUID from</p>
+     * @return <p>A UUID</p>
+     */
     @SuppressWarnings("deprecation")
     private static UUID getPlayerUUID(String ownerString) {
-        if (ownerString.length() > 16)
+        if (ownerString.length() > 16) {
             return UUID.fromString(ownerString);
-        return Bukkit.getOfflinePlayer(ownerString).getUniqueId();
+        } else {
+            return Bukkit.getOfflinePlayer(ownerString).getUniqueId();
+        }
     }
 
-    private static EnumSet<PortalFlag> parseFlags(String[] splitedLine) {
-        EnumSet<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
+    /**
+     * Parses the flags found in a portal file
+     *
+     * @param splitLine <p>The split portal save line</p>
+     * @return <p>The parsed flags</p>
+     */
+    private static Set<PortalFlag> parseFlags(String[] splitLine) {
+        Set<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
         for (PortalFlag flag : LEGACY_FLAGS_POS_MAP.keySet()) {
             int position = LEGACY_FLAGS_POS_MAP.get(flag);
-            if (splitedLine.length > position && splitedLine[position].equalsIgnoreCase("true")) {
+            if (splitLine.length > position && splitLine[position].equalsIgnoreCase("true")) {
                 flags.add(flag);
             }
         }
@@ -136,20 +173,35 @@ public class LegacyPortalStorageLoader {
         return flags;
     }
 
+    /**
+     * Gets the facing direction from the given x and z values
+     *
+     * @param modX <p>The x modifier used in legacy</p>
+     * @param modZ <p>The z modifier used in legacy</p>
+     * @return <p>The corresponding block face, or null if on a fork without modX, modZ</p>
+     */
     private static BlockFace getFacing(int modX, int modZ) {
-        if (modX < 0)
+        if (modX < 0) {
             return BlockFace.WEST;
-        if (modX > 0)
+        } else if (modX > 0) {
             return BlockFace.EAST;
-        if (modZ < 0)
+        } else if (modZ < 0) {
             return BlockFace.NORTH;
-        if (modZ > 0)
+        } else if (modZ > 0) {
             return BlockFace.EAST;
-        return null;
+        } else {
+            return null;
+        }
     }
 
-    private static BlockFace getFacing(double rot) {
-        return getFacing(-(int) Math.round(Math.cos(rot)), -(int) Math.round(Math.sin(rot)));
+    /**
+     * Gets the facing direction from the given rotation
+     *
+     * @param rotation <p>The rotation to get the direction from</p>
+     * @return <p>The corresponding block face</p>
+     */
+    private static BlockFace getFacing(double rotation) {
+        return getFacing(-(int) Math.round(Math.cos(rotation)), -(int) Math.round(Math.sin(rotation)));
     }
 
 }

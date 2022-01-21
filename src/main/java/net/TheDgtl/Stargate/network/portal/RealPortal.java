@@ -38,7 +38,7 @@ public interface RealPortal extends Portal {
     /**
      * Gets the gate belonging to this portal
      *
-     * @return <p>The gate belonding to this portal</p>
+     * @return <p>The gate belonging to this portal</p>
      */
     Gate getGate();
 

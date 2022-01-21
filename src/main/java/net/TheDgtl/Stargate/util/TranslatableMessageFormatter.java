@@ -50,22 +50,22 @@ public class TranslatableMessageFormatter {
         return unformattedMessage.replace(NET_NAME_IDENTIFIER, netName);
     }
 
-    public static String compileFlags(String unformatedMessage, Set<PortalFlag> dissallowedFlags) {
-        String flagsString = compileFlagsString(new ArrayList<>(dissallowedFlags));
-        return unformatedMessage.replace(FLAGS_NAME_IDENTIFIER, flagsString);
+    public static String compileFlags(String unformattedMessage, Set<PortalFlag> disallowedFlags) {
+        String flagsString = compileFlagsString(new ArrayList<>(disallowedFlags));
+        return unformattedMessage.replace(FLAGS_NAME_IDENTIFIER, flagsString);
     }
 
-    public static String compileFlagsString(List<PortalFlag> dissallowedFlags) {
-        String chracterRepresentation = dissallowedFlags.get(0).getCharacterRepresentation().toString();
-        if (dissallowedFlags.size() < 2)
-            return chracterRepresentation;
-        if (dissallowedFlags.size() == 2)
-            return chracterRepresentation + "&" + compileFlagsString(dissallowedFlags.subList(1, dissallowedFlags.size()));
-        return chracterRepresentation + "," + compileFlagsString(dissallowedFlags.subList(1, dissallowedFlags.size()));
+    public static String compileFlagsString(List<PortalFlag> disallowedFlags) {
+        String characterRepresentation = disallowedFlags.get(0).getCharacterRepresentation().toString();
+        if (disallowedFlags.size() < 2)
+            return characterRepresentation;
+        if (disallowedFlags.size() == 2)
+            return characterRepresentation + "&" + compileFlagsString(disallowedFlags.subList(1, disallowedFlags.size()));
+        return characterRepresentation + "," + compileFlagsString(disallowedFlags.subList(1, disallowedFlags.size()));
     }
 
-    public static String compileVersion(String unformatedMessage, String version) {
-        return unformatedMessage.replace(VERSION_IDENTIFIER, version);
+    public static String compileVersion(String unformattedMessage, String version) {
+        return unformattedMessage.replace(VERSION_IDENTIFIER, version);
     }
 
 }

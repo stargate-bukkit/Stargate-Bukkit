@@ -195,7 +195,7 @@ gateExitSpeedMultiplier: 1
 # Where should this flatfile be named?
 portalFile: stargate
 
-# By default SG will preface its remote database tables with `SG_`.
+# By default, SG will preface its remote database tables with `SG_`.
 # If this conflicts with another plugin, you can change that prefix here.
 customRemoteDatabasePrefix: SG_
 

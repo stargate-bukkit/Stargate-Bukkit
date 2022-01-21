@@ -29,5 +29,5 @@ public class PortalCreationHelper {
             return new FixedPortal(network, lines[0], lines[1], block, flags, ownerUUID);
         }
     }
-    
+
 }

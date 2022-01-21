@@ -15,10 +15,6 @@ import java.io.IOException;
 import java.util.Map;
 
 public class Refactorer {
-    /*
-     * This name stays
-     * NOT USED CURRENTLY
-     */
 
     private int configVersion;
     private final File configFile;
@@ -40,9 +36,9 @@ public class Refactorer {
     }
 
     /**
-     * @return every configuration mapping that could be transfered over to this version
+     * @return every configuration mapping that could be transferred over to this version
      */
-    public Map<String, Object> getConfigModificatinos() {
+    public Map<String, Object> getConfigModifications() {
         for (Modifier retCon : RETCONS) {
             int retConConfigNumber = retCon.getConfigVersion();
             if (retConConfigNumber >= configVersion) {

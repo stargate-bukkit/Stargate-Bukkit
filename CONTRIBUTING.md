@@ -17,7 +17,7 @@ request [here](https://github.com/the-lockedcraft-legacy-organization/Stargate-B
 > Comments are great, however, they can generally be replaced with descriptive variable/method/class naming.
 
 Please use comments to describe why you are using something, but let the code describe what you are doing.<br>Method
-names should be verbs, class names should be nouns, and Boolean variables should be yes/no statements '(i.e. isRed)'.
+names should be verbs, class names should be nouns, and Boolean variables should be "yes/no" statements '(i.e. isRed)'.
 
 #### Keep your methods short.
 

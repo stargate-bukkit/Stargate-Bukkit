@@ -169,7 +169,7 @@ public class BlockEventListener implements Listener {
             flags.add(PortalFlag.NETWORKED);
         }
 
-        Set<PortalFlag> disallowedFlags = permissionManager.returnDissallowedFlags(flags);
+        Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
 
         if (disallowedFlags.size() > 0) {
             String unformattedMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
