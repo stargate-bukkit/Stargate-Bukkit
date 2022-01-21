@@ -134,6 +134,20 @@ public class SQLQueryGenerator {
     }
 
     /**
+     * Gets a prepared statement for getting all stored portal position types
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateGetAllPortalPositionTypesStatement(Connection connection) throws SQLException {
+        String statementMessage = "SELECT id, positionName FROM {PortalPositionType};";
+        statementMessage = replaceKnownTableNames(statementMessage);
+        logger.logMessage(Level.FINEST, statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
      * Gets a prepared statement for creating the portal position table
      *
      * @param connection <p>The database connection to use</p>
@@ -141,12 +155,12 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalPositionTableStatement(Connection connection) throws SQLException {
-        String statementMessage = "CREATE TABLE {PortalPosition} (xCoordinate INTEGER, yCoordinate INTEGER, " +
-                "zCoordinate INTEGER, portalName NVARCHAR(180), networkName NVARCHAR(180), positionType INTEGER," +
-                "PRIMARY KEY (xCoordinate, yCoordinate, zCoordinate), " +
+        String statementMessage = "CREATE TABLE {PortalPosition} (portalName NVARCHAR(180), networkName NVARCHAR(180), " +
+                "xCoordinate INTEGER, yCoordinate INTEGER, zCoordinate INTEGER, positionType INTEGER," +
+                "PRIMARY KEY (portalName, networkName, xCoordinate, yCoordinate, zCoordinate), " +
                 "FOREIGN KEY (portalName, networkName) REFERENCES Portal(portalName, networkName), " +
                 "FOREIGN KEY (positionType) REFERENCES PortalPositionType (id));" +
-                "CREATE INDEX {PortalPosition}PortalIndex ON {PortalPosition} (portalName, networkName);";
+                "CREATE INDEX PortalPositionIndex ON {PortalPosition} (portalName, networkName);";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -160,8 +174,8 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateAddPortalPositionStatement(Connection connection) throws SQLException {
-        String statementMessage = "INSERT INTO {PortalPosition} (xCoordinate, yCoordinate, zCoordinate, portalName, " +
-                "networkName, positionType) VALUES (?, ?, ?, ?, ?, ?);";
+        String statementMessage = "INSERT INTO {PortalPosition} (portalName, networkName, xCoordinate, yCoordinate, " +
+                "zCoordinate, positionType) VALUES (?, ?, ?, ?, ?, ?);";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
