@@ -135,6 +135,9 @@ public class StargateFactory {
         runStatement(flagStatement);
         addMissingFlags(connection, sqlMaker);
 
+        PreparedStatement portalPositionTypesStatement = sqlMaker.generateCreatePortalPositionTypeTableStatement(connection);
+        runStatement(portalPositionTypesStatement);
+        //TODO: Add portal position types (buttons, signs). Should probably create an enum for this
 
         PreparedStatement lastKnownNameStatement = sqlMaker.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);
@@ -156,6 +159,9 @@ public class StargateFactory {
         runStatement(interServerRelationStatement);
         PreparedStatement interPortalViewStatement = sqlMaker.generateCreatePortalViewStatement(connection, PortalType.INTER_SERVER);
         runStatement(interPortalViewStatement);
+
+        PreparedStatement portalPositionsStatement = sqlMaker.generateCreatePortalPositionTableStatement(connection);
+        runStatement(portalPositionsStatement);
         connection.close();
     }
 
@@ -185,36 +191,44 @@ public class StargateFactory {
         addStatement.close();
     }
 
-    private void loadAllPortals(Database database, PortalType tablePortalType) throws SQLException {
+    /**
+     * Loads all portals from the given database of the given portal type
+     *
+     * @param database   <p>The database to load from</p>
+     * @param portalType <p>The portal type to load</p>
+     * @throws SQLException <p>If an SQL error occurs</p>
+     */
+    private void loadAllPortals(Database database, PortalType portalType) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement statement = sqlMaker.generateGetAllPortalsStatement(connection, tablePortalType);
+        PreparedStatement statement = sqlMaker.generateGetAllPortalsStatement(connection, portalType);
 
-        ResultSet set = statement.executeQuery();
-        while (set.next()) {
-            String name = set.getString("name");
-            String netName = set.getString("network");
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next()) {
+            String name = resultSet.getString("name");
+            String netName = resultSet.getString("network");
 
             //Skip null rows
             if (name == null && netName == null) {
                 continue;
             }
 
-            String destination = set.getString("destination");
+            String destination = resultSet.getString("destination");
             //Make sure to treat no destination as empty, not a null string
-            if (set.wasNull()) {
+            if (resultSet.wasNull()) {
                 destination = "";
             }
-            String worldName = set.getString("world");
-            int x = set.getInt("x");
-            int y = set.getInt("y");
-            int z = set.getInt("z");
-            String flagsMsg = set.getString("flags");
-            UUID ownerUUID = UUID.fromString(set.getString("ownerUUID"));
+            String worldName = resultSet.getString("world");
+            int x = resultSet.getInt("x");
+            int y = resultSet.getInt("y");
+            int z = resultSet.getInt("z");
+            String flagString = resultSet.getString("flags");
+            UUID ownerUUID = UUID.fromString(resultSet.getString("ownerUUID"));
 
-            Set<PortalFlag> flags = PortalFlag.parseFlags(flagsMsg);
+            Set<PortalFlag> flags = PortalFlag.parseFlags(flagString);
 
             boolean isBungee = flags.contains(PortalFlag.FANCY_INTER_SERVER);
-            logger.logMessage(Level.FINEST, "Trying to add portal " + name + ", on network " + netName + ",isInterServer = " + isBungee);
+            logger.logMessage(Level.FINEST, "Trying to add portal " + name + ", on network " + netName +
+                    ",isInterServer = " + isBungee);
 
             String targetNet = netName;
             if (flags.contains(PortalFlag.BUNGEE)) {
@@ -225,15 +239,15 @@ public class StargateFactory {
                 createNetwork(targetNet, flags);
             } catch (NameErrorException ignored) {
             }
-            Network net = getNetwork(targetNet, isBungee);
+            Network network = getNetwork(targetNet, isBungee);
 
-            if (tablePortalType == PortalType.INTER_SERVER) {
-                String serverUUID = set.getString("homeServerId");
+            if (portalType == PortalType.INTER_SERVER) {
+                String serverUUID = resultSet.getString("homeServerId");
                 logger.logMessage(Level.FINEST, "serverUUID = " + serverUUID);
                 if (!serverUUID.equals(Stargate.serverUUID.toString())) {
-                    String serverName = set.getString("serverName");
-                    Portal virtualPortal = new VirtualPortal(serverName, name, net, flags, ownerUUID);
-                    net.addPortal(virtualPortal, false);
+                    String serverName = resultSet.getString("serverName");
+                    Portal virtualPortal = new VirtualPortal(serverName, name, network, flags, ownerUUID);
+                    network.addPortal(virtualPortal, false);
                     logger.logMessage(Level.FINEST, "Added as virtual portal");
                     continue;
                 }
@@ -246,12 +260,15 @@ public class StargateFactory {
             Block block = world.getBlockAt(x, y, z);
             String[] virtualSign = {name, destination, netName};
 
-            if (destination == null || destination.trim().isEmpty())
+            if (destination == null || destination.trim().isEmpty()) {
                 flags.add(PortalFlag.NETWORKED);
+            }
 
             try {
-                Portal portal = PortalCreationHelper.createPortalFromSign(net, virtualSign, block, flags, ownerUUID);
-                net.addPortal(portal, false);
+                //TODO: This needs to be changed as we will save the top-left location and the sign will be seen as one 
+                // of potentially several interfaces rather than an identifier
+                Portal portal = PortalCreationHelper.createPortalFromSign(network, virtualSign, block, flags, ownerUUID);
+                network.addPortal(portal, false);
                 logger.logMessage(Level.FINEST, "Added as normal portal");
                 if (isBungee) {
                     setInterServerPortalOnlineStatus(portal, true);
