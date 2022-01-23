@@ -9,6 +9,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -168,7 +169,7 @@ public class PlaceholderPortal implements RealPortal {
     }
 
     @Override
-    public Location getSignLocation() {
+    public List<Location> getSignLocations() {
         return null;
     }
 

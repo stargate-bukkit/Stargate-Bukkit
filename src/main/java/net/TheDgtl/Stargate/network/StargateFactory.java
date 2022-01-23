@@ -56,7 +56,6 @@ public class StargateFactory {
     private final boolean useInterServerNetworks;
     private final StargateLogger logger;
 
-
     /**
      * Instantiates a new stargate factory
      *

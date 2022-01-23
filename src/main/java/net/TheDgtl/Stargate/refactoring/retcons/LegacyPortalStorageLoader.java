@@ -11,12 +11,15 @@ import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.PlaceholderPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.PortalPosition;
+import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.util.FileHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
+import org.bukkit.util.BlockVector;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -99,28 +102,25 @@ public class LegacyPortalStorageLoader {
      */
     static private Portal readPortal(String line, World world, StargateFactory factory,
                                      StargateLogger logger) throws InvalidStructureException {
-        String[] splitLine = line.split(":");
-        String name = splitLine[0];
-        String[] coordinates = splitLine[6].split(",");
-        Location topLeft = new Location(
-                world,
-                Double.parseDouble(coordinates[0]),
-                Double.parseDouble(coordinates[1]),
-                Double.parseDouble(coordinates[2]));
-        int modX = Integer.parseInt(splitLine[3]);
-        int modZ = Integer.parseInt(splitLine[4]);
+        String[] portalProperties = line.split(":");
+        String name = portalProperties[0];
+        Location signLocation = loadLocation(world, portalProperties[1]);
+        Location buttonLocation = loadLocation(world, portalProperties[2]);
+        int modX = Integer.parseInt(portalProperties[3]);
+        int modZ = Integer.parseInt(portalProperties[4]);
         logger.logMessage(Level.FINEST, String.format("modX = %d, modZ = %d", modX, modZ));
         BlockFace facing = getFacing(modX, modZ);
         if (facing == null) {
-            facing = getFacing(Double.parseDouble(splitLine[5]));
+            facing = getFacing(Double.parseDouble(portalProperties[5]));
         }
 
-        String gateFormatName = splitLine[7];
-        String destination = (splitLine.length > 8) ? splitLine[8] : "";
-        String networkName = (splitLine.length > 9) ? splitLine[9] : Settings.getString(Setting.DEFAULT_NETWORK);
-        String ownerString = (splitLine.length > 10) ? splitLine[10] : "";
+        Location topLeft = loadLocation(world, portalProperties[6]);
+        String gateFormatName = portalProperties[7];
+        String destination = (portalProperties.length > 8) ? portalProperties[8] : "";
+        String networkName = (portalProperties.length > 9) ? portalProperties[9] : Settings.getString(Setting.DEFAULT_NETWORK);
+        String ownerString = (portalProperties.length > 10) ? portalProperties[10] : "";
         UUID ownerUUID = getPlayerUUID(ownerString);
-        Set<PortalFlag> flags = parseFlags(splitLine);
+        Set<PortalFlag> flags = parseFlags(portalProperties);
         if (destination == null || destination.trim().isEmpty()) {
             flags.add(PortalFlag.NETWORKED);
         }
@@ -128,14 +128,48 @@ public class LegacyPortalStorageLoader {
             factory.createNetwork(networkName, flags);
         } catch (NameErrorException ignored) {
         }
+        if (topLeft == null) {
+            throw new InvalidStructureException();
+        }
+
+        List<PortalPosition> portalPositions = new ArrayList<>();
+        if (signLocation != null) {
+            Location relativeSignLocation = signLocation.subtract(topLeft);
+            portalPositions.add(new PortalPosition(PositionType.SIGN, new BlockVector(relativeSignLocation.getBlockX(),
+                    relativeSignLocation.getBlockY(), relativeSignLocation.getBlockZ())));
+        }
+        if (buttonLocation != null) {
+            Location relativeButtonLocation = buttonLocation.subtract(topLeft);
+            portalPositions.add(new PortalPosition(PositionType.BUTTON, new BlockVector(relativeButtonLocation.getBlockX(),
+                    relativeButtonLocation.getBlockY(), relativeButtonLocation.getBlockZ())));
+        }
         Network network = factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
-        Gate gate = new Gate(topLeft, facing, false, gateFormatName, flags, logger);
+        Gate gate = new Gate(topLeft, facing, false, gateFormatName, flags, portalPositions, logger);
         Portal portal = new PlaceholderPortal(name, network, destination, flags, ownerUUID, gate);
 
         //Add the portal to its network and store it to the database
         network.addPortal(portal, true);
 
         return portal;
+    }
+
+    /**
+     * Loads a location from the given input string
+     *
+     * @param world <p>The world the location belongs to</p>
+     * @param input <p>The input string to parse to coordinates</p>
+     * @return <p>The loaded location</p>
+     */
+    private static Location loadLocation(World world, String input) {
+        if (input.trim().isEmpty()) {
+            return null;
+        }
+        String[] coordinates = input.split(",");
+        return new Location(
+                world,
+                Double.parseDouble(coordinates[0]),
+                Double.parseDouble(coordinates[1]),
+                Double.parseDouble(coordinates[2]));
     }
 
     /**

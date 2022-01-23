@@ -8,6 +8,8 @@ import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.PortalPosition;
+import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -40,8 +42,7 @@ public class Gate {
     private final GateFormat format;
     private final VectorOperation converter;
     private Location topLeft;
-    private BlockVector signPosition;
-    private BlockVector buttonPosition;
+    private List<PortalPosition> portalPositions;
     private final BlockFace facing;
     private boolean isOpen = false;
     private final Set<PortalFlag> flags;
@@ -61,6 +62,7 @@ public class Gate {
      */
     public Gate(GateFormat format, Location signLocation, BlockFace signFace, Set<PortalFlag> flags)
             throws InvalidStructureException, GateConflictException {
+        this.portalPositions = new ArrayList<>();
         this.format = format;
         facing = signFace;
         converter = new VectorOperation(signFace, Stargate.getInstance());
@@ -81,21 +83,24 @@ public class Gate {
     /**
      * Instantiates a gate from already predetermined parameters, no checking is done to see if format matches
      *
-     * @param topLeft        <p>The location of the origin of the gate</p>
-     * @param facing         <p>The facing of the gate</p>
-     * @param zFlip          <p>If the gateFormat is flipped in the z-axis</p>
-     * @param gateDesignName <p>The filename of the design for this gate</p>
-     * @param flags          <p>The flags enabled for this gate</p>
+     * @param topLeft         <p>The location of the origin of the gate</p>
+     * @param facing          <p>The facing of the gate</p>
+     * @param zFlip           <p>If the gateFormat is flipped in the z-axis</p>
+     * @param gateDesignName  <p>The filename of the design for this gate</p>
+     * @param flags           <p>The flags enabled for this gate</p>
+     * @param portalPositions <p>The positions of this gate's control blocks</p>
      * @throws InvalidStructureException <p>If the facing is invalid</p>
      */
-    public Gate(Location topLeft, BlockFace facing, boolean zFlip, String gateDesignName, Set<PortalFlag> flags, StargateLogger logger)
-            throws InvalidStructureException {
+    public Gate(Location topLeft, BlockFace facing, boolean zFlip, String gateDesignName, Set<PortalFlag> flags,
+                List<PortalPosition> portalPositions, StargateLogger logger) throws InvalidStructureException {
+        this.portalPositions = new ArrayList<>();
         this.facing = facing;
         this.topLeft = topLeft;
         this.converter = new VectorOperation(facing, logger);
         this.converter.setFlipZAxis(zFlip);
         this.format = GateFormat.getFormat(gateDesignName);
         this.flags = flags;
+        this.portalPositions = portalPositions;
     }
 
     /**
@@ -116,30 +121,42 @@ public class Gate {
      * @param signLines <p>The lines to draw on the sign</p>
      */
     private void drawSign(String[] signLines) {
-        Location signLocation = getLocation(signPosition);
-        BlockState signState = signLocation.getBlock().getState();
-        if (!(signState instanceof Sign)) {
-            Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
-            return;
-        }
+        for (PortalPosition portalPosition : portalPositions) {
+            if (portalPosition.getPositionType() != PositionType.SIGN) {
+                continue;
+            }
 
-        Sign sign = (Sign) signState;
-        for (int i = 0; i < 4; i++) {
-            sign.setLine(i, signLines[i]);
+            Location signLocation = getLocation(portalPosition.getPositionLocation());
+            BlockState signState = signLocation.getBlock().getState();
+            if (!(signState instanceof Sign)) {
+                Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
+                return;
+            }
+
+            Sign sign = (Sign) signState;
+            for (int i = 0; i < 4; i++) {
+                sign.setLine(i, signLines[i]);
+            }
+            Stargate.syncTickPopulator.addAction(new BlockSetAction(sign, true));
         }
-        Stargate.syncTickPopulator.addAction(new BlockSetAction(sign, true));
     }
 
     /**
      * Draws this gate's button
      */
     private void drawButton() {
-        Location buttonLocation = getLocation(buttonPosition);
-        Material buttonMaterial = getButtonMaterial();
-        Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
-        buttonData.setFacing(facing);
+        for (PortalPosition portalPosition : portalPositions) {
+            if (portalPosition.getPositionType() != PositionType.BUTTON) {
+                continue;
+            }
 
-        buttonLocation.getBlock().setBlockData(buttonData);
+            Location buttonLocation = getLocation(portalPosition.getPositionLocation());
+            Material buttonMaterial = getButtonMaterial();
+            Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
+            buttonData.setFacing(facing);
+
+            buttonLocation.getBlock().setBlockData(buttonData);
+        }
     }
 
     /**
@@ -152,12 +169,15 @@ public class Gate {
     }
 
     /**
-     * Gets the location of this gate's sign
+     * Gets the location of this gate's signs
      *
-     * @return <p>The location of this gate's sign</p>
+     * @return <p>The location of this gate's signs</p>
      */
-    public Location getSignLocation() {
-        return getLocation(signPosition);
+    public List<Location> getSignLocations() {
+        List<Location> signs = new ArrayList<>();
+        portalPositions.stream().filter((position) -> position.getPositionType() == PositionType.SIGN).forEach(
+                (position) -> signs.add(getLocation(position.getPositionLocation())));
+        return signs;
     }
 
     /**
@@ -174,9 +194,11 @@ public class Gate {
             output.add(new BlockLocation(loc));
         }
 
-        if (structureType == GateStructureType.CONTROL_BLOCK && flags.contains(PortalFlag.ALWAYS_ON) && buttonPosition != null) {
-            Location buttonLoc = getLocation(buttonPosition);
-            output.remove(new BlockLocation(buttonLoc));
+        List<BlockLocation> buttonPositions = new ArrayList<>();
+        portalPositions.stream().filter((position) -> position.getPositionType() == PositionType.BUTTON).forEach(
+                position -> buttonPositions.add(new BlockLocation(getLocation(position.getPositionLocation()))));
+        if (structureType == GateStructureType.CONTROL_BLOCK && flags.contains(PortalFlag.ALWAYS_ON) && !buttonPositions.isEmpty()) {
+            output.removeAll(buttonPositions);
         }
         return output;
     }
@@ -329,6 +351,7 @@ public class Gate {
      */
     public boolean matchesFormat(@NotNull Location location) throws GateConflictException {
         List<BlockVector> controlBlocks = getFormat().getControlBlocks();
+        BlockVector signPosition;
         for (BlockVector controlBlock : controlBlocks) {
             /*
              * Top-left is origin for the format, everything becomes easier if you calculate
@@ -347,11 +370,14 @@ public class Gate {
                  * button. Note that this will have weird behaviour if there's more than 3
                  * control-blocks
                  */
+                //TODO: Need to figure out if this makes sense and account for more control blocks
                 signPosition = controlBlock;
-                for (BlockVector buttonVec : getFormat().getControlBlocks()) {
-                    if (signPosition == buttonVec)
+                for (BlockVector buttonVector : getFormat().getControlBlocks()) {
+                    if (signPosition == buttonVector) {
                         continue;
-                    buttonPosition = buttonVec;
+                    }
+                    portalPositions.add(new PortalPosition(PositionType.SIGN, signPosition));
+                    portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector));
                     break;
                 }
 
@@ -387,6 +413,11 @@ public class Gate {
         setOpen(open);
     }
 
+    /**
+     * Gets this gate's top-left location
+     *
+     * @return <p>This gate's top-left location</p>
+     */
     public Location getTopLeft() {
         return this.topLeft;
     }

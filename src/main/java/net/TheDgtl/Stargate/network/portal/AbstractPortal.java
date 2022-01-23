@@ -126,8 +126,8 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public Location getSignLocation() {
-        return gate.getSignLocation();
+    public List<Location> getSignLocations() {
+        return gate.getSignLocations();
     }
 
     @Override
@@ -267,9 +267,9 @@ public abstract class AbstractPortal implements RealPortal {
         if (this.hasFlag(PortalFlag.IRON_DOOR) && event.useInteractedBlock() == Result.DENY) {
             Block exitBlock = gate.getExit().add(gate.getFacing().getDirection()).getBlock();
             if (exitBlock.getType() == Material.IRON_DOOR) {
-                Directional signDirection = (Directional) gate.getSignLocation().getBlock().getBlockData();
+                BlockFace gateDirection = gate.getFacing();
                 Directional doorDirection = (Directional) exitBlock.getBlockData();
-                if (signDirection.getFacing() == doorDirection.getFacing()) {
+                if (gateDirection == doorDirection.getFacing()) {
                     return;
                 }
             }
@@ -297,17 +297,19 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void setSignColor(DyeColor color) {
-        Sign sign = (Sign) this.getSignLocation().getBlock().getState();
-        if (color != null) {
-            sign.setColor(color);
-            sign.update();
+        for (Location location : this.getSignLocations()) {
+            Sign sign = (Sign) location.getBlock().getState();
+            if (color != null) {
+                sign.setColor(color);
+                sign.update();
+            }
+            if (!VersionParser.bukkitIsNewerThan(ImportantVersion.NO_CHAT_COLOR_IMPLEMENTED))
+                colorDrawer = new NoLineColorFormatter();
+            else {
+                colorDrawer = new LineColorFormatter(sign.getColor(), sign.getType());
+            }
+            this.drawControlMechanisms();
         }
-        if (!VersionParser.bukkitIsNewerThan(ImportantVersion.NO_CHAT_COLOR_IMPLEMENTED))
-            colorDrawer = new NoLineColorFormatter();
-        else {
-            colorDrawer = new LineColorFormatter(sign.getColor(), sign.getType());
-        }
-        this.drawControlMechanisms();
     }
 
     @Override

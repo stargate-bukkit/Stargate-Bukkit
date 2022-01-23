@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.block.Sign;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import java.util.List;
+
 /**
  * A real portal with a physical sign that is located on this server
  */
@@ -64,10 +66,10 @@ public interface RealPortal extends Portal {
 
 
     /**
-     * Gets the location of this portal's sign
+     * Gets the location of this portal's signs
      *
-     * @return <p>The location of this portal's sign</p>
+     * @return <p>The location of this portal's signs</p>
      */
-    Location getSignLocation();
+    List<Location> getSignLocations();
 
 }

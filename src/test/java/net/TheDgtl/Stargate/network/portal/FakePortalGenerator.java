@@ -7,6 +7,7 @@ import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,12 +73,14 @@ public class FakePortalGenerator {
      * @return <p>A fake portal</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      */
-    public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal, StargateLogger logger) throws InvalidStructureException {
+    public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal,
+                                         StargateLogger logger) throws InvalidStructureException {
         Set<PortalFlag> flags = generateRandomFlags();
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
         }
-        Gate gate = new Gate(world.getBlockAt(0, 0, 0).getLocation(), BlockFace.EAST, false, "fileName.gate", flags, logger);
+        Gate gate = new Gate(world.getBlockAt(0, 0, 0).getLocation(), BlockFace.EAST, false,
+                "fileName.gate", flags, new ArrayList<>(), logger);
         return new PlaceholderPortal(name, portalNetwork, "", flags, UUID.randomUUID(), gate);
     }
 
