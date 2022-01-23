@@ -238,6 +238,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     public void reload() {
+        //TODO: This is never used
         this.reloadConfig();
         load();
     }

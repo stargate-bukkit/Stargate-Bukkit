@@ -132,6 +132,7 @@ public class LegacyPortalStorageLoader {
             throw new InvalidStructureException();
         }
 
+        //TODO: Need to make sure whether this way of calculating the relative location works, and fix it if it doesn't
         List<PortalPosition> portalPositions = new ArrayList<>();
         if (signLocation != null) {
             Location relativeSignLocation = signLocation.subtract(topLeft);

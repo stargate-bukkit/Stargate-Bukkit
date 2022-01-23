@@ -238,6 +238,8 @@ public class Network {
             addFlagStatement.close();
             connection.commit();
             connection.setAutoCommit(true);
+
+            //TODO: Save any portal positions related to the portal
         } catch (SQLException exception) {
             try {
                 if (connection != null) {
@@ -274,6 +276,8 @@ public class Network {
             PreparedStatement statement = sqlMaker.generateRemovePortalStatement(conn, portal, portalType);
             statement.execute();
             statement.close();
+
+            //TODO: Remove any portal positions related to the portal
 
             conn.commit();
             conn.setAutoCommit(true);
