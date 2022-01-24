@@ -12,6 +12,7 @@ import net.TheDgtl.Stargate.event.StargateDestroyEvent;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
+import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -218,7 +219,8 @@ public class BlockEventListener implements Listener {
             throws NameErrorException, GateConflictException, NoFormatFoundException {
 
         UUID ownerUUID = flags.contains(PortalFlag.PERSONAL_NETWORK) ? UUID.fromString(selectedNetwork.getName()) : player.getUniqueId();
-        Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, signLocation, flags, ownerUUID);
+        Gate gate = PortalCreationHelper.createGate(signLocation);
+        Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID);
         StargateCreateEvent sEvent = new StargateCreateEvent(player, portal, lines, cost);
 
 

@@ -84,21 +84,12 @@ public abstract class AbstractPortal implements RealPortal {
      * @throws NoFormatFoundException <p>If no gate format matches the portal</p>
      * @throws GateConflictException  <p>If the portal's gate conflicts with an existing one</p>
      */
-    AbstractPortal(Network network, String name, Block signBlock, Set<PortalFlag> flags, UUID ownerUUID)
-            throws NameErrorException, NoFormatFoundException, GateConflictException {
+    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID)
+            throws NameErrorException {
         this.ownerUUID = ownerUUID;
         this.network = network;
         this.name = name;
         this.flags = flags;
-
-        if (!(Tag.WALL_SIGNS.isTagged(signBlock.getType()))) {
-            throw new NoFormatFoundException();
-        }
-        //Get the block behind the sign; the material of that block is stored in a register with available gateFormats
-        Directional signDirection = (Directional) signBlock.getBlockData();
-        Block behind = signBlock.getRelative(signDirection.getFacing().getOppositeFace());
-        List<GateFormat> gateFormats = GateFormat.getPossibleGateFormatsFromControlBlockMaterial(behind.getType());
-        setGate(findMatchingGate(gateFormats, signBlock.getLocation(), signDirection.getFacing()));
 
         if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH))
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
@@ -365,29 +356,6 @@ public abstract class AbstractPortal implements RealPortal {
      */
     private void setGate(Gate gate) {
         this.gate = gate;
-    }
-
-    /**
-     * Tries to find a gate at the given location matching one of the given gate formats
-     *
-     * @param gateFormats  <p>The gate formats to look for</p>
-     * @param signLocation <p>The location of the sign of the portal to look for</p>
-     * @param signFacing   <p>The direction the sign is facing</p>
-     * @return <p>A gate if found, or null if no gate was found</p>
-     * @throws NoFormatFoundException <p>If no gate was found at the given location matching any of the given formats</p>
-     * @throws GateConflictException  <p>If the found gate conflicts with another gate</p>
-     */
-    private Gate findMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing)
-            throws NoFormatFoundException, GateConflictException {
-        Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
-        for (GateFormat gateFormat : gateFormats) {
-            Stargate.log(Level.FINE, "--------- " + gateFormat.getFileName() + " ---------");
-            try {
-                return new Gate(gateFormat, signLocation, signFacing, flags);
-            } catch (InvalidStructureException ignored) {
-            }
-        }
-        throw new NoFormatFoundException();
     }
 
 }

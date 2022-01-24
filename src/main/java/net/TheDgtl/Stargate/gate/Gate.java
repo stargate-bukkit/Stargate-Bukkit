@@ -45,7 +45,6 @@ public class Gate {
     private List<PortalPosition> portalPositions;
     private final BlockFace facing;
     private boolean isOpen = false;
-    private final Set<PortalFlag> flags;
 
     private static final Material DEFAULT_BUTTON = Material.STONE_BUTTON;
     private static final Material DEFAULT_WATER_BUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
@@ -60,13 +59,12 @@ public class Gate {
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
-    public Gate(GateFormat format, Location signLocation, BlockFace signFace, Set<PortalFlag> flags)
+    public Gate(GateFormat format, Location signLocation, BlockFace signFace)
             throws InvalidStructureException, GateConflictException {
         this.portalPositions = new ArrayList<>();
         this.format = format;
         facing = signFace;
         converter = new VectorOperation(signFace, Stargate.getInstance());
-        this.flags = flags;
 
         //Allow mirroring for non-symmetrical gates
         if (matchesFormat(signLocation)) {
@@ -91,16 +89,13 @@ public class Gate {
      * @param portalPositions <p>The positions of this gate's control blocks</p>
      * @throws InvalidStructureException <p>If the facing is invalid</p>
      */
-    public Gate(Location topLeft, BlockFace facing, boolean zFlip, String gateDesignName, Set<PortalFlag> flags,
-                List<PortalPosition> portalPositions, StargateLogger logger) throws InvalidStructureException {
+    public Gate(GateFormat format, Location topLeft, BlockFace facing, boolean zFlip, StargateLogger logger) throws InvalidStructureException {
         this.portalPositions = new ArrayList<>();
         this.facing = facing;
         this.topLeft = topLeft;
         this.converter = new VectorOperation(facing, logger);
         this.converter.setFlipZAxis(zFlip);
-        this.format = GateFormat.getFormat(gateDesignName);
-        this.flags = flags;
-        this.portalPositions = portalPositions;
+        this.format = format;
     }
 
     /**

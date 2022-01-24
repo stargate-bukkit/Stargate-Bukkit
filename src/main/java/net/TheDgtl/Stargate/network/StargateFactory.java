@@ -11,8 +11,11 @@ import net.TheDgtl.Stargate.database.MySqlDatabase;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.exception.GateConflictException;
+import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
+import net.TheDgtl.Stargate.gate.Gate;
+import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -25,6 +28,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 
 import java.io.File;
@@ -566,7 +570,9 @@ public class StargateFactory {
             try {
                 //TODO: This needs to be changed as we will save the top-left location and the sign will be seen as one 
                 // of potentially several interfaces rather than an identifier
-                Portal portal = PortalCreationHelper.createPortalFromSign(network, virtualSign, block, flags, ownerUUID);
+                GateFormat format = GateFormat.getFormat("fileName.gate");
+                Gate gate = new Gate(format, block.getLocation(), BlockFace.EAST, false, logger);
+                Portal portal = PortalCreationHelper.createPortalFromSign(network, virtualSign, flags, gate, ownerUUID);
                 network.addPortal(portal, false);
                 logger.logMessage(Level.FINEST, "Added as normal portal");
                 if (isBungee) {
@@ -575,6 +581,11 @@ public class StargateFactory {
             } catch (GateConflictException | NoFormatFoundException ignored) {
             } catch (NameErrorException e) {
                 e.printStackTrace();
+            } catch (InvalidStructureException e) {
+                logger.logMessage(Level.WARNING, String.format(
+                        "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
+                        name, (portalType == PortalType.INTER_SERVER ? "interserver" : ""), netName,
+                        block.getLocation().toString()));
             }
         }
         statement.close();

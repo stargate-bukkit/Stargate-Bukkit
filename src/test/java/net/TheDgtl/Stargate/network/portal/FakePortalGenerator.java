@@ -2,7 +2,9 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
+import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
+import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
@@ -43,10 +45,11 @@ public class FakePortalGenerator {
      * @param numberOfPortals          <p>The number of fake portals to generate</p>
      * @return <p>A map from the portal's name to the portal's object</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
+     * @throws NameErrorException 
      */
     public Map<String, RealPortal> generateFakePortals(World world, Network portalNetwork,
                                                        boolean createInterServerPortals, int numberOfPortals,
-                                                       StargateLogger logger) throws InvalidStructureException {
+                                                       StargateLogger logger) throws InvalidStructureException, NameErrorException {
         Map<String, RealPortal> output = new HashMap<>();
         String baseName;
         if (createInterServerPortals) {
@@ -72,16 +75,17 @@ public class FakePortalGenerator {
      * @param createInterServerPortal <p>Whether to generate a fake inter-server portal</p>
      * @return <p>A fake portal</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
+     * @throws NameErrorException 
      */
     public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal,
-                                         StargateLogger logger) throws InvalidStructureException {
+                                         StargateLogger logger) throws InvalidStructureException, NameErrorException {
         Set<PortalFlag> flags = generateRandomFlags();
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
         }
-        Gate gate = new Gate(world.getBlockAt(0, 0, 0).getLocation(), BlockFace.EAST, false,
-                "fileName.gate", flags, new ArrayList<>(), logger);
-        return new PlaceholderPortal(name, portalNetwork, "", flags, UUID.randomUUID(), gate);
+        GateFormat format = GateFormat.getFormat("fileName.gate");
+        Gate gate = new Gate(format, world.getBlockAt(0, 0, 0).getLocation(), BlockFace.EAST, false, logger);
+        return new FixedPortal(portalNetwork, name, "", flags, gate, UUID.randomUUID());
     }
 
     /**

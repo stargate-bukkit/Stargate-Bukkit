@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.refactoring.retcons;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.TwoTuple;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
+import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.util.FileHelper;
@@ -83,7 +84,7 @@ public class RetCon1_0_0 extends Modifier {
                     break;
                 }
             }
-        } catch (IOException | InvalidStructureException e) {
+        } catch (IOException | InvalidStructureException | NameErrorException e) {
             e.printStackTrace();
         }
     }

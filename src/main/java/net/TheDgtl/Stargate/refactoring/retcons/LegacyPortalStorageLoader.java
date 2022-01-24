@@ -6,14 +6,16 @@ import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
+import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
-import net.TheDgtl.Stargate.network.portal.PlaceholderPortal;
+import net.TheDgtl.Stargate.network.portal.FixedPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.util.FileHelper;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -64,9 +66,10 @@ public class LegacyPortalStorageLoader {
      * @return <p>The list of loaded and saved portals</p>
      * @throws IOException               <p>If unable to read one or more .db files</p>
      * @throws InvalidStructureException <p>If an encountered portal's structure is invalid</p>
+     * @throws NameErrorException 
      */
     public static List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, StargateFactory factory,
-                                                      StargateLogger logger) throws IOException, InvalidStructureException {
+                                                      StargateLogger logger) throws IOException, InvalidStructureException, NameErrorException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".db")) : new File[0];
@@ -99,9 +102,10 @@ public class LegacyPortalStorageLoader {
      * @param logger  <p>The logger used for logging</p>
      * @return <p>The loaded portal</p>
      * @throws InvalidStructureException <p>If the portal's structure is invalid</p>
+     * @throws NameErrorException 
      */
     static private Portal readPortal(String line, World world, StargateFactory factory,
-                                     StargateLogger logger) throws InvalidStructureException {
+                                     StargateLogger logger) throws InvalidStructureException, NameErrorException {
         String[] portalProperties = line.split(":");
         String name = portalProperties[0];
         Location signLocation = loadLocation(world, portalProperties[1]);
@@ -145,8 +149,10 @@ public class LegacyPortalStorageLoader {
                     relativeButtonLocation.getBlockY(), relativeButtonLocation.getBlockZ())));
         }
         Network network = factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
-        Gate gate = new Gate(topLeft, facing, false, gateFormatName, flags, portalPositions, logger);
-        Portal portal = new PlaceholderPortal(name, network, destination, flags, ownerUUID, gate);
+        
+        GateFormat format = GateFormat.getFormat(gateFormatName);
+        Gate gate = new Gate(format, topLeft, facing, false, logger);
+        Portal portal = new FixedPortal(network, name, destination, flags,gate, ownerUUID);
 
         //Add the portal to its network and store it to the database
         network.addPortal(portal, true);

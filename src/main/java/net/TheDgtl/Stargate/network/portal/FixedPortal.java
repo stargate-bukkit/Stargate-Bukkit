@@ -5,6 +5,7 @@ import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
+import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import org.bukkit.block.Block;
@@ -32,9 +33,9 @@ public class FixedPortal extends AbstractPortal {
      * @throws NoFormatFoundException <p>If no gate format matches the portal</p>
      * @throws GateConflictException  <p>If the portal's gate conflicts with an existing one</p>
      */
-    public FixedPortal(Network network, String name, String destinationName, Block signBlock, Set<PortalFlag> flags,
-                       UUID ownerUUID) throws NoFormatFoundException, GateConflictException, NameErrorException {
-        super(network, name, signBlock, flags, ownerUUID);
+    public FixedPortal(Network network, String name, String destinationName, Set<PortalFlag> flags, Gate gate,
+                       UUID ownerUUID) throws NameErrorException {
+        super(network, name, flags, gate, ownerUUID);
         this.destinationName = destinationName;
     }
 
