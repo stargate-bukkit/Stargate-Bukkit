@@ -4,8 +4,8 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.PortalSignDrawer;
 import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.knarcraft.stargate.utility.PermissionHelper;
+import net.md_5.bungee.api.ChatColor;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -33,7 +33,7 @@ public final class EconomyConfig {
         this.configOptions = configOptions;
         try {
             String freeColor = (String) configOptions.get(ConfigOption.FREE_GATES_COLOR);
-            PortalSignDrawer.setFreeColor(ChatColor.valueOf(freeColor.toUpperCase()));
+            PortalSignDrawer.setFreeColor(ChatColor.of(freeColor.toUpperCase()));
         } catch (IllegalArgumentException | NullPointerException ignored) {
             PortalSignDrawer.setFreeColor(ChatColor.DARK_GREEN);
         }

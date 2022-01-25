@@ -6,7 +6,7 @@ import net.knarcraft.stargate.config.ConfigTag;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.portal.PortalSignDrawer;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -61,7 +61,7 @@ public class CommandConfig implements CommandExecutor {
         //Validate any sign colors
         if (ConfigTag.COLOR.isTagged(selectedOption)) {
             try {
-                ChatColor.valueOf(value.toUpperCase());
+                ChatColor.of(value.toUpperCase());
             } catch (IllegalArgumentException | NullPointerException ignored) {
                 commandSender.sendMessage(ChatColor.RED + "Invalid color given");
                 return;
@@ -153,7 +153,7 @@ public class CommandConfig implements CommandExecutor {
      */
     private ChatColor parseColor(String value) {
         try {
-            return ChatColor.valueOf(value.toUpperCase());
+            return ChatColor.of(value.toUpperCase());
         } catch (IllegalArgumentException | NullPointerException ignored) {
             return null;
         }

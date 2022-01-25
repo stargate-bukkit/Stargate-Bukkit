@@ -2,8 +2,10 @@ package net.knarcraft.stargate.config;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.PortalSignDrawer;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Material;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -180,6 +182,25 @@ public final class StargateGateConfig {
         //Load the sign colors
         loadSignColor((String) configOptions.get(ConfigOption.MAIN_SIGN_COLOR),
                 (String) configOptions.get(ConfigOption.HIGHLIGHT_SIGN_COLOR));
+        String[] perSignColors = (String[]) configOptions.get(ConfigOption.PER_SIGN_COLORS);
+
+        Map<Material, ChatColor> signMainColors = new HashMap<>();
+        Map<Material, ChatColor> signHighlightColors = new HashMap<>();
+        for (String signColorSpecification : perSignColors) {
+            String[] specificationData = signColorSpecification.split(":");
+            String[] colors = specificationData[1].split(",");
+            if (!colors[0].equalsIgnoreCase("default")) {
+                signMainColors.put(Material.matchMaterial(specificationData[0] + "_SIGN"), ChatColor.of(colors[0]));
+                signMainColors.put(Material.matchMaterial(specificationData[0] + "_WALL_SIGN"), ChatColor.of(colors[0]));
+            }
+            if (!colors[1].equalsIgnoreCase("default")) {
+                signHighlightColors.put(Material.matchMaterial(specificationData[0] + "_SIGN"), ChatColor.of(colors[1]));
+                signHighlightColors.put(Material.matchMaterial(specificationData[0] + "_WALL_SIGN"), ChatColor.of(colors[1]));
+            }
+        }
+
+        PortalSignDrawer.setPerSignMainColors(signMainColors);
+        PortalSignDrawer.setPerSignHighlightColors(signHighlightColors);
     }
 
     /**
@@ -189,8 +210,8 @@ public final class StargateGateConfig {
      */
     private void loadSignColor(String mainSignColor, String highlightSignColor) {
         try {
-            PortalSignDrawer.setMainColor(ChatColor.valueOf(mainSignColor.toUpperCase()));
-            PortalSignDrawer.setHighlightColor(ChatColor.valueOf(highlightSignColor.toUpperCase()));
+            PortalSignDrawer.setMainColor(ChatColor.of(mainSignColor.toUpperCase()));
+            PortalSignDrawer.setHighlightColor(ChatColor.of(highlightSignColor.toUpperCase()));
         } catch (IllegalArgumentException | NullPointerException exception) {
             Stargate.logWarning("You have specified an invalid color in your config.yml. Defaulting to BLACK and WHITE");
             PortalSignDrawer.setMainColor(ChatColor.BLACK);

@@ -2,7 +2,7 @@ package net.knarcraft.stargate.command;
 
 import net.knarcraft.stargate.config.ConfigOption;
 import net.knarcraft.stargate.config.OptionDataType;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -137,7 +137,7 @@ public class ConfigTabCompleter implements TabCompleter {
     private List<String> getColors() {
         List<String> colors = new ArrayList<>();
         for (ChatColor color : getChatColors()) {
-            colors.add(color.name());
+            colors.add(color.getName());
         }
         return colors;
     }

@@ -13,6 +13,7 @@ public enum OptionDataType {
      * The data type for the option is a Boolean
      */
     BOOLEAN,
+    STRING_LIST,
     /**
      * The data type for the option is an Integer
      */

@@ -3,10 +3,15 @@ package net.knarcraft.stargate.portal;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.property.PortalLocation;
 import net.knarcraft.stargate.utility.PermissionHelper;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The portal sign drawer draws the sing of a given portal
@@ -18,6 +23,8 @@ public class PortalSignDrawer {
     private static ChatColor freeColor;
     private static ChatColor mainColor;
     private static ChatColor highlightColor;
+    private static Map<Material, ChatColor> perSignMainColors;
+    private static Map<Material, ChatColor> perSignHighlightColors;
 
     /**
      * Instantiates a new portal sign drawer
@@ -60,6 +67,24 @@ public class PortalSignDrawer {
     }
 
     /**
+     * Sets the per-sign main colors
+     *
+     * @param signMainColors <p>The per-sign main colors</p>
+     */
+    public static void setPerSignMainColors(Map<Material, ChatColor> signMainColors) {
+        PortalSignDrawer.perSignMainColors = signMainColors;
+    }
+
+    /**
+     * Sets the per-sign highlight colors
+     *
+     * @param signHighlightColors <p>The per-sign highlight colors</p>
+     */
+    public static void setPerSignHighlightColors(Map<Material, ChatColor> signHighlightColors) {
+        PortalSignDrawer.perSignHighlightColors = signHighlightColors;
+    }
+
+    /**
      * Draws the sign of the portal this sign drawer is responsible for
      */
     public void drawSign() {
@@ -96,9 +121,11 @@ public class PortalSignDrawer {
      * @param sign <p>The sign re-draw</p>
      */
     private void drawSign(Sign sign) {
+        ChatColor highlightColor = getHighlightColor(sign.getType());
+        ChatColor mainColor = getMainColor(sign.getType());
         //Clear sign
         clearSign(sign);
-        setLine(sign, 0, highlightColor + "-" + mainColor + fixColor(portal.getName()) + highlightColor + "-");
+        setLine(sign, 0, highlightColor + "-" + mainColor + translateAllColorCodes(portal.getName()) + highlightColor + "-");
 
         if (!portal.getPortalActivator().isActive()) {
             //Default sign text
@@ -139,7 +166,7 @@ public class PortalSignDrawer {
             return;
         }
         clearSign(sign);
-        sign.setLine(0, fixColor(portal.getName()));
+        sign.setLine(0, translateAllColorCodes(portal.getName()));
         sign.update();
     }
 
@@ -184,15 +211,17 @@ public class PortalSignDrawer {
      * @param signLineIndex    <p>The line to draw on</p>
      */
     private void drawNetworkSignChosenLine(boolean freeGatesColored, Sign sign, int signLineIndex) {
+        ChatColor highlightColor = getHighlightColor(sign.getType());
+        ChatColor mainColor = getMainColor(sign.getType());
         if (freeGatesColored) {
             Portal destination = PortalHandler.getByName(portal.getDestinationName(), portal.getNetwork());
             boolean free = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
             ChatColor nameColor = (free ? freeColor : highlightColor);
             setLine(sign, signLineIndex, nameColor + ">" + (free ? freeColor : mainColor) +
-                    fixColor(portal.getDestinationName()) + nameColor + "<");
+                    translateAllColorCodes(portal.getDestinationName()) + nameColor + "<");
         } else {
             setLine(sign, signLineIndex, highlightColor + ">" + mainColor +
-                    fixColor(portal.getDestinationName()) + highlightColor + "<");
+                    translateAllColorCodes(portal.getDestinationName()) + highlightColor + "<");
         }
     }
 
@@ -204,6 +233,7 @@ public class PortalSignDrawer {
      * @param text  <p>The new text on the sign</p>
      */
     public void setLine(Sign sign, int index, String text) {
+        ChatColor mainColor = getMainColor(sign.getType());
         sign.setLine(index, mainColor + text);
     }
 
@@ -216,14 +246,15 @@ public class PortalSignDrawer {
      * @param destinationIndex <p>The index of the destination to draw</p>
      */
     private void drawNetworkSignLine(boolean freeGatesColored, Sign sign, int signLineIndex, int destinationIndex) {
+        ChatColor mainColor = getMainColor(sign.getType());
         PortalActivator destinations = portal.getPortalActivator();
         String destinationName = destinations.getDestinations().get(destinationIndex);
         if (freeGatesColored) {
             Portal destination = PortalHandler.getByName(destinationName, portal.getNetwork());
             boolean free = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
-            setLine(sign, signLineIndex, (free ? freeColor : mainColor) + fixColor(destinationName));
+            setLine(sign, signLineIndex, (free ? freeColor : mainColor) + translateAllColorCodes(destinationName));
         } else {
-            setLine(sign, signLineIndex, mainColor + fixColor(destinationName));
+            setLine(sign, signLineIndex, mainColor + translateAllColorCodes(destinationName));
         }
     }
 
@@ -233,10 +264,12 @@ public class PortalSignDrawer {
      * @param sign <p>The sign to re-draw</p>
      */
     private void drawBungeeSign(Sign sign) {
+        ChatColor highlightColor = getHighlightColor(sign.getType());
+        ChatColor mainColor = getMainColor(sign.getType());
         setLine(sign, 1, Stargate.getString("bungeeSign"));
-        setLine(sign, 2, highlightColor + ">" + mainColor + fixColor(portal.getDestinationName()) +
+        setLine(sign, 2, highlightColor + ">" + mainColor + translateAllColorCodes(portal.getDestinationName()) +
                 highlightColor + "<");
-        setLine(sign, 3, highlightColor + "[" + mainColor + fixColor(portal.getNetwork()) +
+        setLine(sign, 3, highlightColor + "[" + mainColor + translateAllColorCodes(portal.getNetwork()) +
                 highlightColor + "]");
     }
 
@@ -248,10 +281,12 @@ public class PortalSignDrawer {
      * @param sign <p>The sign to re-draw</p>
      */
     private void drawInactiveSign(Sign sign) {
+        ChatColor highlightColor = getHighlightColor(sign.getType());
+        ChatColor mainColor = getMainColor(sign.getType());
         setLine(sign, 1, Stargate.getString("signRightClick"));
         setLine(sign, 2, Stargate.getString("signToUse"));
         if (!portal.getOptions().isNoNetwork()) {
-            setLine(sign, 3, highlightColor + "(" + mainColor + fixColor(portal.getNetwork()) +
+            setLine(sign, 3, highlightColor + "(" + mainColor + translateAllColorCodes(portal.getNetwork()) +
                     highlightColor + ")");
         } else {
             setLine(sign, 3, "");
@@ -264,17 +299,20 @@ public class PortalSignDrawer {
      * @param sign <p>The sign to re-draw</p>
      */
     private void drawFixedSign(Sign sign) {
+        ChatColor highlightColor = getHighlightColor(sign.getType());
+        ChatColor mainColor = getMainColor(sign.getType());
         Portal destinationPortal = PortalHandler.getByName(Portal.cleanString(portal.getDestinationName()),
                 portal.getCleanNetwork());
         String destinationName = portal.getOptions().isRandom() ? Stargate.getString("signRandom") :
                 (destinationPortal != null ? destinationPortal.getName() : portal.getDestinationName());
-        setLine(sign, 1, highlightColor + ">" + mainColor + fixColor(destinationName) + highlightColor + "<");
+        setLine(sign, 1, highlightColor + ">" + mainColor + translateAllColorCodes(destinationName) +
+                highlightColor + "<");
 
         if (portal.getOptions().isNoNetwork()) {
             setLine(sign, 2, "");
         } else {
-            setLine(sign, 2, highlightColor + "(" + mainColor + fixColor(portal.getNetwork()) +
-                    highlightColor + ")");
+            setLine(sign, 2, highlightColor + "(" + mainColor +
+                    translateAllColorCodes(portal.getNetwork()) + highlightColor + ")");
         }
         Portal destination = PortalHandler.getByName(Portal.cleanString(portal.getDestinationName()),
                 portal.getNetwork());
@@ -304,13 +342,49 @@ public class PortalSignDrawer {
     }
 
     /**
-     * Fixes coloring of signs as the & character isn't translated on all servers
+     * Translates all found color codes to formatting in a string
      *
-     * @param text <p>The text to fix the coloring of</p>
-     * @return <p>The text with the coloring fixed</p>
+     * @param message <p>The string to search for color codes</p>
+     * @return <p>The message with color codes translated</p>
      */
-    private String fixColor(String text) {
-        return ChatColor.translateAlternateColorCodes('&', text);
+    public static String translateAllColorCodes(String message) {
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        Pattern pattern = Pattern.compile("(#[a-fA-F0-9]{6})");
+        Matcher matcher = pattern.matcher(message);
+        while (matcher.find()) {
+            message = message.replace(matcher.group(), "" + ChatColor.of(matcher.group()));
+        }
+        return message;
+    }
+
+    /**
+     * Gets the main color to use for the given sign type
+     *
+     * @param signType <p>The sign type to get the main color for</p>
+     * @return <p>The main color for the given sign type</p>
+     */
+    private ChatColor getMainColor(Material signType) {
+        ChatColor signColor = perSignMainColors.get(signType);
+        if (signColor == null) {
+            return mainColor;
+        } else {
+            return signColor;
+        }
+    }
+
+    /**
+     * Gets the highlight color to use for the given sign type
+     *
+     * @param signType <p>The sign type to get the highlight color for</p>
+     * @return <p>The highlight color for the given sign type</p>
+     */
+    private ChatColor getHighlightColor(Material signType) {
+        ChatColor signColor = perSignHighlightColors.get(signType);
+        if (signColor == null) {
+            return highlightColor;
+        } else {
+            return signColor;
+        }
     }
 
 }

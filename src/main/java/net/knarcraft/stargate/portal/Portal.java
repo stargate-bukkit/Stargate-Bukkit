@@ -8,7 +8,7 @@ import net.knarcraft.stargate.portal.property.PortalOptions;
 import net.knarcraft.stargate.portal.property.PortalOwner;
 import net.knarcraft.stargate.portal.property.PortalStructure;
 import net.knarcraft.stargate.portal.property.gate.Gate;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 

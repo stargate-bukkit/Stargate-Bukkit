@@ -50,6 +50,10 @@ public enum ConfigOption {
      */
     HIGHLIGHT_SIGN_COLOR("gates.cosmetic.highlightSignColor", "The text color used for highlighting stargate signs", "WHITE"),
 
+    PER_SIGN_COLORS("gates.cosmetic.perSignColors", "The per-sign color specification", new String[]{
+            "ACACIA:default,default", "BIRCH:default,default", "CRIMSON:default,default", "DARK_OAK:default,default",
+            "JUNGLE:default,default", "OAK:default,default", "SPRUCE:default,default", "WARPED:default,default"}),
+
     /**
      * Whether to destroy portals when any blocks are broken by explosions
      */
@@ -172,7 +176,9 @@ public enum ConfigOption {
         this.description = description;
         this.defaultValue = defaultValue;
 
-        if (defaultValue instanceof String) {
+        if (defaultValue instanceof String[]) {
+            this.dataType = OptionDataType.STRING_LIST;
+        } else if (defaultValue instanceof String) {
             this.dataType = OptionDataType.STRING;
         } else if (defaultValue instanceof Boolean) {
             this.dataType = OptionDataType.BOOLEAN;

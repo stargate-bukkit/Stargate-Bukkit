@@ -49,6 +49,15 @@ gates:
     sortNetworkDestinations: false
     mainSignColor: BLACK
     highlightSignColor: WHITE
+    perSignColors:
+      - "ACACIA:default,default"
+      - "BIRCH:default,default"
+      - "CRIMSON:default,default"
+      - "DARK_OAK:default,default"
+      - "JUNGLE:default,default"
+      - "OAK:default,default"
+      - "SPRUCE:default,default"
+      - "WARPED:default,default"
   integrity:
     destroyedByExplosion: false
     verifyPortals: false

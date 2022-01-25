@@ -1,6 +1,6 @@
 package net.knarcraft.stargate.utility;
 
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

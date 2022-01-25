@@ -1,8 +1,8 @@
 package net.knarcraft.stargate.command;
 
 import net.knarcraft.stargate.Stargate;
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.ArrayUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
