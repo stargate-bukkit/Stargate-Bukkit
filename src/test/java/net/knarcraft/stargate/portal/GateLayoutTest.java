@@ -32,6 +32,7 @@ public class GateLayoutTest {
 
     @AfterAll
     public static void tearDown() {
+        MockBukkit.getMock().getPluginManager().disablePlugins();
         MockBukkit.unmock();
     }
 
