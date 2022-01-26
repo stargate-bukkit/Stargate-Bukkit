@@ -351,6 +351,7 @@ public final class StargateConfig {
 
             //Load the option using its correct data type
             switch (option.getDataType()) {
+                case STRING_LIST -> optionValue = newConfig.getStringList(configNode);
                 case STRING -> {
                     String value = newConfig.getString(configNode);
                     optionValue = value != null ? value.trim() : "";

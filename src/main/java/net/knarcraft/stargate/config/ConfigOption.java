@@ -51,8 +51,8 @@ public enum ConfigOption {
     HIGHLIGHT_SIGN_COLOR("gates.cosmetic.highlightSignColor", "The text color used for highlighting stargate signs", "WHITE"),
 
     PER_SIGN_COLORS("gates.cosmetic.perSignColors", "The per-sign color specification", new String[]{
-            "ACACIA:default,default", "BIRCH:default,default", "CRIMSON:default,default", "DARK_OAK:default,default",
-            "JUNGLE:default,default", "OAK:default,default", "SPRUCE:default,default", "WARPED:default,default"}),
+            "'ACACIA:default,default'", "'BIRCH:default,default'", "'CRIMSON:WHITE,BLACK'", "'DARK_OAK:WHITE,BLACK'",
+            "'JUNGLE:default,default'", "'OAK:default,default'", "'SPRUCE:WHITE,BLACK'", "'WARPED:WHITE,BLACK'"}),
 
     /**
      * Whether to destroy portals when any blocks are broken by explosions
@@ -185,7 +185,7 @@ public enum ConfigOption {
         } else if (defaultValue instanceof Integer) {
             this.dataType = OptionDataType.INTEGER;
         } else {
-            throw new IllegalArgumentException("Unknown config data type encountered.");
+            throw new IllegalArgumentException("Unknown config data type encountered: " + defaultValue);
         }
     }
 

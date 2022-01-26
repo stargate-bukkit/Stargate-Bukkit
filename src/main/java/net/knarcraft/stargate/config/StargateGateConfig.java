@@ -6,6 +6,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -182,18 +183,18 @@ public final class StargateGateConfig {
         //Load the sign colors
         loadSignColor((String) configOptions.get(ConfigOption.MAIN_SIGN_COLOR),
                 (String) configOptions.get(ConfigOption.HIGHLIGHT_SIGN_COLOR));
-        String[] perSignColors = (String[]) configOptions.get(ConfigOption.PER_SIGN_COLORS);
+        List<?> perSignColors = (List<?>) configOptions.get(ConfigOption.PER_SIGN_COLORS);
 
         Map<Material, ChatColor> signMainColors = new HashMap<>();
         Map<Material, ChatColor> signHighlightColors = new HashMap<>();
-        for (String signColorSpecification : perSignColors) {
-            String[] specificationData = signColorSpecification.split(":");
+        for (Object signColorSpecification : perSignColors) {
+            String[] specificationData = String.valueOf(signColorSpecification).split(":");
             String[] colors = specificationData[1].split(",");
-            if (!colors[0].equalsIgnoreCase("default")) {
+            if (!colors[0].equalsIgnoreCase("default") && ChatColor.of(colors[0]) != null) {
                 signMainColors.put(Material.matchMaterial(specificationData[0] + "_SIGN"), ChatColor.of(colors[0]));
                 signMainColors.put(Material.matchMaterial(specificationData[0] + "_WALL_SIGN"), ChatColor.of(colors[0]));
             }
-            if (!colors[1].equalsIgnoreCase("default")) {
+            if (!colors[1].equalsIgnoreCase("default") && ChatColor.of(colors[1]) != null) {
                 signHighlightColors.put(Material.matchMaterial(specificationData[0] + "_SIGN"), ChatColor.of(colors[1]));
                 signHighlightColors.put(Material.matchMaterial(specificationData[0] + "_WALL_SIGN"), ChatColor.of(colors[1]));
             }
