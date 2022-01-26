@@ -235,7 +235,7 @@ public class Gate {
             Material type = topLeft.getRelativeLocation(entranceVector, yaw).getType();
 
             //Ignore entrance if it's air or water, and we're creating a new gate
-            if (onCreate && (type == Material.AIR || type == Material.WATER)) {
+            if (onCreate && (type.isAir() || type == Material.WATER)) {
                 continue;
             }
 
