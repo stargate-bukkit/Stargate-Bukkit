@@ -193,7 +193,7 @@ public final class StargateGateConfig {
     /**
      * Loads the per-sign colors specified in the config file
      */
-    private void loadPerSignColors() {
+    public void loadPerSignColors() {
         List<?> perSignColors = (List<?>) configOptions.get(ConfigOption.PER_SIGN_COLORS);
         ChatColor[] defaultColors = new ChatColor[]{PortalSignDrawer.getMainColor(), PortalSignDrawer.getHighlightColor()};
         List<Map<Material, ChatColor>> colorMaps = new ArrayList<>();
@@ -279,10 +279,15 @@ public final class StargateGateConfig {
     private void loadPerSignColor(String mainSignColor, String highlightSignColor) {
         try {
             PortalSignDrawer.setMainColor(ChatColor.of(mainSignColor.toUpperCase()));
+        } catch (IllegalArgumentException | NullPointerException exception) {
+            Stargate.logWarning("You have specified an invalid main sign color in your config.yml. Defaulting to BLACK");
+            PortalSignDrawer.setMainColor(ChatColor.BLACK);
+        }
+
+        try {
             PortalSignDrawer.setHighlightColor(ChatColor.of(highlightSignColor.toUpperCase()));
         } catch (IllegalArgumentException | NullPointerException exception) {
-            Stargate.logWarning("You have specified an invalid color in your config.yml. Defaulting to BLACK and WHITE");
-            PortalSignDrawer.setMainColor(ChatColor.BLACK);
+            Stargate.logWarning("You have specified an invalid highlighting sign color in your config.yml. Defaulting to WHITE");
             PortalSignDrawer.setHighlightColor(ChatColor.WHITE);
         }
     }

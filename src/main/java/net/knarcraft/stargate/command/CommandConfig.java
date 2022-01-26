@@ -200,20 +200,27 @@ public class CommandConfig implements CommandExecutor {
         if (ConfigTag.requiresFullReload(configOption)) {
             //Reload everything
             Stargate.getStargateConfig().reload(commandSender);
-        } else if (ConfigTag.requiresPortalReload(configOption)) {
-            //Just unload and reload the portals
-            Stargate.getStargateConfig().unloadAllPortals();
-            Stargate.getStargateConfig().loadAllPortals();
-        } else if (ConfigTag.requiresLanguageReload(configOption)) {
-            //Reload the language loader
-            Stargate.getStargateConfig().getLanguageLoader().reload();
-            //Re-draw all portal signs
-            for (Portal portal : PortalRegistry.getAllPortals()) {
-                portal.drawSign();
+        } else {
+            if (ConfigTag.requiresColorReload(configOption)) {
+                Stargate.getStargateConfig().getStargateGateConfig().loadPerSignColors();
             }
-        } else if (ConfigTag.requiresEconomyReload(configOption)) {
-            //Load or unload Vault and Economy as necessary
-            Stargate.getStargateConfig().reloadEconomy();
+            if (ConfigTag.requiresPortalReload(configOption)) {
+                //Just unload and reload the portals
+                Stargate.getStargateConfig().unloadAllPortals();
+                Stargate.getStargateConfig().loadAllPortals();
+            }
+            if (ConfigTag.requiresLanguageReload(configOption)) {
+                //Reload the language loader
+                Stargate.getStargateConfig().getLanguageLoader().reload();
+                //Re-draw all portal signs
+                for (Portal portal : PortalRegistry.getAllPortals()) {
+                    portal.drawSign();
+                }
+            }
+            if (ConfigTag.requiresEconomyReload(configOption)) {
+                //Load or unload Vault and Economy as necessary
+                Stargate.getStargateConfig().reloadEconomy();
+            }
         }
     }
 

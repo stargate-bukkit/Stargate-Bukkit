@@ -32,6 +32,16 @@ public enum ConfigTag {
     }
 
     /**
+     * Checks whether a given config option requires a "reload of colors" to take effect
+     *
+     * @param configOption <p>The config option to check</p>
+     * @return <p>True if changing the config option requires a "reload of colors" to take effect</p>
+     */
+    public static boolean requiresColorReload(ConfigOption configOption) {
+        return COLOR.isTagged(configOption) && configOption != ConfigOption.FREE_GATES_COLOR;
+    }
+
+    /**
      * Checks whether a given config option requires a full reload to take effect
      *
      * @param option <p>The config option to check</p>
