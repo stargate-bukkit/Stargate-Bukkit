@@ -2,9 +2,12 @@ package net.knarcraft.stargate.config;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.PortalSignDrawer;
+import net.knarcraft.stargate.utility.ColorHelper;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Material;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -181,27 +184,91 @@ public final class StargateGateConfig {
      */
     private void loadGateConfig() {
         //Load the sign colors
-        loadSignColor((String) configOptions.get(ConfigOption.MAIN_SIGN_COLOR),
-                (String) configOptions.get(ConfigOption.HIGHLIGHT_SIGN_COLOR));
-        List<?> perSignColors = (List<?>) configOptions.get(ConfigOption.PER_SIGN_COLORS);
+        String mainSignColor = (String) configOptions.get(ConfigOption.MAIN_SIGN_COLOR);
+        String highlightSignColor = (String) configOptions.get(ConfigOption.HIGHLIGHT_SIGN_COLOR);
+        loadPerSignColor(mainSignColor, highlightSignColor);
+        loadPerSignColors();
+    }
 
-        Map<Material, ChatColor> signMainColors = new HashMap<>();
-        Map<Material, ChatColor> signHighlightColors = new HashMap<>();
+    /**
+     * Loads the per-sign colors specified in the config file
+     */
+    private void loadPerSignColors() {
+        List<?> perSignColors = (List<?>) configOptions.get(ConfigOption.PER_SIGN_COLORS);
+        ChatColor[] defaultColors = new ChatColor[]{PortalSignDrawer.getMainColor(), PortalSignDrawer.getHighlightColor()};
+        List<Map<Material, ChatColor>> colorMaps = new ArrayList<>();
+        colorMaps.add(new HashMap<>());
+        colorMaps.add(new HashMap<>());
+
         for (Object signColorSpecification : perSignColors) {
-            String[] specificationData = String.valueOf(signColorSpecification).split(":");
-            String[] colors = specificationData[1].split(",");
-            if (!colors[0].equalsIgnoreCase("default") && ChatColor.of(colors[0]) != null) {
-                signMainColors.put(Material.matchMaterial(specificationData[0] + "_SIGN"), ChatColor.of(colors[0]));
-                signMainColors.put(Material.matchMaterial(specificationData[0] + "_WALL_SIGN"), ChatColor.of(colors[0]));
-            }
-            if (!colors[1].equalsIgnoreCase("default") && ChatColor.of(colors[1]) != null) {
-                signHighlightColors.put(Material.matchMaterial(specificationData[0] + "_SIGN"), ChatColor.of(colors[1]));
-                signHighlightColors.put(Material.matchMaterial(specificationData[0] + "_WALL_SIGN"), ChatColor.of(colors[1]));
-            }
+            parsePerSignColors(signColorSpecification, defaultColors, colorMaps);
         }
 
-        PortalSignDrawer.setPerSignMainColors(signMainColors);
-        PortalSignDrawer.setPerSignHighlightColors(signHighlightColors);
+        PortalSignDrawer.setPerSignMainColors(colorMaps.get(0));
+        PortalSignDrawer.setPerSignHighlightColors(colorMaps.get(1));
+    }
+
+    /**
+     * Parses a per-sign color specification object and stores the result
+     *
+     * @param signColorSpecification <p>The sign color specification to parse</p>
+     * @param defaultColors          <p>The specified default colors</p>
+     * @param colorMaps              <p>The list of color maps to save the resulting colors to</p>
+     */
+    private void parsePerSignColors(Object signColorSpecification, ChatColor[] defaultColors,
+                                    List<Map<Material, ChatColor>> colorMaps) {
+        String[] specificationData = String.valueOf(signColorSpecification).split(":");
+        Material[] signMaterials = new Material[]{Material.matchMaterial(specificationData[0] + "_SIGN"),
+                Material.matchMaterial(specificationData[0] + "_WALL_SIGN")};
+
+        if (specificationData.length != 2) {
+            Stargate.logWarning("You have an invalid per-sign line in your config.yml file. Please fix it!");
+            return;
+        }
+        String[] colors = specificationData[1].split(",");
+        if (colors.length != 2) {
+            Stargate.logWarning("You have an invalid per-sign line in your config.yml file. Please fix it!");
+            return;
+        }
+        for (int colorIndex = 0; colorIndex < 2; colorIndex++) {
+            if (colors[colorIndex].equalsIgnoreCase("default")) {
+                continue;
+            }
+            loadPerSignColor(colors, colorIndex, defaultColors, signMaterials, colorMaps);
+        }
+    }
+
+    /**
+     * Loads a per-sign color
+     *
+     * @param colors        <p>The colors specified in the config file</p>
+     * @param colorIndex    <p>The index of the color to load</p>
+     * @param defaultColors <p>The specified default colors</p>
+     * @param signMaterials <p>The materials to load this color for</p>
+     * @param colorMaps     <p>The list of color maps to save the resulting color to</p>
+     */
+    private void loadPerSignColor(String[] colors, int colorIndex, ChatColor[] defaultColors, Material[] signMaterials,
+                                  List<Map<Material, ChatColor>> colorMaps) {
+        ChatColor parsedColor;
+        if (colors[colorIndex].equalsIgnoreCase("inverted")) {
+            //Convert from ChatColor to awt.Color to Bukkit.Color then invert and convert to ChatColor
+            java.awt.Color color = defaultColors[colorIndex].getColor();
+            parsedColor = ColorHelper.fromColor(ColorHelper.invert(Color.fromRGB(color.getRed(),
+                    color.getGreen(), color.getBlue())));
+        } else {
+            try {
+                parsedColor = ChatColor.of(colors[colorIndex]);
+            } catch (IllegalArgumentException | NullPointerException exception) {
+                Stargate.logWarning("You have specified an invalid per-sign color in your config.yml. Custom color for \"" +
+                        signMaterials[0] + "\" disabled");
+                return;
+            }
+        }
+        if (parsedColor != null) {
+            for (Material signMaterial : signMaterials) {
+                colorMaps.get(colorIndex).put(signMaterial, parsedColor);
+            }
+        }
     }
 
     /**
@@ -209,7 +276,7 @@ public final class StargateGateConfig {
      *
      * @param mainSignColor <p>A string representing the main sign color</p>
      */
-    private void loadSignColor(String mainSignColor, String highlightSignColor) {
+    private void loadPerSignColor(String mainSignColor, String highlightSignColor) {
         try {
             PortalSignDrawer.setMainColor(ChatColor.of(mainSignColor.toUpperCase()));
             PortalSignDrawer.setHighlightColor(ChatColor.of(highlightSignColor.toUpperCase()));

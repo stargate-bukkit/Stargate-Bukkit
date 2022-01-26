@@ -27,12 +27,12 @@ gates:
     perSignColors:
       - 'ACACIA:default,default'
       - 'BIRCH:default,default'
-      - 'CRIMSON:WHITE,BLACK'
-      - 'DARK_OAK:WHITE,BLACK'
+      - 'CRIMSON:inverted,inverted'
+      - 'DARK_OAK:inverted,inverted'
       - 'JUNGLE:default,default'
       - 'OAK:default,default'
-      - 'SPRUCE:WHITE,BLACK'
-      - 'WARPED:WHITE,BLACK'
+      - 'SPRUCE:inverted,inverted'
+      - 'WARPED:inverted,inverted'
   integrity:
     # destroyedByExplosion - Whether to destroy gates with explosions (Creeper, TNT, etc.)
     destroyedByExplosion: false

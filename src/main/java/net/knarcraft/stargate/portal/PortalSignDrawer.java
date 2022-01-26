@@ -86,6 +86,24 @@ public class PortalSignDrawer {
     }
 
     /**
+     * Gets the currently used main sign color
+     *
+     * @return <p>The currently used main sign color</p>
+     */
+    public static ChatColor getMainColor() {
+        return mainColor;
+    }
+
+    /**
+     * Gets the currently used highlighting sign color
+     *
+     * @return <p>The currently used highlighting sign color</p>
+     */
+    public static ChatColor getHighlightColor() {
+        return highlightColor;
+    }
+
+    /**
      * Draws the sign of the portal this sign drawer is responsible for
      */
     public void drawSign() {

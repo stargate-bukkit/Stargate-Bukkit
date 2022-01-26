@@ -51,8 +51,8 @@ public enum ConfigOption {
     HIGHLIGHT_SIGN_COLOR("gates.cosmetic.highlightSignColor", "The text color used for highlighting stargate signs", "WHITE"),
 
     PER_SIGN_COLORS("gates.cosmetic.perSignColors", "The per-sign color specification", new String[]{
-            "'ACACIA:default,default'", "'BIRCH:default,default'", "'CRIMSON:WHITE,BLACK'", "'DARK_OAK:WHITE,BLACK'",
-            "'JUNGLE:default,default'", "'OAK:default,default'", "'SPRUCE:WHITE,BLACK'", "'WARPED:WHITE,BLACK'"}),
+            "'ACACIA:default,default'", "'BIRCH:default,default'", "'CRIMSON:inverted,inverted'", "'DARK_OAK:inverted,inverted'",
+            "'JUNGLE:default,default'", "'OAK:default,default'", "'SPRUCE:inverted,inverted'", "'WARPED:inverted,inverted'"}),
 
     /**
      * Whether to destroy portals when any blocks are broken by explosions
