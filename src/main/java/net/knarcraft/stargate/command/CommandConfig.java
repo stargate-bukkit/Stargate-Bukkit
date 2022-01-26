@@ -3,10 +3,12 @@ package net.knarcraft.stargate.command;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.config.ConfigOption;
 import net.knarcraft.stargate.config.ConfigTag;
+import net.knarcraft.stargate.config.OptionDataType;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.portal.PortalSignDrawer;
 import net.md_5.bungee.api.ChatColor;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -105,6 +107,11 @@ public class CommandConfig implements CommandExecutor {
                 }
                 Stargate.getStargateConfig().getConfigOptionsReference().put(selectedOption, value);
                 configuration.set(selectedOption.getConfigNode(), value);
+            }
+            case STRING_LIST -> {
+                if (selectedOption == ConfigOption.PER_SIGN_COLORS) {
+                    commandSender.sendMessage(ChatColor.RED + value);
+                }
             }
             default -> {
                 Stargate.getStargateConfig().getConfigOptionsReference().put(selectedOption, value);
@@ -242,8 +249,13 @@ public class CommandConfig implements CommandExecutor {
      * @return <p>A string describing the config option</p>
      */
     private String getOptionDescription(ConfigOption option) {
+        Object defaultValue = option.getDefaultValue();
+        String stringValue = String.valueOf(defaultValue);
+        if (option.getDataType() == OptionDataType.STRING_LIST) {
+            stringValue = "[" + StringUtils.join((String[]) defaultValue, ",") + "]";
+        }
         return ChatColor.GOLD + option.getName() + ChatColor.WHITE + " - " + ChatColor.GREEN + option.getDescription() +
-                ChatColor.DARK_GRAY + " (Default: " + ChatColor.GRAY + option.getDefaultValue() + ChatColor.DARK_GRAY + ")";
+                ChatColor.DARK_GRAY + " (Default: " + ChatColor.GRAY + stringValue + ChatColor.DARK_GRAY + ")";
     }
 
 }

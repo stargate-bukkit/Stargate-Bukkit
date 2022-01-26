@@ -105,6 +105,8 @@ public class ConfigTabCompleter implements TabCompleter {
             }
         }
 
+        //TODO: What to do with per-sign colors?
+
         return null;
     }
 
