@@ -15,6 +15,7 @@ can share a network or be split into clusters; they can be hidden on a network o
 - **API available** -- using the API, a lot of behavior can be changed
 - **Button customization** -- a large amount of materials usable as buttons (buttons, wall corals, shulkers, chests)
 - **Config commands** -- All main config values can be changed from the commandline
+- **RGB and dye support** -- Signs can use RGB colors as their default colors, and can also be dyed on a per-sign basis
 
 ## Background
 
@@ -85,6 +86,7 @@ stargate.admin -- Allow all admin features (Hidden/Private bypass, BungeeCord, R
   stargate.admin.bungee -- Allow the creation of BungeeCord stargates (U option)
   stargate.admin.reload -- Allow use of the reload command
   stargate.admin.config -- Allows the player to change config values from the chat
+  stargate.admin.dye -- Allows this player to change the dye of any stargate's sign
 ```
 
 ## Default Permissions
@@ -304,8 +306,9 @@ gates:
   cosmetic:
     rememberDestination - Whether to set the first destination as the last used destination for all gates
     sortNetworkDestinations - If true, network lists will be sorted alphabetically.
-    mainSignColor - This allows you to specify the color of the gate signs.
-    highlightSignColor - This allows you to specify the color of the sign markings.
+    mainSignColor - This allows you to specify the color of the gate signs. Use a color code such as WHITE,BLACK,YELLOW or a hex color code such as '#ed76d9'. You need quotes around hex color codes.
+    highlightSignColor - This allows you to specify the color of the sign markings. Use a color code such as WHITE,BLACK,YELLOW or a hex color code such as '#ed76d9'. You need quotes around hex color codes.
+    perSignColors: - A list of per-sign color specifications. Format: "SIGN_TYPE:mainColor,highlight_color". The SIGN_TYPE is OAK for an oak sign, DARK_OAK for a dark oak sign and so on. The colors can be "default" to use the color specified in "mainSignColor" or "highlightSignColor", "inverted" to use the inverse color of the default color, a normal color such as BLACK,WHITE,YELLOW or a hex color code such as #ed76d9.
   integrity:
     destroyedByExplosion - Whether to destroy a stargate with explosions, or stop an explosion if it contains a gates controls.
     verifyPortals - Whether or not all the non-sign blocks are checked to match the gate layout when an old stargate is loaded at startup.
@@ -389,6 +392,12 @@ portalInfoServer=Server: %server%
 ```
 
 # Changes
+
+#### \[Version 0.9.3.0] EpicKnarvik97 fork
+
+- Adds support for RGB colors (use hex color codes)
+- Adds support for dyed and glowing signs
+- Adds support for specifying sign colors per sign type
 
 #### \[Version 0.9.2.5] EpicKnarvik97 fork
 
