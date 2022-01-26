@@ -339,6 +339,9 @@ public class Stargate extends JavaPlugin {
         PluginDescriptionFile pluginDescriptionFile = this.getDescription();
         pluginManager = getServer().getPluginManager();
         FileConfiguration newConfig = this.getConfig();
+        this.saveDefaultConfig();
+        newConfig.options().copyDefaults(true);
+
         logger = Logger.getLogger("Minecraft");
         Server server = getServer();
         stargate = this;
