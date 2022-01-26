@@ -399,6 +399,8 @@ portalInfoServer=Server: %server%
 - Adds support for RGB colors (use hex color codes)
 - Adds support for dyed and glowing signs
 - Adds support for specifying sign colors per sign type
+- Adds a tab-completable config sub-command for easily changing per-sign colors
+- Allows a per-sign color to be set as the inverse of the default color of the given type
 
 #### \[Version 0.9.2.5] EpicKnarvik97 fork
 
