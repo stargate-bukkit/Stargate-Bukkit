@@ -1,7 +1,7 @@
 package net.knarcraft.stargate.container;
 
+import net.knarcraft.stargate.utility.ColorHelper;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.block.Sign;
 
@@ -45,8 +45,7 @@ public class SignData {
      */
     public ChatColor getMainSignColor() {
         if (dyedColor != DyeColor.BLACK) {
-            Color color = dyedColor.getColor();
-            return ChatColor.of(String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue()));
+            return ColorHelper.fromColor(dyedColor.getColor());
         } else {
             return mainSignColor;
         }
@@ -58,7 +57,11 @@ public class SignData {
      * @return <p>The highlighting color of the sign</p>
      */
     public ChatColor getHighlightSignColor() {
-        return highlightSignColor;
+        if (dyedColor != DyeColor.BLACK) {
+            return ColorHelper.fromColor(ColorHelper.invert(dyedColor.getColor()));
+        } else {
+            return highlightSignColor;
+        }
     }
 
 }

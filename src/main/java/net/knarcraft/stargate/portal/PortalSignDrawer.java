@@ -11,8 +11,8 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static net.knarcraft.stargate.utility.ColorHelper.translateAllColorCodes;
 
 /**
  * The portal sign drawer draws the sing of a given portal
@@ -343,22 +343,6 @@ public class PortalSignDrawer {
         sign.update();
 
         Stargate.logInfo(String.format("Gate layout on line %d does not exist [%s]", lineIndex, gateName));
-    }
-
-    /**
-     * Translates all found color codes to formatting in a string
-     *
-     * @param message <p>The string to search for color codes</p>
-     * @return <p>The message with color codes translated</p>
-     */
-    public static String translateAllColorCodes(String message) {
-        message = ChatColor.translateAlternateColorCodes('&', message);
-        Pattern pattern = Pattern.compile("(#[a-fA-F0-9]{6})");
-        Matcher matcher = pattern.matcher(message);
-        while (matcher.find()) {
-            message = message.replace(matcher.group(), "" + ChatColor.of(matcher.group()));
-        }
-        return message;
     }
 
     /**
