@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.container.SignData;
 import net.knarcraft.stargate.portal.property.PortalLocation;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import net.md_5.bungee.api.ChatColor;
@@ -93,7 +94,8 @@ public class PortalSignDrawer {
             return;
         }
 
-        drawSign(sign);
+        SignData signData = new SignData(sign, getMainColor(sign.getType()), getHighlightColor(sign.getType()));
+        drawSign(signData);
     }
 
     /**
@@ -118,28 +120,30 @@ public class PortalSignDrawer {
     /**
      * Draws the sign of the portal this sign drawer is responsible for
      *
-     * @param sign <p>The sign re-draw</p>
+     * @param signData <p>All necessary sign information</p>
      */
-    private void drawSign(Sign sign) {
-        ChatColor highlightColor = getHighlightColor(sign.getType());
-        ChatColor mainColor = getMainColor(sign.getType());
+    private void drawSign(SignData signData) {
+        Sign sign = signData.getSign();
+        ChatColor highlightColor = signData.getHighlightSignColor();
+        ChatColor mainColor = signData.getMainSignColor();
         //Clear sign
         clearSign(sign);
-        setLine(sign, 0, highlightColor + "-" + mainColor + translateAllColorCodes(portal.getName()) + highlightColor + "-");
+        setLine(signData, 0, highlightColor + "-" + mainColor + translateAllColorCodes(portal.getName()) +
+                highlightColor + "-");
 
         if (!portal.getPortalActivator().isActive()) {
             //Default sign text
-            drawInactiveSign(sign);
+            drawInactiveSign(signData);
         } else {
             if (portal.getOptions().isBungee()) {
                 //Bungee sign
-                drawBungeeSign(sign);
+                drawBungeeSign(signData);
             } else if (portal.getOptions().isFixed()) {
                 //Sign pointing at one other portal
-                drawFixedSign(sign);
+                drawFixedSign(signData);
             } else {
                 //Networking stuff
-                drawNetworkSign(sign);
+                drawNetworkSign(signData);
             }
         }
 
@@ -173,9 +177,9 @@ public class PortalSignDrawer {
     /**
      * Draws a sign with choose-able network locations
      *
-     * @param sign <p>The sign to re-draw</p>
+     * @param signData <p>All necessary sign information</p>
      */
-    private void drawNetworkSign(Sign sign) {
+    private void drawNetworkSign(SignData signData) {
         PortalActivator destinations = portal.getPortalActivator();
         int maxIndex = destinations.getDestinations().size() - 1;
         int signLineIndex = 0;
@@ -185,42 +189,42 @@ public class PortalSignDrawer {
 
         //Last, and not only entry. Draw the entry two back
         if ((destinationIndex == maxIndex) && (maxIndex > 1)) {
-            drawNetworkSignLine(freeGatesColored, sign, ++signLineIndex, destinationIndex - 2);
+            drawNetworkSignLine(signData, freeGatesColored, ++signLineIndex, destinationIndex - 2);
         }
         //Not first entry. Draw the previous entry
         if (destinationIndex > 0) {
-            drawNetworkSignLine(freeGatesColored, sign, ++signLineIndex, destinationIndex - 1);
+            drawNetworkSignLine(signData, freeGatesColored, ++signLineIndex, destinationIndex - 1);
         }
         //Draw the chosen entry (line 2 or 3)
-        drawNetworkSignChosenLine(freeGatesColored, sign, ++signLineIndex);
+        drawNetworkSignChosenLine(signData, freeGatesColored, ++signLineIndex);
         //Has another entry and space on the sign
         if ((maxIndex >= destinationIndex + 1)) {
-            drawNetworkSignLine(freeGatesColored, sign, ++signLineIndex, destinationIndex + 1);
+            drawNetworkSignLine(signData, freeGatesColored, ++signLineIndex, destinationIndex + 1);
         }
         //Has another entry and space on the sign
         if ((maxIndex >= destinationIndex + 2) && (++signLineIndex <= 3)) {
-            drawNetworkSignLine(freeGatesColored, sign, signLineIndex, destinationIndex + 2);
+            drawNetworkSignLine(signData, freeGatesColored, signLineIndex, destinationIndex + 2);
         }
     }
 
     /**
      * Draws the chosen destination on one sign line
      *
+     * @param signData         <p>All necessary sign information</p>
      * @param freeGatesColored <p>Whether to display free gates in a different color</p>
-     * @param sign             <p>The sign to draw on</p>
      * @param signLineIndex    <p>The line to draw on</p>
      */
-    private void drawNetworkSignChosenLine(boolean freeGatesColored, Sign sign, int signLineIndex) {
-        ChatColor highlightColor = getHighlightColor(sign.getType());
-        ChatColor mainColor = getMainColor(sign.getType());
+    private void drawNetworkSignChosenLine(SignData signData, boolean freeGatesColored, int signLineIndex) {
+        ChatColor highlightColor = signData.getHighlightSignColor();
+        ChatColor mainColor = signData.getMainSignColor();
         if (freeGatesColored) {
             Portal destination = PortalHandler.getByName(portal.getDestinationName(), portal.getNetwork());
             boolean free = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
             ChatColor nameColor = (free ? freeColor : highlightColor);
-            setLine(sign, signLineIndex, nameColor + ">" + (free ? freeColor : mainColor) +
+            setLine(signData, signLineIndex, nameColor + ">" + (free ? freeColor : mainColor) +
                     translateAllColorCodes(portal.getDestinationName()) + nameColor + "<");
         } else {
-            setLine(sign, signLineIndex, highlightColor + ">" + mainColor +
+            setLine(signData, signLineIndex, highlightColor + ">" + mainColor +
                     translateAllColorCodes(portal.getDestinationName()) + highlightColor + "<");
         }
     }
@@ -228,48 +232,48 @@ public class PortalSignDrawer {
     /**
      * Sets a line on a sign, adding the chosen sign color
      *
-     * @param sign  <p>The sign to update</p>
-     * @param index <p>The index of the sign line to change</p>
-     * @param text  <p>The new text on the sign</p>
+     * @param signData <p>All necessary sign information</p>
+     * @param index    <p>The index of the sign line to change</p>
+     * @param text     <p>The new text on the sign</p>
      */
-    public void setLine(Sign sign, int index, String text) {
-        ChatColor mainColor = getMainColor(sign.getType());
-        sign.setLine(index, mainColor + text);
+    public void setLine(SignData signData, int index, String text) {
+        ChatColor mainColor = signData.getMainSignColor();
+        signData.getSign().setLine(index, mainColor + text);
     }
 
     /**
      * Draws one network destination on one sign line
      *
+     * @param signData         <p>All necessary sign information</p>
      * @param freeGatesColored <p>Whether to display free gates in a different color</p>
-     * @param sign             <p>The sign to draw on</p>
      * @param signLineIndex    <p>The line to draw on</p>
      * @param destinationIndex <p>The index of the destination to draw</p>
      */
-    private void drawNetworkSignLine(boolean freeGatesColored, Sign sign, int signLineIndex, int destinationIndex) {
-        ChatColor mainColor = getMainColor(sign.getType());
+    private void drawNetworkSignLine(SignData signData, boolean freeGatesColored, int signLineIndex, int destinationIndex) {
+        ChatColor mainColor = signData.getMainSignColor();
         PortalActivator destinations = portal.getPortalActivator();
         String destinationName = destinations.getDestinations().get(destinationIndex);
         if (freeGatesColored) {
             Portal destination = PortalHandler.getByName(destinationName, portal.getNetwork());
             boolean free = PermissionHelper.isFree(portal.getActivePlayer(), portal, destination);
-            setLine(sign, signLineIndex, (free ? freeColor : mainColor) + translateAllColorCodes(destinationName));
+            setLine(signData, signLineIndex, (free ? freeColor : mainColor) + translateAllColorCodes(destinationName));
         } else {
-            setLine(sign, signLineIndex, mainColor + translateAllColorCodes(destinationName));
+            setLine(signData, signLineIndex, mainColor + translateAllColorCodes(destinationName));
         }
     }
 
     /**
      * Draws the sign of a BungeeCord portal
      *
-     * @param sign <p>The sign to re-draw</p>
+     * @param signData <p>All necessary sign information</p>
      */
-    private void drawBungeeSign(Sign sign) {
-        ChatColor highlightColor = getHighlightColor(sign.getType());
-        ChatColor mainColor = getMainColor(sign.getType());
-        setLine(sign, 1, Stargate.getString("bungeeSign"));
-        setLine(sign, 2, highlightColor + ">" + mainColor + translateAllColorCodes(portal.getDestinationName()) +
+    private void drawBungeeSign(SignData signData) {
+        ChatColor highlightColor = signData.getHighlightSignColor();
+        ChatColor mainColor = signData.getMainSignColor();
+        setLine(signData, 1, Stargate.getString("bungeeSign"));
+        setLine(signData, 2, highlightColor + ">" + mainColor + translateAllColorCodes(portal.getDestinationName()) +
                 highlightColor + "<");
-        setLine(sign, 3, highlightColor + "[" + mainColor + translateAllColorCodes(portal.getNetwork()) +
+        setLine(signData, 3, highlightColor + "[" + mainColor + translateAllColorCodes(portal.getNetwork()) +
                 highlightColor + "]");
     }
 
@@ -278,48 +282,48 @@ public class PortalSignDrawer {
      *
      * <p>The sign for an in-active portal should display the right-click prompt and the network.</p>
      *
-     * @param sign <p>The sign to re-draw</p>
+     * @param signData <p>All necessary sign information</p>
      */
-    private void drawInactiveSign(Sign sign) {
-        ChatColor highlightColor = getHighlightColor(sign.getType());
-        ChatColor mainColor = getMainColor(sign.getType());
-        setLine(sign, 1, Stargate.getString("signRightClick"));
-        setLine(sign, 2, Stargate.getString("signToUse"));
+    private void drawInactiveSign(SignData signData) {
+        ChatColor highlightColor = signData.getHighlightSignColor();
+        ChatColor mainColor = signData.getMainSignColor();
+        setLine(signData, 1, Stargate.getString("signRightClick"));
+        setLine(signData, 2, Stargate.getString("signToUse"));
         if (!portal.getOptions().isNoNetwork()) {
-            setLine(sign, 3, highlightColor + "(" + mainColor + translateAllColorCodes(portal.getNetwork()) +
+            setLine(signData, 3, highlightColor + "(" + mainColor + translateAllColorCodes(portal.getNetwork()) +
                     highlightColor + ")");
         } else {
-            setLine(sign, 3, "");
+            setLine(signData, 3, "");
         }
     }
 
     /**
      * Draws a sign pointing to a fixed location
      *
-     * @param sign <p>The sign to re-draw</p>
+     * @param signData <p>All necessary sign information</p>
      */
-    private void drawFixedSign(Sign sign) {
-        ChatColor highlightColor = getHighlightColor(sign.getType());
-        ChatColor mainColor = getMainColor(sign.getType());
+    private void drawFixedSign(SignData signData) {
+        ChatColor highlightColor = signData.getHighlightSignColor();
+        ChatColor mainColor = signData.getMainSignColor();
         Portal destinationPortal = PortalHandler.getByName(Portal.cleanString(portal.getDestinationName()),
                 portal.getCleanNetwork());
         String destinationName = portal.getOptions().isRandom() ? Stargate.getString("signRandom") :
                 (destinationPortal != null ? destinationPortal.getName() : portal.getDestinationName());
-        setLine(sign, 1, highlightColor + ">" + mainColor + translateAllColorCodes(destinationName) +
+        setLine(signData, 1, highlightColor + ">" + mainColor + translateAllColorCodes(destinationName) +
                 highlightColor + "<");
 
         if (portal.getOptions().isNoNetwork()) {
-            setLine(sign, 2, "");
+            setLine(signData, 2, "");
         } else {
-            setLine(sign, 2, highlightColor + "(" + mainColor +
+            setLine(signData, 2, highlightColor + "(" + mainColor +
                     translateAllColorCodes(portal.getNetwork()) + highlightColor + ")");
         }
         Portal destination = PortalHandler.getByName(Portal.cleanString(portal.getDestinationName()),
                 portal.getNetwork());
         if (destination == null && !portal.getOptions().isRandom()) {
-            setLine(sign, 3, errorColor + Stargate.getString("signDisconnected"));
+            setLine(signData, 3, errorColor + Stargate.getString("signDisconnected"));
         } else {
-            setLine(sign, 3, "");
+            setLine(signData, 3, "");
         }
     }
 

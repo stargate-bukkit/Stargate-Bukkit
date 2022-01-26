@@ -15,6 +15,7 @@ import net.knarcraft.stargate.utility.PermissionHelper;
 import net.knarcraft.stargate.utility.UUIDMigrationHelper;
 import net.knarcraft.stargate.utility.UpdateChecker;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
@@ -219,6 +220,17 @@ public class PlayerEventListener implements Listener {
         Portal portal = PortalHandler.getByBlock(block);
         if (portal == null) {
             return;
+        }
+
+        //Allow players to apply dye to signs
+        EquipmentSlot hand = event.getHand();
+        if (hand != null) {
+            String itemName = player.getInventory().getItem(hand).getType().toString();
+            if (itemName.endsWith("DYE") || itemName.endsWith("INK_SAC")) {
+                event.setUseInteractedBlock(Event.Result.ALLOW);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), portal::drawSign, 1);
+                return;
+            }
         }
 
         event.setUseInteractedBlock(Event.Result.DENY);
