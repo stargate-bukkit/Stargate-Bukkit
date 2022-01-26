@@ -1,83 +1,84 @@
 # stargate Configuration File
 # Main stargate config
-# I----------I----------I #
-# portalFolder -  The folder for storing portals
-# gateFolder - The folder for storing gate layouts
-# defaultGateNetwork - The default gate network
-# destroyedByExplosion - Whether to destroy gates with explosions (Creeper, TNT, etc.)
-# maxGatesEachNetwork - The maximum number of gates allowed on a network - 0 for unlimited
-# language - The language file to load for messages
-# rememberDestination - Whether to remember the cursor location between uses
-# handleVehicles - Whether to allow vehicles through gates. This overrides other vehicle settings
-# handleEmptyVehicles - Whether to allow empty vehicles through gates (chest/hopper/tnt/furnace minecarts included)
-# handleCreatureTransportation - Whether to allow players to transport creatures by sending vehicles (minecarts, boats) through gates
-# handleNonPlayerVehicles - Whether to allow vehicles with a passenger which is not a player through gates. handleCreatureTransportation must be enabled
-# handleLeashedCreatures - Whether to allow creatures lead by a player to teleport with the player
-# sortNetworkDestinations - Whether to sort network lists alphabetically
-# protectEntrance - Whether to protect gate entrance material (More resource intensive. Only enable if using destroyable open/closed material)
-# mainSignColor - The color used for drawing signs (Default: BLACK).
-# highlightSignColor - The color used for sign markings (Default: WHITE)
-# verifyPortals - Whether all the non-sign blocks are checked to match the gate layout when a stargate is loaded.
-# adminUpdateAlert - Whether to alert admins about new plugin updates
-# I------------I-------------I #
-# stargate economy options #
-# I------------I-------------I #
-# useEconomy - Whether to use an economy plugin
-# createCost - The cost to create a gate
-# destroyCost - The cost to destroy a gate
-# useCost - The cost to use a gate
-# toOwner - Whether the charge for using a gate goes to the gate's owner
-# chargeFreeDestination - Whether a gate whose destination is a free gate is still charged
-# freeGatesColored - Whether a free gate in the destination list is marked with a color
-# freeGatesColor - The color to use for marking free gates
-# I-------I-------I #
-# Debug options #
-# I-------I-------I #
-# debug - Debug -- Only enable if you have issues, massive console output
-# permissionDebug - This will output any and all Permissions checks to console, used for permissions debugging (Requires debug: true)
 
+# language - The language file to load for messages
 language: en
+# adminUpdateAlert - Whether to alert admins about new plugin updates
 adminUpdateAlert: true
 folders:
+  # portalFolder -  The folder for storing portals
   portalFolder: plugins/Stargate/portals/
+  # gateFolder - The folder for storing gate layouts
   gateFolder: plugins/Stargate/gates/
 gates:
+  # maxGatesEachNetwork - The maximum number of gates allowed on a network - 0 for unlimited
   maxGatesEachNetwork: 0
+  # defaultGateNetwork - The default gate network
   defaultGateNetwork: central
   cosmetic:
+    # rememberDestination - Whether to remember the cursor location between uses
     rememberDestination: false
+    # sortNetworkDestinations - Whether to sort network lists alphabetically
     sortNetworkDestinations: false
+    # mainSignColor - The color used for drawing signs (Default: BLACK).
     mainSignColor: BLACK
+    # highlightSignColor - The color used for sign markings (Default: WHITE)
     highlightSignColor: WHITE
     perSignColors:
-      - "ACACIA:default,default"
-      - "BIRCH:default,default"
-      - "CRIMSON:default,default"
-      - "DARK_OAK:default,default"
-      - "JUNGLE:default,default"
-      - "OAK:default,default"
-      - "SPRUCE:default,default"
-      - "WARPED:default,default"
+      - 'ACACIA:default,default'
+      - 'BIRCH:default,default'
+      - 'CRIMSON:WHITE,BLACK'
+      - 'DARK_OAK:WHITE,BLACK'
+      - 'JUNGLE:default,default'
+      - 'OAK:default,default'
+      - 'SPRUCE:WHITE,BLACK'
+      - 'WARPED:WHITE,BLACK'
   integrity:
+    # destroyedByExplosion - Whether to destroy gates with explosions (Creeper, TNT, etc.)
     destroyedByExplosion: false
+    # verifyPortals - Whether all the non-sign blocks are checked to match the gate layout when a stargate is loaded.
     verifyPortals: false
+    # protectEntrance - Whether to protect gate entrance material (More resource intensive. Only enable if using destroyable open/closed material)
     protectEntrance: false
   functionality:
     enableBungee: false
+    # handleVehicles - Whether to allow vehicles through gates. This overrides other vehicle settings
     handleVehicles: true
+    # handleEmptyVehicles - Whether to allow empty vehicles through gates (chest/hopper/tnt/furnace minecarts included)
     handleEmptyVehicles: true
+    # handleCreatureTransportation - Whether to allow players to transport creatures by sending vehicles (minecarts, boats) through gates
     handleCreatureTransportation: true
+    # handleNonPlayerVehicles - Whether to allow vehicles with a passenger which is not a player through gates. handleCreatureTransportation must be enabled
     handleNonPlayerVehicles: true
+    # handleLeashedCreatures - Whether to allow creatures lead by a player to teleport with the player
     handleLeashedCreatures: true
+
+# I------------I-------------I #
+# stargate economy options #
+# I------------I-------------I #
 economy:
+  # useEconomy - Whether to use an economy plugin
   useEconomy: false
+  # createCost - The cost to create a gate
   createCost: 0
+  # destroyCost - The cost to destroy a gate
   destroyCost: 0
+  # useCost - The cost to use a gate
   useCost: 0
+  # toOwner - Whether the charge for using a gate goes to the gate's owner
   toOwner: false
+  # chargeFreeDestination - Whether a gate whose destination is a free gate is still charged
   chargeFreeDestination: true
+  # freeGatesColored - Whether a free gate in the destination list is marked with a color
   freeGatesColored: false
+  # freeGatesColor - The color to use for marking free gates
   freeGatesColor: DARK_GREEN
+
+# I-------I-------I #
+# Debug options #
+# I-------I-------I #
 debugging:
+  # debug - Debug -- Only enable if you have issues, massive console output
   debug: false
+  # permissionDebug - This will output any and all Permissions checks to console, used for permissions debugging (Requires debug: true)
   permissionDebug: false
