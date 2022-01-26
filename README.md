@@ -15,6 +15,8 @@ can share a network or be split into clusters; they can be hidden on a network o
 - **API available** -- using the API, a lot of behavior can be changed
 - **Button customization** -- a large amount of materials usable as buttons (buttons, wall corals, shulkers, chests)
 - **Config commands** -- All main config values can be changed from the commandline
+- **Color customization** -- Stargate signs can be colored in many ways. Colors can be set globally, or on a per sign
+  type basis
 - **RGB and dye support** -- Signs can use RGB colors (using hex codes) as their main and highlighting colors, and can
   also be dyed on a per-sign basis
 
