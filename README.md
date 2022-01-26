@@ -396,6 +396,10 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+#### \[Version 0.9.3.1] EpicKnarvik97 fork
+
+- Ignores the type of air when checking if a stargate is valid
+
 #### \[Version 0.9.3.0] EpicKnarvik97 fork
 
 - Adds support for RGB colors (use hex color codes)
