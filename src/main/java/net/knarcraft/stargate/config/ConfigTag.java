@@ -7,7 +7,8 @@ import java.util.Arrays;
  */
 public enum ConfigTag {
 
-    COLOR(new ConfigOption[]{ConfigOption.FREE_GATES_COLOR, ConfigOption.MAIN_SIGN_COLOR, ConfigOption.HIGHLIGHT_SIGN_COLOR}),
+    COLOR(new ConfigOption[]{ConfigOption.FREE_GATES_COLOR, ConfigOption.MAIN_SIGN_COLOR,
+            ConfigOption.HIGHLIGHT_SIGN_COLOR, ConfigOption.PER_SIGN_COLORS}),
     FOLDER(new ConfigOption[]{ConfigOption.GATE_FOLDER, ConfigOption.PORTAL_FOLDER});
 
     private final ConfigOption[] taggedOptions;
@@ -38,7 +39,7 @@ public enum ConfigTag {
      * @return <p>True if changing the config option requires a "reload of colors" to take effect</p>
      */
     public static boolean requiresColorReload(ConfigOption configOption) {
-        return COLOR.isTagged(configOption) && configOption != ConfigOption.FREE_GATES_COLOR;
+        return (COLOR.isTagged(configOption) && configOption != ConfigOption.FREE_GATES_COLOR);
     }
 
     /**

@@ -3,6 +3,8 @@ package net.knarcraft.stargate.command;
 import net.knarcraft.stargate.config.ConfigOption;
 import net.knarcraft.stargate.config.OptionDataType;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -17,15 +19,26 @@ import java.util.List;
  */
 public class ConfigTabCompleter implements TabCompleter {
 
+    private List<String> signTypes;
+    private List<String> booleans;
+    private List<String> numbers;
+    private List<String> chatColors;
+    private List<String> languages;
+    private List<String> extendedColors;
+
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
                                       @NotNull String[] args) {
-
+        if (signTypes == null || booleans == null || numbers == null || chatColors == null || languages == null) {
+            initializeAutoCompleteLists();
+        }
         if (args.length > 1) {
             ConfigOption selectedOption = ConfigOption.getByName(args[0]);
             if (selectedOption == null) {
                 return new ArrayList<>();
+            } else if (selectedOption.getDataType() == OptionDataType.STRING_LIST) {
+                return getPossibleStringListOptionValues(selectedOption, args);
             } else {
                 return getPossibleOptionValues(selectedOption, args[1]);
             }
@@ -63,18 +76,10 @@ public class ConfigTabCompleter implements TabCompleter {
      * @return <p>Some or all of the valid values for the option</p>
      */
     private List<String> getPossibleOptionValues(ConfigOption selectedOption, String typedText) {
-        List<String> booleans = new ArrayList<>();
-        booleans.add("true");
-        booleans.add("false");
-
-        List<String> numbers = new ArrayList<>();
-        numbers.add("0");
-        numbers.add("5");
-
         switch (selectedOption) {
             case LANGUAGE:
                 //Return available languages
-                return filterMatching(getLanguages(), typedText);
+                return filterMatching(languages, typedText);
             case GATE_FOLDER:
             case PORTAL_FOLDER:
             case DEFAULT_GATE_NETWORK:
@@ -88,7 +93,7 @@ public class ConfigTabCompleter implements TabCompleter {
             case HIGHLIGHT_SIGN_COLOR:
             case FREE_GATES_COLOR:
                 //Return all colors
-                return filterMatching(getColors(), typedText);
+                return filterMatching(chatColors, typedText);
         }
 
         //If the config value is a boolean, show the two boolean values
@@ -104,50 +109,95 @@ public class ConfigTabCompleter implements TabCompleter {
                 return new ArrayList<>();
             }
         }
-
-        //TODO: What to do with per-sign colors?
-
         return null;
     }
 
     /**
-     * Gets all available languages
+     * Get possible values for the selected string list option
      *
-     * @return <p>The available languages</p>
+     * @param selectedOption <p>The selected option</p>
+     * @param args           <p>The arguments given by the user</p>
+     * @return <p>Some or all of the valid values for the option</p>
      */
-    private List<String> getLanguages() {
-        List<String> languages = new ArrayList<>();
-        languages.add("de");
-        languages.add("en");
-        languages.add("es");
-        languages.add("fr");
-        languages.add("hu");
-        languages.add("it");
-        languages.add("nb-no");
-        languages.add("nl");
-        languages.add("nn-no");
-        languages.add("pt-br");
-        languages.add("ru");
-        return languages;
-    }
-
-    /**
-     * Gets all available colors
-     *
-     * @return <p>All available colors</p>
-     */
-    private List<String> getColors() {
-        List<String> colors = new ArrayList<>();
-        for (ChatColor color : getChatColors()) {
-            colors.add(color.getName());
+    private List<String> getPossibleStringListOptionValues(ConfigOption selectedOption, String[] args) {
+        if (selectedOption == ConfigOption.PER_SIGN_COLORS) {
+            return getPerSignColorCompletion(args);
+        } else {
+            return null;
         }
-        return colors;
     }
 
     /**
-     * Gets a list of all available chat colors
+     * Gets the tab completion values for completing the per-sign color text
      *
-     * @return <p>A list of chat colors</p>
+     * @param args <p>The arguments given by the user</p>
+     * @return <p>The options to give the user</p>
+     */
+    private List<String> getPerSignColorCompletion(String[] args) {
+        if (args.length < 3) {
+            return filterMatching(signTypes, args[1]);
+        } else if (args.length < 4) {
+            return filterMatching(extendedColors, args[2]);
+        } else if (args.length < 5) {
+            return filterMatching(extendedColors, args[3]);
+        }
+        return new ArrayList<>();
+    }
+
+    /**
+     * Puts a single string value into a string list
+     *
+     * @param value <p>The string to make into a list</p>
+     * @return <p>A list containing the string value</p>
+     */
+    private List<String> putStringInList(String value) {
+        List<String> list = new ArrayList<>();
+        list.add(value);
+        return list;
+    }
+
+    /**
+     * Initializes all lists of auto-completable values
+     */
+    private void initializeAutoCompleteLists() {
+        booleans = new ArrayList<>();
+        booleans.add("true");
+        booleans.add("false");
+
+        numbers = new ArrayList<>();
+        numbers.add("0");
+        numbers.add("5");
+
+        signTypes = new ArrayList<>();
+        for (Material material : Material.values()) {
+            if (Tag.STANDING_SIGNS.isTagged(material)) {
+                signTypes.add(material.toString().replace("_SIGN", ""));
+            }
+        }
+
+        getColors();
+        initializeLanguages();
+
+        extendedColors = new ArrayList<>(chatColors);
+        extendedColors.add("default");
+        extendedColors.add("inverted");
+    }
+
+
+    /**
+     * Initializes the list of chat colors
+     */
+    private void getColors() {
+        chatColors = new ArrayList<>();
+        for (ChatColor color : getChatColors()) {
+            chatColors.add(color.getName());
+        }
+    }
+
+    /**
+     * Gets available chat colors
+     *
+     * @return <p>The available chat colors</p>
      */
     private List<ChatColor> getChatColors() {
         List<ChatColor> chatColors = new ArrayList<>();
@@ -167,19 +217,29 @@ public class ConfigTabCompleter implements TabCompleter {
         chatColors.add(ChatColor.DARK_GRAY);
         chatColors.add(ChatColor.GRAY);
         chatColors.add(ChatColor.YELLOW);
+        chatColors.add(ChatColor.of("#ed76d9"));
+        chatColors.add(ChatColor.of("#ffecb7"));
         return chatColors;
     }
 
     /**
-     * Puts a single string value into a string list
-     *
-     * @param value <p>The string to make into a list</p>
-     * @return <p>A list containing the string value</p>
+     * Initializes the list of all available languages
      */
-    private List<String> putStringInList(String value) {
-        List<String> list = new ArrayList<>();
-        list.add(value);
-        return list;
+    private void initializeLanguages() {
+        languages = new ArrayList<>();
+        languages.add("de");
+        languages.add("en");
+        languages.add("es");
+        languages.add("fr");
+        languages.add("hu");
+        languages.add("it");
+        languages.add("nb-no");
+        languages.add("nl");
+        languages.add("nn-no");
+        languages.add("pt-br");
+        languages.add("ru");
+        //TODO: Generate this list dynamically by listing the language files in the jar and adding the user's custom 
+        // language files
     }
 
 }

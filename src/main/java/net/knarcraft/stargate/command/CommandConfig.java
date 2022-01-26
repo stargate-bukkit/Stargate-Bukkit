@@ -9,12 +9,16 @@ import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.portal.PortalSignDrawer;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This command represents the config command for changing config values
@@ -37,7 +41,11 @@ public class CommandConfig implements CommandExecutor {
                 return false;
             }
             if (args.length > 1) {
-                updateConfigValue(selectedOption, commandSender, args[1]);
+                if (selectedOption.getDataType() == OptionDataType.STRING_LIST) {
+                    updateListConfigValue(selectedOption, commandSender, args);
+                } else {
+                    updateConfigValue(selectedOption, commandSender, args[1]);
+                }
             } else {
                 //Display info and the current value of the given config value
                 printConfigOptionValue(commandSender, selectedOption);
@@ -72,14 +80,7 @@ public class CommandConfig implements CommandExecutor {
 
         //Store the config values, accounting for the data type
         switch (selectedOption.getDataType()) {
-            case BOOLEAN -> {
-                boolean newValue = Boolean.parseBoolean(value);
-                if (selectedOption == ConfigOption.ENABLE_BUNGEE && newValue != Stargate.getGateConfig().enableBungee()) {
-                    Stargate.getStargateConfig().startStopBungeeListener(newValue);
-                }
-                Stargate.getStargateConfig().getConfigOptionsReference().put(selectedOption, newValue);
-                configuration.set(selectedOption.getConfigNode(), newValue);
-            }
+            case BOOLEAN -> updateBooleanConfigValue(selectedOption, value, configuration);
             case INTEGER -> {
                 Integer intValue = getInteger(commandSender, selectedOption, value);
                 if (intValue == null) {
@@ -90,28 +91,8 @@ public class CommandConfig implements CommandExecutor {
                 }
             }
             case STRING -> {
-                if (selectedOption == ConfigOption.GATE_FOLDER || selectedOption == ConfigOption.PORTAL_FOLDER ||
-                        selectedOption == ConfigOption.DEFAULT_GATE_NETWORK) {
-                    if (value.contains("../") || value.contains("..\\")) {
-                        commandSender.sendMessage(ChatColor.RED + "Path traversal characters cannot be used");
-                        return;
-                    }
-                }
-                if (ConfigTag.COLOR.isTagged(selectedOption)) {
-                    if (!registerColor(selectedOption, value, commandSender)) {
-                        return;
-                    }
-                }
-                if (selectedOption == ConfigOption.LANGUAGE) {
-                    Stargate.getStargateConfig().getLanguageLoader().setChosenLanguage(value);
-                }
-                Stargate.getStargateConfig().getConfigOptionsReference().put(selectedOption, value);
+                updateStringConfigValue(selectedOption, commandSender, value);
                 configuration.set(selectedOption.getConfigNode(), value);
-            }
-            case STRING_LIST -> {
-                if (selectedOption == ConfigOption.PER_SIGN_COLORS) {
-                    commandSender.sendMessage(ChatColor.RED + value);
-                }
             }
             default -> {
                 Stargate.getStargateConfig().getConfigOptionsReference().put(selectedOption, value);
@@ -119,6 +100,149 @@ public class CommandConfig implements CommandExecutor {
             }
         }
 
+        saveAndReload(selectedOption, commandSender);
+    }
+
+    /**
+     * Updates a boolean config value
+     *
+     * @param selectedOption <p>The option which should be updated</p>
+     * @param value          <p>The new value of the config option</p>
+     * @param configuration  <p>The configuration file to save to</p>
+     */
+    private void updateBooleanConfigValue(ConfigOption selectedOption, String value, FileConfiguration configuration) {
+        boolean newValue = Boolean.parseBoolean(value);
+        if (selectedOption == ConfigOption.ENABLE_BUNGEE && newValue != Stargate.getGateConfig().enableBungee()) {
+            Stargate.getStargateConfig().startStopBungeeListener(newValue);
+        }
+        Stargate.getStargateConfig().getConfigOptionsReference().put(selectedOption, newValue);
+        configuration.set(selectedOption.getConfigNode(), newValue);
+    }
+
+    /**
+     * Updates a string config value
+     *
+     * @param selectedOption <p>The option which should be updated</p>
+     * @param commandSender  <p>The command sender that changed the value</p>
+     * @param value          <p>The new value of the config option</p>
+     */
+    private void updateStringConfigValue(ConfigOption selectedOption, CommandSender commandSender, String value) {
+        if (selectedOption == ConfigOption.GATE_FOLDER || selectedOption == ConfigOption.PORTAL_FOLDER ||
+                selectedOption == ConfigOption.DEFAULT_GATE_NETWORK) {
+            if (value.contains("../") || value.contains("..\\")) {
+                commandSender.sendMessage(ChatColor.RED + "Path traversal characters cannot be used");
+                return;
+            }
+        }
+        if (ConfigTag.COLOR.isTagged(selectedOption)) {
+            if (!registerColor(selectedOption, value, commandSender)) {
+                return;
+            }
+        }
+        if (selectedOption == ConfigOption.LANGUAGE) {
+            Stargate.getStargateConfig().getLanguageLoader().setChosenLanguage(value);
+        }
+        Stargate.getStargateConfig().getConfigOptionsReference().put(selectedOption, value);
+    }
+
+    /**
+     * Updates a config value
+     *
+     * @param selectedOption <p>The option which should be updated</p>
+     * @param commandSender  <p>The command sender that changed the value</p>
+     * @param arguments      <p>The arguments for the new config option</p>
+     */
+    private void updateListConfigValue(ConfigOption selectedOption, CommandSender commandSender, String[] arguments) {
+        FileConfiguration configuration = Stargate.getInstance().getConfig();
+
+        if (selectedOption == ConfigOption.PER_SIGN_COLORS) {
+            if (arguments.length < 4) {
+                Stargate.getMessageSender().sendErrorMessage(commandSender, "Usage: /sg config perSignColors " +
+                        "<SIGN_TYPE> <MAIN_COLOR> <HIGHLIGHTING_COLOR>");
+                return;
+            }
+
+            String colorString = parsePerSignColorInput(commandSender, arguments);
+            if (colorString == null) {
+                return;
+            }
+
+            //Update the per-sign colors according to input
+            updatePerSignColors(arguments[1], colorString, configuration);
+        }
+
+        saveAndReload(selectedOption, commandSender);
+    }
+
+    /**
+     * Parses the input given for changing the per-color string
+     *
+     * @param commandSender <p>The command sender that triggered the command</p>
+     * @param arguments     <p>The arguments given by the user</p>
+     * @return <p>The per-sign color string to update with, or null if the input was invalid</p>
+     */
+    private String parsePerSignColorInput(CommandSender commandSender, String[] arguments) {
+        //Make sure the sign type is an actual sign
+        if (Material.matchMaterial(arguments[1] + "_SIGN") == null) {
+            Stargate.getMessageSender().sendErrorMessage(commandSender, "The given sign type is invalid");
+            return null;
+        }
+        String colorString = arguments[1] + ":";
+
+        //Validate the colors given by the user
+        String[] errorMessage = new String[]{"The given main sign color is invalid!", "The given highlight sign color is invalid!"};
+        String[] newColors = new String[2];
+        for (int i = 0; i < 2; i++) {
+            if (validatePerSignColor(arguments[i + 2])) {
+                newColors[i] = arguments[i + 2];
+            } else {
+                Stargate.getMessageSender().sendErrorMessage(commandSender, errorMessage[i]);
+                return null;
+            }
+        }
+        colorString += String.join(",", newColors);
+        return colorString;
+    }
+
+    /**
+     * Updates the per-sign colors with the given input
+     *
+     * @param signType      <p>The sign type that is updated</p>
+     * @param colorString   <p>The new color string to replace any previous value with</p>
+     * @param configuration <p>The file configuration to update with the new per-sign colors</p>
+     */
+    private void updatePerSignColors(String signType, String colorString, FileConfiguration configuration) {
+        List<String> newColorStrings = new ArrayList<>();
+        List<?> oldColors = (List<?>) Stargate.getStargateConfig().getConfigOptionsReference().get(ConfigOption.PER_SIGN_COLORS);
+        for (Object object : oldColors) {
+            newColorStrings.add(String.valueOf(object));
+        }
+        newColorStrings.removeIf((item) -> item.startsWith(signType));
+        newColorStrings.add(colorString);
+
+        Stargate.getStargateConfig().getConfigOptionsReference().put(ConfigOption.PER_SIGN_COLORS, newColorStrings);
+        configuration.set(ConfigOption.PER_SIGN_COLORS.getConfigNode(), newColorStrings);
+    }
+
+    /**
+     * Tries to validate one of the colors given when changing per-sign colors
+     *
+     * @param color <p>The color chosen by the user</p>
+     * @return <p>True if the given color is valid</p>
+     */
+    private boolean validatePerSignColor(String color) {
+        ChatColor newHighlightColor = parseColor(color);
+        return newHighlightColor != null || color.equalsIgnoreCase("default") ||
+                color.equalsIgnoreCase("inverted");
+    }
+
+    /**
+     * Saves the configuration file and reloads as necessary
+     *
+     * @param selectedOption <p>The config option that was changed</p>
+     * @param commandSender  <p>The command sender that executed the config command</p>
+     */
+    private void saveAndReload(ConfigOption selectedOption, CommandSender commandSender) {
         //Save the config file and reload if necessary
         Stargate.getInstance().saveConfig();
 
