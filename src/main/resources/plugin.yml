@@ -141,6 +141,9 @@ permissions:
   stargate.admin.config:
     description: Allows the player to change config values from the chat
     default: false
+  stargate.admin.dye:
+    description: Allows this player to change the dye of any stargate's sign
+    default: false
   stargate.server:
     description: Allows the creation of a BungeeCord stargate going to any server
     default: false
@@ -153,3 +156,4 @@ permissions:
       stargate.admin.private: true
       stargate.admin.bungee: true
       stargate.admin.config: true
+      stargate.admin.dye: true

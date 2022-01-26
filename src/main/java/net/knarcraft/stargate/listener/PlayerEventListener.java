@@ -222,9 +222,10 @@ public class PlayerEventListener implements Listener {
             return;
         }
 
-        //Allow players to apply dye to signs
+        //Allow players with permissions to apply dye to signs
         EquipmentSlot hand = event.getHand();
-        if (hand != null) {
+        if (hand != null && (PermissionHelper.hasPermission(player, "stargate.admin.dye") ||
+                portal.isOwner(player))) {
             String itemName = player.getInventory().getItem(hand).getType().toString();
             if (itemName.endsWith("DYE") || itemName.endsWith("INK_SAC")) {
                 event.setUseInteractedBlock(Event.Result.ALLOW);
