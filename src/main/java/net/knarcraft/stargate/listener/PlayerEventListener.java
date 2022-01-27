@@ -34,14 +34,16 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This listener listens to any player-related events related to stargates
  */
 @SuppressWarnings("unused")
 public class PlayerEventListener implements Listener {
 
-    private static long eventTime;
-    private static PlayerInteractEvent previousEvent;
+    private static final Map<Player, Long> previousEventTimes = new HashMap<>();
 
     /**
      * This event handler handles detection of any player teleporting through a bungee gate
@@ -295,7 +297,7 @@ public class PlayerEventListener implements Listener {
         }
 
         //Prevent a double click caused by a Spigot bug
-        if (clickIsBug(event, block)) {
+        if (clickIsBug(event.getPlayer(), block)) {
             return;
         }
 
@@ -366,19 +368,17 @@ public class PlayerEventListener implements Listener {
      * immediately, or causing portal information printing twice. This fix should detect the bug without breaking
      * clicking once the bug is fixed.</p>
      *
-     * @param event <p>The event causing the right click</p>
-     * @param block <p>The block to check</p>
+     * @param player <p>The player performing the right-click</p>
+     * @param block  <p>The block to check</p>
      * @return <p>True if the click is a bug and should be cancelled</p>
      */
-    private boolean clickIsBug(PlayerInteractEvent event, Block block) {
-        if (previousEvent != null &&
-                event.getPlayer() == previousEvent.getPlayer() && eventTime + 15 > System.currentTimeMillis()) {
-            previousEvent = null;
-            eventTime = 0;
+    private boolean clickIsBug(Player player, Block block) {
+        Long previousEventTime = previousEventTimes.get(player);
+        if (previousEventTime != null && previousEventTime + 50 > System.currentTimeMillis()) {
+            previousEventTimes.put(player, null);
             return true;
         }
-        previousEvent = event;
-        eventTime = System.currentTimeMillis();
+        previousEventTimes.put(player, System.currentTimeMillis());
         return false;
     }
 

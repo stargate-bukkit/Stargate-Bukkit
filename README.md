@@ -401,6 +401,7 @@ portalInfoServer=Server: %server%
 
 - Adds a config option to set the exit velocity of any players exiting a stargate
 - Adjusts vehicle teleportation a bit to prevent passengers' exit rotation from being wrong
+- Improves the checking for buggy double-clicks on non-button blocks
 
 #### \[Version 0.9.3.1] EpicKnarvik97 fork
 
