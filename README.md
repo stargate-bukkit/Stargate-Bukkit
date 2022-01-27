@@ -397,6 +397,10 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+#### \[Version 0.9.3.3] EpicKnarvik97 fork
+
+- Prevents Zombified Piglins from randomly spawning at Stargates
+
 #### \[Version 0.9.3.2] EpicKnarvik97 fork
 
 - Adds a config option to set the exit velocity of any players exiting a stargate
