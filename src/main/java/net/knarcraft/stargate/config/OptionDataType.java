@@ -6,17 +6,28 @@ package net.knarcraft.stargate.config;
 public enum OptionDataType {
 
     /**
-     * The data type for the option is a String
+     * The data type if the option is a String
      */
     STRING,
+
     /**
-     * The data type for the option is a Boolean
+     * The data type if the option is a Boolean
      */
     BOOLEAN,
-    STRING_LIST,
+
     /**
-     * The data type for the option is an Integer
+     * The data type if the option is a string list
      */
-    INTEGER
+    STRING_LIST,
+
+    /**
+     * The data type if the option is an Integer
+     */
+    INTEGER,
+
+    /**
+     * The data type if the option is a double
+     */
+    DOUBLE
 
 }

@@ -180,6 +180,15 @@ public final class StargateGateConfig {
     }
 
     /**
+     * Gets the exit velocity of players using stargates, relative to the entry velocity
+     *
+     * @return <p>The relative exit velocity</p>
+     */
+    public double getExitVelocity() {
+        return (double) configOptions.get(ConfigOption.EXIT_VELOCITY);
+    }
+
+    /**
      * Loads all config values related to gates
      */
     private void loadGateConfig() {

@@ -15,6 +15,8 @@ gates:
   maxGatesEachNetwork: 0
   # defaultGateNetwork - The default gate network
   defaultGateNetwork: central
+  # exitVelocity - The velocity of players exiting stargates, relative to the entry velocity
+  exitVelocity: 0.1
   cosmetic:
     # rememberDestination - Whether to remember the cursor location between uses
     rememberDestination: false

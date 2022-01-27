@@ -358,6 +358,7 @@ public final class StargateConfig {
                 }
                 case BOOLEAN -> optionValue = newConfig.getBoolean(configNode);
                 case INTEGER -> optionValue = newConfig.getInt(configNode);
+                case DOUBLE -> optionValue = newConfig.getDouble(configNode);
                 default -> throw new IllegalArgumentException("Invalid config data type encountered");
             }
             configOptions.put(option, optionValue);

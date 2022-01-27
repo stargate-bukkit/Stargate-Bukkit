@@ -156,8 +156,12 @@ public enum ConfigOption {
     /**
      * Whether to alert admins about new updates
      */
-    ADMIN_UPDATE_ALERT("adminUpdateAlert", "Whether to alert admins about new plugin updates", true);
+    ADMIN_UPDATE_ALERT("adminUpdateAlert", "Whether to alert admins about new plugin updates", true),
 
+    /**
+     * The velocity of players exiting a stargate, relative to the entry velocity
+     */
+    EXIT_VELOCITY("gates.exitVelocity", "The velocity of players exiting stargates, relative to the entry velocity", 0.1D);
 
     private final String configNode;
     private final String description;
@@ -184,6 +188,8 @@ public enum ConfigOption {
             this.dataType = OptionDataType.BOOLEAN;
         } else if (defaultValue instanceof Integer) {
             this.dataType = OptionDataType.INTEGER;
+        } else if (defaultValue instanceof Double) {
+            this.dataType = OptionDataType.DOUBLE;
         } else {
             throw new IllegalArgumentException("Unknown config data type encountered: " + defaultValue);
         }

@@ -90,6 +90,15 @@ public class CommandConfig implements CommandExecutor {
                     configuration.set(selectedOption.getConfigNode(), intValue);
                 }
             }
+            case DOUBLE -> {
+                Double doubleValue = getDouble(commandSender, selectedOption, value);
+                if (doubleValue == null) {
+                    return;
+                } else {
+                    Stargate.getStargateConfig().getConfigOptionsReference().put(selectedOption, doubleValue);
+                    configuration.set(selectedOption.getConfigNode(), doubleValue);
+                }
+            }
             case STRING -> {
                 updateStringConfigValue(selectedOption, commandSender, value);
                 configuration.set(selectedOption.getConfigNode(), value);
@@ -308,6 +317,30 @@ public class CommandConfig implements CommandExecutor {
             }
 
             return intValue;
+        } catch (NumberFormatException exception) {
+            commandSender.sendMessage(ChatColor.RED + "Invalid number given");
+            return null;
+        }
+    }
+
+    /**
+     * Gets a double from a string
+     *
+     * @param commandSender  <p>The command sender that sent the config command</p>
+     * @param selectedOption <p>The option the command sender is trying to change</p>
+     * @param value          <p>The value given</p>
+     * @return <p>A double, or null if it was invalid</p>
+     */
+    private Double getDouble(CommandSender commandSender, ConfigOption selectedOption, String value) {
+        try {
+            double doubleValue = Double.parseDouble(value);
+
+            if (selectedOption == ConfigOption.EXIT_VELOCITY && doubleValue < 0) {
+                commandSender.sendMessage(ChatColor.RED + "This config option cannot be negative.");
+                return null;
+            }
+
+            return doubleValue;
         } catch (NumberFormatException exception) {
             commandSender.sendMessage(ChatColor.RED + "Invalid number given");
             return null;

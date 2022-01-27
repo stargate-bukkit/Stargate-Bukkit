@@ -3,9 +3,12 @@ package net.knarcraft.stargate.portal.teleporter;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargatePlayerPortalEvent;
 import net.knarcraft.stargate.portal.Portal;
+import net.knarcraft.stargate.utility.DirectionHelper;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.util.Vector;
 
 /**
  * The portal teleporter takes care of the actual portal teleportation for any players
@@ -32,6 +35,7 @@ public class PlayerTeleporter extends Teleporter {
      * @param event  <p>The player move event triggering the event</p>
      */
     public void teleport(Portal origin, PlayerMoveEvent event) {
+        double velocity = player.getVelocity().length();
         Location traveller = player.getLocation();
         Location exit = getExit(player, traveller);
 
@@ -56,9 +60,16 @@ public class PlayerTeleporter extends Teleporter {
         if (event == null) {
             player.teleport(exit);
         } else {
-            //The new method to teleport in a move event is set the "to" field.
+            //Set the exit location of the event
             event.setTo(exit);
         }
+
+        //Set the velocity of the teleported player after the teleportation is finished
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
+            Vector newVelocityDirection = DirectionHelper.getDirectionVectorFromYaw(portal.getYaw());
+            Vector newVelocity = newVelocityDirection.multiply(velocity * Stargate.getGateConfig().getExitVelocity());
+            player.setVelocity(newVelocity);
+        }, 1);
     }
 
     /**

@@ -21,16 +21,17 @@ public class ConfigTabCompleter implements TabCompleter {
 
     private List<String> signTypes;
     private List<String> booleans;
-    private List<String> numbers;
+    private List<String> integers;
     private List<String> chatColors;
     private List<String> languages;
     private List<String> extendedColors;
+    private List<String> doubles;
 
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
                                       @NotNull String[] args) {
-        if (signTypes == null || booleans == null || numbers == null || chatColors == null || languages == null) {
+        if (signTypes == null || booleans == null || integers == null || chatColors == null || languages == null) {
             initializeAutoCompleteLists();
         }
         if (args.length > 1) {
@@ -104,7 +105,16 @@ public class ConfigTabCompleter implements TabCompleter {
         //If the config value is an integer, display some valid numbers
         if (selectedOption.getDataType() == OptionDataType.INTEGER) {
             if (typedText.trim().isEmpty()) {
-                return numbers;
+                return integers;
+            } else {
+                return new ArrayList<>();
+            }
+        }
+
+        //If the config value is a double, display some valid numbers
+        if (selectedOption.getDataType() == OptionDataType.DOUBLE) {
+            if (typedText.trim().isEmpty()) {
+                return doubles;
             } else {
                 return new ArrayList<>();
             }
@@ -164,9 +174,9 @@ public class ConfigTabCompleter implements TabCompleter {
         booleans.add("true");
         booleans.add("false");
 
-        numbers = new ArrayList<>();
-        numbers.add("0");
-        numbers.add("5");
+        integers = new ArrayList<>();
+        integers.add("0");
+        integers.add("5");
 
         signTypes = new ArrayList<>();
         for (Material material : Material.values()) {
@@ -181,6 +191,12 @@ public class ConfigTabCompleter implements TabCompleter {
         extendedColors = new ArrayList<>(chatColors);
         extendedColors.add("default");
         extendedColors.add("inverted");
+
+        doubles = new ArrayList<>();
+        doubles.add("5");
+        doubles.add("1");
+        doubles.add("0.5");
+        doubles.add("0.1");
     }
 
 
