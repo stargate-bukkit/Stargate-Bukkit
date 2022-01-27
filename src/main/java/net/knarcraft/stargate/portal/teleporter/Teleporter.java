@@ -13,7 +13,6 @@ import org.bukkit.Material;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Slab;
-import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -59,7 +58,7 @@ public abstract class Teleporter {
         }
         float newYaw = (portal.getYaw() + adjust) % 360;
         Stargate.debug("Portal::adjustRotation", "Setting exit yaw to " + newYaw);
-        exit.setYaw(newYaw);
+        exit.setDirection(DirectionHelper.getDirectionVectorFromYaw(newYaw));
     }
 
     /**
@@ -141,14 +140,9 @@ public abstract class Teleporter {
         if (entitySize > 1) {
             double entityOffset;
             if (portal.getOptions().isAlwaysOn()) {
-                entityOffset = entityBoxSize / 2D;
+                entityOffset = (entityBoxSize / 2D) - 1;
             } else {
-                entityOffset = (entitySize / 2D) - 1;
-            }
-            //If a horse has a player riding it, the player will spawn inside the roof of a standard portal unless it's 
-            // moved one block out.
-            if (entity instanceof AbstractHorse) {
-                entityOffset += 1;
+                entityOffset = (entitySize / 2D) - 2;
             }
             exitLocation = DirectionHelper.moveLocation(exitLocation, 0, 0, entityOffset, portal.getYaw());
         }
@@ -217,8 +211,8 @@ public abstract class Teleporter {
     protected void loadChunks() {
         for (Chunk chunk : getChunksToLoad()) {
             chunk.addPluginChunkTicket(Stargate.getInstance());
-            //Allow the chunk to unload after 3 seconds
-            Stargate.addChunkUnloadRequest(new ChunkUnloadRequest(chunk, 3000L));
+            //Allow the chunk to unload after 10 seconds
+            Stargate.addChunkUnloadRequest(new ChunkUnloadRequest(chunk, 10000L));
         }
     }
 
