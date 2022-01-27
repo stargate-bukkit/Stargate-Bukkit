@@ -165,7 +165,7 @@ public class VehicleTeleporter extends EntityTeleporter {
     private void teleportLivingVehicle(Location exit, List<Entity> passengers, Portal origin) {
         teleportingVehicle.eject();
         teleportingVehicle.teleport(exit);
-        handleVehiclePassengers(passengers, teleportingVehicle, 2, origin);
+        handleVehiclePassengers(passengers, teleportingVehicle, 2, origin, exit.getDirection());
     }
 
     /**
@@ -194,19 +194,20 @@ public class VehicleTeleporter extends EntityTeleporter {
         teleportingVehicle.remove();
         //Set rotation, add passengers and restore velocity
         newVehicle.setRotation(exit.getYaw(), exit.getPitch());
-        handleVehiclePassengers(passengers, newVehicle, 1, origin);
+        handleVehiclePassengers(passengers, newVehicle, 1, origin, exit.getDirection());
         scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> newVehicle.setVelocity(newVelocity), 1);
     }
 
     /**
      * Ejects, teleports and adds all passengers to the target vehicle
      *
-     * @param passengers <p>The passengers to handle</p>
-     * @param vehicle    <p>The vehicle the passengers should be put into</p>
-     * @param delay      <p>The amount of milliseconds to wait before adding the vehicle passengers</p>
-     * @param origin     <p>The portal the vehicle teleported from</p>
+     * @param passengers   <p>The passengers to handle</p>
+     * @param vehicle      <p>The vehicle the passengers should be put into</p>
+     * @param delay        <p>The amount of milliseconds to wait before adding the vehicle passengers</p>
+     * @param origin       <p>The portal the vehicle teleported from</p>
+     * @param exitRotation <p>The rotation of any passengers exiting the stargate</p>
      */
-    private void handleVehiclePassengers(List<Entity> passengers, Vehicle vehicle, long delay, Portal origin) {
+    private void handleVehiclePassengers(List<Entity> passengers, Vehicle vehicle, long delay, Portal origin, Vector exitRotation) {
         for (Entity passenger : passengers) {
             passenger.eject();
             scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
@@ -214,7 +215,7 @@ public class VehicleTeleporter extends EntityTeleporter {
                     //Teleport any creatures leashed by the player in a 15-block range
                     teleportLeashedCreatures(player, origin);
                 }
-                teleportAndAddPassenger(vehicle, passenger);
+                teleportAndAddPassenger(vehicle, passenger, exitRotation);
             }, delay);
         }
     }
@@ -227,9 +228,10 @@ public class VehicleTeleporter extends EntityTeleporter {
      *
      * @param targetVehicle <p>The vehicle to add the passenger to</p>
      * @param passenger     <p>The passenger to teleport and add</p>
+     * @param exitDirection <p>The direction of any passengers exiting the stargate</p>
      */
-    private void teleportAndAddPassenger(Vehicle targetVehicle, Entity passenger) {
-        if (!passenger.teleport(targetVehicle.getLocation())) {
+    private void teleportAndAddPassenger(Vehicle targetVehicle, Entity passenger, Vector exitDirection) {
+        if (!passenger.teleport(targetVehicle.getLocation().clone().setDirection(exitDirection))) {
             Stargate.debug("handleVehiclePassengers", "Failed to teleport passenger");
         }
         if (!targetVehicle.addPassenger(passenger)) {
