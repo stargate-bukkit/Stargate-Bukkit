@@ -306,6 +306,7 @@ folders:
 gates:
   maxGatesEachNetwork - If non-zero, will define the maximum amount of gates allowed on any network.
   defaultGateNetwork - The default gate network
+  exitVelocity - The velocity to give players exiting stargates, relative to the entry velocity (1 = same as entry velocity)
   cosmetic:
     rememberDestination - Whether to set the first destination as the last used destination for all gates
     sortNetworkDestinations - If true, network lists will be sorted alphabetically.
@@ -395,6 +396,12 @@ portalInfoServer=Server: %server%
 ```
 
 # Changes
+
+#### \[Version 0.9.3.2] EpicKnarvik97 fork
+
+- Adds a config option to set the exit velocity of any players exiting a stargate
+- Adjusts vehicle teleportation a bit to prevent passengers' exit rotation from being wrong
+- Reduces the outwards offset of teleported entities
 
 #### \[Version 0.9.3.1] EpicKnarvik97 fork
 
