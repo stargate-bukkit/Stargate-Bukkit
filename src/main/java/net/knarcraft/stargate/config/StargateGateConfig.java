@@ -262,7 +262,7 @@ public final class StargateGateConfig {
         if (colors[colorIndex].equalsIgnoreCase("inverted")) {
             //Convert from ChatColor to awt.Color to Bukkit.Color then invert and convert to ChatColor
             java.awt.Color color = defaultColors[colorIndex].getColor();
-            parsedColor = ColorHelper.fromColor(ColorHelper.invert(Color.fromRGB(color.getRed(), color.getGreen(), 
+            parsedColor = ColorHelper.fromColor(ColorHelper.invert(Color.fromRGB(color.getRed(), color.getGreen(),
                     color.getBlue())));
         } else {
             try {

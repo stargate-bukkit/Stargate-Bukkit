@@ -64,7 +64,7 @@ public class VehicleEventListener implements Listener {
 
         if (!passengers.isEmpty() && TeleportHelper.containsPlayer(passengers)) {
             Stargate.debug(route, "Found passenger vehicle");
-            teleportPlayerAndVehicle(entrancePortal, vehicle, passengers);
+            teleportPlayerAndVehicle(entrancePortal, vehicle);
         } else {
             Stargate.debug(route, "Found vehicle without players");
             Portal destinationPortal = entrancePortal.getPortalActivator().getDestination();
@@ -83,10 +83,13 @@ public class VehicleEventListener implements Listener {
      *
      * @param entrancePortal <p>The portal the minecart entered</p>
      * @param vehicle        <p>The vehicle to teleport</p>
-     * @param passengers     <p>Any entities sitting in the minecart</p>
      */
-    private static void teleportPlayerAndVehicle(Portal entrancePortal, Vehicle vehicle, List<Entity> passengers) {
-        List<Player> players = TeleportHelper.getPlayers(passengers);
+    private static void teleportPlayerAndVehicle(Portal entrancePortal, Vehicle vehicle) {
+        Entity rootEntity = vehicle;
+        while (rootEntity.getVehicle() != null) {
+            rootEntity = rootEntity.getVehicle();
+        }
+        List<Player> players = TeleportHelper.getPlayers(rootEntity.getPassengers());
         Portal destinationPortal = null;
 
         for (Player player : players) {
