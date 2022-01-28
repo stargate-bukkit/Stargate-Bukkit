@@ -95,8 +95,7 @@ public class PortalEventListener implements Listener {
 
         Portal exitPortal = teleportation.getExit();
         //Overwrite respawn location to respawn in front of the portal
-        event.setRespawnLocation(new PlayerTeleporter(exitPortal, respawningPlayer).getExit(respawningPlayer,
-                respawningPlayer.getLocation()));
+        event.setRespawnLocation(new PlayerTeleporter(exitPortal, respawningPlayer).getExit());
         //Properly close the portal to prevent it from staying in a locked state until it times out
         exitPortal.getPortalOpener().closePortal(false);
     }
