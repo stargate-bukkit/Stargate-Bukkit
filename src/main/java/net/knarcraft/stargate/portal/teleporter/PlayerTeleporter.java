@@ -4,11 +4,14 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargatePlayerPortalEvent;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.utility.DirectionHelper;
+import net.knarcraft.stargate.utility.TeleportHelper;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
+
+import java.util.List;
 
 /**
  * The portal teleporter takes care of the actual portal teleportation for any players
@@ -20,11 +23,11 @@ public class PlayerTeleporter extends Teleporter {
     /**
      * Instantiates a new player teleporter
      *
-     * @param portal <p>The portal which is the target of the teleportation</p>
-     * @param player <p>The teleporting player</p>
+     * @param targetPortal <p>The portal which is the target of the teleportation</p>
+     * @param player       <p>The teleporting player</p>
      */
-    public PlayerTeleporter(Portal portal, Player player) {
-        super(portal);
+    public PlayerTeleporter(Portal targetPortal, Player player) {
+        super(targetPortal, player);
         this.player = player;
     }
 
@@ -34,17 +37,13 @@ public class PlayerTeleporter extends Teleporter {
      * @param origin <p>The portal the player teleports from</p>
      * @param event  <p>The player move event triggering the event</p>
      */
-    public void teleport(Portal origin, PlayerMoveEvent event) {
+    public void teleportPlayer(Portal origin, PlayerMoveEvent event) {
         double velocity = player.getVelocity().length();
-        Location traveller = player.getLocation();
-        Location exit = getExit(player, traveller);
-
-        //Rotate the player to face out from the portal
-        adjustRotation(exit);
+        List<Entity> passengers = player.getPassengers();
 
         //Call the StargatePlayerPortalEvent to allow plugins to change destination
         if (!origin.equals(portal)) {
-            exit = triggerPlayerPortalEvent(origin, exit, event);
+            exit = triggerPortalEvent(origin, new StargatePlayerPortalEvent(player, origin, portal, exit));
             if (exit == null) {
                 return;
             }
@@ -54,7 +53,11 @@ public class PlayerTeleporter extends Teleporter {
         loadChunks();
 
         //Teleport any creatures leashed by the player in a 15-block range
-        teleportLeashedCreatures(player, origin);
+        TeleportHelper.teleportLeashedCreatures(player, origin, portal);
+
+        if (player.eject()) {
+            TeleportHelper.handleEntityPassengers(passengers, player, origin, portal, exit.getDirection());
+        }
 
         //If no event is passed in, assume it's a teleport, and act as such
         if (event == null) {
@@ -70,25 +73,6 @@ public class PlayerTeleporter extends Teleporter {
             Vector newVelocity = newVelocityDirection.multiply(velocity * Stargate.getGateConfig().getExitVelocity());
             player.setVelocity(newVelocity);
         }, 1);
-    }
-
-    /**
-     * Triggers the player portal event to allow plugins to change the exit location
-     *
-     * @param origin <p>The origin portal teleported from</p>
-     * @param exit   <p>The exit location to teleport the player to</p>
-     * @param event  <p>The player move event which triggered the teleportation</p>
-     * @return <p>The location the player should be teleported to, or null if the event was cancelled</p>
-     */
-    private Location triggerPlayerPortalEvent(Portal origin, Location exit, PlayerMoveEvent event) {
-        StargatePlayerPortalEvent stargatePlayerPortalEvent = new StargatePlayerPortalEvent(player, origin, portal, exit);
-        Stargate.getInstance().getServer().getPluginManager().callEvent(stargatePlayerPortalEvent);
-        //Teleport is cancelled. Teleport the player back to where it came from
-        if (stargatePlayerPortalEvent.isCancelled()) {
-            new PlayerTeleporter(origin, player).teleport(origin, event);
-            return null;
-        }
-        return stargatePlayerPortalEvent.getExit();
     }
 
 }

@@ -190,7 +190,7 @@ public final class BungeeHelper {
         }
 
         //Teleport the player back to this gate, for sanity's sake
-        new PlayerTeleporter(entrancePortal, player).teleport(entrancePortal, event);
+        new PlayerTeleporter(entrancePortal, player).teleportPlayer(entrancePortal, event);
 
         //Send the SGBungee packet first, it will be queued by BC if required
         if (!BungeeHelper.sendTeleportationMessage(player, entrancePortal)) {
