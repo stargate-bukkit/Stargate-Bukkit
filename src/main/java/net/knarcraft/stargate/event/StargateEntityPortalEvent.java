@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * <p>This event can be used to overwrite the location the entity is teleported to.</p>
  */
 @SuppressWarnings("unused")
-public class StargateEntityPortalEvent extends StargateEvent {
+public class StargateEntityPortalEvent extends StargateEvent implements StargateTeleportEvent {
 
     private static final HandlerList handlers = new HandlerList();
     final Entity travellingEntity;
@@ -58,6 +58,7 @@ public class StargateEntityPortalEvent extends StargateEvent {
      *
      * @return <p>Location of the exit point</p>
      */
+    @Override
     public Location getExit() {
         return exit;
     }
