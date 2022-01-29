@@ -116,7 +116,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void update() {
-        if (isOpen() && this.overriddenDestination == null && network.getPortal(getDestination().getName()) == null) {
+        if (isOpen() && this.overriddenDestination == null && getDestination() == null) {
             close(false);
         }
         drawControlMechanisms();
