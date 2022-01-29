@@ -39,9 +39,9 @@ public class FixedPortal extends AbstractPortal {
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
         lines[2] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(this.network.getHighlightedName()) : "";
         Portal destination = loadDestination();
-        if (destination != null)
+        if (destination != null) {
             lines[1] = super.colorDrawer.formatPortalName(loadDestination(), HighlightingStyle.DESTINATION);
-        else {
+        } else {
             lines[1] = super.colorDrawer.formatLine(destinationName);
             lines[3] = super.colorDrawer.formatErrorLine(Stargate.languageManager.getString(
                     TranslatableMessage.DISCONNECTED), HighlightingStyle.BUNGEE);

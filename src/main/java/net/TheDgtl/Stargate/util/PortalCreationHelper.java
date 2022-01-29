@@ -29,16 +29,45 @@ import java.util.logging.Level;
 
 public class PortalCreationHelper {
 
+    /**
+     * Creates a new portal of the correct type from the given sing lines
+     *
+     * @param network   <p>The network the portal belongs to</p>
+     * @param lines     <p>The lines written on a stargate sign</p>
+     * @param flags     <p>The flags enabled for the portal</p>
+     * @param gate      <p>The gate belonging to the portal</p>
+     * @param ownerUUID <p>The UUID of the portal's owner</p>
+     * @return <p>A new portal</p>
+     * @throws NameErrorException <p>If the portal's name is invalid</p>
+     */
     public static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Gate gate,
                                                   UUID ownerUUID) throws NameErrorException, NoFormatFoundException, GateConflictException {
+        return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID);
+    }
+
+    /**
+     * Creates a new portal of the correct type
+     *
+     * @param network      <p>The network the portal belongs to</p>
+     * @param name         <p>The name of the portal</p>
+     * @param destination  <p>The destination of the portal</p>
+     * @param targetServer <p>The portal's target server (if bungee)</p>
+     * @param flags        <p>The flags enabled for the portal</p>
+     * @param gate         <p>The gate belonging to the portal</p>
+     * @param ownerUUID    <p>The UUID of the portal's owner</p>
+     * @return <p>A new portal</p>
+     * @throws NameErrorException <p>If the portal's name is invalid</p>
+     */
+    public static RealPortal createPortal(Network network, String name, String destination, String targetServer,
+                                          Set<PortalFlag> flags, Gate gate, UUID ownerUUID) throws NameErrorException {
         if (flags.contains(PortalFlag.BUNGEE)) {
-            return new BungeePortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID);
+            return new BungeePortal(network, name, destination, targetServer, flags, gate, ownerUUID);
         } else if (flags.contains(PortalFlag.RANDOM)) {
-            return new RandomPortal(network, lines[0], flags, gate, ownerUUID);
+            return new RandomPortal(network, name, flags, gate, ownerUUID);
         } else if (flags.contains(PortalFlag.NETWORKED)) {
-            return new NetworkedPortal(network, lines[0], flags, gate, ownerUUID);
+            return new NetworkedPortal(network, name, flags, gate, ownerUUID);
         } else {
-            return new FixedPortal(network, lines[0], lines[1], flags, gate, ownerUUID);
+            return new FixedPortal(network, name, destination, flags, gate, ownerUUID);
         }
     }
 
@@ -66,7 +95,6 @@ public class PortalCreationHelper {
     }
 
     public static Gate createGate(Block sign) throws NoFormatFoundException, GateConflictException {
-
         if (!(Tag.WALL_SIGNS.isTagged(sign.getType()))) {
             throw new NoFormatFoundException();
         }

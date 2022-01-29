@@ -10,10 +10,8 @@ import net.TheDgtl.Stargate.database.DriverEnum;
 import net.TheDgtl.Stargate.database.MySqlDatabase;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
-import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
-import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
@@ -526,6 +524,9 @@ public class StargateFactory {
             int topLeftZ = resultSet.getInt("z");
             String flagString = resultSet.getString("flags");
             UUID ownerUUID = UUID.fromString(resultSet.getString("ownerUUID"));
+            String gateFileName = resultSet.getString("gateFileName");
+            boolean flipZ = Boolean.parseBoolean(resultSet.getString("zFlip"));
+            BlockFace facing = getBlockFaceFromOrdinal(Integer.parseInt(resultSet.getString("facing")));
 
             Set<PortalFlag> flags = PortalFlag.parseFlags(flagString);
 
@@ -533,16 +534,16 @@ public class StargateFactory {
             logger.logMessage(Level.FINEST, "Trying to add portal " + name + ", on network " + networkName +
                     ",isInterServer = " + isBungee);
 
-            String targetNet = networkName;
+            String targetNetwork = networkName;
             if (flags.contains(PortalFlag.BUNGEE)) {
-                targetNet = "§§§§§§#BUNGEE#§§§§§§";
+                targetNetwork = "§§§§§§#BUNGEE#§§§§§§";
             }
 
             try {
-                createNetwork(targetNet, flags);
+                createNetwork(targetNetwork, flags);
             } catch (NameErrorException ignored) {
             }
-            Network network = getNetwork(targetNet, isBungee);
+            Network network = getNetwork(targetNetwork, isBungee);
 
             if (portalType == PortalType.INTER_SERVER) {
                 String serverUUID = resultSet.getString("homeServerId");
@@ -561,7 +562,6 @@ public class StargateFactory {
                 continue;
             }
             Block block = world.getBlockAt(topLeftX, topLeftY, topLeftZ);
-            String[] virtualSign = {name, destination, networkName};
 
             if (destination == null || destination.trim().isEmpty()) {
                 flags.add(PortalFlag.NETWORKED);
@@ -570,16 +570,15 @@ public class StargateFactory {
             try {
                 //TODO: This needs to be changed as we will save the top-left location and the sign will be seen as one 
                 // of potentially several interfaces rather than an identifier
-                GateFormat format = GateFormat.getFormat("fileName.gate");
+                GateFormat format = GateFormat.getFormat(gateFileName);
                 List<PortalPosition> portalPositions = new ArrayList<>();
-                Gate gate = new Gate(block.getLocation(), BlockFace.EAST, false, format, portalPositions, logger);
-                Portal portal = PortalCreationHelper.createPortalFromSign(network, virtualSign, flags, gate, ownerUUID);
+                Gate gate = new Gate(block.getLocation(), facing, flipZ, format, portalPositions, logger);
+                Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate, ownerUUID);
                 network.addPortal(portal, false);
                 logger.logMessage(Level.FINEST, "Added as normal portal");
                 if (isBungee) {
                     setInterServerPortalOnlineStatus(portal, true);
                 }
-            } catch (GateConflictException | NoFormatFoundException ignored) {
             } catch (NameErrorException e) {
                 e.printStackTrace();
             } catch (InvalidStructureException e) {
@@ -591,6 +590,21 @@ public class StargateFactory {
         }
         statement.close();
         connection.close();
+    }
+
+    /**
+     * Gets the correct block face from the given ordinal
+     *
+     * @param ordinal <p>The ordinal to get the block face from</p>
+     * @return <p>The corresponding block face, or null</p>
+     */
+    private BlockFace getBlockFaceFromOrdinal(int ordinal) {
+        for (BlockFace blockFace : BlockFace.values()) {
+            if (blockFace.ordinal() == ordinal) {
+                return blockFace;
+            }
+        }
+        return null;
     }
 
     /**

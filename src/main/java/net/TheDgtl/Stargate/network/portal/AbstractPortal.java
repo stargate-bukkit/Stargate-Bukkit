@@ -281,15 +281,14 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void setSignColor(DyeColor color) {
+        colorDrawer = new NoLineColorFormatter();
         for (Location location : this.getSignLocations()) {
             Sign sign = (Sign) location.getBlock().getState();
             if (color != null) {
                 sign.setColor(color);
                 sign.update();
             }
-            if (!VersionParser.bukkitIsNewerThan(ImportantVersion.NO_CHAT_COLOR_IMPLEMENTED))
-                colorDrawer = new NoLineColorFormatter();
-            else {
+            if (VersionParser.bukkitIsNewerThan(ImportantVersion.NO_CHAT_COLOR_IMPLEMENTED)) {
                 colorDrawer = new LineColorFormatter(sign.getColor(), sign.getType());
             }
             this.drawControlMechanisms();
