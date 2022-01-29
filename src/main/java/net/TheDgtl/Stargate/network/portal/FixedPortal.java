@@ -31,6 +31,7 @@ public class FixedPortal extends AbstractPortal {
                        UUID ownerUUID) throws NameErrorException {
         super(network, name, flags, gate, ownerUUID);
         this.destinationName = destinationName;
+        this.destination = network.getPortal(destinationName);
     }
 
     @Override

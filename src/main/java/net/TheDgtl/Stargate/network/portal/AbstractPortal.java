@@ -102,8 +102,9 @@ public abstract class AbstractPortal implements RealPortal {
         }
         Stargate.log(Level.FINE, msg.toString());
 
-        if (hasFlag(PortalFlag.ALWAYS_ON))
+        if (hasFlag(PortalFlag.ALWAYS_ON)) {
             this.open(null);
+        }
 
         AbstractPortal.portalCount++;
         AbstractPortal.allUsedFlags.addAll(flags);
