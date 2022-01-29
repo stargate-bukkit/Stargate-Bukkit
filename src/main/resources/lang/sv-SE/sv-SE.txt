@@ -38,8 +38,8 @@ bungeeTargetOffline=Proxyn är för närvarande nere, bungee portals är tillfä
 
 # Gate Usage
 tpSuccess=Teleporterad!
-tpDestiInvalid=Ogiltig destination!
-tpDestiBlocked=Destinationen är blockerad!
+tpDestInvalid=Ogiltig destination!
+tpDestBlocked=Destinationen är blockerad!
 tpEmptyNet=Destinationslistan är tom!
 
 # Access
