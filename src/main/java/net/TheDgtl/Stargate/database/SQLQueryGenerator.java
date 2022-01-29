@@ -112,8 +112,10 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalPositionTypeTableStatement(Connection connection) throws SQLException {
-        String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalPositionType} (id INTEGER PRIMARY KEY " +
-                "AUTO_INCREMENT, positionName NVARCHAR(16));";
+        String autoIncrement = (driverEnum == DriverEnum.MARIADB || driverEnum == DriverEnum.MYSQL) ?
+                "AUTO_INCREMENT" : "AUTOINCREMENT";
+        String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalPositionType} (id INTEGER PRIMARY KEY " + 
+                autoIncrement + ", positionName NVARCHAR(16));";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);

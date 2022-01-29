@@ -411,7 +411,6 @@ public class StargateFactory {
         PreparedStatement flagStatement = sqlQueryGenerator.generateCreateFlagTableStatement(connection);
         runStatement(flagStatement);
         addMissingFlags(connection, sqlQueryGenerator);
-        addMissingPositionTypes(connection, sqlQueryGenerator);
 
         PreparedStatement portalPositionTypesStatement = sqlQueryGenerator.generateCreatePortalPositionTypeTableStatement(connection);
         runStatement(portalPositionTypesStatement);
