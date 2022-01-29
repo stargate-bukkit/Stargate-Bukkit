@@ -13,9 +13,9 @@ import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.FixedPortal;
 import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.RandomPortal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
-
 import org.bukkit.Location;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
@@ -41,7 +41,7 @@ public class PortalCreationHelper {
             return new FixedPortal(network, lines[0], lines[1], flags, gate, ownerUUID);
         }
     }
-    
+
     /**
      * Tries to find a gate at the given location matching one of the given gate formats
      *
@@ -64,7 +64,7 @@ public class PortalCreationHelper {
         }
         throw new NoFormatFoundException();
     }
-    
+
     public static Gate createGate(Block sign) throws NoFormatFoundException, GateConflictException {
 
         if (!(Tag.WALL_SIGNS.isTagged(sign.getType()))) {
@@ -77,9 +77,10 @@ public class PortalCreationHelper {
         return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing());
     }
 
-    public static Gate createGate(GateFormat format, Location topLeft, BlockFace portalFacing, boolean zFlip, StargateLogger logger) throws InvalidStructureException {
-        return new Gate(format, topLeft,portalFacing,zFlip,logger);
+    public static Gate createGate(GateFormat format, Location topLeft, BlockFace portalFacing, boolean zFlip,
+                                  List<PortalPosition> portalPositions, StargateLogger logger) throws InvalidStructureException {
+        return new Gate(topLeft, portalFacing, zFlip, format, portalPositions, logger);
     }
-    
-    
+
+
 }

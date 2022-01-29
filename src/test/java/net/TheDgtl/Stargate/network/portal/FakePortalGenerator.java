@@ -8,10 +8,12 @@ import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
+import org.bukkit.util.BlockVector;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -45,7 +47,7 @@ public class FakePortalGenerator {
      * @param numberOfPortals          <p>The number of fake portals to generate</p>
      * @return <p>A map from the portal's name to the portal's object</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
-     * @throws NameErrorException 
+     * @throws NameErrorException        <p>If the generated portal name is invalid</p>
      */
     public Map<String, RealPortal> generateFakePortals(World world, Network portalNetwork,
                                                        boolean createInterServerPortals, int numberOfPortals,
@@ -75,7 +77,7 @@ public class FakePortalGenerator {
      * @param createInterServerPortal <p>Whether to generate a fake inter-server portal</p>
      * @return <p>A fake portal</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
-     * @throws NameErrorException 
+     * @throws NameErrorException        <p>If the given portal name is invalid</p>
      */
     public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal,
                                          StargateLogger logger) throws InvalidStructureException, NameErrorException {
@@ -83,8 +85,11 @@ public class FakePortalGenerator {
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
         }
+        List<PortalPosition> portalPositions = new ArrayList<>();
+        portalPositions.add(new PortalPosition(PositionType.SIGN, new BlockVector(0, 3, 0)));
         GateFormat format = GateFormat.getFormat("fileName.gate");
-        Gate gate = new Gate(format, world.getBlockAt(0, 0, 0).getLocation(), BlockFace.EAST, false, logger);
+        Gate gate = new Gate(world.getBlockAt(0, 0, 0).getLocation(), BlockFace.EAST, false, format,
+                portalPositions, logger);
         return new FixedPortal(portalNetwork, name, "", flags, gate, UUID.randomUUID());
     }
 

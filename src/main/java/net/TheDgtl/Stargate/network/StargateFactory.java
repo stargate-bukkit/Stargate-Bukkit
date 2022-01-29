@@ -20,6 +20,7 @@ import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
@@ -508,10 +509,10 @@ public class StargateFactory {
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
             String name = resultSet.getString("name");
-            String netName = resultSet.getString("network");
+            String networkName = resultSet.getString("network");
 
             //Skip null rows
-            if (name == null && netName == null) {
+            if (name == null && networkName == null) {
                 continue;
             }
 
@@ -521,19 +522,19 @@ public class StargateFactory {
                 destination = "";
             }
             String worldName = resultSet.getString("world");
-            int x = resultSet.getInt("x");
-            int y = resultSet.getInt("y");
-            int z = resultSet.getInt("z");
+            int topLeftX = resultSet.getInt("x");
+            int topLeftY = resultSet.getInt("y");
+            int topLeftZ = resultSet.getInt("z");
             String flagString = resultSet.getString("flags");
             UUID ownerUUID = UUID.fromString(resultSet.getString("ownerUUID"));
 
             Set<PortalFlag> flags = PortalFlag.parseFlags(flagString);
 
             boolean isBungee = flags.contains(PortalFlag.FANCY_INTER_SERVER);
-            logger.logMessage(Level.FINEST, "Trying to add portal " + name + ", on network " + netName +
+            logger.logMessage(Level.FINEST, "Trying to add portal " + name + ", on network " + networkName +
                     ",isInterServer = " + isBungee);
 
-            String targetNet = netName;
+            String targetNet = networkName;
             if (flags.contains(PortalFlag.BUNGEE)) {
                 targetNet = "§§§§§§#BUNGEE#§§§§§§";
             }
@@ -560,8 +561,8 @@ public class StargateFactory {
             if (world == null) {
                 continue;
             }
-            Block block = world.getBlockAt(x, y, z);
-            String[] virtualSign = {name, destination, netName};
+            Block block = world.getBlockAt(topLeftX, topLeftY, topLeftZ);
+            String[] virtualSign = {name, destination, networkName};
 
             if (destination == null || destination.trim().isEmpty()) {
                 flags.add(PortalFlag.NETWORKED);
@@ -571,7 +572,8 @@ public class StargateFactory {
                 //TODO: This needs to be changed as we will save the top-left location and the sign will be seen as one 
                 // of potentially several interfaces rather than an identifier
                 GateFormat format = GateFormat.getFormat("fileName.gate");
-                Gate gate = new Gate(format, block.getLocation(), BlockFace.EAST, false, logger);
+                List<PortalPosition> portalPositions = new ArrayList<>();
+                Gate gate = new Gate(block.getLocation(), BlockFace.EAST, false, format, portalPositions, logger);
                 Portal portal = PortalCreationHelper.createPortalFromSign(network, virtualSign, flags, gate, ownerUUID);
                 network.addPortal(portal, false);
                 logger.logMessage(Level.FINEST, "Added as normal portal");
@@ -584,8 +586,8 @@ public class StargateFactory {
             } catch (InvalidStructureException e) {
                 logger.logMessage(Level.WARNING, String.format(
                         "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
-                        name, (portalType == PortalType.INTER_SERVER ? "interserver" : ""), netName,
-                        block.getLocation().toString()));
+                        name, (portalType == PortalType.INTER_SERVER ? "interserver" : ""), networkName,
+                        block.getLocation()));
             }
         }
         statement.close();

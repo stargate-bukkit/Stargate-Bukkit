@@ -2,13 +2,10 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
-import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
-import org.bukkit.block.Block;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -43,12 +40,9 @@ public class BungeePortal extends AbstractPortal {
      * @param name              <p>The name of the portal</p>
      * @param destination       <p>The destination of the portal</p>
      * @param destinationServer <p>The destination server to connect to</p>
-     * @param signBlock         <p>The block this portal's sign is located at</p>
      * @param flags             <p>The flags enabled for this portal</p>
      * @param ownerUUID         <p>The UUID of this portal's owner</p>
-     * @throws NameErrorException     <p>If the portal name is invalid</p>
-     * @throws NoFormatFoundException <p>If no gate format matches the portal</p>
-     * @throws GateConflictException  <p>If the portal's gate conflicts with an existing one</p>
+     * @throws NameErrorException <p>If the portal name is invalid</p>
      */
     public BungeePortal(Network network, String name, String destination, String destinationServer,
                         Set<PortalFlag> flags, Gate gate, UUID ownerUUID) throws NameErrorException {

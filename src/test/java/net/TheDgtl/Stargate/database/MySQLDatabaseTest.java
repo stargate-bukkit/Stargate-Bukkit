@@ -5,7 +5,6 @@ import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.config.TableNameConfig;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;

@@ -81,7 +81,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
     final String GATE_FOLDER = "gates";
     final String LANGUAGE_FOLDER = "lang";
-    final String PORTAL_FOLDER = "portals";
     final String INTERNAL_FOLDER = ".internal";
 
     private PluginManager pm;

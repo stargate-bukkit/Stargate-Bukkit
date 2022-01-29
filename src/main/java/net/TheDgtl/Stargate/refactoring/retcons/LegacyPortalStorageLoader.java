@@ -15,7 +15,7 @@ import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.util.FileHelper;
-
+import net.TheDgtl.Stargate.vectorlogic.SimpleVectorOperation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -66,7 +66,7 @@ public class LegacyPortalStorageLoader {
      * @return <p>The list of loaded and saved portals</p>
      * @throws IOException               <p>If unable to read one or more .db files</p>
      * @throws InvalidStructureException <p>If an encountered portal's structure is invalid</p>
-     * @throws NameErrorException 
+     * @throws NameErrorException        <p>If the name of a portal is invalid</p>
      */
     public static List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, StargateFactory factory,
                                                       StargateLogger logger) throws IOException, InvalidStructureException, NameErrorException {
@@ -102,7 +102,7 @@ public class LegacyPortalStorageLoader {
      * @param logger  <p>The logger used for logging</p>
      * @return <p>The loaded portal</p>
      * @throws InvalidStructureException <p>If the portal's structure is invalid</p>
-     * @throws NameErrorException 
+     * @throws NameErrorException        <p>If the name of the portal is invalid</p>
      */
     static private Portal readPortal(String line, World world, StargateFactory factory,
                                      StargateLogger logger) throws InvalidStructureException, NameErrorException {
@@ -138,26 +138,50 @@ public class LegacyPortalStorageLoader {
 
         //TODO: Need to make sure whether this way of calculating the relative location works, and fix it if it doesn't
         List<PortalPosition> portalPositions = new ArrayList<>();
-        if (signLocation != null) {
-            Location relativeSignLocation = signLocation.subtract(topLeft);
-            portalPositions.add(new PortalPosition(PositionType.SIGN, new BlockVector(relativeSignLocation.getBlockX(),
-                    relativeSignLocation.getBlockY(), relativeSignLocation.getBlockZ())));
+        PortalPosition signPosition = getRelativePosition(topLeft, signLocation, facing, logger);
+        if (signPosition != null) {
+            portalPositions.add(signPosition);
         }
-        if (buttonLocation != null) {
-            Location relativeButtonLocation = buttonLocation.subtract(topLeft);
-            portalPositions.add(new PortalPosition(PositionType.BUTTON, new BlockVector(relativeButtonLocation.getBlockX(),
-                    relativeButtonLocation.getBlockY(), relativeButtonLocation.getBlockZ())));
+        PortalPosition buttonPosition = getRelativePosition(topLeft, buttonLocation, facing, logger);
+        if (buttonPosition != null) {
+            portalPositions.add(buttonPosition);
         }
         Network network = factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
-        
+
         GateFormat format = GateFormat.getFormat(gateFormatName);
-        Gate gate = new Gate(format, topLeft, facing, false, logger);
-        Portal portal = new FixedPortal(network, name, destination, flags,gate, ownerUUID);
+        Gate gate = new Gate(topLeft, facing, false, format, portalPositions, logger);
+        Portal portal = new FixedPortal(network, name, destination, flags, gate, ownerUUID);
 
         //Add the portal to its network and store it to the database
         network.addPortal(portal, true);
 
         return portal;
+    }
+
+    /**
+     * Gets the portal position from a location, relative to the top-left location
+     *
+     * @param topLeft       <p>The top-left location of the portal the block position belongs to</p>
+     * @param blockPosition <p>The position of the block to get the portal position for</p>
+     * @param facing        <p>The direction the portal in question is facing</p>
+     * @param logger        <p>The logger to used for debug logging</p>
+     * @return <p>The portal position relative to the top-left location</p>
+     * @throws InvalidStructureException <p>If the portal's direction is invalid</p>
+     */
+    private static PortalPosition getRelativePosition(Location topLeft, Location blockPosition, BlockFace facing,
+                                                      StargateLogger logger) throws InvalidStructureException {
+        if (blockPosition != null) {
+            Location relativeBlockPosition = blockPosition.subtract(topLeft);
+            BlockVector relativeBlockVector = new BlockVector(relativeBlockPosition.getBlockX(),
+                    relativeBlockPosition.getBlockY(), relativeBlockPosition.getBlockZ());
+            SimpleVectorOperation operation = new SimpleVectorOperation(facing);
+            BlockVector normalizedVector = operation.performInverseOperation(relativeBlockVector);
+            logger.logMessage(Level.FINER, "Calculated portal position: " + normalizedVector +
+                    " from top-left: " + topLeft + ", block position: " + blockPosition + " and facing: " + facing);
+            return new PortalPosition(PositionType.SIGN, normalizedVector);
+        } else {
+            return null;
+        }
     }
 
     /**

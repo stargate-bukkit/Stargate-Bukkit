@@ -7,7 +7,6 @@ import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
-import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
@@ -29,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -55,7 +53,6 @@ public class Gate {
      * @param format       <p>The gate format used by this gate</p>
      * @param signLocation <p>The location of this gate's sign</p>
      * @param signFace     <p>The direction this gate's sign is facing</p>
-     * @param flags        <p>The flags enabled for this gate</p>
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
@@ -84,18 +81,19 @@ public class Gate {
      * @param topLeft         <p>The location of the origin of the gate</p>
      * @param facing          <p>The facing of the gate</p>
      * @param zFlip           <p>If the gateFormat is flipped in the z-axis</p>
-     * @param gateDesignName  <p>The filename of the design for this gate</p>
-     * @param flags           <p>The flags enabled for this gate</p>
+     * @param format          <p>The gate format used by this gate</p>
      * @param portalPositions <p>The positions of this gate's control blocks</p>
      * @throws InvalidStructureException <p>If the facing is invalid</p>
      */
-    public Gate(GateFormat format, Location topLeft, BlockFace facing, boolean zFlip, StargateLogger logger) throws InvalidStructureException {
+    public Gate(Location topLeft, BlockFace facing, boolean zFlip, GateFormat format,
+                List<PortalPosition> portalPositions, StargateLogger logger) throws InvalidStructureException {
         this.portalPositions = new ArrayList<>();
         this.facing = facing;
         this.topLeft = topLeft;
         this.converter = new VectorOperation(facing, logger);
         this.converter.setFlipZAxis(zFlip);
         this.format = format;
+        this.portalPositions = portalPositions;
     }
 
     /**
@@ -188,13 +186,13 @@ public class Gate {
             Location loc = getLocation(vec);
             output.add(new BlockLocation(loc));
         }
-
-        List<BlockLocation> buttonPositions = new ArrayList<>();
+        
+        /*List<BlockLocation> buttonPositions = new ArrayList<>();
         portalPositions.stream().filter((position) -> position.getPositionType() == PositionType.BUTTON).forEach(
                 position -> buttonPositions.add(new BlockLocation(getLocation(position.getPositionLocation()))));
         if (structureType == GateStructureType.CONTROL_BLOCK && flags.contains(PortalFlag.ALWAYS_ON) && !buttonPositions.isEmpty()) {
             output.removeAll(buttonPositions);
-        }
+        }*/
         return output;
     }
 
