@@ -282,6 +282,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void setSignColor(DyeColor color) {
+        //TODO: Account for multiple signs with individual colors
         colorDrawer = new NoLineColorFormatter();
         for (Location location : this.getSignLocations()) {
             Sign sign = (Sign) location.getBlock().getState();

@@ -105,9 +105,9 @@ public class PortalCreationHelper {
         return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing());
     }
 
-    public static Gate createGate(GateFormat format, Location topLeft, BlockFace portalFacing, boolean zFlip,
+    public static Gate createGate(GateFormat format, Location topLeft, BlockFace portalFacing, boolean flipZ,
                                   List<PortalPosition> portalPositions, StargateLogger logger) throws InvalidStructureException {
-        return new Gate(topLeft, portalFacing, zFlip, format, portalPositions, logger);
+        return new Gate(topLeft, portalFacing, flipZ, format, portalPositions, logger);
     }
 
 

@@ -80,18 +80,18 @@ public class Gate {
      *
      * @param topLeft         <p>The location of the origin of the gate</p>
      * @param facing          <p>The facing of the gate</p>
-     * @param zFlip           <p>If the gateFormat is flipped in the z-axis</p>
+     * @param flipZ           <p>If the gateFormat is flipped in the z-axis</p>
      * @param format          <p>The gate format used by this gate</p>
      * @param portalPositions <p>The positions of this gate's control blocks</p>
      * @throws InvalidStructureException <p>If the facing is invalid</p>
      */
-    public Gate(Location topLeft, BlockFace facing, boolean zFlip, GateFormat format,
+    public Gate(Location topLeft, BlockFace facing, boolean flipZ, GateFormat format,
                 List<PortalPosition> portalPositions, StargateLogger logger) throws InvalidStructureException {
         this.portalPositions = new ArrayList<>();
         this.facing = facing;
         this.topLeft = topLeft;
         this.converter = new VectorOperation(facing, logger);
-        this.converter.setFlipZAxis(zFlip);
+        this.converter.setFlipZAxis(flipZ);
         this.format = format;
         this.portalPositions = portalPositions;
     }
@@ -106,6 +106,15 @@ public class Gate {
         if (drawButton) {
             drawButton();
         }
+    }
+
+    /**
+     * Gets a copy of this gate's portal positions
+     *
+     * @return <p>A copy of this gate's portal positions</p>
+     */
+    public List<PortalPosition> getPortalPositions() {
+        return new ArrayList<>(this.portalPositions);
     }
 
     /**

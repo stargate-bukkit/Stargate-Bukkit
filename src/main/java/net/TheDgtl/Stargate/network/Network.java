@@ -12,6 +12,7 @@ import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import net.md_5.bungee.api.ChatColor;
@@ -236,6 +237,10 @@ public class Network {
             PreparedStatement addFlagStatement = sqlMaker.generateAddPortalFlagRelationStatement(connection, portalType);
             addFlags(addFlagStatement, portal);
             addFlagStatement.close();
+
+            PreparedStatement addPositionStatement = sqlMaker.generateAddPortalPositionStatement(connection);
+            addPortalPositions(addPositionStatement, portal);
+            addPositionStatement.close();
             connection.commit();
             connection.setAutoCommit(true);
 
@@ -273,11 +278,15 @@ public class Network {
             removeFlagsStatement.execute();
             removeFlagsStatement.close();
 
+            PreparedStatement removePositionsStatement = sqlMaker.generateRemovePortalPositionsStatement(conn);
+            removePositionsStatement.setString(1, portal.getName());
+            removePositionsStatement.setString(2, portal.getNetwork().getName());
+            removePositionsStatement.execute();
+            removePositionsStatement.close();
+
             PreparedStatement statement = sqlMaker.generateRemovePortalStatement(conn, portal, portalType);
             statement.execute();
             statement.close();
-
-            //TODO: Remove any portal positions related to the portal
 
             conn.commit();
             conn.setAutoCommit(true);
@@ -321,6 +330,25 @@ public class Network {
             portalHash = ChatColor.stripColor(portalHash);
         }
         return portalHash;
+    }
+
+    /**
+     * Adds a portal position to the portal positions table
+     *
+     * @param addPositionStatement <p>The prepared statement for adding a portal position</p>
+     * @param portal               <p>The portal to add the portal positions of</p>
+     * @throws SQLException <p>If unable to add the portal positions</p>
+     */
+    private void addPortalPositions(PreparedStatement addPositionStatement, RealPortal portal) throws SQLException {
+        for (PortalPosition portalPosition : portal.getGate().getPortalPositions()) {
+            addPositionStatement.setString(1, portal.getName());
+            addPositionStatement.setString(2, portal.getNetwork().getName());
+            addPositionStatement.setString(3, String.valueOf(portalPosition.getPositionLocation().getBlockX()));
+            addPositionStatement.setString(4, String.valueOf(portalPosition.getPositionLocation().getBlockY()));
+            addPositionStatement.setString(5, String.valueOf(portalPosition.getPositionLocation().getBlockZ()));
+            addPositionStatement.setString(6, portalPosition.getPositionType().name());
+            addPositionStatement.execute();
+        }
     }
 
     /**

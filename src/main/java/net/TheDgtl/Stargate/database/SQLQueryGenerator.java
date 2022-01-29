@@ -97,7 +97,7 @@ public class SQLQueryGenerator {
                 .format("CREATE TABLE IF NOT EXISTS {Portal} (name NVARCHAR(180), network NVARCHAR(180),"
                         + " destination NVARCHAR(180), world NVARCHAR(255) NOT NULL, x INTEGER, y INTEGER,"
                         + " z INTEGER, ownerUUID VARCHAR(36), gateFileName NVARCHAR(255), facing INTEGER,"
-                        + " zFlip BOOLEAN,%s PRIMARY KEY (name, network));", interServerExtraFields);
+                        + " flipZ BOOLEAN,%s PRIMARY KEY (name, network));", interServerExtraFields);
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
         // TODO: Add CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci') equivalent for SQLite
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
@@ -157,8 +157,8 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalPositionTableStatement(Connection connection) throws SQLException {
-        String statementMessage = "CREATE TABLE {PortalPosition} (portalName NVARCHAR(180), networkName NVARCHAR(180), " +
-                "xCoordinate INTEGER, yCoordinate INTEGER, zCoordinate INTEGER, positionType INTEGER," +
+        String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalPosition} (portalName NVARCHAR(180), networkName" +
+                " NVARCHAR(180), xCoordinate INTEGER, yCoordinate INTEGER, zCoordinate INTEGER, positionType INTEGER," +
                 "PRIMARY KEY (portalName, networkName, xCoordinate, yCoordinate, zCoordinate), " +
                 "FOREIGN KEY (portalName, networkName) REFERENCES Portal(portalName, networkName), " +
                 "FOREIGN KEY (positionType) REFERENCES PortalPositionType (id));" +
@@ -177,7 +177,37 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateAddPortalPositionStatement(Connection connection) throws SQLException {
         String statementMessage = "INSERT INTO {PortalPosition} (portalName, networkName, xCoordinate, yCoordinate, " +
-                "zCoordinate, positionType) VALUES (?, ?, ?, ?, ?, ?);";
+                "zCoordinate, positionType) VALUES (?, ?, ?, ?, ?, (SELECT {PortalPositionType}.id FROM " +
+                "{PortalPositionType} WHERE {PortalPositionType}.positionName = ?));";
+        statementMessage = replaceKnownTableNames(statementMessage);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
+     * Gets a prepared statement for removing a position
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateRemovePortalPositionsStatement(Connection connection) throws SQLException {
+        String statementMessage = "DELETE FROM {PortalPosition} WHERE portalName = ? AND networkName = ?;";
+        statementMessage = replaceKnownTableNames(statementMessage);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+
+    /**
+     * Gets a prepared statement for getting all portal positions for one portal
+     *
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateGetPortalPositionsStatement(Connection connection) throws SQLException {
+        String statementMessage = "SELECT *, (SELECT {PortalPositionType}.positionName FROM {PortalPositionType} " +
+                "WHERE {PortalPositionType}.id = positionType) as positionName FROM {PortalPosition} WHERE networkName = ? AND portalName = ?";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);

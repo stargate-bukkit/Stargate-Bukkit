@@ -413,6 +413,8 @@ public class StargateFactory {
         PreparedStatement portalPositionTypesStatement = sqlQueryGenerator.generateCreatePortalPositionTypeTableStatement(connection);
         runStatement(portalPositionTypesStatement);
         addMissingPositionTypes(connection, sqlQueryGenerator);
+        PreparedStatement portalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection);
+        runStatement(portalPositionsStatement);
 
         PreparedStatement lastKnownNameStatement = sqlQueryGenerator.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);
@@ -434,9 +436,6 @@ public class StargateFactory {
         runStatement(interServerRelationStatement);
         PreparedStatement interPortalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, PortalType.INTER_SERVER);
         runStatement(interPortalViewStatement);
-
-        PreparedStatement portalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection);
-        runStatement(portalPositionsStatement);
         connection.close();
     }
 
@@ -525,7 +524,7 @@ public class StargateFactory {
             String flagString = resultSet.getString("flags");
             UUID ownerUUID = UUID.fromString(resultSet.getString("ownerUUID"));
             String gateFileName = resultSet.getString("gateFileName");
-            boolean flipZ = Boolean.parseBoolean(resultSet.getString("zFlip"));
+            boolean flipZ = Boolean.parseBoolean(resultSet.getString("flipZ"));
             BlockFace facing = getBlockFaceFromOrdinal(Integer.parseInt(resultSet.getString("facing")));
 
             Set<PortalFlag> flags = PortalFlag.parseFlags(flagString);
@@ -568,10 +567,8 @@ public class StargateFactory {
             }
 
             try {
-                //TODO: This needs to be changed as we will save the top-left location and the sign will be seen as one 
-                // of potentially several interfaces rather than an identifier
                 GateFormat format = GateFormat.getFormat(gateFileName);
-                List<PortalPosition> portalPositions = new ArrayList<>();
+                List<PortalPosition> portalPositions = getPortalPositions(networkName, name);
                 Gate gate = new Gate(block.getLocation(), facing, flipZ, format, portalPositions, logger);
                 Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate, ownerUUID);
                 network.addPortal(portal, false);
@@ -590,6 +587,34 @@ public class StargateFactory {
         }
         statement.close();
         connection.close();
+    }
+
+    /**
+     * Gets all portal positions for the given portal
+     *
+     * @param networkName <p>The name of the network the portal belongs to</p>
+     * @param portalName  <p>The name of the portal</p>
+     * @return <p>The portal positions belonging to the portal</p>
+     * @throws SQLException <p>If the SQL query fails to successfully execute</p>
+     */
+    private List<PortalPosition> getPortalPositions(String networkName, String portalName) throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionsStatement(connection);
+        statement.setString(1, networkName);
+        statement.setString(2, portalName);
+
+        List<PortalPosition> portalPositions = new ArrayList<>();
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next()) {
+            int xCoordinate = Integer.parseInt(resultSet.getString("xCoordinate"));
+            int yCoordinate = Integer.parseInt(resultSet.getString("yCoordinate"));
+            int zCoordinate = Integer.parseInt(resultSet.getString("zCoordinate"));
+            BlockVector positionVector = new BlockVector(xCoordinate, yCoordinate, zCoordinate);
+            PositionType positionType = PositionType.valueOf(resultSet.getString("positionName"));
+            portalPositions.add(new PortalPosition(positionType, positionVector));
+        }
+        statement.close();
+        return portalPositions;
     }
 
     /**
