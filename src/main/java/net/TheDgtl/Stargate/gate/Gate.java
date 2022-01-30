@@ -162,15 +162,6 @@ public class Gate {
     }
 
     /**
-     * Gets the block face of this gate's sign
-     *
-     * @return <p>The block face of this gate's sign</p>
-     */
-    public BlockFace getSignFace() {
-        return this.facing;
-    }
-
-    /**
      * Gets the location of this gate's signs
      *
      * @return <p>The location of this gate's signs</p>

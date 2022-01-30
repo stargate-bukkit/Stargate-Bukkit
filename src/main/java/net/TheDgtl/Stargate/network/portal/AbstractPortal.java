@@ -182,7 +182,7 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void teleportHere(Entity target, RealPortal origin) {
 
-        BlockFace portalFacing = gate.getSignFace().getOppositeFace();
+        BlockFace portalFacing = gate.getFacing().getOppositeFace();
         if (flags.contains(PortalFlag.BACKWARDS)) {
             portalFacing = portalFacing.getOppositeFace();
         }
