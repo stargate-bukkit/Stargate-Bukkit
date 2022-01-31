@@ -52,7 +52,10 @@ public class FixedPortal extends AbstractPortal {
 
     @Override
     public Portal loadDestination() {
-        return this.network.getPortal(destinationName);
+        Portal destination = this.network.getPortal(destinationName);
+        if(destination == null)
+            destination = new InvalidPortal(destinationName);
+        return destination;
     }
 
     @Override
