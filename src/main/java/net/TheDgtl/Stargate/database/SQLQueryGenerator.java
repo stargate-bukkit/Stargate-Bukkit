@@ -361,7 +361,7 @@ public class SQLQueryGenerator {
         String extraValues = (isInterServer ? ", ?, ?" : "");
         String statementMessage = String
                 .format("INSERT INTO {Portal} (network, name, destination, world, x, y, z, ownerUUID,"
-                        + "gateFileName, facing%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?%s);", extraKeys, extraValues);
+                        + "gateFileName, facing, flipZ%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?%s);", extraKeys, extraValues);
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
 
         PreparedStatement statement = connection.prepareStatement(statementMessage);
@@ -386,7 +386,7 @@ public class SQLQueryGenerator {
 
         statement.setString(9, gate.getFormat().getFileName());
         statement.setInt(10, gate.getFacing().ordinal());
-
+        statement.setBoolean(11, gate.getFlipZ());
 
         if (isInterServer) {
             statement.setString(11, Stargate.serverUUID.toString());

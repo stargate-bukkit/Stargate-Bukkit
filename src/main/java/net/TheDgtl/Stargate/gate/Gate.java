@@ -43,6 +43,7 @@ public class Gate {
     private List<PortalPosition> portalPositions;
     private final BlockFace facing;
     private boolean isOpen = false;
+    private boolean flipped;
 
     private static final Material DEFAULT_BUTTON = Material.STONE_BUTTON;
     private static final Material DEFAULT_WATER_BUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
@@ -68,6 +69,7 @@ public class Gate {
             return;
         }
         converter.setFlipZAxis(true);
+        flipped = true;
         if (matchesFormat(signLocation)) {
             return;
         }
@@ -94,6 +96,7 @@ public class Gate {
         this.converter.setFlipZAxis(flipZ);
         this.format = format;
         this.portalPositions = portalPositions;
+        this.flipped = flipZ;
     }
 
     /**
@@ -257,6 +260,15 @@ public class Gate {
     }
 
     /**
+     * Gets whether this gate has been flipped on the z-axis
+     *
+     * @return <p>Whether this gate has been flipped on the z-axis</p>
+     */
+    public boolean getFlipZ() {
+        return this.flipped;
+    }
+
+    /**
      * Gets a vector relative to this gate's top-left location using the given location
      *
      * @param location <p>The location to turn into a relative location</p>
@@ -414,5 +426,4 @@ public class Gate {
     public Location getTopLeft() {
         return this.topLeft;
     }
-
 }
