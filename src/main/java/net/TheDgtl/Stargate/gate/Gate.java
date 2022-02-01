@@ -40,7 +40,7 @@ public class Gate {
     private final GateFormat format;
     private final VectorOperation converter;
     private Location topLeft;
-    private List<PortalPosition> portalPositions;
+    private final List<PortalPosition> portalPositions;
     private final BlockFace facing;
     private boolean isOpen = false;
     private boolean flipped;
@@ -89,7 +89,6 @@ public class Gate {
      */
     public Gate(Location topLeft, BlockFace facing, boolean flipZ, GateFormat format,
                 List<PortalPosition> portalPositions, StargateLogger logger) throws InvalidStructureException {
-        this.portalPositions = new ArrayList<>();
         this.facing = facing;
         this.topLeft = topLeft;
         this.converter = new VectorOperation(facing, logger);
