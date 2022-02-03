@@ -144,7 +144,7 @@ public class LegacyPortalStorageLoader {
             portalPositions.add(signPosition);
         }
         PortalPosition buttonPosition = getRelativePosition(topLeft, buttonLocation, facing, logger);
-        if (buttonPosition != null) {
+        if (buttonPosition != null && !flags.contains(PortalFlag.ALWAYS_ON)) {
             portalPositions.add(buttonPosition);
         }
         Network network = factory.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
