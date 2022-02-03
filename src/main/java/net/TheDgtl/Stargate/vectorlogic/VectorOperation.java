@@ -80,7 +80,7 @@ public class VectorOperation implements IVectorOperation {
     }
 
     @Override
-    public Vector performInverseOperation(@NotNull Vector vector) {
+    public Vector performOperation(@NotNull Vector vector) {
         Vector output = matrixRotation.performOperation(vector);
         if (flipZAxis) {
             output.setZ(-output.getZ());
@@ -89,7 +89,7 @@ public class VectorOperation implements IVectorOperation {
     }
 
     @Override
-    public Vector performOperation(@NotNull Vector vector) {
+    public Vector performInverseOperation(@NotNull Vector vector) {
         Vector output = vector.clone();
         if (flipZAxis) {
             output.setZ(-output.getZ());
