@@ -113,11 +113,14 @@ public class RefactorerTest {
     }
 
     @AfterAll
-    public static void tearDown() throws IOException {
+    public static void tearDown() throws IOException, SQLException {
         MockBukkit.unmock();
+        sqlDatabase.getConnection().close();
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
-            if (oldConfigFile.exists() && !configFile.delete()) {
+            if(!oldConfigFile.exists())
+                continue;
+            if (!configFile.delete()) {
                 throw new IOException("Unable to delete test-generated config file");
             }
             if (!oldConfigFile.renameTo(configFile)) {
