@@ -15,6 +15,7 @@ import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.util.FileHelper;
+import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import net.TheDgtl.Stargate.vectorlogic.SimpleVectorOperation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -150,9 +151,10 @@ public class LegacyPortalStorageLoader {
 
         GateFormat format = GateFormat.getFormat(gateFormatName);
         Gate gate = new Gate(topLeft, facing, false, format, portalPositions, logger);
-        Portal portal = new FixedPortal(network, name, destination, flags, gate, ownerUUID);
+        Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate, ownerUUID);
 
         //Add the portal to its network and store it to the database
+        logger.logMessage(Level.FINE, "Saved portal %s in network %s from old storage ");
         network.addPortal(portal, true);
 
         return portal;
