@@ -608,7 +608,7 @@ public class StargateFactory {
         while (resultSet.next()) {
             int xCoordinate = Integer.parseInt(resultSet.getString("xCoordinate"));
             int yCoordinate = Integer.parseInt(resultSet.getString("yCoordinate"));
-            int zCoordinate = Integer.parseInt(resultSet.getString("zCoordinate"));
+            int zCoordinate = -Integer.parseInt(resultSet.getString("zCoordinate"));
             BlockVector positionVector = new BlockVector(xCoordinate, yCoordinate, zCoordinate);
             PositionType positionType = PositionType.valueOf(resultSet.getString("positionName"));
             portalPositions.add(new PortalPosition(positionType, positionVector));

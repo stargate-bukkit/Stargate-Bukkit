@@ -345,7 +345,7 @@ public class Network {
             addPositionStatement.setString(2, portal.getNetwork().getName());
             addPositionStatement.setString(3, String.valueOf(portalPosition.getPositionLocation().getBlockX()));
             addPositionStatement.setString(4, String.valueOf(portalPosition.getPositionLocation().getBlockY()));
-            addPositionStatement.setString(5, String.valueOf(portalPosition.getPositionLocation().getBlockZ()));
+            addPositionStatement.setString(5, String.valueOf(-portalPosition.getPositionLocation().getBlockZ()));
             addPositionStatement.setString(6, portalPosition.getPositionType().name());
             addPositionStatement.execute();
         }
