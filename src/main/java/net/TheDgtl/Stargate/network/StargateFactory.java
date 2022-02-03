@@ -524,7 +524,7 @@ public class StargateFactory {
             String flagString = resultSet.getString("flags");
             UUID ownerUUID = UUID.fromString(resultSet.getString("ownerUUID"));
             String gateFileName = resultSet.getString("gateFileName");
-            boolean flipZ = Boolean.parseBoolean(resultSet.getString("flipZ"));
+            boolean flipZ = resultSet.getBoolean("flipZ");
             BlockFace facing = getBlockFaceFromOrdinal(Integer.parseInt(resultSet.getString("facing")));
 
             Set<PortalFlag> flags = PortalFlag.parseFlags(flagString);
