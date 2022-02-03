@@ -255,7 +255,7 @@ public class GateFormatParser {
         for (lineNumber = 0; lineNumber < lines.size(); lineNumber++) {
             char[] charLine = lines.get(lineNumber).toCharArray();
             for (i = 0; i < charLine.length; i++) {
-                BlockVector selectedLocation = new BlockVector(0, -lineNumber, i);
+                BlockVector selectedLocation = new BlockVector(0, -lineNumber, -i);
                 setDesignPoint(charLine[i], selectedLocation.clone());
             }
         }
