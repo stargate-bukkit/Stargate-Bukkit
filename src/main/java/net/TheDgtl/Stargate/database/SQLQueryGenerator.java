@@ -389,8 +389,8 @@ public class SQLQueryGenerator {
         statement.setBoolean(11, gate.getFlipZ());
 
         if (isInterServer) {
-            statement.setString(11, Stargate.serverUUID.toString());
-            statement.setBoolean(12, true);
+            statement.setString(12, Stargate.serverUUID.toString());
+            statement.setBoolean(13, true);
         }
 
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
