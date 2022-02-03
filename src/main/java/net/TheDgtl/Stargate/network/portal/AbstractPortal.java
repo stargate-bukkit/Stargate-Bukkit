@@ -285,6 +285,10 @@ public abstract class AbstractPortal implements RealPortal {
         //TODO: Account for multiple signs with individual colors
         colorDrawer = new NoLineColorFormatter();
         for (Location location : this.getSignLocations()) {
+            if(!(location.getBlock().getState() instanceof Sign)) {
+                //TODO send error message?
+                continue;
+            }
             Sign sign = (Sign) location.getBlock().getState();
             if (color != null) {
                 sign.setColor(color);
