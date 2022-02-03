@@ -37,7 +37,7 @@ public abstract class GateStructure {
         }
         WorldBorder border = world.getWorldBorder();
         for (BlockVector partPos : partsPos) {
-            BlockVector inverse = vectorOperation.performInverseOperation(partPos);
+            BlockVector inverse = vectorOperation.performToRealSpaceOperation(partPos);
             Location partLoc = topLeft.clone().add(inverse);
             Stargate.log(Level.FINEST,
                     "Checking location (" + partLoc.getBlockX() + "," + partLoc.getBlockY() + "," + partLoc.getBlockZ()

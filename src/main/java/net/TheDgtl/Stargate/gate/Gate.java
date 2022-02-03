@@ -275,7 +275,7 @@ public class Gate {
      */
     public Vector getRelativeVector(Location location) {
         Vector vector = topLeft.clone().subtract(location).toVector();
-        return converter.performOperation(vector);
+        return converter.performToAbstractSpaceOperation(vector);
     }
 
     /**
@@ -339,7 +339,7 @@ public class Gate {
      * @return <p>The location corresponding to the given vector</p>
      */
     private Location getLocation(@NotNull Vector vector) {
-        return topLeft.clone().add(converter.performInverseOperation(vector));
+        return topLeft.clone().add(converter.performToRealSpaceOperation(vector));
     }
 
     /**
@@ -363,7 +363,7 @@ public class Gate {
              * the position of the sign minus a vector of a hypothetical sign position in
              * format.
              */
-            topLeft = location.clone().subtract(converter.performInverseOperation(controlBlock));
+            topLeft = location.clone().subtract(converter.performToRealSpaceOperation(controlBlock));
 
             if (getFormat().matches(converter, topLeft)) {
                 if (isGateConflict()) {

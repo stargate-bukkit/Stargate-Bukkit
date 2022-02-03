@@ -9,7 +9,6 @@ import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
-import net.TheDgtl.Stargate.network.portal.FixedPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
@@ -177,7 +176,7 @@ public class LegacyPortalStorageLoader {
             BlockVector relativeBlockVector = new BlockVector(relativeBlockPosition.getBlockX(),
                     relativeBlockPosition.getBlockY(), relativeBlockPosition.getBlockZ());
             SimpleVectorOperation operation = new SimpleVectorOperation(facing);
-            BlockVector normalizedVector = operation.performInverseOperation(relativeBlockVector);
+            BlockVector normalizedVector = operation.performToRealSpaceOperation(relativeBlockVector);
             logger.logMessage(Level.FINER, "Calculated portal position: " + normalizedVector +
                     " from top-left: " + topLeft + ", block position: " + blockPosition + " and facing: " + facing);
             return new PortalPosition(PositionType.SIGN, normalizedVector);

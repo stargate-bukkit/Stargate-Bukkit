@@ -118,7 +118,7 @@ public class RefactorerTest {
         sqlDatabase.getConnection().close();
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
-            if(!oldConfigFile.exists())
+            if (!oldConfigFile.exists())
                 continue;
             if (!configFile.delete()) {
                 throw new IOException("Unable to delete test-generated config file");

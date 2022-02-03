@@ -65,7 +65,7 @@ public class SimpleVectorOperation implements IVectorOperation {
     }
 
     @Override
-    public Vector performOperation(@NotNull Vector vector) {
+    public Vector performToAbstractSpaceOperation(@NotNull Vector vector) {
         Vector clone = vector.clone();
         clone.rotateAroundAxis(rotationAxes.get(facing), rotationAngles.get(facing));
         if (flipZAxis) {
@@ -75,7 +75,7 @@ public class SimpleVectorOperation implements IVectorOperation {
     }
 
     @Override
-    public Vector performInverseOperation(@NotNull Vector vector) {
+    public Vector performToRealSpaceOperation(@NotNull Vector vector) {
         Vector clone = vector.clone();
         if (flipZAxis) {
             clone.setZ(-clone.getZ());
@@ -84,8 +84,8 @@ public class SimpleVectorOperation implements IVectorOperation {
     }
 
     @Override
-    public BlockVector performInverseOperation(@NotNull BlockVector vector) {
-        return performInverseOperation((Vector) vector).toBlockVector();
+    public BlockVector performToRealSpaceOperation(@NotNull BlockVector vector) {
+        return performToRealSpaceOperation((Vector) vector).toBlockVector();
     }
 
     /**

@@ -40,7 +40,7 @@ public interface IVectorOperation {
      * @param vector <p>The vector to perform the operation on</p>
      * @return vector <p>A new vector with the operation applied</p>
      */
-    Vector performOperation(@NotNull Vector vector);
+    Vector performToAbstractSpaceOperation(@NotNull Vector vector);
 
     /**
      * Performs the reverse of this vector operation on the given vector
@@ -51,7 +51,7 @@ public interface IVectorOperation {
      * @param vector <p>The vector to perform the inverse operation on</p>
      * @return vector <p>A new vector with the inverse operation applied</p>
      */
-    Vector performInverseOperation(@NotNull Vector vector);
+    Vector performToRealSpaceOperation(@NotNull Vector vector);
 
     /**
      * Performs the reverse of this vector operation on the given vector
@@ -62,6 +62,6 @@ public interface IVectorOperation {
      * @param vector <p>The vector to perform the inverse operation on</p>
      * @return vector <p>A new vector with the inverse operation applied</p>
      */
-    BlockVector performInverseOperation(@NotNull BlockVector vector);
+    BlockVector performToRealSpaceOperation(@NotNull BlockVector vector);
 
 }
