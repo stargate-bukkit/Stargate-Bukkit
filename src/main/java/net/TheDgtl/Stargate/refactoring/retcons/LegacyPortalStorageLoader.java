@@ -153,7 +153,7 @@ public class LegacyPortalStorageLoader {
         Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate, ownerUUID);
 
         //Add the portal to its network and store it to the database
-        logger.logMessage(Level.FINE, "Saved portal %s in network %s from old storage ");
+        logger.logMessage(Level.FINE, String.format("Saving portal %s in network %s from old storage... ",name,networkName));
         network.addPortal(portal, true);
 
         return portal;

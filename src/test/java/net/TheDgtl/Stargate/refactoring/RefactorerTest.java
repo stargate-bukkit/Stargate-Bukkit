@@ -116,6 +116,7 @@ public class RefactorerTest {
     public static void tearDown() throws IOException, SQLException {
         MockBukkit.unmock();
         sqlDatabase.getConnection().close();
+        
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
             if (!oldConfigFile.exists())
@@ -130,6 +131,7 @@ public class RefactorerTest {
         if (sqlDatabaseFile.exists() && !sqlDatabaseFile.delete()) {
             throw new IOException("Unable to remove database file");
         }
+        
     }
 
     @Test
@@ -163,7 +165,9 @@ public class RefactorerTest {
     @Test
     @Order(2)
     public void doOtherRefactorCheck() {
-        for (Refactorer refactorer : refactorerMap.values()) {
+        for (String key : refactorerMap.keySet()) {
+            System.out.println(String.format("####### Doing misc refectoring based on the configfile %s",key));
+            Refactorer refactorer = refactorerMap.get(key);
             refactorer.run();
         }
     }
@@ -206,6 +210,8 @@ public class RefactorerTest {
     public void portalLoadCheck() {
         for (String key : configTestMap.keySet()) {
             Map<String, String> testMap = configTestMap.get(key).getSecondValue();
+            
+            System.out.println(String.format("--------- Checking portal loaded from %s configuration",key));
             for (String portalName : testMap.keySet()) {
                 String netName = testMap.get(portalName);
                 Network net = factory.getNetwork(netName, false);
