@@ -54,10 +54,11 @@ public class Gate {
      * @param format       <p>The gate format used by this gate</p>
      * @param signLocation <p>The location of this gate's sign</p>
      * @param signFace     <p>The direction this gate's sign is facing</p>
+     * @param alwaysOn     <p>Whether this gate has been set as always-on</p>
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
-    public Gate(GateFormat format, Location signLocation, BlockFace signFace)
+    public Gate(GateFormat format, Location signLocation, BlockFace signFace, boolean alwaysOn)
             throws InvalidStructureException, GateConflictException {
         this.portalPositions = new ArrayList<>();
         this.format = format;
@@ -65,12 +66,12 @@ public class Gate {
         converter = new VectorOperation(signFace, Stargate.getInstance());
 
         //Allow mirroring for non-symmetrical gates
-        if (matchesFormat(signLocation)) {
+        if (matchesFormat(signLocation, alwaysOn)) {
             return;
         }
         converter.setFlipZAxis(true);
         flipped = true;
-        if (matchesFormat(signLocation)) {
+        if (matchesFormat(signLocation, alwaysOn)) {
             return;
         }
 
@@ -188,13 +189,6 @@ public class Gate {
             Location loc = getLocation(vec);
             output.add(new BlockLocation(loc));
         }
-        
-        /*List<BlockLocation> buttonPositions = new ArrayList<>();
-        portalPositions.stream().filter((position) -> position.getPositionType() == PositionType.BUTTON).forEach(
-                position -> buttonPositions.add(new BlockLocation(getLocation(position.getPositionLocation()))));
-        if (structureType == GateStructureType.CONTROL_BLOCK && flags.contains(PortalFlag.ALWAYS_ON) && !buttonPositions.isEmpty()) {
-            output.removeAll(buttonPositions);
-        }*/
         return output;
     }
 
@@ -350,10 +344,11 @@ public class Gate {
      * TODO: symmetric formats will be checked twice, make a way to determine if a format is symmetric to avoid this
      *
      * @param location <p>The top-left location of a built stargate</p>
+     * @param alwaysOn <p>Whether the new portal is set as always-on</p>
      * @return <p>True if the built stargate matches this format</p>
      * @throws GateConflictException <p>If the built stargate conflicts with another gate</p>
      */
-    public boolean matchesFormat(@NotNull Location location) throws GateConflictException {
+    public boolean matchesFormat(@NotNull Location location, boolean alwaysOn) throws GateConflictException {
         List<BlockVector> controlBlocks = getFormat().getControlBlocks();
         BlockVector signPosition;
         for (BlockVector controlBlock : controlBlocks) {
@@ -374,14 +369,16 @@ public class Gate {
                  * button. Note that this will have weird behaviour if there's more than 3
                  * control-blocks
                  */
-                //TODO: Need to figure out if this makes sense and account for more control blocks
+                //TODO: Need to account for more control blocks
                 signPosition = controlBlock;
                 for (BlockVector buttonVector : getFormat().getControlBlocks()) {
                     if (signPosition == buttonVector) {
                         continue;
                     }
                     portalPositions.add(new PortalPosition(PositionType.SIGN, signPosition));
-                    portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector));
+                    if (!alwaysOn) {
+                        portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector));
+                    }
                     break;
                 }
 
