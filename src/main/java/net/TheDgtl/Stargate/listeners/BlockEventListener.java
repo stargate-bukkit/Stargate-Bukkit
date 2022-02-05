@@ -219,10 +219,9 @@ public class BlockEventListener implements Listener {
             throws NameErrorException, GateConflictException, NoFormatFoundException {
 
         UUID ownerUUID = flags.contains(PortalFlag.PERSONAL_NETWORK) ? UUID.fromString(selectedNetwork.getName()) : player.getUniqueId();
-        Gate gate = PortalCreationHelper.createGate(signLocation);
+        Gate gate = PortalCreationHelper.createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON));
         Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID);
         StargateCreateEvent sEvent = new StargateCreateEvent(player, portal, lines, cost);
-
 
         Bukkit.getPluginManager().callEvent(sEvent);
 

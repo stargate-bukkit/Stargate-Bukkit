@@ -185,9 +185,17 @@ public class Gate {
     public List<BlockLocation> getLocations(GateStructureType structureType) {
         List<BlockLocation> output = new ArrayList<>();
 
-        for (BlockVector vec : getFormat().getStructure(structureType).getStructureTypePositions()) {
-            Location loc = getLocation(vec);
-            output.add(new BlockLocation(loc));
+        if (structureType == GateStructureType.CONTROL_BLOCK) {
+            //Only give the locations of control-blocks in use
+            for (PortalPosition position : portalPositions) {
+                output.add(new BlockLocation(getLocation(position.getPositionLocation())));
+            }
+        } else {
+            //Get all locations from the format
+            for (BlockVector structurePositionVector : getFormat().getStructure(structureType).getStructureTypePositions()) {
+                Location structureLocation = getLocation(structurePositionVector);
+                output.add(new BlockLocation(structureLocation));
+            }
         }
         return output;
     }

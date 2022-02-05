@@ -1,7 +1,6 @@
 package net.TheDgtl.Stargate.util;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
@@ -13,7 +12,6 @@ import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.FixedPortal;
 import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.RandomPortal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import org.bukkit.Location;
@@ -77,24 +75,25 @@ public class PortalCreationHelper {
      * @param gateFormats  <p>The gate formats to look for</p>
      * @param signLocation <p>The location of the sign of the portal to look for</p>
      * @param signFacing   <p>The direction the sign is facing</p>
+     * @param alwaysOn     <p>Whether the portal is always on</p>
      * @return <p>A gate if found, otherwise throws an {@link NoFormatFoundException}</p>
      * @throws NoFormatFoundException <p>If no gate was found at the given location matching any of the given formats</p>
      * @throws GateConflictException  <p>If the found gate conflicts with another gate</p>
      */
-    private static Gate findMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing)
+    private static Gate findMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing, boolean alwaysOn)
             throws NoFormatFoundException, GateConflictException {
         Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
         for (GateFormat gateFormat : gateFormats) {
             Stargate.log(Level.FINE, "--------- " + gateFormat.getFileName() + " ---------");
             try {
-                return new Gate(gateFormat, signLocation, signFacing);
+                return new Gate(gateFormat, signLocation, signFacing, alwaysOn);
             } catch (InvalidStructureException ignored) {
             }
         }
         throw new NoFormatFoundException();
     }
 
-    public static Gate createGate(Block sign) throws NoFormatFoundException, GateConflictException {
+    public static Gate createGate(Block sign, boolean alwaysOn) throws NoFormatFoundException, GateConflictException {
         if (!(Tag.WALL_SIGNS.isTagged(sign.getType()))) {
             throw new NoFormatFoundException();
         }
@@ -102,13 +101,7 @@ public class PortalCreationHelper {
         Directional signDirection = (Directional) sign.getBlockData();
         Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
         List<GateFormat> gateFormats = GateFormat.getPossibleGateFormatsFromControlBlockMaterial(behind.getType());
-        return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing());
+        return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), alwaysOn);
     }
-
-    public static Gate createGate(GateFormat format, Location topLeft, BlockFace portalFacing, boolean flipZ,
-                                  List<PortalPosition> portalPositions, StargateLogger logger) throws InvalidStructureException {
-        return new Gate(topLeft, portalFacing, flipZ, format, portalPositions, logger);
-    }
-
 
 }
