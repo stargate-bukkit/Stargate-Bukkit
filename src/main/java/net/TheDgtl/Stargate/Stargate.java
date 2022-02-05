@@ -186,8 +186,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     private void loadColors() {
         try {
-            Stargate.defaultLightSignColor = loadColor(Settings.getString(Setting.DEFAULT_LIGHT_SIGN_COLOR));
-            Stargate.defaultDarkColor = loadColor(Settings.getString(Setting.DEFAULT_DARK_SIGN_COLOR));
+            Stargate.defaultLightSignColor = getColor(Settings.getString(Setting.DEFAULT_LIGHT_SIGN_COLOR));
+            Stargate.defaultDarkColor = getColor(Settings.getString(Setting.DEFAULT_DARK_SIGN_COLOR));
         } catch (IllegalArgumentException | NullPointerException e) {
             Stargate.log(Level.WARNING, "Invalid colors for sign text. Using default colors instead...");
             Stargate.defaultLightSignColor = ChatColor.BLACK;
@@ -195,11 +195,15 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
     }
 
-    private ChatColor loadColor(String colorString) throws IllegalArgumentException {
-        if (colorString.startsWith("#")) {
-            return ChatColor.of(colorString);
-        }
-        return ChatColor.valueOf(colorString);
+    /**
+     * Gets the corresponding chat color from the given color string
+     *
+     * @param colorString <p>The color string to parse</p>
+     * @return <p>The color corresponding to the string</p>
+     * @throws IllegalArgumentException <p>If the given color string is invalid</p>
+     */
+    private ChatColor getColor(String colorString) throws IllegalArgumentException {
+        return ChatColor.of(colorString);
     }
 
     private void registerListeners() {

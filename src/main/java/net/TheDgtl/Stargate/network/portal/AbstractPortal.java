@@ -180,13 +180,13 @@ public abstract class AbstractPortal implements RealPortal {
         this.network = targetNetwork;
         this.drawControlMechanisms();
     }
-    
+
     @Override
     //TODO: Finish implementation (modify database).
     public void setOwner(UUID targetPlayer) {
         this.ownerUUID = targetPlayer;
     }
-    
+
 
     @Override
     public void teleportHere(Entity target, RealPortal origin) {
