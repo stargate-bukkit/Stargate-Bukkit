@@ -89,6 +89,13 @@ public interface Portal {
      * @param targetNetwork <p>The new network this portal should belong to</p>
      */
     void setNetwork(Network targetNetwork);
+    
+    /**
+     * Changes the player this portal belongs to
+     * 
+     * @param targetPlayer <p>The new player this portal should belong to</p>
+     */
+    void setOwner(UUID targetPlayer);
 
     /**
      * Checks whether this portal has the given portal flag enabled

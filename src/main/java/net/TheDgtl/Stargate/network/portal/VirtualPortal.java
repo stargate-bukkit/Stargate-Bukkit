@@ -54,7 +54,6 @@ public class VirtualPortal implements Portal {
     @Override
     public void teleportHere(Entity target, RealPortal origin) {
         //TODO: implement vehicle compatibility.
-        //WHY?! Stargate.log(Level.FINEST, "");
         Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
         if (!(target instanceof Player)) {
             return;
@@ -191,6 +190,11 @@ public class VirtualPortal implements Portal {
             Stargate.log(Level.WARNING, "[Stargate] Error sending BungeeCord teleport packet");
             throw exception;
         }
+    }
+
+    @Override
+    public void setOwner(UUID targetPlayer) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }
