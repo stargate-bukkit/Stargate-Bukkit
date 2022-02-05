@@ -63,8 +63,8 @@ public abstract class AbstractPortal implements RealPortal {
     protected LineFormatter colorDrawer;
 
     private long openTime = -1;
-    private final UUID ownerUUID;
-    private final Gate gate;
+    private UUID ownerUUID;
+    private Gate gate;
     private final Set<PortalFlag> flags;
 
     /**
