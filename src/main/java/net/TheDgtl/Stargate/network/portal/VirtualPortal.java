@@ -69,7 +69,8 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
-    public void close(boolean force) {}
+    public void close(boolean force) {
+    }
 
     @Override
     public String getName() {
@@ -92,7 +93,8 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
-    public void open(Player player) {}
+    public void open(Player player) {
+    }
 
     @Override
     public void destroy() {

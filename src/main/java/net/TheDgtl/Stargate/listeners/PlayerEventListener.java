@@ -30,7 +30,6 @@ import org.bukkit.inventory.ItemStack;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
@@ -189,11 +188,7 @@ public class PlayerEventListener implements Listener {
      */
     private void updateServerName() {
         ConditionalDelayedAction action = new ConditionalDelayedAction(() -> {
-            try {
-                Stargate.factory.startInterServerConnection();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            Stargate.getStorageAPI().startInterServerConnection();
             return true;
         }, () -> Stargate.knowsServerName);
         Stargate.syncSecPopulator.addAction(action, true);

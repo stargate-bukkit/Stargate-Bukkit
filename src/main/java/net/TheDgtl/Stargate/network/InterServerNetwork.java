@@ -19,7 +19,6 @@ import org.bukkit.Bukkit;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.logging.Level;
 
 /**
@@ -44,13 +43,8 @@ public class InterServerNetwork extends Network {
     public void removePortal(Portal portal, boolean removeFromDatabase) {
         super.removePortal(portal, removeFromDatabase);
 
-        try {
-            removePortalFromDatabase(portal, PortalType.INTER_SERVER);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Stargate.getRegistry().removePortal(portal, PortalType.INTER_SERVER);
         updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
-
     }
 
     @Override
@@ -65,7 +59,7 @@ public class InterServerNetwork extends Network {
          * that it can be seen on other servers
          */
         Stargate.syncSecPopulator.addAction(new SupplierAction(() -> {
-            savePortal(database, portal, PortalType.INTER_SERVER);
+            Stargate.getRegistry().savePortal(portal, PortalType.INTER_SERVER);
             return true;
         }), true);
         updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_ADD);

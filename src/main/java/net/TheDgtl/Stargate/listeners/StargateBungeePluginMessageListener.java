@@ -166,7 +166,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         UUID ownerUUID = UUID.fromString(json.get(StargateProtocolProperty.OWNER.toString()).getAsString());
 
         try {
-            Stargate.factory.createNetwork(network, flags);
+            Stargate.getRegistry().createNetwork(network, flags);
         } catch (NameErrorException ignored) {
         }
 

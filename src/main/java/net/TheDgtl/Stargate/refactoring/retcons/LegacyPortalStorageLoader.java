@@ -3,12 +3,12 @@ package net.TheDgtl.Stargate.refactoring.retcons;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
-import net.TheDgtl.Stargate.database.PortalDatabaseHandler;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
@@ -62,14 +62,14 @@ public class LegacyPortalStorageLoader {
      *
      * @param portalSaveLocation <p>The folder containing legacy portals</p>
      * @param server             <p>The server this plugin is running on</p>
-     * @param factory            <p>The stargate factory to save portals to</p>
+     * @param registry           <p>The stargate registry to save portals to</p>
      * @param logger             <p>The logger used for logging</p>
      * @return <p>The list of loaded and saved portals</p>
      * @throws IOException               <p>If unable to read one or more .db files</p>
      * @throws InvalidStructureException <p>If an encountered portal's structure is invalid</p>
      * @throws NameErrorException        <p>If the name of a portal is invalid</p>
      */
-    public static List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, PortalDatabaseHandler factory,
+    public static List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server, StargateRegistry registry,
                                                       StargateLogger logger) throws IOException, InvalidStructureException, NameErrorException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
@@ -86,7 +86,7 @@ public class LegacyPortalStorageLoader {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
-                portals.add(readPortal(line, server.getWorld(worldName), factory, logger));
+                portals.add(readPortal(line, server.getWorld(worldName), registry, logger));
 
                 line = reader.readLine();
             }
@@ -97,15 +97,15 @@ public class LegacyPortalStorageLoader {
     /**
      * Reads a portal line from a legacy portal .db file
      *
-     * @param line    <p>The line to read</p>
-     * @param world   <p>The world the portal belongs to</p>
-     * @param factory <p>The portal factory to save the portal to</p>
-     * @param logger  <p>The logger used for logging</p>
+     * @param line     <p>The line to read</p>
+     * @param world    <p>The world the portal belongs to</p>
+     * @param registry <p>The portal registry to save the portal to</p>
+     * @param logger   <p>The logger used for logging</p>
      * @return <p>The loaded portal</p>
      * @throws InvalidStructureException <p>If the portal's structure is invalid</p>
      * @throws NameErrorException        <p>If the name of the portal is invalid</p>
      */
-    static private Portal readPortal(String line, World world, PortalDatabaseHandler factory,
+    static private Portal readPortal(String line, World world, StargateRegistry registry,
                                      StargateLogger logger) throws InvalidStructureException, NameErrorException {
         String[] portalProperties = line.split(":");
         String name = portalProperties[0];
@@ -130,7 +130,7 @@ public class LegacyPortalStorageLoader {
             flags.add(PortalFlag.NETWORKED);
         }
         try {
-            factory.createNetwork(networkName, flags);
+            registry.createNetwork(networkName, flags);
         } catch (NameErrorException ignored) {
         }
         if (topLeft == null) {
@@ -147,7 +147,7 @@ public class LegacyPortalStorageLoader {
         if (buttonPosition != null && !flags.contains(PortalFlag.ALWAYS_ON)) {
             portalPositions.add(buttonPosition);
         }
-        Network network = factory.getRegistry().getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
+        Network network = registry.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
         GateFormat format = GateFormat.getFormat(gateFormatName);
         Gate gate = new Gate(topLeft, facing, false, format, portalPositions, logger);

@@ -9,8 +9,9 @@ import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.TwoTuple;
 import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.database.Database;
-import net.TheDgtl.Stargate.database.PortalDatabaseHandler;
+import net.TheDgtl.Stargate.database.PortalDatabaseAPI;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
+import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateRegistry;
@@ -48,7 +49,6 @@ public class RefactorerTest {
     static private Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> configTestMap;
     private static final File testGatesDir = new File("src/test/resources/gates");
 
-    static private PortalDatabaseHandler factory;
     static private ServerMock server;
     private static StargateRegistry registry;
 
@@ -66,8 +66,9 @@ public class RefactorerTest {
         defaultConfigFile = new File("src/main/resources", "config.yml");
         sqlDatabaseFile = new File("src/test/resources", "test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);
-        registry = new StargateRegistry();
-        factory = new PortalDatabaseHandler(sqlDatabase, false, false, logger, registry);
+        StorageAPI storageAPI = new PortalDatabaseAPI(sqlDatabase, false, false, logger);
+        registry = new StargateRegistry(storageAPI);
+
 
         defaultConfigFile = new File("src/main/resources", "config.yml");
         server = MockBukkit.mock();
@@ -146,12 +147,12 @@ public class RefactorerTest {
             if (oldConfigFile.exists() && !oldConfigFile.delete()) {
                 throw new IOException("Unable to delete old config file");
             }
-            Refactorer middas = new Refactorer(configFile, logger, server, factory);
+            Refactorer refactorer = new Refactorer(configFile, logger, server, registry);
             if (!configFile.renameTo(oldConfigFile)) {
                 throw new IOException("Unable to rename existing config for backup");
             }
 
-            Map<String, Object> config = middas.getConfigModifications();
+            Map<String, Object> config = refactorer.getConfigModifications();
             Files.copy(defaultConfigFile, configFile);
             FileConfiguration fileConfig = new StargateConfiguration();
             fileConfig.load(configFile);
@@ -160,8 +161,8 @@ public class RefactorerTest {
                         fileConfig.getKeys(true).contains(key) || key.contains(StargateConfiguration.START_OF_COMMENT), String.format("The key %s was added to the new config of %s", key, configFile.getName()));
             }
 
-            middas.insertNewValues(config);
-            refactorerMap.put(configFile.getName(), middas);
+            refactorer.insertNewValues(config);
+            refactorerMap.put(configFile.getName(), refactorer);
             fileConfig.load(configFile);
         }
     }

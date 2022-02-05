@@ -1,43 +1,84 @@
 package net.TheDgtl.Stargate.network;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Level;
-
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.util.BlockVector;
-
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
+import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import net.TheDgtl.Stargate.network.portal.VirtualPortal;
-import net.md_5.bungee.api.ChatColor;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.util.BlockVector;
+
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
 
 /**
- * Registre of all portals and networks
- * @author Thorin (idea from EpicKnarvik)
+ * Register of all portals and networks
  *
+ * @author Thorin (idea from EpicKnarvik)
  */
 public class StargateRegistry {
 
+    private final StorageAPI storageAPI;
     private final HashMap<String, Network> networkList = new HashMap<>();
     private final HashMap<String, InterServerNetwork> bungeeNetworkList = new HashMap<>();
     private final Map<GateStructureType, Map<BlockLocation, Portal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
 
-    
+    /**
+     * Instantiates a new Stargate registry
+     *
+     * @param storageAPI <p>The database API to use for interfacing with the database</p>
+     */
+    public StargateRegistry(StorageAPI storageAPI) {
+        this.storageAPI = storageAPI;
+    }
+
+    /**
+     * Loads all portals from storage
+     */
+    public void loadPortals() {
+        storageAPI.loadFromStorage();
+        updateAllPortals();
+    }
+
+    /**
+     * Removes the given portal from storage
+     *
+     * @param portal     <p>The portal to remove</p>
+     * @param portalType <p>The type of portal to be removed</p>
+     */
+    public void removePortal(Portal portal, PortalType portalType) {
+        storageAPI.removePortalFromStorage(portal, portalType);
+    }
+
+    /**
+     * Saves the given portal to the database
+     *
+     * @param portal     <p>The portal to save</p>
+     * @param portalType <p>The type of portal to save</p>
+     */
+    public void savePortal(RealPortal portal, PortalType portalType) {
+        storageAPI.savePortalToStorage(portal, portalType);
+    }
+
+    /**
+     * Creates a new network
+     *
+     * @param networkName <p>The name of the new network</p>
+     * @param flags       <p>The flags containing the network's enabled options</p>
+     * @throws NameErrorException <p>If the given network name is invalid</p>
+     */
+    public void createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
+        storageAPI.createNetwork(networkName, flags);
+    }
+
     /**
      * Update all portals handled by this registry
      */
@@ -45,7 +86,7 @@ public class StargateRegistry {
         updatePortals(getNetworkList());
         updatePortals(getBungeeNetworkList());
     }
-    
+
     /**
      * Updates all portals in the given networks
      *
@@ -217,11 +258,22 @@ public class StargateRegistry {
         }
     }
 
+    /**
+     * Gets the map storing all BungeeCord networks
+     *
+     * @return <p>All BungeeCord networks</p>
+     */
     public HashMap<String, InterServerNetwork> getBungeeNetworkList() {
         return bungeeNetworkList;
     }
 
+    /**
+     * Gets the map storing all non-BungeeCord networks
+     *
+     * @return <p>All non-BungeeCord networks</p>
+     */
     public HashMap<String, Network> getNetworkList() {
         return networkList;
     }
+
 }

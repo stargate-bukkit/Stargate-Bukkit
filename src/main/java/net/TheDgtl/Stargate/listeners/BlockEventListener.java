@@ -359,7 +359,7 @@ public class BlockEventListener implements Listener {
      */
     private Network selectNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {
         try {
-            Stargate.factory.createNetwork(name, flags);
+            Stargate.getRegistry().createNetwork(name, flags);
         } catch (NameErrorException nameErrorException) {
             TranslatableMessage translatableMessage = nameErrorException.getErrorMessage();
             if (translatableMessage != null) {

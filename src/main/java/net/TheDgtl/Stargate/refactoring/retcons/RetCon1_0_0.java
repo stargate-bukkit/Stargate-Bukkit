@@ -2,9 +2,9 @@ package net.TheDgtl.Stargate.refactoring.retcons;
 
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.TwoTuple;
-import net.TheDgtl.Stargate.database.PortalDatabaseHandler;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.util.FileHelper;
 import org.bukkit.Server;
@@ -27,19 +27,20 @@ public class RetCon1_0_0 extends Modifier {
     }
 
     private final Server server;
-    private final PortalDatabaseHandler factory;
+    private final StargateRegistry registry;
     private Map<String, Object> oldConfig;
     private final StargateLogger logger;
 
     /**
      * Instantiates a new Ret-Con 1.0.0
      *
-     * @param server  <p>The server to use for loading legacy portals</p>
-     * @param factory <p>The stargate factory to use for loading legacy portals</p>
+     * @param server   <p>The server to use for loading legacy portals</p>
+     * @param registry <p>The stargate registry to register loaded portals to</p>
+     * @param logger   <p>The logger to use for logging any messages</p>
      */
-    public RetCon1_0_0(Server server, PortalDatabaseHandler factory, StargateLogger logger) {
+    public RetCon1_0_0(Server server, StargateRegistry registry, StargateLogger logger) {
         this.server = server;
-        this.factory = factory;
+        this.registry = registry;
         this.logger = logger;
     }
 
@@ -68,7 +69,7 @@ public class RetCon1_0_0 extends Modifier {
             for (String portalFolder : possiblePortalFoldersSetting) {
                 if (oldConfig.get(portalFolder) != null) {
                     List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(
-                            (String) oldConfig.get(portalFolder), server, factory, logger);
+                            (String) oldConfig.get(portalFolder), server, registry, logger);
                     if (portals == null) {
                         logger.logMessage(Level.WARNING, "No portals migrated!");
                     } else {

@@ -23,8 +23,9 @@ import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.database.Database;
-import net.TheDgtl.Stargate.database.PortalDatabaseHandler;
+import net.TheDgtl.Stargate.database.PortalDatabaseAPI;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
+import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.listeners.BlockEventListener;
 import net.TheDgtl.Stargate.listeners.MoveEventListener;
@@ -85,9 +86,9 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     final String LANGUAGE_FOLDER = "lang";
     final String INTERNAL_FOLDER = ".internal";
 
-    private PluginManager pm;
+    private PluginManager pluginManager;
 
-    public static PortalDatabaseHandler factory;
+    private static StorageAPI storageAPI;
     public static LanguageManager languageManager;
     public final static int CURRENT_CONFIG_VERSION = 6;
     /**
@@ -143,7 +144,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         languageManager = new LanguageManager(this, new File(DATA_FOLDER, LANGUAGE_FOLDER));
         load();
 
-        pm = getServer().getPluginManager();
+        pluginManager = getServer().getPluginManager();
         registerListeners();
         BukkitScheduler scheduler = getServer().getScheduler();
         scheduler.scheduleSyncRepeatingTask(this, syncTickPopulator, 0L, 1L);
@@ -210,10 +211,10 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     private void registerListeners() {
-        pm.registerEvents(new BlockEventListener(), this);
-        pm.registerEvents(new MoveEventListener(), this);
-        pm.registerEvents(new PlayerEventListener(), this);
-        pm.registerEvents(new PluginEventListener(), this);
+        pluginManager.registerEvents(new BlockEventListener(), this);
+        pluginManager.registerEvents(new MoveEventListener(), this);
+        pluginManager.registerEvents(new PlayerEventListener(), this);
+        pluginManager.registerEvents(new PluginEventListener(), this);
         if (Settings.getBoolean(Setting.USING_BUNGEE)) {
             Messenger msgr = Bukkit.getMessenger();
 
@@ -235,10 +236,11 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     private void refactor() throws IOException, InvalidConfigurationException, SQLException {
         File file = new File(this.getDataFolder(), "stargate.db");
         Database database = new SQLiteDatabase(file);
-        StargateRegistry notUsedRegistry = new StargateRegistry();
-        PortalDatabaseHandler factory = new PortalDatabaseHandler(database, false, false, this, notUsedRegistry);
 
-        Refactorer refactorer = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(), factory);
+        StorageAPI storageAPI = new PortalDatabaseAPI(database, false, false, this);
+        registry = new StargateRegistry(storageAPI);
+
+        Refactorer refactorer = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(), registry);
         Map<String, Object> newConfig = refactorer.getConfigModifications();
         this.saveResource("config.yml", true);
         refactorer.insertNewValues(newConfig);
@@ -296,9 +298,9 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
 
         try {
-            registry = new StargateRegistry();
-            factory = new PortalDatabaseHandler(this,getRegistry());
-            factory.loadFromDatabase();
+            storageAPI = new PortalDatabaseAPI(this);
+            registry = new StargateRegistry(storageAPI);
+            registry.loadPortals();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -322,12 +324,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         if (!Settings.getBoolean(Setting.USING_BUNGEE)) {
             return;
         }
-
-        try {
-            factory.endInterServerConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        storageAPI.endInterServerConnection();
     }
 
     public static void log(Level priorityLevel, String msg) {
@@ -406,6 +403,10 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     public static StargateRegistry getRegistry() {
         return registry;
+    }
+
+    public static StorageAPI getStorageAPI() {
+        return storageAPI;
     }
 
 }

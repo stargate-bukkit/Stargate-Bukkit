@@ -12,22 +12,17 @@ import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 /**
  * A network of portals
@@ -48,7 +43,7 @@ public class Network {
      * @param queryGenerator <p>The generator to use for generating SQL queries</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public Network(String name, Database database, SQLQueryGenerator queryGenerator, StargateRegistry factory) throws NameErrorException {
+    public Network(String name, Database database, SQLQueryGenerator queryGenerator, StargateRegistry registry) throws NameErrorException {
         if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH)) {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         }
@@ -56,7 +51,7 @@ public class Network {
         this.database = database;
         this.sqlMaker = queryGenerator;
         nameToPortalMap = new HashMap<>();
-        this.registry = factory;
+        this.registry = registry;
     }
 
     /**
@@ -92,12 +87,7 @@ public class Network {
         if (!removeFromDatabase) {
             return;
         }
-
-        try {
-            removePortalFromDatabase(portal, PortalType.LOCAL);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Stargate.getRegistry().removePortal(portal, PortalType.LOCAL);
     }
 
     /**
@@ -215,90 +205,7 @@ public class Network {
      * @param portal <p>The portal to save</p>
      */
     protected void savePortal(RealPortal portal) {
-        savePortal(database, portal, PortalType.LOCAL);
-    }
-
-    /**
-     * Saves the given portal to the database
-     *
-     * @param database   <p>The database to save to</p>
-     * @param portal     <p>The portal to save</p>
-     * @param portalType <p>The type of portal to save</p>
-     */
-    protected void savePortal(Database database, RealPortal portal, PortalType portalType) {
-        /* An SQL transaction is used here to make sure partial data is never added to the database. */
-        Connection connection = null;
-        try {
-            connection = database.getConnection();
-            connection.setAutoCommit(false);
-            PreparedStatement savePortalStatement = sqlMaker.generateAddPortalStatement(connection, portal, portalType);
-            savePortalStatement.execute();
-            savePortalStatement.close();
-
-            PreparedStatement addFlagStatement = sqlMaker.generateAddPortalFlagRelationStatement(connection, portalType);
-            addFlags(addFlagStatement, portal);
-            addFlagStatement.close();
-
-            PreparedStatement addPositionStatement = sqlMaker.generateAddPortalPositionStatement(connection);
-            addPortalPositions(addPositionStatement, portal);
-            addPositionStatement.close();
-            connection.commit();
-            connection.setAutoCommit(true);
-
-            //TODO: Save any portal positions related to the portal
-        } catch (SQLException exception) {
-            try {
-                if (connection != null) {
-                    connection.rollback();
-                    connection.setAutoCommit(true);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            exception.printStackTrace();
-        }
-    }
-
-    /**
-     * Removes a portal and its associated data from the database
-     *
-     * @param portal     <p>The portal to remove</p>
-     * @param portalType <p>The type of portal to remove</p>
-     * @throws SQLException <p>If a database error occurs</p>
-     */
-    protected void removePortalFromDatabase(Portal portal, PortalType portalType) throws SQLException {
-        /* An SQL transaction is used here to make sure portals are never partially removed from the database. */
-        Connection conn = null;
-        try {
-            conn = database.getConnection();
-            conn.setAutoCommit(false);
-
-            PreparedStatement removeFlagsStatement = sqlMaker.generateRemoveFlagStatement(conn, portalType);
-            removeFlagsStatement.setString(1, portal.getName());
-            removeFlagsStatement.setString(2, portal.getNetwork().getName());
-            removeFlagsStatement.execute();
-            removeFlagsStatement.close();
-
-            PreparedStatement removePositionsStatement = sqlMaker.generateRemovePortalPositionsStatement(conn);
-            removePositionsStatement.setString(1, portal.getName());
-            removePositionsStatement.setString(2, portal.getNetwork().getName());
-            removePositionsStatement.execute();
-            removePositionsStatement.close();
-
-            PreparedStatement statement = sqlMaker.generateRemovePortalStatement(conn, portal, portalType);
-            statement.execute();
-            statement.close();
-
-            conn.commit();
-            conn.setAutoCommit(true);
-            conn.close();
-        } catch (SQLException e) {
-            if (conn != null) {
-                conn.rollback();
-                conn.setAutoCommit(false);
-                conn.close();
-            }
-        }
+        Stargate.getRegistry().savePortal(portal, PortalType.LOCAL);
     }
 
     /**
@@ -331,42 +238,6 @@ public class Network {
             portalHash = ChatColor.stripColor(portalHash);
         }
         return portalHash;
-    }
-
-    /**
-     * Adds a portal position to the portal positions table
-     *
-     * @param addPositionStatement <p>The prepared statement for adding a portal position</p>
-     * @param portal               <p>The portal to add the portal positions of</p>
-     * @throws SQLException <p>If unable to add the portal positions</p>
-     */
-    private void addPortalPositions(PreparedStatement addPositionStatement, RealPortal portal) throws SQLException {
-        for (PortalPosition portalPosition : portal.getGate().getPortalPositions()) {
-            addPositionStatement.setString(1, portal.getName());
-            addPositionStatement.setString(2, portal.getNetwork().getName());
-            addPositionStatement.setString(3, String.valueOf(portalPosition.getPositionLocation().getBlockX()));
-            addPositionStatement.setString(4, String.valueOf(portalPosition.getPositionLocation().getBlockY()));
-            addPositionStatement.setString(5, String.valueOf(-portalPosition.getPositionLocation().getBlockZ()));
-            addPositionStatement.setString(6, portalPosition.getPositionType().name());
-            addPositionStatement.execute();
-        }
-    }
-
-    /**
-     * Adds flags for the given portal to the database
-     *
-     * @param addFlagStatement <p>The statement used to add flags</p>
-     * @param portal           <p>The portal to add the flags of</p>
-     * @throws SQLException <p>If unable to set the flags</p>
-     */
-    private void addFlags(PreparedStatement addFlagStatement, Portal portal) throws SQLException {
-        for (Character character : portal.getAllFlagsString().toCharArray()) {
-            Stargate.log(Level.FINER, "Adding flag " + character + " to portal: " + portal);
-            addFlagStatement.setString(1, portal.getName());
-            addFlagStatement.setString(2, portal.getNetwork().getName());
-            addFlagStatement.setString(3, String.valueOf(character));
-            addFlagStatement.execute();
-        }
     }
 
 }
