@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.config.setting.Setting;
@@ -48,9 +49,9 @@ public class NetworkedPortal extends AbstractPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID)
+    public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
             throws NameErrorException {
-        super(network, name, flags, gate, ownerUUID);
+        super(network, name, flags, gate, ownerUUID, logger);
     }
 
     /**

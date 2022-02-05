@@ -220,7 +220,7 @@ public class BlockEventListener implements Listener {
 
         UUID ownerUUID = flags.contains(PortalFlag.PERSONAL_NETWORK) ? UUID.fromString(selectedNetwork.getName()) : player.getUniqueId();
         Gate gate = PortalCreationHelper.createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON));
-        Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID);
+        Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance());
         StargateCreateEvent sEvent = new StargateCreateEvent(player, portal, lines, cost);
 
         Bukkit.getPluginManager().callEvent(sEvent);
