@@ -4,6 +4,7 @@ import net.TheDgtl.Stargate.BypassPermission;
 import net.TheDgtl.Stargate.ImportantVersion;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.actions.DelayedAction;
 import net.TheDgtl.Stargate.actions.SupplierAction;
@@ -64,8 +65,9 @@ public abstract class AbstractPortal implements RealPortal {
 
     private long openTime = -1;
     private UUID ownerUUID;
-    private Gate gate;
+    private final Gate gate;
     private final Set<PortalFlag> flags;
+    private final StargateLogger logger;
 
     /**
      * Instantiates a new abstract portal
@@ -76,13 +78,14 @@ public abstract class AbstractPortal implements RealPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID)
+    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
             throws NameErrorException {
         this.ownerUUID = ownerUUID;
         this.network = network;
         this.name = name;
         this.flags = flags;
         this.gate = gate;
+        this.logger = logger;
 
         if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH)) {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
@@ -294,7 +297,9 @@ public abstract class AbstractPortal implements RealPortal {
         colorDrawer = new NoLineColorFormatter();
         for (Location location : this.getSignLocations()) {
             if (!(location.getBlock().getState() instanceof Sign)) {
-                //TODO Display warning in the chat, or a debug message?
+                logger.logMessage(Level.WARNING, String.format("Could not find a sign for portal %s in network %s \n"
+                        + "This is most likely caused from a bug // please contact developers (use ''sg about'' for github repo)",
+                        this.name, this.network.getName()));
                 continue;
             }
             Sign sign = (Sign) location.getBlock().getState();

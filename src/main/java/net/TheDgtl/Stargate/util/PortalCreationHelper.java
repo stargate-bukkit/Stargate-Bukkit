@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.util;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
@@ -39,8 +40,8 @@ public class PortalCreationHelper {
      * @throws NameErrorException <p>If the portal's name is invalid</p>
      */
     public static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Gate gate,
-                                                  UUID ownerUUID) throws NameErrorException {
-        return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID);
+                                                  UUID ownerUUID, StargateLogger logger) throws NameErrorException {
+        return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID, logger);
     }
 
     /**
@@ -57,15 +58,15 @@ public class PortalCreationHelper {
      * @throws NameErrorException <p>If the portal's name is invalid</p>
      */
     public static RealPortal createPortal(Network network, String name, String destination, String targetServer,
-                                          Set<PortalFlag> flags, Gate gate, UUID ownerUUID) throws NameErrorException {
+                                          Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger) throws NameErrorException {
         if (flags.contains(PortalFlag.BUNGEE)) {
-            return new BungeePortal(network, name, destination, targetServer, flags, gate, ownerUUID);
+            return new BungeePortal(network, name, destination, targetServer, flags, gate, ownerUUID, logger);
         } else if (flags.contains(PortalFlag.RANDOM)) {
-            return new RandomPortal(network, name, flags, gate, ownerUUID);
+            return new RandomPortal(network, name, flags, gate, ownerUUID, logger);
         } else if (flags.contains(PortalFlag.NETWORKED)) {
-            return new NetworkedPortal(network, name, flags, gate, ownerUUID);
+            return new NetworkedPortal(network, name, flags, gate, ownerUUID, logger);
         } else {
-            return new FixedPortal(network, name, destination, flags, gate, ownerUUID);
+            return new FixedPortal(network, name, destination, flags, gate, ownerUUID, logger);
         }
     }
 

@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
@@ -28,8 +29,8 @@ public class FixedPortal extends AbstractPortal {
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
     public FixedPortal(Network network, String name, String destinationName, Set<PortalFlag> flags, Gate gate,
-                       UUID ownerUUID) throws NameErrorException {
-        super(network, name, flags, gate, ownerUUID);
+                       UUID ownerUUID, StargateLogger logger) throws NameErrorException {
+        super(network, name, flags, gate, ownerUUID, logger);
         this.destinationName = destinationName;
         this.destination = network.getPortal(destinationName);
     }
