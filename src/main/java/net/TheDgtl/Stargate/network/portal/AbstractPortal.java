@@ -291,11 +291,10 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void setSignColor(DyeColor color) {
-        //TODO: Account for multiple signs with individual colors
         colorDrawer = new NoLineColorFormatter();
         for (Location location : this.getSignLocations()) {
             if (!(location.getBlock().getState() instanceof Sign)) {
-                //TODO send error message?
+                //TODO Display warning in the chat, or a debug message?
                 continue;
             }
             Sign sign = (Sign) location.getBlock().getState();
@@ -306,8 +305,8 @@ public abstract class AbstractPortal implements RealPortal {
             if (VersionParser.bukkitIsNewerThan(ImportantVersion.NO_CHAT_COLOR_IMPLEMENTED)) {
                 colorDrawer = new LineColorFormatter(sign.getColor(), sign.getType());
             }
-            this.drawControlMechanisms();
         }
+        this.drawControlMechanisms();
     }
 
     @Override
