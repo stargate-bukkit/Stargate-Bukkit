@@ -118,8 +118,6 @@ public class Teleporter {
         }
 
         if (target instanceof PoweredMinecart) {
-            // TODO: NOT Currently implemented, does not seem to be an accessible way to rotate powered minecarts using 
-            //  spigot api
             return;
         }
 
