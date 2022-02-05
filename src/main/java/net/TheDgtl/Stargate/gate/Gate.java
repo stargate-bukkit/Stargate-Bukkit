@@ -106,7 +106,7 @@ public class Gate {
      * @param signLines an array with 4 elements, representing each line of a sign
      */
     public void drawControlMechanisms(String[] signLines, boolean drawButton) {
-        drawSign(signLines);
+        drawSigns(signLines);
         if (drawButton) {
             drawButton();
         }
@@ -122,11 +122,11 @@ public class Gate {
     }
 
     /**
-     * Draws this gate's sign
+     * Draws this gate's signs
      *
      * @param signLines <p>The lines to draw on the sign</p>
      */
-    private void drawSign(String[] signLines) {
+    private void drawSigns(String[] signLines) {
         for (PortalPosition portalPosition : portalPositions) {
             if (portalPosition.getPositionType() != PositionType.SIGN) {
                 continue;
