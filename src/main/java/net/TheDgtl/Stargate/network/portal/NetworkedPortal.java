@@ -60,7 +60,6 @@ public class NetworkedPortal extends AbstractPortal {
      * @param event <p>The triggered player interact event</p>
      */
     public void onSignClick(PlayerInteractEvent event) {
-        //TODO have this individual for each player?
 
         Player actor = event.getPlayer();
         if ((this.activator != null && !actor.getUniqueId().equals(this.activator))

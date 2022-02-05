@@ -69,9 +69,7 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
-    public void close(boolean force) {
-        // TODO: not implemented, probably never will / as it would be overusing much needed BungeeCord message data
-    }
+    public void close(boolean force) {}
 
     @Override
     public String getName() {
@@ -94,9 +92,7 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
-    public void open(Player player) {
-        //TODO: not implemented
-    }
+    public void open(Player player) {}
 
     @Override
     public void destroy() {
