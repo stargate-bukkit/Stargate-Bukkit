@@ -1,12 +1,17 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.TwoTuple;
+import net.TheDgtl.Stargate.exception.InvalidStructureException;
+import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.StargateFactory;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.util.FileHelper;
 import org.bukkit.Server;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -24,6 +29,7 @@ public class RetCon1_0_0 extends Modifier {
     private final Server server;
     private final StargateFactory factory;
     private Map<String, Object> oldConfig;
+    private final StargateLogger logger;
 
     /**
      * Instantiates a new Ret-Con 1.0.0
@@ -31,9 +37,10 @@ public class RetCon1_0_0 extends Modifier {
      * @param server  <p>The server to use for loading legacy portals</p>
      * @param factory <p>The stargate factory to use for loading legacy portals</p>
      */
-    public RetCon1_0_0(Server server, StargateFactory factory) {
+    public RetCon1_0_0(Server server, StargateFactory factory, StargateLogger logger) {
         this.server = server;
         this.factory = factory;
+        this.logger = logger;
     }
 
     @Override
@@ -60,11 +67,24 @@ public class RetCon1_0_0 extends Modifier {
             String[] possiblePortalFoldersSetting = {"portal-folder", "folders.portalFolder"};
             for (String portalFolder : possiblePortalFoldersSetting) {
                 if (oldConfig.get(portalFolder) != null) {
-                    LegacyPortalStorageLoader.loadPortalsFromStorage((String) oldConfig.get(portalFolder), server, factory);
+                    List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(
+                            (String) oldConfig.get(portalFolder), server, factory, logger);
+                    if (portals == null) {
+                        logger.logMessage(Level.WARNING, "No portals migrated!");
+                    } else {
+                        logger.logMessage(Level.INFO, "The following portals have been migrated:");
+                        for (Portal portal : portals) {
+                            logger.logMessage(Level.INFO, String.format("Name: %s, Network: %s, Owner: %s, Flags: %s",
+                                    portal.getName(), portal.getNetwork(), portal.getOwnerUUID(),
+                                    portal.getAllFlagsString()));
+                        }
+                    }
+
+                    //Only check the first matching folder
                     break;
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | InvalidStructureException | NameErrorException e) {
             e.printStackTrace();
         }
     }
@@ -76,12 +96,14 @@ public class RetCon1_0_0 extends Modifier {
         }
         String newKey = CONFIG_CONVERSIONS.get(oldSetting.getFirstValue());
 
-        if (newKey == null)
+        if (newKey == null) {
             return null;
+        }
 
         if (oldSetting.getFirstValue().equals("freegatesgreen") ||
-                oldSetting.getFirstValue().equals("economy.freeGatesColored"))
+                oldSetting.getFirstValue().equals("economy.freeGatesColored")) {
             return new TwoTuple<>(newKey, 2);
+        }
 
         return new TwoTuple<>(newKey, oldSetting.getSecondValue());
     }

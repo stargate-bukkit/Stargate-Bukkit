@@ -42,8 +42,6 @@ public class StargatePortalEvent extends StargateEvent {
     /*
      * An event which occurs every time players teleport?
      */
-
-
     private final Entity target;
     private final Portal destination;
     private Location exit;
@@ -56,6 +54,7 @@ public class StargatePortalEvent extends StargateEvent {
     }
 
     @NotNull
+    @SuppressWarnings("unused")
     public static HandlerList getHandlerList() {
         return handlers;
     }
@@ -64,19 +63,20 @@ public class StargatePortalEvent extends StargateEvent {
         super(Objects.requireNonNull(portal));
 
         this.target = Objects.requireNonNull(target);
-        this.destination = ((RealPortal) portal).loadDestination();
-        if (destination instanceof RealPortal)
+        this.destination = portal.loadDestination();
+        if (destination instanceof RealPortal) {
             this.exit = ((RealPortal) destination).getExit();
+        }
     }
 
     /**
      * @return player that went through the gate
      */
-    @NotNull
     @Deprecated
     public Player getPlayer() {
-        if (target instanceof Player)
+        if (target instanceof Player) {
             return (Player) target;
+        }
         return null;
     }
 
@@ -96,8 +96,9 @@ public class StargatePortalEvent extends StargateEvent {
      * @return Location players exit point
      */
     public Location getExit() {
-        if (destination instanceof RealPortal)
+        if (destination instanceof RealPortal) {
             return ((RealPortal) destination).getExit();
+        }
         return null;
     }
 
@@ -105,6 +106,7 @@ public class StargatePortalEvent extends StargateEvent {
      * @param exitLocation
      */
     public void setExit(@NotNull Location exitLocation) {
+        //TODO: Exit variable is never used. Is this a bug?
         this.exit = Objects.requireNonNull(exitLocation);
     }
 
@@ -113,10 +115,12 @@ public class StargatePortalEvent extends StargateEvent {
         String identifier = "sg.use";
         List<Permission> permList = new ArrayList<>();
         if (target instanceof Player) {
-            if (!portal.isOpenFor(target))
+            if (!portal.isOpenFor(target)) {
                 permList.add(Bukkit.getPluginManager().getPermission(identifier + ".follow"));
-            if (portal.hasFlag(PortalFlag.PRIVATE) && !portal.getOwnerUUID().equals(target.getUniqueId()))
+            }
+            if (portal.hasFlag(PortalFlag.PRIVATE) && !portal.getOwnerUUID().equals(target.getUniqueId())) {
                 permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
+            }
         }
 
         return permList;

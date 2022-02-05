@@ -12,6 +12,7 @@ import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import org.bukkit.Bukkit;
 
@@ -34,9 +35,9 @@ public class InterServerNetwork extends Network {
      * @param queryGenerator <p>The generator to use for generating SQL queries</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public InterServerNetwork(String networkName, Database database, SQLQueryGenerator queryGenerator)
+    public InterServerNetwork(String networkName, Database database, SQLQueryGenerator queryGenerator, StargateFactory factory)
             throws NameErrorException {
-        super(networkName, database, queryGenerator);
+        super(networkName, database, queryGenerator, factory);
     }
 
     @Override
@@ -58,7 +59,7 @@ public class InterServerNetwork extends Network {
     }
 
     @Override
-    protected void savePortal(Portal portal) {
+    protected void savePortal(RealPortal portal) {
         /*
          * Save one local partition of every bungee gate on this server. Also save it to the inter-server database, so
          * that it can be seen on other servers

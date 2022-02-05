@@ -10,12 +10,8 @@ import net.TheDgtl.Stargate.actions.SupplierAction;
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
-import net.TheDgtl.Stargate.exception.GateConflictException;
-import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
-import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.gate.Gate;
-import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.LineColorFormatter;
@@ -26,7 +22,6 @@ import net.TheDgtl.Stargate.util.VersionParser;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -51,11 +46,11 @@ import java.util.logging.Level;
  */
 public abstract class AbstractPortal implements RealPortal {
     /**
-     * Used in bstats metrics
+     * Used in bStats metrics
      */
     public static int portalCount = 0;
     /**
-     * Used for bstats metrics, this is every flag that has been used by all portals
+     * Used for bStats metrics, this is every flag that has been used by all portals
      */
     public static final Set<PortalFlag> allUsedFlags = EnumSet.noneOf(PortalFlag.class);
 
@@ -68,8 +63,8 @@ public abstract class AbstractPortal implements RealPortal {
     protected LineFormatter colorDrawer;
 
     private long openTime = -1;
-    private UUID ownerUUID;
-    private Gate gate;
+    private final UUID ownerUUID;
+    private final Gate gate;
     private final Set<PortalFlag> flags;
 
     /**
@@ -77,32 +72,21 @@ public abstract class AbstractPortal implements RealPortal {
      *
      * @param network   <p>The network the portal belongs to</p>
      * @param name      <p>The name of the portal</p>
-     * @param signBlock <p>The block this portal's sign is located at</p>
      * @param flags     <p>The flags enabled for the portal</p>
      * @param ownerUUID <p>The UUID of the portal's owner</p>
-     * @throws NameErrorException     <p>If the portal name is invalid</p>
-     * @throws NoFormatFoundException <p>If no gate format matches the portal</p>
-     * @throws GateConflictException  <p>If the portal's gate conflicts with an existing one</p>
+     * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    AbstractPortal(Network network, String name, Block signBlock, Set<PortalFlag> flags, UUID ownerUUID)
-            throws NameErrorException, NoFormatFoundException, GateConflictException {
+    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID)
+            throws NameErrorException {
         this.ownerUUID = ownerUUID;
         this.network = network;
         this.name = name;
         this.flags = flags;
+        this.gate = gate;
 
-        if (!(Tag.WALL_SIGNS.isTagged(signBlock.getType()))) {
-            throw new NoFormatFoundException();
-        }
-        //Get the block behind the sign; the material of that block is stored in a register with available gateFormats
-        Directional signDirection = (Directional) signBlock.getBlockData();
-        Block behind = signBlock.getRelative(signDirection.getFacing().getOppositeFace());
-        List<GateFormat> gateFormats = GateFormat.getPossibleGateFormatsFromControlBlockMaterial(behind.getType());
-        setGate(findMatchingGate(gateFormats, signBlock.getLocation(), signDirection.getFacing()));
-
-        if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH))
+        if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH)) {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
-        if (this.network.isPortalNameTaken(name)) {
+        } else if (this.network.isPortalNameTaken(name)) {
             throw new NameErrorException(TranslatableMessage.ALREADY_EXIST);
         }
 
@@ -118,21 +102,22 @@ public abstract class AbstractPortal implements RealPortal {
         }
         Stargate.log(Level.FINE, msg.toString());
 
-        if (hasFlag(PortalFlag.ALWAYS_ON))
+        if (hasFlag(PortalFlag.ALWAYS_ON)) {
             this.open(null);
+        }
 
         AbstractPortal.portalCount++;
         AbstractPortal.allUsedFlags.addAll(flags);
     }
 
     @Override
-    public Location getSignLocation() {
-        return gate.getSignLocation();
+    public List<Location> getSignLocations() {
+        return gate.getSignLocations();
     }
 
     @Override
     public void update() {
-        if (isOpen() && this.overriddenDestination == null && network.getPortal(getDestination().getName()) == null) {
+        if (isOpen() && this.overriddenDestination == null && getDestination() == null) {
             close(false);
         }
         drawControlMechanisms();
@@ -146,8 +131,9 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void open(Player actor) {
         getGate().open();
-        if (actor != null)
+        if (actor != null) {
             this.openFor = actor.getUniqueId();
+        }
         if (hasFlag(PortalFlag.ALWAYS_ON)) {
             return;
         }
@@ -166,8 +152,9 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void close(boolean forceClose) {
-        if (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose)
+        if (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose) {
             return;
+        }
         getGate().close();
         drawControlMechanisms();
         openFor = null;
@@ -204,7 +191,7 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void teleportHere(Entity target, RealPortal origin) {
 
-        BlockFace portalFacing = gate.getSignFace().getOppositeFace();
+        BlockFace portalFacing = gate.getFacing().getOppositeFace();
         if (flags.contains(PortalFlag.BACKWARDS)) {
             portalFacing = portalFacing.getOppositeFace();
         }
@@ -264,11 +251,6 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public String getDesignName() {
-        return gate.getFormat().name;
-    }
-
-    @Override
     public UUID getOwnerUUID() {
         return ownerUUID;
     }
@@ -279,9 +261,9 @@ public abstract class AbstractPortal implements RealPortal {
         if (this.hasFlag(PortalFlag.IRON_DOOR) && event.useInteractedBlock() == Result.DENY) {
             Block exitBlock = gate.getExit().add(gate.getFacing().getDirection()).getBlock();
             if (exitBlock.getType() == Material.IRON_DOOR) {
-                Directional signDirection = (Directional) gate.getSignLocation().getBlock().getBlockData();
+                BlockFace gateDirection = gate.getFacing();
                 Directional doorDirection = (Directional) exitBlock.getBlockData();
-                if (signDirection.getFacing() == doorDirection.getFacing()) {
+                if (gateDirection == doorDirection.getFacing()) {
                     return;
                 }
             }
@@ -309,17 +291,23 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void setSignColor(DyeColor color) {
-        Sign sign = (Sign) this.getSignLocation().getBlock().getState();
-        if (color != null) {
-            sign.setColor(color);
-            sign.update();
+        //TODO: Account for multiple signs with individual colors
+        colorDrawer = new NoLineColorFormatter();
+        for (Location location : this.getSignLocations()) {
+            if (!(location.getBlock().getState() instanceof Sign)) {
+                //TODO send error message?
+                continue;
+            }
+            Sign sign = (Sign) location.getBlock().getState();
+            if (color != null) {
+                sign.setColor(color);
+                sign.update();
+            }
+            if (VersionParser.bukkitIsNewerThan(ImportantVersion.NO_CHAT_COLOR_IMPLEMENTED)) {
+                colorDrawer = new LineColorFormatter(sign.getColor(), sign.getType());
+            }
+            this.drawControlMechanisms();
         }
-        if (!VersionParser.bukkitIsNewerThan(ImportantVersion.NO_CHAT_COLOR_IMPLEMENTED))
-            colorDrawer = new NoLineColorFormatter();
-        else {
-            colorDrawer = new LineColorFormatter(sign.getColor(), sign.getType());
-        }
-        this.drawControlMechanisms();
     }
 
     @Override
@@ -366,38 +354,6 @@ public abstract class AbstractPortal implements RealPortal {
         } else {
             return overriddenDestination;
         }
-    }
-
-    /**
-     * Sets the gate used by this portal
-     *
-     * @param gate <p>The gate to be used by this portal</p>
-     */
-    private void setGate(Gate gate) {
-        this.gate = gate;
-    }
-
-    /**
-     * Tries to find a gate at the given location matching one of the given gate formats
-     *
-     * @param gateFormats  <p>The gate formats to look for</p>
-     * @param signLocation <p>The location of the sign of the portal to look for</p>
-     * @param signFacing   <p>The direction the sign is facing</p>
-     * @return <p>A gate if found, or null if no gate was found</p>
-     * @throws NoFormatFoundException <p>If no gate was found at the given location matching any of the given formats</p>
-     * @throws GateConflictException  <p>If the found gate conflicts with another gate</p>
-     */
-    private Gate findMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing)
-            throws NoFormatFoundException, GateConflictException {
-        Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
-        for (GateFormat gateFormat : gateFormats) {
-            Stargate.log(Level.FINE, "--------- " + gateFormat.name + " ---------");
-            try {
-                return new Gate(gateFormat, signLocation, signFacing, this);
-            } catch (InvalidStructureException ignored) {
-            }
-        }
-        throw new NoFormatFoundException();
     }
 
 }

@@ -21,8 +21,8 @@ import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -88,8 +88,9 @@ public abstract class StargateEvent extends Event implements Cancellable {
         if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
             return pm.getPermission(permIdentifier + ".network.personal");
         }
-        if (portal.getNetwork().getName().equals(Settings.getString(Setting.DEFAULT_NETWORK)))
+        if (portal.getNetwork().getName().equals(Settings.getString(Setting.DEFAULT_NETWORK))) {
             return pm.getPermission(permIdentifier + ".network.default");
+        }
         Permission custom = new Permission(permIdentifier + ".network.custom." + portal.getNetwork().getName());
         Permission parent = pm.getPermission(permIdentifier + ".network.custom");
         if (parent != null) {
@@ -98,9 +99,13 @@ public abstract class StargateEvent extends Event implements Cancellable {
         return custom;
     }
 
-    protected Permission compileWorldPerm(String permissionIdentifier, Location loc) {
+    protected Permission compileWorldPerm(String permissionIdentifier, Portal portal) {
+        if (!(portal instanceof RealPortal)) {
+            return null;
+        }
+        RealPortal realPortal = (RealPortal) portal;
         Permission parent = pm.getPermission(permissionIdentifier + ".world");
-        World world = loc.getWorld();
+        World world = realPortal.getGate().getTopLeft().getWorld();
         if (world == null) {
             return null;
         }
@@ -113,8 +118,12 @@ public abstract class StargateEvent extends Event implements Cancellable {
     }
 
     protected Permission compileDesignPerm(String permIdentifier) {
+        if (!(portal instanceof RealPortal)) {
+            return null;
+        }
+        RealPortal realPortal = (RealPortal) portal;
         Permission parent = pm.getPermission(permIdentifier + ".design");
-        String permNode = permIdentifier + ".design." + portal.getDesignName();
+        String permNode = permIdentifier + ".design." + realPortal.getGate().getFormat().getFileName();
         Permission design = new Permission(permNode);
         if (parent != null) {
             design.addParent(parent, true);
@@ -124,7 +133,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
 
     protected List<Permission> defaultPermCompile(String permIdentifier, String activatorUUID) {
         List<Permission> permList = new ArrayList<>(compileFlagPerms(permIdentifier));
-        permList.add(compileWorldPerm(permIdentifier, portal.getSignLocation()));
+        permList.add(compileWorldPerm(permIdentifier, portal));
         permList.add(compileNetworkPerm(permIdentifier, activatorUUID));
         permList.add(compileDesignPerm(permIdentifier));
         return permList;

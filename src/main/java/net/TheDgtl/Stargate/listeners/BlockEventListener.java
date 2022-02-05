@@ -12,6 +12,7 @@ import net.TheDgtl.Stargate.event.StargateDestroyEvent;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
+import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -169,11 +170,11 @@ public class BlockEventListener implements Listener {
             flags.add(PortalFlag.NETWORKED);
         }
 
-        Set<PortalFlag> disallowedFlags = permissionManager.returnDissallowedFlags(flags);
+        Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
 
         if (disallowedFlags.size() > 0) {
             String unformattedMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
-            player.sendMessage(TranslatableMessageFormatter.compileFlags(unformattedMessage, disallowedFlags));
+            player.sendMessage(TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
         }
         flags.removeAll(disallowedFlags);
 
@@ -185,7 +186,6 @@ public class BlockEventListener implements Listener {
         } catch (NameErrorException nameErrorException) {
             errorMessage = nameErrorException.getErrorMessage();
         }
-        
 
 
         try {
@@ -219,9 +219,9 @@ public class BlockEventListener implements Listener {
             throws NameErrorException, GateConflictException, NoFormatFoundException {
 
         UUID ownerUUID = flags.contains(PortalFlag.PERSONAL_NETWORK) ? UUID.fromString(selectedNetwork.getName()) : player.getUniqueId();
-        Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, signLocation, flags, ownerUUID);
+        Gate gate = PortalCreationHelper.createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON));
+        Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID);
         StargateCreateEvent sEvent = new StargateCreateEvent(player, portal, lines, cost);
-
 
         Bukkit.getPluginManager().callEvent(sEvent);
 
@@ -249,7 +249,7 @@ public class BlockEventListener implements Listener {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return;
         }
-        
+
         if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
                 && !Settings.getBoolean(Setting.USING_BUNGEE)) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
@@ -263,7 +263,7 @@ public class BlockEventListener implements Listener {
         if (isInSpawn(signLocation.getLocation())) {
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
-        
+
         selectedNetwork.addPortal(portal, true);
         selectedNetwork.updatePortals();
         Stargate.log(Level.FINE, "A Gate format matches");
@@ -271,7 +271,7 @@ public class BlockEventListener implements Listener {
             player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE_PERSONAL));
         } else {
             String unformattedMessage = Stargate.languageManager.getMessage(TranslatableMessage.CREATE);
-            player.sendMessage(TranslatableMessageFormatter.compileNetwork(unformattedMessage, selectedNetwork.getName()));
+            player.sendMessage(TranslatableMessageFormatter.formatNetwork(unformattedMessage, selectedNetwork.getName()));
         }
     }
 
@@ -327,7 +327,7 @@ public class BlockEventListener implements Listener {
             flags.add(PortalFlag.PERSONAL_NETWORK);
             return player.getUniqueId().toString();
         }
-        
+
         /* Try to fall back to the default or a personal network if no network is given, or the player is missing
          * the necessary permissions */
         if (!permissionManager.canCreateInNetwork(initialNetworkName) || initialNetworkName.trim().isEmpty()) {
@@ -341,7 +341,6 @@ public class BlockEventListener implements Listener {
             return defaultNetwork;
         }
 
-        
 
         //Move the legacy bungee stargates to their own network
         if (flags.contains(PortalFlag.BUNGEE)) {
@@ -377,7 +376,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        if (Stargate.factory.isInPortal(event.getBlocks())) {
+        if (Stargate.factory.isPartOfPortal(event.getBlocks())) {
             event.setCancelled(true);
         }
     }
@@ -389,7 +388,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        if (Stargate.factory.isInPortal(event.getBlocks())) {
+        if (Stargate.factory.isPartOfPortal(event.getBlocks())) {
             event.setCancelled(true);
         }
     }
@@ -439,8 +438,9 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockFormEvent(BlockFormEvent event) {
-        if (!Settings.getBoolean(Setting.PROTECT_ENTRANCE))
+        if (!Settings.getBoolean(Setting.PROTECT_ENTRANCE)) {
             return;
+        }
 
         Location location = event.getBlock().getLocation();
         Portal portal = Stargate.factory.getPortal(location, GateStructureType.IRIS);

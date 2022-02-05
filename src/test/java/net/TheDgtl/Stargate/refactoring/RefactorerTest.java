@@ -10,6 +10,7 @@ import net.TheDgtl.Stargate.TwoTuple;
 import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
+import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -32,6 +33,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class RefactorerTest {
@@ -43,6 +45,7 @@ public class RefactorerTest {
     static private Database sqlDatabase;
     static private final Map<String, Refactorer> refactorerMap = new HashMap<>();
     static private Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> configTestMap;
+    private static final File testGatesDir = new File("src/test/resources/gates");
 
     static private StargateFactory factory;
     static private ServerMock server;
@@ -69,6 +72,8 @@ public class RefactorerTest {
         server.addSimpleWorld("lclo");
         server.addSimpleWorld("pseudoknigth");
         Stargate.getConfigStatic().load(defaultConfigFile);
+
+        GateFormat.setFormats(Objects.requireNonNull(GateFormat.loadGateFormats(testGatesDir)));
     }
 
     private static Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> getSettingTestMaps() {
@@ -108,11 +113,16 @@ public class RefactorerTest {
     }
 
     @AfterAll
-    public static void tearDown() throws IOException {
+    public static void tearDown() throws IOException, SQLException {
         MockBukkit.unmock();
+        sqlDatabase.getConnection().close();
+
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
-            if (oldConfigFile.exists() && !configFile.delete()) {
+            if (!oldConfigFile.exists()) {
+                continue;
+            }
+            if (!configFile.delete()) {
                 throw new IOException("Unable to delete test-generated config file");
             }
             if (!oldConfigFile.renameTo(configFile)) {
@@ -122,6 +132,7 @@ public class RefactorerTest {
         if (sqlDatabaseFile.exists() && !sqlDatabaseFile.delete()) {
             throw new IOException("Unable to remove database file");
         }
+
     }
 
     @Test
@@ -137,7 +148,7 @@ public class RefactorerTest {
                 throw new IOException("Unable to rename existing config for backup");
             }
 
-            Map<String, Object> config = middas.getConfigModificatinos();
+            Map<String, Object> config = middas.getConfigModifications();
             Files.copy(defaultConfigFile, configFile);
             FileConfiguration fileConfig = new StargateConfiguration();
             fileConfig.load(configFile);
@@ -155,7 +166,9 @@ public class RefactorerTest {
     @Test
     @Order(2)
     public void doOtherRefactorCheck() {
-        for (Refactorer refactorer : refactorerMap.values()) {
+        for (String key : refactorerMap.keySet()) {
+            System.out.printf("####### Performing misc. refactoring based on the config-file %s%n", key);
+            Refactorer refactorer = refactorerMap.get(key);
             refactorer.run();
         }
     }
@@ -198,6 +211,8 @@ public class RefactorerTest {
     public void portalLoadCheck() {
         for (String key : configTestMap.keySet()) {
             Map<String, String> testMap = configTestMap.get(key).getSecondValue();
+
+            System.out.printf("--------- Checking portal loaded from %s configuration%n", key);
             for (String portalName : testMap.keySet()) {
                 String netName = testMap.get(portalName);
                 Network net = factory.getNetwork(netName, false);

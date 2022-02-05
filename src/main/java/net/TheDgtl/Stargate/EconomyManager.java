@@ -25,48 +25,44 @@ public class EconomyManager {
             return;
         }
         hasVault = setupEconomy();
-        if (!hasVault)
+        if (!hasVault) {
             Stargate.log(Level.WARNING, "Dependency ''Vault'' is unavailable; economy features are disabled");
-    }
-
-    private boolean setupEconomy() {
-        if (Bukkit.getPluginManager().getPlugin("Vault") == null)
-            return false;
-        RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            return false;
         }
-        econ = rsp.getProvider();
-        return true;
     }
 
     /**
-     * @param player
-     * @param amount
-     * @return if player had enough money for transaction
+     * Charges a player if possible
+     *
+     * @param player <p>The player to charge</p>
+     * @param amount <p>The amount the player should be charged</p>
+     * @return <p>True if the payment was fulfilled</p>
      */
     public boolean chargePlayer(OfflinePlayer player, int amount) {
-        if(amount == 0)
+        if (amount == 0) {
             return true;
+        }
         Stargate.log(Level.FINE, "Charging player " + amount);
-        if (!hasVault)
+        if (!hasVault) {
             return true;
+        }
 
         EconomyResponse response = econ.withdrawPlayer(player, amount);
         if (player.getPlayer() != null) {
             String unformattedMessage = Stargate.languageManager.getMessage(TranslatableMessage.ECO_DEDUCT);
-            String message = TranslatableMessageFormatter.compileCost(unformattedMessage, amount);
+            String message = TranslatableMessageFormatter.formatCost(unformattedMessage, amount);
             player.getPlayer().sendMessage(message);
         }
         return response.transactionSuccess();
     }
 
     public boolean depositPlayer(OfflinePlayer player, int amount) {
-        if(amount == 0)
+        if (amount == 0) {
             return true;
+        }
         Stargate.log(Level.FINE, "Depositing player " + amount);
-        if (!hasVault)
+        if (!hasVault) {
             return true;
+        }
         EconomyResponse response = econ.depositPlayer(player, amount);
         if (!response.transactionSuccess()) {
             econ.createPlayerAccount(player);
@@ -78,13 +74,14 @@ public class EconomyManager {
     /**
      * Money for the tax gods. May you live in wealth
      *
-     * @param player
-     * @param amount
-     * @return
+     * @param player <p>The player to charge and tax</p>
+     * @param amount <p>The amount the player should be charged</p>
+     * @return <p>True if the player was charged and/or taxed</p>
      */
     public boolean chargeAndTax(OfflinePlayer player, int amount) {
-        if(amount == 0)
+        if (amount == 0) {
             return true;
+        }
         String bankUUIDStr = Settings.getString(Setting.TAX_DESTINATION);
         if (!bankUUIDStr.isEmpty()) {
             OfflinePlayer bankAccount = Bukkit.getOfflinePlayer(UUID.fromString(bankUUIDStr));
@@ -94,14 +91,15 @@ public class EconomyManager {
     }
 
     public boolean chargePlayer(OfflinePlayer player, Portal origin, int amount) {
-        if(amount == 0)
+        if (amount == 0) {
             return true;
+        }
         if (Settings.getBoolean(Setting.GATE_OWNER_REVENUE)) {
             if (chargeAndDepositPlayer(player, Bukkit.getServer().getOfflinePlayer(origin.getOwnerUUID()), amount)) {
                 if (player.getPlayer() != null) {
                     String unCompiledMessage = Stargate.languageManager.getMessage(TranslatableMessage.ECO_OBTAIN);
-                    String portalNameCompiledMessage = TranslatableMessageFormatter.compilePortal(unCompiledMessage, origin.getName());
-                    String message = TranslatableMessageFormatter.compileCost(portalNameCompiledMessage, amount);
+                    String portalNameCompiledMessage = TranslatableMessageFormatter.formatPortal(unCompiledMessage, origin.getName());
+                    String message = TranslatableMessageFormatter.formatCost(portalNameCompiledMessage, amount);
                     player.getPlayer().sendMessage(message);
                 }
                 return true;
@@ -111,26 +109,40 @@ public class EconomyManager {
         return chargeAndTax(player, amount);
     }
 
-    private boolean chargeAndDepositPlayer(OfflinePlayer player, OfflinePlayer transactionTarget, int amount) {
-        if(amount == 0)
-            return true;
-        
-        if (chargePlayer(player, amount)) {
-            depositPlayer(transactionTarget, amount);
-            return true;
-        }
-        return false;
-    }
-
     public Plugin getEconomyPlugin() {
         return Bukkit.getPluginManager().getPlugin("Vault");
     }
 
     public boolean isValidEconomyPlugin(Plugin plugin) {
-        return Bukkit.getPluginManager().getPlugin("Vault").equals(plugin);
+        Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
+        return vault != null && vault.equals(plugin);
     }
 
-    public void setEconomy(Plugin plugin) {
+    public void setEconomy() {
         hasVault = setupEconomy();
     }
+
+    private boolean setupEconomy() {
+        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServicesManager().getRegistration(Economy.class);
+        if (economyProvider == null) {
+            return false;
+        }
+        econ = economyProvider.getProvider();
+        return true;
+    }
+
+    private boolean chargeAndDepositPlayer(OfflinePlayer player, OfflinePlayer transactionTarget, int amount) {
+        if (amount == 0) {
+            return true;
+        }
+
+        if (chargePlayer(player, amount)) {
+            return depositPlayer(transactionTarget, amount);
+        }
+        return false;
+    }
+
 }

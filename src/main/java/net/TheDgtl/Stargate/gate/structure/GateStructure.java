@@ -1,7 +1,7 @@
 package net.TheDgtl.Stargate.gate.structure;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
+import net.TheDgtl.Stargate.vectorlogic.IVectorOperation;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -28,16 +28,16 @@ public abstract class GateStructure {
      * @param topLeft         <p>The location of the built portal's top-left block</p>
      * @return true if all parts had valid materials
      */
-    public boolean isValidState(VectorOperation vectorOperation, Location topLeft) {
+    public boolean isValidState(IVectorOperation vectorOperation, Location topLeft) {
         List<BlockVector> partsPos = getStructureTypePositions();
         World world = topLeft.getWorld();
         if (world == null) {
-            Stargate.log(Level.WARNING, "Unable to find the world of the portal at " + topLeft.toString());
+            Stargate.log(Level.WARNING, "Unable to find the world of the portal at " + topLeft);
             return false;
         }
         WorldBorder border = world.getWorldBorder();
         for (BlockVector partPos : partsPos) {
-            BlockVector inverse = vectorOperation.performInverseOperation(partPos);
+            BlockVector inverse = vectorOperation.performToRealSpaceOperation(partPos);
             Location partLoc = topLeft.clone().add(inverse);
             Stargate.log(Level.FINEST,
                     "Checking location (" + partLoc.getBlockX() + "," + partLoc.getBlockY() + "," + partLoc.getBlockZ()

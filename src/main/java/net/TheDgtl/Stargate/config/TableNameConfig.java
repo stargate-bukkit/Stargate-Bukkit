@@ -18,6 +18,8 @@ public class TableNameConfig {
     private String interPortalViewName = "InterPortalView";
     private String lastKnownNameTableName = "LastKnownName";
     private String serverInfoTableName = "ServerInfo";
+    private String portalPositionTypeTableName = "PortalPositionType";
+    private String portalPositionTableName = "PortalPosition";
 
     /**
      * Instantiates a new table config
@@ -45,12 +47,14 @@ public class TableNameConfig {
      * @param lastKnownNameTableName     <p>The name of the table in which to store the last known names attached to UUIDs</p>
      * @param serverInfoTableName        <p>The name of the table in which to store information, such as names about the known
      *                                   servers in the network</p>
+     * @param positionTypeTableName      <p>The name of the table storing position types</p>
+     * @param portalPositionTableName    <p>The name of the table storing portal positions</p>
      */
     @SuppressWarnings("unused")
     public TableNameConfig(String mainPrefix, String serverPrefix, String portalTableName, String interPortalTableName,
                            String flagTableName, String flagRelationTableName, String interFlagRelationTableName,
                            String portalViewName, String interPortalViewName, String lastKnownNameTableName,
-                           String serverInfoTableName) {
+                           String serverInfoTableName, String positionTypeTableName, String portalPositionTableName) {
         this.mainPrefix = mainPrefix;
         this.serverPrefix = serverPrefix;
         this.portalTableName = portalTableName;
@@ -62,6 +66,8 @@ public class TableNameConfig {
         this.interPortalViewName = interPortalViewName;
         this.lastKnownNameTableName = lastKnownNameTableName;
         this.serverInfoTableName = serverInfoTableName;
+        this.portalPositionTypeTableName = positionTypeTableName;
+        this.portalPositionTableName = portalPositionTableName;
     }
 
     /**
@@ -143,6 +149,24 @@ public class TableNameConfig {
      */
     public String getServerInfoTableName() {
         return mainPrefix + serverInfoTableName;
+    }
+
+    /**
+     * Gets the name of the table used to store the available position types
+     *
+     * @return <p>The name of the table used to store available position types</p>
+     */
+    public String getPortalPositionTypeTableName() {
+        return mainPrefix + portalPositionTypeTableName;
+    }
+
+    /**
+     * Gets the name of the table used to store portal positions
+     *
+     * @return <p>The name of the table used to store portal positions</p>
+     */
+    public String getPortalPositionTableName() {
+        return mainPrefix + serverPrefix + portalPositionTableName;
     }
 
 }

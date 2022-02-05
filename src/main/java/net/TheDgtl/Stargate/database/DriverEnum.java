@@ -29,6 +29,7 @@ public enum DriverEnum {
 
     /**
      * Represents a PostgreSQL driver
+     * TODO: This is never used
      */
     POSTGRESQL("");
 

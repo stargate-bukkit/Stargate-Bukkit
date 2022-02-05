@@ -14,7 +14,7 @@ import java.util.logging.Level;
  * A network that belongs to a certain player and uses the player's name
  */
 public class PersonalNetwork extends Network {
-    
+
     private final String playerName;
 
     /**
@@ -25,8 +25,8 @@ public class PersonalNetwork extends Network {
      * @param queryGenerator <p>The generator to use for generating SQL queries</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public PersonalNetwork(UUID uuid, Database database, SQLQueryGenerator queryGenerator) throws NameErrorException {
-        super(uuid.toString(), database, queryGenerator);
+    public PersonalNetwork(UUID uuid, Database database, SQLQueryGenerator queryGenerator, StargateFactory factory) throws NameErrorException {
+        super(uuid.toString(), database, queryGenerator, factory);
         Stargate.log(Level.FINE, "Initialized personal network with UUID" + uuid);
         Stargate.log(Level.FINE, "Matching player name: " + Bukkit.getOfflinePlayer(uuid).getName());
         playerName = Bukkit.getOfflinePlayer(uuid).getName();

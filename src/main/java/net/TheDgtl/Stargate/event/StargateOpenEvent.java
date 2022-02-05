@@ -19,8 +19,6 @@
 package net.TheDgtl.Stargate.event;
 
 import net.TheDgtl.Stargate.network.portal.Portal;
-import net.TheDgtl.Stargate.network.portal.RealPortal;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
@@ -50,7 +48,7 @@ public class StargateOpenEvent extends StargateEvent {
         super(Objects.requireNonNull(portal));
         this.player = player;
         this.isForced = isForced;
-        this.destination = ((RealPortal) portal).loadDestination();
+        this.destination = portal.loadDestination();
     }
 
     /**
@@ -77,9 +75,7 @@ public class StargateOpenEvent extends StargateEvent {
     public List<Permission> getRelatedPerms() {
         String identifier = "sg.use";
         List<Permission> permList = super.defaultPermCompile(identifier, player.getUniqueId().toString());
-        Location destinationLoc = destination.getSignLocation();
-        if (destinationLoc != null)
-            permList.add(super.compileWorldPerm(identifier, destinationLoc));
+        permList.add(super.compileWorldPerm(identifier, portal));
         return permList;
     }
 }

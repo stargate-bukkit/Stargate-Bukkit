@@ -22,7 +22,7 @@ public class PluginEventListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPluginEnable(PluginEnableEvent event) {
         if (Stargate.economyManager.isValidEconomyPlugin(event.getPlugin())) {
-            Stargate.economyManager.setEconomy(event.getPlugin());
+            Stargate.economyManager.setEconomy();
         }
     }
 

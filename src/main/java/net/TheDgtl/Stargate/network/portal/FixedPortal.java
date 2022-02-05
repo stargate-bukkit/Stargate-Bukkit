@@ -2,12 +2,10 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
-import net.TheDgtl.Stargate.exception.NoFormatFoundException;
+import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
-import org.bukkit.block.Block;
 
 import java.util.Set;
 import java.util.UUID;
@@ -25,17 +23,15 @@ public class FixedPortal extends AbstractPortal {
      * @param network         <p>The network the portal belongs to</p>
      * @param name            <p>The name of the portal</p>
      * @param destinationName <p>The name of the destination portal</p>
-     * @param signBlock       <p>The block this portal's sign is located at</p>
      * @param flags           <p>The flags enabled for the portal</p>
      * @param ownerUUID       <p>The UUID of the portal's owner</p>
-     * @throws NameErrorException     <p>If the portal name is invalid</p>
-     * @throws NoFormatFoundException <p>If no gate format matches the portal</p>
-     * @throws GateConflictException  <p>If the portal's gate conflicts with an existing one</p>
+     * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    public FixedPortal(Network network, String name, String destinationName, Block signBlock, Set<PortalFlag> flags,
-                       UUID ownerUUID) throws NoFormatFoundException, GateConflictException, NameErrorException {
-        super(network, name, signBlock, flags, ownerUUID);
+    public FixedPortal(Network network, String name, String destinationName, Set<PortalFlag> flags, Gate gate,
+                       UUID ownerUUID) throws NameErrorException {
+        super(network, name, flags, gate, ownerUUID);
         this.destinationName = destinationName;
+        this.destination = network.getPortal(destinationName);
     }
 
     @Override
@@ -44,9 +40,9 @@ public class FixedPortal extends AbstractPortal {
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
         lines[2] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(this.network.getHighlightedName()) : "";
         Portal destination = loadDestination();
-        if (destination != null)
+        if (destination != null) {
             lines[1] = super.colorDrawer.formatPortalName(loadDestination(), HighlightingStyle.DESTINATION);
-        else {
+        } else {
             lines[1] = super.colorDrawer.formatLine(destinationName);
             lines[3] = super.colorDrawer.formatErrorLine(Stargate.languageManager.getString(
                     TranslatableMessage.DISCONNECTED), HighlightingStyle.BUNGEE);
@@ -56,7 +52,11 @@ public class FixedPortal extends AbstractPortal {
 
     @Override
     public Portal loadDestination() {
-        return this.network.getPortal(destinationName);
+        Portal destination = this.network.getPortal(destinationName);
+        if (destination == null) {
+            destination = new InvalidPortal(destinationName);
+        }
+        return destination;
     }
 
     @Override

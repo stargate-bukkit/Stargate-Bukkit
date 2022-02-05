@@ -82,8 +82,9 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         Stargate.log(Level.FINEST, "Received plugin-message");
 
         boolean usingBungee = Settings.getBoolean(Setting.USING_BUNGEE);
-        if (!usingBungee || !channel.equals("BungeeCord"))
+        if (!usingBungee || !channel.equals("BungeeCord")) {
             return;
+        }
 
         try {
             DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));

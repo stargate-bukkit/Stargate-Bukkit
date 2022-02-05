@@ -10,7 +10,7 @@ commands:
   stargate:
     description: Used to reload the plugin. Console use only.
     usage: /<command> reload - Used to reload the plugin. Console use only.
-    aliases: [sg]
+    aliases: [ sg ]
 permissions:
   sg:
     children:
@@ -106,7 +106,7 @@ permissions:
                 description: Can use gates without a specified destination (networked gates).
           sg.use.design:
             description: Can use any portal, regardless of its portal's design (gatefile).
-      #             sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gatefile design to be used.
+      #             sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be used.
 
       sg.create:
         default: op
@@ -172,7 +172,7 @@ permissions:
           sg.create.design:
             description: Can create any portal, regardless of the design (gatefile)
             children:
-              #             sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gatefile design to be created.
+              #             sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be created.
               sg.create.design.nether.gate: true
               sg.create.design.water.gate: true
               sg.create.design.wool.gate: true
@@ -228,7 +228,7 @@ permissions:
           #NOT IMPL.      description: Can destroy gates with invisible signs.
           sg.destroy.design:
             description: Can destroy portals, regardless of design (gatefile).
-      #             sg.destroy.design.<NAME>.gate is a sub-node that allows for portals of a specific gatefile design to be destroyed.
+      #             sg.destroy.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be destroyed.
 
       sg.preset:
         description: Premade groupings for convenience.

@@ -1,14 +1,12 @@
 package net.TheDgtl.Stargate.command;
 
-import org.bukkit.Bukkit;
+import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.TranslatableMessage;
+import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-
-import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 
 /**
  * This command represents any command which starts with stargate
@@ -29,8 +27,8 @@ public class CommandStargate implements CommandExecutor {
             }
             return false;
         } else {
-            String unformatedMessage = Stargate.languageManager.getMessage(TranslatableMessage.COMMAND_INFO);
-            commandSender.sendMessage(TranslatableMessageFormatter.compileVersion(unformatedMessage, Stargate.getInstance().getDescription().getVersion()));
+            String unformattedMessage = Stargate.languageManager.getMessage(TranslatableMessage.COMMAND_INFO);
+            commandSender.sendMessage(TranslatableMessageFormatter.formatVersion(unformattedMessage, Stargate.getInstance().getDescription().getVersion()));
             return true;
         }
     }

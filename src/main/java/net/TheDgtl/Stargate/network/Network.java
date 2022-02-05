@@ -12,6 +12,7 @@ import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import net.md_5.bungee.api.ChatColor;
@@ -37,6 +38,7 @@ public class Network {
     protected Database database;
     protected String name;
     protected SQLQueryGenerator sqlMaker;
+    private final StargateFactory factory;
 
     /**
      * Instantiates a new network
@@ -46,7 +48,7 @@ public class Network {
      * @param queryGenerator <p>The generator to use for generating SQL queries</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public Network(String name, Database database, SQLQueryGenerator queryGenerator) throws NameErrorException {
+    public Network(String name, Database database, SQLQueryGenerator queryGenerator, StargateFactory factory) throws NameErrorException {
         if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH)) {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         }
@@ -54,6 +56,7 @@ public class Network {
         this.database = database;
         this.sqlMaker = queryGenerator;
         nameToPortalMap = new HashMap<>();
+        this.factory = factory;
     }
 
     /**
@@ -101,18 +104,21 @@ public class Network {
      * Adds the given portal to this network
      *
      * @param portal         <p>The portal to add</p>
-     * @param saveToDatabase <p>Whether to also save the portal to the database</p>
+     * @param saveToDatabase <p>Whether to also save the portal to the database, only instances of RealPortal can be saved</p>
      */
     public void addPortal(Portal portal, boolean saveToDatabase) {
         if (portal instanceof RealPortal) {
             RealPortal physicalPortal = (RealPortal) portal;
-            for (GateStructureType key : physicalPortal.getGate().getFormat().portalParts.keySet()) {
+            for (GateStructureType key : GateStructureType.values()) {
                 List<BlockLocation> locations = physicalPortal.getGate().getLocations(key);
-                Stargate.factory.registerLocations(key, generateLocationMap(locations, portal));
+                if (locations == null) {
+                    continue;
+                }
+                factory.registerLocations(key, generateLocationMap(locations, portal));
             }
         }
-        if (saveToDatabase) {
-            savePortal(portal);
+        if (portal instanceof RealPortal && saveToDatabase) {
+            savePortal((RealPortal) portal);
         }
         nameToPortalMap.put(getPortalHash(portal.getName()), portal);
     }
@@ -208,7 +214,7 @@ public class Network {
      *
      * @param portal <p>The portal to save</p>
      */
-    protected void savePortal(Portal portal) {
+    protected void savePortal(RealPortal portal) {
         savePortal(database, portal, PortalType.LOCAL);
     }
 
@@ -219,7 +225,7 @@ public class Network {
      * @param portal     <p>The portal to save</p>
      * @param portalType <p>The type of portal to save</p>
      */
-    protected void savePortal(Database database, Portal portal, PortalType portalType) {
+    protected void savePortal(Database database, RealPortal portal, PortalType portalType) {
         /* An SQL transaction is used here to make sure partial data is never added to the database. */
         Connection connection = null;
         try {
@@ -232,8 +238,14 @@ public class Network {
             PreparedStatement addFlagStatement = sqlMaker.generateAddPortalFlagRelationStatement(connection, portalType);
             addFlags(addFlagStatement, portal);
             addFlagStatement.close();
+
+            PreparedStatement addPositionStatement = sqlMaker.generateAddPortalPositionStatement(connection);
+            addPortalPositions(addPositionStatement, portal);
+            addPositionStatement.close();
             connection.commit();
             connection.setAutoCommit(true);
+
+            //TODO: Save any portal positions related to the portal
         } catch (SQLException exception) {
             try {
                 if (connection != null) {
@@ -266,6 +278,12 @@ public class Network {
             removeFlagsStatement.setString(2, portal.getNetwork().getName());
             removeFlagsStatement.execute();
             removeFlagsStatement.close();
+
+            PreparedStatement removePositionsStatement = sqlMaker.generateRemovePortalPositionsStatement(conn);
+            removePositionsStatement.setString(1, portal.getName());
+            removePositionsStatement.setString(2, portal.getNetwork().getName());
+            removePositionsStatement.execute();
+            removePositionsStatement.close();
 
             PreparedStatement statement = sqlMaker.generateRemovePortalStatement(conn, portal, portalType);
             statement.execute();
@@ -313,6 +331,25 @@ public class Network {
             portalHash = ChatColor.stripColor(portalHash);
         }
         return portalHash;
+    }
+
+    /**
+     * Adds a portal position to the portal positions table
+     *
+     * @param addPositionStatement <p>The prepared statement for adding a portal position</p>
+     * @param portal               <p>The portal to add the portal positions of</p>
+     * @throws SQLException <p>If unable to add the portal positions</p>
+     */
+    private void addPortalPositions(PreparedStatement addPositionStatement, RealPortal portal) throws SQLException {
+        for (PortalPosition portalPosition : portal.getGate().getPortalPositions()) {
+            addPositionStatement.setString(1, portal.getName());
+            addPositionStatement.setString(2, portal.getNetwork().getName());
+            addPositionStatement.setString(3, String.valueOf(portalPosition.getPositionLocation().getBlockX()));
+            addPositionStatement.setString(4, String.valueOf(portalPosition.getPositionLocation().getBlockY()));
+            addPositionStatement.setString(5, String.valueOf(-portalPosition.getPositionLocation().getBlockZ()));
+            addPositionStatement.setString(6, portalPosition.getPositionType().name());
+            addPositionStatement.execute();
+        }
     }
 
     /**

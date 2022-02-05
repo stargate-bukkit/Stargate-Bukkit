@@ -8,13 +8,11 @@ import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.event.StargateActivateEvent;
 import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
-import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
-import net.TheDgtl.Stargate.exception.NoFormatFoundException;
+import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import org.bukkit.Bukkit;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -46,16 +44,13 @@ public class NetworkedPortal extends AbstractPortal {
      *
      * @param network   <p>The network the portal belongs to</p>
      * @param name      <p>The name of the portal</p>
-     * @param signBlock <p>The block this portal's sign is located at</p>
      * @param flags     <p>The flags enabled for the portal</p>
      * @param ownerUUID <p>The UUID of the portal's owner</p>
-     * @throws NameErrorException     <p>If the portal name is invalid</p>
-     * @throws NoFormatFoundException <p>If no gate format matches the portal</p>
-     * @throws GateConflictException  <p>If the portal's gate conflicts with an existing one</p>
+     * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    public NetworkedPortal(Network network, String name, Block signBlock, Set<PortalFlag> flags, UUID ownerUUID)
-            throws NoFormatFoundException, GateConflictException, NameErrorException {
-        super(network, name, signBlock, flags, ownerUUID);
+    public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID)
+            throws NameErrorException {
+        super(network, name, flags, gate, ownerUUID);
     }
 
     /**
@@ -73,13 +68,14 @@ public class NetworkedPortal extends AbstractPortal {
         }
 
         PermissionManager permissionManager = new PermissionManager(event.getPlayer());
-        if (!hasActivatePermissions(actor,permissionManager)) {
-            if(permissionManager.getDenyMessage() != null)
+        if (!hasActivatePermissions(actor, permissionManager)) {
+            if (permissionManager.getDenyMessage() != null) {
                 actor.sendMessage(permissionManager.getDenyMessage());
+            }
             Stargate.log(Level.CONFIG, "Player did not have permission to activate portal");
             return;
         }
-        
+
         boolean previouslyActivated = this.isActive;
         activate(actor);
         if (destinations.size() < 1) {
@@ -89,17 +85,19 @@ public class NetworkedPortal extends AbstractPortal {
             return;
         }
 
-        selectedDestination = selectNewDestination(event.getAction(),previouslyActivated);
+        selectedDestination = selectNewDestination(event.getAction(), previouslyActivated);
         drawControlMechanisms();
-        if (hasFlag(PortalFlag.ALWAYS_ON))
+        if (hasFlag(PortalFlag.ALWAYS_ON)) {
             super.destination = loadDestination();
+        }
     }
-    
-    
+
+
     public int selectNewDestination(Action action, boolean previouslyActivated) {
         if (!previouslyActivated) {
-            if (!Settings.getBoolean(Setting.REMEMBER_LAST_DESTINATION))
+            if (!Settings.getBoolean(Setting.REMEMBER_LAST_DESTINATION)) {
                 return 0;
+            }
             return selectedDestination;
         }
 

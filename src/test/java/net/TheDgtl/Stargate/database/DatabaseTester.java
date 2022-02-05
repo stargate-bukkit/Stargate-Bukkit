@@ -3,23 +3,30 @@ package net.TheDgtl.Stargate.database;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
+import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.TableNameConfig;
+import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.FakePortalGenerator;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -39,8 +46,9 @@ public class DatabaseTester {
     private static Portal testPortal;
     private static final String INTER_PORTAL_NAME = "iPortal";
     private static final String LOCAL_PORTAL_NAME = "portal";
-    private final Map<String, Portal> interServerPortals;
-    private final Map<String, Portal> localPortals;
+    private static final File testGatesDir = new File("src/test/resources/gates");
+    private final Map<String, RealPortal> interServerPortals;
+    private final Map<String, RealPortal> localPortals;
 
     /**
      * Instantiates a new database tester
@@ -49,9 +57,11 @@ public class DatabaseTester {
      * @param nameConfig <p>The config containing all table names</p>
      * @param generator  <p>The SQL Query generator to use for generating test queries</p>
      * @param isMySQL    <p>Whether this database tester is testing MySQL as opposed to SQLite</p>
+     * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
+     * @throws NameErrorException        <p>If an invalid portal name is encountered</p>
      */
     public DatabaseTester(Database database, TableNameConfig nameConfig, SQLQueryGenerator generator,
-                          boolean isMySQL) throws SQLException {
+                          boolean isMySQL) throws SQLException, InvalidStructureException, NameErrorException {
         DatabaseTester.connection = database.getConnection();
         DatabaseTester.generator = generator;
         DatabaseTester.isMySQL = isMySQL;
@@ -67,18 +77,20 @@ public class DatabaseTester {
         DatabaseTester.serverName = "aServerName";
         DatabaseTester.serverUUID = UUID.randomUUID();
         Stargate.serverUUID = serverUUID;
+        StargateLogger logger = new FakeStargate();
 
         Network testNetwork = null;
         try {
-            testNetwork = new Network("test", database, generator);
+            testNetwork = new Network("test", database, generator, null);
         } catch (NameErrorException e) {
             e.printStackTrace();
         }
+        GateFormat.setFormats(Objects.requireNonNull(GateFormat.loadGateFormats(testGatesDir)));
         FakePortalGenerator portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
 
-        this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength);
-        this.localPortals = portalGenerator.generateFakePortals(world, testNetwork, false, localPortalTestLength);
-        DatabaseTester.testPortal = portalGenerator.generateFakePortal(world, testNetwork, "testPortal", false);
+        this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength, logger);
+        this.localPortals = portalGenerator.generateFakePortals(world, testNetwork, false, localPortalTestLength, logger);
+        DatabaseTester.testPortal = portalGenerator.generateFakePortal(world, testNetwork, "testPortal", false, logger);
     }
 
     void addPortalTableTest() throws SQLException {
@@ -149,7 +161,7 @@ public class DatabaseTester {
     }
 
     void addPortalTest() throws SQLException {
-        for (Portal portal : localPortals.values()) {
+        for (RealPortal portal : localPortals.values()) {
             connection.setAutoCommit(false);
             try {
                 finishStatement(generator.generateAddPortalStatement(connection, portal, PortalType.LOCAL));
@@ -169,7 +181,7 @@ public class DatabaseTester {
     }
 
     void addInterPortalTest() throws SQLException {
-        for (Portal portal : interServerPortals.values()) {
+        for (RealPortal portal : interServerPortals.values()) {
             connection.setAutoCommit(false);
             try {
                 finishStatement(
@@ -221,7 +233,7 @@ public class DatabaseTester {
      * @param portals    <p>The portals available for testing</p>
      * @throws SQLException <p>If a database error occurs</p>
      */
-    private void getPortals(PortalType portalType, Map<String, Portal> portals) throws SQLException {
+    private void getPortals(PortalType portalType, Map<String, RealPortal> portals) throws SQLException {
         String tableName = portalType == PortalType.LOCAL ? nameConfig.getPortalViewName() :
                 nameConfig.getInterPortalTableName();
         printTableInfo(tableName);
@@ -339,7 +351,7 @@ public class DatabaseTester {
      * @throws SQLException <p>If a database error occurs</p>
      */
     public void updateServerInfoTest() throws SQLException {
-        PreparedStatement statement = generator.generateUpdateServerInfoStatus(connection, serverName, serverUUID);
+        PreparedStatement statement = generator.generateUpdateServerInfoStatus(connection, serverUUID, serverName);
         finishStatement(statement);
     }
 

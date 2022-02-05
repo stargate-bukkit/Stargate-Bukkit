@@ -10,7 +10,6 @@ import net.TheDgtl.Stargate.util.ColorConverter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.block.Sign;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -37,7 +37,6 @@ import net.TheDgtl.Stargate.refactoring.Refactorer;
 import net.TheDgtl.Stargate.util.BStatsHelper;
 import net.TheDgtl.Stargate.util.FileHelper;
 import net.md_5.bungee.api.ChatColor;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -55,7 +54,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -81,7 +82,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
     final String GATE_FOLDER = "gates";
     final String LANGUAGE_FOLDER = "lang";
-    final String PORTAL_FOLDER = "portals";
     final String INTERNAL_FOLDER = ".internal";
 
     private PluginManager pm;
@@ -117,13 +117,14 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     public static ChatColor defaultDarkColor = ChatColor.WHITE;
 
     private FileConfiguration config;
-    private static FileConfiguration staticConfig = new StargateConfiguration();
+    private static final FileConfiguration staticConfig = new StargateConfiguration();
 
     @Override
     public void onEnable() {
         instance = this;
-        if(!new File(this.getDataFolder(),"config.yml").exists())
+        if (!new File(this.getDataFolder(), "config.yml").exists()) {
             super.saveDefaultConfig();
+        }
 
         if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
             try {
@@ -132,13 +133,13 @@ public class Stargate extends JavaPlugin implements StargateLogger {
                 e.printStackTrace();
             }
         }
-        
-        
+
+
         saveDefaultGates();
-        
-        languageManager = new LanguageManager(this, new File(DATA_FOLDER,LANGUAGE_FOLDER));
+
+        languageManager = new LanguageManager(this, new File(DATA_FOLDER, LANGUAGE_FOLDER));
         load();
-        
+
         pm = getServer().getPluginManager();
         registerListeners();
         BukkitScheduler scheduler = getServer().getScheduler();
@@ -148,12 +149,12 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
         // Registers bstats metrics
         int pluginId = 10451;
-        Metrics metrics = BStatsHelper.getMetrics(pluginId, this);
+        BStatsHelper.getMetrics(pluginId, this);
     }
 
     private void loadBungeeServerName() {
         Stargate.log(Level.FINEST, DATA_FOLDER);
-        File path = new File(String.format("%s/%s", this.getDataFolder().getAbsolutePath(), INTERNAL_FOLDER));
+        File path = new File(this.getDataFolder(), INTERNAL_FOLDER);
         if (!path.exists() && path.mkdir()) {
             try {
                 Files.setAttribute(path.toPath(), "dos:hidden", true);
@@ -188,7 +189,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             Stargate.defaultLightSignColor = loadColor(Settings.getString(Setting.DEFAULT_LIGHT_SIGN_COLOR));
             Stargate.defaultDarkColor = loadColor(Settings.getString(Setting.DEFAULT_DARK_SIGN_COLOR));
         } catch (IllegalArgumentException | NullPointerException e) {
-            Stargate.log(Level.WARNING, "Invalid colors for sign texts, chosing default colors...");
+            Stargate.log(Level.WARNING, "Invalid colors for sign text. Using default colors instead...");
             Stargate.defaultLightSignColor = ChatColor.BLACK;
             Stargate.defaultDarkColor = ChatColor.WHITE;
         }
@@ -217,31 +218,26 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     private void saveDefaultGates() {
         //TODO is there a way to check all files in a resource-folder? Possible solution seems unnecessarily complex
         String[] gateList = {"nether.gate", "water.gate", "wool.gate", "end.gate"};
-        boolean replace = false;
         for (String gateName : gateList) {
-            if (!(new File(DATA_FOLDER + "/" + GATE_FOLDER + "/" + gateName).exists()))
-                this.saveResource(GATE_FOLDER + "/" + gateName, replace);
+            if (!(new File(DATA_FOLDER + "/" + GATE_FOLDER + "/" + gateName).exists())) {
+                this.saveResource(GATE_FOLDER + "/" + gateName, false);
+            }
         }
     }
 
-    private void refactor() throws FileNotFoundException, IOException, InvalidConfigurationException, SQLException {
+    private void refactor() throws IOException, InvalidConfigurationException, SQLException {
         File file = new File(this.getDataFolder(), "stargate.db");
         Database database = new SQLiteDatabase(file);
         StargateFactory factory = new StargateFactory(database, false, false, this);
 
-        Refactorer middas = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(), factory);
-        Map<String, Object> newConfig = middas.getConfigModificatinos();
+        Refactorer refactorer = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(), factory);
+        Map<String, Object> newConfig = refactorer.getConfigModifications();
         this.saveResource("config.yml", true);
-        middas.insertNewValues(newConfig);
+        refactorer.insertNewValues(newConfig);
         this.reloadConfig();
-        middas.run();
+        refactorer.run();
     }
 
-    public void reload() {
-        this.reloadConfig();
-        load();
-    }
-    
     @Override
     public @NotNull FileConfiguration getConfig() {
         if (config == null) {
@@ -276,12 +272,20 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
         economyManager = new EconomyManager();
         String debugLevelStr = Settings.getString(Setting.DEBUG_LEVEL);
-        if (debugLevelStr == null)
+        if (debugLevelStr == null) {
             lowestMsgLevel = Level.INFO;
-        else
+        } else {
             lowestMsgLevel = Level.parse(debugLevelStr);
+        }
         languageManager.setLanguage(Settings.getString(Setting.LANGUAGE));
-        GateFormat.controlMaterialFormatsMap = GateFormat.loadGateFormats(DATA_FOLDER + "/" + GATE_FOLDER);
+
+        List<GateFormat> gateFormats = GateFormat.loadGateFormats(new File(DATA_FOLDER, GATE_FOLDER));
+        if (gateFormats == null) {
+            log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
+            GateFormat.setFormats(new ArrayList<>());
+        } else {
+            GateFormat.setFormats(gateFormats);
+        }
 
         try {
             factory = new StargateFactory(this);
@@ -306,8 +310,9 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
         getServer().getScheduler().cancelTasks(this);
 
-        if (!Settings.getBoolean(Setting.USING_BUNGEE))
+        if (!Settings.getBoolean(Setting.USING_BUNGEE)) {
             return;
+        }
 
         try {
             factory.endInterServerConnection();
@@ -344,11 +349,12 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     public static FileConfiguration getConfigStatic() {
-        if (instance == null)
+        if (instance == null) {
             return staticConfig;
+        }
         return instance.getConfig();
     }
-    
+
     /**
      * Registers a command for this plugin
      */
@@ -365,8 +371,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
 
         /*
-         * In some cases, there might be issues with a portal being delited in a server, but still present in the interserver database.
-         * Therefore we have to check for that...
+         * In some cases, there might be issues with a portal being deleted in a server, but still present in the
+         * inter-server database. Therefore, we have to check for that...
          */
         if (network == null) {
             // Error: This bungee portal's %type% has been removed from the destination server instance.

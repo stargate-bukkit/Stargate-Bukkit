@@ -50,14 +50,14 @@ public class StargateConfiguration extends YamlConfiguration {
     public String convertCommentsToYAMLMappings(String yamlString) {
         StringBuilder newText = new StringBuilder();
         /*
-         * A list of each stored comment (which is an list of comment lines) A comment
+         * A list of each stored comment (which is a list of comment lines) A comment
          * is defined as a set of lines that start with #, this set can not contain an
          * empty line.
          */
         List<List<String>> comments = new ArrayList<>();
         int counter = 0;
         int commentNameCounter = 0;
-        int indent = 0;
+        int indent;
         List<String> currentComment;
         for (String line : yamlString.split("\n")) {
             if (line.trim().isEmpty()) {
@@ -100,8 +100,9 @@ public class StargateConfiguration extends YamlConfiguration {
         boolean isSkippingComment = false;
         for (String line : yamlString.split("\n")) {
             if (isSkippingComment) {
-                if (line.contains(END_OF_COMMENT))
+                if (line.contains(END_OF_COMMENT)) {
                     isSkippingComment = false;
+                }
                 continue;
             }
             // TODO: Create a custom method with Java 11's String.strip() if necessary
@@ -111,15 +112,16 @@ public class StargateConfiguration extends YamlConfiguration {
                 String lastKeyName = possibleComment.split(":")[0];
                 String key = "";
                 for (String possibleKey : getKeys(true)) {
-                    if (possibleKey.contains(lastKeyName))
+                    if (possibleKey.contains(lastKeyName)) {
                         key = possibleKey;
+                    }
                 }
                 String comment = getString(key);
+                if (comment == null) {
+                    continue;
+                }
                 String[] commentLines = comment.split("\n");
-                /*
-                 * Go through every line, except the last one, which is just going to be a
-                 * END_OF_COMMENT identifier
-                 */
+                //Go through every line, except the last one, which is just going to be an END_OF_COMMENT identifier
                 StringBuilder lineBuilder = new StringBuilder();
                 for (int i = 0; i < commentLines.length - 1; i++) {
                     lineBuilder.append("\n").append(repeat(" ", indent)).append("# ").append(commentLines[i]);
@@ -158,10 +160,11 @@ public class StargateConfiguration extends YamlConfiguration {
     private int countSpaces(String line) {
         int spaceAmount = 0;
         for (char aChar : line.toCharArray()) {
-            if (aChar == ' ')
+            if (aChar == ' ') {
                 spaceAmount++;
-            else
+            } else {
                 break;
+            }
         }
         return spaceAmount;
     }

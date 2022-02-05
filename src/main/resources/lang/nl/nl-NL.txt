@@ -38,8 +38,8 @@ bungeeTargetOffline=De proxy is momenteel niet beschikbaar; bungee-portalen zijn
 
 # Gate Usage
 tpSuccess=Geteleporteerd!
-tpDestiInvalid=Ongeldige bestemming
-tpDestiBlocked=Bestemming geblokkeerd!
+tpDestInvalid=Ongeldige bestemming
+tpDestBlocked=Bestemming geblokkeerd!
 tpEmptyNet=Bestemming lijst is leeg!
 
 # Access

@@ -39,7 +39,7 @@ bungee:
   # If you are running a large server, we recommend using a remote database.
   # Note that such a database is required if you intend on building gates with the 'i' flag.
   useRemoteDatabase: false
-  
+
 
   # Only applicable if useRemoteDatabase is true.
   remoteDatabaseSettings:
@@ -195,7 +195,7 @@ gateExitSpeedMultiplier: 1
 # Where should this flatfile be named?
 portalFile: stargate
 
-# By default SG will preface its remote database tables with `SG_`.
+# By default, SG will preface its remote database tables with `SG_`.
 # If this conflicts with another plugin, you can change that prefix here.
 customRemoteDatabasePrefix: SG_
 

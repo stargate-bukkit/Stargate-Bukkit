@@ -23,7 +23,8 @@
 - Added support for material arrays.
 - Switched native storage to sqlite.
 - Added support for remote relational databases; completely restructured databases.
-- Redid language files and messages; see [this page](crowdin.com/project/stargate-bukkit/) for the new translations.
+- Redid language files and messages; see [this page](https://crowdin.com/project/stargate-bukkit/) for the new
+  translations.
 - Players now keep momentum when using a portal
 - Entities and passengers can now use gates (re-added minecart support)
 - Leashed entities can now go through gates.

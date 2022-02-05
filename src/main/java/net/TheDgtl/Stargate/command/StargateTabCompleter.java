@@ -1,14 +1,14 @@
 package net.TheDgtl.Stargate.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the tab completer for the /stargate (/sg) command
@@ -41,7 +41,7 @@ public class StargateTabCompleter implements TabCompleter {
     private List<String> getAvailableCommands(CommandSender commandSender) {
         List<String> commands = new ArrayList<>();
         commands.add("about");
-        if (!(commandSender instanceof Player ) || ((Player)commandSender).hasPermission("stargate.admin.reload")) {
+        if (!(commandSender instanceof Player) || commandSender.hasPermission("stargate.admin.reload")) {
             commands.add("reload");
         }
         return commands;

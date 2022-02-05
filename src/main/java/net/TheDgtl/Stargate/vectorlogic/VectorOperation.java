@@ -6,6 +6,7 @@ import org.bukkit.Axis;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Level;
 
@@ -79,7 +80,7 @@ public class VectorOperation implements IVectorOperation {
     }
 
     @Override
-    public Vector performOperation(Vector vector) {
+    public Vector performToAbstractSpaceOperation(@NotNull Vector vector) {
         Vector output = matrixRotation.performOperation(vector);
         if (flipZAxis) {
             output.setZ(-output.getZ());
@@ -88,7 +89,7 @@ public class VectorOperation implements IVectorOperation {
     }
 
     @Override
-    public Vector performInverseOperation(Vector vector) {
+    public Vector performToRealSpaceOperation(@NotNull Vector vector) {
         Vector output = vector.clone();
         if (flipZAxis) {
             output.setZ(-output.getZ());
@@ -97,8 +98,8 @@ public class VectorOperation implements IVectorOperation {
     }
 
     @Override
-    public BlockVector performInverseOperation(BlockVector vector) {
-        return performInverseOperation((Vector) vector).toBlockVector();
+    public BlockVector performToRealSpaceOperation(@NotNull BlockVector vector) {
+        return performToRealSpaceOperation((Vector) vector).toBlockVector();
     }
 
 }

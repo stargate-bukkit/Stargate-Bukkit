@@ -1,7 +1,5 @@
 package net.TheDgtl.Stargate.listeners;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.PluginChannel;
 import net.TheDgtl.Stargate.Stargate;
@@ -139,8 +137,9 @@ public class PlayerEventListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!Settings.getBoolean(Setting.USING_BUNGEE))
+        if (!Settings.getBoolean(Setting.USING_BUNGEE)) {
             return;
+        }
 
         //Gets the name of this server if it's still unknown
         if (!Stargate.knowsServerName) {

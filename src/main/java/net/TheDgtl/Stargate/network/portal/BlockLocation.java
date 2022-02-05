@@ -50,12 +50,15 @@ public class BlockLocation {
 
     @Override
     public boolean equals(Object other) {
-        if (this == other)
+        if (this == other) {
             return true;
-        if (other == null)
+        }
+        if (other == null) {
             return false;
-        if (getClass() != other.getClass())
+        }
+        if (getClass() != other.getClass()) {
             return false;
+        }
 
         BlockLocation otherLoc = (BlockLocation) other;
         return (x == otherLoc.x) && (y == otherLoc.y) && (z == otherLoc.z) && (world.equals(otherLoc.world));

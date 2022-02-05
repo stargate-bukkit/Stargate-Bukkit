@@ -68,15 +68,6 @@ public class GateFormatParser {
     }
 
     /**
-     * Gets the set of materials used for the parsed gate format's control blocks
-     *
-     * @return <p>The materials used for control blocks</p>
-     */
-    public Set<Material> getControlBlockMaterials() {
-        return controlMaterials;
-    }
-
-    /**
      * Parses the gate file given during instantiation
      *
      * @return <p>The parsed gate format</p>
@@ -98,7 +89,7 @@ public class GateFormatParser {
             throw new ParsingErrorException("Design requires at least 2 control blocks '-' ");
         }
 
-        return new GateFormat(iris, frame, controlBlocks, filename, canBeBlockedByIronDoor);
+        return new GateFormat(iris, frame, controlBlocks, filename, canBeBlockedByIronDoor, controlMaterials);
     }
 
 
@@ -106,11 +97,10 @@ public class GateFormatParser {
      * Stores all configuration options to relevant variables/sets
      *
      * @param config <p>The configuration map to read</p>
-     * @return <p>The remaining configuration options after the known options have been taken care of</p>
      * @throws ParsingErrorException <p>If unable to parse one of the materials given in the options</p>
      */
-    private Map<String, String> setSettings(Map<String, String> config) throws ParsingErrorException {
-        Map<String, String> remaining = new HashMap<>();
+    private void setSettings(Map<String, String> config) throws ParsingErrorException {
+        //Map<String, String> remaining = new HashMap<>();
         for (String key : config.keySet()) {
             if (key.length() != 1) {
                 switch (key) {
@@ -121,7 +111,7 @@ public class GateFormatParser {
                         irisClosed = parseMaterial(config.get(key));
                         break;
                     default:
-                        remaining.put(key, config.get(key));
+                        //remaining.put(key, config.get(key));
                         break;
                 }
                 continue;
@@ -135,7 +125,7 @@ public class GateFormatParser {
             }
             frameMaterials.put(symbol, id);
         }
-        return remaining;
+        //return remaining;
     }
 
     /**
@@ -265,7 +255,7 @@ public class GateFormatParser {
         for (lineNumber = 0; lineNumber < lines.size(); lineNumber++) {
             char[] charLine = lines.get(lineNumber).toCharArray();
             for (i = 0; i < charLine.length; i++) {
-                BlockVector selectedLocation = new BlockVector(0, -lineNumber, i);
+                BlockVector selectedLocation = new BlockVector(0, -lineNumber, -i);
                 setDesignPoint(charLine[i], selectedLocation.clone());
             }
         }

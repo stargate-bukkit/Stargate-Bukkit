@@ -2,12 +2,10 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
-import net.TheDgtl.Stargate.exception.NoFormatFoundException;
+import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
-import org.bukkit.block.Block;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -25,11 +23,11 @@ public class BungeePortal extends AbstractPortal {
     private final Network cheatNetwork;
     private final LegacyVirtualPortal targetPortal;
     private final String serverDestination;
-    private String bungeeString;
+    private final String bungeeString;
 
     static {
         try {
-            LEGACY_NETWORK = new Network("§§§§§§#BUNGEE#§§§§§§", null, null);
+            LEGACY_NETWORK = new Network("§§§§§§#BUNGEE#§§§§§§", null, null, null);
         } catch (NameErrorException e) {
             e.printStackTrace();
         }
@@ -42,17 +40,13 @@ public class BungeePortal extends AbstractPortal {
      * @param name              <p>The name of the portal</p>
      * @param destination       <p>The destination of the portal</p>
      * @param destinationServer <p>The destination server to connect to</p>
-     * @param signBlock         <p>The block this portal's sign is located at</p>
      * @param flags             <p>The flags enabled for this portal</p>
      * @param ownerUUID         <p>The UUID of this portal's owner</p>
-     * @throws NameErrorException     <p>If the portal name is invalid</p>
-     * @throws NoFormatFoundException <p>If no gate format matches the portal</p>
-     * @throws GateConflictException  <p>If the portal's gate conflicts with an existing one</p>
+     * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    public BungeePortal(Network network, String name, String destination, String destinationServer, Block signBlock,
-                        Set<PortalFlag> flags, UUID ownerUUID) throws NameErrorException, NoFormatFoundException,
-            GateConflictException {
-        super(network, name, signBlock, flags, ownerUUID);
+    public BungeePortal(Network network, String name, String destination, String destinationServer,
+                        Set<PortalFlag> flags, Gate gate, UUID ownerUUID) throws NameErrorException {
+        super(network, name, flags, gate, ownerUUID);
 
 
         if (destination == null || destination.trim().isEmpty() || destinationServer == null || destinationServer.trim().isEmpty()) {
@@ -75,7 +69,7 @@ public class BungeePortal extends AbstractPortal {
          * CHEATS! we love cheats. This one helps to save the legacy bungee gate into sql table so that the
          * target server is stored as a replacement to network.
          */
-        cheatNetwork = new Network(destinationServer, null, null);
+        cheatNetwork = new Network(destinationServer, null, null, null);
         bungeeString = Stargate.languageManager.getString(TranslatableMessage.BUNGEE_SIGN_LINE_4);
     }
 

@@ -11,26 +11,20 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
 public class Refactorer {
-    /*
-     * This name stays
-     * NOT USED CURRENTLY
-     */
 
     private int configVersion;
     private final File configFile;
     private Map<String, Object> config;
-    private StargateLogger logger;
-    private FileConfiguration fileConfig;
+    private final FileConfiguration fileConfig;
     private final Modifier[] RETCONS;
 
-    public Refactorer(File configFile, StargateLogger logger, Server server, StargateFactory factory) throws FileNotFoundException, IOException, InvalidConfigurationException {
+    public Refactorer(File configFile, StargateLogger logger, Server server, StargateFactory factory) throws IOException, InvalidConfigurationException {
         RETCONS = new Modifier[]{
-                new RetCon1_0_0(server, factory)
+                new RetCon1_0_0(server, factory, logger)
         };
 
         FileConfiguration fileConfig = new StargateConfiguration();
@@ -39,13 +33,12 @@ public class Refactorer {
         this.config = fileConfig.getValues(true);
         this.configVersion = fileConfig.getInt("configVersion");
         this.configFile = configFile;
-        this.logger = logger;
     }
 
     /**
-     * @return every configuration mapping that could be transfered over to this version
+     * @return every configuration mapping that could be transferred over to this version
      */
-    public Map<String, Object> getConfigModificatinos() {
+    public Map<String, Object> getConfigModifications() {
         for (Modifier retCon : RETCONS) {
             int retConConfigNumber = retCon.getConfigVersion();
             if (retConConfigNumber >= configVersion) {

@@ -59,18 +59,18 @@ public class PermissionManager {
      * @param flags <p>The flags to check if the entity can use</p>
      * @return <p>The flags usable by the entity</p>
      */
-    public Set<PortalFlag> returnDissallowedFlags(Set<PortalFlag> flags) {
-        Set<PortalFlag> dissallowed = EnumSet.noneOf(PortalFlag.class);
+    public Set<PortalFlag> returnDisallowedFlags(Set<PortalFlag> flags) {
+        Set<PortalFlag> disallowed = EnumSet.noneOf(PortalFlag.class);
         for (PortalFlag flag : flags) {
             if (flag == PortalFlag.PERSONAL_NETWORK || flag == PortalFlag.IRON_DOOR || flag == PortalFlag.FIXED || flag == PortalFlag.NETWORKED) {
                 continue;
             }
 
             if (!target.hasPermission((FLAG_PERMISSION + flag.getCharacterRepresentation()).toLowerCase())) {
-                dissallowed.add(flag);
+                disallowed.add(flag);
             }
         }
-        return dissallowed;
+        return disallowed;
     }
 
     /**
@@ -119,8 +119,9 @@ public class PermissionManager {
 
         if ((event instanceof StargatePortalEvent) && canProcessMetaData) {
             StargatePortalEvent sPEvent = (StargatePortalEvent) event;
-            if (!sPEvent.getEntity().getUniqueId().equals(sPEvent.getPortal().getOwnerUUID()) && sPEvent.getEntity() instanceof Player)
+            if (!sPEvent.getEntity().getUniqueId().equals(sPEvent.getPortal().getOwnerUUID()) && sPEvent.getEntity() instanceof Player) {
                 return canFollow();
+            }
         }
         return true;
     }
@@ -131,15 +132,17 @@ public class PermissionManager {
             if (permissionNode.contains("world")) {
                 String unformattedMessage = languageManager.getErrorMessage(TranslatableMessage.WORLD_DENY);
                 String worldName = permissionNode.split(".world.")[1];
-                return TranslatableMessageFormatter.compileWorld(unformattedMessage, worldName);
+                return TranslatableMessageFormatter.formatWorld(unformattedMessage, worldName);
             }
-            if (permissionNode.contains("network"))
+            if (permissionNode.contains("network")) {
                 return languageManager.getErrorMessage(TranslatableMessage.NET_DENY);
+            }
         }
 
         if (permissionNode.contains("create")) {
-            if (permissionNode.contains("design"))
+            if (permissionNode.contains("design")) {
                 return languageManager.getErrorMessage(TranslatableMessage.GATE_DENY);
+            }
             if (permissionNode.contains("type")) {
                 PortalFlag flag = PortalFlag.valueOf(permissionNode.split(".type.")[1]);
                 if (flag == PortalFlag.BUNGEE || flag == PortalFlag.FANCY_INTER_SERVER) {
