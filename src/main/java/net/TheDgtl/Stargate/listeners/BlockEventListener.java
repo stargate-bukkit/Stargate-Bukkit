@@ -438,8 +438,9 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockFormEvent(BlockFormEvent event) {
-        if (!Settings.getBoolean(Setting.PROTECT_ENTRANCE))
+        if (!Settings.getBoolean(Setting.PROTECT_ENTRANCE)) {
             return;
+        }
 
         Location location = event.getBlock().getLocation();
         Portal portal = Stargate.factory.getPortal(location, GateStructureType.IRIS);

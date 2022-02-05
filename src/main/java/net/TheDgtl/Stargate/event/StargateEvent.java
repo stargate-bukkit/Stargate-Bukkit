@@ -88,8 +88,9 @@ public abstract class StargateEvent extends Event implements Cancellable {
         if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
             return pm.getPermission(permIdentifier + ".network.personal");
         }
-        if (portal.getNetwork().getName().equals(Settings.getString(Setting.DEFAULT_NETWORK)))
+        if (portal.getNetwork().getName().equals(Settings.getString(Setting.DEFAULT_NETWORK))) {
             return pm.getPermission(permIdentifier + ".network.default");
+        }
         Permission custom = new Permission(permIdentifier + ".network.custom." + portal.getNetwork().getName());
         Permission parent = pm.getPermission(permIdentifier + ".network.custom");
         if (parent != null) {
@@ -99,8 +100,9 @@ public abstract class StargateEvent extends Event implements Cancellable {
     }
 
     protected Permission compileWorldPerm(String permissionIdentifier, Portal portal) {
-        if (!(portal instanceof RealPortal))
+        if (!(portal instanceof RealPortal)) {
             return null;
+        }
         RealPortal realPortal = (RealPortal) portal;
         Permission parent = pm.getPermission(permissionIdentifier + ".world");
         World world = realPortal.getGate().getTopLeft().getWorld();
@@ -116,8 +118,9 @@ public abstract class StargateEvent extends Event implements Cancellable {
     }
 
     protected Permission compileDesignPerm(String permIdentifier) {
-        if (!(portal instanceof RealPortal))
+        if (!(portal instanceof RealPortal)) {
             return null;
+        }
         RealPortal realPortal = (RealPortal) portal;
         Permission parent = pm.getPermission(permIdentifier + ".design");
         String permNode = permIdentifier + ".design." + realPortal.getGate().getFormat().getFileName();

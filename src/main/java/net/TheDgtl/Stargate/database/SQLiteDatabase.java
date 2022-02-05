@@ -14,7 +14,6 @@ public class SQLiteDatabase implements Database {
 
     private String url;
     private Connection previousConnection;
-    final File dbFile;
 
     /**
      * Instantiates a new SQL database
@@ -23,7 +22,6 @@ public class SQLiteDatabase implements Database {
      * @throws SQLException <p>If unable to setup SQLite for the database file</p>
      */
     public SQLiteDatabase(File databaseFile) throws SQLException {
-        this.dbFile = databaseFile;
         setupSQLITE(databaseFile);
     }
 

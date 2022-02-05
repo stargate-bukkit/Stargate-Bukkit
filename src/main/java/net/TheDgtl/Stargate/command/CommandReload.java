@@ -24,8 +24,9 @@ public class CommandReload implements CommandExecutor {
         }
 
         Stargate stargate = Stargate.getInstance();
-        if (!new File(stargate.getDataFolder(), "config.yml").exists())
+        if (!new File(stargate.getDataFolder(), "config.yml").exists()) {
             stargate.saveDefaultConfig();
+        }
         stargate.reloadConfig();
         stargate.load();
         Stargate.log(Level.INFO, "Reloaded stargate.");

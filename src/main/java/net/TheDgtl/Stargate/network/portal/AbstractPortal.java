@@ -131,8 +131,9 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void open(Player actor) {
         getGate().open();
-        if (actor != null)
+        if (actor != null) {
             this.openFor = actor.getUniqueId();
+        }
         if (hasFlag(PortalFlag.ALWAYS_ON)) {
             return;
         }
@@ -151,8 +152,9 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void close(boolean forceClose) {
-        if (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose)
+        if (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose) {
             return;
+        }
         getGate().close();
         drawControlMechanisms();
         openFor = null;

@@ -96,12 +96,14 @@ public class RetCon1_0_0 extends Modifier {
         }
         String newKey = CONFIG_CONVERSIONS.get(oldSetting.getFirstValue());
 
-        if (newKey == null)
+        if (newKey == null) {
             return null;
+        }
 
         if (oldSetting.getFirstValue().equals("freegatesgreen") ||
-                oldSetting.getFirstValue().equals("economy.freeGatesColored"))
+                oldSetting.getFirstValue().equals("economy.freeGatesColored")) {
             return new TwoTuple<>(newKey, 2);
+        }
 
         return new TwoTuple<>(newKey, oldSetting.getSecondValue());
     }

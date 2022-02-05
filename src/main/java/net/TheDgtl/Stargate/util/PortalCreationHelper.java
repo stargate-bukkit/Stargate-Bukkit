@@ -39,7 +39,7 @@ public class PortalCreationHelper {
      * @throws NameErrorException <p>If the portal's name is invalid</p>
      */
     public static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Gate gate,
-                                                  UUID ownerUUID) throws NameErrorException, NoFormatFoundException, GateConflictException {
+                                                  UUID ownerUUID) throws NameErrorException {
         return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID);
     }
 

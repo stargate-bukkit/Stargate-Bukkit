@@ -37,7 +37,6 @@ import net.TheDgtl.Stargate.refactoring.Refactorer;
 import net.TheDgtl.Stargate.util.BStatsHelper;
 import net.TheDgtl.Stargate.util.FileHelper;
 import net.md_5.bungee.api.ChatColor;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -55,7 +54,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -121,8 +122,9 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     @Override
     public void onEnable() {
         instance = this;
-        if (!new File(this.getDataFolder(), "config.yml").exists())
+        if (!new File(this.getDataFolder(), "config.yml").exists()) {
             super.saveDefaultConfig();
+        }
 
         if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
             try {
@@ -147,7 +149,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
         // Registers bstats metrics
         int pluginId = 10451;
-        Metrics metrics = BStatsHelper.getMetrics(pluginId, this);
+        BStatsHelper.getMetrics(pluginId, this);
     }
 
     private void loadBungeeServerName() {
@@ -236,12 +238,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         refactorer.run();
     }
 
-    public void reload() {
-        //TODO: This is never used
-        this.reloadConfig();
-        load();
-    }
-
     @Override
     public @NotNull FileConfiguration getConfig() {
         if (config == null) {
@@ -276,14 +272,20 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
         economyManager = new EconomyManager();
         String debugLevelStr = Settings.getString(Setting.DEBUG_LEVEL);
-        if (debugLevelStr == null)
+        if (debugLevelStr == null) {
             lowestMsgLevel = Level.INFO;
-        else
+        } else {
             lowestMsgLevel = Level.parse(debugLevelStr);
+        }
         languageManager.setLanguage(Settings.getString(Setting.LANGUAGE));
 
-        //TODO: Might cause a NullPointerException
-        GateFormat.setFormats(GateFormat.loadGateFormats(new File(DATA_FOLDER, GATE_FOLDER)));
+        List<GateFormat> gateFormats = GateFormat.loadGateFormats(new File(DATA_FOLDER, GATE_FOLDER));
+        if (gateFormats == null) {
+            log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
+            GateFormat.setFormats(new ArrayList<>());
+        } else {
+            GateFormat.setFormats(gateFormats);
+        }
 
         try {
             factory = new StargateFactory(this);
@@ -308,8 +310,9 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
         getServer().getScheduler().cancelTasks(this);
 
-        if (!Settings.getBoolean(Setting.USING_BUNGEE))
+        if (!Settings.getBoolean(Setting.USING_BUNGEE)) {
             return;
+        }
 
         try {
             factory.endInterServerConnection();
@@ -346,8 +349,9 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     public static FileConfiguration getConfigStatic() {
-        if (instance == null)
+        if (instance == null) {
             return staticConfig;
+        }
         return instance.getConfig();
     }
 

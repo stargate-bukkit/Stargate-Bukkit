@@ -32,8 +32,9 @@ public abstract class Modifier {
         Map<String, Object> replacementConfig = new HashMap<>();
         for (String key : config.keySet()) {
             Object value = config.get(key);
-            if (value instanceof ConfigurationSection)
+            if (value instanceof ConfigurationSection) {
                 continue;
+            }
             TwoTuple<String, Object> oldSetting = new TwoTuple<>(key, value);
 
             TwoTuple<String, Object> newSetting = getNewSetting(oldSetting);

@@ -14,7 +14,7 @@ import java.util.UUID;
  */
 public class InvalidPortal implements Portal {
 
-    String name;
+    final String name;
 
     public InvalidPortal(String name) {
         this.name = name;

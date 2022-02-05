@@ -9,6 +9,7 @@ import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
+import net.TheDgtl.Stargate.vectorlogic.IVectorOperation;
 import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -38,7 +39,7 @@ import java.util.logging.Level;
 public class Gate {
 
     private final GateFormat format;
-    private final VectorOperation converter;
+    private final IVectorOperation converter;
     private Location topLeft;
     private final List<PortalPosition> portalPositions;
     private final BlockFace facing;

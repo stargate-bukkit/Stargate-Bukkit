@@ -79,6 +79,7 @@ public enum Setting {
 
     /**
      * The color style to use for the pointers displayed on a sign
+     * TODO: This is never used
      */
     POINTER_STYLE("signStyle.pointer"),
 
@@ -168,6 +169,7 @@ public enum Setting {
 
     /**
      * Allow vehicles to teleport without any player inside
+     * TODO: This is never used
      */
     HANDLE_VEHICLES("handleVehicles"),
 
@@ -181,7 +183,14 @@ public enum Setting {
      */
     REMEMBER_LAST_DESTINATION("rememberLastDestination"),
 
+    /**
+     * TODO: This is never used
+     */
     UPKEEP_COST("economy.upkeepCost"),
+
+    /**
+     * TODO: This is never used
+     */
     CHECK_PORTAL_VALIDITY("checkPortalValidity");
 
     private final String configNode;

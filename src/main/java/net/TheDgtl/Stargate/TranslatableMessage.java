@@ -233,8 +233,9 @@ public enum TranslatableMessage {
         }
 
         for (TranslatableMessage enumeration : values()) {
-            if (enumeration.getMessageKey().equals(key))
+            if (enumeration.getMessageKey().equals(key)) {
                 return enumeration;
+            }
         }
         return null;
     }

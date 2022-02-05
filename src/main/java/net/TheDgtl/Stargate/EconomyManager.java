@@ -25,14 +25,17 @@ public class EconomyManager {
             return;
         }
         hasVault = setupEconomy();
-        if (!hasVault)
+        if (!hasVault) {
             Stargate.log(Level.WARNING, "Dependency ''Vault'' is unavailable; economy features are disabled");
+        }
     }
 
     /**
-     * @param player
-     * @param amount
-     * @return if player had enough money for transaction
+     * Charges a player if possible
+     *
+     * @param player <p>The player to charge</p>
+     * @param amount <p>The amount the player should be charged</p>
+     * @return <p>True if the payment was fulfilled</p>
      */
     public boolean chargePlayer(OfflinePlayer player, int amount) {
         if (amount == 0) {
@@ -71,13 +74,14 @@ public class EconomyManager {
     /**
      * Money for the tax gods. May you live in wealth
      *
-     * @param player
-     * @param amount
-     * @return
+     * @param player <p>The player to charge and tax</p>
+     * @param amount <p>The amount the player should be charged</p>
+     * @return <p>True if the player was charged and/or taxed</p>
      */
     public boolean chargeAndTax(OfflinePlayer player, int amount) {
-        if (amount == 0)
+        if (amount == 0) {
             return true;
+        }
         String bankUUIDStr = Settings.getString(Setting.TAX_DESTINATION);
         if (!bankUUIDStr.isEmpty()) {
             OfflinePlayer bankAccount = Bukkit.getOfflinePlayer(UUID.fromString(bankUUIDStr));

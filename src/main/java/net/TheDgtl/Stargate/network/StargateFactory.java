@@ -123,8 +123,9 @@ public class StargateFactory {
         for (InterServerNetwork net : bungeeNetworkList.values()) {
             for (Portal portal : net.getAllPortals()) {
                 //Virtual portal = portals on other servers
-                if (portal instanceof VirtualPortal)
+                if (portal instanceof VirtualPortal) {
                     continue;
+                }
 
                 setInterServerPortalOnlineStatus(portal, true);
             }
@@ -226,8 +227,9 @@ public class StargateFactory {
     public Portal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
         for (GateStructureType key : structureTypes) {
             Portal portal = getPortal(blockLocation, key);
-            if (portal != null)
+            if (portal != null) {
                 return portal;
+            }
         }
         return null;
     }

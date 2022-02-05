@@ -15,7 +15,8 @@ import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.util.FileHelper;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
-import net.TheDgtl.Stargate.vectorlogic.SimpleVectorOperation;
+import net.TheDgtl.Stargate.vectorlogic.IVectorOperation;
+import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -153,7 +154,7 @@ public class LegacyPortalStorageLoader {
         Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate, ownerUUID);
 
         //Add the portal to its network and store it to the database
-        logger.logMessage(Level.FINE, String.format("Saving portal %s in network %s from old storage... ",name,networkName));
+        logger.logMessage(Level.FINE, String.format("Saving portal %s in network %s from old storage... ", name, networkName));
         network.addPortal(portal, true);
 
         return portal;
@@ -175,7 +176,7 @@ public class LegacyPortalStorageLoader {
             Location relativeBlockPosition = blockPosition.subtract(topLeft);
             BlockVector relativeBlockVector = new BlockVector(relativeBlockPosition.getBlockX(),
                     relativeBlockPosition.getBlockY(), relativeBlockPosition.getBlockZ());
-            SimpleVectorOperation operation = new SimpleVectorOperation(facing);
+            IVectorOperation operation = new VectorOperation(facing, logger);
             BlockVector normalizedVector = operation.performToRealSpaceOperation(relativeBlockVector);
             logger.logMessage(Level.FINER, "Calculated portal position: " + normalizedVector +
                     " from top-left: " + topLeft + ", block position: " + blockPosition + " and facing: " + facing);

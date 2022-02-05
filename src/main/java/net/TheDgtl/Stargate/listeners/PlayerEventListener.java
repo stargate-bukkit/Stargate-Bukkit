@@ -137,8 +137,9 @@ public class PlayerEventListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!Settings.getBoolean(Setting.USING_BUNGEE))
+        if (!Settings.getBoolean(Setting.USING_BUNGEE)) {
             return;
+        }
 
         //Gets the name of this server if it's still unknown
         if (!Stargate.knowsServerName) {

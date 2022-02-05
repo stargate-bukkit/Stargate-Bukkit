@@ -58,7 +58,7 @@ public class DatabaseTester {
      * @param generator  <p>The SQL Query generator to use for generating test queries</p>
      * @param isMySQL    <p>Whether this database tester is testing MySQL as opposed to SQLite</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
-     * @throws NameErrorException
+     * @throws NameErrorException        <p>If an invalid portal name is encountered</p>
      */
     public DatabaseTester(Database database, TableNameConfig nameConfig, SQLQueryGenerator generator,
                           boolean isMySQL) throws SQLException, InvalidStructureException, NameErrorException {

@@ -119,8 +119,9 @@ public class PermissionManager {
 
         if ((event instanceof StargatePortalEvent) && canProcessMetaData) {
             StargatePortalEvent sPEvent = (StargatePortalEvent) event;
-            if (!sPEvent.getEntity().getUniqueId().equals(sPEvent.getPortal().getOwnerUUID()) && sPEvent.getEntity() instanceof Player)
+            if (!sPEvent.getEntity().getUniqueId().equals(sPEvent.getPortal().getOwnerUUID()) && sPEvent.getEntity() instanceof Player) {
                 return canFollow();
+            }
         }
         return true;
     }
@@ -133,13 +134,15 @@ public class PermissionManager {
                 String worldName = permissionNode.split(".world.")[1];
                 return TranslatableMessageFormatter.formatWorld(unformattedMessage, worldName);
             }
-            if (permissionNode.contains("network"))
+            if (permissionNode.contains("network")) {
                 return languageManager.getErrorMessage(TranslatableMessage.NET_DENY);
+            }
         }
 
         if (permissionNode.contains("create")) {
-            if (permissionNode.contains("design"))
+            if (permissionNode.contains("design")) {
                 return languageManager.getErrorMessage(TranslatableMessage.GATE_DENY);
+            }
             if (permissionNode.contains("type")) {
                 PortalFlag flag = PortalFlag.valueOf(permissionNode.split(".type.")[1]);
                 if (flag == PortalFlag.BUNGEE || flag == PortalFlag.FANCY_INTER_SERVER) {
