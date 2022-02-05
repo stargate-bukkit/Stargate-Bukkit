@@ -93,7 +93,7 @@ public class FakePortalGenerator {
 
         //To avoid using the Portal#open method on constructor, which uses an unimplemented function in mockbuckit (blockstates)
         flags.remove(PortalFlag.ALWAYS_ON);
-        return new FixedPortal(portalNetwork, name, "", flags, gate, UUID.randomUUID());
+        return new FixedPortal(portalNetwork, name, "", flags, gate, UUID.randomUUID(), logger);
     }
 
     /**
