@@ -3,7 +3,7 @@ package net.TheDgtl.Stargate.refactoring;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.StargateConfiguration;
-import net.TheDgtl.Stargate.network.StargateFactory;
+import net.TheDgtl.Stargate.database.PortalDatabaseHandler;
 import net.TheDgtl.Stargate.refactoring.retcons.Modifier;
 import net.TheDgtl.Stargate.refactoring.retcons.RetCon1_0_0;
 import org.bukkit.Server;
@@ -22,7 +22,7 @@ public class Refactorer {
     private final FileConfiguration fileConfig;
     private final Modifier[] RETCONS;
 
-    public Refactorer(File configFile, StargateLogger logger, Server server, StargateFactory factory) throws IOException, InvalidConfigurationException {
+    public Refactorer(File configFile, StargateLogger logger, Server server, PortalDatabaseHandler factory) throws IOException, InvalidConfigurationException {
         RETCONS = new Modifier[]{
                 new RetCon1_0_0(server, factory, logger)
         };

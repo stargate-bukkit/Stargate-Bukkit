@@ -23,6 +23,7 @@ import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.database.Database;
+import net.TheDgtl.Stargate.database.PortalDatabaseHandler;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.listeners.BlockEventListener;
@@ -31,7 +32,7 @@ import net.TheDgtl.Stargate.listeners.PlayerEventListener;
 import net.TheDgtl.Stargate.listeners.PluginEventListener;
 import net.TheDgtl.Stargate.listeners.StargateBungeePluginMessageListener;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.StargateFactory;
+import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.refactoring.Refactorer;
 import net.TheDgtl.Stargate.util.BStatsHelper;
@@ -86,7 +87,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     private PluginManager pm;
 
-    public static StargateFactory factory;
+    public static PortalDatabaseHandler factory;
     public static LanguageManager languageManager;
     public final static int CURRENT_CONFIG_VERSION = 6;
     /**
@@ -117,6 +118,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     public static ChatColor defaultDarkColor = ChatColor.WHITE;
 
     private FileConfiguration config;
+
+    private static StargateRegistry registry;
     private static final FileConfiguration staticConfig = new StargateConfiguration();
 
     @Override
@@ -232,7 +235,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     private void refactor() throws IOException, InvalidConfigurationException, SQLException {
         File file = new File(this.getDataFolder(), "stargate.db");
         Database database = new SQLiteDatabase(file);
-        StargateFactory factory = new StargateFactory(database, false, false, this);
+        StargateRegistry notUsedRegistry = new StargateRegistry();
+        PortalDatabaseHandler factory = new PortalDatabaseHandler(database, false, false, this, notUsedRegistry);
 
         Refactorer refactorer = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(), factory);
         Map<String, Object> newConfig = refactorer.getConfigModifications();
@@ -292,7 +296,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
 
         try {
-            factory = new StargateFactory(this);
+            registry = new StargateRegistry();
+            factory = new PortalDatabaseHandler(this,getRegistry());
             factory.loadFromDatabase();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -371,7 +376,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     public static void addToQueue(String playerName, String portalName, String netName, boolean isInterServer) {
-        Network network = factory.getNetwork(netName, isInterServer);
+        Network network = getRegistry().getNetwork(netName, isInterServer);
 
 
         /*
@@ -397,6 +402,10 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     public static Portal pullFromQueue(String playerName) {
         return instance.bungeeQueue.remove(playerName);
+    }
+
+    public static StargateRegistry getRegistry() {
+        return registry;
     }
 
 }

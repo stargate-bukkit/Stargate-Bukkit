@@ -35,9 +35,9 @@ public class InterServerNetwork extends Network {
      * @param queryGenerator <p>The generator to use for generating SQL queries</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public InterServerNetwork(String networkName, Database database, SQLQueryGenerator queryGenerator, StargateFactory factory)
+    public InterServerNetwork(String networkName, Database database, SQLQueryGenerator queryGenerator, StargateRegistry registry)
             throws NameErrorException {
-        super(networkName, database, queryGenerator, factory);
+        super(networkName, database, queryGenerator, registry);
     }
 
     @Override

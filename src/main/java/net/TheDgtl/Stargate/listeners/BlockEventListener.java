@@ -59,7 +59,7 @@ public class BlockEventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Location location = event.getBlock().getLocation();
-        Portal portal = Stargate.factory.getPortal(location, GateStructureType.FRAME);
+        Portal portal = Stargate.getRegistry().getPortal(location, GateStructureType.FRAME);
         if (portal != null) {
             Supplier<Boolean> destroyAction = () -> {
                 String msg = Stargate.languageManager.getErrorMessage(TranslatableMessage.DESTROY);
@@ -73,11 +73,11 @@ public class BlockEventListener implements Listener {
             destroyPortalIfHasPermissionAndCanPay(event, portal, destroyAction);
             return;
         }
-        if (Stargate.factory.getPortal(location, GateStructureType.CONTROL_BLOCK) != null) {
+        if (Stargate.getRegistry().getPortal(location, GateStructureType.CONTROL_BLOCK) != null) {
             event.setCancelled(true);
             return;
         }
-        if (Stargate.factory.getPortal(location, GateStructureType.IRIS) != null && Settings.getBoolean(Setting.PROTECT_ENTRANCE)) {
+        if (Stargate.getRegistry().getPortal(location, GateStructureType.IRIS) != null && Settings.getBoolean(Setting.PROTECT_ENTRANCE)) {
             event.setCancelled(true);
         }
     }
@@ -140,7 +140,7 @@ public class BlockEventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Location loc = event.getBlock().getLocation();
-        Portal portal = Stargate.factory.getPortal(loc, GateStructureType.IRIS);
+        Portal portal = Stargate.getRegistry().getPortal(loc, GateStructureType.IRIS);
         if (portal != null && Settings.getBoolean(Setting.PROTECT_ENTRANCE)) {
             event.setCancelled(true);
         }
@@ -366,7 +366,7 @@ public class BlockEventListener implements Listener {
                 throw nameErrorException;
             }
         }
-        return Stargate.factory.getNetwork(name, flags.contains(PortalFlag.FANCY_INTER_SERVER));
+        return Stargate.getRegistry().getNetwork(name, flags.contains(PortalFlag.FANCY_INTER_SERVER));
     }
 
     /**
@@ -376,7 +376,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        if (Stargate.factory.isPartOfPortal(event.getBlocks())) {
+        if (Stargate.getRegistry().isPartOfPortal(event.getBlocks())) {
             event.setCancelled(true);
         }
     }
@@ -388,7 +388,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        if (Stargate.factory.isPartOfPortal(event.getBlocks())) {
+        if (Stargate.getRegistry().isPartOfPortal(event.getBlocks())) {
             event.setCancelled(true);
         }
     }
@@ -400,7 +400,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        Portal portal = Stargate.factory.getPortal(event.getLocation(), new GateStructureType[]{GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK});
+        Portal portal = Stargate.getRegistry().getPortal(event.getLocation(), new GateStructureType[]{GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK});
         if (portal != null) {
             if (Settings.getBoolean(Setting.DESTROY_ON_EXPLOSION)) {
                 portal.destroy();
@@ -425,8 +425,8 @@ public class BlockEventListener implements Listener {
     public void onBlockFromTo(BlockFromToEvent event) {
         Block toBlock = event.getToBlock();
         Block fromBlock = event.getBlock();
-        if ((Stargate.factory.getPortal(toBlock.getLocation(), GateStructureType.IRIS) != null)
-                || (Stargate.factory.getPortal(fromBlock.getLocation(), GateStructureType.IRIS) != null)) {
+        if ((Stargate.getRegistry().getPortal(toBlock.getLocation(), GateStructureType.IRIS) != null)
+                || (Stargate.getRegistry().getPortal(fromBlock.getLocation(), GateStructureType.IRIS) != null)) {
             event.setCancelled(true);
         }
     }
@@ -443,7 +443,7 @@ public class BlockEventListener implements Listener {
         }
 
         Location location = event.getBlock().getLocation();
-        Portal portal = Stargate.factory.getPortal(location, GateStructureType.IRIS);
+        Portal portal = Stargate.getRegistry().getPortal(location, GateStructureType.IRIS);
         if (portal != null) {
             event.setCancelled(true);
         }

@@ -27,7 +27,7 @@ public class StargateAPI {
      * @return <p>A portal, or null if no portal was found</p>
      */
     public static Portal getPortal(Location portalBlock) {
-        return Stargate.factory.getPortal(portalBlock, GateStructureType.values());
+        return Stargate.getRegistry().getPortal(portalBlock, GateStructureType.values());
     }
 
     /**
@@ -41,7 +41,7 @@ public class StargateAPI {
      * @return <p>A portal, or null if no portal was found</p>
      */
     public static Portal getPortal(Location portalBlock, GateStructureType structureType) {
-        return Stargate.factory.getPortal(portalBlock, structureType);
+        return Stargate.getRegistry().getPortal(portalBlock, structureType);
     }
 
     /**
@@ -55,7 +55,7 @@ public class StargateAPI {
      * @return <p>A portal, or null if no portal was found</p>
      */
     public static Portal getPortal(Location portalBlock, GateStructureType[] structureTypes) {
-        return Stargate.factory.getPortal(portalBlock, structureTypes);
+        return Stargate.getRegistry().getPortal(portalBlock, structureTypes);
     }
 
     /**
@@ -78,7 +78,7 @@ public class StargateAPI {
      * @return <p>A portal, or null if no portal was found</p>
      */
     public static Portal getPortal(String networkName, String portalName, boolean isBungee) {
-        Network network = Stargate.factory.getNetwork(networkName, isBungee);
+        Network network = Stargate.getRegistry().getNetwork(networkName, isBungee);
         if (network == null) {
             return null;
         }
@@ -104,7 +104,7 @@ public class StargateAPI {
      * @return <p>The network, or null if no such network was found</p>
      */
     public static Network getNetwork(String networkName, boolean isBungee) {
-        return Stargate.factory.getNetwork(networkName, isBungee);
+        return Stargate.getRegistry().getNetwork(networkName, isBungee);
     }
 
     /**

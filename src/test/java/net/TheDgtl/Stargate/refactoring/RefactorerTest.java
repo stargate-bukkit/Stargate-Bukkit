@@ -9,10 +9,11 @@ import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.TwoTuple;
 import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.database.Database;
+import net.TheDgtl.Stargate.database.PortalDatabaseHandler;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.StargateFactory;
+import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -47,8 +48,9 @@ public class RefactorerTest {
     static private Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> configTestMap;
     private static final File testGatesDir = new File("src/test/resources/gates");
 
-    static private StargateFactory factory;
+    static private PortalDatabaseHandler factory;
     static private ServerMock server;
+    private static StargateRegistry registry;
 
     @BeforeAll
     public static void setUp() throws IOException, InvalidConfigurationException, SQLException {
@@ -64,7 +66,8 @@ public class RefactorerTest {
         defaultConfigFile = new File("src/main/resources", "config.yml");
         sqlDatabaseFile = new File("src/test/resources", "test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);
-        factory = new StargateFactory(sqlDatabase, false, false, logger);
+        registry = new StargateRegistry();
+        factory = new PortalDatabaseHandler(sqlDatabase, false, false, logger, registry);
 
         defaultConfigFile = new File("src/main/resources", "config.yml");
         server = MockBukkit.mock();
@@ -215,7 +218,7 @@ public class RefactorerTest {
             System.out.printf("--------- Checking portal loaded from %s configuration%n", key);
             for (String portalName : testMap.keySet()) {
                 String netName = testMap.get(portalName);
-                Network net = factory.getNetwork(netName, false);
+                Network net = registry.getNetwork(netName, false);
                 Assertions.assertNotNull(net, String.format("Network %s for portal %s was null", netName, portalName));
                 Portal portal = net.getPortal(portalName);
                 Assertions.assertNotNull(portal, String.format("Portal %s in network %s was null", portalName, netName));

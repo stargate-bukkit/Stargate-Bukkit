@@ -329,7 +329,7 @@ public abstract class AbstractPortal implements RealPortal {
         for (GateStructureType formatType : GateStructureType.values()) {
             for (BlockLocation loc : this.getGate().getLocations(formatType)) {
                 Stargate.log(Level.FINEST, "Unregistering type: " + formatType + " location, at: " + loc);
-                Stargate.factory.unRegisterLocation(formatType, loc);
+                Stargate.getRegistry().unRegisterLocation(formatType, loc);
             }
         }
         network.updatePortals();

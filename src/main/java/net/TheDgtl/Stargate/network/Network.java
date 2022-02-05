@@ -38,7 +38,7 @@ public class Network {
     protected Database database;
     protected String name;
     protected SQLQueryGenerator sqlMaker;
-    private final StargateFactory factory;
+    private final StargateRegistry registry;
 
     /**
      * Instantiates a new network
@@ -48,7 +48,7 @@ public class Network {
      * @param queryGenerator <p>The generator to use for generating SQL queries</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public Network(String name, Database database, SQLQueryGenerator queryGenerator, StargateFactory factory) throws NameErrorException {
+    public Network(String name, Database database, SQLQueryGenerator queryGenerator, StargateRegistry factory) throws NameErrorException {
         if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH)) {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         }
@@ -56,7 +56,7 @@ public class Network {
         this.database = database;
         this.sqlMaker = queryGenerator;
         nameToPortalMap = new HashMap<>();
-        this.factory = factory;
+        this.registry = factory;
     }
 
     /**
@@ -114,7 +114,7 @@ public class Network {
                 if (locations == null) {
                     continue;
                 }
-                factory.registerLocations(key, generateLocationMap(locations, portal));
+                registry.registerLocations(key, generateLocationMap(locations, portal));
             }
         }
         if (portal instanceof RealPortal && saveToDatabase) {

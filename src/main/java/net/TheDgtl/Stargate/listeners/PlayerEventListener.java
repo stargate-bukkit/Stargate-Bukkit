@@ -59,7 +59,7 @@ public class PlayerEventListener implements Listener {
         }
 
         // TODO material optimisation?
-        Portal portal = Stargate.factory.getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
+        Portal portal = Stargate.getRegistry().getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
         if (portal == null) {
             return;
         }

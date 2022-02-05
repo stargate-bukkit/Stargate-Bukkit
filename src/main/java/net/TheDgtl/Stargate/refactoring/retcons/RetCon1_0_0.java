@@ -2,9 +2,9 @@ package net.TheDgtl.Stargate.refactoring.retcons;
 
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.TwoTuple;
+import net.TheDgtl.Stargate.database.PortalDatabaseHandler;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
-import net.TheDgtl.Stargate.network.StargateFactory;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.util.FileHelper;
 import org.bukkit.Server;
@@ -27,7 +27,7 @@ public class RetCon1_0_0 extends Modifier {
     }
 
     private final Server server;
-    private final StargateFactory factory;
+    private final PortalDatabaseHandler factory;
     private Map<String, Object> oldConfig;
     private final StargateLogger logger;
 
@@ -37,7 +37,7 @@ public class RetCon1_0_0 extends Modifier {
      * @param server  <p>The server to use for loading legacy portals</p>
      * @param factory <p>The stargate factory to use for loading legacy portals</p>
      */
-    public RetCon1_0_0(Server server, StargateFactory factory, StargateLogger logger) {
+    public RetCon1_0_0(Server server, PortalDatabaseHandler factory, StargateLogger logger) {
         this.server = server;
         this.factory = factory;
         this.logger = logger;

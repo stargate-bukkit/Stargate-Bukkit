@@ -140,7 +140,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
             Stargate.addToQueue(playerName, destination, bungeeNetwork, false);
         } else {
-            Network network = Stargate.factory.getNetwork(bungeeNetwork, false);
+            Network network = Stargate.getRegistry().getNetwork(bungeeNetwork, false);
             Portal destinationPortal = network.getPortal(destination);
             destinationPortal.teleportHere(player, null);
         }
@@ -170,7 +170,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         } catch (NameErrorException ignored) {
         }
 
-        InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.factory.getNetwork(network, true);
+        InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.getRegistry().getNetwork(network, true);
         VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
 
         switch (requestType) {
@@ -206,7 +206,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         }
 
         Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
-        Network network = Stargate.factory.getNetwork(networkName, true);
+        Network network = Stargate.getRegistry().getNetwork(networkName, true);
         if (network == null) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_NETWORK));
             return;
