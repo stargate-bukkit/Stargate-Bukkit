@@ -21,18 +21,22 @@ public class BlockChangeThread implements Runnable {
         long sTime = System.nanoTime();
         //Repeat for at most 0.025 seconds
         while (System.nanoTime() - sTime < 25000000) {
-            pollQueue();
+            if (pollQueue()) {
+                break;
+            }
         }
     }
 
     /**
      * Polls the block change request queue for any waiting requests
+     *
+     * @return <p>True if the queue is empty and it's safe to quit</p>
      */
-    public static void pollQueue() {
+    public static boolean pollQueue() {
         //Abort if there's no work to be done
         BlockChangeRequest blockChangeRequest = Stargate.getBlockChangeRequestQueue().poll();
         if (blockChangeRequest == null) {
-            return;
+            return true;
         }
 
         //Change the material of the pulled block
@@ -46,6 +50,7 @@ public class BlockChangeThread implements Runnable {
             //If orientation is relevant, adjust the block's orientation
             orientBlock(block, blockChangeRequest.getAxis());
         }
+        return false;
     }
 
     /**
