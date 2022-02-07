@@ -2,7 +2,7 @@ name: Stargate
 main: net.TheDgtl.Stargate.Stargate
 version: @version@
 description: Stargate mod for Bukkit
-authors: [ Dinnerbone, Drakia, PseudoKnight, Thorin ]
+authors: [ Dinnerbone, Drakia, PseudoKnight, Thorin, Knarvik]
 website: https://discord.gg/mTaHuK6BVa
 api-version: 1.15
 softdepend: [ Vault ]
@@ -39,7 +39,7 @@ permissions:
                 description: Can see hidden gates on a network.
               sg.admin.bypass.gatelimit:
                 description: Can bypass the networkLimit specified in the config.
-              #                 Note: the gate-limit meta can be used to specify a per-player/per-group network limit.
+              #Note: the gate-limit meta can be used to specify a per-player/per-group network limit.
               sg.admin.bypass.cost:
                 description: Can bypass any and all costs specified in the config.
                 children:
@@ -48,7 +48,7 @@ permissions:
                   sg.admin.bypass.cost.create:
                     description: Bypass the cost associated with creating a portal.
                   sg.admin.bypass.cost.use:
-                    description: Bypass the cost associated with creating a portal.
+                    description: Bypass the cost associated with using a portal.
 
       sg.use:
         default: true
@@ -58,13 +58,13 @@ permissions:
             description: Even if they would otherwise lack perms, users can use any gate that has been opened by a player with the perms needed to do so.
           sg.use.world:
             description: Can use portals, regardless of the dimension within which they exit.
-          #                 sg.use.world.<NAME> is a sub-node that allows for portals that exit in a specified dimension to be used.
+          #sg.use.world.<NAME> is a sub-node that allows for portals that exit in a specified dimension to be used.
           sg.use.network:
             description: Can use portals, regardless of their network.
             children:
               sg.use.network.custom:
                 description: Can use portals if they are on any custom network.
-              #                 sg.use.network.custom.<NAME> is a sub-node that allows for portals on a specific (specified) custom network to be used.
+              #sg.use.network.custom.<NAME> is a sub-node that allows for portals on a specific (specified) custom network to be used.
               sg.use.network.personal:
                 description: Can use portals if they are on one's personal (username) network.
               sg.use.network.default:
@@ -106,7 +106,7 @@ permissions:
                 description: Can use gates without a specified destination (networked gates).
           sg.use.design:
             description: Can use any portal, regardless of its portal's design (gatefile).
-      #             sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be used.
+      #sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be used.
 
       sg.create:
         default: op
@@ -115,13 +115,13 @@ permissions:
           sg.create.world:
             default: true
             description: Can create portals in any dimension.
-          #             sg.create.world.<NAME> is a sub-node that allows for portals to be created in a specific dimension.
+          #sg.create.world.<NAME> is a sub-node that allows for portals to be created in a specific dimension.
           sg.create.network:
             description: Can create portals on any network.
             children:
               sg.create.network.custom:
                 description: Create portal on any custom network.
-              #                 sg.create.network.custom.<NAME> is a sub-node that allows for portals to be created on a specific (specified) custom network.
+              #sg.create.network.custom.<NAME> is a sub-node that allows for portals to be created on a specific (specified) custom network.
               sg.create.network.personal:
                 default: true
                 description: Can create portals if they are on one's personal (username) network.
@@ -172,7 +172,7 @@ permissions:
           sg.create.design:
             description: Can create any portal, regardless of the design (gatefile)
             children:
-              #             sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be created.
+              #sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be created.
               sg.create.design.nether.gate: true
               sg.create.design.water.gate: true
               sg.create.design.wool.gate: true
@@ -185,7 +185,7 @@ permissions:
           sg.destroy.world:
             description: Can destroy portals, regardless of dimension
             default: true
-          #             sg.destroy.world.<NAME> is a sub-node that allows for portals in a specific dimension to be destroyed.
+          #sg.destroy.world.<NAME> is a sub-node that allows for portals in a specific dimension to be destroyed.
           sg.destroy.network:
             description: Can destroy portals, regardless of network
             children:
@@ -228,7 +228,7 @@ permissions:
           #NOT IMPL.      description: Can destroy gates with invisible signs.
           sg.destroy.design:
             description: Can destroy portals, regardless of design (gatefile).
-      #             sg.destroy.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be destroyed.
+      #sg.destroy.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be destroyed.
 
       sg.preset:
         description: Premade groupings for convenience.
