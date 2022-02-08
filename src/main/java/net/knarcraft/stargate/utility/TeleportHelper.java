@@ -115,7 +115,7 @@ public final class TeleportHelper {
                     teleportLeashedCreatures(player, origin, target);
                 }
                 TeleportHelper.teleportAndAddPassenger(entity, passenger, exitRotation);
-            }, passenger instanceof Player ? 6 : 0);
+            }, passenger instanceof Player ? Stargate.getGateConfig().waitForPlayerAfterTeleportDelay() : 0);
         }
     }
 
@@ -144,7 +144,8 @@ public final class TeleportHelper {
             creature.setLeashHolder(null);
             scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
                 new EntityTeleporter(target, creature).teleportEntity(origin);
-                scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> creature.setLeashHolder(player), 6);
+                scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> creature.setLeashHolder(player),
+                        Stargate.getGateConfig().waitForPlayerAfterTeleportDelay());
             }, 2);
         }
     }

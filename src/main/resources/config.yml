@@ -86,3 +86,6 @@ debugging:
   debug: false
   # permissionDebug - This will output any and all Permissions checks to console, used for permissions debugging (Requires debug: true)
   permissionDebug: false
+advanced:
+  # waitForPlayerAfterTeleportDelay - The amount of ticks to wait before adding a player as passenger of a vehicle. On slow servers, a value of 6 is required to avoid client glitches after teleporting on a vehicle.
+  waitForPlayerAfterTeleportDelay: 6

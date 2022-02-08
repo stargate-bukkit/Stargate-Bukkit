@@ -113,6 +113,13 @@ public enum ConfigOption {
                     "when CraftBook's remove minecart/boat on eject setting is enabled", false),
 
     /**
+     * The delay between teleporting a vehicle and adding the player as passenger
+     */
+    WAIT_FOR_PLAYER_AFTER_TELEPORT_DELAY("advanced.waitForPlayerAfterTeleportDelay",
+            "The amount of ticks to wait before adding a player as passenger of a vehicle. On slow servers, " +
+                    "a value of 6 is required to avoid client glitches after teleporting on a vehicle.", 1),
+
+    /**
      * Whether to enable economy support for taking payment from players creating/destroying/using stargates
      */
     USE_ECONOMY("economy.useEconomy", "Whether to use economy to incur fees when stargates are used, created or destroyed", false),

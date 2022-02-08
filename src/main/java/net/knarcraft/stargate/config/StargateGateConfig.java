@@ -137,6 +137,15 @@ public final class StargateGateConfig {
     }
 
     /**
+     * Gets the delay to use before adding a player as passenger of a teleported vehicle
+     *
+     * @return <p>The delay to use before adding a player as passenger of a teleported vehicle</p>
+     */
+    public int waitForPlayerAfterTeleportDelay() {
+        return (int) configOptions.get(ConfigOption.WAIT_FOR_PLAYER_AFTER_TELEPORT_DELAY);
+    }
+
+    /**
      * Gets whether the list of destinations within a network should be sorted
      *
      * @return <p>Whether network destinations should be sorted</p>
