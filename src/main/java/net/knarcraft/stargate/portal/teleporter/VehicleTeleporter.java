@@ -8,6 +8,7 @@ import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.TeleportHelper;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Vehicle;
@@ -156,6 +157,9 @@ public class VehicleTeleporter extends EntityTeleporter {
         }
         //Spawn a new vehicle
         Vehicle newVehicle = vehicleWorld.spawn(exit, teleportingVehicle.getClass());
+        if (teleportingVehicle instanceof Boat boat) {
+            ((Boat) newVehicle).setWoodType(boat.getWoodType());
+        }
         //Remove the old vehicle
         if (teleportingVehicle.eject()) {
             TeleportHelper.handleEntityPassengers(passengers, newVehicle, origin, portal, exit.getDirection());

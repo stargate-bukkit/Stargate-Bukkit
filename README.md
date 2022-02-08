@@ -407,6 +407,7 @@ portalInfoServer=Server: %server%
 - Teleports boats/minecarts like other vehicles unless *enableCraftBookRemoveOnEjectFix* is enabled
 - Adds the *waitForPlayerAfterTeleportDelay* config option which allows changing the delay between vehicle teleportation
   and the player being teleported to the vehicle
+- Makes boats keep their wood type even when re-created
 
 #### \[Version 0.9.3.3] EpicKnarvik97 fork
 
