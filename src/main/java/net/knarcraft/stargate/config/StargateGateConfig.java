@@ -126,6 +126,17 @@ public final class StargateGateConfig {
     }
 
     /**
+     * Gets whether the CraftBook vehicle removal fix is enabled
+     *
+     * <p>If enabled, minecarts and boats should be re-created instead of teleported.</p>
+     *
+     * @return <p>True if the CraftBook vehicle removal fix is enabled</p>
+     */
+    public boolean enableCraftBookRemoveOnEjectFix() {
+        return (boolean) configOptions.get(ConfigOption.ENABLE_CRAFT_BOOK_REMOVE_ON_EJECT_FIX);
+    }
+
+    /**
      * Gets whether the list of destinations within a network should be sorted
      *
      * @return <p>Whether network destinations should be sorted</p>

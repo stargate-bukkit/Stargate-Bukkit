@@ -81,12 +81,13 @@ public class VehicleTeleporter extends EntityTeleporter {
                 return false;
             }
 
-            if (!(teleportingVehicle instanceof LivingEntity)) {
+            if (!(teleportingVehicle instanceof LivingEntity) &&
+                    Stargate.getGateConfig().enableCraftBookRemoveOnEjectFix()) {
                 //Teleport a normal vehicle with passengers (minecart or boat)
                 putPassengersInNewVehicle(passengers, exit, newVelocity, origin);
             } else {
                 //Teleport a living vehicle with passengers (pig, horse, donkey, strider)
-                teleportLivingVehicle(exit, passengers, origin);
+                teleportVehicle(passengers, exit, newVelocity, origin);
             }
         } else {
             //Check if teleportation of empty vehicles is enabled
@@ -120,15 +121,18 @@ public class VehicleTeleporter extends EntityTeleporter {
     /**
      * Teleport a vehicle which is not a minecart or a boat
      *
-     * @param exit       <p>The location the vehicle will exit</p>
-     * @param passengers <p>The passengers of the vehicle</p>
-     * @param origin     <p>The portal the vehicle teleported from</p>
+     * @param passengers  <p>The passengers of the vehicle</p>
+     * @param exit        <p>The location the vehicle will exit</p>
+     * @param newVelocity <p>The new velocity of the teleported vehicle</p>
+     * @param origin      <p>The portal the vehicle teleported from</p>
      */
-    private void teleportLivingVehicle(Location exit, List<Entity> passengers, Portal origin) {
+    private void teleportVehicle(List<Entity> passengers, Location exit, Vector newVelocity, Portal origin) {
         if (teleportingVehicle.eject()) {
             TeleportHelper.handleEntityPassengers(passengers, teleportingVehicle, origin, portal, exit.getDirection());
         }
         teleportingVehicle.teleport(exit);
+        scheduler.scheduleSyncDelayedTask(Stargate.getInstance(),
+                () -> teleportingVehicle.setVelocity(newVelocity), 1);
     }
 
     /**
