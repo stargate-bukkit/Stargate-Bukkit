@@ -196,4 +196,35 @@ public final class TeleportHelper {
         return players;
     }
 
+    /**
+     * Checks whether the given player is allowed to and can afford to teleport
+     *
+     * @param player            <p>The player trying to teleport</p>
+     * @param entrancePortal    <p>The portal the player is entering</p>
+     * @param destinationPortal <p>The portal the player is to exit from</p>
+     * @return <p>True if the player is allowed to teleport and is able to pay necessary fees</p>
+     */
+    public static boolean playerCanTeleport(Player player, Portal entrancePortal, Portal destinationPortal) {
+        //Make sure the user can access the portal
+        if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destinationPortal)) {
+            if (!entrancePortal.getOptions().isSilent()) {
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
+            }
+            entrancePortal.getPortalOpener().closePortal(false);
+            return false;
+        }
+
+        //Check if the player is able to afford the teleport fee
+        int cost = EconomyHelper.getUseCost(player, entrancePortal, destinationPortal);
+        boolean canAffordFee = cost <= 0 || Stargate.getEconomyConfig().canAffordFee(player, cost);
+        if (!canAffordFee) {
+            if (!entrancePortal.getOptions().isSilent()) {
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("ecoInFunds"));
+            }
+            return false;
+        }
+
+        return TeleportHelper.noLeashedCreaturesPreventTeleportation(player);
+    }
+
 }
