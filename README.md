@@ -324,6 +324,7 @@ gates:
     handleCreatureTransportation - Whether or not to handle players that transport creatures by sending vehicles (minecarts, boats) through gates.
     handleNonPlayerVehicles - Whether or not to handle vehicles with a passenger which is not a player going through gates (pigs, horses, villagers, creepers, etc.). handleCreatureTransportation must be enabled.
     handleLeashedCreatures - Whether or not to handle creatures leashed by a player going through gates. Set to false to disallow leashed creatures going through gates.
+    enableCraftBookRemoveOnEjectFix - Whether to enable a fix that causes loss of NBT data, but allows vehicle teleportation to work when CraftBook's remove minecart/boat on eject setting is enabled
 economy:
   useEconomy - Whether or not to enable Economy using Vault (must have the Vault plugin)
   createCost - The cost to create a stargate
@@ -336,6 +337,8 @@ economy:
 debugging:
   debug - Whether to show massive debug output
   permissionDebug - Whether to show massive permission debug output
+advanced:
+  waitForPlayerAfterTeleportDelay - The amount of ticks to wait before adding a player as passenger of a vehicle. On slow servers, a value of 6 is required to avoid client glitches after teleporting on a vehicle.
 ```
 
 # Message Customization
@@ -396,6 +399,14 @@ portalInfoServer=Server: %server%
 ```
 
 # Changes
+
+#### \[Version 0.9.3.4] EpicKnarvik97 fork
+
+- Includes passengers of passengers when teleporting entities
+- Fixes a bug which caused Stargate to use more CPU for no reason
+- Teleports boats/minecarts like other vehicles unless *enableCraftBookRemoveOnEjectFix* is enabled
+- Adds the *waitForPlayerAfterTeleportDelay* config option which allows changing the delay between vehicle teleportation
+  and the player being teleported to the vehicle
 
 #### \[Version 0.9.3.3] EpicKnarvik97 fork
 
