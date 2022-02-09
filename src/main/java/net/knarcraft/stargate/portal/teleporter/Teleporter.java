@@ -19,6 +19,7 @@ import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +84,8 @@ public abstract class Teleporter {
         loadChunks();
 
         if (teleportedEntity.eject()) {
-            TeleportHelper.handleEntityPassengers(passengers, teleportedEntity, origin, portal, exit.getDirection());
+            TeleportHelper.handleEntityPassengers(passengers, teleportedEntity, origin, portal, exit.getDirection(),
+                    new Vector());
         }
         teleportedEntity.teleport(exit);
         return true;

@@ -133,7 +133,8 @@ public class VehicleTeleporter extends EntityTeleporter {
      */
     private void teleportVehicle(List<Entity> passengers, Location exit, Vector newVelocity, Portal origin) {
         if (teleportingVehicle.eject()) {
-            TeleportHelper.handleEntityPassengers(passengers, teleportingVehicle, origin, portal, exit.getDirection());
+            TeleportHelper.handleEntityPassengers(passengers, teleportingVehicle, origin, portal, exit.getDirection(),
+                    newVelocity);
         }
         Stargate.debug("VehicleTeleporter::teleportVehicle", "Teleporting " + teleportingVehicle +
                 " to final location " + exit + " with direction " + exit.getDirection());
@@ -172,7 +173,8 @@ public class VehicleTeleporter extends EntityTeleporter {
         }
         //Remove the old vehicle
         if (teleportingVehicle.eject()) {
-            TeleportHelper.handleEntityPassengers(passengers, newVehicle, origin, portal, exit.getDirection());
+            TeleportHelper.handleEntityPassengers(passengers, newVehicle, origin, portal, exit.getDirection(),
+                    newVelocity);
         }
         teleportingVehicle.remove();
         scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> newVehicle.setVelocity(newVelocity), 1);

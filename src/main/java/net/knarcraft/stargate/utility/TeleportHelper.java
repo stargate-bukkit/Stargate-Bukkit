@@ -79,8 +79,10 @@ public final class TeleportHelper {
      * @param targetVehicle <p>The entity to add the passenger to</p>
      * @param passenger     <p>The passenger to teleport and add</p>
      * @param exitDirection <p>The direction of any passengers exiting the stargate</p>
+     * @param newVelocity   <p>The new velocity of the teleported passenger</p>
      */
-    public static void teleportAndAddPassenger(Entity targetVehicle, Entity passenger, Vector exitDirection) {
+    public static void teleportAndAddPassenger(Entity targetVehicle, Entity passenger, Vector exitDirection,
+                                               Vector newVelocity) {
         Location passengerExit = targetVehicle.getLocation().clone().setDirection(exitDirection);
         if (!passenger.teleport(passengerExit)) {
             Stargate.debug("TeleportHelper::handleVehiclePassengers", "Failed to teleport passenger" +
@@ -96,6 +98,9 @@ public final class TeleportHelper {
             Stargate.debug("TeleportHelper::handleVehiclePassengers", "Added passenger " + passenger +
                     " to " + targetVehicle);
         }
+        Stargate.debug("VehicleTeleporter::teleportVehicle", "Setting velocity " + newVelocity +
+                " for passenger " + passenger);
+        passenger.setVelocity(newVelocity);
     }
 
     /**
@@ -106,9 +111,10 @@ public final class TeleportHelper {
      * @param origin       <p>The portal the entity teleported from</p>
      * @param target       <p>The portal the entity is teleporting to</p>
      * @param exitRotation <p>The rotation of any passengers exiting the stargate</p>
+     * @param newVelocity  <p>The new velocity of the teleported passengers</p>
      */
     public static void handleEntityPassengers(List<Entity> passengers, Entity entity, Portal origin, Portal target,
-                                              Vector exitRotation) {
+                                              Vector exitRotation, Vector newVelocity) {
         for (Entity passenger : passengers) {
             List<Entity> passengerPassengers = passenger.getPassengers();
             if (!passengerPassengers.isEmpty()) {
@@ -117,14 +123,14 @@ public final class TeleportHelper {
             }
             if (passenger.eject()) {
                 //Teleport any passengers of the passenger
-                handleEntityPassengers(passengerPassengers, passenger, origin, target, exitRotation);
+                handleEntityPassengers(passengerPassengers, passenger, origin, target, exitRotation, newVelocity);
             }
             Bukkit.getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
                 if (passenger instanceof Player player) {
                     //Teleport any creatures leashed by the player in a 15-block range
                     teleportLeashedCreatures(player, origin, target);
                 }
-                teleportAndAddPassenger(entity, passenger, exitRotation);
+                teleportAndAddPassenger(entity, passenger, exitRotation, newVelocity);
             }, passenger instanceof Player ? Stargate.getGateConfig().waitForPlayerAfterTeleportDelay() : 0);
         }
     }

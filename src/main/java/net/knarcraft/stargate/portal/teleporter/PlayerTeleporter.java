@@ -49,6 +49,10 @@ public class PlayerTeleporter extends Teleporter {
             }
         }
 
+        //Calculate the exit velocity of the player
+        Vector newVelocityDirection = DirectionHelper.getDirectionVectorFromYaw(portal.getYaw());
+        Vector newVelocity = newVelocityDirection.multiply(velocity * Stargate.getGateConfig().getExitVelocity());
+
         //Load chunks to make sure not to teleport to the void
         loadChunks();
 
@@ -56,7 +60,7 @@ public class PlayerTeleporter extends Teleporter {
         TeleportHelper.teleportLeashedCreatures(player, origin, portal);
 
         if (player.eject()) {
-            TeleportHelper.handleEntityPassengers(passengers, player, origin, portal, exit.getDirection());
+            TeleportHelper.handleEntityPassengers(passengers, player, origin, portal, exit.getDirection(), newVelocity);
         }
 
         //If no event is passed in, assume it's a teleport, and act as such
@@ -69,8 +73,6 @@ public class PlayerTeleporter extends Teleporter {
 
         //Set the velocity of the teleported player after the teleportation is finished
         Bukkit.getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
-            Vector newVelocityDirection = DirectionHelper.getDirectionVectorFromYaw(portal.getYaw());
-            Vector newVelocity = newVelocityDirection.multiply(velocity * Stargate.getGateConfig().getExitVelocity());
             player.setVelocity(newVelocity);
         }, 1);
     }
