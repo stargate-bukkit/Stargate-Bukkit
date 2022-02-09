@@ -426,5 +426,5 @@ public class Stargate extends JavaPlugin {
     public static StargateConfig getStargateConfig() {
         return stargateConfig;
     }
-    
+
 }
