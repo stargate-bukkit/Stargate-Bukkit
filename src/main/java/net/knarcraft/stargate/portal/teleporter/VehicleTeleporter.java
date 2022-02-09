@@ -12,6 +12,7 @@ import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 
 import java.util.List;
@@ -57,7 +58,10 @@ public class VehicleTeleporter extends EntityTeleporter {
         Vector newVelocity = newVelocityDirection.multiply(velocity);
 
         //Call the StargateEntityPortalEvent to allow plugins to change destination
-        triggerPortalEvent(origin, new StargateEntityPortalEvent(teleportingVehicle, origin, portal, exit));
+        exit = triggerPortalEvent(origin, new StargateEntityPortalEvent(teleportingVehicle, origin, portal, exit));
+        if (exit == null) {
+            return false;
+        }
 
         //Teleport the vehicle
         return teleportVehicle(exit, newVelocity, origin);
@@ -131,9 +135,15 @@ public class VehicleTeleporter extends EntityTeleporter {
         if (teleportingVehicle.eject()) {
             TeleportHelper.handleEntityPassengers(passengers, teleportingVehicle, origin, portal, exit.getDirection());
         }
-        teleportingVehicle.teleport(exit);
+        Stargate.debug("VehicleTeleporter::teleportVehicle", "Teleporting " + teleportingVehicle +
+                " to final location " + exit + " with direction " + exit.getDirection());
+        teleportingVehicle.teleport(exit, PlayerTeleportEvent.TeleportCause.PLUGIN);
         scheduler.scheduleSyncDelayedTask(Stargate.getInstance(),
-                () -> teleportingVehicle.setVelocity(newVelocity), 1);
+                () -> {
+                    Stargate.debug("VehicleTeleporter::teleportVehicle", "Setting velocity " + newVelocity +
+                            " for vehicle " + teleportingVehicle);
+                    teleportingVehicle.setVelocity(newVelocity);
+                }, 1);
     }
 
     /**

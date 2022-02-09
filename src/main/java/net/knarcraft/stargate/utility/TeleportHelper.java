@@ -4,6 +4,7 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.teleporter.EntityTeleporter;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -80,11 +81,20 @@ public final class TeleportHelper {
      * @param exitDirection <p>The direction of any passengers exiting the stargate</p>
      */
     public static void teleportAndAddPassenger(Entity targetVehicle, Entity passenger, Vector exitDirection) {
-        if (!passenger.teleport(targetVehicle.getLocation().clone().setDirection(exitDirection))) {
-            Stargate.debug("handleVehiclePassengers", "Failed to teleport passenger" + passenger);
+        Location passengerExit = targetVehicle.getLocation().clone().setDirection(exitDirection);
+        if (!passenger.teleport(passengerExit)) {
+            Stargate.debug("TeleportHelper::handleVehiclePassengers", "Failed to teleport passenger" +
+                    passenger);
+        } else {
+            Stargate.debug("TeleportHelper::handleVehiclePassengers", "Teleported " + passenger +
+                    " to " + passengerExit);
         }
         if (!targetVehicle.addPassenger(passenger)) {
-            Stargate.debug("handleVehiclePassengers", "Failed to add passenger" + passenger);
+            Stargate.debug("TeleportHelper::handleVehiclePassengers", "Failed to add passenger" +
+                    passenger);
+        } else {
+            Stargate.debug("TeleportHelper::handleVehiclePassengers", "Added passenger " + passenger +
+                    " to " + targetVehicle);
         }
     }
 
@@ -114,7 +124,7 @@ public final class TeleportHelper {
                     //Teleport any creatures leashed by the player in a 15-block range
                     teleportLeashedCreatures(player, origin, target);
                 }
-                TeleportHelper.teleportAndAddPassenger(entity, passenger, exitRotation);
+                teleportAndAddPassenger(entity, passenger, exitRotation);
             }, passenger instanceof Player ? Stargate.getGateConfig().waitForPlayerAfterTeleportDelay() : 0);
         }
     }

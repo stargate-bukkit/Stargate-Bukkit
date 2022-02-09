@@ -33,6 +33,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -131,6 +132,7 @@ public class PlayerEventListener implements Listener {
                 horse.setOwner(player);
             }
             //Teleport the player's vehicle
+            player.setVelocity(new Vector());
             new VehicleTeleporter(destination, (Vehicle) playerVehicle).teleportEntity(entrancePortal);
         } else {
             //Just teleport the player like normal
