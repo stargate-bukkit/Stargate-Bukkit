@@ -400,6 +400,11 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+#### \[Version 0.9.3.5] EpicKnarvik97 fork
+
+- Fixes the wait for player delay being too low by default
+- Performs some minor code optimizations and restructuring
+
 #### \[Version 0.9.3.4] EpicKnarvik97 fork
 
 - Includes passengers of passengers when teleporting entities
