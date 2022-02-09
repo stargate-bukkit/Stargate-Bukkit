@@ -143,6 +143,9 @@ public final class StargateGateConfig {
      * @return <p>The delay to use before adding a player as passenger of a teleported vehicle</p>
      */
     public int waitForPlayerAfterTeleportDelay() {
+        if ((int) configOptions.get(ConfigOption.WAIT_FOR_PLAYER_AFTER_TELEPORT_DELAY) < 2) {
+            configOptions.put(ConfigOption.WAIT_FOR_PLAYER_AFTER_TELEPORT_DELAY, 6);
+        }
         return (int) configOptions.get(ConfigOption.WAIT_FOR_PLAYER_AFTER_TELEPORT_DELAY);
     }
 
