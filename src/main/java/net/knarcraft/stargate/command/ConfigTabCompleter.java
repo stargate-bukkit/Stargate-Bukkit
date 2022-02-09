@@ -217,22 +217,10 @@ public class ConfigTabCompleter implements TabCompleter {
      */
     private List<ChatColor> getChatColors() {
         List<ChatColor> chatColors = new ArrayList<>();
-        chatColors.add(ChatColor.WHITE);
-        chatColors.add(ChatColor.BLUE);
-        chatColors.add(ChatColor.DARK_BLUE);
-        chatColors.add(ChatColor.DARK_PURPLE);
-        chatColors.add(ChatColor.LIGHT_PURPLE);
-        chatColors.add(ChatColor.GOLD);
-        chatColors.add(ChatColor.GREEN);
-        chatColors.add(ChatColor.BLACK);
-        chatColors.add(ChatColor.DARK_GREEN);
-        chatColors.add(ChatColor.DARK_RED);
-        chatColors.add(ChatColor.RED);
-        chatColors.add(ChatColor.AQUA);
-        chatColors.add(ChatColor.DARK_AQUA);
-        chatColors.add(ChatColor.DARK_GRAY);
-        chatColors.add(ChatColor.GRAY);
-        chatColors.add(ChatColor.YELLOW);
+        char[] colors = new char[]{'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        for (char color : colors) {
+            chatColors.add(ChatColor.getByChar(color));
+        }
         chatColors.add(ChatColor.of("#ed76d9"));
         chatColors.add(ChatColor.of("#ffecb7"));
         return chatColors;

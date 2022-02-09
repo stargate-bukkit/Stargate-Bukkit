@@ -16,6 +16,7 @@ import java.util.Map;
  * The Stargate gate config keeps track of all global config values related to gates
  */
 public final class StargateGateConfig {
+
     private static final int activeTime = 10;
     private static final int openTime = 10;
     private final Map<ConfigOption, Object> configOptions;
@@ -320,4 +321,5 @@ public final class StargateGateConfig {
             PortalSignDrawer.setHighlightColor(ChatColor.WHITE);
         }
     }
+
 }

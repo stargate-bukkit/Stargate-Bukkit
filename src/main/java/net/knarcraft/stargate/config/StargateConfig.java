@@ -520,4 +520,5 @@ public final class StargateConfig {
     public LanguageLoader getLanguageLoader() {
         return languageLoader;
     }
+
 }

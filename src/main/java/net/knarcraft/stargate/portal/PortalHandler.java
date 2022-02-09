@@ -448,4 +448,5 @@ public class PortalHandler {
         }
         return input.replaceAll("[|:#]", "").trim();
     }
+
 }
