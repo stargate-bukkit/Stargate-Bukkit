@@ -72,9 +72,7 @@ public class PlayerTeleporter extends Teleporter {
         }
 
         //Set the velocity of the teleported player after the teleportation is finished
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
-            player.setVelocity(newVelocity);
-        }, 1);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), () -> player.setVelocity(newVelocity), 1);
     }
 
 }
