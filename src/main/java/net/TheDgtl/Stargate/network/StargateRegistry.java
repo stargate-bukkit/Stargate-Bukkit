@@ -24,7 +24,7 @@ import java.util.logging.Level;
  *
  * @author Thorin (idea from EpicKnarvik)
  */
-public class StargateRegistry implements StargateRegistryAPI{
+public class StargateRegistry implements PortalRegistryAPI, NetworkRegistryAPI{
 
     private final StorageAPI storageAPI;
     private final HashMap<String, Network> networkList = new HashMap<>();
