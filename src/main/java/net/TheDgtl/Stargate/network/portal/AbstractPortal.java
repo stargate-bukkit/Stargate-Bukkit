@@ -179,8 +179,11 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public void setNetwork(Network targetNetwork) {
+    public void setNetwork(Network targetNetwork) throws NameErrorException {
+        if(targetNetwork.getPortal(this.name) != null)
+            throw new NameErrorException(null);
         this.network = targetNetwork;
+        //TODO: update network in database
         this.drawControlMechanisms();
     }
 

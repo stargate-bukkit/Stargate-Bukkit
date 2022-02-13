@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * A network of portals
  */
-public class Network {
+public class Network implements NetworkAPI{
 
     protected Map<String, Portal> nameToPortalMap;
     protected Database database;
@@ -54,21 +54,12 @@ public class Network {
         this.registry = registry;
     }
 
-    /**
-     * Gets all portals belonging to this network
-     *
-     * @return <p>All portals belonging to this network</p>
-     */
+    @Override
     public Collection<Portal> getAllPortals() {
         return nameToPortalMap.values();
     }
 
-    /**
-     * Gets the portal with the given name
-     *
-     * @param name <p>The name of the portal to get</p>
-     * @return <p>The portal with the given name, or null if not found</p>
-     */
+    @Override
     public Portal getPortal(String name) {
         if (name == null) {
             return null;
@@ -76,12 +67,7 @@ public class Network {
         return nameToPortalMap.get(this.getPortalHash(name));
     }
 
-    /**
-     * Removes the given portal from this network
-     *
-     * @param portal             <p>The portal to remove</p>
-     * @param removeFromDatabase <p>Whether to also remove the portal from the database</p>
-     */
+    @Override
     public void removePortal(Portal portal, boolean removeFromDatabase) {
         nameToPortalMap.remove(this.getPortalHash(portal.getName()));
         if (!removeFromDatabase) {
@@ -90,12 +76,7 @@ public class Network {
         Stargate.getRegistry().removePortal(portal, PortalType.LOCAL);
     }
 
-    /**
-     * Adds the given portal to this network
-     *
-     * @param portal         <p>The portal to add</p>
-     * @param saveToDatabase <p>Whether to also save the portal to the database, only instances of RealPortal can be saved</p>
-     */
+    @Override
     public void addPortal(Portal portal, boolean saveToDatabase) {
         if (portal instanceof RealPortal) {
             RealPortal physicalPortal = (RealPortal) portal;
@@ -113,32 +94,19 @@ public class Network {
         nameToPortalMap.put(getPortalHash(portal.getName()), portal);
     }
 
-    /**
-     * Checks whether there is already a portal in this network with the given name
-     *
-     * @param name <p>The name to check for</p>
-     * @return <p>True if an existing portal is already using the given name</p>
-     */
+    @Override
     public boolean isPortalNameTaken(String name) {
         return nameToPortalMap.containsKey(name);
     }
 
-    /**
-     * Updates all portals in this network
-     */
+    @Override
     public void updatePortals() {
         for (String portal : nameToPortalMap.keySet()) {
             getPortal(portal).update();
         }
     }
 
-    /**
-     * Gets names of all portals available to the given player from the given portal
-     *
-     * @param player    <p>The player to get portals </p>
-     * @param requester <p>The portal the player is viewing other portals from</p>
-     * @return <p>The names of all portals the player is allowed to see</p>
-     */
+    @Override
     public Set<String> getAvailablePortals(Player player, Portal requester) {
         Set<String> tempPortalList = new HashSet<>(nameToPortalMap.keySet());
         tempPortalList.remove(getPortalHash(requester.getName()));
@@ -170,9 +138,7 @@ public class Network {
         return HighlightingStyle.NETWORK.getHighlightedName(getName());
     }
 
-    /**
-     * Destroys this network and every portal contained in it
-     */
+    @Override
     public void destroy() {
         for (String portalName : nameToPortalMap.keySet()) {
             Portal portal = nameToPortalMap.get(portalName);
@@ -181,20 +147,12 @@ public class Network {
         nameToPortalMap.clear();
     }
 
-    /**
-     * Gets the name of this network
-     *
-     * @return <p>The name of this network</p>
-     */
+    @Override
     public String getName() {
         return name;
     }
 
-    /**
-     * Gets the current number of portals in this network
-     *
-     * @return <p>The size of this network</p>
-     */
+    @Override
     public int size() {
         return this.getAllPortals().size();
     }

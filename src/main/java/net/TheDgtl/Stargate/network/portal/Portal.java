@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.network.portal;
 
+import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.Network;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -87,8 +88,9 @@ public interface Portal {
      * Changes the network this portal belongs to
      *
      * @param targetNetwork <p>The new network this portal should belong to</p>
+     * @throws NameErrorException 
      */
-    void setNetwork(Network targetNetwork);
+    void setNetwork(Network targetNetwork) throws NameErrorException;
 
     /**
      * Changes the player this portal belongs to
