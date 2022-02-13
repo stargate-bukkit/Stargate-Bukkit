@@ -30,6 +30,7 @@ import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.InterServerNetwork;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
@@ -140,7 +141,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
             Stargate.addToQueue(playerName, destination, bungeeNetwork, false);
         } else {
-            Network network = Stargate.getRegistry().getNetwork(bungeeNetwork, false);
+            NetworkAPI network = Stargate.getRegistry().getNetwork(bungeeNetwork, false);
             Portal destinationPortal = network.getPortal(destination);
             destinationPortal.teleportHere(player, null);
         }
@@ -206,7 +207,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         }
 
         Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
-        Network network = Stargate.getRegistry().getNetwork(networkName, true);
+        NetworkAPI network = Stargate.getRegistry().getNetwork(networkName, true);
         if (network == null) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_NETWORK));
             return;

@@ -6,6 +6,8 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.NetworkAPI;
+
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
@@ -49,7 +51,7 @@ public class FakePortalGenerator {
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      * @throws NameErrorException        <p>If the generated portal name is invalid</p>
      */
-    public Map<String, RealPortal> generateFakePortals(World world, Network portalNetwork,
+    public Map<String, RealPortal> generateFakePortals(World world, NetworkAPI portalNetwork,
                                                        boolean createInterServerPortals, int numberOfPortals,
                                                        StargateLogger logger) throws InvalidStructureException, NameErrorException {
         Map<String, RealPortal> output = new HashMap<>();
@@ -79,7 +81,7 @@ public class FakePortalGenerator {
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      * @throws NameErrorException        <p>If the given portal name is invalid</p>
      */
-    public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal,
+    public RealPortal generateFakePortal(World world, NetworkAPI portalNetwork, String name, boolean createInterServerPortal,
                                          StargateLogger logger) throws InvalidStructureException, NameErrorException {
         Set<PortalFlag> flags = generateRandomFlags();
         if (createInterServerPortal) {

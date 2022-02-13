@@ -8,6 +8,7 @@ import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
@@ -24,11 +25,11 @@ import java.util.logging.Level;
  *
  * @author Thorin (idea from EpicKnarvik)
  */
-public class StargateRegistry implements PortalRegistryAPI, NetworkRegistryAPI{
+public class StargateRegistry implements RegistryAPI{
 
     private final StorageAPI storageAPI;
-    private final HashMap<String, Network> networkList = new HashMap<>();
-    private final HashMap<String, InterServerNetwork> bungeeNetworkList = new HashMap<>();
+    private final HashMap<String, NetworkAPI> networkList = new HashMap<>();
+    private final HashMap<String, NetworkAPI> bungeeNetworkList = new HashMap<>();
     private final Map<GateStructureType, Map<BlockLocation, Portal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
 
     /**
@@ -58,7 +59,12 @@ public class StargateRegistry implements PortalRegistryAPI, NetworkRegistryAPI{
 
     @Override
     public void createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
-        storageAPI.createNetwork(networkName, flags);
+        if (this.networkExists(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER))) {
+            throw new NameErrorException(null);
+        }
+        NetworkAPI network = storageAPI.createNetwork(networkName, flags);
+        network.assignToRegistry(this);
+        getNetworkList().put(networkName, network);
     }
 
     @Override
@@ -68,8 +74,8 @@ public class StargateRegistry implements PortalRegistryAPI, NetworkRegistryAPI{
     }
 
     @Override
-    public void updatePortals(Map<String, ? extends Network> networkMap) {
-        for (Network network : networkMap.values()) {
+    public void updatePortals(Map<String, ? extends NetworkAPI> networkMap) {
+        for (NetworkAPI network : networkMap.values()) {
             network.updatePortals();
         }
     }
@@ -80,7 +86,7 @@ public class StargateRegistry implements PortalRegistryAPI, NetworkRegistryAPI{
     }
 
     @Override
-    public Network getNetwork(String name, boolean isBungee) {
+    public NetworkAPI getNetwork(String name, boolean isBungee) {
         return getNetworkMap(isBungee).get(name);
     }
 
@@ -168,7 +174,7 @@ public class StargateRegistry implements PortalRegistryAPI, NetworkRegistryAPI{
      * @param getBungee <p>Whether to get BungeeCord networks</p>
      * @return <p>A network name -> network map</p>
      */
-    private Map<String, ? extends Network> getNetworkMap(boolean getBungee) {
+    private Map<String, ? extends NetworkAPI> getNetworkMap(boolean getBungee) {
         if (getBungee) {
             return getBungeeNetworkList();
         } else {
@@ -177,12 +183,12 @@ public class StargateRegistry implements PortalRegistryAPI, NetworkRegistryAPI{
     }
 
     @Override
-    public HashMap<String, InterServerNetwork> getBungeeNetworkList() {
+    public HashMap<String, NetworkAPI> getBungeeNetworkList() {
         return bungeeNetworkList;
     }
 
     @Override
-    public HashMap<String, Network> getNetworkList() {
+    public HashMap<String, NetworkAPI> getNetworkList() {
         return networkList;
     }
 

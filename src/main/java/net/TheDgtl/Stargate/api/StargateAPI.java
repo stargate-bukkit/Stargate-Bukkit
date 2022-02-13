@@ -1,9 +1,10 @@
 package net.TheDgtl.Stargate.api;
 
+import org.bukkit.configuration.Configuration;
+
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.database.StorageAPI;
-import net.TheDgtl.Stargate.network.NetworkRegistryAPI;
-import net.TheDgtl.Stargate.network.PortalRegistryAPI;
+import net.TheDgtl.Stargate.network.RegistryAPI;
 
 /**
  * An API to facilitate addons and integrations
@@ -15,11 +16,7 @@ import net.TheDgtl.Stargate.network.PortalRegistryAPI;
 public class StargateAPI {
 
     
-    public static PortalRegistryAPI getPortalRegistry() {
-        return Stargate.getRegistry();
-    }
-
-    public static NetworkRegistryAPI getNetworkRegistry() {
+    public static RegistryAPI getPortalRegistry() {
         return Stargate.getRegistry();
     }
     
@@ -27,5 +24,11 @@ public class StargateAPI {
         return Stargate.getStorageAPI();
     }
     
-
+    public static void load() {
+        Stargate.getInstance().load();
+    }
+    
+    public static Configuration getConfig() {
+        return Stargate.getConfigStatic();
+    }
 }

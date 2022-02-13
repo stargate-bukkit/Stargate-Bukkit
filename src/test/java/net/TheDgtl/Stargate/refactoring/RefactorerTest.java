@@ -14,6 +14,7 @@ import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -219,7 +220,7 @@ public class RefactorerTest {
             System.out.printf("--------- Checking portal loaded from %s configuration%n", key);
             for (String portalName : testMap.keySet()) {
                 String netName = testMap.get(portalName);
-                Network net = registry.getNetwork(netName, false);
+                NetworkAPI net = registry.getNetwork(netName, false);
                 Assertions.assertNotNull(net, String.format("Network %s for portal %s was null", netName, portalName));
                 Portal portal = net.getPortal(portalName);
                 Assertions.assertNotNull(portal, String.format("Portal %s in network %s was null", portalName, netName));

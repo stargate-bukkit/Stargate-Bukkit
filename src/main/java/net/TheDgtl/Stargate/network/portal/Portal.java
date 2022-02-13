@@ -2,6 +2,8 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.NetworkAPI;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -82,7 +84,7 @@ public interface Portal {
      *
      * @return <p>The network this portal belongs to</p>
      */
-    Network getNetwork();
+    NetworkAPI getNetwork();
 
     /**
      * Changes the network this portal belongs to

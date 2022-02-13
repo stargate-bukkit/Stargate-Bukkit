@@ -8,6 +8,7 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -147,7 +148,7 @@ public class LegacyPortalStorageLoader {
         if (buttonPosition != null && !flags.contains(PortalFlag.ALWAYS_ON)) {
             portalPositions.add(buttonPosition);
         }
-        Network network = registry.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
+        NetworkAPI network = registry.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
         GateFormat format = GateFormat.getFormat(gateFormatName);
         Gate gate = new Gate(topLeft, facing, false, format, portalPositions, logger);

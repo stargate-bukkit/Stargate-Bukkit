@@ -15,6 +15,7 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.portal.formatting.LineColorFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.LineFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.NoLineColorFormatter;
@@ -56,7 +57,7 @@ public abstract class AbstractPortal implements RealPortal {
     public static final Set<PortalFlag> allUsedFlags = EnumSet.noneOf(PortalFlag.class);
 
     protected final int openDelay = 20;
-    protected Network network;
+    protected NetworkAPI network;
     protected final String name;
     protected UUID openFor;
     protected Portal destination = null;
@@ -78,7 +79,7 @@ public abstract class AbstractPortal implements RealPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
+    AbstractPortal(NetworkAPI network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
             throws NameErrorException {
         this.ownerUUID = ownerUUID;
         this.network = network;
@@ -174,7 +175,7 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public Network getNetwork() {
+    public NetworkAPI getNetwork() {
         return this.network;
     }
 

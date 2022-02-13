@@ -75,10 +75,26 @@ public interface NetworkAPI {
      */
     public String getName();
     
+    
+    
     /**
      * Gets the current number of portals in this network
      *
      * @return <p>The size of this network</p>
      */
     public int size();
+    
+    /**
+     * Assign the network to a registry
+     * @param registry
+     */
+    public void assignToRegistry(RegistryAPI registry);
+    
+    
+    /**
+     * Gets the highlighted name of this network
+     *
+     * @return <p>The highlighted name of this network</p>
+     */
+    public String getHighlightedName();
 }

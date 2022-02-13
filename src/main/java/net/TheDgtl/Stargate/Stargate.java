@@ -33,6 +33,7 @@ import net.TheDgtl.Stargate.listeners.PlayerEventListener;
 import net.TheDgtl.Stargate.listeners.PluginEventListener;
 import net.TheDgtl.Stargate.listeners.StargateBungeePluginMessageListener;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.refactoring.Refactorer;
@@ -373,7 +374,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     }
 
     public static void addToQueue(String playerName, String portalName, String netName, boolean isInterServer) {
-        Network network = getRegistry().getNetwork(netName, isInterServer);
+        NetworkAPI network = getRegistry().getNetwork(netName, isInterServer);
 
 
         /*

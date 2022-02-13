@@ -15,6 +15,7 @@ import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
@@ -179,7 +180,7 @@ public class BlockEventListener implements Listener {
         flags.removeAll(disallowedFlags);
 
         String finalNetworkName;
-        Network selectedNetwork = null;
+        NetworkAPI selectedNetwork = null;
         try {
             finalNetworkName = interpretNetworkName(network, flags, player, permissionManager);
             selectedNetwork = selectNetwork(finalNetworkName, flags);
@@ -214,7 +215,7 @@ public class BlockEventListener implements Listener {
      * @throws GateConflictException  <p>If the gate's physical structure is in conflict with another</p>
      * @throws NoFormatFoundException <p>If no known format matches the built stargate</p>
      */
-    private void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation, Set<PortalFlag> flags,
+    private void tryPortalCreation(NetworkAPI selectedNetwork, String[] lines, Block signLocation, Set<PortalFlag> flags,
                                    Player player, int cost, PermissionManager permissionManager, TranslatableMessage errorMessage)
             throws NameErrorException, GateConflictException, NoFormatFoundException {
 
@@ -357,7 +358,7 @@ public class BlockEventListener implements Listener {
      * @return <p>The network the portal should be connected to</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    private Network selectNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {
+    private NetworkAPI selectNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {
         try {
             Stargate.getRegistry().createNetwork(name, flags);
         } catch (NameErrorException nameErrorException) {

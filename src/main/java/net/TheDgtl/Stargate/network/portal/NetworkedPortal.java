@@ -12,6 +12,7 @@ import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -49,7 +50,7 @@ public class NetworkedPortal extends AbstractPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
+    public NetworkedPortal(NetworkAPI network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
             throws NameErrorException {
         super(network, name, flags, gate, ownerUUID, logger);
     }
