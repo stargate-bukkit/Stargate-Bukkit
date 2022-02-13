@@ -9,6 +9,7 @@ import net.TheDgtl.Stargate.refactoring.retcons.RetCon1_0_0;
 import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +28,10 @@ public class Refactorer {
                 new RetCon1_0_0(server, registry, logger)
         };
 
-        FileConfiguration fileConfig = new StargateConfiguration();
+        /*
+         * Not StargateConfiguration, as we don't want to save comments
+         */
+        FileConfiguration fileConfig = new YamlConfiguration();
         fileConfig.load(configFile);
         this.fileConfig = fileConfig;
         this.config = fileConfig.getValues(true);
