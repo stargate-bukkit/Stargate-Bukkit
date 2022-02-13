@@ -25,8 +25,8 @@ public class PersonalNetwork extends Network {
      * @param queryGenerator <p>The generator to use for generating SQL queries</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public PersonalNetwork(UUID uuid, Database database, SQLQueryGenerator queryGenerator, StargateRegistry registry) throws NameErrorException {
-        super(uuid.toString(), database, queryGenerator, registry);
+    public PersonalNetwork(UUID uuid, Database database, SQLQueryGenerator queryGenerator) throws NameErrorException {
+        super(uuid.toString(), database, queryGenerator);
         Stargate.log(Level.FINE, "Initialized personal network with UUID" + uuid);
         Stargate.log(Level.FINE, "Matching player name: " + Bukkit.getOfflinePlayer(uuid).getName());
         playerName = Bukkit.getOfflinePlayer(uuid).getName();

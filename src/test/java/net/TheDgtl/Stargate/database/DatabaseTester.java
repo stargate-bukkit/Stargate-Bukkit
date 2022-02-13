@@ -11,6 +11,7 @@ import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.FakePortalGenerator;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -79,9 +80,9 @@ public class DatabaseTester {
         Stargate.serverUUID = serverUUID;
         StargateLogger logger = new FakeStargate();
 
-        Network testNetwork = null;
+        NetworkAPI testNetwork = null;
         try {
-            testNetwork = new Network("test", database, generator, null);
+            testNetwork = new Network("test", database, generator);
         } catch (NameErrorException e) {
             e.printStackTrace();
         }

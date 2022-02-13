@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.database;
 
 import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -26,13 +27,14 @@ public interface StorageAPI {
     void endInterServerConnection();
 
     /**
-     * Creates a new network
+     * Creates a new network unassigned to a registry
      *
      * @param networkName <p>The name of the new network</p>
      * @param flags       <p>The flag set used to look for network flags</p>
+     * @return The network that was created
      * @throws NameErrorException <p>If the given network name is invalid</p>
      */
-    void createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException;
+    NetworkAPI createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException;
 
     /**
      * Saves the given portal to storage

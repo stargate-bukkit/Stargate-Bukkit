@@ -6,6 +6,7 @@ import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.EnumSet;
@@ -28,7 +29,7 @@ public class BungeePortal extends AbstractPortal {
 
     static {
         try {
-            LEGACY_NETWORK = new Network("§§§§§§#BUNGEE#§§§§§§", null, null, null);
+            LEGACY_NETWORK = new Network("§§§§§§#BUNGEE#§§§§§§", null, null);
         } catch (NameErrorException e) {
             e.printStackTrace();
         }
@@ -45,7 +46,7 @@ public class BungeePortal extends AbstractPortal {
      * @param ownerUUID         <p>The UUID of this portal's owner</p>
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    public BungeePortal(Network network, String name, String destination, String destinationServer,
+    public BungeePortal(NetworkAPI network, String name, String destination, String destinationServer,
                         Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger) throws NameErrorException {
         super(network, name, flags, gate, ownerUUID, logger);
 
@@ -70,7 +71,7 @@ public class BungeePortal extends AbstractPortal {
          * CHEATS! we love cheats. This one helps to save the legacy bungee gate into sql table so that the
          * target server is stored as a replacement to network.
          */
-        cheatNetwork = new Network(destinationServer, null, null, null);
+        cheatNetwork = new Network(destinationServer, null, null);
         bungeeString = Stargate.languageManager.getString(TranslatableMessage.BUNGEE_SIGN_LINE_4);
     }
 

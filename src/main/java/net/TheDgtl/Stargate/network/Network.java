@@ -33,7 +33,7 @@ public class Network implements NetworkAPI{
     protected Database database;
     protected String name;
     protected SQLQueryGenerator sqlMaker;
-    private final StargateRegistry registry;
+    private RegistryAPI registry;
 
     /**
      * Instantiates a new network
@@ -43,7 +43,7 @@ public class Network implements NetworkAPI{
      * @param queryGenerator <p>The generator to use for generating SQL queries</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public Network(String name, Database database, SQLQueryGenerator queryGenerator, StargateRegistry registry) throws NameErrorException {
+    public Network(String name, Database database, SQLQueryGenerator queryGenerator) throws NameErrorException {
         if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH)) {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         }
@@ -51,7 +51,6 @@ public class Network implements NetworkAPI{
         this.database = database;
         this.sqlMaker = queryGenerator;
         nameToPortalMap = new HashMap<>();
-        this.registry = registry;
     }
 
     @Override
@@ -129,11 +128,7 @@ public class Network implements NetworkAPI{
         return tempPortalList;
     }
 
-    /**
-     * Gets the highlighted name of this network
-     *
-     * @return <p>The highlighted name of this network</p>
-     */
+    @Override
     public String getHighlightedName() {
         return HighlightingStyle.NETWORK.getHighlightedName(getName());
     }
@@ -196,6 +191,11 @@ public class Network implements NetworkAPI{
             portalHash = ChatColor.stripColor(portalHash);
         }
         return portalHash;
+    }
+
+    @Override
+    public void assignToRegistry(RegistryAPI registry) {
+        this.registry = registry;
     }
 
 }
