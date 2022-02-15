@@ -23,8 +23,9 @@ public class CommandAbout implements CommandExecutor {
         commandSender.sendMessage(textColor + "Go to " + highlightColor +
                 "https://git.knarcraft.net/EpicKnarvik97/Stargate " + textColor + "for the official repository");
         String author = Stargate.getStargateConfig().getLanguageLoader().getString("author");
-        if (!author.isEmpty())
+        if (!author.isEmpty()) {
             commandSender.sendMessage(textColor + "Language created by " + highlightColor + author);
+        }
         return true;
     }
 

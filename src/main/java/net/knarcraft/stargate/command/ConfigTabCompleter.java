@@ -254,6 +254,7 @@ public class ConfigTabCompleter implements TabCompleter {
         languages.add("nn-no");
         languages.add("pt-br");
         languages.add("ru");
+        languages.add("zh_cn");
         //TODO: Generate this list dynamically by listing the language files in the jar and adding the user's custom 
         // language files
     }

@@ -7,7 +7,7 @@ can share a network or be split into clusters; they can be hidden on a network o
 - **Vault economy support** -- can add costs for create, destroy and use.
 - **Ability to create custom gate configurations**. Four different default gate configurations are available.
 - **Message customization**
-- **Multiple built-in languages** (de, en, es, fr, hu, it, nb-no, nl, nn-no, pt-br, ru)
+- **Multiple built-in languages** (de, en, es, fr, hu, it, nb-no, nl, nn-no, pt-br, ru, zh_cn)
 - **Teleport across worlds or servers** (BungeeCord supported)
 - **Vehicle teleportation** -- teleport minecarts, boats, horses, pigs and striders
 - **Leashed teleportation** -- teleport any creature in a leash with the player
@@ -396,6 +396,10 @@ portalInfoServer=Server: %server%
 ```
 
 # Changes
+
+#### \[Version 0.9.3.6] EpicKnarvik97 fork
+
+- Adds the simplified Chinese language file provided by spigot user YKDZ
 
 #### \[Version 0.9.3.3] EpicKnarvik97 fork
 
