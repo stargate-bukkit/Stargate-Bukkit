@@ -117,7 +117,7 @@ public enum ConfigOption {
      */
     WAIT_FOR_PLAYER_AFTER_TELEPORT_DELAY("advanced.waitForPlayerAfterTeleportDelay",
             "The amount of ticks to wait before adding a player as passenger of a vehicle. On slow servers, " +
-                    "a value of 6 is required to avoid client glitches after teleporting on a vehicle.", 1),
+                    "a value of 6 is required to avoid client glitches after teleporting on a vehicle.", 6),
 
     /**
      * Whether to enable economy support for taking payment from players creating/destroying/using stargates

@@ -46,4 +46,5 @@ public class WorldEventListener implements Listener {
             PortalRegistry.clearPortals(world);
         }
     }
+
 }
