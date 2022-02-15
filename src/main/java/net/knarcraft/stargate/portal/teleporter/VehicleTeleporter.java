@@ -12,6 +12,7 @@ import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 
 import java.util.List;
@@ -57,7 +58,10 @@ public class VehicleTeleporter extends EntityTeleporter {
         Vector newVelocity = newVelocityDirection.multiply(velocity);
 
         //Call the StargateEntityPortalEvent to allow plugins to change destination
-        triggerPortalEvent(origin, new StargateEntityPortalEvent(teleportingVehicle, origin, portal, exit));
+        exit = triggerPortalEvent(origin, new StargateEntityPortalEvent(teleportingVehicle, origin, portal, exit));
+        if (exit == null) {
+            return false;
+        }
 
         //Teleport the vehicle
         return teleportVehicle(exit, newVelocity, origin);
@@ -129,11 +133,18 @@ public class VehicleTeleporter extends EntityTeleporter {
      */
     private void teleportVehicle(List<Entity> passengers, Location exit, Vector newVelocity, Portal origin) {
         if (teleportingVehicle.eject()) {
-            TeleportHelper.handleEntityPassengers(passengers, teleportingVehicle, origin, portal, exit.getDirection());
+            TeleportHelper.handleEntityPassengers(passengers, teleportingVehicle, origin, portal, exit.getDirection(),
+                    newVelocity);
         }
-        teleportingVehicle.teleport(exit);
+        Stargate.debug("VehicleTeleporter::teleportVehicle", "Teleporting " + teleportingVehicle +
+                " to final location " + exit + " with direction " + exit.getDirection());
+        teleportingVehicle.teleport(exit, PlayerTeleportEvent.TeleportCause.PLUGIN);
         scheduler.scheduleSyncDelayedTask(Stargate.getInstance(),
-                () -> teleportingVehicle.setVelocity(newVelocity), 1);
+                () -> {
+                    Stargate.debug("VehicleTeleporter::teleportVehicle", "Setting velocity " + newVelocity +
+                            " for vehicle " + teleportingVehicle);
+                    teleportingVehicle.setVelocity(newVelocity);
+                }, 1);
     }
 
     /**
@@ -162,7 +173,8 @@ public class VehicleTeleporter extends EntityTeleporter {
         }
         //Remove the old vehicle
         if (teleportingVehicle.eject()) {
-            TeleportHelper.handleEntityPassengers(passengers, newVehicle, origin, portal, exit.getDirection());
+            TeleportHelper.handleEntityPassengers(passengers, newVehicle, origin, portal, exit.getDirection(),
+                    newVelocity);
         }
         teleportingVehicle.remove();
         scheduler.scheduleSyncDelayedTask(Stargate.getInstance(), () -> newVehicle.setVelocity(newVelocity), 1);

@@ -345,4 +345,5 @@ public class Portal {
             return cleanNetwork.equalsIgnoreCase(other.cleanNetwork);
         }
     }
+
 }

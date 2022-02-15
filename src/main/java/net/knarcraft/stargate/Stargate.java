@@ -45,18 +45,14 @@ import java.util.logging.Logger;
 @SuppressWarnings("unused")
 public class Stargate extends JavaPlugin {
 
-    //Used for changing gate open/closed material.
     private static final Queue<BlockChangeRequest> blockChangeRequestQueue = new LinkedList<>();
     private static final Queue<ChunkUnloadRequest> chunkUnloadQueue = new PriorityQueue<>();
 
     private static Logger logger;
     private static Stargate stargate;
-
     private static String pluginVersion;
-
     private static PluginManager pluginManager;
     private static StargateConfig stargateConfig;
-
     private static String updateAvailable = null;
 
     /**
@@ -430,4 +426,5 @@ public class Stargate extends JavaPlugin {
     public static StargateConfig getStargateConfig() {
         return stargateConfig;
     }
+
 }

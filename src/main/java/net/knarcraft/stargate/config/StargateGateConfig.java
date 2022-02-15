@@ -16,6 +16,7 @@ import java.util.Map;
  * The Stargate gate config keeps track of all global config values related to gates
  */
 public final class StargateGateConfig {
+
     private static final int activeTime = 10;
     private static final int openTime = 10;
     private final Map<ConfigOption, Object> configOptions;
@@ -142,6 +143,9 @@ public final class StargateGateConfig {
      * @return <p>The delay to use before adding a player as passenger of a teleported vehicle</p>
      */
     public int waitForPlayerAfterTeleportDelay() {
+        if ((int) configOptions.get(ConfigOption.WAIT_FOR_PLAYER_AFTER_TELEPORT_DELAY) < 2) {
+            configOptions.put(ConfigOption.WAIT_FOR_PLAYER_AFTER_TELEPORT_DELAY, 6);
+        }
         return (int) configOptions.get(ConfigOption.WAIT_FOR_PLAYER_AFTER_TELEPORT_DELAY);
     }
 
@@ -320,4 +324,5 @@ public final class StargateGateConfig {
             PortalSignDrawer.setHighlightColor(ChatColor.WHITE);
         }
     }
+
 }

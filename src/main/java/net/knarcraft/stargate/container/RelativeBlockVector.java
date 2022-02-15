@@ -58,16 +58,11 @@ public class RelativeBlockVector {
      * @return <p>A new relative block vector with the property altered</p>
      */
     public RelativeBlockVector addToVector(Property propertyToAddTo, int valueToAdd) {
-        switch (propertyToAddTo) {
-            case RIGHT:
-                return new RelativeBlockVector(this.right + valueToAdd, this.down, this.out);
-            case DOWN:
-                return new RelativeBlockVector(this.right, this.down + valueToAdd, this.out);
-            case OUT:
-                return new RelativeBlockVector(this.right, this.down, this.out + valueToAdd);
-            default:
-                throw new IllegalArgumentException("Invalid relative block vector property given");
-        }
+        return switch (propertyToAddTo) {
+            case RIGHT -> new RelativeBlockVector(this.right + valueToAdd, this.down, this.out);
+            case DOWN -> new RelativeBlockVector(this.right, this.down + valueToAdd, this.out);
+            case OUT -> new RelativeBlockVector(this.right, this.down, this.out + valueToAdd);
+        };
     }
 
     /**

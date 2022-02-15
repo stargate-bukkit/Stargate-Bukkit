@@ -49,4 +49,5 @@ public class PluginEventListener implements Listener {
             Stargate.logInfo("Vault plugin lost.");
         }
     }
+
 }
