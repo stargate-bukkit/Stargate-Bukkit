@@ -343,7 +343,7 @@ advanced:
 
 # Message Customization
 
-It is possible to customize all the messages Stargate displays, including the [Stargate] prefix. You can find the
+It is possible to customize all the messages Stargate displays, including the \[Stargate] prefix. You can find the
 strings in plugins/Stargate/lang/chosenLanguage.txt.
 
 If a string is removed, or left blank, it will default to the default english string. There are some special cases
@@ -400,6 +400,15 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+#### \[Version 0.9.3.6] EpicKnarvik97 fork
+
+- Adds the simplified Chinese language file provided by spigot user YKDZ
+
+#### \[Version 0.9.3.5] EpicKnarvik97 fork
+
+- Fixes the wait for player delay being too low by default
+- Performs some minor code optimizations and restructuring
+
 #### \[Version 0.9.3.4] EpicKnarvik97 fork
 
 - Includes passengers of passengers when teleporting entities
@@ -408,10 +417,6 @@ portalInfoServer=Server: %server%
 - Adds the *waitForPlayerAfterTeleportDelay* config option which allows changing the delay between vehicle teleportation
   and the player being teleported to the vehicle
 - Makes boats keep their wood type even when re-created
-
-#### \[Version 0.9.3.6] EpicKnarvik97 fork
-
-- Adds the simplified Chinese language file provided by spigot user YKDZ
 
 #### \[Version 0.9.3.3] EpicKnarvik97 fork
 
