@@ -54,6 +54,8 @@ gates:
     handleNonPlayerVehicles: true
     # handleLeashedCreatures - Whether to allow creatures lead by a player to teleport with the player
     handleLeashedCreatures: true
+    # enableCraftBookRemoveOnEjectFix - Whether to enable a fix that causes loss of NBT data, but allows vehicle teleportation to work when CraftBook's remove minecart/boat on eject setting is enabled
+    enableCraftBookRemoveOnEjectFix: false
 
 # I------------I-------------I #
 # stargate economy options #
@@ -84,3 +86,6 @@ debugging:
   debug: false
   # permissionDebug - This will output any and all Permissions checks to console, used for permissions debugging (Requires debug: true)
   permissionDebug: false
+advanced:
+  # waitForPlayerAfterTeleportDelay - The amount of ticks to wait before adding a player as passenger of a vehicle. On slow servers, a value of 6 is required to avoid client glitches after teleporting on a vehicle.
+  waitForPlayerAfterTeleportDelay: 6

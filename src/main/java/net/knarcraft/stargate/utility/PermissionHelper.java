@@ -387,7 +387,7 @@ public final class PermissionHelper {
             if (!entrancePortal.getOptions().isSilent()) {
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
             }
-            new PlayerTeleporter(entrancePortal, player).teleport(entrancePortal, event);
+            new PlayerTeleporter(entrancePortal, player).teleportPlayer(entrancePortal, event);
             return true;
         }
 
@@ -401,7 +401,7 @@ public final class PermissionHelper {
             if (!entrancePortal.getOptions().isSilent()) {
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
             }
-            new PlayerTeleporter(entrancePortal, player).teleport(entrancePortal, event);
+            new PlayerTeleporter(entrancePortal, player).teleportPlayer(entrancePortal, event);
             entrancePortal.getPortalOpener().closePortal(false);
             return true;
         }

@@ -7,11 +7,11 @@ import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalActivator;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.teleporter.PlayerTeleporter;
-import net.knarcraft.stargate.portal.teleporter.Teleporter;
 import net.knarcraft.stargate.portal.teleporter.VehicleTeleporter;
 import net.knarcraft.stargate.utility.BungeeHelper;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
+import net.knarcraft.stargate.utility.TeleportHelper;
 import net.knarcraft.stargate.utility.UUIDMigrationHelper;
 import net.knarcraft.stargate.utility.UpdateChecker;
 import net.md_5.bungee.api.ChatColor;
@@ -131,10 +131,10 @@ public class PlayerEventListener implements Listener {
                 horse.setOwner(player);
             }
             //Teleport the player's vehicle
-            new VehicleTeleporter(destination, (Vehicle) playerVehicle).teleport(entrancePortal);
+            new VehicleTeleporter(destination, (Vehicle) playerVehicle).teleportEntity(entrancePortal);
         } else {
             //Just teleport the player like normal
-            new PlayerTeleporter(destination, player).teleport(entrancePortal, event);
+            new PlayerTeleporter(destination, player).teleportPlayer(entrancePortal, event);
         }
         if (!entrancePortal.getOptions().isSilent()) {
             Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("teleportMsg"));
@@ -185,7 +185,7 @@ public class PlayerEventListener implements Listener {
         }
 
         //Make sure to check if the player has any leashed creatures, even though leashed teleportation is disabled
-        return Teleporter.noLeashedCreaturesPreventTeleportation(player);
+        return TeleportHelper.noLeashedCreaturesPreventTeleportation(player);
     }
 
     /**

@@ -126,6 +126,26 @@ public final class StargateGateConfig {
     }
 
     /**
+     * Gets whether the CraftBook vehicle removal fix is enabled
+     *
+     * <p>If enabled, minecarts and boats should be re-created instead of teleported.</p>
+     *
+     * @return <p>True if the CraftBook vehicle removal fix is enabled</p>
+     */
+    public boolean enableCraftBookRemoveOnEjectFix() {
+        return (boolean) configOptions.get(ConfigOption.ENABLE_CRAFT_BOOK_REMOVE_ON_EJECT_FIX);
+    }
+
+    /**
+     * Gets the delay to use before adding a player as passenger of a teleported vehicle
+     *
+     * @return <p>The delay to use before adding a player as passenger of a teleported vehicle</p>
+     */
+    public int waitForPlayerAfterTeleportDelay() {
+        return (int) configOptions.get(ConfigOption.WAIT_FOR_PLAYER_AFTER_TELEPORT_DELAY);
+    }
+
+    /**
      * Gets whether the list of destinations within a network should be sorted
      *
      * @return <p>Whether network destinations should be sorted</p>
@@ -262,8 +282,8 @@ public final class StargateGateConfig {
         if (colors[colorIndex].equalsIgnoreCase("inverted")) {
             //Convert from ChatColor to awt.Color to Bukkit.Color then invert and convert to ChatColor
             java.awt.Color color = defaultColors[colorIndex].getColor();
-            parsedColor = ColorHelper.fromColor(ColorHelper.invert(Color.fromRGB(color.getRed(),
-                    color.getGreen(), color.getBlue())));
+            parsedColor = ColorHelper.fromColor(ColorHelper.invert(Color.fromRGB(color.getRed(), color.getGreen(),
+                    color.getBlue())));
         } else {
             try {
                 parsedColor = ChatColor.of(colors[colorIndex]);

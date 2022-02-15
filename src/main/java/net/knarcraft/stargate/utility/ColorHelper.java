@@ -6,7 +6,14 @@ import org.bukkit.Color;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ColorHelper {
+/**
+ * A helper class for dealing with colors
+ */
+public final class ColorHelper {
+
+    private ColorHelper() {
+
+    }
 
     /**
      * Inverts the given color

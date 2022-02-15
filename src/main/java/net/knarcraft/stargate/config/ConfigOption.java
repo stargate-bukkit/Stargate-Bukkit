@@ -50,6 +50,9 @@ public enum ConfigOption {
      */
     HIGHLIGHT_SIGN_COLOR("gates.cosmetic.highlightSignColor", "The text color used for highlighting stargate signs", "WHITE"),
 
+    /**
+     * The colors to use for each type of sign
+     */
     PER_SIGN_COLORS("gates.cosmetic.perSignColors", "The per-sign color specification", new String[]{
             "'ACACIA:default,default'", "'BIRCH:default,default'", "'CRIMSON:inverted,inverted'", "'DARK_OAK:inverted,inverted'",
             "'JUNGLE:default,default'", "'OAK:default,default'", "'SPRUCE:inverted,inverted'", "'WARPED:inverted,inverted'"}),
@@ -101,6 +104,20 @@ public enum ConfigOption {
      */
     HANDLE_LEASHED_CREATURES("gates.functionality.handleLeashedCreatures",
             "Whether to enable players to teleport a creature on a leash", true),
+
+    /**
+     * Whether to enable a fix that makes teleportation of minecarts/boats work even with craftbook's vehicle removal
+     */
+    ENABLE_CRAFT_BOOK_REMOVE_ON_EJECT_FIX("gates.functionality.enableCraftBookRemoveOnEjectFix",
+            "Whether to enable a fix that causes loss of NBT data, but allows vehicle teleportation to work " +
+                    "when CraftBook's remove minecart/boat on eject setting is enabled", false),
+
+    /**
+     * The delay between teleporting a vehicle and adding the player as passenger
+     */
+    WAIT_FOR_PLAYER_AFTER_TELEPORT_DELAY("advanced.waitForPlayerAfterTeleportDelay",
+            "The amount of ticks to wait before adding a player as passenger of a vehicle. On slow servers, " +
+                    "a value of 6 is required to avoid client glitches after teleporting on a vehicle.", 1),
 
     /**
      * Whether to enable economy support for taking payment from players creating/destroying/using stargates
