@@ -158,7 +158,7 @@ public class Network implements NetworkAPI{
      * @param portal <p>The portal to save</p>
      */
     protected void savePortal(RealPortal portal) {
-        Stargate.getRegistry().savePortal(portal, PortalType.LOCAL);
+        registry.savePortal(portal, PortalType.LOCAL);
     }
 
     /**

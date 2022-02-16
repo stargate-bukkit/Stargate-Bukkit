@@ -3,6 +3,8 @@ package net.TheDgtl.Stargate.refactoring;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import com.google.common.io.Files;
+
+import net.TheDgtl.Stargate.FakeLanguageManager;
 import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
@@ -64,6 +66,7 @@ public class RefactorerTest {
         }
 
         logger = new FakeStargate();
+        Stargate.languageManager = new FakeLanguageManager();
         defaultConfigFile = new File("src/main/resources", "config.yml");
         sqlDatabaseFile = new File("src/test/resources", "test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);

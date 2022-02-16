@@ -28,7 +28,7 @@ public class CommandReload implements CommandExecutor {
             stargate.saveDefaultConfig();
         }
         stargate.reloadConfig();
-        stargate.load();
+        stargate.reload();
         Stargate.log(Level.INFO, "Reloaded stargate.");
         commandSender.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.COMMAND_RELOAD));
         return true;

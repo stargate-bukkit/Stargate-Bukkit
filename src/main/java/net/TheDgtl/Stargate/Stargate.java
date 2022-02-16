@@ -90,7 +90,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     private PluginManager pluginManager;
 
     private static StorageAPI storageAPI;
-    public static LanguageManager languageManager;
+    public static LanguageAPI languageManager;
     public final static int CURRENT_CONFIG_VERSION = 6;
     /**
      * Goes through every action in the queue every 1 tick. Should be used in tasks that need to be finished within a short time frame
@@ -130,7 +130,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         if (!new File(this.getDataFolder(), "config.yml").exists()) {
             super.saveDefaultConfig();
         }
-
+        
+        loadGateFormats();
         if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
             try {
                 this.refactor();
@@ -138,9 +139,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
                 e.printStackTrace();
             }
         }
-
-
-        saveDefaultGates();
 
         languageManager = new LanguageManager(this, new File(DATA_FOLDER, LANGUAGE_FOLDER));
         load();
@@ -276,7 +274,23 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
     }
 
-    public void load() {
+    private void loadGateFormats() {
+        saveDefaultGates();
+        List<GateFormat> gateFormats = GateFormat.loadGateFormats(new File(DATA_FOLDER, GATE_FOLDER));
+        if (gateFormats == null) {
+            log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
+            GateFormat.setFormats(new ArrayList<>());
+        } else {
+            GateFormat.setFormats(gateFormats);
+        }
+    }
+    
+    public void reload() {
+        loadGateFormats();
+        load();
+    }
+    
+    private void load() {
         loadColors();
         if (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
             loadBungeeServerName();
@@ -289,15 +303,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             lowestMsgLevel = Level.parse(debugLevelStr);
         }
         languageManager.setLanguage(Settings.getString(Setting.LANGUAGE));
-
-        List<GateFormat> gateFormats = GateFormat.loadGateFormats(new File(DATA_FOLDER, GATE_FOLDER));
-        if (gateFormats == null) {
-            log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
-            GateFormat.setFormats(new ArrayList<>());
-        } else {
-            GateFormat.setFormats(gateFormats);
-        }
-
+        
         try {
             storageAPI = new PortalDatabaseAPI(this);
             registry = new StargateRegistry(storageAPI);

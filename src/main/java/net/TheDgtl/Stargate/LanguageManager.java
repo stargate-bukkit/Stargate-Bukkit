@@ -14,7 +14,7 @@ import java.util.logging.Level;
 /**
  * The language manager is responsible for translating various messages
  */
-public class LanguageManager {
+public class LanguageManager implements LanguageAPI{
 
     private final File languageFolder;
     private String language;
@@ -43,32 +43,17 @@ public class LanguageManager {
         backupStrings = loadLanguage(defaultLanguage);
     }
 
-    /**
-     * Gets a formatted error message
-     *
-     * @param translatableMessage <p>The translatable message to display as an error</p>
-     * @return <p>The formatted error message</p>
-     */
+    @Override
     public String getErrorMessage(TranslatableMessage translatableMessage) {
         return formatMessage(translatableMessage, true);
     }
 
-    /**
-     * Gets a formatted message
-     *
-     * @param translatableMessage <p>The translatable message to display</p>
-     * @return <p>The formatted message</p>
-     */
+    @Override
     public String getMessage(TranslatableMessage translatableMessage) {
         return formatMessage(translatableMessage, false);
     }
 
-    /**
-     * Gets a translated string
-     *
-     * @param translatableMessage <p>The translatable message to translate</p>
-     * @return <p>The corresponding translated message</p>
-     */
+    @Override
     public String getString(TranslatableMessage translatableMessage) {
         String translatedMessage = translatedStrings.get(translatableMessage);
         if (translatedMessage == null) {
@@ -96,13 +81,7 @@ public class LanguageManager {
         }
     }
 
-    /**
-     * Sets the currently used language
-     *
-     * <p>Sets the language and loads everything from the language file</p>
-     *
-     * @param language <p>The language to change to</p>
-     */
+    @Override
     public void setLanguage(String language) {
         if (LANGUAGE_EDGE_CASES.get(language) != null) {
             language = LANGUAGE_EDGE_CASES.get(language);

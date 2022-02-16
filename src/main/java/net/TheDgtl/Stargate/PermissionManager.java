@@ -34,7 +34,7 @@ public class PermissionManager {
     private String denyMessage;
     private Chat metadataProvider;
     private final boolean canProcessMetaData;
-    private final LanguageManager languageManager;
+    private final LanguageAPI languageManager;
 
     private final static String FLAG_PERMISSION = "sg.create.type.";
     private final static String CREATE_PERMISSION = "sg.create.network";
@@ -48,7 +48,7 @@ public class PermissionManager {
         this(target, Stargate.languageManager);
     }
 
-    public PermissionManager(Entity target, LanguageManager languageManager) {
+    public PermissionManager(Entity target, LanguageAPI languageManager) {
         this.target = target;
         canProcessMetaData = setupMetadataProvider();
         this.languageManager = languageManager;

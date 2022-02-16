@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.api;
 
 import org.bukkit.configuration.Configuration;
 
+import net.TheDgtl.Stargate.LanguageAPI;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.network.RegistryAPI;
@@ -16,7 +17,7 @@ import net.TheDgtl.Stargate.network.RegistryAPI;
 public class StargateAPI {
 
     
-    public static RegistryAPI getPortalRegistry() {
+    public static RegistryAPI getRegistry() {
         return Stargate.getRegistry();
     }
     
@@ -24,11 +25,15 @@ public class StargateAPI {
         return Stargate.getStorageAPI();
     }
     
-    public static void load() {
-        Stargate.getInstance().load();
+    public static void reload() {
+        Stargate.getInstance().reload();
     }
     
     public static Configuration getConfig() {
         return Stargate.getConfigStatic();
+    }
+    
+    public static LanguageAPI getLanguageAPI() {
+        return Stargate.languageManager;
     }
 }
