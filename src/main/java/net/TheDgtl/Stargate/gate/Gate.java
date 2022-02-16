@@ -41,7 +41,7 @@ public class Gate {
     private final GateFormat format;
     private final IVectorOperation converter;
     private Location topLeft;
-    private final List<PortalPosition> portalPositions;
+    private final List<PortalPosition> portalPositions = new ArrayList<PortalPosition>();
     private final BlockFace facing;
     private boolean isOpen = false;
     private boolean flipped;
@@ -61,7 +61,6 @@ public class Gate {
      */
     public Gate(GateFormat format, Location signLocation, BlockFace signFace, boolean alwaysOn)
             throws InvalidStructureException, GateConflictException {
-        this.portalPositions = new ArrayList<>();
         this.format = format;
         facing = signFace;
         converter = new VectorOperation(signFace, Stargate.getInstance());
@@ -89,14 +88,12 @@ public class Gate {
      * @param portalPositions <p>The positions of this gate's control blocks</p>
      * @throws InvalidStructureException <p>If the facing is invalid</p>
      */
-    public Gate(Location topLeft, BlockFace facing, boolean flipZ, GateFormat format,
-                List<PortalPosition> portalPositions, StargateLogger logger) throws InvalidStructureException {
+    public Gate(Location topLeft, BlockFace facing, boolean flipZ, GateFormat format, StargateLogger logger) throws InvalidStructureException {
         this.facing = facing;
         this.topLeft = topLeft;
         this.converter = new VectorOperation(facing, logger);
         this.converter.setFlipZAxis(flipZ);
         this.format = format;
-        this.portalPositions = portalPositions;
         this.flipped = flipZ;
     }
 
@@ -430,5 +427,19 @@ public class Gate {
      */
     public Location getTopLeft() {
         return this.topLeft;
+    }
+
+    public void addPortalPosition(Location location, PositionType type) {
+        BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
+        this.addPortalPosition(relativeBlockVector, type);
+    }
+    
+    public void addPortalPosition(BlockVector relativeBlockVector, PositionType type) {
+        PortalPosition pos = new PortalPosition(type,relativeBlockVector);
+        this.portalPositions.add(pos);
+    }
+
+    public void addPortalPositions(List<PortalPosition> portalPositions) {
+        this.portalPositions.addAll(portalPositions);
     }
 }

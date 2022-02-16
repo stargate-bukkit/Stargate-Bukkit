@@ -425,7 +425,8 @@ public class PortalDatabaseAPI implements StorageAPI {
             try {
                 GateFormat format = GateFormat.getFormat(gateFileName);
                 List<PortalPosition> portalPositions = getPortalPositions(networkName, name);
-                Gate gate = new Gate(block.getLocation(), facing, flipZ, format, portalPositions, logger);
+                Gate gate = new Gate(block.getLocation(), facing, flipZ, format, logger);
+                gate.addPortalPositions(portalPositions);
                 Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate, ownerUUID, logger);
                 network.addPortal(portal, false);
                 logger.logMessage(Level.FINEST, "Added as normal portal");

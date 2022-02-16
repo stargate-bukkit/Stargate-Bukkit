@@ -91,7 +91,7 @@ public class FakePortalGenerator {
         portalPositions.add(new PortalPosition(PositionType.SIGN, new BlockVector(0, 3, 0)));
         GateFormat format = GateFormat.getFormat("fileName.gate");
         Gate gate = new Gate(world.getBlockAt(0, 0, 0).getLocation(), BlockFace.EAST, false, format,
-                portalPositions, logger);
+                 logger);
 
         //To avoid using the Portal#open method on constructor, which uses an unimplemented function in mockbuckit (blockstates)
         flags.remove(PortalFlag.ALWAYS_ON);

@@ -144,21 +144,19 @@ public class LegacyPortalStorageLoader {
         if (topLeft == null) {
             throw new InvalidStructureException();
         }
-
-        //TODO: Need to make sure whether this way of calculating the relative location works, and fix it if it doesn't
-        List<PortalPosition> portalPositions = new ArrayList<>();
-        PortalPosition signPosition = getRelativePosition(topLeft, signLocation, facing, logger);
-        if (signPosition != null) {
-            portalPositions.add(signPosition);
-        }
-        PortalPosition buttonPosition = getRelativePosition(topLeft, buttonLocation, facing, logger);
-        if (buttonPosition != null && !flags.contains(PortalFlag.ALWAYS_ON)) {
-            portalPositions.add(buttonPosition);
-        }
+        
         NetworkAPI network = registry.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
         GateFormat format = GateFormat.getFormat(gateFormatName);
-        Gate gate = new Gate(topLeft, facing, false, format, portalPositions, logger);
+        Gate gate = new Gate(topLeft, facing, false, format, logger);
+        if (buttonLocation != null) {
+            gate.addPortalPosition(signLocation,PositionType.SIGN);
+        }
+        if (buttonLocation != null && !flags.contains(PortalFlag.ALWAYS_ON)) {
+            gate.addPortalPosition(buttonLocation,PositionType.BUTTON);
+        }
+        
+        
         Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate, ownerUUID, logger);
 
         //Add the portal to its network and store it to the database
@@ -166,32 +164,6 @@ public class LegacyPortalStorageLoader {
         network.addPortal(portal, true);
 
         return portal;
-    }
-
-    /**
-     * Gets the portal position from a location, relative to the top-left location
-     *
-     * @param topLeft       <p>The top-left location of the portal the block position belongs to</p>
-     * @param blockPosition <p>The position of the block to get the portal position for</p>
-     * @param facing        <p>The direction the portal in question is facing</p>
-     * @param logger        <p>The logger to used for debug logging</p>
-     * @return <p>The portal position relative to the top-left location</p>
-     * @throws InvalidStructureException <p>If the portal's direction is invalid</p>
-     */
-    private static PortalPosition getRelativePosition(Location topLeft, Location blockPosition, BlockFace facing,
-                                                      StargateLogger logger) throws InvalidStructureException {
-        if (blockPosition != null) {
-            Location relativeBlockPosition = blockPosition.subtract(topLeft);
-            BlockVector relativeBlockVector = new BlockVector(relativeBlockPosition.getBlockX(),
-                    relativeBlockPosition.getBlockY(), relativeBlockPosition.getBlockZ());
-            IVectorOperation operation = new VectorOperation(facing, logger);
-            BlockVector normalizedVector = operation.performToRealSpaceOperation(relativeBlockVector);
-            logger.logMessage(Level.FINER, "Calculated portal position: " + normalizedVector +
-                    " from top-left: " + topLeft + ", block position: " + blockPosition + " and facing: " + facing);
-            return new PortalPosition(PositionType.SIGN, normalizedVector);
-        } else {
-            return null;
-        }
     }
 
     /**
