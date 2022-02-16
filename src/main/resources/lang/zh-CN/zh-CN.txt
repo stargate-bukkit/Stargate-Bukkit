@@ -1,0 +1,57 @@
+# General Styling
+prefix=[星门] 
+
+# Sign Formatting
+signLegacyBungee=传统跨服
+signNonFixedL2=右键
+signNonFixedL3=以使用星门
+signRandom=随机
+signDisconnected=断开连接
+signTerminalL2=付款使用
+
+# Gate Actions
+gateDestroy=星门已被摧毁!
+gateCreateSpecified=在网络 %network% 中创建了星门!
+gateCreatePersonal=在私人网络中创建了星门.
+gateTerminalSold=已为在 %terminalName% 中的星门 %gateName% 支付了 %cost%.
+gateTerminalSale=已列出售价为 %cost% 的在 %terminalName% 中的星门 %gateName%
+
+# Gate Construction Problems
+faultNetwork=你没有这个星门网络的访问许可!
+faultLayout=你没有这个星门结构的使用许可!
+faultLength=名称太短或太长!
+faultExists=本星门网络中已存在一个同名星门!
+faultFull=该星门网络已满!
+faultWorldDeny=你没有链接世界 %world% 的权限!
+faultConflict=这个星门与现有星门冲突.
+faultFlag=你没有使用 %flags% 的权限; 已从星门中去除!
+
+# Bungee Problems
+bungeePerms=你没有创建跨服星门的权限!
+bungeeDisabled=跨服功能未启用.
+bungeeLocal=现代跨服功能未启用.
+bungeeLegacySyntax=传统跨服星门需要指定目的地和服务器名.
+bungeeInvalidExitNetwork=此星门的网络已不再存在于目标服务器.
+bungeeInvalidExitGate=此星门的返回目标已不再存在于目标服务器.
+bungeeProxyOffline=此星门所处的服务器已离线.
+bungeeTargetOffline=代理服务器正在关闭；临时禁用跨服星门.
+
+# Gate Usage
+tpSuccess=已传送!
+tpDestInvalid=无效的目的地!
+tpEmptyNet=目的地列表为空!
+
+# Access
+conflictPerms=访问被拒绝!
+conflictSpawn=重生点区块正在干扰此星门!
+
+# Economy
+ecoDeduct=花费了 %cost%.
+ecoObtain=从星门 %portal% 赚取了 %cost%!
+ecoInsolvent=存款不足!
+
+#Admin
+adminReload=配置文件已重载!
+adminInfo=正在运行版本 %version%. 更新记录: https://git.io/JD4Qo
+adminHelp=星门的WIKI可在 https://git.io/JDclf 上找到.
+translatedBy=YK_DZ

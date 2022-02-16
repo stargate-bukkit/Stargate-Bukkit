@@ -39,7 +39,6 @@ bungeeTargetOffline=Mellomtjener-serveren er nede akkurat nå; bungee portaler e
 # Gate Usage
 tpSuccess=Teleporterte!
 tpDestInvalid=Ugyldig destinasjon!
-tpDestBlocked=Destinasjonen er blokkert!
 tpEmptyNet=Det fins ingen tilgjengelige destinasjoner!
 
 # Access

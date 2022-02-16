@@ -39,7 +39,6 @@ bungeeTargetOffline=Mellomtenarmaskina er nede akkurat no; bungee portalar er me
 # Gate Usage
 tpSuccess=Teleporterte!
 tpDestInvalid=Ugyldig mål!
-tpDestBlocked=Målet er blokkert!
 tpEmptyNet=Det finnast ingen tilgjengelege mål!
 
 # Access
