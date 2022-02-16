@@ -1,0 +1,57 @@
+# General Styling
+prefix=[Stargate] 
+
+# Sign Formatting
+signLegacyBungee=Miras Bungee
+signNonFixedL2=Sağ tık
+signNonFixedL3=geçiti kullanmak için
+signRandom=Rastgele
+signDisconnected=Bağlantı Kesildi
+signTerminalL2=Satılık
+
+# Gate Actions
+gateDestroy=Geçit yıkıldı!
+gateCreateSpecified=Geçit %network% ağında yaratıldı!
+gateCreatePersonal=Kişisel ağda geçit yaratılıyor.
+gateTerminalSold=Satın Aldığınız geçit olan %gateName% %terminalName% içinde %cost% fiyatında.
+gateTerminalSale=Listelenen geçit olan %gateName% %terminalName% içinde %cost% fiyatında satılık.
+
+# Gate Construction Problems
+faultNetwork=Bu ağa erişim izniniz yok.
+faultLayout=Bu geçit düzenine erişim izniniz yok!
+faultLength=İsim çok kısa ya da çok uzun!
+faultExists=Bu isimde zaten bir geçit mevcut.
+faultFull=Bu ağ dolu!
+faultWorldDeny=%world% dünyasına erişim izniniz yok!
+faultConflict=Bu geçit var olan geçitle çakışmaktadır.
+faultFlag=%flags% Bayraklarını kullanmak için yetkin az; portalın bayraksız yaratıldı!
+
+# Bungee Problems
+bungeePerms=Bungee geçitleri yapmak için yetkiniz yok!
+bungeeDisabled=Bungeecord desteği aktif değil.
+bungeeLocal=Modern bungee geçitleri aktif değil.
+bungeeLegacySyntax=Miras bungee geçitleri senden sunucunun ve geçitin hedefini belirlemeni gerektirir.
+bungeeInvalidExitNetwork=Bu portal ağı hedef sunucuda artık bulunmamaktadır.
+bungeeInvalidExitGate=Bu portal'ın çıkışı hedef sunucuda artık bulunmamaktadır.
+bungeeProxyOffline=Bu portal şu an kapalı olan bir sunucuda bulunmaktadır.
+bungeeTargetOffline=Proxy şu anda kapalı; bungee portalları geçiçi olarak kapalı.
+
+# Gate Usage
+tpSuccess=Işınlanıldı!
+tpDestInvalid=Geçersiz Hedef!
+tpEmptyNet=Hedef listesi boş!
+
+# Access
+conflictPerms=Erişim reddedildi!
+conflictSpawn=Spawn chunkları bu portalla çatışıyor!
+
+# Economy
+ecoDeduct=Düşürülmüş %cost%.
+ecoObtain=Stargarte %portal% 'ından %cost% elde edildi!
+ecoInsolvent=Yetersiz Bakiye!
+
+#Admin
+adminReload=Yapılandırma yeniden yüklendi!
+adminInfo=Şu anki versiyon %version%. Geliştirici Günlüğü: https://git.io/JD4Qo
+adminHelp=StarGate'in belgelerine https://git.io/JDclf üzerinden ulaşabilirsiniz
+translatedBy=yugurr

@@ -39,7 +39,6 @@ bungeeTargetOffline=Der Proxy ist momentan nicht verfügbar; Bungee-Portale sind
 # Gate Usage
 tpSuccess=Teleportiert!
 tpDestInvalid=Ungültiger Ziel!
-tpDestBlocked=Ziel ist blockiert
 tpEmptyNet=Zielliste ist leer!
 
 # Access

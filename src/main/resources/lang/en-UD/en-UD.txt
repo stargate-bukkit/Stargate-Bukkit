@@ -39,7 +39,6 @@ bungeeTargetOffline=˙pǝlqɐsᴉp ʎlᴉɹɐɹodɯǝʇ ǝɹɐ slɐʇɹod ǝǝƃ
 # Gate Usage
 tpSuccess=¡pǝʇɹodǝlǝ┴
 tpDestInvalid=¡uoᴉʇɐuᴉʇsǝp pᴉlɐʌuI
-tpDestBlocked=¡pǝʇɔnɹʇsqo uoᴉʇɐuᴉʇsǝp
 tpEmptyNet=¡ʎʇdɯǝ ʇsᴉl uoᴉʇɐuᴉʇsǝp
 
 # Access

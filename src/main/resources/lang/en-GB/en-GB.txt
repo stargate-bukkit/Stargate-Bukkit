@@ -39,7 +39,6 @@ bungeeTargetOffline=The proxy is currently down; bungee portals are temporarily 
 # Gate Usage
 tpSuccess=Teleported!
 tpDestInvalid=Invalid destination!
-tpDestBlocked=Destination obstructed!
 tpEmptyNet=Destination list empty!
 
 # Access

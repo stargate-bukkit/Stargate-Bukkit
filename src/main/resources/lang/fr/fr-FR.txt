@@ -1,0 +1,57 @@
+# General Styling
+prefix=[Stargate] 
+
+# Sign Formatting
+signLegacyBungee=Legacy Bungee
+signNonFixedL2=Clic droit
+signNonFixedL3=pour utiliser le portail
+signRandom=Aléatoire
+signDisconnected=Déconnecté
+signTerminalL2=À vendre
+
+# Gate Actions
+gateDestroy=Portail détruit !
+gateCreateSpecified=Portail créée sur le réseau %network% !
+gateCreatePersonal=Création d'un Portail sur le réseau personnel.
+gateTerminalSold=Portail %gateName% acheté en %terminalName% pour %cost%.
+gateTerminalSale=Portail listé %gateName% en vente à %terminalName% pour %cost%.
+
+# Gate Construction Problems
+faultNetwork=Vous n'avez pas accès à ce réseau !
+faultLayout=Vous n'avez pas accès à la disposition de ce Portail !
+faultLength=Nom trop court ou trop long !
+faultExists=Un portail portant ce nom existe déjà !
+faultFull=Ce réseau est plein !
+faultWorldDeny=Vous n'avez pas accès au monde %world%!
+faultConflict=Ce portail entre en conflit avec un portail existant.
+faultFlag=Vous n'avez pas la permission d'utiliser les drapeaux %flags% ; votre portail a été créé sans eux !
+
+# Bungee Problems
+bungeePerms=Vous n'avez pas la permission de faire des Portail bungee !
+bungeeDisabled=La prise en charge de Bungeecord n'est pas activée.
+bungeeLocal=Les portails à bungee modernes ne sont pas activés.
+bungeeLegacySyntax=Legacy bungee vous demandent de spécifier un portail de destination et un serveur.
+bungeeInvalidExitNetwork=Le réseau de ce portail n'existe plus sur le serveur cible.
+bungeeInvalidExitGate=La sortie de ce portail n'existe plus sur le serveur cible.
+bungeeProxyOffline=Ce portail se termine sur un serveur qui est actuellement indisponible.
+bungeeTargetOffline=Le proxy est actuellement en panne; les portails bungee sont temporairement désactivés.
+
+# Gate Usage
+tpSuccess=Téléporté !
+tpDestInvalid=Destination invalide !
+tpEmptyNet=Liste de destination vide !
+
+# Access
+conflictPerms=Accès refusé !
+conflictSpawn=Les chunks d'apparition interfèrent avec ce portail !
+
+# Economy
+ecoDeduct=Déduction de %cost%.
+ecoObtain=Obtenu %cost% par StarGate %portal% !
+ecoInsolvent=Fonds insuffisants !
+
+#Admin
+adminReload=Configuration rechargée !
+adminInfo=Version %version% en cours d'exécution. Journal des mise a jour: https://git.io/JD4Qo
+adminHelp=La documentation de Stargate peut être trouvée sur https://git.io/JDclf
+translatedBy=Damiendier
