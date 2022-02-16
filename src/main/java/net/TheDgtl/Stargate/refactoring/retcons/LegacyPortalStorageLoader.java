@@ -110,20 +110,27 @@ public class LegacyPortalStorageLoader {
                                      StargateLogger logger) throws InvalidStructureException, NameErrorException {
         String[] portalProperties = line.split(":");
         String name = portalProperties[0];
+        String networkName = (portalProperties.length > 9) ? portalProperties[9] : Settings.getString(Setting.DEFAULT_NETWORK);
+        logger.logMessage(Level.FINEST, String.format("Loading portal %s in network %s",name,networkName));
+
+        
         Location signLocation = loadLocation(world, portalProperties[1]);
         Location buttonLocation = loadLocation(world, portalProperties[2]);
         int modX = Integer.parseInt(portalProperties[3]);
         int modZ = Integer.parseInt(portalProperties[4]);
-        logger.logMessage(Level.FINEST, String.format("modX = %d, modZ = %d", modX, modZ));
+        double rotation = Double.parseDouble(portalProperties[5]);
+        logger.logMessage(Level.FINEST, String.format("----modX = %d, modZ = %d, rotation %f", modX, modZ, rotation));
+        
         BlockFace facing = getFacing(modX, modZ);
         if (facing == null) {
             facing = getFacing(Double.parseDouble(portalProperties[5]));
         }
+        logger.logMessage(Level.FINEST, String.format("----chose a facing %s",facing.toString()));
 
         Location topLeft = loadLocation(world, portalProperties[6]);
+        
         String gateFormatName = portalProperties[7];
         String destination = (portalProperties.length > 8) ? portalProperties[8] : "";
-        String networkName = (portalProperties.length > 9) ? portalProperties[9] : Settings.getString(Setting.DEFAULT_NETWORK);
         String ownerString = (portalProperties.length > 10) ? portalProperties[10] : "";
         UUID ownerUUID = getPlayerUUID(ownerString);
         Set<PortalFlag> flags = parseFlags(portalProperties);
@@ -155,7 +162,7 @@ public class LegacyPortalStorageLoader {
         Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate, ownerUUID, logger);
 
         //Add the portal to its network and store it to the database
-        logger.logMessage(Level.FINE, String.format("Saving portal %s in network %s from old storage... ", name, networkName));
+        logger.logMessage(Level.FINE, String.format("----Saving portal %s in network %s from old storage... ", name, networkName));
         network.addPortal(portal, true);
 
         return portal;
@@ -249,14 +256,14 @@ public class LegacyPortalStorageLoader {
      * @return <p>The corresponding block face, or null if on a fork without modX, modZ</p>
      */
     private static BlockFace getFacing(int modX, int modZ) {
-        if (modX < 0) {
+        if (modZ < 0) {
             return BlockFace.WEST;
-        } else if (modX > 0) {
-            return BlockFace.EAST;
-        } else if (modZ < 0) {
-            return BlockFace.NORTH;
         } else if (modZ > 0) {
             return BlockFace.EAST;
+        } else if (modX < 0) {
+            return BlockFace.SOUTH;
+        } else if (modX > 0) {
+            return BlockFace.NORTH;
         } else {
             return null;
         }
