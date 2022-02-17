@@ -134,6 +134,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         loadGateFormats();
         if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
             try {
+                // Avoid nullpointer exception, as some stuff wants language messages
+                languageManager = new FakeLanguageManager();
                 this.refactor();
             } catch (IOException | InvalidConfigurationException | SQLException e) {
                 e.printStackTrace();
