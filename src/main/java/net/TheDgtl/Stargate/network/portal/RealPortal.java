@@ -66,10 +66,10 @@ public interface RealPortal extends Portal {
 
 
     /**
-     * Gets the location of this portal's signs
-     *
+     * Gets the location of all positions of the specified portal position type
+     * @param type <p> The type of portalPosition </p>
      * @return <p>The location of this portal's signs</p>
      */
-    List<Location> getSignLocations();
+    List<Location> getPortalPosition(PositionType type);
 
 }

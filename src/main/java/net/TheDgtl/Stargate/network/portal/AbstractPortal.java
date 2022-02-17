@@ -115,8 +115,8 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public List<Location> getSignLocations() {
-        return gate.getSignLocations();
+    public List<Location> getPortalPosition(PositionType type) {
+        return gate.getPortalPositions(type);
     }
 
     @Override
@@ -299,7 +299,7 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void setSignColor(DyeColor color) {
         colorDrawer = new NoLineColorFormatter();
-        for (Location location : this.getSignLocations()) {
+        for (Location location : this.getPortalPosition(PositionType.SIGN)) {
             if (!(location.getBlock().getState() instanceof Sign)) {
                 logger.logMessage(Level.WARNING, String.format("Could not find a sign for portal %s in network %s \n"
                                 + "This is most likely caused from a bug // please contact developers (use ''sg about'' for github repo)",

@@ -19,7 +19,7 @@ public class Refactorer {
 
     private int configVersion;
     private final File configFile;
-    private Map<String, Object> config;
+    private Map<String, Object> configModifications;
     private final FileConfiguration fileConfig;
     private final Modifier[] RETCONS;
 
@@ -34,7 +34,7 @@ public class Refactorer {
         FileConfiguration fileConfig = new YamlConfiguration();
         fileConfig.load(configFile);
         this.fileConfig = fileConfig;
-        this.config = fileConfig.getValues(true);
+        this.configModifications = fileConfig.getValues(true);
         this.configVersion = fileConfig.getInt("configVersion");
         this.configFile = configFile;
     }
@@ -46,10 +46,10 @@ public class Refactorer {
         for (Modifier retCon : RETCONS) {
             int retConConfigNumber = retCon.getConfigVersion();
             if (retConConfigNumber >= configVersion) {
-                config = retCon.getConfigModifications(config);
+                configModifications = retCon.getConfigModifications(configModifications);
             }
         }
-        return config;
+        return configModifications;
     }
 
     public void run() {
@@ -62,12 +62,12 @@ public class Refactorer {
         }
     }
 
-    public void insertNewValues(Map<String, Object> config) throws IOException, InvalidConfigurationException {
+    public void insertNewConfigValues(FileConfiguration config, Map<String, Object> configChanges) throws IOException, InvalidConfigurationException {
         fileConfig.load(configFile);
-        for (String settingKey : config.keySet()) {
-            fileConfig.set(settingKey, config.get(settingKey));
+        for (String settingKey : configChanges.keySet()) {
+            config.set(settingKey, configChanges.get(settingKey));
         }
-        fileConfig.set("configVersion", Stargate.CURRENT_CONFIG_VERSION);
-        fileConfig.save(configFile);
+        config.set("configVersion", Stargate.CURRENT_CONFIG_VERSION);
+        config.save(configFile);
     }
 }

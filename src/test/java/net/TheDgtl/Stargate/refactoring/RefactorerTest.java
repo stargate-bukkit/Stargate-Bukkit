@@ -165,7 +165,7 @@ public class RefactorerTest {
                         fileConfig.getKeys(true).contains(key) || key.contains(StargateConfiguration.START_OF_COMMENT), String.format("The key %s was added to the new config of %s", key, configFile.getName()));
             }
 
-            refactorer.insertNewValues(config);
+            refactorer.insertNewConfigValues(fileConfig, config);
             refactorerMap.put(configFile.getName(), refactorer);
             fileConfig.load(configFile);
         }

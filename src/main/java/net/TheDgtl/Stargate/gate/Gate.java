@@ -117,6 +117,13 @@ public class Gate {
     public List<PortalPosition> getPortalPositions() {
         return new ArrayList<>(this.portalPositions);
     }
+    
+    public List<Location> getPortalPositions(PositionType type){
+        List<Location> positions = new ArrayList<>();
+        portalPositions.stream().filter((position) -> position.getPositionType() == type).forEach(
+                (position) -> positions.add(getLocation(position.getPositionLocation())));
+        return positions;
+    }
 
     /**
      * Draws this gate's signs
@@ -161,19 +168,6 @@ public class Gate {
             buttonLocation.getBlock().setBlockData(buttonData);
         }
     }
-
-    /**
-     * Gets the location of this gate's signs
-     *
-     * @return <p>The location of this gate's signs</p>
-     */
-    public List<Location> getSignLocations() {
-        List<Location> signs = new ArrayList<>();
-        portalPositions.stream().filter((position) -> position.getPositionType() == PositionType.SIGN).forEach(
-                (position) -> signs.add(getLocation(position.getPositionLocation())));
-        return signs;
-    }
-
     /**
      * Gets all locations of this gate containing the given structure type
      *

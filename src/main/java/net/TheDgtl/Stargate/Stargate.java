@@ -240,9 +240,10 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         registry = new StargateRegistry(storageAPI);
 
         Refactorer refactorer = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(), registry);
-        Map<String, Object> newConfig = refactorer.getConfigModifications();
+        Map<String, Object> configModifications = refactorer.getConfigModifications();
         this.saveResource("config.yml", true);
-        refactorer.insertNewValues(newConfig);
+        this.reloadConfig();
+        refactorer.insertNewConfigValues(getConfig(), configModifications);
         this.reloadConfig();
         refactorer.run();
     }
