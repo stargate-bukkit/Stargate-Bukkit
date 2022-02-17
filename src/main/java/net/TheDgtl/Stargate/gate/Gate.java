@@ -43,6 +43,7 @@ public class Gate {
     private Location topLeft;
     private final List<PortalPosition> portalPositions = new ArrayList<PortalPosition>();
     private final BlockFace facing;
+    private final StargateLogger logger;
     private boolean isOpen = false;
     private boolean flipped;
 
@@ -59,9 +60,10 @@ public class Gate {
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
-    public Gate(GateFormat format, Location signLocation, BlockFace signFace, boolean alwaysOn)
+    public Gate(GateFormat format, Location signLocation, BlockFace signFace, boolean alwaysOn, StargateLogger logger)
             throws InvalidStructureException, GateConflictException {
         this.format = format;
+        this.logger = logger;
         facing = signFace;
         converter = new VectorOperation(signFace, Stargate.getInstance());
 
@@ -91,6 +93,7 @@ public class Gate {
     public Gate(Location topLeft, BlockFace facing, boolean flipZ, GateFormat format, StargateLogger logger) throws InvalidStructureException {
         this.facing = facing;
         this.topLeft = topLeft;
+        this.logger = logger;
         this.converter = new VectorOperation(facing, logger);
         this.converter.setFlipZAxis(flipZ);
         this.format = format;
@@ -268,7 +271,7 @@ public class Gate {
      * @return <p>A location relative to this gate's top-left location</p>
      */
     public Vector getRelativeVector(Location location) {
-        Vector vector = topLeft.clone().subtract(location).toVector();
+        Vector vector = location.clone().subtract(topLeft).toVector();
         return converter.performToAbstractSpaceOperation(vector);
     }
 
@@ -425,6 +428,7 @@ public class Gate {
 
     public void addPortalPosition(Location location, PositionType type) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
+        logger.logMessage(Level.FINEST, String.format("Addding portalposition %s with relative position %s", type.toString(), relativeBlockVector.toString()));
         this.addPortalPosition(relativeBlockVector, type);
     }
     

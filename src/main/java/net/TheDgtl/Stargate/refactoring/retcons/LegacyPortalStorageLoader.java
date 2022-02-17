@@ -111,7 +111,7 @@ public class LegacyPortalStorageLoader {
         String[] portalProperties = line.split(":");
         String name = portalProperties[0];
         String networkName = (portalProperties.length > 9) ? portalProperties[9] : Settings.getString(Setting.DEFAULT_NETWORK);
-        logger.logMessage(Level.FINEST, String.format("Loading portal %s in network %s",name,networkName));
+        logger.logMessage(Level.FINEST, String.format("-----------------Loading portal %s in network %s----------------------",name,networkName));
 
         
         Location signLocation = loadLocation(world, portalProperties[1]);
@@ -119,13 +119,13 @@ public class LegacyPortalStorageLoader {
         int modX = Integer.parseInt(portalProperties[3]);
         int modZ = Integer.parseInt(portalProperties[4]);
         double rotation = Double.parseDouble(portalProperties[5]);
-        logger.logMessage(Level.FINEST, String.format("----modX = %d, modZ = %d, rotation %f", modX, modZ, rotation));
+        logger.logMessage(Level.FINEST, String.format("modX = %d, modZ = %d, rotation %f", modX, modZ, rotation));
         
         BlockFace facing = getFacing(modX, modZ);
         if (facing == null) {
             facing = getFacing(Double.parseDouble(portalProperties[5]));
         }
-        logger.logMessage(Level.FINEST, String.format("----chose a facing %s",facing.toString()));
+        logger.logMessage(Level.FINEST, String.format("chose a facing %s",facing.toString()));
 
         Location topLeft = loadLocation(world, portalProperties[6]);
         
@@ -149,10 +149,12 @@ public class LegacyPortalStorageLoader {
 
         GateFormat format = GateFormat.getFormat(gateFormatName);
         Gate gate = new Gate(topLeft, facing, false, format, logger);
-        if (buttonLocation != null) {
+        if (signLocation != null) {
+            logger.logMessage(Level.FINEST, "signLoc="+signLocation.toString());
             gate.addPortalPosition(signLocation,PositionType.SIGN);
         }
         if (buttonLocation != null && !flags.contains(PortalFlag.ALWAYS_ON)) {
+            logger.logMessage(Level.FINEST, "buttonLoc="+buttonLocation.toString());
             gate.addPortalPosition(buttonLocation,PositionType.BUTTON);
         }
         
@@ -160,7 +162,7 @@ public class LegacyPortalStorageLoader {
         Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate, ownerUUID, logger);
 
         //Add the portal to its network and store it to the database
-        logger.logMessage(Level.FINE, String.format("----Saving portal %s in network %s from old storage... ", name, networkName));
+        logger.logMessage(Level.FINE, String.format("Saving portal %s in network %s from old storage... ", name, networkName));
         network.addPortal(portal, true);
 
         return portal;

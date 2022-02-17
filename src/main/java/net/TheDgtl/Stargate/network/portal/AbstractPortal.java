@@ -209,7 +209,7 @@ public abstract class AbstractPortal implements RealPortal {
             //If player enters from back, then take that into consideration
             entranceFace = origin.getGate().getFacing();
             Vector vector = origin.getGate().getRelativeVector(target.getLocation().add(new Vector(-0.5, 0, -0.5)));
-            if (vector.getX() > 0) {
+            if (vector.getX() < 0) {
                 entranceFace = entranceFace.getOppositeFace();
             }
 

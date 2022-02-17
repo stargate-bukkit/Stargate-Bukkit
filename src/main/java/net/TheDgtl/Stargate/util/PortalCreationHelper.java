@@ -82,20 +82,20 @@ public class PortalCreationHelper {
      * @throws NoFormatFoundException <p>If no gate was found at the given location matching any of the given formats</p>
      * @throws GateConflictException  <p>If the found gate conflicts with another gate</p>
      */
-    private static Gate findMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing, boolean alwaysOn)
+    private static Gate findMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing, boolean alwaysOn, StargateLogger logger)
             throws NoFormatFoundException, GateConflictException {
         Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
         for (GateFormat gateFormat : gateFormats) {
-            Stargate.log(Level.FINE, "--------- " + gateFormat.getFileName() + " ---------");
+            logger.logMessage(Level.FINE, "--------- " + gateFormat.getFileName() + " ---------");
             try {
-                return new Gate(gateFormat, signLocation, signFacing, alwaysOn);
+                return new Gate(gateFormat, signLocation, signFacing, alwaysOn, logger);
             } catch (InvalidStructureException ignored) {
             }
         }
         throw new NoFormatFoundException();
     }
 
-    public static Gate createGate(Block sign, boolean alwaysOn) throws NoFormatFoundException, GateConflictException {
+    public static Gate createGate(Block sign, boolean alwaysOn, StargateLogger logger) throws NoFormatFoundException, GateConflictException {
         if (!(Tag.WALL_SIGNS.isTagged(sign.getType()))) {
             throw new NoFormatFoundException();
         }
@@ -103,7 +103,7 @@ public class PortalCreationHelper {
         Directional signDirection = (Directional) sign.getBlockData();
         Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
         List<GateFormat> gateFormats = GateFormat.getPossibleGateFormatsFromControlBlockMaterial(behind.getType());
-        return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), alwaysOn);
+        return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), alwaysOn, logger);
     }
 
 }
