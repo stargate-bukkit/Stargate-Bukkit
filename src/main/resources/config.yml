@@ -1,7 +1,7 @@
 # stargate Configuration File
 # Main stargate config
 
-# language - The language file to load for messages (de,en,es,fr,hu,it,nb-no,nl,nn-no,pt-br,ru,zh_cn)
+# language - The language file to load for messages (de,en,es,fr,hu,it,ja,nb-no,nl,nn-no,pt-br,ru,zh_cn)
 language: en
 # adminUpdateAlert - Whether to alert admins about new plugin updates
 adminUpdateAlert: true

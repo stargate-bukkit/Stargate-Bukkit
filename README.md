@@ -7,7 +7,7 @@ can share a network or be split into clusters; they can be hidden on a network o
 - **Vault economy support** -- can add costs for create, destroy and use.
 - **Ability to create custom gate configurations**. Four different default gate configurations are available.
 - **Message customization**
-- **Multiple built-in languages** (de, en, es, fr, hu, it, nb-no, nl, nn-no, pt-br, ru, zh_cn)
+- **Multiple built-in languages** (de, en, es, fr, hu, it, ja, nb-no, nl, nn-no, pt-br, ru, zh_cn)
 - **Teleport across worlds or servers** (BungeeCord supported)
 - **Vehicle teleportation** -- teleport minecarts, boats, horses, pigs and striders
 - **Leashed teleportation** -- teleport any creature in a leash with the player
@@ -298,7 +298,7 @@ while the per-gate costs re defined in the .gate files. To define a certain cost
 # Configuration
 
 ```
-language - The language to use (Included languages: en, de, es, fr, hu, it, nb-no, nl, nn-no, pt-br, ru)
+language - The language to use (Included languages: en, de, es, fr, hu, it, ja, nb-no, nl, nn-no, pt-br, ru, zh_cn)
 adminUpdateAlert - Whether to alert admins about an available update when joining the server
 folders:
   portalFolder - The folder your portal databases are saved in
@@ -399,6 +399,10 @@ portalInfoServer=Server: %server%
 ```
 
 # Changes
+
+#### \[Version 0.9.3.7] EpicKnarvik97 fork
+
+- Adds the Japanese language file provided by spigot user furplag
 
 #### \[Version 0.9.3.6] EpicKnarvik97 fork
 

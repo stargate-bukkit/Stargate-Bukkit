@@ -237,6 +237,7 @@ public class ConfigTabCompleter implements TabCompleter {
         languages.add("fr");
         languages.add("hu");
         languages.add("it");
+        languages.add("ja");
         languages.add("nb-no");
         languages.add("nl");
         languages.add("nn-no");
