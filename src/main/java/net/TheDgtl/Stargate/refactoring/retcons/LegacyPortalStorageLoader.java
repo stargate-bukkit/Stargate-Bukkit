@@ -147,7 +147,13 @@ public class LegacyPortalStorageLoader {
         
         NetworkAPI network = registry.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
+        
         GateFormat format = GateFormat.getFormat(gateFormatName);
+        if(format == null) {
+            logger.logMessage(Level.FINEST, String.format("Could not find a format of name %s", gateFormatName));
+            throw new InvalidStructureException();
+        }
+            
         Gate gate = new Gate(topLeft, facing, false, format, logger);
         if (signLocation != null) {
             logger.logMessage(Level.FINEST, "signLoc="+signLocation.toString());

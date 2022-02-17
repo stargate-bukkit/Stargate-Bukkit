@@ -87,7 +87,7 @@ public class NetworkedPortal extends AbstractPortal {
         }
 
         selectedDestination = selectNewDestination(event.getAction(), previouslyActivated);
-        drawControlMechanisms();
+        this.update();
         if (hasFlag(PortalFlag.ALWAYS_ON)) {
             super.destination = loadDestination();
         }
