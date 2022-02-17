@@ -60,7 +60,7 @@ public class FixedPortal extends AbstractPortal {
         }
         return destination;
     }
-
+    
     @Override
     public void close(boolean force) {
         super.close(force);
