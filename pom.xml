@@ -84,6 +84,11 @@
             <version>1.5.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.cryptomorin</groupId>
+            <artifactId>XSeries</artifactId>
+            <version>8.6.1</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>Stargate-${project.version}</finalName>
@@ -107,8 +112,31 @@
                         <includes>
                             <include>org.bstats:*</include>
                             <include>com.zaxxer:*</include>
+                            <!-- This may  be neccessary; we will wait for a bit and see -->
+                            <!--<include>com.cryptomorin.xseries:*</include>-->
                         </includes>
                     </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>net.TheDgtl.Stargate.utils.bstats</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.cryptomorin.xseries.XMaterial</pattern>
+                            <shadedPattern>net.TheDgtl.Stargate.utils</shadedPattern>
+                        </relocation>
+                    </relocations>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>com/cryptomorin/xseries/XBiome*</exclude>
+                                <exclude>com/cryptomorin/xseries/NMSExtras*</exclude>
+                                <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
+                                <exclude>com/cryptomorin/xseries/SkullCacheListener*</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                 </configuration>
                 <executions>
                     <execution>
@@ -116,14 +144,6 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <relocations>
-                                <relocation>
-                                    <pattern>org.bstats</pattern>
-                                    <shadedPattern>com.mcsmp.bstats</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
