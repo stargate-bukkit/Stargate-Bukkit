@@ -112,28 +112,37 @@
                         <includes>
                             <include>org.bstats:*</include>
                             <include>com.zaxxer:*</include>
-                            <!-- This may  be neccessary; we will wait for a bit and see -->
-                            <!--<include>com.cryptomorin.xseries:*</include>-->
+                            <include>com.github.cryptomorin:*</include>
                         </includes>
                     </artifactSet>
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>net.TheDgtl.Stargate.utils.bstats</shadedPattern>
+                            <shadedPattern>net.TheDgtl.Stargate.util.bstats</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.cryptomorin.xseries.XMaterial</pattern>
-                            <shadedPattern>net.TheDgtl.Stargate.utils</shadedPattern>
+                            <shadedPattern>net.TheDgtl.Stargate.util.XMaterial</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
+                                <exclude>com/cryptomorin/xseries/particles/*</exclude>
+                                <exclude>com/cryptomorin/xseries/messages/*</exclude>
+                                <exclude>com/cryptomorin/xseries/XSound*</exclude>
+                                <exclude>com/cryptomorin/xseries/XTag*</exclude>
+                                <exclude>com/cryptomorin/xseries/XItem*</exclude>
+                                <exclude>com/cryptomorin/xseries/XBlock*</exclude>
+                                <exclude>com/cryptomorin/xseries/XEntity*</exclude>
                                 <exclude>com/cryptomorin/xseries/XBiome*</exclude>
                                 <exclude>com/cryptomorin/xseries/NMSExtras*</exclude>
-                                <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
-                                <exclude>com/cryptomorin/xseries/SkullCacheListener*</exclude>
+                                <exclude>com/cryptomorin/xseries/XPotion*</exclude>
+                                <exclude>com/cryptomorin/xseries/XEnchantment*</exclude>
+                                <exclude>com/cryptomorin/xseries/NoteBlock*</exclude>
+                                <exclude>com/cryptomorin/xseries/Reflection*</exclude>
+                                <exclude>com/cryptomorin/xseries/Skull*</exclude>
                             </excludes>
                         </filter>
                     </filters>
