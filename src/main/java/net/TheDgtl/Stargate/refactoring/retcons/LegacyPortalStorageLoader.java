@@ -150,8 +150,7 @@ public class LegacyPortalStorageLoader {
         
         GateFormat format = GateFormat.getFormat(gateFormatName);
         if(format == null) {
-            logger.logMessage(Level.FINEST, String.format("Could not find a format of name %s", gateFormatName));
-            throw new InvalidStructureException();
+            logger.logMessage(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup log for more information", gateFormatName));
         }
             
         Gate gate = new Gate(topLeft, facing, false, format, logger);

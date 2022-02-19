@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.gate;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.exception.ParsingErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateControlBlock;
 import net.TheDgtl.Stargate.gate.structure.GateFrame;
@@ -82,7 +83,7 @@ public class GateFormat {
      * @param dir <p>The folder to load gates from</p>
      * @return <p>A map between a control block material and the corresponding gate format</p>
      */
-    public static List<GateFormat> loadGateFormats(File dir) {
+    public static List<GateFormat> loadGateFormats(File dir, StargateLogger logger) {
         List<GateFormat> gateFormatMap = new ArrayList<>();
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".gate")) : new File[0];
 
@@ -92,7 +93,7 @@ public class GateFormat {
 
         for (File file : files) {
             try {
-                gateFormatMap.add(loadGateFormat(file));
+                gateFormatMap.add(loadGateFormat(file,logger));
             } catch (FileNotFoundException | ParsingErrorException e) {
                 Stargate.log(Level.WARNING, "Could not load Gate " + file.getName() + " - " + e.getMessage());
             }
@@ -107,7 +108,7 @@ public class GateFormat {
      * @throws ParsingErrorException <p>If unable to load the gate format</p>
      * @throws FileNotFoundException <p>If the gate file does not exist</p>
      */
-    private static GateFormat loadGateFormat(File file) throws ParsingErrorException, FileNotFoundException {
+    private static GateFormat loadGateFormat(File file, StargateLogger logger) throws ParsingErrorException, FileNotFoundException {
         Stargate.log(Level.CONFIG, "Loaded gate format " + file.getName());
         try (Scanner scanner = new Scanner(file)) {
             Stargate.log(Level.FINER, "Gate file size:" + file.length());
@@ -115,7 +116,7 @@ public class GateFormat {
                 throw new ParsingErrorException("Design is too large");
             }
 
-            GateFormatParser gateParser = new GateFormatParser(scanner, file.getName());
+            GateFormatParser gateParser = new GateFormatParser(scanner, file.getName(), logger);
             return gateParser.parse();
         }
     }

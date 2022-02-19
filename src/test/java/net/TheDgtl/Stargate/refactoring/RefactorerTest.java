@@ -81,7 +81,7 @@ public class RefactorerTest {
         server.addSimpleWorld("pseudoknigth");
         Stargate.getConfigStatic().load(defaultConfigFile);
 
-        GateFormat.setFormats(Objects.requireNonNull(GateFormat.loadGateFormats(testGatesDir)));
+        GateFormat.setFormats(Objects.requireNonNull(GateFormat.loadGateFormats(testGatesDir,logger)));
     }
 
     private static Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> getSettingTestMaps() {

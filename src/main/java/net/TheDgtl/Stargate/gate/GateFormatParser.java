@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.gate;
 
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.exception.ParsingErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateControlBlock;
 import net.TheDgtl.Stargate.gate.structure.GateFrame;
@@ -10,13 +11,17 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.util.BlockVector;
 
+import com.cryptomorin.xseries.XMaterial;
+
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * The gate format parser is responsible for parsing gate format files
@@ -47,6 +52,7 @@ public class GateFormatParser {
     private Set<Material> controlMaterials;
 
     private boolean canBeBlockedByIronDoor = false;
+    private StargateLogger logger;
 
     /**
      * Instantiates a new gate format parser
@@ -54,7 +60,7 @@ public class GateFormatParser {
      * @param scanner  <p>The scanner to read the gate file from</p>
      * @param filename <p>The name of the parsed gate file</p>
      */
-    public GateFormatParser(Scanner scanner, String filename) {
+    public GateFormatParser(Scanner scanner, String filename, StargateLogger logger) {
         frameMaterials = new HashMap<>();
         // Set default materials in case any config keys are missing
         irisOpen = new HashSet<>();
@@ -63,6 +69,7 @@ public class GateFormatParser {
         irisClosed.add(Material.AIR);
         this.scanner = scanner;
         this.filename = filename;
+        this.logger = logger;
 
         //TODO: Split the parser into one reader and one parser to simplify the structure
     }
@@ -88,7 +95,7 @@ public class GateFormatParser {
         if (amountOfControlBlocks < 2) {
             throw new ParsingErrorException("Design requires at least 2 control blocks '-' ");
         }
-
+        
         return new GateFormat(iris, frame, controlBlocks, filename, canBeBlockedByIronDoor, controlMaterials);
     }
 
@@ -164,29 +171,37 @@ public class GateFormatParser {
      * @throws ParsingErrorException <p>If unable to parse the given material</p>
      */
     private Set<Material> parseMaterial(String materialString) throws ParsingErrorException {
-        Set<Material> foundIds = new HashSet<>();
+        Set<Material> foundIDs = new HashSet<>();
         String[] individualIDs = materialString.split(SPLIT_IDENTIFIER);
         for (String stringId : individualIDs) {
 
             //Parse a tag
             if (stringId.startsWith(TAG_IDENTIFIER)) {
-                parseMaterialTag(stringId, foundIds);
+                foundIDs.addAll(parseMaterialTag(stringId.trim()));
                 continue;
             }
-
+            
             //Parse a normal material
-            Material id = Material.getMaterial(stringId);
+            Material id = Material.getMaterial(stringId.toUpperCase().trim());
+            
             if (id == null) {
-                throw new ParsingErrorException("Invalid material ''" + stringId + "''");
+                id = parseMaterialFromLegacyName(stringId);
+                if(id == null)
+                    throw new ParsingErrorException("Invalid material ''" + stringId + "''");
             }
-            foundIds.add(id);
+            foundIDs.add(id);
         }
-        if (foundIds.size() == 0) {
+        if (foundIDs.size() == 0) {
             throw new ParsingErrorException("Invalid field''" + materialString + "'': Field must include at least one block");
         }
-        return foundIds;
+        return foundIDs;
     }
 
+    
+    private Material parseMaterialFromLegacyName(String stringId){
+        return Material.getMaterial(XMaterial.matchXMaterial(stringId).toString());
+    }
+    
     /**
      * Parses a material tag
      *
@@ -194,7 +209,8 @@ public class GateFormatParser {
      * @param foundIds <p>The set to store found material ids to</p>
      * @throws ParsingErrorException <p>If unable to parse the tag</p>
      */
-    private void parseMaterialTag(String stringId, Set<Material> foundIds) throws ParsingErrorException {
+    private Set<Material> parseMaterialTag(String stringId) throws ParsingErrorException {
+        Set<Material> foundIDs = EnumSet.noneOf(Material.class);
         String tagString = stringId.replace(TAG_IDENTIFIER, "");
         Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS,
                 NamespacedKey.minecraft(tagString.toLowerCase()), Material.class);
@@ -203,9 +219,10 @@ public class GateFormatParser {
         }
         for (Material materialInTag : tag.getValues()) {
             if (materialInTag.isBlock()) {
-                foundIds.add(materialInTag);
+                foundIDs.add(materialInTag);
             }
         }
+        return foundIDs;
     }
 
 
@@ -230,10 +247,10 @@ public class GateFormatParser {
 
     /**
      * <p>Creates a vector-structure from the character design, following this reference system:
-     * FFF    y
-     * C.C    ^
-     * F*F    |
-     * FFF    ---->z
+     * FFF         y
+     * C.C         ^
+     * F*F         |
+     * FFF    z<---x
      * <p>
      * where F,C,.,* resembles a gate design and the rest is the coordinate system used by the vectors.
      * Note that origin is in the top-left corner of the gate design.
