@@ -124,7 +124,7 @@ public class NetworkedPortal extends AbstractPortal {
     }
     
     /**
-     * Calculate the position of the portal that is selected.
+     * Calculate the position of the portal that is selected, assuming the available destinations have changed.
      * @return <p> The position of the selected portal in the destinations list</p>
      */
     private int reloadSelectedDestination() {
