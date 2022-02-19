@@ -424,6 +424,8 @@ public class PortalDatabaseAPI implements StorageAPI {
 
             try {
                 GateFormat format = GateFormat.getFormat(gateFileName);
+                if(format == null)
+                    continue;
                 List<PortalPosition> portalPositions = getPortalPositions(networkName, name);
                 Gate gate = new Gate(block.getLocation(), facing, flipZ, format, logger);
                 gate.addPortalPositions(portalPositions);

@@ -93,9 +93,9 @@ public abstract class AbstractPortal implements RealPortal {
         } else if (this.network.isPortalNameTaken(name)) {
             throw new NameErrorException(TranslatableMessage.ALREADY_EXIST);
         }
-
-        setSignColor(null);
-
+        
+        colorDrawer = new NoLineColorFormatter();
+        
         if (gate.getFormat() != null && gate.getFormat().isIronDoorBlockable) {
             flags.add(PortalFlag.IRON_DOOR);
         }
@@ -105,10 +105,6 @@ public abstract class AbstractPortal implements RealPortal {
             msg.append(flag.getCharacterRepresentation());
         }
         Stargate.log(Level.FINE, msg.toString());
-
-        if (hasFlag(PortalFlag.ALWAYS_ON)) {
-            this.open(null);
-        }
 
         AbstractPortal.portalCount++;
         AbstractPortal.allUsedFlags.addAll(flags);
@@ -121,8 +117,14 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void update() {
+        setSignColor(null);
+        
         if(getDestination() == null)
             this.destination = loadDestination();
+        
+        if (hasFlag(PortalFlag.ALWAYS_ON)) {
+            this.open(null);
+        }
         
         if (isOpen() && getDestination() == null) {
             close(false);
@@ -301,7 +303,6 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void setSignColor(DyeColor color) {
-        colorDrawer = new NoLineColorFormatter();
         for (Location location : this.getPortalPosition(PositionType.SIGN)) {
             if (!(location.getBlock().getState() instanceof Sign)) {
                 logger.logMessage(Level.WARNING, String.format("Could not find a sign for portal %s in network %s \n"
