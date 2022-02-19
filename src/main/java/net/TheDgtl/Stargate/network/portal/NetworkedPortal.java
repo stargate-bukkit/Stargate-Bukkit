@@ -119,27 +119,33 @@ public class NetworkedPortal extends AbstractPortal {
 
     @Override
     public void update() {
-        //Check if it's referencing to a destroyed portal, and in that case, change what portal it is selecting
-        if (!isActive) {
-            return;
-        }
+        this.selectedDestination = reloadSelectedDestination();
+        super.update();
+    }
+    
+    /**
+     * Calculate the position of the portal that is selected.
+     * @return <p> The position of the selected portal in the destinations list</p>
+     */
+    private int reloadSelectedDestination() {
+        if(!isActive)
+            return NO_DESTINATION_SELECTED;
+        
         Portal destination = this.destinations.get(this.selectedDestination);
         destinations = getDestinations(Bukkit.getPlayer(activator));
         if (destinations.contains(destination)) {
-            this.selectedDestination = destinations.indexOf(destination);
-            super.update();
-            return;
+            return destinations.indexOf(destination);
         }
-        //If the previously selected destination has been removed...
+        
         int possibleDestination = getNextDestination(0, this.selectedDestination);
         if (possibleDestination == NO_DESTINATION_SELECTED) {
             this.deactivate();
-            super.update();
-            return;
         }
-        selectedDestination = possibleDestination;
-        super.update();
+        return possibleDestination;
     }
+    
+    
+    
 
     @Override
     public void close(boolean force) {
