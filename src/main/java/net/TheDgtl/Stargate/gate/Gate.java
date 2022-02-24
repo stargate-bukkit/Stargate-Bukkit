@@ -36,7 +36,7 @@ import java.util.logging.Level;
  *
  * @author Thorin
  */
-public class Gate {
+public class Gate implements GateAPI{
 
     private final GateFormat format;
     private final IVectorOperation converter;
@@ -100,11 +100,7 @@ public class Gate {
         this.flipped = flipZ;
     }
 
-    /**
-     * Set button and draw sign
-     *
-     * @param signLines an array with 4 elements, representing each line of a sign
-     */
+    @Override
     public void drawControlMechanisms(String[] signLines, boolean drawButton) {
         drawSigns(signLines);
         if (drawButton) {
@@ -112,20 +108,9 @@ public class Gate {
         }
     }
 
-    /**
-     * Gets a copy of this gate's portal positions
-     *
-     * @return <p>A copy of this gate's portal positions</p>
-     */
+    @Override
     public List<PortalPosition> getPortalPositions() {
         return new ArrayList<>(this.portalPositions);
-    }
-    
-    public List<Location> getPortalPositions(PositionType type){
-        List<Location> positions = new ArrayList<>();
-        portalPositions.stream().filter((position) -> position.getPositionType() == type).forEach(
-                (position) -> positions.add(getLocation(position.getPositionLocation())));
-        return positions;
     }
 
     /**
@@ -171,12 +156,8 @@ public class Gate {
             buttonLocation.getBlock().setBlockData(buttonData);
         }
     }
-    /**
-     * Gets all locations of this gate containing the given structure type
-     *
-     * @param structureType <p>The structure type to get locations of</p>
-     * @return <p>All locations containing the given structure type</p>
-     */
+    
+    @Override
     public List<BlockLocation> getLocations(GateStructureType structureType) {
         List<BlockLocation> output = new ArrayList<>();
 
@@ -195,35 +176,23 @@ public class Gate {
         return output;
     }
 
-    /**
-     * Opens this gate
-     */
+    @Override
     public void open() {
         changeOpenState(true);
     }
 
-    /**
-     * Closes this gate
-     */
+    @Override
     public void close() {
         changeOpenState(false);
     }
 
-    /**
-     * Gets the exit location of this gate
-     *
-     * @return <p>The exit location of this gate</p>
-     */
+    @Override
     public Location getExit() {
         BlockVector formatExit = getFormat().getExit();
         return getLocation(formatExit);
     }
 
-    /**
-     * Gets whether this gate is currently open
-     *
-     * @return <p>Whether this gate is currently open</p>
-     */
+    @Override
     public boolean isOpen() {
         return isOpen;
     }
@@ -233,43 +202,26 @@ public class Gate {
      *
      * @param isOpen <p>Whether this gate is currently open</p>
      */
-    public void setOpen(boolean isOpen) {
+    private void setOpen(boolean isOpen) {
         this.isOpen = isOpen;
     }
 
-    /**
-     * Gets the gate format used by this gate
-     *
-     * @return <p>The gate format used by this gate</p>
-     */
+    @Override
     public GateFormat getFormat() {
         return format;
     }
 
-    /**
-     * Gets the block face defining this gate's direction
-     *
-     * @return <p>The block face defining this gate's direction</p>
-     */
+    @Override
     public BlockFace getFacing() {
         return converter.getFacing();
     }
 
-    /**
-     * Gets whether this gate has been flipped on the z-axis
-     *
-     * @return <p>Whether this gate has been flipped on the z-axis</p>
-     */
+    @Override
     public boolean getFlipZ() {
         return this.flipped;
     }
 
-    /**
-     * Gets a vector relative to this gate's top-left location using the given location
-     *
-     * @param location <p>The location to turn into a relative location</p>
-     * @return <p>A location relative to this gate's top-left location</p>
-     */
+    @Override
     public Vector getRelativeVector(Location location) {
         Vector vector = location.clone().subtract(topLeft).toVector();
         return converter.performToAbstractSpaceOperation(vector);
@@ -329,13 +281,8 @@ public class Gate {
         }
     }
 
-    /**
-     * Gets a location from a relative vector
-     *
-     * @param vector <p>The vector defining a location</p>
-     * @return <p>The location corresponding to the given vector</p>
-     */
-    private Location getLocation(@NotNull Vector vector) {
+    @Override
+    public Location getLocation(@NotNull Vector vector) {
         return topLeft.clone().add(converter.performToRealSpaceOperation(vector));
     }
 
@@ -417,26 +364,34 @@ public class Gate {
         setOpen(open);
     }
 
-    /**
-     * Gets this gate's top-left location
-     *
-     * @return <p>This gate's top-left location</p>
-     */
+    @Override
     public Location getTopLeft() {
         return this.topLeft;
     }
-
+    
+    @Override
     public void addPortalPosition(Location location, PositionType type) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
         logger.logMessage(Level.FINEST, String.format("Addding portalposition %s with relative position %s", type.toString(), relativeBlockVector.toString()));
         this.addPortalPosition(relativeBlockVector, type);
     }
     
+    /**
+     * Add a position specific for this Gate
+     * 
+     * @param relativeBlockVector <p> The relative position in format space</p>
+     * @param type     <p> The type of position </p>
+     */ 
     public void addPortalPosition(BlockVector relativeBlockVector, PositionType type) {
         PortalPosition pos = new PortalPosition(type,relativeBlockVector);
         this.portalPositions.add(pos);
     }
 
+    /**
+     * Add portal positions specific for this Gate
+     * 
+     * @param portalPositions     <p> A list of portalPositions </p>
+     */
     public void addPortalPositions(List<PortalPosition> portalPositions) {
         this.portalPositions.addAll(portalPositions);
     }

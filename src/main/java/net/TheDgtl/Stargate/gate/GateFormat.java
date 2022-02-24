@@ -27,7 +27,7 @@ import java.util.logging.Level;
 /**
  * A representation of a gate's format, including all its structures
  */
-public class GateFormat {
+public class GateFormat implements GateFormatAPI{
 
     private static Map<Material, List<GateFormat>> controlMaterialFormatsMap;
     private static Map<String, GateFormat> gateFormatsMap;
@@ -165,12 +165,7 @@ public class GateFormat {
         return controlBlocks.getStructureTypePositions();
     }
 
-    /**
-     * Gets the material used for this gate format's iris when in the given state
-     *
-     * @param getOpenMaterial <p>Whether to get the open-material or the closed-material</p>
-     * @return <p>The material used for this gate format's iris</p>
-     */
+    @Override
     public Material getIrisMaterial(boolean getOpenMaterial) {
         return ((GateIris) portalParts.get(GateStructureType.IRIS)).getMaterial(getOpenMaterial);
     }
@@ -184,6 +179,7 @@ public class GateFormat {
         return ((GateIris) portalParts.get(GateStructureType.IRIS)).getExit();
     }
 
+    @Override
     public String getFileName() {
         return name;
     }

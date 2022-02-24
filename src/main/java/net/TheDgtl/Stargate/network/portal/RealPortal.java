@@ -1,6 +1,8 @@
 package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.gate.Gate;
+import net.TheDgtl.Stargate.gate.GateAPI;
+
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
@@ -42,7 +44,7 @@ public interface RealPortal extends Portal {
      *
      * @return <p>The gate belonging to this portal</p>
      */
-    Gate getGate();
+    GateAPI getGate();
 
     /**
      * Closes this portal
