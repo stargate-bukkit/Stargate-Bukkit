@@ -271,7 +271,10 @@ public class PortalDatabaseAPI implements StorageAPI {
         addMissingPositionTypes(connection, sqlQueryGenerator);
         PreparedStatement portalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection);
         runStatement(portalPositionsStatement);
-
+        PreparedStatement portalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection);
+        runStatement(portalPositionIndex);
+        
+        
         PreparedStatement lastKnownNameStatement = sqlQueryGenerator.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);
         PreparedStatement portalRelationStatement = sqlQueryGenerator.generateCreateFlagRelationTableStatement(connection, PortalType.LOCAL);

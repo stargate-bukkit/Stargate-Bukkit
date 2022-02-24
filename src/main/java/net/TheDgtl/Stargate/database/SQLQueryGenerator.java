@@ -4,6 +4,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.TableNameConfig;
 import net.TheDgtl.Stargate.gate.Gate;
+import net.TheDgtl.Stargate.gate.GateAPI;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
@@ -157,12 +158,22 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalPositionTableStatement(Connection connection) throws SQLException {
-        String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalPosition} (portalName NVARCHAR(180), networkName" +
-                " NVARCHAR(180), xCoordinate INTEGER, yCoordinate INTEGER, zCoordinate INTEGER, positionType INTEGER," +
+        String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalPosition} (" +
+                "portalName NVARCHAR(180) NOT NULL, " +
+                "networkName NVARCHAR(180) NOT NULL, "+
+                "xCoordinate INTEGER NOT NULL, yCoordinate INTEGER NOT NULL, zCoordinate INTEGER NOT NULL, " +
+                "positionType INTEGER NOT NULL, " +
                 "PRIMARY KEY (portalName, networkName, xCoordinate, yCoordinate, zCoordinate), " +
-                "FOREIGN KEY (portalName, networkName) REFERENCES Portal(portalName, networkName), " +
-                "FOREIGN KEY (positionType) REFERENCES PortalPositionType (id));" +
-                "CREATE INDEX PortalPositionIndex ON {PortalPosition} (portalName, networkName);";
+                "FOREIGN KEY (portalName, networkName) REFERENCES {Portal}(name, network), " +
+                "FOREIGN KEY (positionType) REFERENCES {PortalPositionType} (id));";
+        statementMessage = replaceKnownTableNames(statementMessage);
+        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        return connection.prepareStatement(statementMessage);
+    }
+    
+    public PreparedStatement generateCreatePortalPositionIndex(Connection connection) throws SQLException {
+        String statementMessage = 
+                "CREATE INDEX IF NOT EXISTS PortalPositionIndex ON {PortalPosition} (portalName, networkName);";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -382,7 +393,7 @@ public class SQLQueryGenerator {
         statement.setInt(7, topLeft.getBlockZ());
         statement.setString(8, portal.getOwnerUUID().toString());
 
-        Gate gate = portal.getGate();
+        GateAPI gate = portal.getGate();
 
         statement.setString(9, gate.getFormat().getFileName());
         statement.setInt(10, gate.getFacing().ordinal());

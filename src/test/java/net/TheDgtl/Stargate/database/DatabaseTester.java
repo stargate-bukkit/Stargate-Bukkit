@@ -50,6 +50,7 @@ public class DatabaseTester {
     private static final File testGatesDir = new File("src/test/resources/gates");
     private final Map<String, RealPortal> interServerPortals;
     private final Map<String, RealPortal> localPortals;
+    private final PortalDatabaseAPI portalDatabaseAPI;
 
     /**
      * Instantiates a new database tester
@@ -79,6 +80,8 @@ public class DatabaseTester {
         DatabaseTester.serverUUID = UUID.randomUUID();
         Stargate.serverUUID = serverUUID;
         StargateLogger logger = new FakeStargate();
+        this.portalDatabaseAPI = new PortalDatabaseAPI(database, false, isMySQL, logger);
+        DatabaseTester.connection = database.getConnection();
 
         NetworkAPI testNetwork = null;
         try {
@@ -163,59 +166,13 @@ public class DatabaseTester {
 
     void addPortalTest() throws SQLException {
         for (RealPortal portal : localPortals.values()) {
-            connection.setAutoCommit(false);
-            try {
-                finishStatement(generator.generateAddPortalStatement(connection, portal, PortalType.LOCAL));
-
-                PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection,
-                        PortalType.LOCAL);
-                addFlags(addFlagStatement, portal);
-                addFlagStatement.close();
-                connection.commit();
-                connection.setAutoCommit(true);
-            } catch (SQLException exception) {
-                connection.rollback();
-                connection.setAutoCommit(true);
-                throw exception;
-            }
+            this.portalDatabaseAPI.savePortalToStorage(portal, PortalType.LOCAL);
         }
     }
 
     void addInterPortalTest() throws SQLException {
         for (RealPortal portal : interServerPortals.values()) {
-            connection.setAutoCommit(false);
-            try {
-                finishStatement(
-                        generator.generateAddPortalStatement(connection, portal, PortalType.INTER_SERVER));
-
-                PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection,
-                        PortalType.INTER_SERVER);
-                addFlags(addFlagStatement, portal);
-                addFlagStatement.close();
-                connection.commit();
-                connection.setAutoCommit(true);
-            } catch (SQLException exception) {
-                connection.rollback();
-                connection.setAutoCommit(true);
-                throw exception;
-            }
-        }
-    }
-
-    /**
-     * Adds flags for the given portal to the database
-     *
-     * @param addFlagStatement <p>The statement used to add flags</p>
-     * @param portal           <p>The portal to add the flags of</p>
-     * @throws SQLException <p>If unable to set the flags</p>
-     */
-    private void addFlags(PreparedStatement addFlagStatement, Portal portal) throws SQLException {
-        for (Character character : portal.getAllFlagsString().toCharArray()) {
-            System.out.println("Adding flag " + character + " to portal: " + portal);
-            addFlagStatement.setString(1, portal.getName());
-            addFlagStatement.setString(2, portal.getNetwork().getName());
-            addFlagStatement.setString(3, String.valueOf(character));
-            addFlagStatement.execute();
+            this.portalDatabaseAPI.savePortalToStorage(portal, PortalType.INTER_SERVER);
         }
     }
 
@@ -235,6 +192,7 @@ public class DatabaseTester {
      * @throws SQLException <p>If a database error occurs</p>
      */
     private void getPortals(PortalType portalType, Map<String, RealPortal> portals) throws SQLException {
+        
         String tableName = portalType == PortalType.LOCAL ? nameConfig.getPortalViewName() :
                 nameConfig.getInterPortalTableName();
         printTableInfo(tableName);
@@ -262,7 +220,7 @@ public class DatabaseTester {
             }
             System.out.println();
         }
-        Assertions.assertEquals(rows, portals.size());
+        Assertions.assertEquals(portals.size(),rows);
     }
 
     void destroyPortalTest() throws SQLException {
