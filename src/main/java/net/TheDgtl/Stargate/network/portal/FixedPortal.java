@@ -5,7 +5,6 @@ import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
-import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 
@@ -60,7 +59,7 @@ public class FixedPortal extends AbstractPortal {
         }
         return destination;
     }
-    
+
     @Override
     public void close(boolean force) {
         super.close(force);

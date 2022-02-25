@@ -7,23 +7,18 @@ import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
-import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.util.FileHelper;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
-import net.TheDgtl.Stargate.vectorlogic.IVectorOperation;
-import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
-import org.bukkit.util.BlockVector;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -111,24 +106,24 @@ public class LegacyPortalStorageLoader {
         String[] portalProperties = line.split(":");
         String name = portalProperties[0];
         String networkName = (portalProperties.length > 9) ? portalProperties[9] : Settings.getString(Setting.DEFAULT_NETWORK);
-        logger.logMessage(Level.FINEST, String.format("-----------------Loading portal %s in network %s----------------------",name,networkName));
+        logger.logMessage(Level.FINEST, String.format("-----------------Loading portal %s in network %s----------------------", name, networkName));
 
-        
+
         Location signLocation = loadLocation(world, portalProperties[1]);
         Location buttonLocation = loadLocation(world, portalProperties[2]);
         int modX = Integer.parseInt(portalProperties[3]);
         int modZ = Integer.parseInt(portalProperties[4]);
         double rotation = Double.parseDouble(portalProperties[5]);
         logger.logMessage(Level.FINEST, String.format("modX = %d, modZ = %d, rotation %f", modX, modZ, rotation));
-        
+
         BlockFace facing = getFacing(modX, modZ);
         if (facing == null) {
             facing = getFacing(Double.parseDouble(portalProperties[5]));
         }
-        logger.logMessage(Level.FINEST, String.format("chose a facing %s",facing.toString()));
+        logger.logMessage(Level.FINEST, String.format("chose a facing %s", facing.toString()));
 
         Location topLeft = loadLocation(world, portalProperties[6]);
-        
+
         String gateFormatName = portalProperties[7];
         String destination = (portalProperties.length > 8) ? portalProperties[8] : "";
         String ownerString = (portalProperties.length > 10) ? portalProperties[10] : "";
@@ -144,26 +139,26 @@ public class LegacyPortalStorageLoader {
         if (topLeft == null) {
             throw new InvalidStructureException();
         }
-        
+
         NetworkAPI network = registry.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
-        
+
         GateFormat format = GateFormat.getFormat(gateFormatName);
-        if(format == null) {
+        if (format == null) {
             logger.logMessage(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup log for more information", gateFormatName));
         }
-            
+
         Gate gate = new Gate(topLeft, facing, false, format, logger);
         if (signLocation != null) {
-            logger.logMessage(Level.FINEST, "signLoc="+signLocation.toString());
-            gate.addPortalPosition(signLocation,PositionType.SIGN);
+            logger.logMessage(Level.FINEST, "signLoc=" + signLocation.toString());
+            gate.addPortalPosition(signLocation, PositionType.SIGN);
         }
         if (buttonLocation != null && !flags.contains(PortalFlag.ALWAYS_ON)) {
-            logger.logMessage(Level.FINEST, "buttonLoc="+buttonLocation.toString());
-            gate.addPortalPosition(buttonLocation,PositionType.BUTTON);
+            logger.logMessage(Level.FINEST, "buttonLoc=" + buttonLocation.toString());
+            gate.addPortalPosition(buttonLocation, PositionType.BUTTON);
         }
-        
-        
+
+
         Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate, ownerUUID, logger);
 
         //Add the portal to its network and store it to the database

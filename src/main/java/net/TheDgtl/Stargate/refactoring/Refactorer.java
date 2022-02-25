@@ -2,7 +2,6 @@ package net.TheDgtl.Stargate.refactoring;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.config.StargateConfiguration;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.refactoring.retcons.Modifier;
 import net.TheDgtl.Stargate.refactoring.retcons.RetCon1_0_0;

@@ -11,7 +11,6 @@ import net.TheDgtl.Stargate.event.StargateActivateEvent;
 import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
-import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import org.bukkit.Bukkit;
@@ -122,30 +121,30 @@ public class NetworkedPortal extends AbstractPortal {
         this.selectedDestination = reloadSelectedDestination();
         super.update();
     }
-    
+
     /**
      * Calculate the position of the portal that is selected, assuming the available destinations have changed.
+     *
      * @return <p> The position of the selected portal in the destinations list</p>
      */
     private int reloadSelectedDestination() {
-        if(!isActive)
+        if (!isActive) {
             return NO_DESTINATION_SELECTED;
-        
+        }
+
         Portal destination = this.destinations.get(this.selectedDestination);
         destinations = getDestinations(Bukkit.getPlayer(activator));
         if (destinations.contains(destination)) {
             return destinations.indexOf(destination);
         }
-        
+
         int possibleDestination = getNextDestination(0, this.selectedDestination);
         if (possibleDestination == NO_DESTINATION_SELECTED) {
             this.deactivate();
         }
         return possibleDestination;
     }
-    
-    
-    
+
 
     @Override
     public void close(boolean force) {

@@ -93,9 +93,9 @@ public abstract class AbstractPortal implements RealPortal {
         } else if (this.network.isPortalNameTaken(name)) {
             throw new NameErrorException(TranslatableMessage.ALREADY_EXIST);
         }
-        
+
         colorDrawer = new NoLineColorFormatter();
-        
+
         if (gate.getFormat() != null && gate.getFormat().isIronDoorBlockable) {
             flags.add(PortalFlag.IRON_DOOR);
         }
@@ -118,14 +118,15 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void update() {
         setSignColor(null);
-        
-        if(getDestination() == null)
+
+        if (getDestination() == null) {
             this.destination = loadDestination();
-        
+        }
+
         if (hasFlag(PortalFlag.ALWAYS_ON)) {
             this.open(null);
         }
-        
+
         if (isOpen() && getDestination() == null) {
             close(false);
         }
@@ -186,8 +187,9 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void setNetwork(Network targetNetwork) throws NameErrorException {
-        if(targetNetwork.getPortal(this.name) != null)
+        if (targetNetwork.getPortal(this.name) != null) {
             throw new NameErrorException(null);
+        }
         this.network = targetNetwork;
         //TODO: update network in database
         this.drawControlMechanisms();

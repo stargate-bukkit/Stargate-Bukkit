@@ -9,7 +9,7 @@ public interface LanguageAPI {
      * @return <p>The formatted error message</p>
      */
     public String getErrorMessage(TranslatableMessage translatableMessage);
-    
+
     /**
      * Gets a formatted message
      *
@@ -17,7 +17,7 @@ public interface LanguageAPI {
      * @return <p>The formatted message</p>
      */
     public String getMessage(TranslatableMessage translatableMessage);
-    
+
     /**
      * Gets a translated string
      *
@@ -25,7 +25,7 @@ public interface LanguageAPI {
      * @return <p>The corresponding translated message</p>
      */
     public String getString(TranslatableMessage translatableMessage);
-    
+
     /**
      * Sets the currently used language
      *

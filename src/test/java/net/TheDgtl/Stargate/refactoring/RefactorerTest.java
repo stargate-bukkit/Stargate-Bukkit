@@ -3,7 +3,6 @@ package net.TheDgtl.Stargate.refactoring;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import com.google.common.io.Files;
-
 import net.TheDgtl.Stargate.FakeLanguageManager;
 import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.Stargate;
@@ -15,7 +14,6 @@ import net.TheDgtl.Stargate.database.PortalDatabaseAPI;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.gate.GateFormat;
-import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -81,7 +79,7 @@ public class RefactorerTest {
         server.addSimpleWorld("pseudoknigth");
         Stargate.getConfigStatic().load(defaultConfigFile);
 
-        GateFormat.setFormats(Objects.requireNonNull(GateFormat.loadGateFormats(testGatesDir,logger)));
+        GateFormat.setFormats(Objects.requireNonNull(GateFormat.loadGateFormats(testGatesDir, logger)));
     }
 
     private static Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> getSettingTestMaps() {

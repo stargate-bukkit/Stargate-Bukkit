@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.gate;
 
+import com.cryptomorin.xseries.XMaterial;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.exception.ParsingErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateControlBlock;
@@ -11,8 +12,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.util.BlockVector;
 
-import com.cryptomorin.xseries.XMaterial;
-
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.logging.Level;
 
 /**
  * The gate format parser is responsible for parsing gate format files
@@ -95,7 +93,7 @@ public class GateFormatParser {
         if (amountOfControlBlocks < 2) {
             throw new ParsingErrorException("Design requires at least 2 control blocks '-' ");
         }
-        
+
         return new GateFormat(iris, frame, controlBlocks, filename, canBeBlockedByIronDoor, controlMaterials);
     }
 
@@ -180,14 +178,15 @@ public class GateFormatParser {
                 foundIDs.addAll(parseMaterialTag(stringId.trim()));
                 continue;
             }
-            
+
             //Parse a normal material
             Material id = Material.getMaterial(stringId.toUpperCase().trim());
-            
+
             if (id == null) {
                 id = parseMaterialFromLegacyName(stringId);
-                if(id == null)
+                if (id == null) {
                     throw new ParsingErrorException("Invalid material ''" + stringId + "''");
+                }
             }
             foundIDs.add(id);
         }
@@ -197,11 +196,11 @@ public class GateFormatParser {
         return foundIDs;
     }
 
-    
-    private Material parseMaterialFromLegacyName(String stringId){
+
+    private Material parseMaterialFromLegacyName(String stringId) {
         return Material.getMaterial(XMaterial.matchXMaterial(stringId).toString());
     }
-    
+
     /**
      * Parses a material tag
      *

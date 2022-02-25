@@ -93,7 +93,7 @@ public class GateFormat {
 
         for (File file : files) {
             try {
-                gateFormatMap.add(loadGateFormat(file,logger));
+                gateFormatMap.add(loadGateFormat(file, logger));
             } catch (FileNotFoundException | ParsingErrorException e) {
                 Stargate.log(Level.WARNING, "Could not load Gate " + file.getName() + " - " + e.getMessage());
             }

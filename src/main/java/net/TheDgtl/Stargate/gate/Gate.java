@@ -120,8 +120,8 @@ public class Gate {
     public List<PortalPosition> getPortalPositions() {
         return new ArrayList<>(this.portalPositions);
     }
-    
-    public List<Location> getPortalPositions(PositionType type){
+
+    public List<Location> getPortalPositions(PositionType type) {
         List<Location> positions = new ArrayList<>();
         portalPositions.stream().filter((position) -> position.getPositionType() == type).forEach(
                 (position) -> positions.add(getLocation(position.getPositionLocation())));
@@ -171,6 +171,7 @@ public class Gate {
             buttonLocation.getBlock().setBlockData(buttonData);
         }
     }
+
     /**
      * Gets all locations of this gate containing the given structure type
      *
@@ -431,9 +432,9 @@ public class Gate {
         logger.logMessage(Level.FINEST, String.format("Addding portalposition %s with relative position %s", type.toString(), relativeBlockVector.toString()));
         this.addPortalPosition(relativeBlockVector, type);
     }
-    
+
     public void addPortalPosition(BlockVector relativeBlockVector, PositionType type) {
-        PortalPosition pos = new PortalPosition(type,relativeBlockVector);
+        PortalPosition pos = new PortalPosition(type, relativeBlockVector);
         this.portalPositions.add(pos);
     }
 

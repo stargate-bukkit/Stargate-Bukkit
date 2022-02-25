@@ -8,7 +8,6 @@ import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
-
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
@@ -25,7 +24,7 @@ import java.util.logging.Level;
  *
  * @author Thorin (idea from EpicKnarvik)
  */
-public class StargateRegistry implements RegistryAPI{
+public class StargateRegistry implements RegistryAPI {
 
     private final StorageAPI storageAPI;
     private final HashMap<String, NetworkAPI> networkList = new HashMap<>();
@@ -118,7 +117,7 @@ public class StargateRegistry implements RegistryAPI{
     public Portal getPortal(Location location, GateStructureType[] structureTypes) {
         return getPortal(new BlockLocation(location), structureTypes);
     }
-    
+
     @Override
     public Portal getPortal(Location location) {
         return getPortal(location, GateStructureType.values());

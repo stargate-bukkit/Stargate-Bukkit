@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * A network of portals
  */
-public class Network implements NetworkAPI{
+public class Network implements NetworkAPI {
 
     protected Map<String, Portal> nameToPortalMap;
     protected Database database;

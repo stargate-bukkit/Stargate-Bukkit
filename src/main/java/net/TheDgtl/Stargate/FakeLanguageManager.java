@@ -1,6 +1,6 @@
 package net.TheDgtl.Stargate;
 
-public class FakeLanguageManager implements LanguageAPI{
+public class FakeLanguageManager implements LanguageAPI {
 
     @Override
     public String getErrorMessage(TranslatableMessage translatableMessage) {
@@ -18,6 +18,7 @@ public class FakeLanguageManager implements LanguageAPI{
     }
 
     @Override
-    public void setLanguage(String language) { }
+    public void setLanguage(String language) {
+    }
 
 }

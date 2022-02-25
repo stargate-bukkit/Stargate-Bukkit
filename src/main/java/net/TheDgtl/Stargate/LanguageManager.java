@@ -14,7 +14,7 @@ import java.util.logging.Level;
 /**
  * The language manager is responsible for translating various messages
  */
-public class LanguageManager implements LanguageAPI{
+public class LanguageManager implements LanguageAPI {
 
     private final File languageFolder;
     private String language;

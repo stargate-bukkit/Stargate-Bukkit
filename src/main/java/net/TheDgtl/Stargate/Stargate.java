@@ -32,7 +32,6 @@ import net.TheDgtl.Stargate.listeners.MoveEventListener;
 import net.TheDgtl.Stargate.listeners.PlayerEventListener;
 import net.TheDgtl.Stargate.listeners.PluginEventListener;
 import net.TheDgtl.Stargate.listeners.StargateBungeePluginMessageListener;
-import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -130,7 +129,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         if (!new File(this.getDataFolder(), "config.yml").exists()) {
             super.saveDefaultConfig();
         }
-        
+
         loadGateFormats();
         if (Settings.getInteger(Setting.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
             try {
@@ -279,7 +278,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     private void loadGateFormats() {
         saveDefaultGates();
-        List<GateFormat> gateFormats = GateFormat.loadGateFormats(new File(DATA_FOLDER, GATE_FOLDER),this);
+        List<GateFormat> gateFormats = GateFormat.loadGateFormats(new File(DATA_FOLDER, GATE_FOLDER), this);
         if (gateFormats == null) {
             log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
             GateFormat.setFormats(new ArrayList<>());
@@ -287,12 +286,12 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             GateFormat.setFormats(gateFormats);
         }
     }
-    
+
     public void reload() {
         loadGateFormats();
         load();
     }
-    
+
     private void load() {
         loadColors();
         if (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
@@ -306,7 +305,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             lowestMsgLevel = Level.parse(debugLevelStr);
         }
         languageManager.setLanguage(Settings.getString(Setting.LANGUAGE));
-        
+
         try {
             storageAPI = new PortalDatabaseAPI(this);
             registry = new StargateRegistry(storageAPI);

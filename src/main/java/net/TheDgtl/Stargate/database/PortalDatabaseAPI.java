@@ -112,11 +112,11 @@ public class PortalDatabaseAPI implements StorageAPI {
 
     @Override
     public void endInterServerConnection() {
-        
+
     }
-    
-    @Override 
-    public Network createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException{
+
+    @Override
+    public Network createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             InterServerNetwork interServerNetwork = new InterServerNetwork(networkName, database, sqlQueryGenerator);
             String networkHash = interServerNetwork.getName().toLowerCase();
@@ -151,7 +151,7 @@ public class PortalDatabaseAPI implements StorageAPI {
             PreparedStatement addPositionStatement = sqlQueryGenerator.generateAddPortalPositionStatement(connection);
             addPortalPositions(addPositionStatement, portal);
             addPositionStatement.close();
-            
+
             connection.commit();
             connection.setAutoCommit(true);
         } catch (SQLException exception) {
@@ -399,7 +399,7 @@ public class PortalDatabaseAPI implements StorageAPI {
             } catch (NameErrorException ignored) {
             }
             NetworkAPI network = registry.getNetwork(targetNetwork, isBungee);
-            
+
             if (portalType == PortalType.INTER_SERVER) {
                 String serverUUID = resultSet.getString("homeServerId");
                 logger.logMessage(Level.FINEST, "serverUUID = " + serverUUID);
@@ -424,8 +424,9 @@ public class PortalDatabaseAPI implements StorageAPI {
 
             try {
                 GateFormat format = GateFormat.getFormat(gateFileName);
-                if(format == null)
+                if (format == null) {
                     continue;
+                }
                 List<PortalPosition> portalPositions = getPortalPositions(networkName, name);
                 Gate gate = new Gate(block.getLocation(), facing, flipZ, format, logger);
                 gate.addPortalPositions(portalPositions);
@@ -487,6 +488,7 @@ public class PortalDatabaseAPI implements StorageAPI {
         }
         return null;
     }
+
     /**
      * Adds a portal position to the portal positions table
      *

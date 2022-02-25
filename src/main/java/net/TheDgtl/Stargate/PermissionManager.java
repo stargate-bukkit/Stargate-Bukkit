@@ -5,7 +5,6 @@ import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateEvent;
 import net.TheDgtl.Stargate.event.StargatePortalEvent;
-import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;

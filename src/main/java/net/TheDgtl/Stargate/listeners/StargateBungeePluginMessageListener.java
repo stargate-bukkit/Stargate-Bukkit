@@ -29,7 +29,6 @@ import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.InterServerNetwork;
-import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;

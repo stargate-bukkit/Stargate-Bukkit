@@ -8,7 +8,6 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
-import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.FixedPortal;

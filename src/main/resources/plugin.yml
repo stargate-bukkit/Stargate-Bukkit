@@ -2,7 +2,7 @@ name: Stargate
 main: net.TheDgtl.Stargate.Stargate
 version: @version@
 description: Stargate mod for Bukkit
-authors: [ Dinnerbone, Drakia, PseudoKnight, Thorin, Knarvik]
+authors: [ Dinnerbone, Drakia, PseudoKnight, Thorin, Knarvik ]
 website: https://discord.gg/mTaHuK6BVa
 api-version: 1.15
 softdepend: [ Vault ]

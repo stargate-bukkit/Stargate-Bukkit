@@ -86,7 +86,7 @@ public class DatabaseTester {
         } catch (NameErrorException e) {
             e.printStackTrace();
         }
-        GateFormat.setFormats(Objects.requireNonNull(GateFormat.loadGateFormats(testGatesDir,logger)));
+        GateFormat.setFormats(Objects.requireNonNull(GateFormat.loadGateFormats(testGatesDir, logger)));
         FakePortalGenerator portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
 
         this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength, logger);
