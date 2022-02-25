@@ -14,7 +14,6 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
-import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -36,7 +35,6 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.util.Vector;
 
 import java.util.Objects;
 import java.util.Set;
@@ -283,10 +281,11 @@ public class BlockEventListener implements Listener {
      * @return <p>True if the location is located within the spawn area</p>
      */
     private boolean isInSpawn(Location location) {
-        Location spawnPoint = Objects.requireNonNull(location.getWorld()).getSpawnLocation();
-        Vector vec = location.subtract(spawnPoint).toVector();
-        int spawnProtectionWidth = Bukkit.getServer().getSpawnRadius();
-        return (Math.abs(vec.getBlockX()) < spawnProtectionWidth && Math.abs(vec.getBlockZ()) < spawnProtectionWidth);
+        Location spawnLocation = Objects.requireNonNull(location.getWorld()).getSpawnLocation();
+        int spawnRadius = Bukkit.getSpawnRadius();
+        int spawnRadiusSquared = spawnRadius * spawnRadius;
+        //Comparing the squared values is less expensive than taking the square root
+        return location.distanceSquared(spawnLocation) <= spawnRadiusSquared;
     }
 
     /**
