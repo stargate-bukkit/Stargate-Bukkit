@@ -259,6 +259,7 @@ public class BlockEventListener implements Listener {
             return;
         }
 
+        //TODO: Run this check on the entire Stargate, not just the sign
         if (isInSpawn(signLocation.getLocation())) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
@@ -283,9 +284,19 @@ public class BlockEventListener implements Listener {
     private boolean isInSpawn(Location location) {
         Location spawnLocation = Objects.requireNonNull(location.getWorld()).getSpawnLocation();
         int spawnRadius = Bukkit.getSpawnRadius();
-        int spawnRadiusSquared = spawnRadius * spawnRadius;
-        //Comparing the squared values is less expensive than taking the square root
-        return location.distanceSquared(spawnLocation) <= spawnRadiusSquared;
+        return getDistance(location.getBlockX(), spawnLocation.getBlockX()) <= spawnRadius &&
+                getDistance(location.getBlockZ(), spawnLocation.getBlockZ()) <= spawnRadius;
+    }
+
+    /**
+     * Gets the distance between two numbers
+     *
+     * @param number1 <p>The first number</p>
+     * @param number2 <p>The second number</p>
+     * @return <p>The distance between the two numbers</p>
+     */
+    private int getDistance(int number1, int number2) {
+        return Math.abs(Math.abs(number1) - Math.abs(number2));
     }
 
     /**
