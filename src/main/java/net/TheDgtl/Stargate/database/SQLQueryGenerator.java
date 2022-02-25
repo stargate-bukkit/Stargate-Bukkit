@@ -3,7 +3,6 @@ package net.TheDgtl.Stargate.database;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.TableNameConfig;
-import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateAPI;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -160,7 +159,7 @@ public class SQLQueryGenerator {
     public PreparedStatement generateCreatePortalPositionTableStatement(Connection connection) throws SQLException {
         String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalPosition} (" +
                 "portalName NVARCHAR(180) NOT NULL, " +
-                "networkName NVARCHAR(180) NOT NULL, "+
+                "networkName NVARCHAR(180) NOT NULL, " +
                 "xCoordinate INTEGER NOT NULL, yCoordinate INTEGER NOT NULL, zCoordinate INTEGER NOT NULL, " +
                 "positionType INTEGER NOT NULL, " +
                 "PRIMARY KEY (portalName, networkName, xCoordinate, yCoordinate, zCoordinate), " +
@@ -170,9 +169,9 @@ public class SQLQueryGenerator {
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
     }
-    
+
     public PreparedStatement generateCreatePortalPositionIndex(Connection connection) throws SQLException {
-        String statementMessage = 
+        String statementMessage =
                 "CREATE INDEX IF NOT EXISTS PortalPositionIndex ON {PortalPosition} (portalName, networkName);";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);

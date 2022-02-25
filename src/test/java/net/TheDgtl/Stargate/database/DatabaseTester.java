@@ -192,7 +192,7 @@ public class DatabaseTester {
      * @throws SQLException <p>If a database error occurs</p>
      */
     private void getPortals(PortalType portalType, Map<String, RealPortal> portals) throws SQLException {
-        
+
         String tableName = portalType == PortalType.LOCAL ? nameConfig.getPortalViewName() :
                 nameConfig.getInterPortalTableName();
         printTableInfo(tableName);
@@ -220,7 +220,7 @@ public class DatabaseTester {
             }
             System.out.println();
         }
-        Assertions.assertEquals(portals.size(),rows);
+        Assertions.assertEquals(portals.size(), rows);
     }
 
     void destroyPortalTest() throws SQLException {

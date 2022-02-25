@@ -36,7 +36,7 @@ import java.util.logging.Level;
  *
  * @author Thorin
  */
-public class Gate implements GateAPI{
+public class Gate implements GateAPI {
 
     private final GateFormat format;
     private final IVectorOperation converter;
@@ -156,7 +156,7 @@ public class Gate implements GateAPI{
             buttonLocation.getBlock().setBlockData(buttonData);
         }
     }
-    
+
     @Override
     public List<BlockLocation> getLocations(GateStructureType structureType) {
         List<BlockLocation> output = new ArrayList<>();
@@ -368,29 +368,29 @@ public class Gate implements GateAPI{
     public Location getTopLeft() {
         return this.topLeft;
     }
-    
+
     @Override
     public void addPortalPosition(Location location, PositionType type) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
         logger.logMessage(Level.FINEST, String.format("Addding portalposition %s with relative position %s", type.toString(), relativeBlockVector.toString()));
         this.addPortalPosition(relativeBlockVector, type);
     }
-    
+
     /**
      * Add a position specific for this Gate
-     * 
+     *
      * @param relativeBlockVector <p> The relative position in format space</p>
-     * @param type     <p> The type of position </p>
-     */ 
+     * @param type                <p> The type of position </p>
+     */
     public void addPortalPosition(BlockVector relativeBlockVector, PositionType type) {
-        PortalPosition pos = new PortalPosition(type,relativeBlockVector);
+        PortalPosition pos = new PortalPosition(type, relativeBlockVector);
         this.portalPositions.add(pos);
     }
 
     /**
      * Add portal positions specific for this Gate
-     * 
-     * @param portalPositions     <p> A list of portalPositions </p>
+     *
+     * @param portalPositions <p> A list of portalPositions </p>
      */
     public void addPortalPositions(List<PortalPosition> portalPositions) {
         this.portalPositions.addAll(portalPositions);

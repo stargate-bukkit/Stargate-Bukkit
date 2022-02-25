@@ -27,7 +27,7 @@ import java.util.logging.Level;
 /**
  * A representation of a gate's format, including all its structures
  */
-public class GateFormat implements GateFormatAPI{
+public class GateFormat implements GateFormatAPI {
 
     private static Map<Material, List<GateFormat>> controlMaterialFormatsMap;
     private static Map<String, GateFormat> gateFormatsMap;

@@ -112,13 +112,13 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public List<Location> getPortalPosition(PositionType type){
+    public List<Location> getPortalPosition(PositionType type) {
         List<Location> positions = new ArrayList<>();
         gate.getPortalPositions().stream().filter((position) -> position.getPositionType() == type).forEach(
                 (position) -> positions.add(gate.getLocation(position.getPositionLocation())));
         return positions;
     }
-    
+
     @Override
     public void update() {
         setSignColor(null);
