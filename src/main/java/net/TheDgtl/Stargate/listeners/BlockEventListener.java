@@ -260,7 +260,7 @@ public class BlockEventListener implements Listener {
         }
 
         if (isInSpawn(signLocation.getLocation())) {
-            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
 
         selectedNetwork.addPortal(portal, true);
