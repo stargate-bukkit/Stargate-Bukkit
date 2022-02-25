@@ -34,6 +34,7 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -111,10 +112,13 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public List<Location> getPortalPosition(PositionType type) {
-        return gate.getPortalPositions(type);
+    public List<Location> getPortalPosition(PositionType type){
+        List<Location> positions = new ArrayList<>();
+        gate.getPortalPositions().stream().filter((position) -> position.getPositionType() == type).forEach(
+                (position) -> positions.add(gate.getLocation(position.getPositionLocation())));
+        return positions;
     }
-
+    
     @Override
     public void update() {
         setSignColor(null);

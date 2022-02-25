@@ -4,7 +4,7 @@
 
     <groupId>net.TheDgtl</groupId>
     <artifactId>Stargate</artifactId>
-    <version>1.0.0.2-ALPHA</version>
+    <version>1.0.0.3-ALPHA</version>
     <name>StarGate</name>
     <description>Spigot plugin to create and manage networks of Stargates.</description>
 

@@ -87,7 +87,7 @@ public class LanguageManager implements LanguageAPI {
             language = LANGUAGE_EDGE_CASES.get(language);
         }
         // Only update language if it has actually changed
-        if (!language.equals(this.language)) {
+        if (this.language == null || !language.equals(this.language)) {
             this.language = language;
             translatedStrings = loadLanguage(language);
         }
