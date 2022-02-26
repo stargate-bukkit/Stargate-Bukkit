@@ -26,6 +26,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -80,7 +82,7 @@ public class DatabaseTester {
         DatabaseTester.serverUUID = UUID.randomUUID();
         Stargate.serverUUID = serverUUID;
         StargateLogger logger = new FakeStargate();
-        this.portalDatabaseAPI = new PortalDatabaseAPI(database, false, isMySQL, logger);
+        this.portalDatabaseAPI = new PortalDatabaseAPI(database, false, isMySQL, logger, nameConfig);
         DatabaseTester.connection = database.getConnection();
 
         NetworkAPI testNetwork = null;
@@ -133,17 +135,6 @@ public class DatabaseTester {
         finishStatement(generator.generateCreateServerInfoTableStatement(connection));
     }
 
-    void addFlagsTest() throws SQLException {
-        PreparedStatement statement = generator.generateAddFlagStatement(connection);
-
-        for (PortalFlag flag : PortalFlag.values()) {
-            System.out.println("Adding flag " + flag.getCharacterRepresentation() + " to the database");
-            statement.setString(1, String.valueOf(flag.getCharacterRepresentation()));
-            statement.execute();
-        }
-        statement.close();
-    }
-
     void getFlagsTest() throws SQLException {
         printTableInfo("SG_Test_Flag");
 
@@ -171,6 +162,7 @@ public class DatabaseTester {
     }
 
     void addInterPortalTest() {
+        System.out.println("InterServerTableName: " + nameConfig.getInterPortalTableName());
         for (RealPortal portal : interServerPortals.values()) {
             Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, PortalType.INTER_SERVER));
         }
@@ -360,15 +352,23 @@ public class DatabaseTester {
      * @throws SQLException <p>If unable to delete one of the tables</p>
      */
     static void deleteAllTables(TableNameConfig nameConfig) throws SQLException {
-        finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS " + nameConfig.getInterPortalViewName()));
-        finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS " + nameConfig.getPortalViewName()));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getLastKnownNameTableName()));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getInterFlagRelationTableName()));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getFlagRelationTableName()));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getPortalTableName()));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getInterPortalTableName()));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getLastKnownNameTableName()));
-        finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + nameConfig.getFlagTableName()));
+        System.out.println("Running database cleanup...");
+        List<String> tablesToRemove = new ArrayList<>();
+        tablesToRemove.add(nameConfig.getServerInfoTableName());
+        tablesToRemove.add(nameConfig.getPortalPositionTableName());
+        tablesToRemove.add(nameConfig.getPortalPositionTypeTableName());
+        tablesToRemove.add(nameConfig.getInterPortalViewName());
+        tablesToRemove.add(nameConfig.getPortalViewName());
+        tablesToRemove.add(nameConfig.getLastKnownNameTableName());
+        tablesToRemove.add(nameConfig.getInterFlagRelationTableName());
+        tablesToRemove.add(nameConfig.getFlagRelationTableName());
+        tablesToRemove.add(nameConfig.getPortalTableName());
+        tablesToRemove.add(nameConfig.getInterPortalTableName());
+        tablesToRemove.add(nameConfig.getFlagTableName());
+        for (String table : tablesToRemove) {
+            finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + table));
+        }
+        System.out.println("Finished database cleanup");
     }
 
     /**

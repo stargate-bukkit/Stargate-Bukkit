@@ -103,12 +103,6 @@ public class MySQLDatabaseTest {
     }
 
     @Test
-    @Order(3)
-    void addFlagsTest() throws SQLException {
-        tester.addFlagsTest();
-    }
-
-    @Test
     @Order(4)
     void getFlagsTest() throws SQLException {
         tester.getFlagsTest();
@@ -128,13 +122,13 @@ public class MySQLDatabaseTest {
 
     @Test
     @Order(5)
-    void addPortalTest() throws SQLException {
+    void addPortalTest() {
         tester.addPortalTest();
     }
 
     @Test
     @Order(5)
-    void addInterPortalTest() throws SQLException {
+    void addInterPortalTest() {
         tester.addInterPortalTest();
     }
 

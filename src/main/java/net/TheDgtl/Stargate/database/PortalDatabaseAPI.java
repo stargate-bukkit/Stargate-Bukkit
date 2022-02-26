@@ -83,6 +83,26 @@ public class PortalDatabaseAPI implements StorageAPI {
         createTables();
     }
 
+    /**
+     * Instantiates a new stargate registry
+     *
+     * @param database            <p>The database used for storing portals</p>
+     * @param usingBungee         <p>Whether BungeeCord support is enabled</p>
+     * @param usingRemoteDatabase <p>Whether a remote database, not a flatfile database is used</p>
+     * @param logger              <p>The Stargate logger to use for logging</p>
+     * @param config              <p>The table name configuration to use</p>
+     * @throws SQLException <p>If an SQL exception occurs</p>
+     */
+    public PortalDatabaseAPI(Database database, boolean usingBungee, boolean usingRemoteDatabase,
+                             StargateLogger logger, TableNameConfig config) throws SQLException {
+        this.logger = logger;
+        this.database = database;
+        useInterServerNetworks = usingRemoteDatabase && usingBungee;
+        DriverEnum databaseEnum = usingRemoteDatabase ? DriverEnum.MYSQL : DriverEnum.SQLITE;
+        this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
+        createTables();
+    }
+
     @Override
     public void loadFromStorage() {
         try {

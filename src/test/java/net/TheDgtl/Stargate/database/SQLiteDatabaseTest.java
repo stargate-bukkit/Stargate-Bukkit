@@ -97,12 +97,6 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(3)
-    void addFlagsTest() throws SQLException {
-        tester.addFlagsTest();
-    }
-
-    @Test
     @Order(4)
     void getFlagsTest() throws SQLException {
         tester.getFlagsTest();
