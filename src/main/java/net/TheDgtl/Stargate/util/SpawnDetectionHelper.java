@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.util;
 
 import net.TheDgtl.Stargate.gate.Gate;
+import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -26,7 +27,7 @@ public final class SpawnDetectionHelper {
      * @param someLocation <p>Some location of the gate (used to get the world)</p>
      * @return <p>True if the gate has at least one block inside the spawn protection area</p>
      */
-    private static boolean isInterferingWithSpawnProtection(Gate gate, Location someLocation) {
+    public static boolean isInterferingWithSpawnProtection(Gate gate, Location someLocation) {
         Location spawnLocation = Objects.requireNonNull(someLocation.getWorld()).getSpawnLocation();
         int spawnRadius = Bukkit.getSpawnRadius();
 
@@ -34,9 +35,9 @@ public final class SpawnDetectionHelper {
                 someLocation.getWorld().getMinHeight(), spawnLocation.getBlockZ() - spawnRadius);
         Location spawnMaxLocation = new Location(spawnLocation.getWorld(), spawnLocation.getBlockX() + spawnRadius,
                 someLocation.getWorld().getMaxHeight(), spawnLocation.getBlockZ() + spawnRadius);
-        //TODO: Get the Stargate format dimensions from somewhere
-        Location gateMinLocation = getStargateMinCorner(gate, 0, 0, 0);
-        Location gateMaxLocation = getStargateMaxCorner(gate, 0, 0);
+        GateFormat format = gate.getFormat();
+        Location gateMinLocation = getStargateMinCorner(gate, format.getHeight(), format.getWidth(), 0);
+        Location gateMaxLocation = getStargateMaxCorner(gate, format.getWidth(), 0);
 
         //Check if the stargate's frame is intersecting with the spawn area
         if (areIntersecting(gateMinLocation, gateMaxLocation, spawnMinLocation, spawnMaxLocation)) {
