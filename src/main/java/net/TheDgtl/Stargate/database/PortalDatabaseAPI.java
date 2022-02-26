@@ -120,6 +120,7 @@ public class PortalDatabaseAPI implements StorageAPI {
     public Network createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             InterServerNetwork interServerNetwork = new InterServerNetwork(networkName, database, sqlQueryGenerator);
+            //TODO: These four lines are never used. Why?
             String networkHash = interServerNetwork.getName().toLowerCase();
             if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
                 networkHash = ChatColor.stripColor(networkHash);

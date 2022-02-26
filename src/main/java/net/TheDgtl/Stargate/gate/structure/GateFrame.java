@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.gate.structure;
 
+import net.TheDgtl.Stargate.Stargate;
 import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
 
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * Represents the frame part of the gate structure
@@ -40,7 +42,12 @@ public class GateFrame extends GateStructure {
 
     @Override
     protected boolean isValidBlock(BlockVector blockVector, Material material) {
-        return parts.get(blockVector).contains(material);
+        Set<Material> materials = parts.get(blockVector);
+        if (materials == null) {
+            Stargate.log(Level.SEVERE, "Could not get materials for: " + blockVector);
+            return false;
+        }
+        return materials.contains(material);
     }
 
 }

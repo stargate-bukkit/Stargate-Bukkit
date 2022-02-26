@@ -24,9 +24,10 @@ public class GateFormat implements GateFormatAPI {
 
     private final Set<Material> controlMaterials;
     private final Map<GateStructureType, GateStructure> portalParts;
-
     private final String name;
     private final boolean isIronDoorBlockable;
+    private final int height;
+    private final int width;
 
     /**
      * Instantiates a new gate format
@@ -36,9 +37,11 @@ public class GateFormat implements GateFormatAPI {
      * @param controlBlocks       <p>The format's control block structure</p>
      * @param name                <p>The name of the new gate format</p>
      * @param isIronDoorBlockable <p>Whether the gate format's iris can be blocked by a single iron door</p>
+     * @param height              <p>The height of this gate format</p>
+     * @param width               <p>The width of this gate format</p>
      */
     public GateFormat(GateIris iris, GateFrame frame, GateControlBlock controlBlocks, String name,
-                      boolean isIronDoorBlockable, Set<Material> controlMaterials) {
+                      boolean isIronDoorBlockable, Set<Material> controlMaterials, int height, int width) {
         portalParts = new EnumMap<>(GateStructureType.class);
         portalParts.put(GateStructureType.IRIS, iris);
         portalParts.put(GateStructureType.FRAME, frame);
@@ -46,6 +49,26 @@ public class GateFormat implements GateFormatAPI {
         this.name = name;
         this.isIronDoorBlockable = isIronDoorBlockable;
         this.controlMaterials = controlMaterials;
+        this.height = height;
+        this.width = width;
+    }
+
+    /**
+     * Gets the height of this gate format
+     *
+     * @return <p>The height of this gate format</p>
+     */
+    public int getHeight() {
+        return height;
+    }
+
+    /**
+     * Gets the width of this gate format
+     *
+     * @return <p>The width of this gate format</p>
+     */
+    public int getWidth() {
+        return width;
     }
 
     /**

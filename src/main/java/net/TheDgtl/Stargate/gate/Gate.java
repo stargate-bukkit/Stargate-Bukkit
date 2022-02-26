@@ -83,11 +83,10 @@ public class Gate implements GateAPI {
     /**
      * Instantiates a gate from already predetermined parameters, no checking is done to see if format matches
      *
-     * @param topLeft         <p>The location of the origin of the gate</p>
-     * @param facing          <p>The facing of the gate</p>
-     * @param flipZ           <p>If the gateFormat is flipped in the z-axis</p>
-     * @param format          <p>The gate format used by this gate</p>
-     * @param portalPositions <p>The positions of this gate's control blocks</p>
+     * @param topLeft <p>The location of the origin of the gate</p>
+     * @param facing  <p>The facing of the gate</p>
+     * @param flipZ   <p>If the gateFormat is flipped in the z-axis</p>
+     * @param format  <p>The gate format used by this gate</p>
      * @throws InvalidStructureException <p>If the facing is invalid</p>
      */
     public Gate(Location topLeft, BlockFace facing, boolean flipZ, GateFormat format, StargateLogger logger) throws InvalidStructureException {

@@ -369,9 +369,9 @@ public class SQLQueryGenerator {
         boolean isInterServer = (portalType == PortalType.INTER_SERVER);
         String extraKeys = (isInterServer ? ", homeServerId, isOnline" : "");
         String extraValues = (isInterServer ? ", ?, ?" : "");
-        String statementMessage = String
-                .format("INSERT INTO {Portal} (network, name, destination, world, x, y, z, ownerUUID,"
-                        + "gateFileName, facing, flipZ%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?%s);", extraKeys, extraValues);
+        String statementMessage = String.format("INSERT INTO {Portal} (network, name, destination, world, x, y, z, " +
+                        "ownerUUID, gateFileName, facing, flipZ%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?%s);", extraKeys,
+                extraValues);
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
 
         PreparedStatement statement = connection.prepareStatement(statementMessage);

@@ -75,7 +75,7 @@ public class GateFormatHandler {
             try {
                 gateFormatMap.add(loadGateFormat(file, logger));
             } catch (FileNotFoundException | ParsingErrorException e) {
-                Stargate.log(Level.WARNING, "Could not load Gate " + file.getName() + " - " + e.getMessage());
+                logger.logMessage(Level.WARNING, "Could not load Gate " + file.getName() + " - " + e.getMessage());
             }
         }
         return gateFormatMap;
@@ -118,7 +118,8 @@ public class GateFormatHandler {
     /**
      * Loads the given gate format file
      *
-     * @param file <p>The gate format file to load</p>
+     * @param file   <p>The gate format file to load</p>
+     * @param logger <p>The logger used for logging</p>
      * @throws ParsingErrorException <p>If unable to load the gate format</p>
      * @throws FileNotFoundException <p>If the gate file does not exist</p>
      */
@@ -132,7 +133,7 @@ public class GateFormatHandler {
             }
 
             GateFormatParser gateParser = new GateFormatParser(scanner, file.getName(), logger);
-            return gateParser.parse();
+            return gateParser.parseGateFormat();
         }
     }
 

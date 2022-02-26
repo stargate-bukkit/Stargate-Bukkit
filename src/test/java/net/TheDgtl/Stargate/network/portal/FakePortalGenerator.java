@@ -85,6 +85,9 @@ public class FakePortalGenerator {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
         }
         GateFormat format = GateFormatHandler.getFormat("fileName.gate");
+        if (format == null) {
+            throw new IllegalArgumentException("Gate format not found");
+        }
         Gate gate = new Gate(world.getBlockAt(0, 0, 0).getLocation(), BlockFace.EAST, false, format,
                 logger);
 

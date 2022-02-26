@@ -122,13 +122,13 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(5)
-    void addPortalTest() throws SQLException {
+    void addPortalTest() {
         tester.addPortalTest();
     }
 
     @Test
     @Order(5)
-    void addInterPortalTest() throws SQLException {
+    void addInterPortalTest() {
         tester.addInterPortalTest();
     }
 
