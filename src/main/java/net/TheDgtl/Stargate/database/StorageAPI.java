@@ -42,7 +42,7 @@ public interface StorageAPI {
      * @param portal     <p>The portal to save</p>
      * @param portalType <p>The type of portal to save</p>
      */
-    void savePortalToStorage(RealPortal portal, PortalType portalType);
+    boolean savePortalToStorage(RealPortal portal, PortalType portalType);
 
     /**
      * Removes a portal and its associated data from storage

@@ -136,7 +136,7 @@ public class PortalDatabaseAPI implements StorageAPI {
     }
 
     @Override
-    public void savePortalToStorage(RealPortal portal, PortalType portalType) {
+    public boolean savePortalToStorage(RealPortal portal, PortalType portalType) {
         /* An SQL transaction is used here to make sure partial data is never added to the database. */
         Connection connection = null;
         try {
@@ -156,6 +156,7 @@ public class PortalDatabaseAPI implements StorageAPI {
 
             connection.commit();
             connection.setAutoCommit(true);
+            return true;
         } catch (SQLException exception) {
             try {
                 if (connection != null) {
@@ -167,6 +168,7 @@ public class PortalDatabaseAPI implements StorageAPI {
             }
             exception.printStackTrace();
         }
+        return false;
     }
 
     @Override

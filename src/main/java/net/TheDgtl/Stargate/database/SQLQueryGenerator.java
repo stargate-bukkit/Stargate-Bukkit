@@ -373,7 +373,7 @@ public class SQLQueryGenerator {
                         "ownerUUID, gateFileName, facing, flipZ%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?%s);", extraKeys,
                 extraValues);
         statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-
+        
         PreparedStatement statement = connection.prepareStatement(statementMessage);
 
         statement.setString(1, portal.getNetwork().getName());

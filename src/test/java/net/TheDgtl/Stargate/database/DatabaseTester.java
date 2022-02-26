@@ -166,13 +166,13 @@ public class DatabaseTester {
 
     void addPortalTest() {
         for (RealPortal portal : localPortals.values()) {
-            this.portalDatabaseAPI.savePortalToStorage(portal, PortalType.LOCAL);
+            Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, PortalType.LOCAL));
         }
     }
 
     void addInterPortalTest() {
         for (RealPortal portal : interServerPortals.values()) {
-            this.portalDatabaseAPI.savePortalToStorage(portal, PortalType.INTER_SERVER);
+            Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, PortalType.INTER_SERVER));
         }
     }
 

@@ -79,7 +79,7 @@ public class GateFormatParser {
         iris = new GateIris(irisOpen, irisClosed);
         frame = new GateFrame();
         controlBlocks = new GateControlBlock();
-        
+
         loadFrameAndControlMaterials(characterMaterialMap);
         loadDesignLocations(design);
         checkIfCanBeBlockedByIronDoor();
