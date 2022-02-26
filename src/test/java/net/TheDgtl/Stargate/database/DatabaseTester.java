@@ -9,7 +9,6 @@ import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.TableNameConfig;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
-import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.NetworkAPI;
@@ -90,7 +89,7 @@ public class DatabaseTester {
         } catch (NameErrorException e) {
             e.printStackTrace();
         }
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormat.loadGateFormats(testGatesDir, logger)));
+        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
         FakePortalGenerator portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
 
         this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength, logger);

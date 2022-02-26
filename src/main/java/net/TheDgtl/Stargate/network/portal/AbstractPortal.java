@@ -97,7 +97,7 @@ public abstract class AbstractPortal implements RealPortal {
 
         colorDrawer = new NoLineColorFormatter();
 
-        if (gate.getFormat() != null && gate.getFormat().isIronDoorBlockable) {
+        if (gate.getFormat() != null && gate.getFormat().isIronDoorBlockable()) {
             flags.add(PortalFlag.IRON_DOOR);
         }
 

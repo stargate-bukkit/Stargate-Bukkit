@@ -279,7 +279,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     private void loadGateFormats() {
         saveDefaultGates();
-        List<GateFormat> gateFormats = GateFormat.loadGateFormats(new File(DATA_FOLDER, GATE_FOLDER), this);
+        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(new File(DATA_FOLDER, GATE_FOLDER), this);
         if (gateFormats == null) {
             log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
             GateFormatHandler.setFormats(new ArrayList<>());

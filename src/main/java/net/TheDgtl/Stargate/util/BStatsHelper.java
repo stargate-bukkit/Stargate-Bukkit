@@ -2,7 +2,7 @@ package net.TheDgtl.Stargate.util;
 
 import net.TheDgtl.Stargate.config.setting.Setting;
 import net.TheDgtl.Stargate.config.setting.Settings;
-import net.TheDgtl.Stargate.gate.GateFormat;
+import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.network.portal.AbstractPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import org.bstats.bukkit.Metrics;
@@ -19,7 +19,7 @@ public class BStatsHelper {
 
         metrics.addCustomChart(new SimplePie("language", () -> Settings.getString(Setting.LANGUAGE)));
 
-        metrics.addCustomChart(new SimplePie("gateformats", () -> String.valueOf(GateFormat.formatAmount)));
+        metrics.addCustomChart(new SimplePie("gateformats", () -> String.valueOf(GateFormatHandler.formatsStored())));
 
         metrics.addCustomChart(new SingleLineChart("gatesv3", () -> AbstractPortal.portalCount));
 
