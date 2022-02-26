@@ -132,7 +132,7 @@ public class PortalDatabaseAPI implements StorageAPI {
 
     @Override
     public void endInterServerConnection() {
-
+        //TODO: Why is this method here if it does nothing
     }
 
     @Override

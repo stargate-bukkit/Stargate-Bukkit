@@ -31,6 +31,7 @@ public class BStatsHelper {
             }
             return flagsString.toString();
         }));
+        //TODO: The metrics object returned is never created
         return metrics;
     }
 }

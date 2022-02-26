@@ -8,7 +8,7 @@ public interface LanguageAPI {
      * @param translatableMessage <p>The translatable message to display as an error</p>
      * @return <p>The formatted error message</p>
      */
-    public String getErrorMessage(TranslatableMessage translatableMessage);
+    String getErrorMessage(TranslatableMessage translatableMessage);
 
     /**
      * Gets a formatted message
@@ -16,7 +16,7 @@ public interface LanguageAPI {
      * @param translatableMessage <p>The translatable message to display</p>
      * @return <p>The formatted message</p>
      */
-    public String getMessage(TranslatableMessage translatableMessage);
+    String getMessage(TranslatableMessage translatableMessage);
 
     /**
      * Gets a translated string
@@ -24,7 +24,7 @@ public interface LanguageAPI {
      * @param translatableMessage <p>The translatable message to translate</p>
      * @return <p>The corresponding translated message</p>
      */
-    public String getString(TranslatableMessage translatableMessage);
+    String getString(TranslatableMessage translatableMessage);
 
     /**
      * Sets the currently used language
@@ -33,5 +33,5 @@ public interface LanguageAPI {
      *
      * @param language <p>The language to change to</p>
      */
-    public void setLanguage(String language);
+    void setLanguage(String language);
 }

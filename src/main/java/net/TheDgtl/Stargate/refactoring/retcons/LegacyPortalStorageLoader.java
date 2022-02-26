@@ -151,11 +151,11 @@ public class LegacyPortalStorageLoader {
 
         Gate gate = new Gate(topLeft, facing, false, format, logger);
         if (signLocation != null) {
-            logger.logMessage(Level.FINEST, "signLoc=" + signLocation.toString());
+            logger.logMessage(Level.FINEST, "signLoc=" + signLocation);
             gate.addPortalPosition(signLocation, PositionType.SIGN);
         }
         if (buttonLocation != null && !flags.contains(PortalFlag.ALWAYS_ON)) {
-            logger.logMessage(Level.FINEST, "buttonLoc=" + buttonLocation.toString());
+            logger.logMessage(Level.FINEST, "buttonLoc=" + buttonLocation);
             gate.addPortalPosition(buttonLocation, PositionType.BUTTON);
         }
 
