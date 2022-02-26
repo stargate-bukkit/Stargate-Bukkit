@@ -366,7 +366,11 @@ public class DatabaseTester {
         tablesToRemove.add(nameConfig.getInterPortalTableName());
         tablesToRemove.add(nameConfig.getFlagTableName());
         for (String table : tablesToRemove) {
-            finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + table));
+            if (table.contains("View")) {
+                finishStatement(connection.prepareStatement("DROP VIEW IF EXISTS " + table));
+            } else {
+                finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + table));
+            }
         }
         System.out.println("Finished database cleanup");
     }

@@ -1,6 +1,8 @@
 package net.TheDgtl.Stargate.network;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.config.setting.Setting;
+import net.TheDgtl.Stargate.config.setting.Settings;
 import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
@@ -8,6 +10,7 @@ import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
@@ -27,8 +30,8 @@ import java.util.logging.Level;
 public class StargateRegistry implements RegistryAPI {
 
     private final StorageAPI storageAPI;
-    private final HashMap<String, NetworkAPI> networkList = new HashMap<>();
-    private final HashMap<String, NetworkAPI> bungeeNetworkList = new HashMap<>();
+    private final HashMap<String, NetworkAPI> networkMap = new HashMap<>();
+    private final HashMap<String, NetworkAPI> bungeeNetworkMap = new HashMap<>();
     private final Map<GateStructureType, Map<BlockLocation, Portal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
 
     /**
@@ -63,13 +66,13 @@ public class StargateRegistry implements RegistryAPI {
         }
         NetworkAPI network = storageAPI.createNetwork(networkName, flags);
         network.assignToRegistry(this);
-        getNetworkList().put(networkName, network);
+        getNetworkMap().put(network.getId(), network);
     }
 
     @Override
     public void updateAllPortals() {
-        updatePortals(getNetworkList());
-        updatePortals(getBungeeNetworkList());
+        updatePortals(getNetworkMap());
+        updatePortals(getBungeeNetworkMap());
     }
 
     @Override
@@ -86,7 +89,11 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public NetworkAPI getNetwork(String name, boolean isBungee) {
-        return getNetworkMap(isBungee).get(name);
+        String cleanName = name.trim().toLowerCase();
+        if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
+            cleanName = ChatColor.stripColor(cleanName);
+        }
+        return getNetworkMap(isBungee).get(cleanName);
     }
 
     @Override
@@ -175,20 +182,20 @@ public class StargateRegistry implements RegistryAPI {
      */
     private Map<String, ? extends NetworkAPI> getNetworkMap(boolean getBungee) {
         if (getBungee) {
-            return getBungeeNetworkList();
+            return getBungeeNetworkMap();
         } else {
-            return getNetworkList();
+            return getNetworkMap();
         }
     }
 
     @Override
-    public HashMap<String, NetworkAPI> getBungeeNetworkList() {
-        return bungeeNetworkList;
+    public HashMap<String, NetworkAPI> getBungeeNetworkMap() {
+        return bungeeNetworkMap;
     }
 
     @Override
-    public HashMap<String, NetworkAPI> getNetworkList() {
-        return networkList;
+    public HashMap<String, NetworkAPI> getNetworkMap() {
+        return networkMap;
     }
 
 }

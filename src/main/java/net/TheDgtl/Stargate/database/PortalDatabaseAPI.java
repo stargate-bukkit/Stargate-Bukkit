@@ -23,7 +23,6 @@ import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -139,13 +138,7 @@ public class PortalDatabaseAPI implements StorageAPI {
     @Override
     public Network createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
-            InterServerNetwork interServerNetwork = new InterServerNetwork(networkName, database, sqlQueryGenerator);
-            //TODO: These four lines are never used. Why?
-            String networkHash = interServerNetwork.getName().toLowerCase();
-            if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
-                networkHash = ChatColor.stripColor(networkHash);
-            }
-            return interServerNetwork;
+            return new InterServerNetwork(networkName, database, sqlQueryGenerator);
         }
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
             UUID uuid = UUID.fromString(networkName);

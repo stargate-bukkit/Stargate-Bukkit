@@ -170,12 +170,12 @@ public interface RegistryAPI {
      *
      * @return <p>All BungeeCord networks</p>
      */
-    public HashMap<String, NetworkAPI> getBungeeNetworkList();
+    public HashMap<String, NetworkAPI> getBungeeNetworkMap();
 
     /**
      * Gets the map storing all non-BungeeCord networks
      *
      * @return <p>All non-BungeeCord networks</p>
      */
-    public HashMap<String, NetworkAPI> getNetworkList();
+    public HashMap<String, NetworkAPI> getNetworkMap();
 }

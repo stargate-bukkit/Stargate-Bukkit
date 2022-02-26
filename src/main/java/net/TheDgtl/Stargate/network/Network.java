@@ -32,7 +32,7 @@ public class Network implements NetworkAPI {
     protected Map<String, Portal> nameToPortalMap;
     protected Database database;
     protected String name;
-    protected SQLQueryGenerator sqlMaker;
+    protected SQLQueryGenerator sqlQueryGenerator;
     private RegistryAPI registry;
 
     /**
@@ -47,10 +47,18 @@ public class Network implements NetworkAPI {
         if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH)) {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         }
-        this.name = name;
+        this.name = name.trim();
+        if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
+            this.name = ChatColor.stripColor(this.name);
+        }
         this.database = database;
-        this.sqlMaker = queryGenerator;
+        this.sqlQueryGenerator = queryGenerator;
         nameToPortalMap = new HashMap<>();
+    }
+
+    @Override
+    public String getId() {
+        return this.name.toLowerCase();
     }
 
     @Override
