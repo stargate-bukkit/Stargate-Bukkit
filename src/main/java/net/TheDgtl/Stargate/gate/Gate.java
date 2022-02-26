@@ -6,6 +6,7 @@ import net.TheDgtl.Stargate.actions.BlockSetAction;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
+import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
@@ -41,7 +42,7 @@ public class Gate implements GateAPI {
     private final GateFormat format;
     private final IVectorOperation converter;
     private Location topLeft;
-    private final List<PortalPosition> portalPositions = new ArrayList<PortalPosition>();
+    private final List<PortalPosition> portalPositions = new ArrayList<>();
     private final BlockFace facing;
     private final StargateLogger logger;
     private boolean isOpen = false;
@@ -310,7 +311,7 @@ public class Gate implements GateAPI {
             topLeft = location.clone().subtract(converter.performToRealSpaceOperation(controlBlock));
 
             if (getFormat().matches(converter, topLeft)) {
-                if (isGateConflict()) {
+                if (hasGateFrameConflict()) {
                     throw new GateConflictException();
                 }
                 /*
@@ -318,7 +319,8 @@ public class Gate implements GateAPI {
                  * button. Note that this will have weird behaviour if there's more than 3
                  * control-blocks
                  */
-                //TODO: Need to account for more control blocks
+                //TODO: Need to account for more control blocks (look for controls on all control blocks. If a button 
+                // is required and not found, check for an available control block. If none is found, thrown an exception)
                 signPosition = controlBlock;
                 for (BlockVector buttonVector : getFormat().getControlBlocks()) {
                     if (signPosition == buttonVector) {
@@ -331,6 +333,10 @@ public class Gate implements GateAPI {
                     break;
                 }
 
+                //Make sure no controls conflict with existing controls
+                if (hasGateControlConflict()) {
+                    throw new GateConflictException();
+                }
                 return true;
             }
         }
@@ -342,10 +348,29 @@ public class Gate implements GateAPI {
      *
      * @return <p>True if there is a conflict</p>
      */
-    private boolean isGateConflict() {
-        List<BlockLocation> locations = this.getLocations(GateStructureType.FRAME);
-        for (BlockLocation loc : locations) {
-            if (Stargate.getRegistry().getPortal(loc, GateStructureType.values()) != null) {
+    private boolean hasGateFrameConflict() {
+        RegistryAPI registryAPI = Stargate.getRegistry();
+        List<BlockLocation> frameLocations = this.getLocations(GateStructureType.FRAME);
+        for (BlockLocation blockLocation : frameLocations) {
+            if (registryAPI.getPortal(blockLocation, GateStructureType.values()) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if this gate's control blocks are in conflict with another gate's control blocks
+     *
+     * @return <p>True if there is a conflict</p>
+     */
+    private boolean hasGateControlConflict() {
+        RegistryAPI registryAPI = Stargate.getRegistry();
+        //TODO: If we allow add-ons to add new controls after creation, this should be expanded to all control blocks
+        List<PortalPosition> portalPositions = this.getPortalPositions();
+        for (PortalPosition portalPosition : portalPositions) {
+            BlockLocation positionLocation = new BlockLocation(getLocation(portalPosition.getPositionLocation()));
+            if (registryAPI.getPortal(positionLocation, GateStructureType.CONTROL_BLOCK) != null) {
                 return true;
             }
         }
@@ -371,7 +396,7 @@ public class Gate implements GateAPI {
     @Override
     public void addPortalPosition(Location location, PositionType type) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
-        logger.logMessage(Level.FINEST, String.format("Addding portalposition %s with relative position %s", type.toString(), relativeBlockVector.toString()));
+        logger.logMessage(Level.FINEST, String.format("Addding portalposition %s with relative position %s", type.toString(), relativeBlockVector));
         this.addPortalPosition(relativeBlockVector, type);
     }
 

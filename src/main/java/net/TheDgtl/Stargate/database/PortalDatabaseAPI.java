@@ -15,7 +15,7 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.PersonalNetwork;
 import net.TheDgtl.Stargate.network.PortalType;
-import net.TheDgtl.Stargate.network.StargateRegistry;
+import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
@@ -381,7 +381,7 @@ public class PortalDatabaseAPI implements StorageAPI {
      * @param portalType <p>The portal type to load</p>
      * @throws SQLException <p>If an SQL error occurs</p>
      */
-    private void loadAllPortals(Database database, PortalType portalType, StargateRegistry registry) throws SQLException {
+    private void loadAllPortals(Database database, PortalType portalType, RegistryAPI registry) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsStatement(connection, portalType);
 

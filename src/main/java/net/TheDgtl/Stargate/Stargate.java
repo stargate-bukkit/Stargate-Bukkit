@@ -34,6 +34,7 @@ import net.TheDgtl.Stargate.listeners.PlayerEventListener;
 import net.TheDgtl.Stargate.listeners.PluginEventListener;
 import net.TheDgtl.Stargate.listeners.StargateBungeePluginMessageListener;
 import net.TheDgtl.Stargate.network.NetworkAPI;
+import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.refactoring.Refactorer;
@@ -411,7 +412,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         return instance.bungeeQueue.remove(playerName);
     }
 
-    public static StargateRegistry getRegistry() {
+    public static RegistryAPI getRegistry() {
         return registry;
     }
 
