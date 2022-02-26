@@ -92,13 +92,23 @@ public class NetworkedPortal extends AbstractPortal {
         }
     }
 
-
+    /**
+     * Selects the next destination in this portal's destination list
+     *
+     * @param action              <p>The action performed on this portal's sign</p>
+     * @param previouslyActivated <p>Whether this portal is currently active</p>
+     * @return <p>The index of the new destination</p>
+     */
     public int selectNewDestination(Action action, boolean previouslyActivated) {
         if (!previouslyActivated) {
             if (!Settings.getBoolean(Setting.REMEMBER_LAST_DESTINATION)) {
                 return 0;
+            } else {
+                if (selectedDestination == NO_DESTINATION_SELECTED) {
+                    selectedDestination = 0;
+                }
+                return selectedDestination;
             }
-            return selectedDestination;
         }
 
         if (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK) {
