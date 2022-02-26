@@ -258,7 +258,7 @@ public class BlockEventListener implements Listener {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INTER_SERVER_DISABLED));
             return;
         }
-
+        
         //TODO: Run this check on the entire Stargate, not just the sign
         if (isInSpawn(signLocation.getLocation())) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));

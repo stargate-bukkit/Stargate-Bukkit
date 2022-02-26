@@ -57,6 +57,8 @@ public class GateFormat implements GateFormatAPI {
         this.isIronDoorBlockable = isIronDoorBlockable;
         GateFormat.formatAmount++;
         this.controlMaterials = controlMaterials;
+
+        //TODO: Split this into GateFormat and GateFormatHandler
     }
 
     /**
