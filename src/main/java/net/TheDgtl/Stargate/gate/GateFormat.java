@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -29,8 +28,6 @@ import java.util.logging.Level;
  */
 public class GateFormat implements GateFormatAPI {
 
-    private static Map<Material, List<GateFormat>> controlMaterialFormatsMap;
-    private static Map<String, GateFormat> gateFormatsMap;
     public static int formatAmount = 0;
 
     private final Set<Material> controlMaterials;
@@ -124,40 +121,6 @@ public class GateFormat implements GateFormatAPI {
     }
 
     /**
-     * Adds a new gate format
-     *
-     * @param controlToGateMap <p>The map of registered control block material to gate format mapping</p>
-     * @param format           <p>The gate format to register</p>
-     * @param controlMaterials <p>The allowed control block materials for the new gate format</p>
-     */
-    private static void addGateFormat(Map<Material, List<GateFormat>> controlToGateMap, GateFormat format,
-                                      Set<Material> controlMaterials) {
-        for (Material controlMaterial : controlMaterials) {
-            //Add an empty list if the material has no entry
-            if (!(controlToGateMap.containsKey(controlMaterial))) {
-                List<GateFormat> gateFormatList = new ArrayList<>();
-                controlToGateMap.put(controlMaterial, gateFormatList);
-            }
-            controlToGateMap.get(controlMaterial).add(format);
-        }
-    }
-
-    /**
-     * Gets all gate format using the given control block material
-     *
-     * @param signParentBlockMaterial <p>The material of a placed sign's parent block</p>
-     * @return <p>All gate formats using the given control block</p>
-     */
-    public static List<GateFormat> getPossibleGateFormatsFromControlBlockMaterial(Material signParentBlockMaterial) {
-        List<GateFormat> possibleGates = controlMaterialFormatsMap.get(signParentBlockMaterial);
-        if (possibleGates == null) {
-            return new ArrayList<>();
-        }
-        return possibleGates;
-
-    }
-
-    /**
      * Gets the locations of this gate format's control blocks
      *
      * @return <p>The locations of this gate format's control blocks</p>
@@ -196,23 +159,11 @@ public class GateFormat implements GateFormatAPI {
     /**
      * Get the {@link GateStructure} of the specified type
      *
-     * @param type <p> The specified type of {@link GateStructure} </p>
-     * @return
+     * @param type <p>The specified type of {@link GateStructure}</p>
+     * @return <p>The {@link GateStructure} of the specified type</p>
      */
     public GateStructure getStructure(GateStructureType type) {
         return this.portalParts.get(type);
     }
 
-    public static GateFormat getFormat(String gateDesignName) {
-        return gateFormatsMap.get(gateDesignName);
-    }
-
-    public static void setFormats(List<GateFormat> gateFormats) {
-        controlMaterialFormatsMap = new EnumMap<>(Material.class);
-        gateFormatsMap = new HashMap<>();
-        for (GateFormat format : gateFormats) {
-            addGateFormat(controlMaterialFormatsMap, format, format.getControlMaterials());
-            gateFormatsMap.put(format.getFileName(), format);
-        }
-    }
 }

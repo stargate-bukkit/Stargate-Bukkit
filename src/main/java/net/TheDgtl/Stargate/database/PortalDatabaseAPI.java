@@ -9,6 +9,7 @@ import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
+import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.network.InterServerNetwork;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.NetworkAPI;
@@ -426,7 +427,7 @@ public class PortalDatabaseAPI implements StorageAPI {
             }
 
             try {
-                GateFormat format = GateFormat.getFormat(gateFileName);
+                GateFormat format = GateFormatHandler.getFormat(gateFileName);
                 if (format == null) {
                     continue;
                 }

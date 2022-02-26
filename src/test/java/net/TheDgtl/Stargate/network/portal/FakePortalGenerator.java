@@ -5,15 +5,14 @@ import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
+import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.network.NetworkAPI;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -85,12 +84,9 @@ public class FakePortalGenerator {
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
         }
-        List<PortalPosition> portalPositions = new ArrayList<>();
-        portalPositions.add(new PortalPosition(PositionType.SIGN, new BlockVector(0, 3, 0)));
-        GateFormat format = GateFormat.getFormat("fileName.gate");
+        GateFormat format = GateFormatHandler.getFormat("fileName.gate");
         Gate gate = new Gate(world.getBlockAt(0, 0, 0).getLocation(), BlockFace.EAST, false, format,
                 logger);
-
 
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON);
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);

@@ -7,6 +7,7 @@ import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
+import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -143,7 +144,7 @@ public class LegacyPortalStorageLoader {
         NetworkAPI network = registry.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
 
-        GateFormat format = GateFormat.getFormat(gateFormatName);
+        GateFormat format = GateFormatHandler.getFormat(gateFormatName);
         if (format == null) {
             logger.logMessage(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup log for more information", gateFormatName));
         }

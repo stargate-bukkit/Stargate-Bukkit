@@ -14,6 +14,7 @@ import net.TheDgtl.Stargate.database.PortalDatabaseAPI;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.gate.GateFormat;
+import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -79,7 +80,7 @@ public class RefactorerTest {
         server.addSimpleWorld("pseudoknigth");
         Stargate.getConfigStatic().load(defaultConfigFile);
 
-        GateFormat.setFormats(Objects.requireNonNull(GateFormat.loadGateFormats(testGatesDir, logger)));
+        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormat.loadGateFormats(testGatesDir, logger)));
     }
 
     private static Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> getSettingTestMaps() {

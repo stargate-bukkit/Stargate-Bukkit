@@ -27,6 +27,7 @@ import net.TheDgtl.Stargate.database.PortalDatabaseAPI;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.gate.GateFormat;
+import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.listeners.BlockEventListener;
 import net.TheDgtl.Stargate.listeners.MoveEventListener;
 import net.TheDgtl.Stargate.listeners.PlayerEventListener;
@@ -281,9 +282,9 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         List<GateFormat> gateFormats = GateFormat.loadGateFormats(new File(DATA_FOLDER, GATE_FOLDER), this);
         if (gateFormats == null) {
             log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
-            GateFormat.setFormats(new ArrayList<>());
+            GateFormatHandler.setFormats(new ArrayList<>());
         } else {
-            GateFormat.setFormats(gateFormats);
+            GateFormatHandler.setFormats(gateFormats);
         }
     }
 
