@@ -120,19 +120,18 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public void update() {
+    public void updateState() {
         setSignColor(null);
-
-        if (getCurrentDestination() == null) {
+        if (getCurrentDestination() == null || this instanceof FixedPortal) {
             this.destination = getDestination();
         }
 
-        if (hasFlag(PortalFlag.ALWAYS_ON)) {
+        Portal currentDestination = getCurrentDestination();
+        if (hasFlag(PortalFlag.ALWAYS_ON) && currentDestination != null) {
             this.open(null);
         }
-
-        if (isOpen() && getCurrentDestination() == null) {
-            close(false);
+        if (isOpen() && currentDestination == null) {
+            close(true);
         }
         drawControlMechanisms();
     }

@@ -130,7 +130,7 @@ public interface Portal {
     /**
      * Looks into available portals to connect to, and updates appearance and behaviour accordingly
      */
-    void update();
+    void updateState();
 
     /**
      * Gets the currently selected destination portal

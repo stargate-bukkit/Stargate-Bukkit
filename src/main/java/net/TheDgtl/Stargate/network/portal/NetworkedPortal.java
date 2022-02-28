@@ -86,7 +86,7 @@ public class NetworkedPortal extends AbstractPortal {
         }
 
         selectedDestination = selectNewDestination(event.getAction(), previouslyActivated);
-        this.update();
+        this.updateState();
         if (hasFlag(PortalFlag.ALWAYS_ON)) {
             super.destination = getDestination();
         }
@@ -127,9 +127,9 @@ public class NetworkedPortal extends AbstractPortal {
     }
 
     @Override
-    public void update() {
+    public void updateState() {
         this.selectedDestination = reloadSelectedDestination();
-        super.update();
+        super.updateState();
     }
 
     /**

@@ -71,12 +71,12 @@ public class Network implements NetworkAPI {
         if (name == null) {
             return null;
         }
-        return nameToPortalMap.get(this.getPortalHash(name));
+        return nameToPortalMap.get(this.getPortalId(name));
     }
 
     @Override
     public void removePortal(Portal portal, boolean removeFromDatabase) {
-        nameToPortalMap.remove(this.getPortalHash(portal.getName()));
+        nameToPortalMap.remove(this.getPortalId(portal.getName()));
         if (!removeFromDatabase) {
             return;
         }
@@ -86,19 +86,19 @@ public class Network implements NetworkAPI {
     @Override
     public void addPortal(Portal portal, boolean saveToDatabase) {
         if (portal instanceof RealPortal) {
-            RealPortal physicalPortal = (RealPortal) portal;
+            RealPortal realPortal = (RealPortal) portal;
             for (GateStructureType key : GateStructureType.values()) {
-                List<BlockLocation> locations = physicalPortal.getGate().getLocations(key);
+                List<BlockLocation> locations = realPortal.getGate().getLocations(key);
                 if (locations == null) {
                     continue;
                 }
                 registry.registerLocations(key, generateLocationMap(locations, portal));
             }
+            if (saveToDatabase) {
+                savePortal((RealPortal) portal);
+            }
         }
-        if (portal instanceof RealPortal && saveToDatabase) {
-            savePortal((RealPortal) portal);
-        }
-        nameToPortalMap.put(getPortalHash(portal.getName()), portal);
+        nameToPortalMap.put(getPortalId(portal.getName()), portal);
     }
 
     @Override
@@ -109,14 +109,14 @@ public class Network implements NetworkAPI {
     @Override
     public void updatePortals() {
         for (String portal : nameToPortalMap.keySet()) {
-            getPortal(portal).update();
+            getPortal(portal).updateState();
         }
     }
 
     @Override
     public Set<String> getAvailablePortals(Player player, Portal requester) {
         Set<String> tempPortalList = new HashSet<>(nameToPortalMap.keySet());
-        tempPortalList.remove(getPortalHash(requester.getName()));
+        tempPortalList.remove(getPortalId(requester.getName()));
         if (!requester.hasFlag(PortalFlag.FORCE_SHOW)) {
             Set<String> removeList = new HashSet<>();
             for (String portalName : tempPortalList) {
@@ -185,7 +185,7 @@ public class Network implements NetworkAPI {
     }
 
     /**
-     * Gets a "hash" of a portal's name
+     * Gets a portal's id
      *
      * <p>This basically just lower-cases the name, and strips color if enabled. This is to make portal names
      * case-agnostic and optionally color-agnostic.</p>
@@ -193,7 +193,7 @@ public class Network implements NetworkAPI {
      * @param portalName <p>The name to "hash"</p>
      * @return <p>The "hashed" name</p>
      */
-    private String getPortalHash(String portalName) {
+    private String getPortalId(String portalName) {
         String portalHash = portalName.toLowerCase();
         if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
             portalHash = ChatColor.stripColor(portalHash);

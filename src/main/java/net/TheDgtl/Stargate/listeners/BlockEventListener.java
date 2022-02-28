@@ -220,31 +220,31 @@ public class BlockEventListener implements Listener {
         UUID ownerUUID = flags.contains(PortalFlag.PERSONAL_NETWORK) ? UUID.fromString(selectedNetwork.getName()) : player.getUniqueId();
         Gate gate = PortalCreationHelper.createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON), Stargate.getInstance());
         Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance());
-        StargateCreateEvent sEvent = new StargateCreateEvent(player, portal, lines, cost);
+        StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, cost);
 
-        Bukkit.getPluginManager().callEvent(sEvent);
+        Bukkit.getPluginManager().callEvent(stargateCreateEvent);
 
-        boolean hasPerm = permissionManager.hasPermission(sEvent);
-        Stargate.log(Level.CONFIG, " player has perm = " + hasPerm);
+        boolean hasPermission = permissionManager.hasPermission(stargateCreateEvent);
+        Stargate.log(Level.CONFIG, " player has perm = " + hasPermission);
 
         if (errorMessage != null) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(errorMessage));
             return;
         }
 
-        if (!hasPerm) {
+        if (!hasPermission) {
             Stargate.log(Level.CONFIG, " Event was cancelled due to lack of permission");
             player.sendMessage(permissionManager.getDenyMessage());
             return;
         }
-        if (sEvent.isCancelled()) {
+        if (stargateCreateEvent.isCancelled()) {
             Stargate.log(Level.CONFIG, " Event was cancelled due an external cancellation");
-            player.sendMessage(sEvent.getDenyReason());
+            player.sendMessage(stargateCreateEvent.getDenyReason());
             return;
         }
 
         if (shouldChargePlayer(player, portal, BypassPermission.COST_CREATE) &&
-                !Stargate.economyManager.chargeAndTax(player, sEvent.getCost())) {
+                !Stargate.economyManager.chargeAndTax(player, stargateCreateEvent.getCost())) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return;
         }

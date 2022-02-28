@@ -132,7 +132,7 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
-    public void update() {
+    public void updateState() {
     }
 
     @Override
