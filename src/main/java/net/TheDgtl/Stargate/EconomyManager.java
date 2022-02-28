@@ -97,8 +97,8 @@ public class EconomyManager {
         if (Settings.getBoolean(Setting.GATE_OWNER_REVENUE)) {
             if (chargeAndDepositPlayer(player, Bukkit.getServer().getOfflinePlayer(origin.getOwnerUUID()), amount)) {
                 if (player.getPlayer() != null) {
-                    String unCompiledMessage = Stargate.languageManager.getMessage(TranslatableMessage.ECO_OBTAIN);
-                    String portalNameCompiledMessage = TranslatableMessageFormatter.formatPortal(unCompiledMessage, origin.getName());
+                    String unFormattedMessage = Stargate.languageManager.getMessage(TranslatableMessage.ECO_OBTAIN);
+                    String portalNameCompiledMessage = TranslatableMessageFormatter.formatPortal(unFormattedMessage, origin.getName());
                     String message = TranslatableMessageFormatter.formatCost(portalNameCompiledMessage, amount);
                     player.getPlayer().sendMessage(message);
                 }

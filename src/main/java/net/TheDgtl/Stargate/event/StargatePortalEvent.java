@@ -63,7 +63,7 @@ public class StargatePortalEvent extends StargateEvent {
         super(Objects.requireNonNull(portal));
 
         this.target = Objects.requireNonNull(target);
-        this.destination = portal.loadDestination();
+        this.destination = portal.getDestination();
         if (destination instanceof RealPortal) {
             this.exit = ((RealPortal) destination).getExit();
         }

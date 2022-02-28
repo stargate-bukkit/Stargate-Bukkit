@@ -128,7 +128,7 @@ public class BlockEventListener implements Listener {
 
         return Settings.getBoolean(Setting.CHARGE_FREE_DESTINATION) ||
                 !portal.hasFlag(PortalFlag.FIXED) ||
-                !portal.loadDestination().hasFlag(PortalFlag.FREE);
+                !portal.getDestination().hasFlag(PortalFlag.FREE);
     }
 
     /**

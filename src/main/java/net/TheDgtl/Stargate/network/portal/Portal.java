@@ -76,6 +76,7 @@ public interface Portal {
      *
      * @param destination <p>The destination this portal should temporarily connect ot</p>
      */
+    @SuppressWarnings("unused")
     void overrideDestination(Portal destination);
 
     /**
@@ -89,7 +90,7 @@ public interface Portal {
      * Changes the network this portal belongs to
      *
      * @param targetNetwork <p>The new network this portal should belong to</p>
-     * @throws NameErrorException
+     * @throws NameErrorException <p>If the given network name is invalid</p>
      */
     void setNetwork(Network targetNetwork) throws NameErrorException;
 
@@ -136,6 +137,15 @@ public interface Portal {
      *
      * @return <p>The currently selected destination portal</p>
      */
-    Portal loadDestination();
+    Portal getDestination();
+
+    /**
+     * Gets the destination name as originally specified on this portal's creation sign
+     *
+     * <p>This will be null for any non-fixed portals.</p>
+     *
+     * @return <p>The destination name specified for this portal</p>
+     */
+    String getDestinationName();
 
 }

@@ -81,15 +81,20 @@ public class BungeePortal extends AbstractPortal {
 
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
-        lines[1] = super.colorDrawer.formatPortalName(loadDestination(), HighlightingStyle.DESTINATION);
+        lines[1] = super.colorDrawer.formatPortalName(getDestination(), HighlightingStyle.DESTINATION);
         lines[2] = super.colorDrawer.formatLine(HighlightingStyle.BUNGEE.getHighlightedName(serverDestination));
         lines[3] = super.colorDrawer.formatLine(bungeeString);
         getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }
 
     @Override
-    public Portal loadDestination() {
+    public Portal getDestination() {
         return targetPortal;
+    }
+
+    @Override
+    public String getDestinationName() {
+        return targetPortal.getName();
     }
 
     @Override

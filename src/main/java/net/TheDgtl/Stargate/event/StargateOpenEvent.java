@@ -48,7 +48,7 @@ public class StargateOpenEvent extends StargateEvent {
         super(Objects.requireNonNull(portal));
         this.player = player;
         this.isForced = isForced;
-        this.destination = portal.loadDestination();
+        this.destination = portal.getDestination();
     }
 
     /**

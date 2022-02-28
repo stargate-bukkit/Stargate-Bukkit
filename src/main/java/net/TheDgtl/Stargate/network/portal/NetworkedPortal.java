@@ -88,7 +88,7 @@ public class NetworkedPortal extends AbstractPortal {
         selectedDestination = selectNewDestination(event.getAction(), previouslyActivated);
         this.update();
         if (hasFlag(PortalFlag.ALWAYS_ON)) {
-            super.destination = loadDestination();
+            super.destination = getDestination();
         }
     }
 
@@ -180,7 +180,7 @@ public class NetworkedPortal extends AbstractPortal {
     }
 
     @Override
-    public Portal loadDestination() {
+    public Portal getDestination() {
         if (selectedDestination == NO_DESTINATION_SELECTED || selectedDestination >= destinations.size()) {
             return null;
         }

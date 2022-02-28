@@ -45,7 +45,7 @@ public class RandomPortal extends AbstractPortal {
     }
 
     @Override
-    public Portal loadDestination() {
+    public Portal getDestination() {
         Set<String> allPortalNames = network.getAvailablePortals(null, this);
         String[] destinations = allPortalNames.toArray(new String[0]);
         if (destinations.length < 1) {

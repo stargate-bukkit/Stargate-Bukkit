@@ -390,12 +390,11 @@ public class SQLQueryGenerator {
 
         statement.setString(1, portal.getNetwork().getName());
         statement.setString(2, portal.getName());
-        String destinationString = null;
-        Portal destination = portal.loadDestination();
-        if (destination != null) {
-            destinationString = destination.getName();
+        String destinationName = portal.getDestinationName();
+        if (destinationName == null) {
+            destinationName = "";
         }
-        statement.setString(3, destinationString);
+        statement.setString(3, destinationName);
         Location topLeft = portal.getGate().getTopLeft();
         World signWorld = topLeft.getWorld();
         statement.setString(4, signWorld != null ? signWorld.getName() : "");

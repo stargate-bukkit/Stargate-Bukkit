@@ -136,7 +136,12 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
-    public Portal loadDestination() {
+    public Portal getDestination() {
+        return null;
+    }
+
+    @Override
+    public String getDestinationName() {
         return null;
     }
 

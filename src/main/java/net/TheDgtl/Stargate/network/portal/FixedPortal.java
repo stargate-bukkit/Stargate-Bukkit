@@ -40,9 +40,9 @@ public class FixedPortal extends AbstractPortal {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
         lines[2] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(this.network.getHighlightedName()) : "";
-        Portal destination = loadDestination();
+        Portal destination = getDestination();
         if (destination != null) {
-            lines[1] = super.colorDrawer.formatPortalName(loadDestination(), HighlightingStyle.DESTINATION);
+            lines[1] = super.colorDrawer.formatPortalName(destination, HighlightingStyle.DESTINATION);
         } else {
             lines[1] = super.colorDrawer.formatLine(destinationName);
             lines[3] = super.colorDrawer.formatErrorLine(Stargate.languageManager.getString(
@@ -52,12 +52,13 @@ public class FixedPortal extends AbstractPortal {
     }
 
     @Override
-    public Portal loadDestination() {
-        Portal destination = this.network.getPortal(destinationName);
-        if (destination == null) {
-            destination = new InvalidPortal(destinationName);
-        }
-        return destination;
+    public Portal getDestination() {
+        return this.network.getPortal(destinationName);
+    }
+
+    @Override
+    public String getDestinationName() {
+        return destinationName;
     }
 
     @Override

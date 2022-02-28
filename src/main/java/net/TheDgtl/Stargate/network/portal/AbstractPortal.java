@@ -123,15 +123,15 @@ public abstract class AbstractPortal implements RealPortal {
     public void update() {
         setSignColor(null);
 
-        if (getDestination() == null) {
-            this.destination = loadDestination();
+        if (getCurrentDestination() == null) {
+            this.destination = getDestination();
         }
 
         if (hasFlag(PortalFlag.ALWAYS_ON)) {
             this.open(null);
         }
 
-        if (isOpen() && getDestination() == null) {
+        if (isOpen() && getCurrentDestination() == null) {
             close(false);
         }
         drawControlMechanisms();
@@ -240,7 +240,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void doTeleport(Entity target) {
-        Portal destination = getDestination();
+        Portal destination = getCurrentDestination();
         if (destination == null) {
             Teleporter teleporter = new Teleporter(this.getExit(), this, gate.getFacing().getOppositeFace(), gate.getFacing(),
                     0, TranslatableMessage.INVALID, false);
@@ -287,7 +287,7 @@ public abstract class AbstractPortal implements RealPortal {
             }
         }
 
-        Portal destination = loadDestination();
+        Portal destination = getDestination();
         if (destination == null) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID));
             return;
@@ -361,12 +361,17 @@ public abstract class AbstractPortal implements RealPortal {
         return gate.getExit();
     }
 
+    @Override
+    public String getDestinationName() {
+        return null;
+    }
+
     /**
      * Gets this portal's current destination
      *
      * @return <p>This portal's current destination</p>
      */
-    private Portal getDestination() {
+    private Portal getCurrentDestination() {
         if (overriddenDestination == null) {
             return destination;
         } else {
