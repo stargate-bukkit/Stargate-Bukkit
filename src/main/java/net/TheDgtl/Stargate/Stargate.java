@@ -36,12 +36,12 @@ import net.TheDgtl.Stargate.listeners.PlayerEventListener;
 import net.TheDgtl.Stargate.listeners.PluginEventListener;
 import net.TheDgtl.Stargate.listeners.StargateBungeePluginMessageListener;
 import net.TheDgtl.Stargate.manager.EconomyManager;
+import net.TheDgtl.Stargate.migration.DataMigrator;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.property.PluginChannel;
-import net.TheDgtl.Stargate.refactoring.Refactorer;
 import net.TheDgtl.Stargate.thread.SynchronousPopulator;
 import net.TheDgtl.Stargate.util.BStatsHelper;
 import net.TheDgtl.Stargate.util.FileHelper;
@@ -142,7 +142,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         languageManager = new StargateLanguageManager(this, new File(DATA_FOLDER, LANGUAGE_FOLDER));
         if (ConfigurationHelper.getInteger(ConfigurationOption.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
             try {
-                this.refactor();
+                this.migrateConfigurationAndData();
             } catch (IOException | InvalidConfigurationException | SQLException e) {
                 e.printStackTrace();
             }
@@ -240,20 +240,31 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
     }
 
-    private void refactor() throws IOException, InvalidConfigurationException, SQLException {
-        File file = new File(this.getDataFolder(), "stargate.db");
-        Database database = new SQLiteDatabase(file);
+    /**
+     * Migrates data files and configuration files if necessary
+     *
+     * @throws IOException                   <p>If unable to load or save a configuration file</p>
+     * @throws InvalidConfigurationException <p>If unable to save the new configuration</p>
+     * @throws SQLException                  <p>If unable to initialize the Portal Database API</p>
+     */
+    private void migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException {
+        File databaseFile = new File(this.getDataFolder(), "stargate.db");
+        Database database = new SQLiteDatabase(databaseFile);
 
         StorageAPI storageAPI = new PortalDatabaseAPI(database, false, false, this);
         registry = new StargateRegistry(storageAPI);
 
-        Refactorer refactorer = new Refactorer(new File(this.getDataFolder(), "config.yml"), this, Bukkit.getServer(), registry);
-        Map<String, Object> configModifications = refactorer.getConfigModifications();
-        this.saveResource("config.yml", true);
-        this.reloadConfig();
-        refactorer.insertNewConfigValues(getConfig(), configModifications);
-        this.reloadConfig();
-        refactorer.run();
+        DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), "config.yml"), this,
+                Bukkit.getServer(), registry);
+
+        if (dataMigrator.isMigrationNecessary()) {
+            Map<String, Object> updatedConfig = dataMigrator.getUpdatedConfig();
+            this.saveResource("config.yml", true);
+            this.reloadConfig();
+            dataMigrator.updateFileConfiguration(getConfig(), updatedConfig);
+            this.reloadConfig();
+            dataMigrator.run();
+        }
     }
 
     @Override

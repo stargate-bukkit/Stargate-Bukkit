@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.refactoring;
+package net.TheDgtl.Stargate.migration;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
@@ -39,14 +39,14 @@ import java.util.Map;
 import java.util.Objects;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class RefactorerTest {
+public class DataMigratorTest {
 
     private static File sqlDatabaseFile;
     static private File[] configFiles;
     static private StargateLogger logger;
     static private File defaultConfigFile;
     static private Database sqlDatabase;
-    static private final Map<String, Refactorer> refactorerMap = new HashMap<>();
+    static private final Map<String, DataMigrator> refactorerMap = new HashMap<>();
     static private Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> configTestMap;
     private static final File testGatesDir = new File("src/test/resources/gates");
 
@@ -149,12 +149,12 @@ public class RefactorerTest {
             if (oldConfigFile.exists() && !oldConfigFile.delete()) {
                 throw new IOException("Unable to delete old config file");
             }
-            Refactorer refactorer = new Refactorer(configFile, logger, server, registry);
+            DataMigrator dataMigrator = new DataMigrator(configFile, logger, server, registry);
             if (!configFile.renameTo(oldConfigFile)) {
                 throw new IOException("Unable to rename existing config for backup");
             }
 
-            Map<String, Object> config = refactorer.getConfigModifications();
+            Map<String, Object> config = dataMigrator.getUpdatedConfig();
             Files.copy(defaultConfigFile, configFile);
             FileConfiguration fileConfig = new StargateYamlConfiguration();
             fileConfig.load(configFile);
@@ -163,8 +163,8 @@ public class RefactorerTest {
                         fileConfig.getKeys(true).contains(key) || key.contains(StargateYamlConfiguration.START_OF_COMMENT), String.format("The key %s was added to the new config of %s", key, configFile.getName()));
             }
 
-            refactorer.insertNewConfigValues(fileConfig, config);
-            refactorerMap.put(configFile.getName(), refactorer);
+            dataMigrator.updateFileConfiguration(fileConfig, config);
+            refactorerMap.put(configFile.getName(), dataMigrator);
             fileConfig.load(configFile);
         }
     }
@@ -174,8 +174,8 @@ public class RefactorerTest {
     public void doOtherRefactorCheck() {
         for (String key : refactorerMap.keySet()) {
             System.out.printf("####### Performing misc. refactoring based on the config-file %s%n", key);
-            Refactorer refactorer = refactorerMap.get(key);
-            refactorer.run();
+            DataMigrator dataMigrator = refactorerMap.get(key);
+            dataMigrator.run();
         }
     }
 
