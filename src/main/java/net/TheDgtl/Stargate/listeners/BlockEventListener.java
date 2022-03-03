@@ -1,22 +1,22 @@
 package net.TheDgtl.Stargate.listeners;
 
-import net.TheDgtl.Stargate.BypassPermission;
-import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.actions.SupplierAction;
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
+import net.TheDgtl.Stargate.action.SupplierAction;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateDestroyEvent;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
+import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
-import net.TheDgtl.Stargate.network.NetworkAPI;
+import net.TheDgtl.Stargate.manager.PermissionManager;
+import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.property.BypassPermission;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import net.TheDgtl.Stargate.util.SpawnDetectionHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
@@ -76,7 +76,7 @@ public class BlockEventListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (Stargate.getRegistry().getPortal(location, GateStructureType.IRIS) != null && Settings.getBoolean(Setting.PROTECT_ENTRANCE)) {
+        if (Stargate.getRegistry().getPortal(location, GateStructureType.IRIS) != null && ConfigurationHelper.getBoolean(ConfigurationOption.PROTECT_ENTRANCE)) {
             event.setCancelled(true);
         }
     }
@@ -90,7 +90,7 @@ public class BlockEventListener implements Listener {
      */
     private void destroyPortalIfHasPermissionAndCanPay(BlockBreakEvent event, Portal portal,
                                                        Supplier<Boolean> destroyAction) {
-        int cost = Settings.getInteger(Setting.DESTROY_COST);
+        int cost = ConfigurationHelper.getInteger(ConfigurationOption.DESTROY_COST);
         StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, event.getPlayer(), cost);
         Bukkit.getPluginManager().callEvent(stargateDestroyEvent);
         PermissionManager permissionManager = new PermissionManager(event.getPlayer());
@@ -126,7 +126,7 @@ public class BlockEventListener implements Listener {
             return false;
         }
 
-        return Settings.getBoolean(Setting.CHARGE_FREE_DESTINATION) ||
+        return ConfigurationHelper.getBoolean(ConfigurationOption.CHARGE_FREE_DESTINATION) ||
                 !portal.hasFlag(PortalFlag.FIXED) ||
                 !portal.getDestination().hasFlag(PortalFlag.FREE);
     }
@@ -140,7 +140,7 @@ public class BlockEventListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Location loc = event.getBlock().getLocation();
         Portal portal = Stargate.getRegistry().getPortal(loc, GateStructureType.IRIS);
-        if (portal != null && Settings.getBoolean(Setting.PROTECT_ENTRANCE)) {
+        if (portal != null && ConfigurationHelper.getBoolean(ConfigurationOption.PROTECT_ENTRANCE)) {
             event.setCancelled(true);
         }
     }
@@ -159,7 +159,7 @@ public class BlockEventListener implements Listener {
 
         String[] lines = event.getLines();
         String network = lines[2];
-        int cost = Settings.getInteger(Setting.CREATION_COST);
+        int cost = ConfigurationHelper.getInteger(ConfigurationOption.CREATION_COST);
         Player player = event.getPlayer();
         Set<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
         PermissionManager permissionManager = new PermissionManager(player);
@@ -178,7 +178,7 @@ public class BlockEventListener implements Listener {
         flags.removeAll(disallowedFlags);
 
         String finalNetworkName;
-        NetworkAPI selectedNetwork = null;
+        Network selectedNetwork = null;
         try {
             finalNetworkName = interpretNetworkName(network, flags, player, permissionManager);
             selectedNetwork = selectNetwork(finalNetworkName, flags);
@@ -213,7 +213,7 @@ public class BlockEventListener implements Listener {
      * @throws GateConflictException  <p>If the gate's physical structure is in conflict with another</p>
      * @throws NoFormatFoundException <p>If no known format matches the built stargate</p>
      */
-    private void tryPortalCreation(NetworkAPI selectedNetwork, String[] lines, Block signLocation, Set<PortalFlag> flags,
+    private void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation, Set<PortalFlag> flags,
                                    Player player, int cost, PermissionManager permissionManager, TranslatableMessage errorMessage)
             throws NameErrorException, GateConflictException, NoFormatFoundException {
 
@@ -250,11 +250,11 @@ public class BlockEventListener implements Listener {
         }
 
         if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
-                && !Settings.getBoolean(Setting.USING_BUNGEE)) {
+                && !ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
             return;
         }
-        if (flags.contains(PortalFlag.FANCY_INTER_SERVER) && !Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
+        if (flags.contains(PortalFlag.FANCY_INTER_SERVER) && !ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INTER_SERVER_DISABLED));
             return;
         }
@@ -318,7 +318,7 @@ public class BlockEventListener implements Listener {
          * the necessary permissions */
         if (!permissionManager.canCreateInNetwork(initialNetworkName) || initialNetworkName.trim().isEmpty()) {
             Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to default...");
-            String defaultNetwork = Settings.getString(Setting.DEFAULT_NETWORK);
+            String defaultNetwork = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
             if (!permissionManager.canCreateInNetwork(defaultNetwork)) {
                 Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to private...");
                 flags.add(PortalFlag.PERSONAL_NETWORK);
@@ -343,7 +343,7 @@ public class BlockEventListener implements Listener {
      * @return <p>The network the portal should be connected to</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    private NetworkAPI selectNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {
+    private Network selectNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {
         try {
             Stargate.getRegistry().createNetwork(name, flags);
         } catch (NameErrorException nameErrorException) {
@@ -388,7 +388,7 @@ public class BlockEventListener implements Listener {
     public void onEntityExplode(EntityExplodeEvent event) {
         Portal portal = Stargate.getRegistry().getPortal(event.getLocation(), new GateStructureType[]{GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK});
         if (portal != null) {
-            if (Settings.getBoolean(Setting.DESTROY_ON_EXPLOSION)) {
+            if (ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION)) {
                 portal.destroy();
                 Supplier<Boolean> destroyAction = () -> {
                     portal.destroy();
@@ -424,7 +424,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockFormEvent(BlockFormEvent event) {
-        if (!Settings.getBoolean(Setting.PROTECT_ENTRANCE)) {
+        if (!ConfigurationHelper.getBoolean(ConfigurationOption.PROTECT_ENTRANCE)) {
             return;
         }
 

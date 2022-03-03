@@ -6,12 +6,12 @@ import be.seeseemelk.mockbukkit.WorldMock;
 import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.config.TableNameConfig;
+import net.TheDgtl.Stargate.config.TableNameConfiguration;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
+import net.TheDgtl.Stargate.network.LocalNetwork;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.FakePortalGenerator;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -42,7 +42,7 @@ public class DatabaseTester {
     private static Connection connection;
     private static SQLQueryGenerator generator;
 
-    private static TableNameConfig nameConfig;
+    private static TableNameConfiguration nameConfig;
     private static boolean isMySQL;
     private static String serverName;
     private static UUID serverUUID;
@@ -64,7 +64,7 @@ public class DatabaseTester {
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      * @throws NameErrorException        <p>If an invalid portal name is encountered</p>
      */
-    public DatabaseTester(Database database, TableNameConfig nameConfig, SQLQueryGenerator generator,
+    public DatabaseTester(Database database, TableNameConfiguration nameConfig, SQLQueryGenerator generator,
                           boolean isMySQL) throws SQLException, InvalidStructureException, NameErrorException {
         DatabaseTester.connection = database.getConnection();
         DatabaseTester.generator = generator;
@@ -85,9 +85,9 @@ public class DatabaseTester {
         this.portalDatabaseAPI = new PortalDatabaseAPI(database, false, isMySQL, logger, nameConfig);
         DatabaseTester.connection = database.getConnection();
 
-        NetworkAPI testNetwork = null;
+        Network testNetwork = null;
         try {
-            testNetwork = new Network("test", database, generator);
+            testNetwork = new LocalNetwork("test", database, generator);
         } catch (NameErrorException e) {
             e.printStackTrace();
         }
@@ -351,7 +351,7 @@ public class DatabaseTester {
      * @param nameConfig <p>The name config to get table names from</p>
      * @throws SQLException <p>If unable to delete one of the tables</p>
      */
-    static void deleteAllTables(TableNameConfig nameConfig) throws SQLException {
+    static void deleteAllTables(TableNameConfiguration nameConfig) throws SQLException {
         System.out.println("Running database cleanup...");
         List<String> tablesToRemove = new ArrayList<>();
         tablesToRemove.add(nameConfig.getServerInfoTableName());

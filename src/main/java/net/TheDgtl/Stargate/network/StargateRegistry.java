@@ -1,8 +1,8 @@
 package net.TheDgtl.Stargate.network;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
@@ -30,8 +30,8 @@ import java.util.logging.Level;
 public class StargateRegistry implements RegistryAPI {
 
     private final StorageAPI storageAPI;
-    private final HashMap<String, NetworkAPI> networkMap = new HashMap<>();
-    private final HashMap<String, NetworkAPI> bungeeNetworkMap = new HashMap<>();
+    private final HashMap<String, Network> networkMap = new HashMap<>();
+    private final HashMap<String, Network> bungeeNetworkMap = new HashMap<>();
     private final Map<GateStructureType, Map<BlockLocation, Portal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
 
     /**
@@ -64,7 +64,7 @@ public class StargateRegistry implements RegistryAPI {
         if (this.networkExists(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER))) {
             throw new NameErrorException(null);
         }
-        NetworkAPI network = storageAPI.createNetwork(networkName, flags);
+        Network network = storageAPI.createNetwork(networkName, flags);
         network.assignToRegistry(this);
         getNetworkMap().put(network.getId(), network);
     }
@@ -76,8 +76,8 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void updatePortals(Map<String, ? extends NetworkAPI> networkMap) {
-        for (NetworkAPI network : networkMap.values()) {
+    public void updatePortals(Map<String, ? extends Network> networkMap) {
+        for (Network network : networkMap.values()) {
             network.updatePortals();
         }
     }
@@ -88,9 +88,9 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public NetworkAPI getNetwork(String name, boolean isBungee) {
+    public Network getNetwork(String name, boolean isBungee) {
         String cleanName = name.trim().toLowerCase();
-        if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
+        if (ConfigurationHelper.getBoolean(ConfigurationOption.DISABLE_CUSTOM_COLORED_NAMES)) {
             cleanName = ChatColor.stripColor(cleanName);
         }
         return getNetworkMap(isBungee).get(cleanName);
@@ -180,7 +180,7 @@ public class StargateRegistry implements RegistryAPI {
      * @param getBungee <p>Whether to get BungeeCord networks</p>
      * @return <p>A network name -> network map</p>
      */
-    private Map<String, ? extends NetworkAPI> getNetworkMap(boolean getBungee) {
+    private Map<String, ? extends Network> getNetworkMap(boolean getBungee) {
         if (getBungee) {
             return getBungeeNetworkMap();
         } else {
@@ -189,12 +189,12 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public HashMap<String, NetworkAPI> getBungeeNetworkMap() {
+    public HashMap<String, Network> getBungeeNetworkMap() {
         return bungeeNetworkMap;
     }
 
     @Override
-    public HashMap<String, NetworkAPI> getNetworkMap() {
+    public HashMap<String, Network> getNetworkMap() {
         return networkMap;
     }
 

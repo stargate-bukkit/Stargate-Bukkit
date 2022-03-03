@@ -1,14 +1,14 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
-import net.TheDgtl.Stargate.network.NetworkAPI;
+import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -38,7 +38,7 @@ import java.util.logging.Level;
  */
 public class LegacyPortalStorageLoader {
 
-    private final static Map<PortalFlag, Integer> LEGACY_FLAGS_POS_MAP = new EnumMap<>(PortalFlag.class);
+    private static final Map<PortalFlag, Integer> LEGACY_FLAGS_POS_MAP = new EnumMap<>(PortalFlag.class);
 
     static {
         LEGACY_FLAGS_POS_MAP.put(PortalFlag.HIDDEN, 11);
@@ -102,11 +102,11 @@ public class LegacyPortalStorageLoader {
      * @throws InvalidStructureException <p>If the portal's structure is invalid</p>
      * @throws NameErrorException        <p>If the name of the portal is invalid</p>
      */
-    static private Portal readPortal(String line, World world, StargateRegistry registry,
+    private static Portal readPortal(String line, World world, StargateRegistry registry,
                                      StargateLogger logger) throws InvalidStructureException, NameErrorException {
         String[] portalProperties = line.split(":");
         String name = portalProperties[0];
-        String networkName = (portalProperties.length > 9) ? portalProperties[9] : Settings.getString(Setting.DEFAULT_NETWORK);
+        String networkName = (portalProperties.length > 9) ? portalProperties[9] : ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
         logger.logMessage(Level.FINEST, String.format("-----------------Loading portal %s in network %s----------------------", name, networkName));
 
 
@@ -141,7 +141,7 @@ public class LegacyPortalStorageLoader {
             throw new InvalidStructureException();
         }
 
-        NetworkAPI network = registry.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
+        Network network = registry.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
 
         GateFormat format = GateFormatHandler.getFormat(gateFormatName);

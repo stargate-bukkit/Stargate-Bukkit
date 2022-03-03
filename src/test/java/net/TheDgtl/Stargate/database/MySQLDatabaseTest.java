@@ -2,7 +2,7 @@ package net.TheDgtl.Stargate.database;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import net.TheDgtl.Stargate.FakeStargate;
-import net.TheDgtl.Stargate.config.TableNameConfig;
+import net.TheDgtl.Stargate.config.TableNameConfiguration;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import org.junit.jupiter.api.AfterAll;
@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class MySQLDatabaseTest {
 
     private static DatabaseTester tester;
-    private static TableNameConfig nameConfig;
+    private static TableNameConfiguration nameConfig;
     private static Database database;
 
     @BeforeAll
@@ -32,7 +32,7 @@ public class MySQLDatabaseTest {
         String password = "root";
 
         Database database = new MySqlDatabase(driver, address, port, databaseName, username, password, true);
-        MySQLDatabaseTest.nameConfig = new TableNameConfig("SG_Test_", "Server_");
+        MySQLDatabaseTest.nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DriverEnum.MYSQL);
         tester = new DatabaseTester(database, nameConfig, generator, true);
         MySQLDatabaseTest.database = database;

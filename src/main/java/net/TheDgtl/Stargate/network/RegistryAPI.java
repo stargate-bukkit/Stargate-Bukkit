@@ -53,7 +53,7 @@ public interface RegistryAPI {
      *
      * @param networkMap <p>A map of networks</p>
      */
-    void updatePortals(Map<String, ? extends NetworkAPI> networkMap);
+    void updatePortals(Map<String, ? extends Network> networkMap);
 
     /**
      * Get the portal with the given structure type at the given location
@@ -163,19 +163,19 @@ public interface RegistryAPI {
      * @param isBungee <p>Whether the network is a BungeeCord network</p>
      * @return <p>The network with the given name</p>
      */
-    NetworkAPI getNetwork(String name, boolean isBungee);
+    Network getNetwork(String name, boolean isBungee);
 
     /**
      * Gets the map storing all BungeeCord networks
      *
      * @return <p>All BungeeCord networks</p>
      */
-    HashMap<String, NetworkAPI> getBungeeNetworkMap();
+    HashMap<String, Network> getBungeeNetworkMap();
 
     /**
      * Gets the map storing all non-BungeeCord networks
      *
      * @return <p>All non-BungeeCord networks</p>
      */
-    HashMap<String, NetworkAPI> getNetworkMap();
+    HashMap<String, Network> getNetworkMap();
 }

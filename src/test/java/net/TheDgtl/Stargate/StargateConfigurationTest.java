@@ -1,6 +1,6 @@
 package net.TheDgtl.Stargate;
 
-import net.TheDgtl.Stargate.config.StargateConfiguration;
+import net.TheDgtl.Stargate.config.StargateYamlConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.junit.jupiter.api.AfterAll;
@@ -42,7 +42,7 @@ public class StargateConfigurationTest {
     @Test
     public void configurationLoadReplaceEditAndSaveTest() throws IOException, InvalidConfigurationException {
         for (File configFile : configFiles) {
-            FileConfiguration config = new StargateConfiguration();
+            FileConfiguration config = new StargateYamlConfiguration();
             config.load(configFile);
             logger.logMessage(Level.FINER, " Current config:\n " + config.saveToString());
             File oldFile = new File(configFile.getAbsolutePath() + ".old");

@@ -1,6 +1,6 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
-import net.TheDgtl.Stargate.TwoTuple;
+import net.TheDgtl.Stargate.container.TwoTuple;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;

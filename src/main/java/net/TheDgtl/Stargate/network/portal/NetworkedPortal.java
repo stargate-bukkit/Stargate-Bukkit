@@ -1,17 +1,17 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.actions.DelayedAction;
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
+import net.TheDgtl.Stargate.action.DelayedAction;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.event.StargateActivateEvent;
 import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
 import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
-import net.TheDgtl.Stargate.network.NetworkAPI;
+import net.TheDgtl.Stargate.manager.PermissionManager;
+import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -49,7 +49,7 @@ public class NetworkedPortal extends AbstractPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    public NetworkedPortal(NetworkAPI network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
+    public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
             throws NameErrorException {
         super(network, name, flags, gate, ownerUUID, logger);
     }
@@ -101,7 +101,7 @@ public class NetworkedPortal extends AbstractPortal {
      */
     public int selectNewDestination(Action action, boolean previouslyActivated) {
         if (!previouslyActivated) {
-            if (!Settings.getBoolean(Setting.REMEMBER_LAST_DESTINATION)) {
+            if (!ConfigurationHelper.getBoolean(ConfigurationOption.REMEMBER_LAST_DESTINATION)) {
                 return 0;
             } else {
                 if (selectedDestination == NO_DESTINATION_SELECTED) {
@@ -214,7 +214,7 @@ public class NetworkedPortal extends AbstractPortal {
      * @param lines            <p>The sign lines to update</p>
      */
     private void drawDestination(int lineIndex, int destination, int destinationIndex, String[] lines) {
-        if (Settings.getInteger(Setting.NAME_STYLE) == 1) {
+        if (ConfigurationHelper.getInteger(ConfigurationOption.NAME_STYLE) == 1) {
             if (destinationIndex == lineIndex) {
                 lines[lineIndex + 1] = super.colorDrawer.formatPortalName(destinations.get(destination),
                         HighlightingStyle.DESTINATION);

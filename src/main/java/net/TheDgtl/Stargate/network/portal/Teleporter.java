@@ -1,13 +1,13 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.actions.DelayedAction;
-import net.TheDgtl.Stargate.actions.SupplierAction;
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
+import net.TheDgtl.Stargate.action.DelayedAction;
+import net.TheDgtl.Stargate.action.SupplierAction;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.event.StargatePortalEvent;
+import net.TheDgtl.Stargate.formatting.TranslatableMessage;
+import net.TheDgtl.Stargate.manager.PermissionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -182,8 +182,8 @@ public class Teleporter {
         Vector velocity = target.getVelocity();
         teleport(target, exit);
 
-        Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(Settings.getDouble(
-                Setting.GATE_EXIT_SPEED_MULTIPLIER));
+        Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(ConfigurationHelper.getDouble(
+                ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER));
         target.setVelocity(targetVelocity);
     }
 

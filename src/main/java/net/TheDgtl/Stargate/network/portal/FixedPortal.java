@@ -2,10 +2,10 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
-import net.TheDgtl.Stargate.network.NetworkAPI;
+import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.Set;
@@ -28,7 +28,7 @@ public class FixedPortal extends AbstractPortal {
      * @param ownerUUID       <p>The UUID of the portal's owner</p>
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    public FixedPortal(NetworkAPI network, String name, String destinationName, Set<PortalFlag> flags, Gate gate,
+    public FixedPortal(Network network, String name, String destinationName, Set<PortalFlag> flags, Gate gate,
                        UUID ownerUUID, StargateLogger logger) throws NameErrorException {
         super(network, name, flags, gate, ownerUUID, logger);
         this.destinationName = destinationName;

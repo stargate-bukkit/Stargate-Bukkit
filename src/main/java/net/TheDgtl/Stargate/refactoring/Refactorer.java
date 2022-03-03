@@ -69,4 +69,5 @@ public class Refactorer {
         config.set("configVersion", Stargate.CURRENT_CONFIG_VERSION);
         config.save(configFile);
     }
+
 }

@@ -20,19 +20,19 @@ package net.TheDgtl.Stargate.listeners;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.TheDgtl.Stargate.PluginChannel;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.StargateProtocolProperty;
-import net.TheDgtl.Stargate.StargateProtocolRequestType;
-import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.network.InterServerNetwork;
-import net.TheDgtl.Stargate.network.NetworkAPI;
+import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
+import net.TheDgtl.Stargate.property.PluginChannel;
+import net.TheDgtl.Stargate.property.StargateProtocolProperty;
+import net.TheDgtl.Stargate.property.StargateProtocolRequestType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
@@ -81,7 +81,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {
         Stargate.log(Level.FINEST, "Received plugin-message");
 
-        boolean usingBungee = Settings.getBoolean(Setting.USING_BUNGEE);
+        boolean usingBungee = ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE);
         if (!usingBungee || !channel.equals("BungeeCord")) {
             return;
         }
@@ -140,7 +140,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
             Stargate.addToQueue(playerName, destination, bungeeNetwork, false);
         } else {
-            NetworkAPI network = Stargate.getRegistry().getNetwork(bungeeNetwork, false);
+            Network network = Stargate.getRegistry().getNetwork(bungeeNetwork, false);
             Portal destinationPortal = network.getPortal(destination);
             destinationPortal.teleportHere(player, null);
         }
@@ -206,7 +206,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         }
 
         Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
-        NetworkAPI network = Stargate.getRegistry().getNetwork(networkName, true);
+        Network network = Stargate.getRegistry().getNetwork(networkName, true);
         if (network == null) {
             player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_NETWORK));
             return;

@@ -2,17 +2,17 @@ package net.TheDgtl.Stargate.database;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.config.TableNameConfig;
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
+import net.TheDgtl.Stargate.config.TableNameConfiguration;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.network.InterServerNetwork;
+import net.TheDgtl.Stargate.network.LocalNetwork;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.PersonalNetwork;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.RegistryAPI;
@@ -57,7 +57,7 @@ public class PortalDatabaseAPI implements StorageAPI {
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
     public PortalDatabaseAPI(Stargate stargate) throws SQLException {
-        this(loadDatabase(stargate), Settings.getBoolean(Setting.USING_BUNGEE), Settings.getBoolean(Setting.USING_REMOTE_DATABASE), stargate);
+        this(loadDatabase(stargate), ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE), ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE), stargate);
     }
 
     /**
@@ -74,9 +74,9 @@ public class PortalDatabaseAPI implements StorageAPI {
         this.logger = logger;
         this.database = database;
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
-        String PREFIX = usingRemoteDatabase ? Settings.getString(Setting.BUNGEE_INSTANCE_NAME) : "";
+        String PREFIX = usingRemoteDatabase ? ConfigurationHelper.getString(ConfigurationOption.BUNGEE_INSTANCE_NAME) : "";
         String serverPrefix = usingRemoteDatabase ? Stargate.serverUUID.toString() : "";
-        TableNameConfig config = new TableNameConfig(PREFIX, serverPrefix.replace("-", ""));
+        TableNameConfiguration config = new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
         DriverEnum databaseEnum = usingRemoteDatabase ? DriverEnum.MYSQL : DriverEnum.SQLITE;
         this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
         createTables();
@@ -93,7 +93,7 @@ public class PortalDatabaseAPI implements StorageAPI {
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
     public PortalDatabaseAPI(Database database, boolean usingBungee, boolean usingRemoteDatabase,
-                             StargateLogger logger, TableNameConfig config) throws SQLException {
+                             StargateLogger logger, TableNameConfiguration config) throws SQLException {
         this.logger = logger;
         this.database = database;
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
@@ -144,7 +144,7 @@ public class PortalDatabaseAPI implements StorageAPI {
             UUID uuid = UUID.fromString(networkName);
             return new PersonalNetwork(uuid, database, sqlQueryGenerator);
         } else {
-            return new Network(networkName, database, sqlQueryGenerator);
+            return new LocalNetwork(networkName, database, sqlQueryGenerator);
         }
     }
 
@@ -232,18 +232,18 @@ public class PortalDatabaseAPI implements StorageAPI {
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
     private static Database loadDatabase(Stargate stargate) throws SQLException {
-        if (Settings.getBoolean(Setting.USING_REMOTE_DATABASE)) {
-            if (Settings.getBoolean(Setting.SHOW_HIKARI_CONFIG)) {
+        if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
+            if (ConfigurationHelper.getBoolean(ConfigurationOption.SHOW_HIKARI_CONFIG)) {
                 return new MySqlDatabase(stargate);
             }
 
-            DriverEnum driver = DriverEnum.valueOf(Settings.getString(Setting.BUNGEE_DRIVER).toUpperCase());
-            String bungeeDatabaseName = Settings.getString(Setting.BUNGEE_DATABASE);
-            int port = Settings.getInteger(Setting.BUNGEE_PORT);
-            String address = Settings.getString(Setting.BUNGEE_ADDRESS);
-            String username = Settings.getString(Setting.BUNGEE_USERNAME);
-            String password = Settings.getString(Setting.BUNGEE_PASSWORD);
-            boolean useSSL = Settings.getBoolean(Setting.BUNGEE_USE_SSL);
+            DriverEnum driver = DriverEnum.valueOf(ConfigurationHelper.getString(ConfigurationOption.BUNGEE_DRIVER).toUpperCase());
+            String bungeeDatabaseName = ConfigurationHelper.getString(ConfigurationOption.BUNGEE_DATABASE);
+            int port = ConfigurationHelper.getInteger(ConfigurationOption.BUNGEE_PORT);
+            String address = ConfigurationHelper.getString(ConfigurationOption.BUNGEE_ADDRESS);
+            String username = ConfigurationHelper.getString(ConfigurationOption.BUNGEE_USERNAME);
+            String password = ConfigurationHelper.getString(ConfigurationOption.BUNGEE_PASSWORD);
+            boolean useSSL = ConfigurationHelper.getBoolean(ConfigurationOption.BUNGEE_USE_SSL);
 
             switch (driver) {
                 case MARIADB:
@@ -253,7 +253,7 @@ public class PortalDatabaseAPI implements StorageAPI {
                     throw new SQLException("Unsupported driver: Stargate currently supports MariaDb and MySql for remote databases");
             }
         } else {
-            String databaseName = Settings.getString(Setting.DATABASE_NAME);
+            String databaseName = ConfigurationHelper.getString(ConfigurationOption.DATABASE_NAME);
             File file = new File(stargate.getDataFolder().getAbsoluteFile(), databaseName + ".db");
             return new SQLiteDatabase(file);
         }
@@ -418,7 +418,7 @@ public class PortalDatabaseAPI implements StorageAPI {
                 registry.createNetwork(targetNetwork, flags);
             } catch (NameErrorException ignored) {
             }
-            NetworkAPI network = registry.getNetwork(targetNetwork, isBungee);
+            Network network = registry.getNetwork(targetNetwork, isBungee);
 
             if (portalType == PortalType.INTER_SERVER) {
                 String serverUUID = resultSet.getString("homeServerId");

@@ -2,7 +2,7 @@ package net.TheDgtl.Stargate.gate;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.actions.BlockSetAction;
+import net.TheDgtl.Stargate.action.BlockSetAction;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
@@ -10,7 +10,7 @@ import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
-import net.TheDgtl.Stargate.vectorlogic.IVectorOperation;
+import net.TheDgtl.Stargate.vectorlogic.MatrixVectorOperation;
 import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -40,7 +40,7 @@ import java.util.logging.Level;
 public class Gate implements GateAPI {
 
     private final GateFormat format;
-    private final IVectorOperation converter;
+    private final VectorOperation converter;
     private Location topLeft;
     private final List<PortalPosition> portalPositions = new ArrayList<>();
     private final BlockFace facing;
@@ -66,7 +66,7 @@ public class Gate implements GateAPI {
         this.format = format;
         this.logger = logger;
         facing = signFace;
-        converter = new VectorOperation(signFace, Stargate.getInstance());
+        converter = new MatrixVectorOperation(signFace, Stargate.getInstance());
 
         //Allow mirroring for non-symmetrical gates
         if (matchesFormat(signLocation, alwaysOn)) {
@@ -94,7 +94,7 @@ public class Gate implements GateAPI {
         this.facing = facing;
         this.topLeft = topLeft;
         this.logger = logger;
-        this.converter = new VectorOperation(facing, logger);
+        this.converter = new MatrixVectorOperation(facing, logger);
         this.converter.setFlipZAxis(flipZ);
         this.format = format;
         this.flipped = flipZ;

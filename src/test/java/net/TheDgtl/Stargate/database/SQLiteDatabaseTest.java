@@ -2,7 +2,7 @@ package net.TheDgtl.Stargate.database;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import net.TheDgtl.Stargate.FakeStargate;
-import net.TheDgtl.Stargate.config.TableNameConfig;
+import net.TheDgtl.Stargate.config.TableNameConfiguration;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import org.junit.jupiter.api.AfterAll;
@@ -19,7 +19,7 @@ import java.sql.SQLException;
 public class SQLiteDatabaseTest {
 
     private static DatabaseTester tester;
-    private static TableNameConfig nameConfig;
+    private static TableNameConfiguration nameConfig;
     private static Database database;
 
     @BeforeAll
@@ -27,7 +27,7 @@ public class SQLiteDatabaseTest {
         System.out.println("Setting up test data");
 
         database = new SQLiteDatabase(new File("src/test/resources", "test.db"));
-        nameConfig = new TableNameConfig("SG_Test_", "Server_");
+        nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DriverEnum.SQLITE);
         tester = new DatabaseTester(database, nameConfig, generator, false);
     }

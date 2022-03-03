@@ -1,7 +1,7 @@
 package net.TheDgtl.Stargate.refactoring.retcons;
 
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.TwoTuple;
+import net.TheDgtl.Stargate.container.TwoTuple;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.StargateRegistry;
@@ -20,7 +20,7 @@ public class RetCon1_0_0 extends Modifier {
     /**
      * A list of every old setting-name and what it changed to in this ret-con
      */
-    static private final HashMap<String, String> CONFIG_CONVERSIONS = new HashMap<>();
+    private static final HashMap<String, String> CONFIG_CONVERSIONS = new HashMap<>();
 
     static {
         FileHelper.readInternalFileToMap("/migration/config-migrations-1_0_0.properties", CONFIG_CONVERSIONS);

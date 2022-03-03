@@ -22,8 +22,8 @@ import java.util.logging.Level;
  */
 public final class GateFormatReader {
 
-    private final static String TAG_IDENTIFIER = "#";
-    private final static String SPLIT_IDENTIFIER = ",";
+    private static final String TAG_IDENTIFIER = "#";
+    private static final String SPLIT_IDENTIFIER = ",";
 
     private GateFormatReader() {
 

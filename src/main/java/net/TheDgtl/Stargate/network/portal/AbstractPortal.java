@@ -1,24 +1,23 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import net.TheDgtl.Stargate.BypassPermission;
-import net.TheDgtl.Stargate.ImportantVersion;
-import net.TheDgtl.Stargate.PermissionManager;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.actions.DelayedAction;
-import net.TheDgtl.Stargate.actions.SupplierAction;
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
+import net.TheDgtl.Stargate.action.DelayedAction;
+import net.TheDgtl.Stargate.action.SupplierAction;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
 import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
+import net.TheDgtl.Stargate.manager.PermissionManager;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.portal.formatting.LineColorFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.LineFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.NoLineColorFormatter;
+import net.TheDgtl.Stargate.property.BypassPermission;
+import net.TheDgtl.Stargate.property.VersionImplemented;
 import net.TheDgtl.Stargate.util.PortalHelper;
 import net.TheDgtl.Stargate.util.VersionParser;
 import org.bukkit.DyeColor;
@@ -58,7 +57,7 @@ public abstract class AbstractPortal implements RealPortal {
     public static final Set<PortalFlag> allUsedFlags = EnumSet.noneOf(PortalFlag.class);
 
     protected final int openDelay = 20;
-    protected NetworkAPI network;
+    protected Network network;
     protected final String name;
     protected UUID openFor;
     protected Portal destination = null;
@@ -80,7 +79,7 @@ public abstract class AbstractPortal implements RealPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    AbstractPortal(NetworkAPI network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
+    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
             throws NameErrorException {
         this.ownerUUID = ownerUUID;
         this.network = network;
@@ -184,7 +183,7 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public NetworkAPI getNetwork() {
+    public Network getNetwork() {
         return this.network;
     }
 
@@ -225,7 +224,7 @@ public abstract class AbstractPortal implements RealPortal {
 
             boolean shouldCharge = !(this.hasFlag(PortalFlag.FREE) || origin.hasFlag(PortalFlag.FREE))
                     && target instanceof Player && !target.hasPermission(BypassPermission.COST_USE.getPermissionString());
-            useCost = shouldCharge ? Settings.getInteger(Setting.USE_COST) : 0;
+            useCost = shouldCharge ? ConfigurationHelper.getInteger(ConfigurationOption.USE_COST) : 0;
         }
 
         Teleporter teleporter = new Teleporter(getExit(), origin, portalFacing, entranceFace, useCost,
@@ -320,7 +319,7 @@ public abstract class AbstractPortal implements RealPortal {
                 sign.setColor(color);
                 sign.update();
             }
-            if (VersionParser.bukkitIsNewerThan(ImportantVersion.NO_CHAT_COLOR_IMPLEMENTED)) {
+            if (VersionParser.bukkitIsNewerThan(VersionImplemented.CHAT_COLOR)) {
                 colorDrawer = new LineColorFormatter(sign.getColor(), sign.getType());
             }
         }

@@ -1,17 +1,17 @@
 package net.TheDgtl.Stargate.listeners;
 
-import net.TheDgtl.Stargate.PermissionManager;
-import net.TheDgtl.Stargate.PluginChannel;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.actions.ConditionalDelayedAction;
-import net.TheDgtl.Stargate.actions.ConditionalRepeatedTask;
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
+import net.TheDgtl.Stargate.action.ConditionalDelayedAction;
+import net.TheDgtl.Stargate.action.ConditionalRepeatedTask;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
+import net.TheDgtl.Stargate.manager.PermissionManager;
 import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
+import net.TheDgtl.Stargate.property.PluginChannel;
 import net.TheDgtl.Stargate.util.ColorConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -136,7 +136,7 @@ public class PlayerEventListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!Settings.getBoolean(Setting.USING_BUNGEE)) {
+        if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             return;
         }
 

@@ -1,7 +1,7 @@
 package net.TheDgtl.Stargate.util;
 
-import net.TheDgtl.Stargate.ImportantVersion;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.property.VersionImplemented;
 import org.bukkit.Bukkit;
 
 import java.util.logging.Level;
@@ -9,7 +9,11 @@ import java.util.logging.Level;
 /**
  * A parser for parsing and checking the used bukkit version
  */
-public class VersionParser {
+public final class VersionParser {
+
+    private VersionParser() {
+
+    }
 
     /**
      * Checks whether the used bukkit version is newer than the given important version
@@ -17,7 +21,7 @@ public class VersionParser {
      * @param version <p>The important version to check for</p>
      * @return <p>True if the bukkit version is newer than the given important version</p>
      */
-    public static boolean bukkitIsNewerThan(ImportantVersion version) {
+    public static boolean bukkitIsNewerThan(VersionImplemented version) {
         String versionString = Bukkit.getServer().getBukkitVersion();
         Stargate.log(Level.FINER, versionString);
         String[] splitVersion = versionString.split("\\.");

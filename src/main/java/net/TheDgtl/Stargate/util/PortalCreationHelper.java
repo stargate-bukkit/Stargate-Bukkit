@@ -9,7 +9,7 @@ import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
-import net.TheDgtl.Stargate.network.NetworkAPI;
+import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.FixedPortal;
 import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
@@ -40,7 +40,7 @@ public class PortalCreationHelper {
      * @return <p>A new portal</p>
      * @throws NameErrorException <p>If the portal's name is invalid</p>
      */
-    public static RealPortal createPortalFromSign(NetworkAPI network, String[] lines, Set<PortalFlag> flags, Gate gate,
+    public static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Gate gate,
                                                   UUID ownerUUID, StargateLogger logger) throws NameErrorException {
         return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID, logger);
     }
@@ -58,7 +58,7 @@ public class PortalCreationHelper {
      * @return <p>A new portal</p>
      * @throws NameErrorException <p>If the portal's name is invalid</p>
      */
-    public static RealPortal createPortal(NetworkAPI network, String name, String destination, String targetServer,
+    public static RealPortal createPortal(Network network, String name, String destination, String targetServer,
                                           Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger) throws NameErrorException {
         if (flags.contains(PortalFlag.BUNGEE)) {
             return new BungeePortal(network, name, destination, targetServer, flags, gate, ownerUUID, logger);

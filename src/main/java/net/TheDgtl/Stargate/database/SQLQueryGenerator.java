@@ -2,7 +2,7 @@ package net.TheDgtl.Stargate.database;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.config.TableNameConfig;
+import net.TheDgtl.Stargate.config.TableNameConfiguration;
 import net.TheDgtl.Stargate.gate.GateAPI;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -22,18 +22,18 @@ import java.util.logging.Level;
 public class SQLQueryGenerator {
 
     private final StargateLogger logger;
-    private final TableNameConfig tableNameConfig;
+    private final TableNameConfiguration tableNameConfiguration;
     private final DriverEnum driverEnum;
 
     /**
      * Instantiates a new SQL query generator
      *
-     * @param tableNameConfig <p>The config to use for table names</p>
-     * @param logger          <p>The logger to use for logging error messages</p>
-     * @param driverEnum      <p>The currently used database driver (for syntax variations)</p>
+     * @param tableNameConfiguration <p>The config to use for table names</p>
+     * @param logger                 <p>The logger to use for logging error messages</p>
+     * @param driverEnum             <p>The currently used database driver (for syntax variations)</p>
      */
-    public SQLQueryGenerator(TableNameConfig tableNameConfig, StargateLogger logger, DriverEnum driverEnum) {
-        this.tableNameConfig = tableNameConfig;
+    public SQLQueryGenerator(TableNameConfiguration tableNameConfiguration, StargateLogger logger, DriverEnum driverEnum) {
+        this.tableNameConfiguration = tableNameConfiguration;
         this.logger = logger;
         this.driverEnum = driverEnum;
     }
@@ -506,12 +506,12 @@ public class SQLQueryGenerator {
                 new String[]{"{Portal}", "{PortalView}", "{Flag}", "{PortalFlagRelation}", "{InterPortal}",
                         "{InterPortalView}", "{InterPortalFlagRelation}", "{LastKnownName}", "{ServerInfo}",
                         "{PortalPositionType}", "{PortalPosition}"},
-                new String[]{tableNameConfig.getPortalTableName(), tableNameConfig.getPortalViewName(),
-                        tableNameConfig.getFlagTableName(), tableNameConfig.getFlagRelationTableName(),
-                        tableNameConfig.getInterPortalTableName(), tableNameConfig.getInterPortalViewName(),
-                        tableNameConfig.getInterFlagRelationTableName(), tableNameConfig.getLastKnownNameTableName(),
-                        tableNameConfig.getServerInfoTableName(), tableNameConfig.getPortalPositionTypeTableName(),
-                        tableNameConfig.getPortalPositionTableName()});
+                new String[]{tableNameConfiguration.getPortalTableName(), tableNameConfiguration.getPortalViewName(),
+                        tableNameConfiguration.getFlagTableName(), tableNameConfiguration.getFlagRelationTableName(),
+                        tableNameConfiguration.getInterPortalTableName(), tableNameConfiguration.getInterPortalViewName(),
+                        tableNameConfiguration.getInterFlagRelationTableName(), tableNameConfiguration.getLastKnownNameTableName(),
+                        tableNameConfiguration.getServerInfoTableName(), tableNameConfiguration.getPortalPositionTypeTableName(),
+                        tableNameConfiguration.getPortalPositionTableName()});
     }
 
     /**

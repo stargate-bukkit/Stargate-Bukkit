@@ -1,7 +1,8 @@
 package net.TheDgtl.Stargate.command;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.TranslatableMessage;
+import net.TheDgtl.Stargate.formatting.TranslatableMessage;
+import net.TheDgtl.Stargate.property.CommandPermission;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

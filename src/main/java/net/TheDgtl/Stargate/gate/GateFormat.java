@@ -6,7 +6,7 @@ import net.TheDgtl.Stargate.gate.structure.GateFrame;
 import net.TheDgtl.Stargate.gate.structure.GateIris;
 import net.TheDgtl.Stargate.gate.structure.GateStructure;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
-import net.TheDgtl.Stargate.vectorlogic.IVectorOperation;
+import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
@@ -90,7 +90,7 @@ public class GateFormat implements GateFormatAPI {
      * @param topLeft   <p>The top-left location of the physical stargate to match</p>
      * @return <p>True if the stargate matches this format</p>
      */
-    public boolean matches(IVectorOperation converter, Location topLeft) {
+    public boolean matches(VectorOperation converter, Location topLeft) {
         for (GateStructureType structureType : portalParts.keySet()) {
             Stargate.log(Level.FINER, "---Validating " + structureType);
             if (!(portalParts.get(structureType).isValidState(converter, topLeft))) {

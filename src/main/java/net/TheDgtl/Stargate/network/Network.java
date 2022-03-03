@@ -1,209 +1,109 @@
 package net.TheDgtl.Stargate.network;
 
-import net.TheDgtl.Stargate.BypassPermission;
-import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.TranslatableMessage;
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
-import net.TheDgtl.Stargate.database.Database;
-import net.TheDgtl.Stargate.database.SQLQueryGenerator;
-import net.TheDgtl.Stargate.exception.NameErrorException;
-import net.TheDgtl.Stargate.gate.structure.GateStructureType;
-import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
-import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import net.TheDgtl.Stargate.network.portal.RealPortal;
-import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
- * A network of portals
+ * A description of a network
  */
-public class Network implements NetworkAPI {
-
-    protected Map<String, Portal> nameToPortalMap;
-    protected Database database;
-    protected String name;
-    protected SQLQueryGenerator sqlQueryGenerator;
-    private RegistryAPI registry;
+public interface Network {
 
     /**
-     * Instantiates a new network
+     * Gets all portals belonging to this network
      *
-     * @param name           <p>The name of the new network</p>
-     * @param database       <p>The database to use for saving network data</p>
-     * @param queryGenerator <p>The generator to use for generating SQL queries</p>
-     * @throws NameErrorException <p>If the network name is invalid</p>
+     * @return <p>All portals belonging to this network</p>
      */
-    public Network(String name, Database database, SQLQueryGenerator queryGenerator) throws NameErrorException {
-        if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH)) {
-            throw new NameErrorException(TranslatableMessage.INVALID_NAME);
-        }
-        this.name = name.trim();
-        if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
-            this.name = ChatColor.stripColor(this.name);
-        }
-        this.database = database;
-        this.sqlQueryGenerator = queryGenerator;
-        nameToPortalMap = new HashMap<>();
-    }
-
-    @Override
-    public String getId() {
-        return this.name.toLowerCase();
-    }
-
-    @Override
-    public Collection<Portal> getAllPortals() {
-        return nameToPortalMap.values();
-    }
-
-    @Override
-    public Portal getPortal(String name) {
-        if (name == null) {
-            return null;
-        }
-        return nameToPortalMap.get(this.getPortalId(name));
-    }
-
-    @Override
-    public void removePortal(Portal portal, boolean removeFromDatabase) {
-        nameToPortalMap.remove(this.getPortalId(portal.getName()));
-        if (!removeFromDatabase) {
-            return;
-        }
-        Stargate.getRegistry().removePortal(portal, PortalType.LOCAL);
-    }
-
-    @Override
-    public void addPortal(Portal portal, boolean saveToDatabase) {
-        if (portal instanceof RealPortal) {
-            RealPortal realPortal = (RealPortal) portal;
-            for (GateStructureType key : GateStructureType.values()) {
-                List<BlockLocation> locations = realPortal.getGate().getLocations(key);
-                if (locations == null) {
-                    continue;
-                }
-                registry.registerLocations(key, generateLocationMap(locations, portal));
-            }
-            if (saveToDatabase) {
-                savePortal((RealPortal) portal);
-            }
-        }
-        nameToPortalMap.put(getPortalId(portal.getName()), portal);
-    }
-
-    @Override
-    public boolean isPortalNameTaken(String name) {
-        return nameToPortalMap.containsKey(name);
-    }
-
-    @Override
-    public void updatePortals() {
-        for (String portal : nameToPortalMap.keySet()) {
-            getPortal(portal).updateState();
-        }
-    }
-
-    @Override
-    public Set<String> getAvailablePortals(Player player, Portal requester) {
-        Set<String> tempPortalList = new HashSet<>(nameToPortalMap.keySet());
-        tempPortalList.remove(getPortalId(requester.getName()));
-        if (!requester.hasFlag(PortalFlag.FORCE_SHOW)) {
-            Set<String> removeList = new HashSet<>();
-            for (String portalName : tempPortalList) {
-                Portal target = getPortal(portalName);
-                if (target.hasFlag(PortalFlag.HIDDEN) &&
-                        (player != null && !player.hasPermission(BypassPermission.HIDDEN.getPermissionString()))) {
-                    removeList.add(portalName);
-                }
-                if (target.hasFlag(PortalFlag.PRIVATE) && player != null &&
-                        !player.hasPermission(BypassPermission.PRIVATE.getPermissionString()) &&
-                        !player.getUniqueId().equals(target.getOwnerUUID())) {
-                    removeList.add(portalName);
-                }
-            }
-            tempPortalList.removeAll(removeList);
-        }
-        return tempPortalList;
-    }
-
-    @Override
-    public String getHighlightedName() {
-        return HighlightingStyle.NETWORK.getHighlightedName(getName());
-    }
-
-    @Override
-    public void destroy() {
-        for (String portalName : nameToPortalMap.keySet()) {
-            Portal portal = nameToPortalMap.get(portalName);
-            portal.destroy();
-        }
-        nameToPortalMap.clear();
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public int size() {
-        return this.getAllPortals().size();
-    }
+    Collection<Portal> getAllPortals();
 
     /**
-     * Saves the given portal to the database
+     * Gets the portal with the given name
      *
-     * @param portal <p>The portal to save</p>
+     * @param name <p>The name of the portal to get</p>
+     * @return <p>The portal with the given name, or null if not found</p>
      */
-    protected void savePortal(RealPortal portal) {
-        registry.savePortal(portal, PortalType.LOCAL);
-    }
+    Portal getPortal(String name);
 
     /**
-     * Gets a map between the given block locations and the given portal
+     * Removes the given portal from this network
      *
-     * @param locations <p>The locations related to the portal</p>
-     * @param portal    <p>The portal with blocks at the given locations</p>
-     * @return <p>The resulting location to portal mapping</p>
+     * @param portal             <p>The portal to remove</p>
+     * @param removeFromDatabase <p>Whether to also remove the portal from the database</p>
      */
-    private Map<BlockLocation, Portal> generateLocationMap(List<BlockLocation> locations, Portal portal) {
-        Map<BlockLocation, Portal> output = new HashMap<>();
-        for (BlockLocation location : locations) {
-            output.put(location, portal);
-        }
-        return output;
-    }
+    void removePortal(Portal portal, boolean removeFromDatabase);
 
     /**
-     * Gets a portal's id
+     * Adds the given portal to this network
      *
-     * <p>This basically just lower-cases the name, and strips color if enabled. This is to make portal names
-     * case-agnostic and optionally color-agnostic.</p>
-     *
-     * @param portalName <p>The name to "hash"</p>
-     * @return <p>The "hashed" name</p>
+     * @param portal         <p>The portal to add</p>
+     * @param saveToDatabase <p>Whether to also save the portal to the database, only instances of RealPortal can be saved</p>
      */
-    private String getPortalId(String portalName) {
-        String portalHash = portalName.toLowerCase();
-        if (Settings.getBoolean(Setting.DISABLE_CUSTOM_COLORED_NAMES)) {
-            portalHash = ChatColor.stripColor(portalHash);
-        }
-        return portalHash;
-    }
+    void addPortal(Portal portal, boolean saveToDatabase);
 
-    @Override
-    public void assignToRegistry(RegistryAPI registry) {
-        this.registry = registry;
-    }
+    /**
+     * Checks whether there is already a portal in this network with the given name
+     *
+     * @param name <p>The name to check for</p>
+     * @return <p>True if an existing portal is already using the given name</p>
+     */
+    boolean isPortalNameTaken(String name);
+
+    /**
+     * Updates all portals in this network
+     */
+    void updatePortals();
+
+    /**
+     * Gets names of all portals available to the given player from the given portal
+     *
+     * @param player    <p>The player to get portals </p>
+     * @param requester <p>The portal the player is viewing other portals from</p>
+     * @return <p>The names of all portals the player is allowed to see</p>
+     */
+    Set<String> getAvailablePortals(Player player, Portal requester);
+
+    /**
+     * Destroys this network and every portal contained in it
+     */
+    void destroy();
+
+    /**
+     * Gets the name of this network
+     *
+     * @return <p>The name of this network</p>
+     */
+    String getName();
+
+
+    /**
+     * Gets the current number of portals in this network
+     *
+     * @return <p>The size of this network</p>
+     */
+    int size();
+
+    /**
+     * Assign the network to a registry
+     *
+     * @param registry <p>The registry API to register to</p>
+     */
+    void assignToRegistry(RegistryAPI registry);
+
+
+    /**
+     * Gets the highlighted name of this network
+     *
+     * @return <p>The highlighted name of this network</p>
+     */
+    String getHighlightedName();
+
+    /**
+     * Gets the unique identifier for this network
+     *
+     * @return <p>The unique identifier for this network</p>
+     */
+    String getId();
 
 }

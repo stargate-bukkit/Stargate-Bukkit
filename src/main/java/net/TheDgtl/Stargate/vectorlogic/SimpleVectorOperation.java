@@ -15,7 +15,7 @@ import java.util.Map;
  *
  * @author Kristian
  */
-public class SimpleVectorOperation implements IVectorOperation {
+public class SimpleVectorOperation implements VectorOperation {
 
     private static final Map<BlockFace, Double> rotationAngles = new HashMap<>();
     private static final Map<BlockFace, Vector> rotationAxes = new HashMap<>();

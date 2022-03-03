@@ -2,11 +2,10 @@ package net.TheDgtl.Stargate.network.portal;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import net.TheDgtl.Stargate.PluginChannel;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.StargateProtocolProperty;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.NetworkAPI;
+import net.TheDgtl.Stargate.property.PluginChannel;
+import net.TheDgtl.Stargate.property.StargateProtocolProperty;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,7 +29,7 @@ public class VirtualPortal implements Portal {
 
     protected final String server;
     private final String name;
-    private NetworkAPI network;
+    private Network network;
     private final Set<PortalFlag> flags;
     private final UUID ownerUUID;
 
@@ -43,7 +42,7 @@ public class VirtualPortal implements Portal {
      * @param flags     <p>The portal flags enabled for this virtual portal</p>
      * @param ownerUUID <p>The UUID of this virtual portal's owner</p>
      */
-    public VirtualPortal(String server, String name, NetworkAPI network, Set<PortalFlag> flags, UUID ownerUUID) {
+    public VirtualPortal(String server, String name, Network network, Set<PortalFlag> flags, UUID ownerUUID) {
         this.server = server;
         this.name = name;
         this.network = network;
@@ -89,7 +88,7 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
-    public NetworkAPI getNetwork() {
+    public Network getNetwork() {
         return network;
     }
 

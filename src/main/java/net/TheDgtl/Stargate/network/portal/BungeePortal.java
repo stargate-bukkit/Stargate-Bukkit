@@ -2,11 +2,11 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.TranslatableMessage;
 import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
+import net.TheDgtl.Stargate.network.LocalNetwork;
 import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.NetworkAPI;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.EnumSet;
@@ -22,14 +22,14 @@ import java.util.logging.Level;
 public class BungeePortal extends AbstractPortal {
 
     private static Network LEGACY_NETWORK;
-    private final Network cheatNetwork;
+    private final Network fakeNetwork;
     private final LegacyVirtualPortal targetPortal;
     private final String serverDestination;
     private final String bungeeString;
 
     static {
         try {
-            LEGACY_NETWORK = new Network("§§§§§§#BUNGEE#§§§§§§", null, null);
+            LEGACY_NETWORK = new LocalNetwork("§§§§§§#BUNGEE#§§§§§§", null, null);
         } catch (NameErrorException e) {
             e.printStackTrace();
         }
@@ -46,7 +46,7 @@ public class BungeePortal extends AbstractPortal {
      * @param ownerUUID         <p>The UUID of this portal's owner</p>
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    public BungeePortal(NetworkAPI network, String name, String destination, String destinationServer,
+    public BungeePortal(Network network, String name, String destination, String destinationServer,
                         Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger) throws NameErrorException {
         super(network, name, flags, gate, ownerUUID, logger);
 
@@ -71,7 +71,7 @@ public class BungeePortal extends AbstractPortal {
          * CHEATS! we love cheats. This one helps to save the legacy bungee gate into sql table so that the
          * target server is stored as a replacement to network.
          */
-        cheatNetwork = new Network(destinationServer, null, null);
+        fakeNetwork = new LocalNetwork(destinationServer, null, null);
         bungeeString = Stargate.languageManager.getString(TranslatableMessage.BUNGEE_SIGN_LINE_4);
     }
 
@@ -99,7 +99,7 @@ public class BungeePortal extends AbstractPortal {
 
     @Override
     public Network getNetwork() {
-        return cheatNetwork;
+        return fakeNetwork;
     }
 
 }

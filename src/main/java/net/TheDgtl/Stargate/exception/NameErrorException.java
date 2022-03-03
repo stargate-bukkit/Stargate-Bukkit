@@ -1,6 +1,6 @@
 package net.TheDgtl.Stargate.exception;
 
-import net.TheDgtl.Stargate.TranslatableMessage;
+import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 
 /**
  * The name error exception is thrown when a portal name is invalid for whatever reason

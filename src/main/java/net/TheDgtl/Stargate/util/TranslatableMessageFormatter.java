@@ -11,14 +11,18 @@ import java.util.Set;
  *
  * <p>The translatable message formatter is mainly used for replacing placeholders in translatable message</p>
  */
-public class TranslatableMessageFormatter {
+public final class TranslatableMessageFormatter {
 
-    static private final String COST_INSERTION_IDENTIFIER = "%cost%";
-    static private final String PORTAL_INSERTION_IDENTIFIER = "%portal%";
-    static private final String WORLD_INSERTION_IDENTIFIER = "%world%";
-    static private final String NETWORK_NAME_IDENTIFIER = "%network%";
-    static private final String FLAGS_NAME_IDENTIFIER = "%flags%";
-    static private final String VERSION_IDENTIFIER = "%version%";
+    private static final String COST_INSERTION_IDENTIFIER = "%cost%";
+    private static final String PORTAL_INSERTION_IDENTIFIER = "%portal%";
+    private static final String WORLD_INSERTION_IDENTIFIER = "%world%";
+    private static final String NETWORK_NAME_IDENTIFIER = "%network%";
+    private static final String FLAGS_NAME_IDENTIFIER = "%flags%";
+    private static final String VERSION_IDENTIFIER = "%version%";
+
+    private TranslatableMessageFormatter() {
+
+    }
 
     /**
      * Replaces the %cost% in a string with the given cost

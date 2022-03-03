@@ -23,13 +23,13 @@ public class VectorOperationTester {
         this.testVectors = testVectors;
     }
 
-    public void noRotationForEastTest(IVectorOperation operation) {
+    public void noRotationForEastTest(VectorOperation operation) {
         for (Vector vector : testVectors) {
             Assertions.assertEquals(vector, operation.performToAbstractSpaceOperation(vector));
         }
     }
 
-    public void originalVectorNotModifiedTest(IVectorOperation operation) {
+    public void originalVectorNotModifiedTest(VectorOperation operation) {
         for (Vector vector : testVectors) {
             Vector oldVector = vector.copy(vector);
             operation.performToAbstractSpaceOperation(vector);
@@ -37,7 +37,7 @@ public class VectorOperationTester {
         }
     }
 
-    public void rotateSouthTest(IVectorOperation operation) {
+    public void rotateSouthTest(VectorOperation operation) {
         for (Vector vector : testVectors) {
             Vector newVector = operation.performToAbstractSpaceOperation(vector);
             Vector rotatedVector = new Vector(vector.getZ(), vector.getY(), -vector.getX());
@@ -45,7 +45,7 @@ public class VectorOperationTester {
         }
     }
 
-    public void rotateWestTest(IVectorOperation operation) {
+    public void rotateWestTest(VectorOperation operation) {
         for (Vector vector : testVectors) {
             Vector newVector = operation.performToAbstractSpaceOperation(vector);
             Vector rotatedVector = new Vector(-vector.getX(), vector.getY(), -vector.getZ());
@@ -53,7 +53,7 @@ public class VectorOperationTester {
         }
     }
 
-    public void inverseOperationTest(IVectorOperation operation) {
+    public void inverseOperationTest(VectorOperation operation) {
         for (Vector vector : testVectors) {
             Vector operatedVector = operation.performToAbstractSpaceOperation(vector);
             Vector inverseOperatedVector = operation.performToRealSpaceOperation(operatedVector);
@@ -61,7 +61,7 @@ public class VectorOperationTester {
         }
     }
 
-    public void rotateNorthTest(IVectorOperation operation) {
+    public void rotateNorthTest(VectorOperation operation) {
         for (Vector vector : testVectors) {
             Vector newVector = operation.performToAbstractSpaceOperation(vector);
             Vector rotatedVector = new Vector(-vector.getZ(), vector.getY(), vector.getX());
@@ -69,7 +69,7 @@ public class VectorOperationTester {
         }
     }
 
-    public void rotateUpTest(IVectorOperation operation) {
+    public void rotateUpTest(VectorOperation operation) {
         for (Vector vector : testVectors) {
             Vector newVector = operation.performToAbstractSpaceOperation(vector);
             Vector rotatedVector = new Vector(-vector.getY(), vector.getX(), vector.getZ());
@@ -77,7 +77,7 @@ public class VectorOperationTester {
         }
     }
 
-    public void rotateDownTest(IVectorOperation operation) {
+    public void rotateDownTest(VectorOperation operation) {
         for (Vector vector : testVectors) {
             Vector newVector = operation.performToAbstractSpaceOperation(vector);
             Vector rotatedVector = new Vector(vector.getY(), -vector.getX(), vector.getZ());
@@ -85,7 +85,7 @@ public class VectorOperationTester {
         }
     }
 
-    public void runningOperationTwiceGivesInitialTest(IVectorOperation operation) {
+    public void runningOperationTwiceGivesInitialTest(VectorOperation operation) {
         for (Vector vector : testVectors) {
             Vector newVector = operation.performToAbstractSpaceOperation(vector);
             newVector = operation.performToAbstractSpaceOperation(newVector);
@@ -93,7 +93,7 @@ public class VectorOperationTester {
         }
     }
 
-    public void runningOperationFourTimesGivesInitialTest(IVectorOperation operation) {
+    public void runningOperationFourTimesGivesInitialTest(VectorOperation operation) {
         for (Vector vector : testVectors) {
             Vector newVector = operation.performToAbstractSpaceOperation(vector);
             newVector = operation.performToAbstractSpaceOperation(newVector);
@@ -103,7 +103,7 @@ public class VectorOperationTester {
         }
     }
 
-    public void flipTest(IVectorOperation operation) {
+    public void flipTest(VectorOperation operation) {
         for (Vector vector : testVectors) {
             Vector flippedVector = new Vector(vector.getX(), vector.getY(), -vector.getZ());
             operation.setFlipZAxis(false);

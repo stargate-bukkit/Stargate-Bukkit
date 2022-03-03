@@ -17,8 +17,8 @@ package net.TheDgtl.Stargate.event;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
@@ -88,7 +88,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
         if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
             return pm.getPermission(permIdentifier + ".network.personal");
         }
-        if (portal.getNetwork().getName().equals(Settings.getString(Setting.DEFAULT_NETWORK))) {
+        if (portal.getNetwork().getName().equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
             return pm.getPermission(permIdentifier + ".network.default");
         }
         Permission custom = new Permission(permIdentifier + ".network.custom." + portal.getNetwork().getName());

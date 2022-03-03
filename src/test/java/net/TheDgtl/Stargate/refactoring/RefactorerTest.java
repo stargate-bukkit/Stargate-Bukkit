@@ -7,14 +7,14 @@ import net.TheDgtl.Stargate.FakeLanguageManager;
 import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.TwoTuple;
-import net.TheDgtl.Stargate.config.StargateConfiguration;
+import net.TheDgtl.Stargate.config.StargateYamlConfiguration;
+import net.TheDgtl.Stargate.container.TwoTuple;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.PortalDatabaseAPI;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
-import net.TheDgtl.Stargate.network.NetworkAPI;
+import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -77,7 +77,7 @@ public class RefactorerTest {
         server.addSimpleWorld("epicknarvik");
         server.addSimpleWorld("lclo");
         server.addSimpleWorld("pseudoknigth");
-        Stargate.getConfigStatic().load(defaultConfigFile);
+        Stargate.getFileConfiguration().load(defaultConfigFile);
 
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
     }
@@ -156,11 +156,11 @@ public class RefactorerTest {
 
             Map<String, Object> config = refactorer.getConfigModifications();
             Files.copy(defaultConfigFile, configFile);
-            FileConfiguration fileConfig = new StargateConfiguration();
+            FileConfiguration fileConfig = new StargateYamlConfiguration();
             fileConfig.load(configFile);
             for (String key : config.keySet()) {
                 Assertions.assertTrue(
-                        fileConfig.getKeys(true).contains(key) || key.contains(StargateConfiguration.START_OF_COMMENT), String.format("The key %s was added to the new config of %s", key, configFile.getName()));
+                        fileConfig.getKeys(true).contains(key) || key.contains(StargateYamlConfiguration.START_OF_COMMENT), String.format("The key %s was added to the new config of %s", key, configFile.getName()));
             }
 
             refactorer.insertNewConfigValues(fileConfig, config);
@@ -184,7 +184,7 @@ public class RefactorerTest {
     public void configDoubleCheck() throws IOException, InvalidConfigurationException {
         for (File configFile : configFiles) {
             Map<String, Object> testMap = configTestMap.get(configFile.getName()).getFirstValue();
-            FileConfiguration config = new StargateConfiguration();
+            FileConfiguration config = new StargateYamlConfiguration();
             config.load(configFile);
             for (String settingKey : testMap.keySet()) {
                 Object value = testMap.get(settingKey);
@@ -221,7 +221,7 @@ public class RefactorerTest {
             System.out.printf("--------- Checking portal loaded from %s configuration%n", key);
             for (String portalName : testMap.keySet()) {
                 String netName = testMap.get(portalName);
-                NetworkAPI net = registry.getNetwork(netName, false);
+                Network net = registry.getNetwork(netName, false);
                 Assertions.assertNotNull(net, String.format("Network %s for portal %s was null", netName, portalName));
                 Portal portal = net.getPortal(portalName);
                 Assertions.assertNotNull(portal, String.format("Portal %s in network %s was null", portalName, netName));

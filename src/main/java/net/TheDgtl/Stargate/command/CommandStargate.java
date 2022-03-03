@@ -1,7 +1,7 @@
 package net.TheDgtl.Stargate.command;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.TranslatableMessage;
+import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,7 +28,8 @@ public class CommandStargate implements CommandExecutor {
             return false;
         } else {
             String unformattedMessage = Stargate.languageManager.getMessage(TranslatableMessage.COMMAND_INFO);
-            commandSender.sendMessage(TranslatableMessageFormatter.formatVersion(unformattedMessage, Stargate.getInstance().getDescription().getVersion()));
+            commandSender.sendMessage(TranslatableMessageFormatter.formatVersion(unformattedMessage,
+                    Stargate.getInstance().getDescription().getVersion()));
             return true;
         }
     }

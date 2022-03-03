@@ -1,8 +1,8 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import net.TheDgtl.Stargate.PluginChannel;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.property.PluginChannel;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;

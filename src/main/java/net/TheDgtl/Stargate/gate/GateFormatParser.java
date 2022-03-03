@@ -28,10 +28,10 @@ public class GateFormatParser {
     private final String filename;
     private final Map<Character, Set<Material>> frameMaterials;
 
-    private final static char NOTHING = ' ';
-    private final static char EXIT = '*';
-    private final static char ENTRANCE = '.';
-    private final static char CONTROL = '-';
+    private static final char NOTHING = ' ';
+    private static final char EXIT = '*';
+    private static final char ENTRANCE = '.';
+    private static final char CONTROL = '-';
 
     private boolean gateHasEntrance = false;
     private int amountOfControlBlocks = 0;

@@ -13,7 +13,7 @@ import java.util.logging.Level;
 /**
  * A network that belongs to a certain player and uses the player's name
  */
-public class PersonalNetwork extends Network {
+public class PersonalNetwork extends LocalNetwork {
 
     private final String playerName;
 

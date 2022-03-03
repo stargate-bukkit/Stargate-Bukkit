@@ -2,18 +2,18 @@ package net.TheDgtl.Stargate.network;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import net.TheDgtl.Stargate.PluginChannel;
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.StargateProtocolProperty;
-import net.TheDgtl.Stargate.StargateProtocolRequestType;
-import net.TheDgtl.Stargate.actions.ForcibleFunctionAction;
-import net.TheDgtl.Stargate.actions.SupplierAction;
+import net.TheDgtl.Stargate.action.ForcibleFunctionAction;
+import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
+import net.TheDgtl.Stargate.property.PluginChannel;
+import net.TheDgtl.Stargate.property.StargateProtocolProperty;
+import net.TheDgtl.Stargate.property.StargateProtocolRequestType;
 import org.bukkit.Bukkit;
 
 import java.io.ByteArrayOutputStream;
@@ -24,7 +24,7 @@ import java.util.logging.Level;
 /**
  * A network containing portals across servers
  */
-public class InterServerNetwork extends Network {
+public class InterServerNetwork extends LocalNetwork {
 
     /**
      * Instantiates a new inter-server network

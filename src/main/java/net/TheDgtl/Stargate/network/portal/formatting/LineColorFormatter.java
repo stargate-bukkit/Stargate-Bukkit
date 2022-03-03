@@ -1,8 +1,8 @@
 package net.TheDgtl.Stargate.network.portal.formatting;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.config.setting.Setting;
-import net.TheDgtl.Stargate.config.setting.Settings;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
@@ -49,13 +49,13 @@ public class LineColorFormatter implements LineFormatter {
         ChatColor nameColor;
         ChatColor selectorColor;
 
-        if (Settings.getInteger(Setting.NAME_STYLE) == 3) {
+        if (ConfigurationHelper.getInteger(ConfigurationOption.NAME_STYLE) == 3) {
             nameColor = getDefaultColor(isLightSign);
         } else {
             nameColor = getNameColor(portal, isLightSign);
         }
 
-        switch (Settings.getInteger(Setting.NAME_STYLE)) {
+        switch (ConfigurationHelper.getInteger(ConfigurationOption.NAME_STYLE)) {
             case 1:
                 selectorColor = getDefaultColor(isLightSign);
                 break;
