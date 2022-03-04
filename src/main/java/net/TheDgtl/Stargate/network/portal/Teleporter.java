@@ -102,8 +102,8 @@ public class Teleporter {
         PermissionManager permissionManager = new PermissionManager(target);
         if (!hasPermission(target, permissionManager) && checkPermissions) {
             target.sendMessage(permissionManager.getDenyMessage());
-            /* For non math guys: teleport entity to the exit of the portal it entered. Also turn the entity around 180
-             * degrees */
+            /* For non math guys: teleport entity to the exit of the portal it entered. Also turn the entity around 
+            half a rotation */
             teleport(target, origin.getExit(), Math.PI);
             return;
         }
@@ -111,7 +111,7 @@ public class Teleporter {
         // Teleport player to the entrance portal if the player is unable to pay
         if (target instanceof Player && !charge((Player) target)) {
             target.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
-            teleport(target, origin.getExit(), 180);
+            teleport(target, origin.getExit(), Math.PI);
             Player player = (Player) target;
             teleportNearbyLeashedEntities(player, rotation);
             return;
