@@ -8,7 +8,7 @@ import net.TheDgtl.Stargate.Stargate;
 public final class ConfigurationHelper {
 
     private ConfigurationHelper() {
-        
+
     }
 
     /**

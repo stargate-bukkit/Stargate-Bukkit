@@ -117,10 +117,6 @@ public class Teleporter {
             return;
         }
 
-        if (target instanceof PoweredMinecart) {
-            return;
-        }
-
         // To smooth the experienced for highly used portals, or entity teleportation
         if (!destination.getChunk().isLoaded()) {
             destination.getChunk().load();
@@ -179,12 +175,25 @@ public class Teleporter {
     private void teleport(Entity target, Location location, double rotation) {
         Vector direction = target.getLocation().getDirection();
         Location exit = location.setDirection(direction.rotateAroundY(rotation));
-        Vector velocity = target.getVelocity();
-        teleport(target, exit);
 
+        Vector velocity = target.getVelocity();
         Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(ConfigurationHelper.getDouble(
                 ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER));
-        target.setVelocity(targetVelocity);
+        if (target instanceof PoweredMinecart) {
+            //A workaround for powered minecarts
+            PoweredMinecart poweredMinecart = (PoweredMinecart) target;
+            int fuel = poweredMinecart.getFuel();
+            poweredMinecart.setFuel(0);
+            Bukkit.getScheduler().runTaskLater(Stargate.getInstance(), () -> {
+                poweredMinecart.setVelocity(new Vector());
+                teleport(poweredMinecart, exit);
+                poweredMinecart.setFuel(fuel);
+                poweredMinecart.setVelocity(targetVelocity);
+            }, 1);
+        } else {
+            teleport(target, exit);
+            target.setVelocity(targetVelocity);
+        }
     }
 
     /**

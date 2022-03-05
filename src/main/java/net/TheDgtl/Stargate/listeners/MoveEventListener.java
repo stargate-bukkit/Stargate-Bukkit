@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Vehicle;
-import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -78,10 +77,6 @@ public class MoveEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleMove(VehicleMoveEvent event) {
-        //TODO: Find a proper way of handling powered minecarts
-        if (event.getVehicle() instanceof PoweredMinecart) {
-            return;
-        }
         onAnyMove(event.getVehicle(), event.getTo(), event.getFrom());
     }
 
