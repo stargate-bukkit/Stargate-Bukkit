@@ -148,8 +148,12 @@ public class Gate implements GateAPI {
             if (portalPosition.getPositionType() != PositionType.BUTTON) {
                 continue;
             }
-
+            
             Location buttonLocation = getLocation(portalPosition.getPositionLocation());
+            Material blockType = buttonLocation.getBlock().getType();
+            if (Tag.BUTTONS.isTagged(blockType) || Tag.WALL_CORALS.isTagged(blockType)) {
+                continue;
+            }
             Material buttonMaterial = getButtonMaterial();
             Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
             buttonData.setFacing(facing);
@@ -356,6 +360,7 @@ public class Gate implements GateAPI {
             break;
         }
 
+        //GATE_CONTROLS_FAULT
         //TODO: What to do if no available control block?
     }
 
