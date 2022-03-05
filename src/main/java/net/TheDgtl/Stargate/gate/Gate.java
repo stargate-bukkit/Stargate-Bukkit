@@ -15,6 +15,7 @@ import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -104,7 +105,7 @@ public class Gate implements GateAPI {
     public void drawControlMechanisms(String[] signLines, boolean drawButton) {
         drawSigns(signLines);
         if (drawButton) {
-            drawButton();
+            drawButtons();
         }
     }
 
@@ -142,7 +143,7 @@ public class Gate implements GateAPI {
     /**
      * Draws this gate's button
      */
-    private void drawButton() {
+    private void drawButtons() {
         for (PortalPosition portalPosition : portalPositions) {
             if (portalPosition.getPositionType() != PositionType.BUTTON) {
                 continue;
@@ -289,9 +290,9 @@ public class Gate implements GateAPI {
     /**
      * Checks if the built stargate matches this gate's format
      *
-     * <p>This will try to match the format regardless of which control block the sign was placed on</p>
-     * <p>
+     * <p>This will try to match the format regardless of which control block the sign was placed on
      * TODO: symmetric formats will be checked twice, make a way to determine if a format is symmetric to avoid this
+     * </p>
      *
      * @param location <p>The top-left location of a built stargate</p>
      * @param alwaysOn <p>Whether the new portal is set as always-on</p>
@@ -300,13 +301,11 @@ public class Gate implements GateAPI {
      */
     public boolean matchesFormat(@NotNull Location location, boolean alwaysOn) throws GateConflictException {
         List<BlockVector> controlBlocks = getFormat().getControlBlocks();
-        BlockVector signPosition;
         for (BlockVector controlBlock : controlBlocks) {
             /*
-             * Top-left is origin for the format, everything becomes easier if you calculate
-             * this position in the world; this is a hypothetical position, calculated from
-             * the position of the sign minus a vector of a hypothetical sign position in
-             * format.
+             * Top-left is origin for the format, everything becomes easier if you calculate this position in the world;
+             * this is a hypothetical position, calculated from the position of the sign minus a vector of a
+             * hypothetical sign position in format.
              */
             topLeft = location.clone().subtract(converter.performToRealSpaceOperation(controlBlock));
 
@@ -314,24 +313,9 @@ public class Gate implements GateAPI {
                 if (hasGateFrameConflict()) {
                     throw new GateConflictException();
                 }
-                /*
-                 * Just a cheat to exclude the sign location, and determine the position of the
-                 * button. Note that this will have weird behaviour if there's more than 3
-                 * control-blocks
-                 */
-                //TODO: Need to account for more control blocks (look for controls on all control blocks. If a button 
-                // is required and not found, check for an available control block. If none is found, thrown an exception)
-                signPosition = controlBlock;
-                for (BlockVector buttonVector : getFormat().getControlBlocks()) {
-                    if (signPosition == buttonVector) {
-                        continue;
-                    }
-                    portalPositions.add(new PortalPosition(PositionType.SIGN, signPosition));
-                    if (!alwaysOn) {
-                        portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector));
-                    }
-                    break;
-                }
+
+                //Calculate all relevant portal positions
+                calculatePortalPositions(alwaysOn);
 
                 //Make sure no controls conflict with existing controls
                 if (hasGateControlConflict()) {
@@ -341,6 +325,72 @@ public class Gate implements GateAPI {
             }
         }
         return false;
+    }
+
+    /**
+     * Calculates all portal positions for this gate
+     *
+     * @param alwaysOn <p>Whether this gate is always on</p>
+     */
+    private void calculatePortalPositions(boolean alwaysOn) {
+        //First find buttons and signs on the Stargate
+        List<BlockVector> registeredControls = getExistingControlPositions(alwaysOn);
+
+        //Return if no button is necessary
+        if (alwaysOn) {
+            return;
+        }
+        //Return if a button has already been registered
+        for (PortalPosition portalPosition : portalPositions) {
+            if (portalPosition.getPositionType() == PositionType.BUTTON) {
+                return;
+            }
+        }
+
+        //Add a button to the first available control block
+        for (BlockVector buttonVector : getFormat().getControlBlocks()) {
+            if (registeredControls.contains(buttonVector)) {
+                continue;
+            }
+            portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector));
+            break;
+        }
+
+        //TODO: What to do if no available control block?
+    }
+
+    /**
+     * Gets positions for any controls built on the Stargate
+     *
+     * @return <p>The vectors found containing controls</p>
+     */
+    private List<BlockVector> getExistingControlPositions(boolean alwaysOn) {
+        List<BlockVector> foundVectors = new ArrayList<>();
+        for (BlockVector blockVector : getFormat().getControlBlocks()) {
+            Material material = getLocation(blockVector).getBlock().getType();
+            if (!isControl(material)) {
+                continue;
+            }
+
+            if (Tag.WALL_SIGNS.isTagged(material)) {
+                portalPositions.add(new PortalPosition(PositionType.SIGN, blockVector));
+            } else if (!alwaysOn && (Tag.BUTTONS.isTagged(material) || Tag.WALL_CORALS.isTagged(material))) {
+                portalPositions.add(new PortalPosition(PositionType.BUTTON, blockVector));
+            }
+            foundVectors.add(blockVector);
+        }
+        return foundVectors;
+    }
+
+    /**
+     * Checks whether the given material corresponds to a control
+     *
+     * @param material <p>The material to check</p>
+     * @return <p>True if the material corresponds to a control</p>
+     */
+    private boolean isControl(Material material) {
+        return Tag.WALL_SIGNS.isTagged(material) || Tag.BUTTONS.isTagged(material) ||
+                Tag.WALL_CORALS.isTagged(material);
     }
 
     /**
