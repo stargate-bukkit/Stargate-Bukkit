@@ -128,9 +128,8 @@ public class NetworkedPortal extends AbstractPortal {
 
     @Override
     public void updateState() {
-        super.updateState();
-        this.destinations = getDestinations(null);
         this.selectedDestination = reloadSelectedDestination();
+        super.updateState();
     }
 
     /**
