@@ -133,6 +133,22 @@ public class DatabaseTester {
     void createServerInfoTableTest() throws SQLException {
         finishStatement(generator.generateCreateServerInfoTableStatement(connection));
     }
+    
+    void createPortalPositionTypeTableTest() throws SQLException {
+        finishStatement(generator.generateCreatePortalPositionTypeTableStatement(connection));
+    }
+    
+    void createPortalPositionTableTest() throws SQLException {
+        createPortalPositionTableTest(PortalType.LOCAL);
+    }
+    
+    void createInterPortalPositionTableTest() throws SQLException {
+        createPortalPositionTableTest(PortalType.INTER_SERVER);
+    }
+    
+    private void createPortalPositionTableTest(PortalType type) throws SQLException {
+        finishStatement(generator.generateCreatePortalPositionTableStatement(connection, type));
+    }
 
     void getFlagsTest() throws SQLException {
         printTableInfo("SG_Test_Flag");
@@ -340,6 +356,7 @@ public class DatabaseTester {
         List<String> tablesToRemove = new ArrayList<>();
         tablesToRemove.add(nameConfig.getServerInfoTableName());
         tablesToRemove.add(nameConfig.getPortalPositionTableName());
+        tablesToRemove.add(nameConfig.getInterPortalPositionTableName());
         tablesToRemove.add(nameConfig.getPortalPositionTypeTableName());
         tablesToRemove.add(nameConfig.getInterPortalViewName());
         tablesToRemove.add(nameConfig.getPortalViewName());

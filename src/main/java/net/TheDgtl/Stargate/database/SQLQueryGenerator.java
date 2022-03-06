@@ -13,6 +13,8 @@ import org.bukkit.World;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -24,6 +26,7 @@ public class SQLQueryGenerator {
     private final StargateLogger logger;
     private final TableNameConfiguration tableNameConfiguration;
     private final DriverEnum driverEnum;
+    private final Map<String,String> nameReplacements;
 
     /**
      * Instantiates a new SQL query generator
@@ -36,6 +39,24 @@ public class SQLQueryGenerator {
         this.tableNameConfiguration = tableNameConfiguration;
         this.logger = logger;
         this.driverEnum = driverEnum;
+        this.nameReplacements = getNameReplacements();
+    }
+
+    private Map<String, String> getNameReplacements() {
+        Map<String, String> nameReplacements = new HashMap<>();
+        nameReplacements.put("{Portal}", tableNameConfiguration.getPortalTableName());
+        nameReplacements.put("{PortalView}", tableNameConfiguration.getPortalViewName());
+        nameReplacements.put("{Flag}", tableNameConfiguration.getFlagTableName());
+        nameReplacements.put("{PortalFlagRelation}", tableNameConfiguration.getFlagRelationTableName());
+        nameReplacements.put("{InterPortal}", tableNameConfiguration.getInterPortalTableName());
+        nameReplacements.put("{InterPortalView}", tableNameConfiguration.getInterPortalViewName());
+        nameReplacements.put("{InterPortalFlagRelation}", tableNameConfiguration.getInterFlagRelationTableName());
+        nameReplacements.put("{LastKnownName}", tableNameConfiguration.getLastKnownNameTableName());
+        nameReplacements.put("{ServerInfo}", tableNameConfiguration.getServerInfoTableName());
+        nameReplacements.put("{PositionType}", tableNameConfiguration.getPortalPositionTypeTableName());
+        nameReplacements.put("{PortalPosition}", tableNameConfiguration.getPortalPositionTableName());
+        nameReplacements.put("{InterPortalPosition}", tableNameConfiguration.getInterPortalPositionTableName());
+        return nameReplacements;
     }
 
     /**
@@ -114,7 +135,7 @@ public class SQLQueryGenerator {
     public PreparedStatement generateCreatePortalPositionTypeTableStatement(Connection connection) throws SQLException {
         String autoIncrement = (driverEnum == DriverEnum.MARIADB || driverEnum == DriverEnum.MYSQL) ?
                 "AUTO_INCREMENT" : "AUTOINCREMENT";
-        String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalPositionType} (id INTEGER PRIMARY KEY " +
+        String statementMessage = "CREATE TABLE IF NOT EXISTS {PositionType} (id INTEGER PRIMARY KEY " +
                 autoIncrement + ", positionName NVARCHAR(16));";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
@@ -129,7 +150,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateAddPortalPositionTypeStatement(Connection connection) throws SQLException {
-        String statementMessage = "INSERT INTO {PortalPositionType} (positionName) VALUES (?);";
+        String statementMessage = "INSERT INTO {PositionType} (positionName) VALUES (?);";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -143,7 +164,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateGetAllPortalPositionTypesStatement(Connection connection) throws SQLException {
-        String statementMessage = "SELECT id, positionName FROM {PortalPositionType};";
+        String statementMessage = "SELECT id, positionName FROM {PositionType};";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -156,7 +177,7 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreatePortalPositionTableStatement(Connection connection) throws SQLException {
+    public PreparedStatement generateCreatePortalPositionTableStatement(Connection connection, PortalType type) throws SQLException {
         String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalPosition} (" +
                 "portalName NVARCHAR(180) NOT NULL, " +
                 "networkName NVARCHAR(180) NOT NULL, " +
@@ -164,7 +185,8 @@ public class SQLQueryGenerator {
                 "positionType INTEGER NOT NULL, " +
                 "PRIMARY KEY (portalName, networkName, xCoordinate, yCoordinate, zCoordinate), " +
                 "FOREIGN KEY (portalName, networkName) REFERENCES {Portal}(name, network), " +
-                "FOREIGN KEY (positionType) REFERENCES {PortalPositionType} (id));";
+                "FOREIGN KEY (positionType) REFERENCES {PositionType} (id));";
+        statementMessage = adjustStatementForPortalType(statementMessage, type);
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -192,10 +214,11 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateAddPortalPositionStatement(Connection connection) throws SQLException {
+    public PreparedStatement generateAddPortalPositionStatement(Connection connection, PortalType type) throws SQLException {
         String statementMessage = "INSERT INTO {PortalPosition} (portalName, networkName, xCoordinate, yCoordinate, " +
-                "zCoordinate, positionType) VALUES (?, ?, ?, ?, ?, (SELECT {PortalPositionType}.id FROM " +
-                "{PortalPositionType} WHERE {PortalPositionType}.positionName = ?));";
+                "zCoordinate, positionType) VALUES (?, ?, ?, ?, ?, (SELECT {PositionType}.id FROM " +
+                "{PositionType} WHERE {PositionType}.positionName = ?));";
+        statementMessage = adjustStatementForPortalType(statementMessage, type);
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -208,8 +231,9 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateRemovePortalPositionsStatement(Connection connection) throws SQLException {
+    public PreparedStatement generateRemovePortalPositionsStatement(Connection connection, PortalType type) throws SQLException {
         String statementMessage = "DELETE FROM {PortalPosition} WHERE portalName = ? AND networkName = ?;";
+        statementMessage = adjustStatementForPortalType(statementMessage, type);
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -222,9 +246,10 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateGetPortalPositionsStatement(Connection connection) throws SQLException {
-        String statementMessage = "SELECT *, (SELECT {PortalPositionType}.positionName FROM {PortalPositionType} " +
-                "WHERE {PortalPositionType}.id = positionType) as positionName FROM {PortalPosition} WHERE networkName = ? AND portalName = ?";
+    public PreparedStatement generateGetPortalPositionsStatement(Connection connection, PortalType type) throws SQLException {
+        String statementMessage = "SELECT *, (SELECT {PositionType}.positionName FROM {PositionType} " +
+                "WHERE {PositionType}.id = positionType) as positionName FROM {PortalPosition} WHERE networkName = ? AND portalName = ?";
+        statementMessage = adjustStatementForPortalType(statementMessage, type);
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -502,16 +527,7 @@ public class SQLQueryGenerator {
      * @return <p>The query string with keys replaced</p>
      */
     private String replaceKnownTableNames(String input) {
-        return replaceTableNames(input,
-                new String[]{"{Portal}", "{PortalView}", "{Flag}", "{PortalFlagRelation}", "{InterPortal}",
-                        "{InterPortalView}", "{InterPortalFlagRelation}", "{LastKnownName}", "{ServerInfo}",
-                        "{PortalPositionType}", "{PortalPosition}"},
-                new String[]{tableNameConfiguration.getPortalTableName(), tableNameConfiguration.getPortalViewName(),
-                        tableNameConfiguration.getFlagTableName(), tableNameConfiguration.getFlagRelationTableName(),
-                        tableNameConfiguration.getInterPortalTableName(), tableNameConfiguration.getInterPortalViewName(),
-                        tableNameConfiguration.getInterFlagRelationTableName(), tableNameConfiguration.getLastKnownNameTableName(),
-                        tableNameConfiguration.getServerInfoTableName(), tableNameConfiguration.getPortalPositionTypeTableName(),
-                        tableNameConfiguration.getPortalPositionTableName()});
+        return replaceTableNames(input, this.nameReplacements);
     }
 
     /**
@@ -522,10 +538,9 @@ public class SQLQueryGenerator {
      * @param values <p>The corresponding values of each key</p>
      * @return <p>The query with the values replaced</p>
      */
-    private String replaceTableNames(String query, String[] keys, String[] values) {
-        int min = Math.min(keys.length, values.length);
-        for (int i = 0; i < min; i++) {
-            query = query.replace(keys[i], values[i]);
+    private String replaceTableNames(String query, Map<String,String> nameReplacements) {
+        for (String key : nameReplacements.keySet()) {
+            query = query.replace(key, nameReplacements.get(key));
         }
         return query;
     }

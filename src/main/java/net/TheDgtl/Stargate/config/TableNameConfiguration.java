@@ -20,6 +20,8 @@ public class TableNameConfiguration {
     private String serverInfoTableName = "ServerInfo";
     private String portalPositionTypeTableName = "PortalPositionType";
     private String portalPositionTableName = "PortalPosition";
+    private String interPortalPositionTableName = "PortalPosition";
+    
 
     /**
      * Instantiates a new table config
@@ -167,6 +169,10 @@ public class TableNameConfiguration {
      */
     public String getPortalPositionTableName() {
         return mainPrefix + serverPrefix + portalPositionTableName;
+    }
+
+    public String getInterPortalPositionTableName() {
+        return mainPrefix + interPortalPositionTableName;
     }
 
 }

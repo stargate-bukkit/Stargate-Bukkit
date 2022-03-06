@@ -163,7 +163,7 @@ public class PortalDatabaseAPI implements StorageAPI {
             addFlags(addFlagStatement, portal);
             addFlagStatement.close();
 
-            PreparedStatement addPositionStatement = sqlQueryGenerator.generateAddPortalPositionStatement(connection);
+            PreparedStatement addPositionStatement = sqlQueryGenerator.generateAddPortalPositionStatement(connection, portalType);
             addPortalPositions(addPositionStatement, portal);
             addPositionStatement.close();
 
@@ -198,7 +198,7 @@ public class PortalDatabaseAPI implements StorageAPI {
             removeFlagsStatement.execute();
             removeFlagsStatement.close();
 
-            PreparedStatement removePositionsStatement = sqlQueryGenerator.generateRemovePortalPositionsStatement(conn);
+            PreparedStatement removePositionsStatement = sqlQueryGenerator.generateRemovePortalPositionsStatement(conn, portalType);
             removePositionsStatement.setString(1, portal.getName());
             removePositionsStatement.setString(2, portal.getNetwork().getName());
             removePositionsStatement.execute();
@@ -286,7 +286,7 @@ public class PortalDatabaseAPI implements StorageAPI {
         PreparedStatement portalPositionTypesStatement = sqlQueryGenerator.generateCreatePortalPositionTypeTableStatement(connection);
         runStatement(portalPositionTypesStatement);
         addMissingPositionTypes(connection, sqlQueryGenerator);
-        PreparedStatement portalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection);
+        PreparedStatement portalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, PortalType.LOCAL);
         runStatement(portalPositionsStatement);
         PreparedStatement portalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection);
         runStatement(portalPositionIndex);
@@ -312,6 +312,8 @@ public class PortalDatabaseAPI implements StorageAPI {
         runStatement(interServerRelationStatement);
         PreparedStatement interPortalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, PortalType.INTER_SERVER);
         runStatement(interPortalViewStatement);
+        PreparedStatement interPortalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, PortalType.INTER_SERVER);
+        runStatement(interPortalPositionsStatement);
         connection.close();
     }
 
@@ -447,7 +449,7 @@ public class PortalDatabaseAPI implements StorageAPI {
                 if (format == null) {
                     continue;
                 }
-                List<PortalPosition> portalPositions = getPortalPositions(networkName, name);
+                List<PortalPosition> portalPositions = getPortalPositions(networkName, name, portalType);
                 Gate gate = new Gate(block.getLocation(), facing, flipZ, format, logger);
                 gate.addPortalPositions(portalPositions);
                 Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate, ownerUUID, logger);
@@ -474,9 +476,9 @@ public class PortalDatabaseAPI implements StorageAPI {
      * @return <p>The portal positions belonging to the portal</p>
      * @throws SQLException <p>If the SQL query fails to successfully execute</p>
      */
-    private List<PortalPosition> getPortalPositions(String networkName, String portalName) throws SQLException {
+    private List<PortalPosition> getPortalPositions(String networkName, String portalName, PortalType type) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionsStatement(connection);
+        PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionsStatement(connection,type);
         statement.setString(1, networkName);
         statement.setString(2, portalName);
 
