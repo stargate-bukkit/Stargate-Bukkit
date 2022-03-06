@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 public class SQLiteDatabase implements Database {
 
     private String url;
-    private Connection previousConnection;
 
     /**
      * Instantiates a new SQL database
@@ -27,10 +26,7 @@ public class SQLiteDatabase implements Database {
 
     @Override
     public Connection getConnection() throws SQLException {
-        if (previousConnection == null || previousConnection.isClosed()) {
-            previousConnection = DriverManager.getConnection(this.url);
-        }
-        return previousConnection;
+        return DriverManager.getConnection(this.url);
     }
 
     /**

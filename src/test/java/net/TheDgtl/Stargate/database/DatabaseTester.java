@@ -83,7 +83,6 @@ public class DatabaseTester {
         Stargate.serverUUID = serverUUID;
         StargateLogger logger = new FakeStargate();
         this.portalDatabaseAPI = new PortalDatabaseAPI(database, false, isMySQL, logger, nameConfig);
-        DatabaseTester.connection = database.getConnection();
 
         Network testNetwork = null;
         try {
