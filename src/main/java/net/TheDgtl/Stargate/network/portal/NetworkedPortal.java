@@ -130,12 +130,6 @@ public class NetworkedPortal extends AbstractPortal {
     public void updateState() {
         this.selectedDestination = reloadSelectedDestination();
         super.updateState();
-
-        Portal destination = getDestination();
-        if (this.isActive && (destination == null || network.getPortal(destination.getName()) == null)) {
-            this.deactivate();
-            this.close(true);
-        }
     }
 
     /**
@@ -157,6 +151,9 @@ public class NetworkedPortal extends AbstractPortal {
         int possibleDestination = getNextDestination(0, this.selectedDestination);
         if (possibleDestination == NO_DESTINATION_SELECTED) {
             this.deactivate();
+            if (isOpen()) {
+                this.close(true);
+            }
         }
         return possibleDestination;
     }
