@@ -270,22 +270,7 @@ public class DatabaseTester {
      * @throws SQLException <p>If a database error occurs</p>
      */
     private void destroyPortal(Portal portal, PortalType portalType) throws SQLException {
-        connection.setAutoCommit(false);
-
-        try {
-            PreparedStatement removeFlagsStatement = generator.generateRemoveFlagStatement(connection, portalType);
-            removeFlagsStatement.setString(1, portal.getName());
-            removeFlagsStatement.setString(2, portal.getNetwork().getName());
-            finishStatement(removeFlagsStatement);
-            finishStatement(generator.generateRemovePortalStatement(connection, portal, portalType));
-            connection.commit();
-            connection.setAutoCommit(true);
-        } catch (SQLException exception) {
-            connection.rollback();
-            connection.setAutoCommit(true);
-            throw exception;
-        }
-        connection.setAutoCommit(true);
+        this.portalDatabaseAPI.removePortalFromStorage(portal, portalType);
 
         String flagTable = portalType == PortalType.LOCAL ? nameConfig.getFlagRelationTableName() :
                 nameConfig.getInterFlagRelationTableName();
