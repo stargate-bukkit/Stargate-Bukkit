@@ -133,19 +133,19 @@ public class DatabaseTester {
     void createServerInfoTableTest() throws SQLException {
         finishStatement(generator.generateCreateServerInfoTableStatement(connection));
     }
-    
+
     void createPortalPositionTypeTableTest() throws SQLException {
         finishStatement(generator.generateCreatePortalPositionTypeTableStatement(connection));
     }
-    
+
     void createPortalPositionTableTest() throws SQLException {
         createPortalPositionTableTest(PortalType.LOCAL);
     }
-    
+
     void createInterPortalPositionTableTest() throws SQLException {
         createPortalPositionTableTest(PortalType.INTER_SERVER);
     }
-    
+
     private void createPortalPositionTableTest(PortalType type) throws SQLException {
         finishStatement(generator.generateCreatePortalPositionTableStatement(connection, type));
     }

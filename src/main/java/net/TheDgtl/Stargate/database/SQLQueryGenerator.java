@@ -26,7 +26,7 @@ public class SQLQueryGenerator {
     private final StargateLogger logger;
     private final TableNameConfiguration tableNameConfiguration;
     private final DriverEnum driverEnum;
-    private final Map<String,String> nameReplacements;
+    private final Map<String, String> nameReplacements;
 
     /**
      * Instantiates a new SQL query generator
@@ -538,7 +538,7 @@ public class SQLQueryGenerator {
      * @param values <p>The corresponding values of each key</p>
      * @return <p>The query with the values replaced</p>
      */
-    private String replaceTableNames(String query, Map<String,String> nameReplacements) {
+    private String replaceTableNames(String query, Map<String, String> nameReplacements) {
         for (String key : nameReplacements.keySet()) {
             query = query.replace(key, nameReplacements.get(key));
         }

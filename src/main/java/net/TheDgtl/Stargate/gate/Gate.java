@@ -148,7 +148,7 @@ public class Gate implements GateAPI {
             if (portalPosition.getPositionType() != PositionType.BUTTON) {
                 continue;
             }
-            
+
             Location buttonLocation = getLocation(portalPosition.getPositionLocation());
             Material blockType = buttonLocation.getBlock().getType();
             if (Tag.BUTTONS.isTagged(blockType) || Tag.WALL_CORALS.isTagged(blockType)) {

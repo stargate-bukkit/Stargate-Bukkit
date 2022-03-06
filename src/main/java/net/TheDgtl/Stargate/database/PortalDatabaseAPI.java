@@ -478,7 +478,7 @@ public class PortalDatabaseAPI implements StorageAPI {
      */
     private List<PortalPosition> getPortalPositions(String networkName, String portalName, PortalType type) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionsStatement(connection,type);
+        PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionsStatement(connection, type);
         statement.setString(1, networkName);
         statement.setString(2, portalName);
 

@@ -89,19 +89,19 @@ public class MySQLDatabaseTest {
     void createInterPortalFlagRelationTableTest() throws SQLException {
         tester.createInterPortalFlagRelationTableTest();
     }
-    
+
     @Test
     @Order(2)
     void createPortalPositionTypeTableTest() throws SQLException {
         tester.createPortalPositionTypeTableTest();
     }
-    
+
     @Test
     @Order(3)
     void createInterPortalPositioTableTest() throws SQLException {
         tester.createPortalPositionTableTest();
     }
-    
+
     @Test
     @Order(3)
     void createInterPortalPositionTableTest() throws SQLException {

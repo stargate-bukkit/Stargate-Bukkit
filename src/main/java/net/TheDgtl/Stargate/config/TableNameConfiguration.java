@@ -21,7 +21,7 @@ public class TableNameConfiguration {
     private String portalPositionTypeTableName = "PortalPositionType";
     private String portalPositionTableName = "PortalPosition";
     private String interPortalPositionTableName = "PortalPosition";
-    
+
 
     /**
      * Instantiates a new table config
