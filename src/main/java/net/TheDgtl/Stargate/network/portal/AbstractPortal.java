@@ -121,7 +121,7 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void updateState() {
         setSignColor(null);
-        if (getCurrentDestination() == null || this instanceof FixedPortal) {
+        if (getCurrentDestination() == null || this instanceof FixedPortal || hasFlag(PortalFlag.ALWAYS_ON)) {
             this.destination = getDestination();
         }
 
