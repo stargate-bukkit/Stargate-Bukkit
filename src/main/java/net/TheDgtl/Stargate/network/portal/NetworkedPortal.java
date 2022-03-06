@@ -132,7 +132,7 @@ public class NetworkedPortal extends AbstractPortal {
         super.updateState();
 
         Portal destination = getDestination();
-        if (destination != null && network.getPortal(destination.getName()) == null) {
+        if (this.isActive && (destination == null || network.getPortal(destination.getName()) == null)) {
             this.deactivate();
             this.close(true);
         }
