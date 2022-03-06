@@ -87,7 +87,7 @@ import java.util.logging.Level;
 public class Stargate extends JavaPlugin implements StargateLogger {
     private static Stargate instance;
 
-    private Level lowestMsgLevel = Level.FINEST;//setting before config loads
+    private Level lowestMessageLevel = Level.FINEST;//setting before config loads
 
     final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
     final String GATE_FOLDER = "gates";
@@ -316,11 +316,11 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             loadBungeeServerName();
         }
         economyManager = new EconomyManager();
-        String debugLevelStr = ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL);
-        if (debugLevelStr == null) {
-            lowestMsgLevel = Level.INFO;
+        String debugLevelString = ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL);
+        if (debugLevelString == null) {
+            lowestMessageLevel = Level.INFO;
         } else {
-            lowestMsgLevel = Level.parse(debugLevelStr);
+            lowestMessageLevel = Level.parse(debugLevelString);
         }
         languageManager.setLanguage(ConfigurationHelper.getString(ConfigurationOption.LANGUAGE));
 
@@ -354,12 +354,12 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         storageAPI.endInterServerConnection();
     }
 
-    public static void log(Level priorityLevel, String msg) {
+    public static void log(Level priorityLevel, String message) {
         if (instance != null) {
-            instance.logMessage(priorityLevel, msg);
+            instance.logMessage(priorityLevel, message);
             return;
         }
-        System.out.println(msg);
+        System.out.println(message);
     }
 
     /**
@@ -373,12 +373,13 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     @Override
     public void logMessage(Level priorityLevel, String message) {
-        if (this.lowestMsgLevel.intValue() <= priorityLevel.intValue()
-                && priorityLevel.intValue() < Level.INFO.intValue()) {
-            this.getLogger().log(Level.INFO, message);
-            return;
+        if (priorityLevel.intValue() >= this.lowestMessageLevel.intValue()) {
+            if (priorityLevel.intValue() < Level.INFO.intValue()) {
+                this.getLogger().log(Level.INFO, message);
+            } else {
+                this.getLogger().log(priorityLevel, message);
+            }
         }
-        this.getLogger().log(priorityLevel, message);
     }
 
     public static FileConfiguration getFileConfiguration() {
