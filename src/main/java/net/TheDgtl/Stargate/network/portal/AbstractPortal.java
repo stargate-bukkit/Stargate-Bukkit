@@ -104,7 +104,7 @@ public abstract class AbstractPortal implements RealPortal {
         for (PortalFlag flag : flags) {
             msg.append(flag.getCharacterRepresentation());
         }
-        Stargate.log(Level.FINE, msg.toString());
+        Stargate.log(Level.FINER, msg.toString());
 
         AbstractPortal.portalCount++;
         AbstractPortal.allUsedFlags.addAll(flags);

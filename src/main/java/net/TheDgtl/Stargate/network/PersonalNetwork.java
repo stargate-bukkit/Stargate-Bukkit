@@ -27,8 +27,8 @@ public class PersonalNetwork extends LocalNetwork {
      */
     public PersonalNetwork(UUID uuid, Database database, SQLQueryGenerator queryGenerator) throws NameErrorException {
         super(uuid.toString(), database, queryGenerator);
-        Stargate.log(Level.FINE, "Initialized personal network with UUID" + uuid);
-        Stargate.log(Level.FINE, "Matching player name: " + Bukkit.getOfflinePlayer(uuid).getName());
+        Stargate.log(Level.FINER, "Initialized personal network with UUID " + uuid);
+        Stargate.log(Level.FINER, "Matching player name: " + Bukkit.getOfflinePlayer(uuid).getName());
         playerName = Bukkit.getOfflinePlayer(uuid).getName();
     }
 
