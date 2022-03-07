@@ -164,7 +164,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void close(boolean forceClose) {
-        if (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose) {
+        if (!isOpen() || (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose)) {
             return;
         }
         getGate().close();
