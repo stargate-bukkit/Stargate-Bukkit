@@ -7,13 +7,12 @@ import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
+import org.bukkit.entity.Entity;
 
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
-
-import org.bukkit.entity.Entity;
 
 /**
  * A portal that always chooses a random destination within its own network
@@ -65,10 +64,10 @@ public class RandomPortal extends AbstractPortal {
         super.close(force);
         destination = null;
     }
-    
+
     @Override
     public void doTeleport(Entity target) {
-        if(hasFlag(PortalFlag.ALWAYS_ON)) {
+        if (hasFlag(PortalFlag.ALWAYS_ON)) {
             super.destination = getDestination();
         }
         super.doTeleport(target);

@@ -357,7 +357,7 @@ public class DatabaseTester {
         tablesToRemove.add(nameConfig.getServerInfoTableName());
         tablesToRemove.add(nameConfig.getPortalPositionTableName());
         tablesToRemove.add(nameConfig.getInterPortalPositionTableName());
-        tablesToRemove.add(nameConfig.getPortalPositionTypeTableName());
+        tablesToRemove.add(nameConfig.getPositionTypeTableName());
         tablesToRemove.add(nameConfig.getInterPortalViewName());
         tablesToRemove.add(nameConfig.getPortalViewName());
         tablesToRemove.add(nameConfig.getLastKnownNameTableName());

@@ -359,17 +359,17 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         storageAPI.endInterServerConnection();
     }
 
-    private void closeAllPortals(Map<String,Network> networkMap) {
+    private void closeAllPortals(Map<String, Network> networkMap) {
         for (Network network : networkMap.values()) {
             for (Portal portal : network.getAllPortals()) {
-                if (portal.hasFlag(PortalFlag.ALWAYS_ON) && !portal.hasFlag(PortalFlag.FIXED) && 
+                if (portal.hasFlag(PortalFlag.ALWAYS_ON) && !portal.hasFlag(PortalFlag.FIXED) &&
                         portal instanceof RealPortal) {
                     ((RealPortal) portal).getGate().close();
                 }
             }
         }
     }
-    
+
     public static void log(Level priorityLevel, String message) {
         if (instance != null) {
             instance.logMessage(priorityLevel, message);

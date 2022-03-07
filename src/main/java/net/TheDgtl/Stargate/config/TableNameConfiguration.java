@@ -18,10 +18,9 @@ public class TableNameConfiguration {
     private String interPortalViewName = "InterPortalView";
     private String lastKnownNameTableName = "LastKnownName";
     private String serverInfoTableName = "ServerInfo";
-    private String portalPositionTypeTableName = "PortalPositionType";
+    private String positionTypeTableName = "PortalPositionType";
     private String portalPositionTableName = "PortalPosition";
-    private String interPortalPositionTableName = "PortalPosition";
-
+    private String interPortalPositionTableName = "InterPortalPosition";
 
     /**
      * Instantiates a new table config
@@ -37,26 +36,28 @@ public class TableNameConfiguration {
     /**
      * Instantiates a new table config
      *
-     * @param mainPrefix                 <p>The main prefix used on all tables to prevent name collisions</p>
-     * @param serverPrefix               <p>The per-server prefix used to prevent name conflicts between non-shared tables</p>
-     * @param portalTableName            <p>The name of the table storing portals</p>
-     * @param interPortalTableName       <p>The name of the table storing inter-portals</p>
-     * @param flagTableName              <p>The name of the table storing available portal-flags</p>
-     * @param flagRelationTableName      <p>The name of the table storing set flags for normal portals</p>
-     * @param interFlagRelationTableName <p>The name of the table storing set flags for inter-server portals</p>
-     * @param portalViewName             <p>The name of the view used to get the full information about portals</p>
-     * @param interPortalViewName        <p>The name of the view used to get the full information about inter-server portals</p>
-     * @param lastKnownNameTableName     <p>The name of the table in which to store the last known names attached to UUIDs</p>
-     * @param serverInfoTableName        <p>The name of the table in which to store information, such as names about the known
-     *                                   servers in the network</p>
-     * @param positionTypeTableName      <p>The name of the table storing position types</p>
-     * @param portalPositionTableName    <p>The name of the table storing portal positions</p>
+     * @param mainPrefix                   <p>The main prefix used on all tables to prevent name collisions</p>
+     * @param serverPrefix                 <p>The per-server prefix used to prevent name conflicts between non-shared tables</p>
+     * @param portalTableName              <p>The name of the table storing portals</p>
+     * @param interPortalTableName         <p>The name of the table storing inter-portals</p>
+     * @param flagTableName                <p>The name of the table storing available portal-flags</p>
+     * @param flagRelationTableName        <p>The name of the table storing set flags for normal portals</p>
+     * @param interFlagRelationTableName   <p>The name of the table storing set flags for inter-server portals</p>
+     * @param portalViewName               <p>The name of the view used to get the full information about portals</p>
+     * @param interPortalViewName          <p>The name of the view used to get the full information about inter-server portals</p>
+     * @param lastKnownNameTableName       <p>The name of the table in which to store the last known names attached to UUIDs</p>
+     * @param serverInfoTableName          <p>The name of the table in which to store information, such as names about the known
+     *                                     servers in the network</p>
+     * @param positionTypeTableName        <p>The name of the table storing position types</p>
+     * @param portalPositionTableName      <p>The name of the table storing portal positions</p>
+     * @param interPortalPositionTableName <p>The name of the table storing inter-server portal positions</p>
      */
     @SuppressWarnings("unused")
     public TableNameConfiguration(String mainPrefix, String serverPrefix, String portalTableName, String interPortalTableName,
                                   String flagTableName, String flagRelationTableName, String interFlagRelationTableName,
                                   String portalViewName, String interPortalViewName, String lastKnownNameTableName,
-                                  String serverInfoTableName, String positionTypeTableName, String portalPositionTableName) {
+                                  String serverInfoTableName, String positionTypeTableName,
+                                  String portalPositionTableName, String interPortalPositionTableName) {
         this.mainPrefix = mainPrefix;
         this.serverPrefix = serverPrefix;
         this.portalTableName = portalTableName;
@@ -68,8 +69,9 @@ public class TableNameConfiguration {
         this.interPortalViewName = interPortalViewName;
         this.lastKnownNameTableName = lastKnownNameTableName;
         this.serverInfoTableName = serverInfoTableName;
-        this.portalPositionTypeTableName = positionTypeTableName;
+        this.positionTypeTableName = positionTypeTableName;
         this.portalPositionTableName = portalPositionTableName;
+        this.interPortalPositionTableName = interPortalPositionTableName;
     }
 
     /**
@@ -158,8 +160,8 @@ public class TableNameConfiguration {
      *
      * @return <p>The name of the table used to store available position types</p>
      */
-    public String getPortalPositionTypeTableName() {
-        return mainPrefix + portalPositionTypeTableName;
+    public String getPositionTypeTableName() {
+        return mainPrefix + positionTypeTableName;
     }
 
     /**
@@ -171,6 +173,11 @@ public class TableNameConfiguration {
         return mainPrefix + serverPrefix + portalPositionTableName;
     }
 
+    /**
+     * Gets the name of the table used to store inter-portal positions
+     *
+     * @return <p>The name of the table used to store inter-portal positions</p>
+     */
     public String getInterPortalPositionTableName() {
         return mainPrefix + interPortalPositionTableName;
     }

@@ -26,7 +26,7 @@ public class SQLQueryGenerator {
     private final StargateLogger logger;
     private final TableNameConfiguration tableNameConfiguration;
     private final DriverEnum driverEnum;
-    private final Map<String, String> nameReplacements;
+    private final Map<String, String> prefixedTableNames;
 
     /**
      * Instantiates a new SQL query generator
@@ -39,24 +39,7 @@ public class SQLQueryGenerator {
         this.tableNameConfiguration = tableNameConfiguration;
         this.logger = logger;
         this.driverEnum = driverEnum;
-        this.nameReplacements = getNameReplacements();
-    }
-
-    private Map<String, String> getNameReplacements() {
-        Map<String, String> nameReplacements = new HashMap<>();
-        nameReplacements.put("{Portal}", tableNameConfiguration.getPortalTableName());
-        nameReplacements.put("{PortalView}", tableNameConfiguration.getPortalViewName());
-        nameReplacements.put("{Flag}", tableNameConfiguration.getFlagTableName());
-        nameReplacements.put("{PortalFlagRelation}", tableNameConfiguration.getFlagRelationTableName());
-        nameReplacements.put("{InterPortal}", tableNameConfiguration.getInterPortalTableName());
-        nameReplacements.put("{InterPortalView}", tableNameConfiguration.getInterPortalViewName());
-        nameReplacements.put("{InterPortalFlagRelation}", tableNameConfiguration.getInterFlagRelationTableName());
-        nameReplacements.put("{LastKnownName}", tableNameConfiguration.getLastKnownNameTableName());
-        nameReplacements.put("{ServerInfo}", tableNameConfiguration.getServerInfoTableName());
-        nameReplacements.put("{PositionType}", tableNameConfiguration.getPortalPositionTypeTableName());
-        nameReplacements.put("{PortalPosition}", tableNameConfiguration.getPortalPositionTableName());
-        nameReplacements.put("{InterPortalPosition}", tableNameConfiguration.getInterPortalPositionTableName());
-        return nameReplacements;
+        this.prefixedTableNames = getPrefixedTableNamesMap();
     }
 
     /**
@@ -527,22 +510,43 @@ public class SQLQueryGenerator {
      * @return <p>The query string with keys replaced</p>
      */
     private String replaceKnownTableNames(String input) {
-        return replaceTableNames(input, this.nameReplacements);
+        return replaceTableNames(input, this.prefixedTableNames);
     }
 
     /**
      * Replaces the table name keys with the table name values
      *
-     * @param query  <p>The query to replace keys for</p>
-     * @param keys   <p>The keys to replace</p>
-     * @param values <p>The corresponding values of each key</p>
+     * @param query          <p>The query to replace keys for</p>
+     * @param replacementMap <p>The map</p>
      * @return <p>The query with the values replaced</p>
      */
-    private String replaceTableNames(String query, Map<String, String> nameReplacements) {
-        for (String key : nameReplacements.keySet()) {
-            query = query.replace(key, nameReplacements.get(key));
+    private String replaceTableNames(String query, Map<String, String> replacementMap) {
+        for (String key : replacementMap.keySet()) {
+            query = query.replace("{" + key + "}", replacementMap.get(key));
         }
         return query;
+    }
+
+    /**
+     * Gets the map between table name placeholders and the correct prefixed table names
+     *
+     * @return <p>The map between table name placeholders and the correct prefixed table names</p>
+     */
+    private Map<String, String> getPrefixedTableNamesMap() {
+        Map<String, String> prefixedTableNames = new HashMap<>();
+        prefixedTableNames.put("Portal", tableNameConfiguration.getPortalTableName());
+        prefixedTableNames.put("PortalView", tableNameConfiguration.getPortalViewName());
+        prefixedTableNames.put("Flag", tableNameConfiguration.getFlagTableName());
+        prefixedTableNames.put("PortalFlagRelation", tableNameConfiguration.getFlagRelationTableName());
+        prefixedTableNames.put("InterPortal", tableNameConfiguration.getInterPortalTableName());
+        prefixedTableNames.put("InterPortalView", tableNameConfiguration.getInterPortalViewName());
+        prefixedTableNames.put("InterPortalFlagRelation", tableNameConfiguration.getInterFlagRelationTableName());
+        prefixedTableNames.put("LastKnownName", tableNameConfiguration.getLastKnownNameTableName());
+        prefixedTableNames.put("ServerInfo", tableNameConfiguration.getServerInfoTableName());
+        prefixedTableNames.put("PositionType", tableNameConfiguration.getPositionTypeTableName());
+        prefixedTableNames.put("PortalPosition", tableNameConfiguration.getPortalPositionTableName());
+        prefixedTableNames.put("InterPortalPosition", tableNameConfiguration.getInterPortalPositionTableName());
+        return prefixedTableNames;
     }
 
 }
