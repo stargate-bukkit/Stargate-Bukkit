@@ -11,6 +11,9 @@ import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
+
+import org.bukkit.entity.Entity;
 
 /**
  * A portal that always chooses a random destination within its own network
@@ -53,6 +56,7 @@ public class RandomPortal extends AbstractPortal {
         }
         int randomNumber = randomizer.nextInt(destinations.length);
         String destination = destinations[randomNumber];
+        super.logger.logMessage(Level.FINEST, String.format("Chose random destination %s, calculated from integer %d", destination, randomNumber));
         return network.getPortal(destination);
     }
 
@@ -60,6 +64,14 @@ public class RandomPortal extends AbstractPortal {
     public void close(boolean force) {
         super.close(force);
         destination = null;
+    }
+    
+    @Override
+    public void doTeleport(Entity target) {
+        if(hasFlag(PortalFlag.ALWAYS_ON)) {
+            super.destination = getDestination();
+        }
+        super.doTeleport(target);
     }
 
 }

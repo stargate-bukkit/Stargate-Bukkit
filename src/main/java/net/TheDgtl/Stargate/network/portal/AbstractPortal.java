@@ -67,7 +67,7 @@ public abstract class AbstractPortal implements RealPortal {
     private UUID ownerUUID;
     private final Gate gate;
     private final Set<PortalFlag> flags;
-    private final StargateLogger logger;
+    protected final StargateLogger logger;
 
     /**
      * Instantiates a new abstract portal
