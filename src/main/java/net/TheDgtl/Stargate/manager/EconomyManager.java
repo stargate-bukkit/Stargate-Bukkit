@@ -5,6 +5,7 @@ import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -94,6 +95,11 @@ public class EconomyManager {
 
     public boolean chargePlayer(OfflinePlayer player, Portal origin, int amount) {
         if (amount == 0) {
+            return true;
+        }
+        if (origin.getOwnerUUID() == player.getUniqueId()
+                && ConfigurationHelper.getBoolean(ConfigurationOption.GATE_OWNER_REVENUE)
+                && origin.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
             return true;
         }
         if (ConfigurationHelper.getBoolean(ConfigurationOption.GATE_OWNER_REVENUE)) {
