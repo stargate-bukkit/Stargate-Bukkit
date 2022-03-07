@@ -66,7 +66,7 @@ public class StargateRegistry implements RegistryAPI {
         }
         Network network = storageAPI.createNetwork(networkName, flags);
         network.assignToRegistry(this);
-        getNetworkMap().put(network.getId(), network);
+        getNetworkMap(flags.contains(PortalFlag.FANCY_INTER_SERVER)).put(network.getId(), network);
     }
 
     @Override
@@ -180,7 +180,7 @@ public class StargateRegistry implements RegistryAPI {
      * @param getBungee <p>Whether to get BungeeCord networks</p>
      * @return <p>A network name -> network map</p>
      */
-    private Map<String, ? extends Network> getNetworkMap(boolean getBungee) {
+    private Map<String, Network> getNetworkMap(boolean getBungee) {
         if (getBungee) {
             return getBungeeNetworkMap();
         } else {
