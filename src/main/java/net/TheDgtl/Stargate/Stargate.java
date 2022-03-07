@@ -89,7 +89,7 @@ import java.util.logging.Level;
 public class Stargate extends JavaPlugin implements StargateLogger {
     private static Stargate instance;
 
-    private Level lowestMessageLevel = Level.FINEST;//setting before config loads
+    private Level lowestMessageLevel = Level.INFO;//setting before config loads
 
     final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
     final String GATE_FOLDER = "gates";
