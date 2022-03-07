@@ -338,14 +338,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     @Override
     public void onDisable() {
         //Close networked always-on Stargates as they have no destination on next start
-        for (Network network : registry.getNetworkMap().values()) {
-            for (Portal portal : network.getAllPortals()) {
-                if (portal.hasFlag(PortalFlag.ALWAYS_ON) && !portal.hasFlag(PortalFlag.FIXED) && 
-                        portal instanceof RealPortal) {
-                    ((RealPortal) portal).getGate().close();
-                }
-            }
-        }
+        closeAllPortals(registry.getBungeeNetworkMap());
+        closeAllPortals(registry.getNetworkMap());
         /*
          * Replacement for legacy, which used:
          * methodPortal.closeAllGates(this); Portal.clearGates(); managedWorlds.clear();
@@ -365,6 +359,17 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         storageAPI.endInterServerConnection();
     }
 
+    private void closeAllPortals(Map<String,Network> networkMap) {
+        for (Network network : networkMap.values()) {
+            for (Portal portal : network.getAllPortals()) {
+                if (portal.hasFlag(PortalFlag.ALWAYS_ON) && !portal.hasFlag(PortalFlag.FIXED) && 
+                        portal instanceof RealPortal) {
+                    ((RealPortal) portal).getGate().close();
+                }
+            }
+        }
+    }
+    
     public static void log(Level priorityLevel, String message) {
         if (instance != null) {
             instance.logMessage(priorityLevel, message);
