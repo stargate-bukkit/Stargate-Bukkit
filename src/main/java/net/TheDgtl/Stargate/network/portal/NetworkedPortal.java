@@ -133,7 +133,7 @@ public class NetworkedPortal extends AbstractPortal {
             this.deactivate();
             this.close(true);
         }
-        
+
         this.selectedDestination = reloadSelectedDestination();
         super.updateState();
     }

@@ -41,6 +41,8 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.property.PluginChannel;
 import net.TheDgtl.Stargate.thread.SynchronousPopulator;
 import net.TheDgtl.Stargate.util.BStatsHelper;
@@ -335,6 +337,14 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     @Override
     public void onDisable() {
+        //Close any networked fixed gates as their destination will become invalid upon restart
+        for (Network network : registry.getNetworkMap().values()) {
+            for (Portal portal : network.getAllPortals()) {
+                if (portal.hasFlag(PortalFlag.ALWAYS_ON) && portal instanceof RealPortal) {
+                    ((RealPortal) portal).getGate().close();
+                }
+            }
+        }
         /*
          * Replacement for legacy, which used:
          * methodPortal.closeAllGates(this); Portal.clearGates(); managedWorlds.clear();
@@ -342,9 +352,9 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         syncTickPopulator.forceDoAllTasks();
         syncSecPopulator.forceDoAllTasks();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
-            Messenger msgr = Bukkit.getMessenger();
-            msgr.unregisterOutgoingPluginChannel(this);
-            msgr.unregisterIncomingPluginChannel(this);
+            Messenger messenger = Bukkit.getMessenger();
+            messenger.unregisterOutgoingPluginChannel(this);
+            messenger.unregisterIncomingPluginChannel(this);
         }
         getServer().getScheduler().cancelTasks(this);
 

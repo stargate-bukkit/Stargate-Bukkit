@@ -38,7 +38,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 
 /**
@@ -152,14 +151,10 @@ public abstract class AbstractPortal implements RealPortal {
         long openTime = System.currentTimeMillis();
         this.openTime = openTime;
 
-        // Create action which will close this portal
-        Supplier<Boolean> action = () -> {
+        Stargate.syncSecPopulator.addAction(new DelayedAction(openDelay, () -> {
             close(openTime);
             return true;
-        };
-
-        // Make the action on a delay
-        Stargate.syncSecPopulator.addAction(new DelayedAction(openDelay, action));
+        }));
     }
 
     @Override
