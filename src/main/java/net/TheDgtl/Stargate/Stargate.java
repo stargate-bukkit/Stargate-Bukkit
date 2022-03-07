@@ -337,10 +337,11 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     @Override
     public void onDisable() {
-        //Close any networked fixed gates as their destination will become invalid upon restart
+        //Close networked always-on Stargates as they have no destination on next start
         for (Network network : registry.getNetworkMap().values()) {
             for (Portal portal : network.getAllPortals()) {
-                if (portal.hasFlag(PortalFlag.ALWAYS_ON) && portal instanceof RealPortal) {
+                if (portal.hasFlag(PortalFlag.ALWAYS_ON) && !portal.hasFlag(PortalFlag.FIXED) && 
+                        portal instanceof RealPortal) {
                     ((RealPortal) portal).getGate().close();
                 }
             }
