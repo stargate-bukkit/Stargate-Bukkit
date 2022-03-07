@@ -341,14 +341,15 @@ public class NetworkedPortal extends AbstractPortal {
         if (!isActive) {
             return;
         }
-        this.activator = null;
         StargateDeactivateEvent event = new StargateDeactivateEvent(this);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
         }
+        this.activator = null;
         this.destinations.clear();
         this.isActive = false;
+        this.destination = null;
         drawControlMechanisms();
     }
 
