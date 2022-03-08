@@ -10,6 +10,7 @@ import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
+import net.TheDgtl.Stargate.util.NameHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -61,6 +62,7 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public void createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
+        networkName = NameHelper.getAllowedName(networkName);
         if (this.networkExists(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER))) {
             throw new NameErrorException(null);
         }
