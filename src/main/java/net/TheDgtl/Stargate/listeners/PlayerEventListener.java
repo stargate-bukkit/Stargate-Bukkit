@@ -79,8 +79,8 @@ public class PlayerEventListener implements Listener {
 
         if (Tag.WALL_SIGNS.isTagged(blockMaterial)) {
             if (dyePortalSignText(event, portal)) {
-                portal.setSignColor(ColorConverter.getDyeColorFromMaterial(event.getMaterial()));
                 event.setUseInteractedBlock(Event.Result.ALLOW);
+                portal.setSignColor(ColorConverter.getDyeColorFromMaterial(event.getMaterial()));
                 return;
             }
             event.setUseInteractedBlock(Event.Result.DENY);
@@ -126,7 +126,7 @@ public class PlayerEventListener implements Listener {
             return false;
         }
         String itemName = item.getType().toString();
-        return (itemName.contains("DYE") || itemName.contains("GLOW_INK_SAC"));
+        return (itemName.contains("DYE"));
     }
 
     /**

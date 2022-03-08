@@ -50,7 +50,7 @@ public class LineColorFormatter implements LineFormatter {
         ChatColor selectorColor;
 
         if (ConfigurationHelper.getInteger(ConfigurationOption.NAME_STYLE) == 3) {
-            nameColor = getDefaultColor(isLightSign);
+            nameColor = getColor(isLightSign);
         } else {
             nameColor = getNameColor(portal, isLightSign);
         }
