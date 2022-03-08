@@ -162,7 +162,7 @@ chargeFreeDestination: true
 # Note that players can override this with DYE and/or GLOW_INK_SAC
 #
 # All colour names should follow this format:
-# https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Color.html#field.summary
+# https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html
 signStyle:
   defaultForeground: BLACK
   defaultBackground: WHITE
@@ -224,4 +224,4 @@ loggingLevel: INFO
 
 # An internal value used by the plugin to determine how old your config is.
 # Please do not change this.
-configVersion: 6
+configVersion: 7

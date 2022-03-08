@@ -100,7 +100,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     private static StorageAPI storageAPI;
     public static LanguageManager languageManager;
-    public static final int CURRENT_CONFIG_VERSION = 6;
+    public static final int CURRENT_CONFIG_VERSION = 7;
     /**
      * Goes through every action in the queue every 1 tick. Should be used in tasks that need to be finished within a short time frame
      */
