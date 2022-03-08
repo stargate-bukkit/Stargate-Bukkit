@@ -55,7 +55,7 @@ public class LineColorFormatter implements LineFormatter {
             nameColor = getNameColor(portal, isLightSign);
         }
 
-        switch (ConfigurationHelper.getInteger(ConfigurationOption.NAME_STYLE)) {
+        switch (ConfigurationHelper.getInteger(ConfigurationOption.POINTER_STYLE)) {
             case 1:
                 selectorColor = getDefaultColor(isLightSign);
                 break;
