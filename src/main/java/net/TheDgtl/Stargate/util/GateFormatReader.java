@@ -24,7 +24,11 @@ public final class GateFormatReader {
 
     private static final String TAG_IDENTIFIER = "#";
     private static final String SPLIT_IDENTIFIER = ",";
-
+    private static final Material[] allAirTypes = new Material[] {
+            Material.AIR,
+            Material.CAVE_AIR,
+            Material.VOID_AIR,
+    };
     private GateFormatReader() {
 
     }
@@ -82,6 +86,13 @@ public final class GateFormatReader {
             //Parse a normal material
             Material id = Material.getMaterial(stringId.toUpperCase().trim());
 
+            if(id == Material.AIR) {
+                for(Material airtype : allAirTypes) {
+                    foundIDs.add(airtype);
+                }
+                continue;
+            }
+            
             if (id == null) {
                 id = parseMaterialFromLegacyName(stringId);
                 if (id == null) {
