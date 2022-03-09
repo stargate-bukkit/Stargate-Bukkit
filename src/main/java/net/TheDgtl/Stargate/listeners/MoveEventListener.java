@@ -1,6 +1,8 @@
 package net.TheDgtl.Stargate.listeners;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.Location;
@@ -77,7 +79,8 @@ public class MoveEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleMove(VehicleMoveEvent event) {
-        onAnyMove(event.getVehicle(), event.getTo(), event.getFrom());
+        if(ConfigurationHelper.getBoolean(ConfigurationOption.HANDLE_VEHICLES))
+            onAnyMove(event.getVehicle(), event.getTo(), event.getFrom());
     }
 
     /**
