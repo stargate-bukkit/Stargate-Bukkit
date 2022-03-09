@@ -2,7 +2,9 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.action.BlockSetAction;
 import net.TheDgtl.Stargate.action.DelayedAction;
+import net.TheDgtl.Stargate.action.SimpleAction;
 import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
@@ -310,15 +312,18 @@ public abstract class AbstractPortal implements RealPortal {
                 continue;
             }
             Sign sign = (Sign) location.getBlock().getState();
-            if (color != null) {
-                sign.setColor(color);
-                sign.update();
-            }
             if (VersionParser.bukkitIsNewerThan(VersionImplemented.CHAT_COLOR)) {
-                colorDrawer = new LineColorFormatter(sign.getColor(), sign.getType());
+                if(color == null) {
+                    color = sign.getColor();
+                }
+                colorDrawer = new LineColorFormatter(color, sign.getType());
             }
         }
-        this.drawControlMechanisms();
+        // Has to be done one tick later to avoid a bukkit bug
+        Stargate.syncTickPopulator.addAction(new SupplierAction( () -> {
+            this.drawControlMechanisms();
+            return true;
+        }));
     }
 
     @Override
