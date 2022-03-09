@@ -225,7 +225,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         Teleporter teleporter = new Teleporter(getExit(), origin, portalFacing, entranceFace, useCost,
-                TranslatableMessage.TELEPORT, true);
+                Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT), true);
 
         Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
             teleporter.teleport(target);
@@ -238,7 +238,7 @@ public abstract class AbstractPortal implements RealPortal {
         Portal destination = getCurrentDestination();
         if (destination == null) {
             Teleporter teleporter = new Teleporter(this.getExit(), this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, TranslatableMessage.INVALID, false);
+                    0,  Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID), false);
             teleporter.teleport(target);
             return;
         }

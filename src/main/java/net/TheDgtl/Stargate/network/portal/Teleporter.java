@@ -32,7 +32,7 @@ public class Teleporter {
     private final int cost;
     private final double rotation;
     private final BlockFace destinationFace;
-    private final TranslatableMessage teleportMessage;
+    private String teleportMessage;
     private final boolean checkPermissions;
 
     /**
@@ -47,7 +47,7 @@ public class Teleporter {
      * @param checkPermissions <p>Whether to check, or totally ignore permissions</p>
      */
     public Teleporter(Location destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
-                      int cost, TranslatableMessage teleportMessage, boolean checkPermissions) {
+                      int cost, String teleportMessage, boolean checkPermissions) {
         // Center the destination in the destination block
         this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
@@ -101,7 +101,7 @@ public class Teleporter {
 
         PermissionManager permissionManager = new PermissionManager(target);
         if (!hasPermission(target, permissionManager) && checkPermissions) {
-            target.sendMessage(permissionManager.getDenyMessage());
+            teleportMessage = permissionManager.getDenyMessage();
             /* For non math guys: teleport entity to the exit of the portal it entered. Also turn the entity around 
             half a rotation */
             teleport(target, origin.getExit(), Math.PI);
@@ -110,7 +110,7 @@ public class Teleporter {
 
         // Teleport player to the entrance portal if the player is unable to pay
         if (target instanceof Player && !charge((Player) target)) {
-            target.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
+            teleportMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
             teleport(target, origin.getExit(), Math.PI);
             Player player = (Player) target;
             teleportNearbyLeashedEntities(player, rotation);
@@ -205,7 +205,7 @@ public class Teleporter {
     private void teleport(Entity target, Location exitPoint) {
         target.teleport(exitPoint);
         if (origin != null && !origin.hasFlag(PortalFlag.SILENT)) {
-            target.sendMessage(Stargate.languageManager.getMessage(teleportMessage));
+            target.sendMessage(teleportMessage);
         }
     }
 
