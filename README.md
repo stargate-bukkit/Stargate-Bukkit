@@ -28,8 +28,8 @@ version of Stargate compliant with Spigot 1.17, even if it means changing the en
 
 ## License
 
-Stargate is licensed under GNU Lesser General Public License. This includes every source and resource file. See the
-HEADER file for a more detailed license description.
+Stargate is licensed under the GNU Lesser General Public License Version 3.0. This includes every source and resource 
+file. See the HEADER file for a more detailed license description.
 
 ## Migration
 
