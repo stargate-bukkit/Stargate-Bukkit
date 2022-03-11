@@ -26,6 +26,11 @@ This was originally TheDgtl's Bukkit port of the Stargate plugin for hMod by Din
 of [PseudoKnight's fork](https://github.com/PseudoKnight/Stargate-Bukkit). This fork's main purpose is to create a clean
 version of Stargate compliant with Spigot 1.17, even if it means changing the entire project's previous structure.
 
+## License
+
+Stargate is licensed under GNU Lesser General Public License. This includes every source and resource file. See the
+HEADER file for a more detailed license description.
+
 ## Migration
 
 This plugin should be compatible with configurations from the Stargate plugin all the way back. The nethergate.gate
