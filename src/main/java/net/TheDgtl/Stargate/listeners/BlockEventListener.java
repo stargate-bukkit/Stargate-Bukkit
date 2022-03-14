@@ -37,6 +37,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -386,22 +389,27 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
+        Set<Portal> explodedPortals = new HashSet<>();
+        
         for (Block block : event.blockList()) {
             Portal portal = Stargate.getRegistry().getPortal(block.getLocation(),
                     new GateStructureType[] { GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK });
             if (portal != null) {
-                if (ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION)) {
-                    portal.destroy();
-                    Supplier<Boolean> destroyAction = () -> {
-                        portal.destroy();
-                        Stargate.log(Level.FINEST, "Broke the portal from explosion");
-                        return true;
-                    };
-                    Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
+                if (!ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION)) {
+                    event.setCancelled(true);
                     return;
                 }
-                event.setCancelled(true);
+                explodedPortals.add(portal);
             }
+        }
+        
+        for(Portal portal : explodedPortals) {
+            Supplier<Boolean> destroyAction = () -> {
+                portal.destroy();
+                Stargate.log(Level.FINEST, "Broke the portal from explosion");
+                return true;
+            };
+            Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
         }
     }
 
