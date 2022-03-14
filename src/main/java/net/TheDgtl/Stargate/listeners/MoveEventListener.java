@@ -32,10 +32,6 @@ public class MoveEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityPortalTeleport(@NotNull EntityPortalEvent event) {
-        if (!(event.getEntity() instanceof Vehicle)) {
-            return;
-        }
-
         if (Stargate.getRegistry().isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
             event.setCancelled(true);
         }
