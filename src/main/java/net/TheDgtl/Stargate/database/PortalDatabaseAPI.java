@@ -493,6 +493,7 @@ public class PortalDatabaseAPI implements StorageAPI {
             portalPositions.add(new PortalPosition(positionType, positionVector));
         }
         statement.close();
+        connection.close();
         return portalPositions;
     }
 
