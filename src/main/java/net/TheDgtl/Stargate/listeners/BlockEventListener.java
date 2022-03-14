@@ -386,19 +386,22 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        Portal portal = Stargate.getRegistry().getPortal(event.getLocation(), new GateStructureType[]{GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK});
-        if (portal != null) {
-            if (ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION)) {
-                portal.destroy();
-                Supplier<Boolean> destroyAction = () -> {
+        for (Block block : event.blockList()) {
+            Portal portal = Stargate.getRegistry().getPortal(block.getLocation(),
+                    new GateStructureType[] { GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK });
+            if (portal != null) {
+                if (ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION)) {
                     portal.destroy();
-                    Stargate.log(Level.FINEST, "Broke the portal from explosion");
-                    return true;
-                };
-                Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
-                return;
+                    Supplier<Boolean> destroyAction = () -> {
+                        portal.destroy();
+                        Stargate.log(Level.FINEST, "Broke the portal from explosion");
+                        return true;
+                    };
+                    Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
+                    return;
+                }
+                event.setCancelled(true);
             }
-            event.setCancelled(true);
         }
     }
 
