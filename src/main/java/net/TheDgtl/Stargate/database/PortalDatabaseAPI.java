@@ -428,7 +428,12 @@ public class PortalDatabaseAPI implements StorageAPI {
                 if (!serverUUID.equals(Stargate.serverUUID.toString())) {
                     String serverName = resultSet.getString("serverName");
                     Portal virtualPortal = new VirtualPortal(serverName, name, network, flags, ownerUUID);
-                    network.addPortal(virtualPortal, false);
+                    try {
+                        network.addPortal(virtualPortal, false);
+                    } catch (NameErrorException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                     logger.logMessage(Level.FINEST, "Added as virtual portal");
                     continue;
                 }

@@ -91,8 +91,6 @@ public abstract class AbstractPortal implements RealPortal {
 
         if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH)) {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
-        } else if (this.network.isPortalNameTaken(name)) {
-            throw new NameErrorException(TranslatableMessage.ALREADY_EXIST);
         }
 
         colorDrawer = new NoLineColorFormatter();

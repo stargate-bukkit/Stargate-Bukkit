@@ -112,7 +112,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     Stargate.log(Level.FINEST, "Received unknown message with a sub-channel: " + subChannel);
                     break;
             }
-        } catch (IOException ex) {
+        } catch (IOException | NameErrorException ex) {
             Stargate.log(Level.WARNING, "[Stargate] Error receiving BungeeCord message");
             ex.printStackTrace();
         }
@@ -150,8 +150,9 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      * Updates a network according to a "network changed" message
      *
      * @param message <p>The network change message to parse and handle</p>
+     * @throws NameErrorException 
      */
-    private void updateNetwork(String message) {
+    private void updateNetwork(String message) throws NameErrorException {
         JsonParser parser = new JsonParser();
         Stargate.log(Level.FINEST, message);
         JsonObject json = (JsonObject) parser.parse(message);

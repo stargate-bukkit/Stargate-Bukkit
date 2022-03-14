@@ -48,7 +48,6 @@ public class VirtualPortal implements Portal {
         this.network = network;
         this.flags = flags;
         this.ownerUUID = ownerUUID;
-        this.network.addPortal(this, false);
     }
 
     @Override
