@@ -169,12 +169,14 @@ public class PortalDatabaseAPI implements StorageAPI {
 
             connection.commit();
             connection.setAutoCommit(true);
+            connection.close();
             return true;
         } catch (SQLException exception) {
             try {
                 if (connection != null) {
                     connection.rollback();
                     connection.setAutoCommit(true);
+                    connection.close();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
