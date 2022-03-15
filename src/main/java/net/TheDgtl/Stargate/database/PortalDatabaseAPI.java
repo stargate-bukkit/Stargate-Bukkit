@@ -5,6 +5,7 @@ import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.config.TableNameConfiguration;
+import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.Gate;
@@ -458,6 +459,10 @@ public class PortalDatabaseAPI implements StorageAPI {
                 }
                 List<PortalPosition> portalPositions = getPortalPositions(networkName, name, portalType);
                 Gate gate = new Gate(block.getLocation(), facing, flipZ, format, logger);
+                if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
+                        && !gate.isValid(flags.contains(PortalFlag.ALWAYS_ON))) {
+                    throw new InvalidStructureException();
+                }
                 gate.addPortalPositions(portalPositions);
                 Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate, ownerUUID, logger);
                 network.addPortal(portal, false);
@@ -469,7 +474,7 @@ public class PortalDatabaseAPI implements StorageAPI {
                         "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
                         name, (portalType == PortalType.INTER_SERVER ? "interserver" : ""), networkName,
                         block.getLocation()));
-            }
+            } catch (GateConflictException ignored) {}
         }
         statement.close();
         connection.close();

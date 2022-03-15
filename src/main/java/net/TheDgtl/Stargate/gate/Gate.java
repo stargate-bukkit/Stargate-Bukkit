@@ -298,7 +298,7 @@ public class Gate implements GateAPI {
      * TODO: symmetric formats will be checked twice, make a way to determine if a format is symmetric to avoid this
      * </p>
      *
-     * @param location <p>The top-left location of a built stargate</p>
+     * @param location <p>The location of a controllblock</p>
      * @param alwaysOn <p>Whether the new portal is set as always-on</p>
      * @return <p>True if the built stargate matches this format</p>
      * @throws GateConflictException <p>If the built stargate conflicts with another gate</p>
@@ -309,24 +309,36 @@ public class Gate implements GateAPI {
             /*
              * Top-left is origin for the format, everything becomes easier if you calculate this position in the world;
              * this is a hypothetical position, calculated from the position of the sign minus a vector of a
-             * hypothetical sign position in format.
+             * hypothetical sign position in formatspace.
              */
             topLeft = location.clone().subtract(converter.performToRealSpaceOperation(controlBlock));
-
-            if (getFormat().matches(converter, topLeft)) {
-                if (hasGateFrameConflict()) {
-                    throw new GateConflictException();
-                }
-
-                //Calculate all relevant portal positions
-                calculatePortalPositions(alwaysOn);
-
-                //Make sure no controls conflict with existing controls
-                if (hasGateControlConflict()) {
-                    throw new GateConflictException();
-                }
+            if(isValid(alwaysOn)) {
                 return true;
             }
+        }
+        return false;
+    }
+    
+    /**
+     * Check if this gate with the current settings is valid
+     * @param alwaysOn
+     * @return
+     * @throws GateConflictException
+     */
+    public boolean isValid(boolean alwaysOn) throws GateConflictException{
+        if (getFormat().matches(converter, topLeft)) {
+            if (hasGateFrameConflict()) {
+                throw new GateConflictException();
+            }
+
+            //Calculate all relevant portal positions
+            calculatePortalPositions(alwaysOn);
+
+            //Make sure no controls conflict with existing controls
+            if (hasGateControlConflict()) {
+                throw new GateConflictException();
+            }
+            return true;
         }
         return false;
     }
