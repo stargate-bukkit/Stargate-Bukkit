@@ -19,6 +19,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -252,9 +253,9 @@ public class NetworkedPortal extends AbstractPortal {
         if (player == null) {
             return new ArrayList<>();
         }
-
-        Set<String> availablePortals = network.getAvailablePortals(player, this);
-        availablePortals.toArray(new String[0]);
+        List<String> availablePortals = new ArrayList<>();
+        availablePortals.addAll(network.getAvailablePortals(player, this));
+        Collections.sort(availablePortals);
         List<Portal> destinations = new ArrayList<>();
         for (String name : availablePortals) {
             destinations.add(network.getPortal(name));
