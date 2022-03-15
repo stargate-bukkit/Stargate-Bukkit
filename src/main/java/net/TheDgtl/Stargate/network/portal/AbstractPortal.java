@@ -20,6 +20,7 @@ import net.TheDgtl.Stargate.network.portal.formatting.LineFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.NoLineColorFormatter;
 import net.TheDgtl.Stargate.property.BypassPermission;
 import net.TheDgtl.Stargate.property.VersionImplemented;
+import net.TheDgtl.Stargate.util.NameHelper;
 import net.TheDgtl.Stargate.util.PortalHelper;
 import net.TheDgtl.Stargate.util.VersionParser;
 import org.bukkit.DyeColor;
@@ -375,4 +376,8 @@ public abstract class AbstractPortal implements RealPortal {
         }
     }
 
+    @Override
+    public String getID() {
+        return NameHelper.getID(name);
+    }
 }

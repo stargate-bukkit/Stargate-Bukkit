@@ -147,4 +147,11 @@ public interface Portal {
      */
     String getDestinationName();
 
+    /**
+     * Gets the unique identifier for this portal
+     *
+     * @return <p>The unique identifier for this network</p>
+     */
+    String getID();
+
 }

@@ -14,6 +14,7 @@ import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import net.TheDgtl.Stargate.property.BypassPermission;
+import net.TheDgtl.Stargate.util.NameHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -58,7 +59,7 @@ public class LocalNetwork implements Network {
 
     @Override
     public String getId() {
-        return this.name.toLowerCase();
+        return NameHelper.getID(this.name);
     }
 
     @Override
@@ -71,12 +72,12 @@ public class LocalNetwork implements Network {
         if (name == null) {
             return null;
         }
-        return nameToPortalMap.get(this.getPortalId(name));
+        return nameToPortalMap.get(NameHelper.getID(name));
     }
 
     @Override
     public void removePortal(Portal portal, boolean removeFromDatabase) {
-        nameToPortalMap.remove(this.getPortalId(portal.getName()));
+        nameToPortalMap.remove(portal.getID());
         if (!removeFromDatabase) {
             return;
         }
@@ -100,12 +101,12 @@ public class LocalNetwork implements Network {
                 savePortal((RealPortal) portal);
             }
         }
-        nameToPortalMap.put(getPortalId(portal.getName()), portal);
+        nameToPortalMap.put(portal.getID(), portal);
     }
 
     @Override
     public boolean isPortalNameTaken(String name) {
-        return nameToPortalMap.containsKey(this.getPortalId(name));
+        return nameToPortalMap.containsKey(NameHelper.getID(name));
     }
 
     @Override
@@ -118,7 +119,7 @@ public class LocalNetwork implements Network {
     @Override
     public Set<String> getAvailablePortals(Player player, Portal requester) {
         Set<String> tempPortalList = new HashSet<>(nameToPortalMap.keySet());
-        tempPortalList.remove(getPortalId(requester.getName()));
+        tempPortalList.remove(requester.getID());
         if (!requester.hasFlag(PortalFlag.FORCE_SHOW)) {
             Set<String> removeList = new HashSet<>();
             for (String portalName : tempPortalList) {
@@ -184,23 +185,6 @@ public class LocalNetwork implements Network {
             output.put(location, portal);
         }
         return output;
-    }
-
-    /**
-     * Gets a portal's id
-     *
-     * <p>This basically just lower-cases the name, and strips color if enabled. This is to make portal names
-     * case-agnostic and optionally color-agnostic.</p>
-     *
-     * @param portalName <p>The name to "hash"</p>
-     * @return <p>The "hashed" name</p>
-     */
-    private String getPortalId(String portalName) {
-        String portalHash = portalName.toLowerCase();
-        if (ConfigurationHelper.getBoolean(ConfigurationOption.DISABLE_CUSTOM_COLORED_NAMES)) {
-            portalHash = ChatColor.stripColor(portalHash);
-        }
-        return portalHash;
     }
 
     @Override

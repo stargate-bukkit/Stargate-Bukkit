@@ -6,6 +6,8 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.property.PluginChannel;
 import net.TheDgtl.Stargate.property.StargateProtocolProperty;
+import net.TheDgtl.Stargate.util.NameHelper;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -199,4 +201,8 @@ public class VirtualPortal implements Portal {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
+    @Override
+    public String getID() {
+        return NameHelper.getID(name);
+    }
 }
