@@ -85,8 +85,9 @@ public class Teleporter {
      *
      * @param target   <p>The entity to teleport</p>
      * @param rotation <p>The rotation to apply to teleported entities, relative to its existing rotation</p>
+     * @return <p>If the teleportation was successfull</p>
      */
-    private void betterTeleport(Entity target, double rotation) {
+    private boolean betterTeleport(Entity target, double rotation) {
         List<Entity> passengers = target.getPassengers();
         if (target.eject()) {
             Stargate.log(Level.FINER, "Ejected all passengers");
@@ -96,7 +97,7 @@ public class Teleporter {
         if (origin == null) {
             destination.setDirection(destinationFace.getOppositeFace().getDirection());
             teleport(target, destination);
-            return;
+            return true;
         }
 
         PermissionManager permissionManager = new PermissionManager(target);
@@ -105,7 +106,7 @@ public class Teleporter {
             /* For non math guys: teleport entity to the exit of the portal it entered. Also turn the entity around 
             half a rotation */
             teleport(target, origin.getExit(), Math.PI);
-            return;
+            return false;
         }
 
         // Teleport player to the entrance portal if the player is unable to pay
@@ -114,7 +115,7 @@ public class Teleporter {
             teleport(target, origin.getExit(), Math.PI);
             Player player = (Player) target;
             teleportNearbyLeashedEntities(player, rotation);
-            return;
+            return false;
         }
 
         // To smooth the experienced for highly used portals, or entity teleportation
@@ -123,6 +124,7 @@ public class Teleporter {
         }
 
         teleport(target, destination, rotation);
+        return true;
     }
 
     /**
@@ -134,8 +136,8 @@ public class Teleporter {
     private void teleportPassengers(Entity target, List<Entity> passengers) {
         for (Entity passenger : passengers) {
             Supplier<Boolean> action = () -> {
-                betterTeleport(passenger, rotation);
-                target.addPassenger(passenger);
+                if(betterTeleport(passenger, rotation))
+                    target.addPassenger(passenger);
                 return true;
             };
 
