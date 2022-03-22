@@ -18,7 +18,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.util.Vector;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
@@ -34,6 +36,7 @@ public class Teleporter {
     private final double rotation;
     private final BlockFace destinationFace;
     private String teleportMessage;
+    private Set<Entity> teleportedEntities = new HashSet<>();
     private final boolean checkPermissions;
     private final StargateLogger logger;
 
@@ -91,6 +94,9 @@ public class Teleporter {
      * @return <p>If the teleportation was successfull</p>
      */
     private boolean betterTeleport(Entity target, double rotation) {
+        if(teleportedEntities.contains(target))
+            return true;
+        teleportedEntities.add(target);
         List<Entity> passengers = target.getPassengers();
         if (target.eject()) {
             Stargate.log(Level.FINER, "Ejected all passengers");
@@ -124,10 +130,8 @@ public class Teleporter {
             destination.getChunk().load();
         }
 
-        if(target instanceof Player) {
-            logger.logMessage(Level.FINEST, "Trying to teleport surrounding leashed entities");
-            teleportNearbyLeashedEntities((Player)target, rotation);
-        }
+        logger.logMessage(Level.FINEST, "Trying to teleport surrounding leashed entities");
+        teleportNearbyLeashedEntities(target, rotation);
         teleport(target, destination, rotation);
         return true;
     }
@@ -161,13 +165,20 @@ public class Teleporter {
      * @param holder   <p>The player that may hold entities in a leash</p>
      * @param rotation <p>The rotation to apply to teleported leashed entities, relative to its existing rotation</p>
      */
-    private void teleportNearbyLeashedEntities(Player holder, double rotation) {
+    private void teleportNearbyLeashedEntities(Entity holder, double rotation) {
         List<Entity> entities = holder.getNearbyEntities(LOOK_FOR_LEASHED_RADIUS, LOOK_FOR_LEASHED_RADIUS,
                 LOOK_FOR_LEASHED_RADIUS);
         for (Entity entity : entities) {
-            if (entity instanceof LivingEntity && ((LivingEntity) entity).isLeashed() &&
-                    ((LivingEntity) entity).getLeashHolder() == holder) {
-                betterTeleport(entity, rotation);
+            if (entity instanceof LivingEntity && ((LivingEntity) entity).isLeashed()
+                    && ((LivingEntity) entity).getLeashHolder() == holder) {
+                Supplier<Boolean> action = () -> {
+                    ((LivingEntity) entity).setLeashHolder(null);
+                    if(betterTeleport(entity, rotation))
+                        ((LivingEntity) entity).setLeashHolder(holder);
+                    
+                    return true;
+                };
+                Stargate.syncTickPopulator.addAction(new SupplierAction(action));
             }
         }
     }
