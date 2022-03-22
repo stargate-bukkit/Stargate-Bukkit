@@ -169,7 +169,6 @@ public enum ConfigurationOption {
 
     /**
      * Allow vehicles to teleport without any player inside
-     * TODO: This is never used
      */
     HANDLE_VEHICLES("handleVehicles"),
 
@@ -184,15 +183,25 @@ public enum ConfigurationOption {
     REMEMBER_LAST_DESTINATION("rememberLastDestination"),
 
     /**
-     * TODO: This is never used
+     * TODO: Unimplemented
      */
     UPKEEP_COST("economy.upkeepCost"),
 
     /**
-     * TODO: This is never used
+     * Check if the portal is valid on startup (prevent zombie portals)
      */
-    CHECK_PORTAL_VALIDITY("checkPortalValidity");
-
+    CHECK_PORTAL_VALIDITY("checkPortalValidity"),
+    
+    /**
+     * Handle leashed entities during teleportation
+     */
+    HANDLE_LEASHES("handleLeashedCreatures"),
+    
+    /**
+     * TODO: Unimplemented
+     */
+    DEFAULT_TERMINAL_NAME("defaultTerminalNetwork");
+    
     private final String configNode;
 
     /**

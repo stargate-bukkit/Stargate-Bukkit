@@ -82,6 +82,7 @@ import java.util.logging.Level;
  * Lead Developers:
  *
  * @author Thorin (2020-Present)
+ * @author EpicKnarvik (2021-Present)
  * @author PseudoKnight (2015-2020)
  * @author Drakia (2011-2013)
  * @author Dinnerbone (2010-2011)
@@ -160,7 +161,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         registerCommands();
 
         //Register bStats metrics
-        int pluginId = 10451;
+        int pluginId = 13629;
         //TODO: Nothing is done with the created metrics object
         Metrics metrics = BStatsHelper.getMetrics(pluginId, this);
     }
