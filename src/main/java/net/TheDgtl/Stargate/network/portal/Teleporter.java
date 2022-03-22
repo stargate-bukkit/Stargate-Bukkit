@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.action.DelayedAction;
 import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
@@ -34,6 +35,7 @@ public class Teleporter {
     private final BlockFace destinationFace;
     private String teleportMessage;
     private final boolean checkPermissions;
+    private final StargateLogger logger;
 
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
@@ -47,7 +49,7 @@ public class Teleporter {
      * @param checkPermissions <p>Whether to check, or totally ignore permissions</p>
      */
     public Teleporter(Location destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
-                      int cost, String teleportMessage, boolean checkPermissions) {
+                      int cost, String teleportMessage, boolean checkPermissions, StargateLogger logger) {
         // Center the destination in the destination block
         this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
@@ -56,6 +58,7 @@ public class Teleporter {
         this.cost = cost;
         this.teleportMessage = teleportMessage;
         this.checkPermissions = checkPermissions;
+        this.logger = logger;
     }
 
     /**
@@ -113,8 +116,6 @@ public class Teleporter {
         if (target instanceof Player && !charge((Player) target)) {
             teleportMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
             teleport(target, origin.getExit(), Math.PI);
-            Player player = (Player) target;
-            teleportNearbyLeashedEntities(player, rotation);
             return false;
         }
 
@@ -123,6 +124,10 @@ public class Teleporter {
             destination.getChunk().load();
         }
 
+        if(target instanceof Player) {
+            logger.logMessage(Level.FINEST, "Trying to teleport surrounding leashed entities");
+            teleportNearbyLeashedEntities((Player)target, rotation);
+        }
         teleport(target, destination, rotation);
         return true;
     }
