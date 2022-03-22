@@ -28,7 +28,12 @@ import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.manager.PermissionManager;
 
-public class NewTeleporter {
+/**
+ * 
+ * @author Thorinwasher
+ * Work in progress, not used currently
+ */
+public class DraftTeleporter {
 
     private static final double LOOK_FOR_LEASHED_RADIUS = 15;
     private final Location destination;
@@ -51,7 +56,7 @@ public class NewTeleporter {
      * @param teleportMessage  <p>The teleportation message to display if the teleportation is successful</p>
      * @param checkPermissions <p>Whether to check, or totally ignore permissions</p>
      */
-    public NewTeleporter(Location destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
+    public DraftTeleporter(Location destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
                       int cost, String teleportMessage, boolean checkPermissions, StargateLogger logger) {
         // Center the destination in the destination block
         this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
@@ -81,23 +86,20 @@ public class NewTeleporter {
         List<LivingEntity> surroundingLeashed = getSurroundingLeashed(baseEntity);
         boolean shouldProceed = DFS(baseEntity, passengerNet, leashedNet, surroundingLeashed, entitiesToTeleport);
         
-        Location modifiedDestination = calculateDestination(shouldProceed,baseEntity);
         Supplier<Boolean> action1 = () -> {
             unStackEntities(entitiesToTeleport);
             return true;
         };
-
         Stargate.syncTickPopulator.addAction(new SupplierAction(action1));
+
+        Location modifiedDestination = calculateDestination(shouldProceed,baseEntity);
+        modifiedDestination.getChunk().load();
         Supplier<Boolean> action2 = () -> {
             doTeleportation(entitiesToTeleport,modifiedDestination,shouldProceed);
-            return true;
-        };
-        Stargate.syncTickPopulator.addAction(new DelayedAction(1,action2));
-        Supplier<Boolean> action3 = () -> {
             stackEntities(entitiesToTeleport,leashedNet,passengerNet);
             return true;
         };
-        Stargate.syncTickPopulator.addAction(new DelayedAction(10,action3));
+        Stargate.syncTickPopulator.addAction(new SupplierAction(action2));
     }
     
     private Vector getOffsett(BlockFace destinationFacing, Entity target) {
@@ -109,14 +111,22 @@ public class NewTeleporter {
     
     private void stackEntities(Set<Entity> entitiesToTeleport, Map<LivingEntity, Entity> leashedNet,
             Map<Entity, Entity> passengerNet) {
-        for(Entity entity : entitiesToTeleport) {
-            Entity vehicle = passengerNet.get(entity);
-            Entity leashHolder = leashedNet.get(entity);
-            if(vehicle != null) {
-                vehicle.addPassenger(entity);
-            }
-            if(leashHolder != null) {
-                ((LivingEntity)entity).setLeashHolder(leashHolder);
+        for (Entity entity : entitiesToTeleport) {
+            Supplier<Boolean> action = () -> {
+                Entity vehicle = passengerNet.get(entity);
+                Entity leashHolder = leashedNet.get(entity);
+                if (vehicle != null) {
+                    vehicle.addPassenger(entity);
+                }
+                if (leashHolder != null) {
+                    ((LivingEntity) entity).setLeashHolder(leashHolder);
+                }
+                return true;
+            };
+            if(entity instanceof Player) {
+                Stargate.syncTickPopulator.addAction(new DelayedAction(1,action));
+            } else {
+                Stargate.syncTickPopulator.addAction(new SupplierAction(action));
             }
         }
     }
@@ -210,7 +220,6 @@ public class NewTeleporter {
         }
         return surroundingLeashedEntities;
     }
-    
     
     /**
      * Teleports the given target to the given location
