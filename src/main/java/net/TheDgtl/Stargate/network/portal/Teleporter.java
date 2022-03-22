@@ -168,6 +168,9 @@ public class Teleporter {
      * @param rotation <p>The rotation to apply to teleported leashed entities, relative to its existing rotation</p>
      */
     private void teleportNearbyLeashedEntities(Entity holder, double rotation) {
+        if(!ConfigurationHelper.getBoolean(ConfigurationOption.HANDLE_LEASHES))
+            return;
+        
         List<Entity> entities = holder.getNearbyEntities(LOOK_FOR_LEASHED_RADIUS, LOOK_FOR_LEASHED_RADIUS,
                 LOOK_FOR_LEASHED_RADIUS);
         for (Entity entity : entities) {
