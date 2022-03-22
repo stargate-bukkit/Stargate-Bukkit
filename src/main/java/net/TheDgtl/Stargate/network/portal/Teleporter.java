@@ -18,6 +18,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -220,6 +222,17 @@ public class Teleporter {
                 teleport(poweredMinecart, exit);
                 poweredMinecart.setFuel(fuel);
                 poweredMinecart.setVelocity(targetVelocity);
+                try {
+                    Method setPushX = PoweredMinecart.class.getMethod("setPushX",double.class);
+                    Method setPushZ = PoweredMinecart.class.getMethod("setPushZ",double.class);
+                    setPushX.invoke(poweredMinecart,-location.getDirection().getBlockX());
+                    setPushZ.invoke(poweredMinecart,-location.getDirection().getBlockZ());
+                    
+                } catch (NoSuchMethodException ignored) {
+                    logger.logMessage(Level.FINE, String.format( "Unable to restore Furnace Minecart Momentum at %S -- use Paper 1.18.2+ for this feature.",location.toString()));
+                } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
             }, 1);
         } else {
             teleport(target, exit);
