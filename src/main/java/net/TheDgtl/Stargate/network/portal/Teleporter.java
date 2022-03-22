@@ -197,6 +197,19 @@ public class Teleporter {
         Vector velocity = target.getVelocity();
         Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(ConfigurationHelper.getDouble(
                 ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER));
+        
+        if(target instanceof Player) {
+            Player player = (Player)target;
+            String msg = "Teleporting player %s to %s";
+            msg = String.format(msg, player.getName(),location.toString());
+            if(this.origin != null) {
+                msg = msg + "from portal %s in network %s";
+                msg = String.format(msg, origin.getName(), origin.getNetwork().getName());
+            }
+                
+            logger.logMessage(Level.FINE, msg);
+        }
+        
         if (target instanceof PoweredMinecart) {
             //A workaround for powered minecarts
             PoweredMinecart poweredMinecart = (PoweredMinecart) target;
