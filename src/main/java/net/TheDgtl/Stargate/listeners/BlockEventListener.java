@@ -22,6 +22,7 @@ import net.TheDgtl.Stargate.util.SpawnDetectionHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
@@ -290,6 +291,7 @@ public class BlockEventListener implements Listener {
      * @return <p>The interpreted network name</p>
      * @throws NameErrorException <p>If the network name does not follow all rules</p>
      */
+    @SuppressWarnings("deprecation")
     private String interpretNetworkName(String initialNetworkName, Set<PortalFlag> flags, Player player,
                                         PermissionManager permissionManager) throws NameErrorException {
         //Force a network name surrounded by square brackets to force an inter-server portal
@@ -304,11 +306,17 @@ public class BlockEventListener implements Listener {
         if (initialNetworkName.endsWith("}") && initialNetworkName.startsWith("{")) {
             String possiblePlayerName = initialNetworkName.substring(1, initialNetworkName.length() - 1);
             flags.add(PortalFlag.PERSONAL_NETWORK);
-            Player possiblePlayer = Bukkit.getPlayer(possiblePlayerName);
+            OfflinePlayer possiblePlayer = Bukkit.getOfflinePlayer(possiblePlayerName);
             if (possiblePlayer != null) {
                 return possiblePlayer.getUniqueId().toString();
             }
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
+        }
+        
+        OfflinePlayer possiblePlayer = Bukkit.getOfflinePlayer(initialNetworkName);
+        if(possiblePlayer != null){
+            flags.add(PortalFlag.PERSONAL_NETWORK);
+            return possiblePlayer.getUniqueId().toString();
         }
 
         //Moves any private stargates to the player's personal network
