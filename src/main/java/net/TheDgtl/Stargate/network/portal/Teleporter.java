@@ -96,8 +96,9 @@ public class Teleporter {
      * @return <p>If the teleportation was successfull</p>
      */
     private boolean betterTeleport(Entity target, double rotation) {
-        if(teleportedEntities.contains(target))
+        if (teleportedEntities.contains(target)) {
             return true;
+        }
         teleportedEntities.add(target);
         List<Entity> passengers = target.getPassengers();
         if (target.eject()) {
@@ -147,8 +148,9 @@ public class Teleporter {
     private void teleportPassengers(Entity target, List<Entity> passengers) {
         for (Entity passenger : passengers) {
             Supplier<Boolean> action = () -> {
-                if(betterTeleport(passenger, rotation))
+                if (betterTeleport(passenger, rotation)) {
                     target.addPassenger(passenger);
+                }
                 return true;
             };
 
@@ -168,9 +170,10 @@ public class Teleporter {
      * @param rotation <p>The rotation to apply to teleported leashed entities, relative to its existing rotation</p>
      */
     private void teleportNearbyLeashedEntities(Entity holder, double rotation) {
-        if(!ConfigurationHelper.getBoolean(ConfigurationOption.HANDLE_LEASHES))
+        if (!ConfigurationHelper.getBoolean(ConfigurationOption.HANDLE_LEASHES)) {
             return;
-        
+        }
+
         List<Entity> entities = holder.getNearbyEntities(LOOK_FOR_LEASHED_RADIUS, LOOK_FOR_LEASHED_RADIUS,
                 LOOK_FOR_LEASHED_RADIUS);
         for (Entity entity : entities) {
@@ -178,9 +181,10 @@ public class Teleporter {
                     && ((LivingEntity) entity).getLeashHolder() == holder) {
                 Supplier<Boolean> action = () -> {
                     ((LivingEntity) entity).setLeashHolder(null);
-                    if(betterTeleport(entity, rotation))
+                    if (betterTeleport(entity, rotation)) {
                         ((LivingEntity) entity).setLeashHolder(holder);
-                    
+                    }
+
                     return true;
                 };
                 Stargate.syncTickPopulator.addAction(new SupplierAction(action));
@@ -202,19 +206,19 @@ public class Teleporter {
         Vector velocity = target.getVelocity();
         Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(ConfigurationHelper.getDouble(
                 ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER));
-        
-        if(target instanceof Player) {
-            Player player = (Player)target;
+
+        if (target instanceof Player) {
+            Player player = (Player) target;
             String msg = "Teleporting player %s to %s";
-            msg = String.format(msg, player.getName(),location.toString());
-            if(this.origin != null) {
+            msg = String.format(msg, player.getName(), location.toString());
+            if (this.origin != null) {
                 msg = msg + "from portal %s in network %s";
                 msg = String.format(msg, origin.getName(), origin.getNetwork().getName());
             }
-                
+
             logger.logMessage(Level.FINE, msg);
         }
-        
+
         if (target instanceof PoweredMinecart) {
             //A workaround for powered minecarts
             PoweredMinecart poweredMinecart = (PoweredMinecart) target;
@@ -226,13 +230,13 @@ public class Teleporter {
                 poweredMinecart.setFuel(fuel);
                 poweredMinecart.setVelocity(targetVelocity);
                 try {
-                    Method setPushX = PoweredMinecart.class.getMethod("setPushX",double.class);
-                    Method setPushZ = PoweredMinecart.class.getMethod("setPushZ",double.class);
-                    setPushX.invoke(poweredMinecart,-location.getDirection().getBlockX());
-                    setPushZ.invoke(poweredMinecart,-location.getDirection().getBlockZ());
-                    
+                    Method setPushX = PoweredMinecart.class.getMethod("setPushX", double.class);
+                    Method setPushZ = PoweredMinecart.class.getMethod("setPushZ", double.class);
+                    setPushX.invoke(poweredMinecart, -location.getDirection().getBlockX());
+                    setPushZ.invoke(poweredMinecart, -location.getDirection().getBlockZ());
+
                 } catch (NoSuchMethodException ignored) {
-                    logger.logMessage(Level.FINE, String.format( "Unable to restore Furnace Minecart Momentum at %S -- use Paper 1.18.2+ for this feature.",location.toString()));
+                    logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S -- use Paper 1.18.2+ for this feature.", location.toString()));
                 } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     e.printStackTrace();
                 }

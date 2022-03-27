@@ -33,4 +33,5 @@ public class ForcibleFunctionAction implements ForcibleAction {
     public boolean isFinished() {
         return finished;
     }
+
 }

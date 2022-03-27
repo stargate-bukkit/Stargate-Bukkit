@@ -24,5 +24,4 @@ public class CommandAbout implements CommandExecutor {
         return true;
     }
 
-
 }

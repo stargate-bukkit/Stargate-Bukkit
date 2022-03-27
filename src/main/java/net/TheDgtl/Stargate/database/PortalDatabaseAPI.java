@@ -474,7 +474,8 @@ public class PortalDatabaseAPI implements StorageAPI {
                         "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
                         name, (portalType == PortalType.INTER_SERVER ? "interserver" : ""), networkName,
                         block.getLocation()));
-            } catch (GateConflictException ignored) {}
+            } catch (GateConflictException ignored) {
+            }
         }
         statement.close();
         connection.close();

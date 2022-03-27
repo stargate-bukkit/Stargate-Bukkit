@@ -191,17 +191,17 @@ public enum ConfigurationOption {
      * Check if the portal is valid on startup (prevent zombie portals)
      */
     CHECK_PORTAL_VALIDITY("checkPortalValidity"),
-    
+
     /**
      * Handle leashed entities during teleportation
      */
     HANDLE_LEASHES("handleLeashedCreatures"),
-    
+
     /**
      * TODO: Unimplemented
      */
     DEFAULT_TERMINAL_NAME("defaultTerminalNetwork");
-    
+
     private final String configNode;
 
     /**

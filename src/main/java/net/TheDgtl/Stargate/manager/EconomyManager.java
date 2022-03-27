@@ -11,7 +11,6 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Entity;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
@@ -156,13 +155,15 @@ public class EconomyManager {
 
     /**
      * Check if player has enough money
+     *
      * @param target
      * @param amount
      * @return
      */
     public boolean has(OfflinePlayer target, int amount) {
-        if(!this.hasVault)
+        if (!this.hasVault) {
             return true;
+        }
         return this.econ.has(target, amount);
     }
 

@@ -312,20 +312,21 @@ public class Gate implements GateAPI {
              * hypothetical sign position in formatspace.
              */
             topLeft = location.clone().subtract(converter.performToRealSpaceOperation(controlBlock));
-            if(isValid(alwaysOn)) {
+            if (isValid(alwaysOn)) {
                 return true;
             }
         }
         return false;
     }
-    
+
     /**
      * Check if this gate with the current settings is valid
+     *
      * @param alwaysOn
      * @return
      * @throws GateConflictException
      */
-    public boolean isValid(boolean alwaysOn) throws GateConflictException{
+    public boolean isValid(boolean alwaysOn) throws GateConflictException {
         if (getFormat().matches(converter, topLeft)) {
             if (hasGateFrameConflict()) {
                 throw new GateConflictException();

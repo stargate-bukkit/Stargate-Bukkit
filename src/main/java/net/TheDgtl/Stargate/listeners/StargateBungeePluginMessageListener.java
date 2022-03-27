@@ -150,7 +150,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      * Updates a network according to a "network changed" message
      *
      * @param message <p>The network change message to parse and handle</p>
-     * @throws NameErrorException 
+     * @throws NameErrorException
      */
     private void updateNetwork(String message) throws NameErrorException {
         JsonParser parser = new JsonParser();

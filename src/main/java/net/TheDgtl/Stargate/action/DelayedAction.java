@@ -50,4 +50,5 @@ public class DelayedAction implements ForcibleAction {
     public String toString() {
         return "[" + delay + "](" + action.toString() + ")";
     }
+
 }

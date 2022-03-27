@@ -41,34 +41,34 @@ public class BStatsHelper {
             }
             return flagsString.toString();
         }));
-        
-        metrics.addCustomChart(new SimplePie("useRemoteDatabase", () ->  String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE))));
 
-        metrics.addCustomChart(new SimplePie("defaultGateNetwork", () ->  ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK)));
-        
-        metrics.addCustomChart(new SimplePie("defaultTerminalNetwork", () ->  ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME)));
-        
-        metrics.addCustomChart(new SimplePie("handleVehicles", () ->  String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.HANDLE_VEHICLES))));
-        
-        metrics.addCustomChart(new SimplePie("handleLeashedCreatures", () ->  String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.HANDLE_LEASHES))));
-        
-        metrics.addCustomChart(new SimplePie("checkPortalValidity", () ->  String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY))));
-        
-        metrics.addCustomChart(new SimplePie("destroyOnExplosion", () ->  String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION))));
-        
-        metrics.addCustomChart(new SimplePie("useEconomy", () ->  String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.USE_ECONOMY))));
-        
-        metrics.addCustomChart(new SimplePie("pointer", () ->  String.valueOf(ConfigurationHelper.getInteger(ConfigurationOption.POINTER_STYLE))));
-        
-        metrics.addCustomChart(new SimplePie("listing", () ->  String.valueOf(ConfigurationHelper.getInteger(ConfigurationOption.NAME_STYLE))));
-        
-        metrics.addCustomChart(new SimplePie("defaultForeground", () ->  String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.DEFAULT_LIGHT_SIGN_COLOR))));
+        metrics.addCustomChart(new SimplePie("useRemoteDatabase", () -> String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE))));
 
-        metrics.addCustomChart(new SimplePie("defaultBackground", () ->  String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.DEFAULT_DARK_SIGN_COLOR))));
-        
-        metrics.addCustomChart(new SimplePie("gateExitSpeedMultiplier", () ->  String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER))));
-        
-        metrics.addCustomChart(new SimplePie("loggingLevel", () ->  ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL)));
+        metrics.addCustomChart(new SimplePie("defaultGateNetwork", () -> ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK)));
+
+        metrics.addCustomChart(new SimplePie("defaultTerminalNetwork", () -> ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME)));
+
+        metrics.addCustomChart(new SimplePie("handleVehicles", () -> String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.HANDLE_VEHICLES))));
+
+        metrics.addCustomChart(new SimplePie("handleLeashedCreatures", () -> String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.HANDLE_LEASHES))));
+
+        metrics.addCustomChart(new SimplePie("checkPortalValidity", () -> String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY))));
+
+        metrics.addCustomChart(new SimplePie("destroyOnExplosion", () -> String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION))));
+
+        metrics.addCustomChart(new SimplePie("useEconomy", () -> String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.USE_ECONOMY))));
+
+        metrics.addCustomChart(new SimplePie("pointer", () -> String.valueOf(ConfigurationHelper.getInteger(ConfigurationOption.POINTER_STYLE))));
+
+        metrics.addCustomChart(new SimplePie("listing", () -> String.valueOf(ConfigurationHelper.getInteger(ConfigurationOption.NAME_STYLE))));
+
+        metrics.addCustomChart(new SimplePie("defaultForeground", () -> String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.DEFAULT_LIGHT_SIGN_COLOR))));
+
+        metrics.addCustomChart(new SimplePie("defaultBackground", () -> String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.DEFAULT_DARK_SIGN_COLOR))));
+
+        metrics.addCustomChart(new SimplePie("gateExitSpeedMultiplier", () -> String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER))));
+
+        metrics.addCustomChart(new SimplePie("loggingLevel", () -> ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL)));
         return metrics;
     }
 }

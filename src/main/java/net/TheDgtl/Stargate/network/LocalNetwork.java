@@ -85,9 +85,10 @@ public class LocalNetwork implements Network {
     }
 
     @Override
-    public void addPortal(Portal portal, boolean saveToDatabase) throws NameErrorException{
-        if(isPortalNameTaken(portal.getName()))
+    public void addPortal(Portal portal, boolean saveToDatabase) throws NameErrorException {
+        if (isPortalNameTaken(portal.getName())) {
             throw new NameErrorException(TranslatableMessage.ALREADY_EXIST);
+        }
         if (portal instanceof RealPortal) {
             RealPortal realPortal = (RealPortal) portal;
             for (GateStructureType key : GateStructureType.values()) {

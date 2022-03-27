@@ -2,9 +2,7 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.action.BlockSetAction;
 import net.TheDgtl.Stargate.action.DelayedAction;
-import net.TheDgtl.Stargate.action.SimpleAction;
 import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
@@ -237,7 +235,7 @@ public abstract class AbstractPortal implements RealPortal {
         Portal destination = getCurrentDestination();
         if (destination == null) {
             Teleporter teleporter = new Teleporter(this.getExit(), this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0,  Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID), false, logger);
+                    0, Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID), false, logger);
             teleporter.teleport(target);
             return;
         }
@@ -312,14 +310,14 @@ public abstract class AbstractPortal implements RealPortal {
             }
             Sign sign = (Sign) location.getBlock().getState();
             if (VersionParser.bukkitIsNewerThan(VersionImplemented.CHAT_COLOR)) {
-                if(color == null) {
+                if (color == null) {
                     color = sign.getColor();
                 }
                 colorDrawer = new LineColorFormatter(color, sign.getType());
             }
         }
         // Has to be done one tick later to avoid a bukkit bug
-        Stargate.syncTickPopulator.addAction(new SupplierAction( () -> {
+        Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
             this.drawControlMechanisms();
             return true;
         }));

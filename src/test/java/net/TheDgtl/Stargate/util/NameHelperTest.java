@@ -1,16 +1,16 @@
 package net.TheDgtl.Stargate.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 class NameHelperTest {
-    
-    static Map<String,String> nameTests = new HashMap<>();
-    
+
+    static Map<String, String> nameTests = new HashMap<>();
+
     @BeforeAll
     public static void setUp() {
         nameTests.put(" test     ", "test");
@@ -25,11 +25,11 @@ class NameHelperTest {
         nameTests.put("                    this is a gate name", "this is a gate name");
         nameTests.put("this is a gate name                  ", "this is a gate name");
     }
-    
+
     @Test
     void test() {
-        for(String key : nameTests.keySet()) {
-            Assertions.assertEquals(nameTests.get(key),NameHelper.getAllowedName(key));
+        for (String key : nameTests.keySet()) {
+            Assertions.assertEquals(nameTests.get(key), NameHelper.getAllowedName(key));
         }
     }
 }

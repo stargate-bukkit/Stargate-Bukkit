@@ -8,7 +8,6 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -75,8 +74,9 @@ public class MoveEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleMove(VehicleMoveEvent event) {
-        if(ConfigurationHelper.getBoolean(ConfigurationOption.HANDLE_VEHICLES))
+        if (ConfigurationHelper.getBoolean(ConfigurationOption.HANDLE_VEHICLES)) {
             onAnyMove(event.getVehicle(), event.getTo(), event.getFrom());
+        }
     }
 
     /**

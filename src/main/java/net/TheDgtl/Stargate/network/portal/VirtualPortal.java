@@ -7,7 +7,6 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.property.PluginChannel;
 import net.TheDgtl.Stargate.property.StargateProtocolProperty;
 import net.TheDgtl.Stargate.util.NameHelper;
-
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
