@@ -82,7 +82,7 @@ public class TeleportedEntityRelationDFS {
             }
         }
 
-        if (!leashHolders.containsKey((LivingEntity) node)) {
+        if (node instanceof LivingEntity && !leashHolders.containsKey((LivingEntity) node)) {
             for (LivingEntity leashed : nearbyLeashedEntities) {
                 if (leashed.getLeashHolder() == node) {
                     success &= depthFirstSearch(node, leashed, false);
@@ -96,7 +96,7 @@ public class TeleportedEntityRelationDFS {
         }
         if (nodeIsPassenger && parent != null) {
             passengerVehicles.put(node, parent);
-        } else if (parent != null) {
+        } else if (!nodeIsPassenger && node instanceof LivingEntity && parent != null) {
             leashHolders.put((LivingEntity) node, parent);
         }
         return success;
