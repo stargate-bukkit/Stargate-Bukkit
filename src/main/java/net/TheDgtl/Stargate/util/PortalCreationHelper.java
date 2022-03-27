@@ -60,7 +60,7 @@ public class PortalCreationHelper {
      */
     public static RealPortal createPortal(Network network, String name, String destination, String targetServer,
                                           Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger) throws NameErrorException {
-        name = NameHelper.getAllowedName(name);
+        name = NameHelper.getTrimmedName(name);
 
         if (flags.contains(PortalFlag.BUNGEE)) {
             return new BungeePortal(network, name, destination, targetServer, flags, gate, ownerUUID, logger);

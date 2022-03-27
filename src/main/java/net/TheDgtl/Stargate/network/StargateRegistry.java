@@ -62,7 +62,7 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public void createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
-        networkName = NameHelper.getAllowedName(networkName);
+        networkName = NameHelper.getTrimmedName(networkName);
         if (this.networkExists(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER))) {
             throw new NameErrorException(null);
         }

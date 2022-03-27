@@ -7,11 +7,13 @@ import net.md_5.bungee.api.ChatColor;
 public class NameHelper {
 
     /**
-     * @param name <p> The name to check </p>
-     * @return <p> The allowed name </P>
+     * Trims a name and replaces whitespace with normal spaces
+     *
+     * @param name <p>The name to check</p>
+     * @return <p>The trimmed name</p>
      */
-    public static String getAllowedName(String name) {
-        name = name.replaceAll("\s\s+", " ");
+    public static String getTrimmedName(String name) {
+        name = name.replaceAll("\\s\\s+", " ");
         return name.trim();
     }
 
@@ -25,11 +27,11 @@ public class NameHelper {
      * @return <p>The "hashed" name</p>
      */
     public static String getID(String name) {
-        String nameHash = name.toLowerCase();
+        String normalizedName = name.toLowerCase();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.DISABLE_CUSTOM_COLORED_NAMES)) {
-            nameHash = ChatColor.stripColor(nameHash);
+            normalizedName = ChatColor.stripColor(normalizedName);
         }
-        return nameHash;
+        return normalizedName;
     }
 
 }

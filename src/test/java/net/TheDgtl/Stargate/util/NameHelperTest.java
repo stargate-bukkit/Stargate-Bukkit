@@ -29,7 +29,7 @@ class NameHelperTest {
     @Test
     void test() {
         for (String key : nameTests.keySet()) {
-            Assertions.assertEquals(nameTests.get(key), NameHelper.getAllowedName(key));
+            Assertions.assertEquals(nameTests.get(key), NameHelper.getTrimmedName(key));
         }
     }
 }

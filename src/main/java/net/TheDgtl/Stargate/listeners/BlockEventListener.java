@@ -304,17 +304,19 @@ public class BlockEventListener implements Listener {
         if (initialNetworkName.endsWith("}") && initialNetworkName.startsWith("{")) {
             String possiblePlayerName = initialNetworkName.substring(1, initialNetworkName.length() - 1);
             flags.add(PortalFlag.PERSONAL_NETWORK);
-            OfflinePlayer possiblePlayer = Bukkit.getOfflinePlayer(possiblePlayerName);
-            if (possiblePlayer != null) {
+            try {
+                OfflinePlayer possiblePlayer = Bukkit.getOfflinePlayer(possiblePlayerName);
                 return possiblePlayer.getUniqueId().toString();
+            } catch (IllegalArgumentException ignored) {
             }
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         }
 
-        OfflinePlayer possiblePlayer = Bukkit.getOfflinePlayer(initialNetworkName);
-        if (possiblePlayer != null) {
+        try {
+            OfflinePlayer possiblePlayer = Bukkit.getOfflinePlayer(initialNetworkName);
             flags.add(PortalFlag.PERSONAL_NETWORK);
             return possiblePlayer.getUniqueId().toString();
+        } catch (IllegalArgumentException ignored) {
         }
 
         //Moves any private stargates to the player's personal network
