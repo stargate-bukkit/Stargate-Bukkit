@@ -86,7 +86,7 @@ public class DraftTeleporter {
                 return false;
             }
             return true;
-        }, getSurroundingLeashed(baseEntity));
+        }, getNearbyLeashedEntities(baseEntity));
 
         boolean shouldProceed = dfs.depthFirstSearch(null, baseEntity, true);
         
@@ -126,6 +126,7 @@ public class DraftTeleporter {
                     vehicle.addPassenger(entity);
                 }
                 
+                //Adds the leash holder to the entity if necessary
                 if (entity instanceof LivingEntity) {
                     LivingEntity livingEntity = (LivingEntity) entity;
                     if (leashHolders.containsKey(livingEntity)) {
@@ -137,9 +138,9 @@ public class DraftTeleporter {
                 return true;
             };
             if (entity instanceof Player) {
-                Stargate.syncTickPopulator.addAction(new DelayedAction(1, action));
+                Stargate.syncTickPopulator.addAction(new DelayedAction(6, action));
             } else {
-                Stargate.syncTickPopulator.addAction(new SupplierAction(action));
+                Stargate.syncTickPopulator.addAction(new DelayedAction(1, action));
             }
         }
     }
@@ -155,11 +156,12 @@ public class DraftTeleporter {
 
     private Location calculateDestination(boolean shouldProceed, Entity baseEntity) {
         if (!shouldProceed && origin != null) {
-            Vector offset = getOffset(destinationFace, baseEntity);
+            Vector offset = getOffset(entranceFace, baseEntity);
             return origin.getExit().clone().subtract(offset);
+        } else {
+            Vector offset = getOffset(destinationFace, baseEntity);
+            return this.destination.clone().subtract(offset);
         }
-        Vector offset = getOffset(destinationFace, baseEntity);
-        return this.destination.clone().subtract(offset);
     }
 
     private void doTeleportation(List<Entity> entitiesToTeleport, Location destination, boolean shouldProceed) {
@@ -181,7 +183,7 @@ public class DraftTeleporter {
     }
 
 
-    private List<LivingEntity> getSurroundingLeashed(Entity origin) {
+    private List<LivingEntity> getNearbyLeashedEntities(Entity origin) {
         List<Entity> surroundingEntities = origin.getNearbyEntities(LOOK_FOR_LEASHED_RADIUS, LOOK_FOR_LEASHED_RADIUS,
                 LOOK_FOR_LEASHED_RADIUS);
         List<LivingEntity> surroundingLeashedEntities = new ArrayList<>();
