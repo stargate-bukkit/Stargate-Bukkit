@@ -88,7 +88,11 @@ public class DraftTeleporter {
             return true;
         }, getSurroundingLeashed(baseEntity));
 
-        boolean shouldProceed = dfs.depthFirstSearch(null, target, true);
+        boolean shouldProceed = dfs.depthFirstSearch(null, baseEntity, true);
+        
+        logger.logMessage(Level.FINEST, "Entities teleporting: " + dfs.getEntitiesToTeleport());
+        logger.logMessage(Level.FINEST, "Passenger vehicles: " + dfs.getPassengerVehicles());
+        logger.logMessage(Level.FINEST, "Leash holders: " + dfs.getLeashHolders());
 
         Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
             unStackEntities(dfs.getEntitiesToTeleport());
@@ -117,13 +121,17 @@ public class DraftTeleporter {
             Supplier<Boolean> action = () -> {
                 //Adds the passenger to its previous vehicle if necessary
                 if (passengerVehicles.containsKey(entity)) {
-                    passengerVehicles.get(entity).addPassenger(entity);
+                    Entity vehicle = passengerVehicles.get(entity);
+                    logger.logMessage(Level.FINEST, "Adding passenger " + entity + " to vehicle " + vehicle);
+                    vehicle.addPassenger(entity);
                 }
                 
                 if (entity instanceof LivingEntity) {
                     LivingEntity livingEntity = (LivingEntity) entity;
                     if (leashHolders.containsKey(livingEntity)) {
-                        livingEntity.setLeashHolder(leashHolders.get(livingEntity));
+                        Entity holder = leashHolders.get(livingEntity);
+                        logger.logMessage(Level.FINEST, "Adding leash holder " + holder + " to entity " + entity);
+                        livingEntity.setLeashHolder(holder);
                     }
                 }
                 return true;
