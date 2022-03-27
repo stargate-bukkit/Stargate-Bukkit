@@ -1,23 +1,5 @@
 package net.TheDgtl.Stargate.network.portal;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.minecart.PoweredMinecart;
-import org.bukkit.util.Vector;
-
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.action.DelayedAction;
@@ -27,9 +9,23 @@ import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.manager.PermissionManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.minecart.PoweredMinecart;
+import org.bukkit.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.logging.Level;
 
 /**
- * 
  * @author Thorinwasher
  * Work in progress, not used currently
  */
@@ -41,23 +37,23 @@ public class DraftTeleporter {
     private final int cost;
     private final BlockFace destinationFace;
     private String teleportMessage;
-    private final boolean checkPermissions;
     private final StargateLogger logger;
-    private BlockFace entranceFace;
-    
+    private final BlockFace entranceFace;
+
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
      *
-     * @param destination      <p>The destination location of this teleporter</p>
-     * @param origin           <p>The origin portal the teleportation is originating from</p>
-     * @param destinationFace  <p>The direction the destination's portal is facing</p>
-     * @param entranceFace     <p>The direction the entrance portal is facing</p>
-     * @param cost             <p>The cost of teleportation for any players</p>
-     * @param teleportMessage  <p>The teleportation message to display if the teleportation is successful</p>
-     * @param checkPermissions <p>Whether to check, or totally ignore permissions</p>
+     * @param destination        <p>The destination location of this teleporter</p>
+     * @param origin             <p>The origin portal the teleportation is originating from</p>
+     * @param destinationFace    <p>The direction the destination's portal is facing</p>
+     * @param entranceFace       <p>The direction the entrance portal is facing</p>
+     * @param cost               <p>The cost of teleportation for any players</p>
+     * @param teleportMessage    <p>The teleportation message to display if the teleportation is successful</p>
+     * @param permissionFunction <p>The function to call to check if an entity has the required permissions for teleportation</p>
+     * @param logger             <p>The logger used for logging messages</p>
      */
     public DraftTeleporter(Location destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
-                      int cost, String teleportMessage, boolean checkPermissions, StargateLogger logger) {
+                           int cost, String teleportMessage, Function<Entity, Boolean> permissionFunction, StargateLogger logger) {
         // Center the destination in the destination block
         this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
@@ -65,10 +61,9 @@ public class DraftTeleporter {
         this.origin = origin;
         this.cost = cost;
         this.teleportMessage = teleportMessage;
-        this.checkPermissions = checkPermissions;
         this.logger = logger;
     }
-    
+
     /**
      * Teleports the given target entity
      *
@@ -80,41 +75,50 @@ public class DraftTeleporter {
             baseEntity = baseEntity.getVehicle();
         }
 
-        Map<Entity, Entity> passengerNet = new HashMap<>();
-        Map<LivingEntity,Entity> leashedNet = new HashMap<>();
-        Set<Entity> entitiesToTeleport = new HashSet<>();
-        List<LivingEntity> surroundingLeashed = getSurroundingLeashed(baseEntity);
-        boolean shouldProceed = DFS(baseEntity, passengerNet, leashedNet, surroundingLeashed, entitiesToTeleport);
-        
-        Supplier<Boolean> action1 = () -> {
-            unStackEntities(entitiesToTeleport);
-            return true;
-        };
-        Stargate.syncTickPopulator.addAction(new SupplierAction(action1));
+        TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
+            //TODO: The access event should be called to allow add-ons cancelling or overriding the teleportation
+            PermissionManager permissionManager = new PermissionManager(anyEntity);
+            if (!hasPermission(anyEntity, permissionManager)) {
+                teleportMessage = permissionManager.getDenyMessage();
+                return false;
+            }
 
-        Location modifiedDestination = calculateDestination(shouldProceed,baseEntity);
-        modifiedDestination.getChunk().load();
-        Supplier<Boolean> action2 = () -> {
-            doTeleportation(entitiesToTeleport,modifiedDestination,shouldProceed);
-            stackEntities(entitiesToTeleport,leashedNet,passengerNet);
+            if (anyEntity instanceof Player && !Stargate.economyManager.has((Player) anyEntity, this.cost)) {
+                teleportMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
+                return false;
+            }
             return true;
-        };
-        Stargate.syncTickPopulator.addAction(new SupplierAction(action2));
+        }, getSurroundingLeashed(baseEntity));
+
+        boolean shouldProceed = dfs.depthFirstSearch(null, target, true);
+
+        Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
+            unStackEntities(dfs.getEntitiesToTeleport());
+            return true;
+        }));
+
+        Location modifiedDestination = calculateDestination(shouldProceed, baseEntity);
+        modifiedDestination.getChunk().load();
+        Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
+            doTeleportation(dfs.getEntitiesToTeleport(), modifiedDestination, shouldProceed);
+            stackEntities(dfs.getEntitiesToTeleport(), dfs.getLeashHolders(), dfs.getPassengerVehicles());
+            return true;
+        }));
     }
-    
-    private Vector getOffsett(BlockFace destinationFacing, Entity target) {
+
+    private Vector getOffset(BlockFace destinationFacing, Entity target) {
         double targetWidth = target.getWidth();
         Vector offset = destinationFacing.getDirection();
         offset.multiply(Math.ceil((targetWidth + 1) / 2));
         return offset;
     }
-    
-    private void stackEntities(Set<Entity> entitiesToTeleport, Map<LivingEntity, Entity> leashedNet,
-            Map<Entity, Entity> passengerNet) {
+
+    private void stackEntities(List<Entity> entitiesToTeleport, Map<LivingEntity, Entity> leashedNet,
+                               Map<Entity, Entity> passengerNet) {
         for (Entity entity : entitiesToTeleport) {
             Supplier<Boolean> action = () -> {
                 Entity vehicle = passengerNet.get(entity);
-                Entity leashHolder = leashedNet.get(entity);
+                Entity leashHolder = leashedNet.get((LivingEntity) entity);
                 if (vehicle != null) {
                     vehicle.addPassenger(entity);
                 }
@@ -123,104 +127,63 @@ public class DraftTeleporter {
                 }
                 return true;
             };
-            if(entity instanceof Player) {
-                Stargate.syncTickPopulator.addAction(new DelayedAction(1,action));
+            if (entity instanceof Player) {
+                Stargate.syncTickPopulator.addAction(new DelayedAction(1, action));
             } else {
                 Stargate.syncTickPopulator.addAction(new SupplierAction(action));
             }
         }
     }
 
-    private void unStackEntities(Set<Entity> entitiesToTeleport) {
-        for(Entity entity : entitiesToTeleport) {
+    private void unStackEntities(List<Entity> entitiesToTeleport) {
+        for (Entity entity : entitiesToTeleport) {
             entity.leaveVehicle();
-            if(entity instanceof LivingEntity && ((LivingEntity)entity).isLeashed()) {
-                ((LivingEntity)entity).setLeashHolder(null);
+            if (entity instanceof LivingEntity && ((LivingEntity) entity).isLeashed()) {
+                ((LivingEntity) entity).setLeashHolder(null);
             }
         }
     }
-    
+
     private Location calculateDestination(boolean shouldProceed, Entity baseEntity) {
         if (!shouldProceed && origin != null) {
-            Vector offset = getOffsett(destinationFace,baseEntity);
+            Vector offset = getOffset(destinationFace, baseEntity);
             return origin.getExit().clone().subtract(offset);
         }
-        Vector offset = getOffsett(destinationFace,baseEntity);
+        Vector offset = getOffset(destinationFace, baseEntity);
         return this.destination.clone().subtract(offset);
     }
 
-    private void doTeleportation(Set<Entity> entitiesToTeleport, Location destination, boolean shouldProceed) {
-
-        double rotation = 0;
-        logger.logMessage(Level.FINE, String.format("Teleporting entities to destination %s",destination.toString()));
+    private void doTeleportation(List<Entity> entitiesToTeleport, Location destination, boolean shouldProceed) {
+        double rotation;
+        logger.logMessage(Level.FINE, String.format("Teleporting entities to destination %s", destination.toString()));
         if (!shouldProceed && origin != null) {
             rotation = Math.PI;
-            
+
         } else {
             rotation = calculateAngleDifference(entranceFace, destinationFace);
         }
 
         for (Entity entity : entitiesToTeleport) {
             teleport(entity, destination, rotation);
-            if(entity instanceof Player && cost != 0) {
-                charge((Player)entity);
+            if (entity instanceof Player && cost != 0 && charge((Player) entity)) {
                 entity.sendMessage(teleportMessage);
             }
         }
     }
 
-    /**
-     * Does a deep first search
-     * @param target
-     * @param passengerNet
-     * @param leashedNet
-     * @param surroundingLeashed
-     * @return <p> If the teleportation should proceed </p>
-     */
-    private boolean DFS(Entity target, Map<Entity,Entity> passengerNet, Map<LivingEntity,Entity> leashedNet,List<LivingEntity> surroundingLeashed, Set<Entity> entitiesToTeleport) {
-        if(entitiesToTeleport.contains(target))
-            return true;
-        entitiesToTeleport.add(target);
-        
-        boolean success = true;
-        PermissionManager permissionManager = new PermissionManager(target);
-        if (!hasPermission(target,permissionManager)){
-            teleportMessage = permissionManager.getDenyMessage();
-            success = false;
-        }
-        
-        if(target instanceof Player && !Stargate.economyManager.has((Player) target, this.cost)) {
-            teleportMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
-            success = false;
-        }
 
-        for (Entity passenger : target.getPassengers()) {
-            passengerNet.put(passenger, target);
-            if(!DFS(passenger,passengerNet,leashedNet,surroundingLeashed,entitiesToTeleport))
-                success = false;
-        }
-        
-        for(LivingEntity leashed : surroundingLeashed) {
-            if(leashed.getLeashHolder() == target) {
-                leashedNet.put(leashed, target);
-                if(!DFS(leashed,passengerNet,leashedNet,surroundingLeashed,entitiesToTeleport))
-                    success = false;
-            }
-        }
-        return success;
-    }
-    
     private List<LivingEntity> getSurroundingLeashed(Entity origin) {
-        List<Entity> surroundingEntities = origin.getNearbyEntities(LOOK_FOR_LEASHED_RADIUS,LOOK_FOR_LEASHED_RADIUS,LOOK_FOR_LEASHED_RADIUS);
+        List<Entity> surroundingEntities = origin.getNearbyEntities(LOOK_FOR_LEASHED_RADIUS, LOOK_FOR_LEASHED_RADIUS,
+                LOOK_FOR_LEASHED_RADIUS);
         List<LivingEntity> surroundingLeashedEntities = new ArrayList<>();
-        for(Entity entity : surroundingEntities) {
-            if(entity instanceof LivingEntity && ((LivingEntity)entity).isLeashed()) {
-                surroundingLeashedEntities.add((LivingEntity)entity);
+        for (Entity entity : surroundingEntities) {
+            if (entity instanceof LivingEntity && ((LivingEntity) entity).isLeashed()) {
+                surroundingLeashedEntities.add((LivingEntity) entity);
             }
         }
         return surroundingLeashedEntities;
     }
-    
+
     /**
      * Teleports the given target to the given location
      *
@@ -264,7 +227,7 @@ public class DraftTeleporter {
             target.sendMessage(teleportMessage);
         }
     }
-    
+
     /**
      * Charges the given player as necessary
      *
@@ -278,7 +241,7 @@ public class DraftTeleporter {
             return Stargate.economyManager.chargeAndTax(target, cost);
         }
     }
-    
+
     /**
      * Calculates the relative angle difference between two block faces
      *
@@ -294,7 +257,7 @@ public class DraftTeleporter {
             return -directionalAngleOperator(BlockFace.EAST.getDirection(), destinationFace.getDirection());
         }
     }
-    
+
     /**
      * Gets the angle between two vectors
      *
@@ -311,7 +274,7 @@ public class DraftTeleporter {
     private double directionalAngleOperator(Vector vector1, Vector vector2) {
         return Math.atan2(vector1.clone().crossProduct(vector2).getY(), vector1.dot(vector2));
     }
-    
+
     /**
      * Checks whether the given entity has the required permissions for performing the teleportation
      *
@@ -322,7 +285,7 @@ public class DraftTeleporter {
     private boolean hasPermission(Entity target, PermissionManager permissionManager) {
         StargatePortalEvent event = new StargatePortalEvent(target, origin);
         Bukkit.getPluginManager().callEvent(event);
-        return (!checkPermissions || (permissionManager.hasPermission(event) ) && !event.isCancelled());
+        return (permissionManager.hasPermission(event)) && !event.isCancelled();
     }
 
 }
