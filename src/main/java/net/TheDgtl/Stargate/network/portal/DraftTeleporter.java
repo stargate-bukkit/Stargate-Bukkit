@@ -21,7 +21,6 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
@@ -49,11 +48,10 @@ public class DraftTeleporter {
      * @param entranceFace       <p>The direction the entrance portal is facing</p>
      * @param cost               <p>The cost of teleportation for any players</p>
      * @param teleportMessage    <p>The teleportation message to display if the teleportation is successful</p>
-     * @param permissionFunction <p>The function to call to check if an entity has the required permissions for teleportation</p>
      * @param logger             <p>The logger used for logging messages</p>
      */
     public DraftTeleporter(Location destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
-                           int cost, String teleportMessage, Function<Entity, Boolean> permissionFunction, StargateLogger logger) {
+                           int cost, String teleportMessage, StargateLogger logger) {
         // Center the destination in the destination block
         this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
