@@ -111,17 +111,20 @@ public class DraftTeleporter {
         return offset;
     }
 
-    private void stackEntities(List<Entity> entitiesToTeleport, Map<LivingEntity, Entity> leashedNet,
-                               Map<Entity, Entity> passengerNet) {
+    private void stackEntities(List<Entity> entitiesToTeleport, Map<LivingEntity, Entity> leashHolders,
+                               Map<Entity, Entity> passengerVehicles) {
         for (Entity entity : entitiesToTeleport) {
             Supplier<Boolean> action = () -> {
-                Entity vehicle = passengerNet.get(entity);
-                Entity leashHolder = leashedNet.get((LivingEntity) entity);
-                if (vehicle != null) {
-                    vehicle.addPassenger(entity);
+                //Adds the passenger to its previous vehicle if necessary
+                if (passengerVehicles.containsKey(entity)) {
+                    passengerVehicles.get(entity).addPassenger(entity);
                 }
-                if (leashHolder != null) {
-                    ((LivingEntity) entity).setLeashHolder(leashHolder);
+                
+                if (entity instanceof LivingEntity) {
+                    LivingEntity livingEntity = (LivingEntity) entity;
+                    if (leashHolders.containsKey(livingEntity)) {
+                        livingEntity.setLeashHolder(leashHolders.get(livingEntity));
+                    }
                 }
                 return true;
             };
