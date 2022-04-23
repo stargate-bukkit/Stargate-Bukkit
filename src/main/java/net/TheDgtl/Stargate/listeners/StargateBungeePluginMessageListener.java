@@ -89,7 +89,13 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         try {
             DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
             String subChannel = in.readUTF();
-            switch (PluginChannel.parse(subChannel)) {
+            //Ignore any unknown sub-channels to prevent an exception caused by converting null into ordinal
+            PluginChannel subPluginChannel = PluginChannel.parse(subChannel);
+            if (subPluginChannel == null) {
+                Stargate.log(Level.FINEST, "Received unknown message on unknown sub-channel: " + subChannel);
+                return;
+            }
+            switch (subPluginChannel) {
                 case GET_SERVER:
                     Stargate.serverName = in.readUTF();
                     Stargate.knowsServerName = !Stargate.serverName.isEmpty();
@@ -150,7 +156,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      * Updates a network according to a "network changed" message
      *
      * @param message <p>The network change message to parse and handle</p>
-     * @throws NameErrorException
+     * @throws NameErrorException <p>If the specified network name cannot be used</p>
      */
     private void updateNetwork(String message) throws NameErrorException {
         JsonParser parser = new JsonParser();
