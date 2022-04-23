@@ -169,7 +169,7 @@ public class StargateRegistry implements RegistryAPI {
     @Override
     public void unRegisterLocation(GateStructureType structureType, BlockLocation blockLocation) {
         Map<BlockLocation, Portal> map = portalFromStructureTypeMap.get(structureType);
-        if (map != null) {
+        if (map != null && map.get(blockLocation) != null) {
             Stargate.log(Level.FINER, "Unregistering portal " + map.get(blockLocation).getName() +
                     " with structType " + structureType + " at location " + blockLocation.toString());
             map.remove(blockLocation);
