@@ -109,20 +109,4 @@ public class StargatePortalEvent extends StargateEvent {
         //TODO: Exit variable is never used. Is this a bug?
         this.exit = Objects.requireNonNull(exitLocation);
     }
-
-    @Override
-    public List<Permission> getRelatedPerms() {
-        String identifier = "sg.use";
-        List<Permission> permList = new ArrayList<>();
-        if (target instanceof Player) {
-            if (!portal.isOpenFor(target)) {
-                permList.add(Bukkit.getPluginManager().getPermission(identifier + ".follow"));
-            }
-            if (portal.hasFlag(PortalFlag.PRIVATE) && !portal.getOwnerUUID().equals(target.getUniqueId())) {
-                permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
-            }
-        }
-
-        return permList;
-    }
 }

@@ -48,9 +48,4 @@ public class StargateDeactivateEvent extends StargateEvent {
     public StargateDeactivateEvent(@NotNull Portal portal) {
         super(Objects.requireNonNull(portal));
     }
-
-    @Override
-    public List<Permission> getRelatedPerms() {
-        return new ArrayList<>();
-    }
 }

@@ -62,80 +62,14 @@ public abstract class StargateEvent extends Event implements Cancellable {
         this.cancelled = cancelled;
     }
 
-    public abstract List<Permission> getRelatedPerms();
 
-    protected List<Permission> compileFlagPerms(String permIdentifier) {
-        List<Permission> permList = new ArrayList<>();
-        Set<PortalFlag> flags = PortalFlag.parseFlags(portal.getAllFlagsString());
-        for (PortalFlag flag : flags) {
-            String identifier;
-            switch (flag) {
-                case FIXED:
-                case NETWORKED:
-                case PERSONAL_NETWORK:
-                case IRON_DOOR:
-                    continue;
-                default:
-                    identifier = String.valueOf(flag.getCharacterRepresentation()).toLowerCase();
-                    break;
-            }
-            permList.add(pm.getPermission(permIdentifier + ".type." + identifier));
-        }
-        return permList;
-    }
+    
 
-    protected Permission compileNetworkPerm(String permIdentifier, String activator) {
-        if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
-            return pm.getPermission(permIdentifier + ".network.personal");
-        }
-        if (portal.getNetwork().getName().equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-            return pm.getPermission(permIdentifier + ".network.default");
-        }
-        Permission custom = new Permission(permIdentifier + ".network.custom." + portal.getNetwork().getName());
-        Permission parent = pm.getPermission(permIdentifier + ".network.custom");
-        if (parent != null) {
-            custom.addParent(parent, true);
-        }
-        return custom;
-    }
+    
 
-    protected Permission compileWorldPerm(String permissionIdentifier, Portal portal) {
-        if (!(portal instanceof RealPortal)) {
-            return null;
-        }
-        RealPortal realPortal = (RealPortal) portal;
-        Permission parent = pm.getPermission(permissionIdentifier + ".world");
-        World world = realPortal.getGate().getTopLeft().getWorld();
-        if (world == null) {
-            return null;
-        }
-        String permissionNode = permissionIdentifier + ".world." + world.getName();
-        Permission worldPermission = new Permission(permissionNode);
-        if (parent != null) {
-            worldPermission.addParent(parent, true);
-        }
-        return worldPermission;
-    }
+    
 
-    protected Permission compileDesignPerm(String permIdentifier) {
-        if (!(portal instanceof RealPortal)) {
-            return null;
-        }
-        RealPortal realPortal = (RealPortal) portal;
-        Permission parent = pm.getPermission(permIdentifier + ".design");
-        String permNode = permIdentifier + ".design." + realPortal.getGate().getFormat().getFileName();
-        Permission design = new Permission(permNode);
-        if (parent != null) {
-            design.addParent(parent, true);
-        }
-        return design;
-    }
+    
 
-    protected List<Permission> defaultPermCompile(String permIdentifier, String activatorUUID) {
-        List<Permission> permList = new ArrayList<>(compileFlagPerms(permIdentifier));
-        permList.add(compileWorldPerm(permIdentifier, portal));
-        permList.add(compileNetworkPerm(permIdentifier, activatorUUID));
-        permList.add(compileDesignPerm(permIdentifier));
-        return permList;
-    }
+    
 }

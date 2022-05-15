@@ -66,9 +66,4 @@ public class StargateAccessEvent extends StargateEvent {
         return this.player;
     }
 
-    @Override
-    public List<Permission> getRelatedPerms() {
-        return null;
-    }
-
 }
