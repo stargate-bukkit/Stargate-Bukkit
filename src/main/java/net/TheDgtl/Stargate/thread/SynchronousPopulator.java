@@ -98,14 +98,19 @@ public class SynchronousPopulator implements Runnable {
 
         //Go through all populator actions until 25 milliseconds have passed, or the queue is empty
         while (iterator.hasNext() && (System.nanoTime() - initialSystemTime < 25000000)) {
-            SimpleAction action = iterator.next();
-            if (action instanceof ForcibleAction) {
-                ((ForcibleAction) action).run(forceAction);
-            } else {
-                action.run();
-            }
+            try {
+                SimpleAction action = iterator.next();
+                if (action instanceof ForcibleAction) {
+                    ((ForcibleAction) action).run(forceAction);
+                } else {
+                    action.run();
+                }
 
-            if (action.isFinished()) {
+                if (action.isFinished()) {
+                    iterator.remove();
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
                 iterator.remove();
             }
         }
