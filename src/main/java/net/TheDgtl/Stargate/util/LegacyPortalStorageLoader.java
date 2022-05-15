@@ -139,6 +139,7 @@ public final class LegacyPortalStorageLoader {
         if (format == null) {
             logger.logMessage(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
                     "log for more information", gateFormatName));
+            throw new InvalidStructureException();
         }
 
         Gate gate = new Gate(topLeft, facing, false, format, logger);
