@@ -10,6 +10,7 @@ import net.TheDgtl.Stargate.formatting.LanguageManager;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import net.TheDgtl.Stargate.property.BypassPermission;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import net.milkbowl.vault.chat.Chat;
@@ -199,7 +200,7 @@ public class PermissionManager {
     /**
      * Checks whether the entity is allowed to create stargates in the given network
      *
-     * @param network <p>The name of the network to check</p>
+     * @param network <p>The formated name of the network to check</p>
      * @return <p>True if the entity is allowed to create stargates</p>
      */
     public boolean canCreateInNetwork(String network) {
@@ -207,14 +208,28 @@ public class PermissionManager {
             return false;
         }
 
+        HighlightingStyle highlight = HighlightingStyle.getHighlightType(network);
+        String netName = HighlightingStyle.getNameFromHighlightedText(network);
         boolean hasPermission;
 
-        if (target.getName().equals(network)) {
-            hasPermission = target.hasPermission(CREATE_PERMISSION + ".personal");
-        } else if (network.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-            hasPermission = target.hasPermission(CREATE_PERMISSION + ".default");
-        } else {
-            hasPermission = target.hasPermission(CREATE_PERMISSION + ".custom." + network);
+        switch(highlight) {
+        case PERSONAL:
+            if (target.getName().equals(netName)) {
+                hasPermission = target.hasPermission(CREATE_PERMISSION + ".personal");
+            } else {
+                hasPermission = target.hasPermission(BypassPermission.PRIVATE.getPermissionString());
+            }
+            break;
+        case BUNGEE:
+            hasPermission = target.hasPermission(CREATE_PERMISSION + ".type." + PortalFlag.FANCY_INTER_SERVER);
+            break;
+        default:
+            if (netName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
+                hasPermission = target.hasPermission(CREATE_PERMISSION + ".default");
+            } else {
+                hasPermission = target.hasPermission(CREATE_PERMISSION + ".custom." + netName);
+            }
+            break;
         }
         if (!hasPermission) {
             denyMessage = languageManager.getErrorMessage(TranslatableMessage.NET_DENY);

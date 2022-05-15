@@ -1,6 +1,8 @@
 package net.TheDgtl.Stargate.network;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameErrorException;
@@ -29,7 +31,14 @@ public class PersonalNetwork extends LocalNetwork {
         super(uuid.toString(), database, queryGenerator);
         Stargate.log(Level.FINER, "Initialized personal network with UUID " + uuid);
         Stargate.log(Level.FINER, "Matching player name: " + Bukkit.getOfflinePlayer(uuid).getName());
-        playerName = Bukkit.getOfflinePlayer(uuid).getName();
+        String possiblePlayerName = Bukkit.getOfflinePlayer(uuid).getName();
+        if (possiblePlayerName != null
+                && (possiblePlayerName.toLowerCase().equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK).toLowerCase())
+                        || possiblePlayerName.toLowerCase()
+                                .equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME).toLowerCase()))) {
+            possiblePlayerName = uuid.toString().split("-")[0];
+        }
+        playerName = possiblePlayerName;
     }
 
     @Override

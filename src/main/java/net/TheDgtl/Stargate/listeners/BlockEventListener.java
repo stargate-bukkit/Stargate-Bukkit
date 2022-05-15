@@ -13,10 +13,13 @@ import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.manager.PermissionManager;
+import net.TheDgtl.Stargate.network.LocalNetwork;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import net.TheDgtl.Stargate.property.BypassPermission;
+import net.TheDgtl.Stargate.util.NetworkCreationHelper;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import net.TheDgtl.Stargate.util.SpawnDetectionHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
@@ -164,6 +167,7 @@ public class BlockEventListener implements Listener {
         int cost = ConfigurationHelper.getInteger(ConfigurationOption.CREATION_COST);
         Player player = event.getPlayer();
         Set<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
+        
         PermissionManager permissionManager = new PermissionManager(player);
         TranslatableMessage errorMessage = null;
 
@@ -171,6 +175,10 @@ public class BlockEventListener implements Listener {
             flags.add(PortalFlag.NETWORKED);
         }
 
+        if (flags.contains(PortalFlag.PRIVATE)) {
+            flags.add(PortalFlag.PERSONAL_NETWORK);
+        }
+        
         Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
 
         if (disallowedFlags.size() > 0) {
@@ -182,8 +190,16 @@ public class BlockEventListener implements Listener {
         String finalNetworkName;
         Network selectedNetwork = null;
         try {
-            finalNetworkName = interpretNetworkName(network, flags, player, permissionManager);
-            selectedNetwork = selectNetwork(finalNetworkName, flags);
+            Stargate.log(Level.FINER, "....Choosing network name....");
+            Stargate.log(Level.FINER, "initial name is " + network);
+            finalNetworkName = NetworkCreationHelper.interpretNetworkName(network, flags, player, Stargate.getRegistry());
+            Stargate.log(Level.FINER, "Took format " + finalNetworkName);
+            finalNetworkName = NetworkCreationHelper.getAllowedNetworkName(finalNetworkName, permissionManager, player);
+            Stargate.log(Level.FINER, "From allowed permissions took " + finalNetworkName);
+            flags.addAll(NetworkCreationHelper.getNameRelatedFlags(finalNetworkName));
+            finalNetworkName = NetworkCreationHelper.parseNetworknameName(finalNetworkName);
+            Stargate.log(Level.FINER, "Ended upp with name " + finalNetworkName);
+            selectedNetwork = NetworkCreationHelper.selectNetwork(finalNetworkName, flags);
         } catch (NameErrorException nameErrorException) {
             errorMessage = nameErrorException.getErrorMessage();
         }
@@ -219,7 +235,7 @@ public class BlockEventListener implements Listener {
                                    Player player, int cost, PermissionManager permissionManager, TranslatableMessage errorMessage)
             throws NameErrorException, GateConflictException, NoFormatFoundException {
 
-        UUID ownerUUID = flags.contains(PortalFlag.PERSONAL_NETWORK) ? UUID.fromString(selectedNetwork.getName()) : player.getUniqueId();
+        UUID ownerUUID = getOwnerUUID(selectedNetwork,player,flags);
         Gate gate = PortalCreationHelper.createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON), Stargate.getInstance());
         Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance());
         StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, cost);
@@ -275,96 +291,23 @@ public class BlockEventListener implements Listener {
             player.sendMessage(TranslatableMessageFormatter.formatNetwork(unformattedMessage, selectedNetwork.getName()));
         }
     }
-
+    
     /**
-     * Interprets a network name and removes any characters with special behavior
-     *
-     * <p>Goes through some scenarios where the initial network name would need to be changed, and returns the
-     * modified network name. Some special characters given in a network name may be interpreted as special flags.</p>
-     *
-     * @param initialNetworkName <p>The initial network name written on the sign</p>
-     * @param flags              <p>All the flags of the portal</p>
-     * @param player             <p>The player that wrote the network name</p>
-     * @param permissionManager  <p>The permission manager to use for checking the player's permissions</p>
-     * @return <p>The interpreted network name</p>
-     * @throws NameErrorException <p>If the network name does not follow all rules</p>
+     * Determine the uuid of the owner of this portal
+     * @param network 
+     * @param player
+     * @param flags
+     * @return
      */
-    @SuppressWarnings("deprecation")
-    private String interpretNetworkName(String initialNetworkName, Set<PortalFlag> flags, Player player,
-                                        PermissionManager permissionManager) throws NameErrorException {
-        //Force a network name surrounded by square brackets to force an inter-server portal
-        //TODO: This bypasses network permission checks. Is this intentional?
-        // Answer: it does not. There is a secondary permission check using the StargateCreateEvent
-        if (initialNetworkName.endsWith("]") && initialNetworkName.startsWith("[")) {
-            flags.add(PortalFlag.FANCY_INTER_SERVER);
-            return initialNetworkName.substring(1, initialNetworkName.length() - 1);
+    private UUID getOwnerUUID(Network network, Player player, Set<PortalFlag> flags) {
+        if(network != null) {
+            return flags.contains(PortalFlag.PERSONAL_NETWORK) ? UUID.fromString(network.getName()) : player.getUniqueId();
         }
-
-        //Force a network name surrounded by curly braces to be treated as a personal network
-        if (initialNetworkName.endsWith("}") && initialNetworkName.startsWith("{")) {
-            String possiblePlayerName = initialNetworkName.substring(1, initialNetworkName.length() - 1);
-            flags.add(PortalFlag.PERSONAL_NETWORK);
-            try {
-                OfflinePlayer possiblePlayer = Bukkit.getOfflinePlayer(possiblePlayerName);
-                return possiblePlayer.getUniqueId().toString();
-            } catch (IllegalArgumentException ignored) {
-            }
-            throw new NameErrorException(TranslatableMessage.INVALID_NAME);
-        }
-
-        try {
-            OfflinePlayer possiblePlayer = Bukkit.getOfflinePlayer(initialNetworkName);
-            flags.add(PortalFlag.PERSONAL_NETWORK);
-            return possiblePlayer.getUniqueId().toString();
-        } catch (IllegalArgumentException ignored) {
-        }
-
-        //Moves any private stargates to the player's personal network
-        if (flags.contains(PortalFlag.PRIVATE)) {
-            flags.add(PortalFlag.PERSONAL_NETWORK);
-            return player.getUniqueId().toString();
-        }
-
-        /* Try to fall back to the default or a personal network if no network is given, or the player is missing
-         * the necessary permissions */
-        if (!permissionManager.canCreateInNetwork(initialNetworkName) || initialNetworkName.trim().isEmpty()) {
-            Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to default...");
-            String defaultNetwork = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
-            if (!permissionManager.canCreateInNetwork(defaultNetwork)) {
-                Stargate.log(Level.CONFIG, " Player does not have perms to create on current network. Replacing to private...");
-                flags.add(PortalFlag.PERSONAL_NETWORK);
-                return player.getUniqueId().toString();
-            }
-            return defaultNetwork;
-        }
-
-
-        //Move the legacy bungee stargates to their own network
-        if (flags.contains(PortalFlag.BUNGEE)) {
-            return "§§§§§§#BUNGEE#§§§§§§";
-        }
-        return initialNetworkName;
+        return player.getUniqueId();
     }
-
-    /**
-     * Gets the network with the given name, and creates it if it doesn't already exist
-     *
-     * @param name  <p>The name of the network to get</p>
-     * @param flags <p>The flags of the portal that should belong to this network</p>
-     * @return <p>The network the portal should be connected to</p>
-     * @throws NameErrorException <p>If the network name is invalid</p>
-     */
-    private Network selectNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {
-        try {
-            Stargate.getRegistry().createNetwork(name, flags);
-        } catch (NameErrorException nameErrorException) {
-            TranslatableMessage translatableMessage = nameErrorException.getErrorMessage();
-            if (translatableMessage != null) {
-                throw nameErrorException;
-            }
-        }
-        return Stargate.getRegistry().getNetwork(name, flags.contains(PortalFlag.FANCY_INTER_SERVER));
-    }
+    
+    
+    
 
     /**
      * Listens to and cancels any piston extend events that may break a stargate

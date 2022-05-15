@@ -26,15 +26,16 @@ public enum HighlightingStyle {
     BUNGEE("[", "]"),
 
     /**
-     * No highlighting at all. Just a workaround, really
-     */
-    NOTHING("", ""),
-
-    /**
      * The highlighting to use for personal networks
      */
-    PERSONAL("{", "}");
+    PERSONAL("{", "}"),
+    
+    /**
+     * No highlighting at all. Just a workaround, really
+     */
+    NOTHING("", "");
 
+    
     private final String prefix;
     private final String suffix;
 
@@ -59,4 +60,26 @@ public enum HighlightingStyle {
         return prefix + name + suffix;
     }
 
+    public static HighlightingStyle getHighlightType(String highlightedText) {
+        for (HighlightingStyle highlight : HighlightingStyle.values()) {
+            if (highlight == HighlightingStyle.NOTHING)
+                continue;
+
+            if (highlightedText.startsWith(highlight.prefix) && highlightedText.endsWith(highlight.suffix)) {
+                return highlight;
+            }
+        }
+        return NOTHING;
+    }
+    
+    /**
+     * Get the name that is highlighted
+     * @param highlightedName <p> The name that is highlighted </p>
+     * @return
+     */
+    public static String getNameFromHighlightedText(String highlightedName) {
+        HighlightingStyle highlight = getHighlightType(highlightedName);
+        return highlightedName.substring(highlight.prefix.length(),
+                highlightedName.length() - highlight.suffix.length());
+    }
 }
