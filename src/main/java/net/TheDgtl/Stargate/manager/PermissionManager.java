@@ -9,9 +9,12 @@ import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import net.TheDgtl.Stargate.formatting.LanguageManager;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import net.TheDgtl.Stargate.property.BypassPermission;
+import net.TheDgtl.Stargate.util.PortalPermissionHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
@@ -94,41 +97,56 @@ public class PermissionManager {
         metadataProvider = registeredServiceProvider.getProvider();
         return true;
     }
-
+    
     /**
-     * Checks if the entity is allowed to perform the given stargate event
-     *
-     * @param event <p>The event to check</p>
-     * @return <p>True if the entity is allowed to perform the event</p>
+     * Scrolls through a list of permissions and notes if 
+     * @param permissions
+     * @return
      */
-    public boolean hasPermission(StargateEvent event) {
-        List<Permission> relatedPermissions = event.getRelatedPerms();
-
-        if (target instanceof Player) {
-            Stargate.log(Level.CONFIG, "checking permission for player " + target.getName());
-        }
-
-        for (Permission relatedPermission : relatedPermissions) {
+    private boolean hasPermission(List<Permission> permissions) {
+        for (Permission relatedPermission : permissions) {
             Stargate.log(Level.CONFIG, " checking permission " + ((relatedPermission != null) ?
                     relatedPermission.getName() : "null"));
             if (relatedPermission != null && !target.hasPermission(relatedPermission)) {
                 denyMessage = determineTranslatableMessageFromPermission(relatedPermission);
+                Stargate.log(Level.CONFIG, String.format(" entity lacks the permissionnode '%s'",relatedPermission.getName()));
                 return false;
             }
         }
-
-        if ((event instanceof StargateCreateEvent) && event.getPortal().hasFlag(PortalFlag.PERSONAL_NETWORK) &&
-                canProcessMetaData && target instanceof Player) {
-            return !isNetworkFull(event.getPortal().getNetwork());
-        }
-
-        if ((event instanceof StargatePortalEvent) && canProcessMetaData) {
-            StargatePortalEvent sPEvent = (StargatePortalEvent) event;
-            if (!sPEvent.getEntity().getUniqueId().equals(sPEvent.getPortal().getOwnerUUID()) && sPEvent.getEntity() instanceof Player) {
-                return canFollow();
-            }
-        }
         return true;
+    }
+    
+    public boolean hasAccessPermission(RealPortal portal) {
+        List<Permission> relatedPerms = PortalPermissionHelper.getAccessPermissions(portal, target);
+        return hasPermission(relatedPerms);
+    }
+    
+    public boolean hasCreatePermissions(RealPortal portal) {
+        List<Permission> relatedPerms = PortalPermissionHelper.getCreatePermissions(portal, target);
+        boolean hasPermission = hasPermission(relatedPerms);
+        if (hasPermission && portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && canProcessMetaData && target instanceof Player) {
+            return !isNetworkFull(portal.getNetwork());
+        }
+        return hasPermission;
+    }
+    
+    public boolean hasDestroyPermissions(RealPortal portal) {
+        List<Permission> relatedPerms = PortalPermissionHelper.getDestroyPermissions(portal, target);
+        return hasPermission(relatedPerms);
+    }
+    
+    public boolean hasOpenPermissions(RealPortal entrance, Portal exit) {
+        List<Permission> relatedPerms = PortalPermissionHelper.getOpenPermissions(entrance, exit, target);
+        return hasPermission(relatedPerms);
+    }
+    
+    public boolean hasTeleportPermissions(RealPortal entrance) {
+        List<Permission> relatedPerms = PortalPermissionHelper.getTeleportPermissions(entrance, target);
+        boolean hasPermission = hasPermission(relatedPerms);
+        if (hasPermission && ! entrance.isOpenFor(target) && target instanceof Player) {
+            return canFollow();
+        }
+        return hasPermission;
     }
 
     public String determineTranslatableMessageFromPermission(Permission permission) {

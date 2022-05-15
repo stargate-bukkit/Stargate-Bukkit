@@ -17,7 +17,7 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 
-public class PermissionHelper {
+public class PortalPermissionHelper {
     /**
      * Compile all permissions that by default will be used related to the portal flags for any action
      * @param portal                <p> The portal which location to check </p>
@@ -123,7 +123,10 @@ public class PermissionHelper {
         return permList;
     }
     
-    static public List<Permission> getAccessPermissions(RealPortal portal, Player actor){
+    static public List<Permission> getAccessPermissions(RealPortal portal, Entity actor){
+        if(!(actor instanceof Player)) {
+            return new ArrayList<>();
+        }
         String identifier = "sg.use";
         List<Permission> permsList = defaultPortalPermCompile(portal, identifier, actor.getUniqueId().toString());
         if (portal.hasFlag(PortalFlag.PRIVATE) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
@@ -145,7 +148,10 @@ public class PermissionHelper {
         return permsList;
     }
     
-    static public List<Permission> getCreatePermissions(RealPortal portal, Player actor){
+    static public List<Permission> getCreatePermissions(RealPortal portal, Entity actor){
+        if(!(actor instanceof Player)) {
+            return new ArrayList<>();
+        }
         String identifier = "sg.create";
         List<Permission> permList = defaultPortalPermCompile(portal, identifier, actor.getUniqueId().toString());
         if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
@@ -154,7 +160,10 @@ public class PermissionHelper {
         return permList;
     }
     
-    static public List<Permission> getDestroyPermissions(RealPortal portal, Player actor){
+    static public List<Permission> getDestroyPermissions(RealPortal portal, Entity actor){
+        if(!(actor instanceof Player)) {
+            return new ArrayList<>();
+        }
         String identifier = "sg.destroy";
         List<Permission> permList = defaultPortalPermCompile(portal, identifier, actor.getUniqueId().toString());
         if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
@@ -163,7 +172,10 @@ public class PermissionHelper {
         return permList;
     }
     
-    static public List<Permission> getOpenPermissions(RealPortal entrance, Portal exit, Player actor) {
+    static public List<Permission> getOpenPermissions(RealPortal entrance, Portal exit, Entity actor) {
+        if(!(actor instanceof Player)) {
+            return new ArrayList<>();
+        }
         String identifier = "sg.use";
         List<Permission> permList = defaultPortalPermCompile(entrance, identifier, actor.getUniqueId().toString());
         if (exit instanceof RealPortal) {
