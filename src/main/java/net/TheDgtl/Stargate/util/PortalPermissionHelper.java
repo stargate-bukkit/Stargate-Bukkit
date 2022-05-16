@@ -140,7 +140,7 @@ public class PortalPermissionHelper {
                 permsList.add(fixedPerm);
             }
             if (portal.hasFlag(PortalFlag.NETWORKED)) {
-                Permission fixedPerm = new Permission(identifier + ".type.non-fixed");
+                Permission fixedPerm = new Permission(identifier + ".type.networked");
                 fixedPerm.addParent(baseTypePermission, true);
                 permsList.add(fixedPerm);
             }

@@ -102,7 +102,7 @@ permissions:
               #NOT IMPL.      description: Can use gates with invisible signs.
               sg.use.type.fixed:
                 description: Can use gates with a specified destination.
-              sg.use.type.non-fixed:
+              sg.use.type.networked:
                 description: Can use gates without a specified destination (networked gates).
           sg.use.design:
             description: Can use any portal, regardless of its portal's design (gatefile).
