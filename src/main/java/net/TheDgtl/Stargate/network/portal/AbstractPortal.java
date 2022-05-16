@@ -286,7 +286,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
         PermissionManager permissionManager = new PermissionManager(player);
         StargateOpenEvent oEvent = new StargateOpenEvent(player, this, false);
-        if (!permissionManager.hasPermission(oEvent)) {
+        if (!permissionManager.hasOpenPermissions(this, destination)) {
             event.getPlayer().sendMessage(permissionManager.getDenyMessage());
             return;
         }

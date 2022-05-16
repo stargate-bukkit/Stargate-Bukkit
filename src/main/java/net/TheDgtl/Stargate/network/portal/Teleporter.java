@@ -300,7 +300,7 @@ public class Teleporter {
     private boolean hasPermission(Entity target, PermissionManager permissionManager) {
         StargatePortalEvent event = new StargatePortalEvent(target, origin);
         Bukkit.getPluginManager().callEvent(event);
-        return (permissionManager.hasPermission(event) && !event.isCancelled());
+        return (permissionManager.hasTeleportPermissions(origin) && !event.isCancelled());
     }
 
     /**

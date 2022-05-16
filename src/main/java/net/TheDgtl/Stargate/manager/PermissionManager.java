@@ -105,11 +105,12 @@ public class PermissionManager {
      */
     private boolean hasPermission(List<Permission> permissions) {
         for (Permission relatedPermission : permissions) {
-            Stargate.log(Level.CONFIG, " checking permission " + ((relatedPermission != null) ?
-                    relatedPermission.getName() : "null"));
-            if (relatedPermission != null && !target.hasPermission(relatedPermission)) {
+            String message = " Checking permission '%s'. returned %s";
+            boolean hasPermission = relatedPermission == null || target.hasPermission(relatedPermission);
+            String permissionNode =  (relatedPermission != null) ? relatedPermission.getName() : "null";
+            Stargate.log(Level.CONFIG, String.format(message,permissionNode,hasPermission));
+            if (!hasPermission) {
                 denyMessage = determineTranslatableMessageFromPermission(relatedPermission);
-                Stargate.log(Level.CONFIG, String.format(" entity lacks the permissionnode '%s'",relatedPermission.getName()));
                 return false;
             }
         }
