@@ -5,8 +5,10 @@ import org.bukkit.entity.LivingEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -17,9 +19,9 @@ public class TeleportedEntityRelationDFS {
     private final Function<Entity, Boolean> permissionFunction;
     private final List<LivingEntity> nearbyLeashedEntities;
 
-    private final Map<LivingEntity, Entity> leashHolders;
-    private final Map<Entity, Entity> passengerVehicles;
-    private final List<Entity> entitiesToTeleport;
+    private final Map<Entity, List<LivingEntity>> leashHolders;
+    private final Map<Entity, List<Entity>> passengerVehicles;
+    private final Set<Entity> entitiesToTeleport;
 
     /**
      * Instantiates a new entity relation Depth-First-Search
@@ -33,7 +35,7 @@ public class TeleportedEntityRelationDFS {
         this.nearbyLeashedEntities = nearbyLeashedEntities;
         this.leashHolders = new HashMap<>();
         this.passengerVehicles = new HashMap<>();
-        this.entitiesToTeleport = new ArrayList<>();
+        this.entitiesToTeleport = new HashSet<>();
     }
 
     /**
@@ -41,7 +43,7 @@ public class TeleportedEntityRelationDFS {
      *
      * @return <p>The map of leash holders</p>
      */
-    public Map<LivingEntity, Entity> getLeashHolders() {
+    public Map<Entity, List<LivingEntity>> getLeashHolders() {
         return leashHolders;
     }
 
@@ -50,16 +52,16 @@ public class TeleportedEntityRelationDFS {
      *
      * @return <p>The map of vehicles</p>
      */
-    public Map<Entity, Entity> getPassengerVehicles() {
+    public  Map<Entity, List<Entity>> getPassengerVehicles() {
         return passengerVehicles;
     }
-
+    
     /**
      * Gets all entities part of the teleportation
      *
      * @return <p>All entities part of the teleportation</p>
      */
-    public List<Entity> getEntitiesToTeleport() {
+    public Set<Entity> getEntitiesToTeleport(){
         return entitiesToTeleport;
     }
 
@@ -67,39 +69,34 @@ public class TeleportedEntityRelationDFS {
      * Does a deep first search
      *
      * @param node            <p>The entity to run the dept-first-search</p>
-     * @param nodeIsPassenger <p>Whether the node is a passenger of the parent or leashed by the parent</p>
      * @return <p>If the teleportation should proceed</p>
      */
-    public boolean depthFirstSearch(Entity parent, Entity node, boolean nodeIsPassenger) {
+    public boolean depthFirstSearch(Entity node) {
         if (!permissionFunction.apply(node)) {
             return false;
         }
+        boolean isSuccess = true;
+        // Should be here to avoid checking the same node twice
+        if (entitiesToTeleport.contains(node)) {
+            return isSuccess;
+        }
+        entitiesToTeleport.add(node);
 
-        boolean success = true;
-        if (!passengerVehicles.containsKey(node)) {
-            for (Entity passenger : node.getPassengers()) {
-                success &= depthFirstSearch(node, passenger, true);
+        List<Entity> passengers = node.getPassengers();
+        for (Entity passenger : node.getPassengers()) {
+            isSuccess &= depthFirstSearch(passenger);
+        }
+        passengerVehicles.put(node, passengers);
+
+        List<LivingEntity> leashedEntities = new ArrayList<>();
+        for (LivingEntity leashed : nearbyLeashedEntities) {
+            if (leashed.getLeashHolder() == node) {
+                leashedEntities.add(leashed);
+                isSuccess &= depthFirstSearch(leashed);
             }
         }
-
-        if (node instanceof LivingEntity && !leashHolders.containsKey((LivingEntity) node)) {
-            for (LivingEntity leashed : nearbyLeashedEntities) {
-                if (leashed.getLeashHolder() == node) {
-                    success &= depthFirstSearch(node, leashed, false);
-                }
-            }
-        }
-
-        //Calling this at the end means we consider passengers before vehicles
-        if (!entitiesToTeleport.contains(node)) {
-            entitiesToTeleport.add(node);
-        }
-        if (nodeIsPassenger && parent != null) {
-            passengerVehicles.put(node, parent);
-        } else if (!nodeIsPassenger && node instanceof LivingEntity && parent != null) {
-            leashHolders.put((LivingEntity) node, parent);
-        }
-        return success;
+        leashHolders.put(node, leashedEntities);
+        return isSuccess;
     }
 
 }
