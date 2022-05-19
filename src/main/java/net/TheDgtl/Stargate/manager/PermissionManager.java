@@ -118,11 +118,13 @@ public class PermissionManager {
     }
     
     public boolean hasAccessPermission(RealPortal portal) {
+        Stargate.log(Level.CONFIG, "Checking access permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getAccessPermissions(portal, target);
         return hasPermission(relatedPerms);
     }
     
     public boolean hasCreatePermissions(RealPortal portal) {
+        Stargate.log(Level.CONFIG, "Checking create permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getCreatePermissions(portal, target);
         boolean hasPermission = hasPermission(relatedPerms);
         if (hasPermission && portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && canProcessMetaData && target instanceof Player) {
@@ -132,19 +134,22 @@ public class PermissionManager {
     }
     
     public boolean hasDestroyPermissions(RealPortal portal) {
+        Stargate.log(Level.CONFIG, "Checking destroy permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getDestroyPermissions(portal, target);
         return hasPermission(relatedPerms);
     }
     
     public boolean hasOpenPermissions(RealPortal entrance, Portal exit) {
+        Stargate.log(Level.CONFIG, "Checking open permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getOpenPermissions(entrance, exit, target);
         return hasPermission(relatedPerms);
     }
     
     public boolean hasTeleportPermissions(RealPortal entrance) {
+        Stargate.log(Level.CONFIG, "Checking teleport permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getTeleportPermissions(entrance, target);
         boolean hasPermission = hasPermission(relatedPerms);
-        if (hasPermission && ! entrance.isOpenFor(target) && target instanceof Player) {
+        if (hasPermission && !entrance.isOpenFor(target) && target instanceof Player) {
             return canFollow();
         }
         return hasPermission;
@@ -202,9 +207,11 @@ public class PermissionManager {
 
             if (existingGatesInNetwork >= maxGates) {
                 denyMessage = languageManager.getErrorMessage(TranslatableMessage.NET_FULL);
+                Stargate.log(Level.CONFIG, String.format(" Network is full, maxGates = %s",maxGates));
                 return true;
             }
         }
+        Stargate.log(Level.CONFIG, " Network is not full, maxGates = %s");
         return false;
     }
 
@@ -212,8 +219,15 @@ public class PermissionManager {
         String metaString = "can-followthrough";
         Player player = (Player) target;
         String group = metadataProvider.getPrimaryGroup(metaString, player);
-        return metadataProvider.getPlayerInfoBoolean(target.getWorld().getName(), player, metaString, true) &&
-                metadataProvider.getGroupInfoBoolean(target.getWorld().getName(), group, metaString, true);
+        boolean canFollowThrough = (metadataProvider.getPlayerInfoBoolean(target.getWorld().getName(), player,
+                metaString, true)
+                && metadataProvider.getGroupInfoBoolean(target.getWorld().getName(), group, metaString, true));
+
+        Stargate.log(Level.CONFIG, String.format(" Checking 'can-followthrough' meta. Returned %s", canFollowThrough));
+        if (!canFollowThrough) {
+            denyMessage = languageManager.getErrorMessage(TranslatableMessage.DENY);
+        }
+        return canFollowThrough;
     }
 
     /**

@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 
+import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -188,10 +190,13 @@ public class PortalPermissionHelper {
         String identifier = "sg.use";
         List<Permission> permList = new ArrayList<>();
         if (target instanceof Player) {
+            Stargate.log(Level.FINER, " Generating teleport permissions for a player");
             if (!entrance.isOpenFor(target)) {
+                Stargate.log(Level.FINER, " Adding the .follow constraint");
                 permList.add(Bukkit.getPluginManager().getPermission(identifier + ".follow"));
             }
             if (entrance.hasFlag(PortalFlag.PRIVATE) && !entrance.getOwnerUUID().equals(target.getUniqueId())) {
+                Stargate.log(Level.FINER, " Adding a bypass constraint for private portals");
                 permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
             }
         }
