@@ -24,7 +24,7 @@ public class PortalPermissionHelper {
      * Compile all permissions that by default will be used related to the portal flags for any action
      * @param portal                <p> The portal which location to check </p>
      * @param permissionIdentifier  <p> The beginning of every permission node generated </p>
-     * @return
+     * @return   <p> A list with related permissions </p>
      */
     static private List<Permission> compileFlagPerms(Portal portal, String permIdentifier) {
         PluginManager pm = Bukkit.getPluginManager();
@@ -115,7 +115,7 @@ public class PortalPermissionHelper {
      * @param portal        <p> The portal affected </p>
      * @param permIdentifier    <p> The beginning of every permission node generated </p>
      * @param activatorUUID     <p> UUID of the activator </p>
-     * @return
+     * @return  <p> A list with related permissions </p>
      */
     static private List<Permission> defaultPortalPermCompile(RealPortal portal, String permIdentifier, String activatorUUID) {
         List<Permission> permList = new ArrayList<>(compileFlagPerms(portal,permIdentifier));
@@ -125,6 +125,12 @@ public class PortalPermissionHelper {
         return permList;
     }
     
+    /**
+     * Generate access permissions
+     * @param portal    <p> The portal to access </p>
+     * @param actor     <p> The entity to get related permissions </p>
+     * @return  <p> A list with related permissions </p>
+     */
     static public List<Permission> getAccessPermissions(RealPortal portal, Entity actor){
         if(!(actor instanceof Player)) {
             return new ArrayList<>();
@@ -150,6 +156,12 @@ public class PortalPermissionHelper {
         return permsList;
     }
     
+    /**
+     * Generate create permissions
+     * @param portal    <p> The portal to create </p>
+     * @param actor     <p> The entity to get related permissions </p>
+     * @return  <p> A list with related permissions </p>
+     */
     static public List<Permission> getCreatePermissions(RealPortal portal, Entity actor){
         if(!(actor instanceof Player)) {
             return new ArrayList<>();
@@ -162,6 +174,12 @@ public class PortalPermissionHelper {
         return permList;
     }
     
+    /**
+     * Generate destroy permissions 
+     * @param portal    <p> The portal to destroy </p>
+     * @param actor     <p> The entity to get related permissions </p>
+     * @return  <p> A list with related permissions </p>
+     */
     static public List<Permission> getDestroyPermissions(RealPortal portal, Entity actor){
         if(!(actor instanceof Player)) {
             return new ArrayList<>();
@@ -174,6 +192,13 @@ public class PortalPermissionHelper {
         return permList;
     }
     
+    /**
+     * Generate open permissions
+     * @param entrance  <p> The portal to open </p>
+     * @param exit      <p> The destination portal </p>
+     * @param actor     <p> the entity to check permissions for </p>
+     * @return  <p> A list with related permissions </p>
+     */
     static public List<Permission> getOpenPermissions(RealPortal entrance, Portal exit, Entity actor) {
         if(!(actor instanceof Player)) {
             return new ArrayList<>();
@@ -186,9 +211,24 @@ public class PortalPermissionHelper {
         return permList;
     }
     
+    
+    /**
+     * Generate teleport permissions
+     * @param entrance <p> The portal to teleport from </p>
+     * @param target   <p> The entity to check permissions on </p>
+     * @return  <p> A list with related permissions </p>
+     */
     static public List<Permission> getTeleportPermissions(RealPortal entrance, Entity target){
         String identifier = "sg.use";
-        List<Permission> permList = new ArrayList<>();
+        
+        List<Permission> permList;
+        if(entrance.hasFlag(PortalFlag.ALWAYS_ON)) {
+            permList = defaultPortalPermCompile(entrance,identifier,target.getUniqueId().toString());
+        } else {
+            permList = new ArrayList<>();
+        }
+        
+        
         if (target instanceof Player) {
             Stargate.log(Level.FINER, " Generating teleport permissions for a player");
             if (!entrance.isOpenFor(target)) {

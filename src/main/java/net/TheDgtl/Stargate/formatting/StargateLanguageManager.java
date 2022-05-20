@@ -109,6 +109,7 @@ public class StargateLanguageManager implements LanguageManager {
     private String formatMessage(TranslatableMessage translatableMessage, boolean isError) {
         String prefix = (isError ? ChatColor.RED : ChatColor.GREEN) + getString(TranslatableMessage.PREFIX);
         String message = getString(translatableMessage).replaceAll("(&([a-f0-9]))", "\u00A7$2");
+        Stargate.log(Level.FINE, String.format("Formated TranslatableMessage '%s' to '%s'", translatableMessage.toString(), message));
         return prefix + ChatColor.WHITE + message;
     }
 

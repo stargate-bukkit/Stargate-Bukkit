@@ -118,12 +118,22 @@ public class PermissionManager {
         return true;
     }
     
+    /**
+     * Check if entity has permission to access portal
+     * @param portal <p> The portal to be accessed </p>
+     * @return       <p> If entity has permission </p>
+     */
     public boolean hasAccessPermission(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking access permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getAccessPermissions(portal, target);
         return hasPermission(relatedPerms);
     }
-    
+   
+    /**
+     * Check if entity has permission to create portal
+     * @param portal <p> The portal to be created </p>
+     * @return       <p> If entity has permission </p>
+     */
     public boolean hasCreatePermissions(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking create permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getCreatePermissions(portal, target);
@@ -134,18 +144,34 @@ public class PermissionManager {
         return hasPermission;
     }
     
+    /**
+     * Check if entity has permission to destroy portal
+     * @param portal    <p> The portal to be destroyed </p>
+     * @return          <p> If entity has permission </p>
+     */
     public boolean hasDestroyPermissions(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking destroy permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getDestroyPermissions(portal, target);
         return hasPermission(relatedPerms);
     }
     
+    /**
+     * Check if entity has permission to open portal
+     * @param entrance  <p> The portal the entity is opening </p>
+     * @param exit      <p> The destination portal </p>
+     * @return          <p> If entity has permission </p>
+     */
     public boolean hasOpenPermissions(RealPortal entrance, Portal exit) {
         Stargate.log(Level.CONFIG, "Checking open permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getOpenPermissions(entrance, exit, target);
         return hasPermission(relatedPerms);
     }
     
+    /**
+     * Check if the entity has permission to teleport through portal
+     * @param entrance <p> The portal the entity is entering </p>
+     * @return         <p> If entity has permission </p>
+     */
     public boolean hasTeleportPermissions(RealPortal entrance) {
         Stargate.log(Level.CONFIG, "Checking teleport permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getTeleportPermissions(entrance, target);
@@ -156,6 +182,11 @@ public class PermissionManager {
         return hasPermission;
     }
 
+    /**
+     * Determine a the message to send the player based out of the permission it was denied.
+     * @param permission <p> The permission node the entity was denied </p>
+     * @return
+     */
     public String determineTranslatableMessageFromPermission(Permission permission) {
         String permissionNode = permission.getName();
         if (permissionNode.contains("create") || permissionNode.contains("use")) {
@@ -216,6 +247,10 @@ public class PermissionManager {
         return false;
     }
 
+    /**
+     * Check the meta can-followthrough and determine if entity has permission
+     * @return <p> If the entity has the meta </p>
+     */
     private boolean canFollow() {
         String metaString = "can-followthrough";
         Player player = (Player) target;
