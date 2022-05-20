@@ -223,20 +223,17 @@ public abstract class AbstractPortal implements RealPortal {
             useCost = shouldCharge ? ConfigurationHelper.getInteger(ConfigurationOption.USE_COST) : 0;
         }
 
-        DraftTeleporter teleporter = new DraftTeleporter(getExit(), origin, portalFacing, entranceFace, useCost,
-                Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT),logger);
+        Teleporter teleporter = new Teleporter(getExit(), origin, portalFacing, entranceFace, useCost,
+                Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT), logger);
 
-        Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
-            teleporter.teleport(target);
-            return true;
-        }));
+        teleporter.teleport(target);
     }
 
     @Override
     public void doTeleport(Entity target) {
         Portal destination = getCurrentDestination();
         if (destination == null) {
-            DraftTeleporter teleporter = new DraftTeleporter(this.getExit(), this, gate.getFacing().getOppositeFace(), gate.getFacing(),
+            Teleporter teleporter = new Teleporter(this.getExit(), this, gate.getFacing().getOppositeFace(), gate.getFacing(),
                     0, Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID), logger);
             teleporter.teleport(target);
             return;

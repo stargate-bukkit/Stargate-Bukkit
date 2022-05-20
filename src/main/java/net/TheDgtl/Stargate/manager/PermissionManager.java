@@ -59,6 +59,7 @@ public class PermissionManager {
         this.target = target;
         canProcessMetaData = setupMetadataProvider();
         this.languageManager = languageManager;
+        Stargate.log(Level.CONFIG, "Checking permissions for entity " + target);
     }
 
     /**

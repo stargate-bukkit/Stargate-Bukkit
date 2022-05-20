@@ -20,6 +20,7 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,10 +38,11 @@ public class Teleporter {
     private final int cost;
     private final double rotation;
     private final BlockFace destinationFace;
+    boolean hasPermission;
     private String teleportMessage;
     private Set<Entity> teleportedEntities = new HashSet<>();
-    private final boolean checkPermissions;
     private final StargateLogger logger;
+    private List<LivingEntity> nearbyLeashed;
 
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
@@ -54,7 +56,7 @@ public class Teleporter {
      * @param checkPermissions <p>Whether to check, or totally ignore permissions</p>
      */
     public Teleporter(Location destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
-                      int cost, String teleportMessage, boolean checkPermissions, StargateLogger logger) {
+                      int cost, String teleportMessage, StargateLogger logger) {
         // Center the destination in the destination block
         this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
@@ -62,7 +64,6 @@ public class Teleporter {
         this.rotation = calculateAngleDifference(entranceFace, destinationFace);
         this.cost = cost;
         this.teleportMessage = teleportMessage;
-        this.checkPermissions = checkPermissions;
         this.logger = logger;
     }
 
@@ -76,15 +77,49 @@ public class Teleporter {
         while (target.getVehicle() != null) {
             target = target.getVehicle();
         }
+        final Entity baseEntity = target;
 
         double targetWidth = target.getWidth();
         Vector offset = destinationFace.getDirection();
         offset.multiply(Math.ceil((targetWidth + 1) / 2));
         destination.subtract(offset);
+        nearbyLeashed = getNearbyLeashedEntities(baseEntity);
+        
+        TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
+            //TODO: The access event should be called to allow add-ons cancelling or overriding the teleportation
+            PermissionManager permissionManager = new PermissionManager(anyEntity);
+            if (!hasPermission(anyEntity, permissionManager)) {
+                teleportMessage = permissionManager.getDenyMessage();
+                return false;
+            }
 
-        betterTeleport(target, rotation);
+            if (anyEntity instanceof Player && !Stargate.economyManager.has((Player) anyEntity, this.cost)) {
+                teleportMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
+                return false;
+            }
+            return true;
+        }, nearbyLeashed);
+        
+        hasPermission = dfs.depthFirstSearch(baseEntity);
+        
+        Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
+            betterTeleport(baseEntity, rotation);
+            return true;
+        }));
     }
 
+    private List<LivingEntity> getNearbyLeashedEntities(Entity origin) {
+        List<Entity> surroundingEntities = origin.getNearbyEntities(LOOK_FOR_LEASHED_RADIUS, LOOK_FOR_LEASHED_RADIUS,
+                LOOK_FOR_LEASHED_RADIUS);
+        List<LivingEntity> surroundingLeashedEntities = new ArrayList<>();
+        for (Entity entity : surroundingEntities) {
+            if (entity instanceof LivingEntity && ((LivingEntity) entity).isLeashed()) {
+                surroundingLeashedEntities.add((LivingEntity) entity);
+            }
+        }
+        return surroundingLeashedEntities;
+    }
+    
     /**
      * Teleports an entity with all its passengers and its vehicle
      *
@@ -113,7 +148,7 @@ public class Teleporter {
         }
 
         PermissionManager permissionManager = new PermissionManager(target);
-        if (!hasPermission(target, permissionManager) && checkPermissions) {
+        if (!hasPermission) {
             teleportMessage = permissionManager.getDenyMessage();
             /* For non math guys: teleport entity to the exit of the portal it entered. Also turn the entity around 
             half a rotation */
@@ -173,12 +208,8 @@ public class Teleporter {
         if (!ConfigurationHelper.getBoolean(ConfigurationOption.HANDLE_LEASHES)) {
             return;
         }
-
-        List<Entity> entities = holder.getNearbyEntities(LOOK_FOR_LEASHED_RADIUS, LOOK_FOR_LEASHED_RADIUS,
-                LOOK_FOR_LEASHED_RADIUS);
-        for (Entity entity : entities) {
-            if (entity instanceof LivingEntity && ((LivingEntity) entity).isLeashed()
-                    && ((LivingEntity) entity).getLeashHolder() == holder) {
+        for (LivingEntity entity : nearbyLeashed) {
+            if (entity.isLeashed() &&  entity.getLeashHolder() == holder) {
                 Supplier<Boolean> action = () -> {
                     ((LivingEntity) entity).setLeashHolder(null);
                     if (betterTeleport(entity, rotation)) {
