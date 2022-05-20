@@ -33,10 +33,10 @@ import java.util.logging.Level;
 public class Teleporter {
 
     private static final double LOOK_FOR_LEASHED_RADIUS = 15;
-    private final Location destination;
+    private Location destination;
     private final RealPortal origin;
     private final int cost;
-    private final double rotation;
+    private double rotation;
     private final BlockFace destinationFace;
     boolean hasPermission;
     private String teleportMessage;
@@ -79,10 +79,7 @@ public class Teleporter {
         }
         final Entity baseEntity = target;
 
-        double targetWidth = target.getWidth();
-        Vector offset = destinationFace.getDirection();
-        offset.multiply(Math.ceil((targetWidth + 1) / 2));
-        destination.subtract(offset);
+
         nearbyLeashed = getNearbyLeashedEntities(baseEntity);
         
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
@@ -101,11 +98,39 @@ public class Teleporter {
         }, nearbyLeashed);
         
         hasPermission = dfs.depthFirstSearch(baseEntity);
+        if(!hasPermission) {
+            rotation = Math.PI;
+            if(origin != null) {
+                destination = origin.getExit().add(new Vector(0.5, 0, 0.5));
+            } else {
+                destination = baseEntity.getLocation();
+            }
+        }
+
+        Vector offset = getOffset(baseEntity);
+        destination.subtract(offset);
         
         Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
             betterTeleport(baseEntity, rotation);
             return true;
         }));
+    }
+    
+    private Vector getOffset(Entity baseEntity) {
+        if(hasPermission) {
+            return getOffsettFromFacing(baseEntity,destinationFace);
+        }
+        if(origin != null) {
+            return getOffsettFromFacing(baseEntity,origin.getGate().getFacing().getOppositeFace());
+        }
+        return new Vector();
+    }
+    
+    private Vector getOffsettFromFacing(Entity baseEntity, BlockFace facing) {
+        Vector offset = facing.getDirection();
+        double targetWidth = baseEntity.getWidth();
+        offset.multiply(Math.ceil((targetWidth + 1) / 2));
+        return offset;
     }
 
     private List<LivingEntity> getNearbyLeashedEntities(Entity origin) {
@@ -145,22 +170,6 @@ public class Teleporter {
             destination.setDirection(destinationFace.getOppositeFace().getDirection());
             teleport(target, destination);
             return true;
-        }
-
-        PermissionManager permissionManager = new PermissionManager(target);
-        if (!hasPermission) {
-            teleportMessage = permissionManager.getDenyMessage();
-            /* For non math guys: teleport entity to the exit of the portal it entered. Also turn the entity around 
-            half a rotation */
-            teleport(target, origin.getExit(), Math.PI);
-            return false;
-        }
-
-        // Teleport player to the entrance portal if the player is unable to pay
-        if (target instanceof Player && !charge((Player) target)) {
-            teleportMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
-            teleport(target, origin.getExit(), Math.PI);
-            return false;
         }
 
         // To smooth the experienced for highly used portals, or entity teleportation
@@ -287,6 +296,7 @@ public class Teleporter {
     private void teleport(Entity target, Location exitPoint) {
         target.teleport(exitPoint);
         if (origin != null && !origin.hasFlag(PortalFlag.SILENT)) {
+            logger.logMessage(Level.FINE, "Sending player teleport message" + teleportMessage);
             target.sendMessage(teleportMessage);
         }
     }
