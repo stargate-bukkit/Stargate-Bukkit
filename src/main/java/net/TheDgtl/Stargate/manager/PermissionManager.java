@@ -9,9 +9,12 @@ import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import net.TheDgtl.Stargate.formatting.LanguageManager;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import net.TheDgtl.Stargate.property.BypassPermission;
+import net.TheDgtl.Stargate.util.PortalPermissionHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
@@ -56,6 +59,7 @@ public class PermissionManager {
         this.target = target;
         canProcessMetaData = setupMetadataProvider();
         this.languageManager = languageManager;
+        Stargate.log(Level.CONFIG, "Checking permissions for entity " + target);
     }
 
     /**
@@ -94,43 +98,95 @@ public class PermissionManager {
         metadataProvider = registeredServiceProvider.getProvider();
         return true;
     }
-
+    
     /**
-     * Checks if the entity is allowed to perform the given stargate event
-     *
-     * @param event <p>The event to check</p>
-     * @return <p>True if the entity is allowed to perform the event</p>
+     * Scrolls through a list of permissions and notes if 
+     * @param permissions
+     * @return
      */
-    public boolean hasPermission(StargateEvent event) {
-        List<Permission> relatedPermissions = event.getRelatedPerms();
-
-        if (target instanceof Player) {
-            Stargate.log(Level.CONFIG, "checking permission for player " + target.getName());
-        }
-
-        for (Permission relatedPermission : relatedPermissions) {
-            Stargate.log(Level.CONFIG, " checking permission " + ((relatedPermission != null) ?
-                    relatedPermission.getName() : "null"));
-            if (relatedPermission != null && !target.hasPermission(relatedPermission)) {
+    private boolean hasPermission(List<Permission> permissions) {
+        for (Permission relatedPermission : permissions) {
+            String message = " Checking permission '%s'. returned %s";
+            boolean hasPermission = relatedPermission == null || target.hasPermission(relatedPermission);
+            String permissionNode =  (relatedPermission != null) ? relatedPermission.getName() : "null";
+            Stargate.log(Level.CONFIG, String.format(message,permissionNode,hasPermission));
+            if (!hasPermission) {
                 denyMessage = determineTranslatableMessageFromPermission(relatedPermission);
                 return false;
             }
         }
-
-        if ((event instanceof StargateCreateEvent) && event.getPortal().hasFlag(PortalFlag.PERSONAL_NETWORK) &&
-                canProcessMetaData && target instanceof Player) {
-            return !isNetworkFull(event.getPortal().getNetwork());
-        }
-
-        if ((event instanceof StargatePortalEvent) && canProcessMetaData) {
-            StargatePortalEvent sPEvent = (StargatePortalEvent) event;
-            if (!sPEvent.getEntity().getUniqueId().equals(sPEvent.getPortal().getOwnerUUID()) && sPEvent.getEntity() instanceof Player) {
-                return canFollow();
-            }
-        }
         return true;
     }
+    
+    /**
+     * Check if entity has permission to access portal
+     * @param portal <p> The portal to be accessed </p>
+     * @return       <p> If entity has permission </p>
+     */
+    public boolean hasAccessPermission(RealPortal portal) {
+        Stargate.log(Level.CONFIG, "Checking access permissions");
+        List<Permission> relatedPerms = PortalPermissionHelper.getAccessPermissions(portal, target);
+        return hasPermission(relatedPerms);
+    }
+   
+    /**
+     * Check if entity has permission to create portal
+     * @param portal <p> The portal to be created </p>
+     * @return       <p> If entity has permission </p>
+     */
+    public boolean hasCreatePermissions(RealPortal portal) {
+        Stargate.log(Level.CONFIG, "Checking create permissions");
+        List<Permission> relatedPerms = PortalPermissionHelper.getCreatePermissions(portal, target);
+        boolean hasPermission = hasPermission(relatedPerms);
+        if (hasPermission && portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && canProcessMetaData && target instanceof Player) {
+            return !isNetworkFull(portal.getNetwork());
+        }
+        return hasPermission;
+    }
+    
+    /**
+     * Check if entity has permission to destroy portal
+     * @param portal    <p> The portal to be destroyed </p>
+     * @return          <p> If entity has permission </p>
+     */
+    public boolean hasDestroyPermissions(RealPortal portal) {
+        Stargate.log(Level.CONFIG, "Checking destroy permissions");
+        List<Permission> relatedPerms = PortalPermissionHelper.getDestroyPermissions(portal, target);
+        return hasPermission(relatedPerms);
+    }
+    
+    /**
+     * Check if entity has permission to open portal
+     * @param entrance  <p> The portal the entity is opening </p>
+     * @param exit      <p> The destination portal </p>
+     * @return          <p> If entity has permission </p>
+     */
+    public boolean hasOpenPermissions(RealPortal entrance, Portal exit) {
+        Stargate.log(Level.CONFIG, "Checking open permissions");
+        List<Permission> relatedPerms = PortalPermissionHelper.getOpenPermissions(entrance, exit, target);
+        return hasPermission(relatedPerms);
+    }
+    
+    /**
+     * Check if the entity has permission to teleport through portal
+     * @param entrance <p> The portal the entity is entering </p>
+     * @return         <p> If entity has permission </p>
+     */
+    public boolean hasTeleportPermissions(RealPortal entrance) {
+        Stargate.log(Level.CONFIG, "Checking teleport permissions");
+        List<Permission> relatedPerms = PortalPermissionHelper.getTeleportPermissions(entrance, target);
+        boolean hasPermission = hasPermission(relatedPerms);
+        if (hasPermission && !entrance.isOpenFor(target) && target instanceof Player) {
+            return canFollow();
+        }
+        return hasPermission;
+    }
 
+    /**
+     * Determine a the message to send the player based out of the permission it was denied.
+     * @param permission <p> The permission node the entity was denied </p>
+     * @return
+     */
     public String determineTranslatableMessageFromPermission(Permission permission) {
         String permissionNode = permission.getName();
         if (permissionNode.contains("create") || permissionNode.contains("use")) {
@@ -183,18 +239,31 @@ public class PermissionManager {
 
             if (existingGatesInNetwork >= maxGates) {
                 denyMessage = languageManager.getErrorMessage(TranslatableMessage.NET_FULL);
+                Stargate.log(Level.CONFIG, String.format(" Network is full, maxGates = %s",maxGates));
                 return true;
             }
         }
+        Stargate.log(Level.CONFIG, " Network is not full, maxGates = %s");
         return false;
     }
 
+    /**
+     * Check the meta can-followthrough and determine if entity has permission
+     * @return <p> If the entity has the meta </p>
+     */
     private boolean canFollow() {
         String metaString = "can-followthrough";
         Player player = (Player) target;
         String group = metadataProvider.getPrimaryGroup(metaString, player);
-        return metadataProvider.getPlayerInfoBoolean(target.getWorld().getName(), player, metaString, true) &&
-                metadataProvider.getGroupInfoBoolean(target.getWorld().getName(), group, metaString, true);
+        boolean canFollowThrough = (metadataProvider.getPlayerInfoBoolean(target.getWorld().getName(), player,
+                metaString, true)
+                && metadataProvider.getGroupInfoBoolean(target.getWorld().getName(), group, metaString, true));
+
+        Stargate.log(Level.CONFIG, String.format(" Checking 'can-followthrough' meta. Returned %s", canFollowThrough));
+        if (!canFollowThrough) {
+            denyMessage = languageManager.getErrorMessage(TranslatableMessage.DENY);
+        }
+        return canFollowThrough;
     }
 
     /**

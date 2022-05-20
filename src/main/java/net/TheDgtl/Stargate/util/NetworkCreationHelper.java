@@ -47,14 +47,18 @@ public class NetworkCreationHelper {
                 return initialNetworkName;
             }
         }
+        
+        if(flags.contains(PortalFlag.PERSONAL_NETWORK)) {
+            if(initialNetworkName.trim().isEmpty()) {
+                return HighlightingStyle.PERSONAL.getHighlightedName(player.getName());
+            }
+            return HighlightingStyle.PERSONAL.getHighlightedName(initialNetworkName);
+        }
         if(initialNetworkName.trim().isEmpty()) {
             return ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
         }
         if(flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             return HighlightingStyle.BUNGEE.getHighlightedName(initialNetworkName);
-        }
-        if(flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            return HighlightingStyle.PERSONAL.getHighlightedName(initialNetworkName);
         }
         if(registry.getNetwork(initialNetworkName, false) != null) {
             return initialNetworkName;

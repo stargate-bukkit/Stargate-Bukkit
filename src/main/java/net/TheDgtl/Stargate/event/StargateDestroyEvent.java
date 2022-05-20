@@ -101,14 +101,4 @@ public class StargateDestroyEvent extends StargateEvent {
         this.cost = cost;
     }
 
-    @Override
-    public List<Permission> getRelatedPerms() {
-        String identifier = "sg.destroy";
-        List<Permission> permList = super.defaultPermCompile(identifier, player.getUniqueId().toString());
-        if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !player.getUniqueId().equals(portal.getOwnerUUID())) {
-            permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
-        }
-        return permList;
-    }
-
 }

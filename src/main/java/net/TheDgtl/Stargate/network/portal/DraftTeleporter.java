@@ -18,9 +18,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
@@ -68,11 +72,11 @@ public class DraftTeleporter {
      * @param target <p>The entity that is the target of this teleportation</p>
      */
     public void teleport(Entity target) {
-        Entity baseEntity = target;
-        while (baseEntity.getVehicle() != null) {
-            baseEntity = baseEntity.getVehicle();
+        Entity testForBaseEntity = target;
+        while (testForBaseEntity.getVehicle() != null) {
+            testForBaseEntity = testForBaseEntity.getVehicle();
         }
-
+        final Entity baseEntity = testForBaseEntity;
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
             //TODO: The access event should be called to allow add-ons cancelling or overriding the teleportation
             PermissionManager permissionManager = new PermissionManager(anyEntity);
@@ -88,7 +92,7 @@ public class DraftTeleporter {
             return true;
         }, getNearbyLeashedEntities(baseEntity));
 
-        boolean shouldProceed = dfs.depthFirstSearch(null, baseEntity, true);
+        boolean shouldProceed = dfs.depthFirstSearch(baseEntity);
         
         logger.logMessage(Level.FINEST, "Entities teleporting: " + dfs.getEntitiesToTeleport());
         logger.logMessage(Level.FINEST, "Passenger vehicles: " + dfs.getPassengerVehicles());
@@ -103,7 +107,7 @@ public class DraftTeleporter {
         modifiedDestination.getChunk().load();
         Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
             doTeleportation(dfs.getEntitiesToTeleport(), modifiedDestination, shouldProceed);
-            stackEntities(dfs.getEntitiesToTeleport(), dfs.getLeashHolders(), dfs.getPassengerVehicles());
+            stackEntities(baseEntity, dfs.getLeashHolders(), dfs.getPassengerVehicles(), new HashSet<>());
             return true;
         }));
     }
@@ -115,37 +119,29 @@ public class DraftTeleporter {
         return offset;
     }
 
-    private void stackEntities(List<Entity> entitiesToTeleport, Map<LivingEntity, Entity> leashHolders,
-                               Map<Entity, Entity> passengerVehicles) {
-        for (Entity entity : entitiesToTeleport) {
-            Supplier<Boolean> action = () -> {
-                //Adds the passenger to its previous vehicle if necessary
-                if (passengerVehicles.containsKey(entity)) {
-                    Entity vehicle = passengerVehicles.get(entity);
-                    logger.logMessage(Level.FINEST, "Adding passenger " + entity + " to vehicle " + vehicle);
-                    vehicle.addPassenger(entity);
-                }
-                
-                //Adds the leash holder to the entity if necessary
-                if (entity instanceof LivingEntity) {
-                    LivingEntity livingEntity = (LivingEntity) entity;
-                    if (leashHolders.containsKey(livingEntity)) {
-                        Entity holder = leashHolders.get(livingEntity);
-                        logger.logMessage(Level.FINEST, "Adding leash holder " + holder + " to entity " + entity);
-                        livingEntity.setLeashHolder(holder);
-                    }
-                }
-                return true;
-            };
-            if (entity instanceof Player) {
-                Stargate.syncTickPopulator.addAction(new DelayedAction(6, action));
-            } else {
-                Stargate.syncTickPopulator.addAction(new DelayedAction(1, action));
-            }
+    private void stackEntities(Entity parrent, Map<Entity, List<LivingEntity>> leashHolders,
+                               Map<Entity, List<Entity>> passengerVehicles, Set<Entity> alreadyDealtWith) {
+        
+        if(alreadyDealtWith.contains(parrent)) {
+            return;
         }
+        alreadyDealtWith.add(parrent);
+        
+        Supplier<Boolean> action = () -> {
+            for (Entity entity : passengerVehicles.get(parrent)) {
+                parrent.addPassenger(entity);
+                stackEntities(entity, leashHolders, passengerVehicles, alreadyDealtWith);
+            }
+            for (LivingEntity entity : leashHolders.get(parrent)) {
+                entity.setLeashHolder(parrent);
+                stackEntities(entity, leashHolders, passengerVehicles, alreadyDealtWith);
+            }
+            return true;
+        };
+        Stargate.syncTickPopulator.addAction(new DelayedAction(1, action));
     }
 
-    private void unStackEntities(List<Entity> entitiesToTeleport) {
+    private void unStackEntities(Set<Entity> entitiesToTeleport) {
         for (Entity entity : entitiesToTeleport) {
             entity.leaveVehicle();
             if (entity instanceof LivingEntity && ((LivingEntity) entity).isLeashed()) {
@@ -164,7 +160,7 @@ public class DraftTeleporter {
         }
     }
 
-    private void doTeleportation(List<Entity> entitiesToTeleport, Location destination, boolean shouldProceed) {
+    private void doTeleportation(Set<Entity> entitiesToTeleport, Location destination, boolean shouldProceed) {
         double rotation;
         logger.logMessage(Level.FINE, String.format("Teleporting entities to destination %s", destination.toString()));
         if (!shouldProceed && origin != null) {
@@ -210,7 +206,7 @@ public class DraftTeleporter {
         Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(ConfigurationHelper.getDouble(
                 ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER));
         if (target instanceof PoweredMinecart) {
-            //A workaround for powered minecarts
+          //A workaround for powered minecarts
             PoweredMinecart poweredMinecart = (PoweredMinecart) target;
             int fuel = poweredMinecart.getFuel();
             poweredMinecart.setFuel(0);
@@ -219,6 +215,17 @@ public class DraftTeleporter {
                 teleport(poweredMinecart, exit);
                 poweredMinecart.setFuel(fuel);
                 poweredMinecart.setVelocity(targetVelocity);
+                try {
+                    Method setPushX = PoweredMinecart.class.getMethod("setPushX", double.class);
+                    Method setPushZ = PoweredMinecart.class.getMethod("setPushZ", double.class);
+                    setPushX.invoke(poweredMinecart, -location.getDirection().getBlockX());
+                    setPushZ.invoke(poweredMinecart, -location.getDirection().getBlockZ());
+
+                } catch (NoSuchMethodException ignored) {
+                    logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %s -- use Paper 1.18.2+ for this feature.", location.toString()));
+                } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
             }, 1);
         } else {
             teleport(target, exit);
@@ -296,7 +303,7 @@ public class DraftTeleporter {
     private boolean hasPermission(Entity target, PermissionManager permissionManager) {
         StargatePortalEvent event = new StargatePortalEvent(target, origin);
         Bukkit.getPluginManager().callEvent(event);
-        return (permissionManager.hasPermission(event)) && !event.isCancelled();
+        return (permissionManager.hasTeleportPermissions(origin)) && !event.isCancelled();
     }
 
 }

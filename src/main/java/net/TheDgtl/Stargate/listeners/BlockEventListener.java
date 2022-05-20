@@ -17,6 +17,7 @@ import net.TheDgtl.Stargate.network.LocalNetwork;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import net.TheDgtl.Stargate.property.BypassPermission;
 import net.TheDgtl.Stargate.util.NetworkCreationHelper;
@@ -99,7 +100,7 @@ public class BlockEventListener implements Listener {
         StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, event.getPlayer(), cost);
         Bukkit.getPluginManager().callEvent(stargateDestroyEvent);
         PermissionManager permissionManager = new PermissionManager(event.getPlayer());
-        if (permissionManager.hasPermission(stargateDestroyEvent) && !stargateDestroyEvent.isCancelled()) {
+        if (permissionManager.hasDestroyPermissions((RealPortal)portal) && !stargateDestroyEvent.isCancelled()) {
             /*
              * If setting charge free destination is false, destination portal is PortalFlag.Free and portal is of Fixed type
              * or if player has override cost permission, do not collect money
@@ -237,12 +238,12 @@ public class BlockEventListener implements Listener {
 
         UUID ownerUUID = getOwnerUUID(selectedNetwork,player,flags);
         Gate gate = PortalCreationHelper.createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON), Stargate.getInstance());
-        Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance());
+        RealPortal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance());
         StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, cost);
 
         Bukkit.getPluginManager().callEvent(stargateCreateEvent);
 
-        boolean hasPermission = permissionManager.hasPermission(stargateCreateEvent);
+        boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         Stargate.log(Level.CONFIG, " player has perm = " + hasPermission);
 
         if (errorMessage != null) {

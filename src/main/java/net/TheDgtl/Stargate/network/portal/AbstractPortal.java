@@ -161,6 +161,7 @@ public abstract class AbstractPortal implements RealPortal {
         if (!isOpen() || (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose)) {
             return;
         }
+        logger.logMessage(Level.FINE, "Closing the portal");
         getGate().close();
         drawControlMechanisms();
         openFor = null;
@@ -168,6 +169,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public boolean isOpenFor(Entity target) {
+        logger.logMessage(Level.FINE, String.format("isOpenForUUID = %s", (openFor == null)?"null":openFor.toString()));
         return ((openFor == null) || (target.getUniqueId() == openFor));
     }
 
@@ -222,12 +224,9 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         Teleporter teleporter = new Teleporter(getExit(), origin, portalFacing, entranceFace, useCost,
-                Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT), true, logger);
+                Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT), logger);
 
-        Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
-            teleporter.teleport(target);
-            return true;
-        }));
+        teleporter.teleport(target);
     }
 
     @Override
@@ -235,7 +234,7 @@ public abstract class AbstractPortal implements RealPortal {
         Portal destination = getCurrentDestination();
         if (destination == null) {
             Teleporter teleporter = new Teleporter(this.getExit(), this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID), false, logger);
+                    0, Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID), logger);
             teleporter.teleport(target);
             return;
         }
@@ -286,7 +285,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
         PermissionManager permissionManager = new PermissionManager(player);
         StargateOpenEvent oEvent = new StargateOpenEvent(player, this, false);
-        if (!permissionManager.hasPermission(oEvent)) {
+        if (!permissionManager.hasOpenPermissions(this, destination)) {
             event.getPlayer().sendMessage(permissionManager.getDenyMessage());
             return;
         }
