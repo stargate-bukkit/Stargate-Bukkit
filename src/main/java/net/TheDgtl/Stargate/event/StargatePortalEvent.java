@@ -1,112 +1,108 @@
-/*
- * Stargate - A portal plugin for Bukkit
- * Copyright (C) 2011, 2012 Steven "Drakia" Scott <Contact@TheDgtl.net>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package net.TheDgtl.Stargate.event;
 
 import net.TheDgtl.Stargate.network.portal.Portal;
-import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import net.TheDgtl.Stargate.network.portal.RealPortal;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 /**
- * Gets thrown whenever a player teleports. Should honestly be called StargateTeleportEvent, but unfortunately
- * is not because of legacy.
+ * This event should be called whenever a non-player teleports through a stargate
  *
- * @author Thorin
+ * <p>This event can be used to overwrite the location the entity is teleported to.</p>
  */
+@SuppressWarnings("unused")
 public class StargatePortalEvent extends StargateEvent {
-    /*
-     * An event which occurs every time players teleport?
-     */
-    private final Entity target;
+
+    private static final HandlerList handlers = new HandlerList();
+    final Entity travellingEntity;
     private final Portal destination;
     private Location exit;
 
-    private static final HandlerList handlers = new HandlerList();
+    /**
+     * Instantiates a new stargate portal event
+     *
+     * @param travellingEntity <p>The entity travelling through a portal</p>
+     * @param portal           <p>The portal the entity entered from</p>
+     * @param destination      <p>The destination the entity should exit from</p>
+     * @param exit             <p>The exit location of the destination portal the entity will be teleported to</p>
+     */
+    public StargatePortalEvent(@NotNull Entity travellingEntity, @NotNull Portal portal, Portal destination,
+                               @NotNull Location exit) {
+        super(portal);
 
-    @NotNull
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    @NotNull
-    @SuppressWarnings("unused")
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    public StargatePortalEvent(@NotNull Entity target, @NotNull Portal portal) {
-        super(Objects.requireNonNull(portal));
-
-        this.target = Objects.requireNonNull(target);
-        this.destination = portal.getDestination();
-        if (destination instanceof RealPortal) {
-            this.exit = ((RealPortal) destination).getExit();
-        }
+        this.travellingEntity = travellingEntity;
+        this.destination = destination;
+        this.exit = exit;
     }
 
     /**
-     * @return player that went through the gate
+     * Return the non-player entity teleporting
+     *
+     * @return <p>The non-player teleporting</p>
      */
-    @Deprecated
-    public Player getPlayer() {
-        if (target instanceof Player) {
-            return (Player) target;
-        }
-        return null;
-    }
-
     public Entity getEntity() {
-        return target;
+        return travellingEntity;
     }
 
     /**
-     * @return destination gate
+     * Return the destination portal
+     *
+     * @return <p>The destination portal</p>
      */
-    @NotNull
     public Portal getDestination() {
         return destination;
     }
 
     /**
-     * @return Location players exit point
+     * Return the location of the players exit point
+     *
+     * @return <p>Location of the exit point</p>
      */
     public Location getExit() {
-        if (destination instanceof RealPortal) {
-            return ((RealPortal) destination).getExit();
-        }
-        return null;
+        return exit;
     }
 
     /**
-     * @param exitLocation
+     * Set the location of the entity's exit point
+     *
+     * @param location <p>The new location of the entity's exit point</p>
      */
-    public void setExit(@NotNull Location exitLocation) {
-        //TODO: Exit variable is never used. Is this a bug?
-        this.exit = Objects.requireNonNull(exitLocation);
+    public void setExit(@NotNull Location location) {
+        this.exit = location;
     }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
+    @NotNull
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
 }
+
+/*
+@Override
+    public List<Permission> getRelatedPerms() {
+        String identifier = "sg.use";
+        List<Permission> permList = new ArrayList<>();
+        if (target instanceof Player) {
+            if (!portal.isOpenFor(target)) {
+                permList.add(Bukkit.getPluginManager().getPermission(identifier + ".follow"));
+            }
+            if (portal.hasFlag(PortalFlag.PRIVATE) && !portal.getOwnerUUID().equals(target.getUniqueId())) {
+                permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
+            }
+        }
+
+        return permList;
+    }
+ */

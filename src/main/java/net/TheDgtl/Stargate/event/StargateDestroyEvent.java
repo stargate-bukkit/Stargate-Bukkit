@@ -1,104 +1,119 @@
-/*
- * Stargate - A portal plugin for Bukkit
- * Copyright (C) 2011, 2012 Steven "Drakia" Scott <Contact@TheDgtl.net>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package net.TheDgtl.Stargate.event;
 
 import net.TheDgtl.Stargate.network.portal.Portal;
-import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Objects;
-
 /**
- * Stargate - A portal plugin for Bukkit
- * Copyright (C) 2011, 2012 Steven "Drakia" Scott <Contact@TheDgtl.net>
- * <p>
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * <p>
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * <p>
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This event should be called whenever a stargate is destroyed
+ *
+ * <p>This event can be used to deny or change the cost of a stargate destruction.</p>
  */
+@SuppressWarnings("unused")
+public class StargateDestroyEvent extends StargateEntityEvent {
 
-public class StargateDestroyEvent extends StargateEvent {
-    // old name = StargateDestroyEvent
-    private final Player player;
+    private static final HandlerList handlers = new HandlerList();
     private boolean deny;
     private String denyReason;
     private int cost;
 
-    private static final HandlerList handlers = new HandlerList();
-
-    @NotNull
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    public StargateDestroyEvent(@NotNull Portal portal, @NotNull Player player, int cost) {
-        super(Objects.requireNonNull(portal));
-        this.player = Objects.requireNonNull(player);
+    /**
+     * Instantiates a new Stargate Destroy Event
+     *
+     * @param portal  <p>The destroyed portal</p>
+     * @param player  <p>The player destroying the portal</p>
+     * @param deny    <p>Whether the event should be denied (cancelled)</p>
+     * @param denyMsg <p>The message to display if the event is denied</p>
+     * @param cost    <p>The cost of destroying the portal</p>
+     */
+    public StargateDestroyEvent(@NotNull Portal portal, @NotNull Player player, boolean deny, @NotNull String denyMsg,
+                                int cost) {
+        super(portal, player);
+        this.deny = deny;
+        this.denyReason = denyMsg;
         this.cost = cost;
     }
 
-    @NotNull
-    public Player getPlayer() {
-        return player;
-    }
-
+    /**
+     * Gets whether this event should be denied
+     *
+     * @return <p>Whether this event should be denied</p>
+     */
     public boolean getDeny() {
         return deny;
     }
 
+    /**
+     * Sets whether this event should be denied
+     *
+     * @param deny <p>Whether this event should be denied</p>
+     */
     public void setDeny(boolean deny) {
         this.deny = deny;
     }
 
-    @NotNull
+    /**
+     * Gets the reason the event was denied
+     *
+     * @return <p>The reason the event was denied</p>
+     */
     public String getDenyReason() {
         return denyReason;
     }
 
+    /**
+     * Sets the reason the event was denied
+     *
+     * @param denyReason <p>The reason the event was denied</p>
+     */
     public void setDenyReason(@NotNull String denyReason) {
-        this.denyReason = Objects.requireNonNull(denyReason);
+        this.denyReason = denyReason;
     }
 
+    /**
+     * Gets the cost of destroying the portal
+     *
+     * @return <p>The cost of destroying the portal</p>
+     */
     public int getCost() {
         return cost;
     }
 
+    /**
+     * Sets the cost of destroying the portal
+     *
+     * @param cost <p>The cost of destroying the portal</p>
+     */
     public void setCost(int cost) {
         this.cost = cost;
     }
 
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @NotNull
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
 }
+
+/*
+@Override
+    public List<Permission> getRelatedPerms() {
+        String identifier = "sg.destroy";
+        List<Permission> permList = super.defaultPermCompile(identifier, player.getUniqueId().toString());
+        if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !player.getUniqueId().equals(portal.getOwnerUUID())) {
+            permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
+        }
+        return permList;
+    }
+ */

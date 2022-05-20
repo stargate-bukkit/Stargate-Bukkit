@@ -6,6 +6,7 @@ import net.TheDgtl.Stargate.action.DelayedAction;
 import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
+import net.TheDgtl.Stargate.event.StargateAccessEvent;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
@@ -238,6 +239,9 @@ public abstract class AbstractPortal implements RealPortal {
             teleporter.teleport(target);
             return;
         }
+
+        //TODO: Implement the access event properly
+        StargateAccessEvent accessEvent = new StargateAccessEvent(target, this, deny, denyReason);
 
         destination.teleportHere(target, this);
         destination.close(false);

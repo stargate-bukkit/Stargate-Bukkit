@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.listeners;
+package net.TheDgtl.Stargate.listener;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.action.ConditionalDelayedAction;
@@ -79,8 +79,8 @@ public class PlayerEventListener implements Listener {
 
         if (Tag.WALL_SIGNS.isTagged(blockMaterial)) {
             if (dyePortalSignText(event, portal)) {
-                event.setUseInteractedBlock(Event.Result.ALLOW);
                 portal.setSignColor(ColorConverter.getDyeColorFromMaterial(event.getMaterial()));
+                event.setUseInteractedBlock(Event.Result.ALLOW);
                 return;
             }
             event.setUseInteractedBlock(Event.Result.DENY);
@@ -107,10 +107,12 @@ public class PlayerEventListener implements Listener {
      * @param portal <p>The portal whose sign to apply dye to<p>
      * @return <p>True if the dye should be applied</p>
      */
-    private boolean dyePortalSignText(PlayerInteractEvent event, RealPortal portal) {
+    private boolean dyePortalSignText(PlayerInteractEvent event, Portal portal) {
         ItemStack item = event.getItem();
         PermissionManager permissionManager = new PermissionManager(event.getPlayer());
-        return itemIsDye(item) && permissionManager.hasCreatePermissions(portal);
+        StargateCreateEvent colorSignPermission = new StargateCreateEvent(event.getPlayer(), portal, new String[]{""},
+                0);
+        return itemIsDye(item) && permissionManager.hasPermission(colorSignPermission);
     }
 
     /**
@@ -124,7 +126,7 @@ public class PlayerEventListener implements Listener {
             return false;
         }
         String itemName = item.getType().toString();
-        return (itemName.contains("DYE"));
+        return (itemName.contains("DYE") || itemName.contains("GLOW_INK_SAC"));
     }
 
     /**
@@ -134,7 +136,7 @@ public class PlayerEventListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE) && ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
+        if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             return;
         }
 

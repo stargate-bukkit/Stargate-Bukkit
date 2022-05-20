@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.TheDgtl.Stargate.listeners;
+package net.TheDgtl.Stargate.listener;
 
 
 import com.google.gson.JsonObject;
@@ -89,13 +89,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         try {
             DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
             String subChannel = in.readUTF();
-            //Ignore any unknown sub-channels to prevent an exception caused by converting null into ordinal
-            PluginChannel subPluginChannel = PluginChannel.parse(subChannel);
-            if (subPluginChannel == null) {
-                Stargate.log(Level.FINEST, "Received unknown message on unknown sub-channel: " + subChannel);
-                return;
-            }
-            switch (subPluginChannel) {
+            switch (PluginChannel.parse(subChannel)) {
                 case GET_SERVER:
                     Stargate.serverName = in.readUTF();
                     Stargate.knowsServerName = !Stargate.serverName.isEmpty();
@@ -118,7 +112,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     Stargate.log(Level.FINEST, "Received unknown message with a sub-channel: " + subChannel);
                     break;
             }
-        } catch (IOException | NameErrorException ex) {
+        } catch (IOException ex) {
             Stargate.log(Level.WARNING, "[Stargate] Error receiving BungeeCord message");
             ex.printStackTrace();
         }
@@ -156,9 +150,8 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      * Updates a network according to a "network changed" message
      *
      * @param message <p>The network change message to parse and handle</p>
-     * @throws NameErrorException <p>If the specified network name cannot be used</p>
      */
-    private void updateNetwork(String message) throws NameErrorException {
+    private void updateNetwork(String message) {
         JsonParser parser = new JsonParser();
         Stargate.log(Level.FINEST, message);
         JsonObject json = (JsonObject) parser.parse(message);
