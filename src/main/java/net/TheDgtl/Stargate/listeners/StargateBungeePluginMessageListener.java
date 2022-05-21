@@ -183,8 +183,10 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         switch (requestType) {
             case PORTAL_ADD:
                 targetNetwork.addPortal(portal, false);
+                Stargate.log(Level.FINE, String.format("Adding virtual portal %s in interserver network %s", portalName, network));
                 break;
             case PORTAL_REMOVE:
+                Stargate.log(Level.FINE, String.format("Removing virtual portal %s in interserver network %s", portalName, network));
                 targetNetwork.removePortal(portal, false);
                 break;
         }
