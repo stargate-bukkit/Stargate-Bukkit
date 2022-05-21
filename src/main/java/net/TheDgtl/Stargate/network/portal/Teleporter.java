@@ -339,6 +339,10 @@ public class Teleporter {
      * @return <p>True if the entity has the required permissions for performing the teleportation</p>
      */
     private boolean hasPermission(Entity target, PermissionManager permissionManager) {
+        if(origin == null) {
+           // TODO origin == null means interserver teleportation. Make a permission check for this or something?
+           return true;
+        } 
         StargatePortalEvent event = new StargatePortalEvent(target, origin);
         Bukkit.getPluginManager().callEvent(event);
         return (permissionManager.hasTeleportPermissions(origin) && !event.isCancelled());
