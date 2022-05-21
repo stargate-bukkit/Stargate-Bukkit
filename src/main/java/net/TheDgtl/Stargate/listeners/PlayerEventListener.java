@@ -134,7 +134,7 @@ public class PlayerEventListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE) && ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
+        if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE) || !ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
             return;
         }
 
