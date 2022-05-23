@@ -34,18 +34,18 @@ public class StargateAccessEvent extends StargateEntityEvent {
     }
 
     /**
-     * Gets whether the player should be denied access
+     * Gets whether the entity should be denied access
      *
-     * @return <p>Whether the player should be denied access</p>
+     * @return <p>Whether the entity should be denied access</p>
      */
     public boolean getDeny() {
         return this.deny;
     }
 
     /**
-     * Sets whether to deny access to the player
+     * Sets whether to deny access to the entity
      *
-     * @param deny <p>Whether to deny access to the player</p>
+     * @param deny <p>Whether to deny access to the entity</p>
      */
     public void setDeny(boolean deny) {
         this.deny = deny;

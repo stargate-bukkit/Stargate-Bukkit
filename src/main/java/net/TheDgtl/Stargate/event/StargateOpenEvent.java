@@ -63,13 +63,3 @@ public class StargateOpenEvent extends StargateEntityEvent {
     }
 
 }
-
-/*
-@Override
-    public List<Permission> getRelatedPerms() {
-        String identifier = "sg.use";
-        List<Permission> permList = super.defaultPermCompile(identifier, player.getUniqueId().toString());
-        permList.add(super.compileWorldPerm(identifier, portal));
-        return permList;
-    }
- */

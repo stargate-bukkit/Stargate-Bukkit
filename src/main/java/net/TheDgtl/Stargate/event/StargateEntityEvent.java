@@ -19,6 +19,7 @@ public abstract class StargateEntityEvent extends StargateEvent {
      */
     StargateEntityEvent(Portal portal, Entity travellingEntity) {
         super(portal);
+        
         this.travellingEntity = travellingEntity;
     }
 

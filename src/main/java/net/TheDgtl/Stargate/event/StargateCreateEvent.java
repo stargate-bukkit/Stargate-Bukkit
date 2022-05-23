@@ -32,6 +32,7 @@ public class StargateCreateEvent extends StargateEntityEvent {
     public StargateCreateEvent(@NotNull Player player, @NotNull Portal portal, @NotNull String[] lines, boolean deny,
                                @NotNull String denyReason, int cost) {
         super(portal, player);
+        
         this.lines = lines;
         this.deny = deny;
         this.denyReason = denyReason;
@@ -102,8 +103,7 @@ public class StargateCreateEvent extends StargateEntityEvent {
     public void setCost(int cost) {
         this.cost = cost;
     }
-
-}
+    
     /**
      * Gets a handler-list containing all event handlers
      *

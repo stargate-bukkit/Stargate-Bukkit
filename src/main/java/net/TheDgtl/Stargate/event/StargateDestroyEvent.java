@@ -30,6 +30,8 @@ public class StargateDestroyEvent extends StargateEntityEvent {
     public StargateDestroyEvent(@NotNull Portal portal, @NotNull Player player, boolean deny, @NotNull String denyMsg,
                                 int cost) {
         super(portal, player);
+        
+        //TODO: Perhaps alter or add an event for a stargate destroyed by an explosion?
         this.deny = deny;
         this.denyReason = denyMsg;
         this.cost = cost;
@@ -105,15 +107,3 @@ public class StargateDestroyEvent extends StargateEntityEvent {
     }
 
 }
-
-/*
-@Override
-    public List<Permission> getRelatedPerms() {
-        String identifier = "sg.destroy";
-        List<Permission> permList = super.defaultPermCompile(identifier, player.getUniqueId().toString());
-        if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !player.getUniqueId().equals(portal.getOwnerUUID())) {
-            permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
-        }
-        return permList;
-    }
- */

@@ -37,16 +37,16 @@ public class StargatePortalEvent extends StargateEvent {
     }
 
     /**
-     * Return the non-player entity teleporting
+     * Gets the teleported entity
      *
-     * @return <p>The non-player teleporting</p>
+     * @return <p>The teleported entity</p>
      */
     public Entity getEntity() {
         return travellingEntity;
     }
 
     /**
-     * Return the destination portal
+     * Gets the destination portal
      *
      * @return <p>The destination portal</p>
      */
@@ -55,18 +55,18 @@ public class StargatePortalEvent extends StargateEvent {
     }
 
     /**
-     * Return the location of the players exit point
+     * Gets the location the entity is about to be teleported to
      *
-     * @return <p>Location of the exit point</p>
+     * @return <p>The location the entity should exit from the portal</p>
      */
     public Location getExit() {
         return exit;
     }
 
     /**
-     * Set the location of the entity's exit point
+     * Set the location the entity should exit from
      *
-     * @param location <p>The new location of the entity's exit point</p>
+     * @param location <p>The new location the entity should exit from.</p>
      */
     public void setExit(@NotNull Location location) {
         this.exit = location;
@@ -88,21 +88,3 @@ public class StargatePortalEvent extends StargateEvent {
     }
 
 }
-
-/*
-@Override
-    public List<Permission> getRelatedPerms() {
-        String identifier = "sg.use";
-        List<Permission> permList = new ArrayList<>();
-        if (target instanceof Player) {
-            if (!portal.isOpenFor(target)) {
-                permList.add(Bukkit.getPluginManager().getPermission(identifier + ".follow"));
-            }
-            if (portal.hasFlag(PortalFlag.PRIVATE) && !portal.getOwnerUUID().equals(target.getUniqueId())) {
-                permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
-            }
-        }
-
-        return permList;
-    }
- */
