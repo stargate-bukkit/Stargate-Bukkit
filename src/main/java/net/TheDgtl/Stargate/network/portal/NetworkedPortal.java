@@ -253,8 +253,7 @@ public class NetworkedPortal extends AbstractPortal {
         if (player == null) {
             return new ArrayList<>();
         }
-        List<String> availablePortals = new ArrayList<>();
-        availablePortals.addAll(network.getAvailablePortals(player, this));
+        List<String> availablePortals = new ArrayList<>(network.getAvailablePortals(player, this));
         Collections.sort(availablePortals);
         List<Portal> destinations = new ArrayList<>();
         for (String name : availablePortals) {
@@ -291,9 +290,46 @@ public class NetworkedPortal extends AbstractPortal {
      * @return <p>True if the given player is allowed to activate this portal</p>
      */
     private boolean hasActivatePermissions(Player player, PermissionManager permissionManager) {
-        StargateActivateEvent event = new StargateActivateEvent(this, player, destinations);
+        //TODO: Call the Access event before this
+        if (!permissionManager.hasAccessPermission(this)) {
+            return false;
+        }
+        StargateActivateEvent event = new StargateActivateEvent(this, player, getPortalNames(destinations), 
+                destination.getDestinationName());
         Bukkit.getPluginManager().callEvent(event);
-        return (!event.isCancelled() && permissionManager.hasAccessPermission(this));
+        if (event.isCancelled()) {
+            return false;
+        }
+        
+        //Update this sign's displayed destinations
+        destinations = getPortals(event.getDestinations());
+        destination = network.getPortal(event.getDestination());
+        drawControlMechanisms();
+        return true;
+    }
+
+    /**
+     * Gets a list of portals from a list of portal names
+     * 
+     * @param names <p>The list of portal names to get portals from</p>
+     * @return <p>The portals corresponding to the names</p>
+     */
+    private List<Portal> getPortals(List<String> names) {
+        List<Portal> portals = new ArrayList<>(names.size());
+        names.forEach((item) -> portals.add(network.getPortal(item)));
+        return portals;
+    }
+
+    /**
+     * Gets a list of portal names from a list of portals
+     * 
+     * @param portals <p>The list of portals to get the names of</p>
+     * @return <p>The names of the portals</p>
+     */
+    private List<String> getPortalNames(List<Portal> portals) {
+        List<String> names = new ArrayList<>(portals.size());
+        portals.forEach((item) -> names.add(item.getName()));
+        return names;
     }
 
     /**
