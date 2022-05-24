@@ -35,8 +35,9 @@ import java.util.logging.Level;
 public class DraftTeleporter {
 
     private static final double LOOK_FOR_LEASHED_RADIUS = 15;
-    private final Location destination;
+    private final Location exit;
     private final RealPortal origin;
+    private final RealPortal destination;
     private final int cost;
     private final BlockFace destinationFace;
     private String teleportMessage;
@@ -46,20 +47,21 @@ public class DraftTeleporter {
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
      *
-     * @param destination        <p>The destination location of this teleporter</p>
-     * @param origin             <p>The origin portal the teleportation is originating from</p>
-     * @param destinationFace    <p>The direction the destination's portal is facing</p>
-     * @param entranceFace       <p>The direction the entrance portal is facing</p>
-     * @param cost               <p>The cost of teleportation for any players</p>
-     * @param teleportMessage    <p>The teleportation message to display if the teleportation is successful</p>
-     * @param logger             <p>The logger used for logging messages</p>
+     * @param destination     <p>The destination location of this teleporter</p>
+     * @param origin          <p>The origin portal the teleportation is originating from</p>
+     * @param destinationFace <p>The direction the destination's portal is facing</p>
+     * @param entranceFace    <p>The direction the entrance portal is facing</p>
+     * @param cost            <p>The cost of teleportation for any players</p>
+     * @param teleportMessage <p>The teleportation message to display if the teleportation is successful</p>
+     * @param logger          <p>The logger used for logging messages</p>
      */
-    public DraftTeleporter(Location destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
+    public DraftTeleporter(RealPortal destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
                            int cost, String teleportMessage, StargateLogger logger) {
         // Center the destination in the destination block
-        this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
+        this.exit = destination.getExit().clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
         this.entranceFace = entranceFace;
+        this.destination = destination;
         this.origin = origin;
         this.cost = cost;
         this.teleportMessage = teleportMessage;
@@ -93,7 +95,7 @@ public class DraftTeleporter {
         }, getNearbyLeashedEntities(baseEntity));
 
         boolean shouldProceed = dfs.depthFirstSearch(baseEntity);
-        
+
         logger.logMessage(Level.FINEST, "Entities teleporting: " + dfs.getEntitiesToTeleport());
         logger.logMessage(Level.FINEST, "Passenger vehicles: " + dfs.getPassengerVehicles());
         logger.logMessage(Level.FINEST, "Leash holders: " + dfs.getLeashHolders());
@@ -121,12 +123,12 @@ public class DraftTeleporter {
 
     private void stackEntities(Entity parrent, Map<Entity, List<LivingEntity>> leashHolders,
                                Map<Entity, List<Entity>> passengerVehicles, Set<Entity> alreadyDealtWith) {
-        
-        if(alreadyDealtWith.contains(parrent)) {
+
+        if (alreadyDealtWith.contains(parrent)) {
             return;
         }
         alreadyDealtWith.add(parrent);
-        
+
         Supplier<Boolean> action = () -> {
             for (Entity entity : passengerVehicles.get(parrent)) {
                 parrent.addPassenger(entity);
@@ -156,7 +158,7 @@ public class DraftTeleporter {
             return origin.getExit().clone().subtract(offset);
         } else {
             Vector offset = getOffset(destinationFace, baseEntity);
-            return this.destination.clone().subtract(offset);
+            return this.exit.clone().subtract(offset);
         }
     }
 
@@ -206,7 +208,7 @@ public class DraftTeleporter {
         Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(ConfigurationHelper.getDouble(
                 ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER));
         if (target instanceof PoweredMinecart) {
-          //A workaround for powered minecarts
+            //A workaround for powered minecarts
             PoweredMinecart poweredMinecart = (PoweredMinecart) target;
             int fuel = poweredMinecart.getFuel();
             poweredMinecart.setFuel(0);
@@ -222,7 +224,7 @@ public class DraftTeleporter {
                     setPushZ.invoke(poweredMinecart, -location.getDirection().getBlockZ());
 
                 } catch (NoSuchMethodException ignored) {
-                    logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %s -- use Paper 1.18.2+ for this feature.", location.toString()));
+                    logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %s -- use Paper 1.18.2+ for this feature.", location));
                 } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -301,7 +303,7 @@ public class DraftTeleporter {
      * @return <p>True if the entity has the required permissions for performing the teleportation</p>
      */
     private boolean hasPermission(Entity target, PermissionManager permissionManager) {
-        StargatePortalEvent event = new StargatePortalEvent(target, origin);
+        StargatePortalEvent event = new StargatePortalEvent(target, origin, destination, exit);
         Bukkit.getPluginManager().callEvent(event);
         return (permissionManager.hasTeleportPermissions(origin)) && !event.isCancelled();
     }

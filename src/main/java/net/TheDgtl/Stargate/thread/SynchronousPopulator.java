@@ -109,7 +109,7 @@ public class SynchronousPopulator implements Runnable {
                 if (action.isFinished()) {
                     iterator.remove();
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 iterator.remove();
             }

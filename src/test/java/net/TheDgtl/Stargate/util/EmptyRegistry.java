@@ -1,14 +1,5 @@
 package net.TheDgtl.Stargate.util;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-
-import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PortalType;
@@ -17,46 +8,58 @@ import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 
-public class EmptyRegistry implements RegistryAPI{
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-    @Override
-    public void loadPortals() {}
-
-    @Override
-    public void removePortal(Portal portal, PortalType portalType) { }
-
-    @Override
-    public void savePortal(RealPortal portal, PortalType portalType) {}
+public class EmptyRegistry implements RegistryAPI {
 
     @Override
-    public void updateAllPortals() {}
+    public void loadPortals() {
+    }
 
     @Override
-    public void updatePortals(Map<String, ? extends Network> networkMap) {}
+    public void removePortal(Portal portal, PortalType portalType) {
+    }
 
     @Override
-    public Portal getPortal(BlockLocation blockLocation, GateStructureType structureType) {
+    public void savePortal(RealPortal portal, PortalType portalType) {
+    }
+
+    @Override
+    public void updateAllPortals() {
+    }
+
+    @Override
+    public void updatePortals(Map<String, ? extends Network> networkMap) {
+    }
+
+    @Override
+    public RealPortal getPortal(BlockLocation blockLocation, GateStructureType structureType) {
         return null;
     }
 
     @Override
-    public Portal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
+    public RealPortal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
         return null;
     }
 
     @Override
-    public Portal getPortal(Location location, GateStructureType structureType) {
+    public RealPortal getPortal(Location location, GateStructureType structureType) {
         return null;
     }
 
     @Override
-    public Portal getPortal(Location location, GateStructureType[] structureTypes) {
+    public RealPortal getPortal(Location location, GateStructureType[] structureTypes) {
         return null;
     }
 
     @Override
-    public Portal getPortal(Location location) {
+    public RealPortal getPortal(Location location) {
         return null;
     }
 
@@ -71,7 +74,8 @@ public class EmptyRegistry implements RegistryAPI{
     }
 
     @Override
-    public void registerLocations(GateStructureType structureType, Map<BlockLocation, Portal> locationsMap) {
+    public void registerLocations(GateStructureType structureType, Map<BlockLocation, RealPortal> locationsMap) {
+
     }
 
     @Override
@@ -79,7 +83,7 @@ public class EmptyRegistry implements RegistryAPI{
     }
 
     @Override
-    public void createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
+    public void createNetwork(String networkName, Set<PortalFlag> flags) {
     }
 
     @Override

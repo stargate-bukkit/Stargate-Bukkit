@@ -52,23 +52,23 @@ public class TeleportedEntityRelationDFS {
      *
      * @return <p>The map of vehicles</p>
      */
-    public  Map<Entity, List<Entity>> getPassengerVehicles() {
+    public Map<Entity, List<Entity>> getPassengerVehicles() {
         return passengerVehicles;
     }
-    
+
     /**
      * Gets all entities part of the teleportation
      *
      * @return <p>All entities part of the teleportation</p>
      */
-    public Set<Entity> getEntitiesToTeleport(){
+    public Set<Entity> getEntitiesToTeleport() {
         return entitiesToTeleport;
     }
 
     /**
      * Does a deep first search
      *
-     * @param node            <p>The entity to run the dept-first-search</p>
+     * @param node <p>The entity to run the dept-first-search</p>
      * @return <p>If the teleportation should proceed</p>
      */
     public boolean depthFirstSearch(Entity node) {

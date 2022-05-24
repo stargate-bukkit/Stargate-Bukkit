@@ -34,8 +34,8 @@ public class PersonalNetwork extends LocalNetwork {
         String possiblePlayerName = Bukkit.getOfflinePlayer(uuid).getName();
         if (possiblePlayerName != null
                 && (possiblePlayerName.toLowerCase().equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK).toLowerCase())
-                        || possiblePlayerName.toLowerCase()
-                                .equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME).toLowerCase()))) {
+                || possiblePlayerName.toLowerCase()
+                .equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME).toLowerCase()))) {
             possiblePlayerName = uuid.toString().split("-")[0];
         }
         playerName = possiblePlayerName;

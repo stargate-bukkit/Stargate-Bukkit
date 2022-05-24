@@ -1,5 +1,10 @@
 package net.TheDgtl.Stargate.util;
 
+import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.RegistryAPI;
+import net.TheDgtl.Stargate.network.portal.Portal;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,21 +15,15 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.RegistryAPI;
-import net.TheDgtl.Stargate.network.portal.Portal;
-
 public class BungeeHelper {
-    
+
 
     /*
      * Used in bungee / waterfall
      */
     private static final HashMap<String, Portal> bungeeQueue = new HashMap<>();
-    
+
     /**
-     * 
      * @param dataFolder
      * @param internalFolder
      */
@@ -59,7 +58,7 @@ public class BungeeHelper {
             e.printStackTrace();
         }
     }
-    
+
     public static void addToQueue(RegistryAPI registry, String playerName, String portalName, String netName, boolean isInterServer) {
         Network network = registry.getNetwork(netName, isInterServer);
 

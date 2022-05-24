@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.listeners;
+package net.TheDgtl.Stargate.listener;
 
 import net.TheDgtl.Stargate.Stargate;
 import org.bukkit.event.EventHandler;

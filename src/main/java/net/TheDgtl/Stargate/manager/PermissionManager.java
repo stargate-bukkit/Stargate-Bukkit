@@ -3,9 +3,7 @@ package net.TheDgtl.Stargate.manager;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
-import net.TheDgtl.Stargate.event.StargateCreateEvent;
-import net.TheDgtl.Stargate.event.StargateEvent;
-import net.TheDgtl.Stargate.event.StargatePortalEvent;
+import net.TheDgtl.Stargate.event.StargateAccessEvent;
 import net.TheDgtl.Stargate.formatting.LanguageManager;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.network.Network;
@@ -34,7 +32,6 @@ import java.util.logging.Level;
  * @author Thorin
  * @author Pheotis
  */
-
 public class PermissionManager {
 
     private final Entity target;
@@ -98,18 +95,19 @@ public class PermissionManager {
         metadataProvider = registeredServiceProvider.getProvider();
         return true;
     }
-    
+
     /**
-     * Scrolls through a list of permissions and notes if 
-     * @param permissions
-     * @return
+     * Checks if the target entity has the given permissions
+     *
+     * @param permissions <p>The list of permissions required for some action</p>
+     * @return <p>True if the entity has all the given permissions</p>
      */
     private boolean hasPermission(List<Permission> permissions) {
         for (Permission relatedPermission : permissions) {
             String message = " Checking permission '%s'. returned %s";
             boolean hasPermission = relatedPermission == null || target.hasPermission(relatedPermission);
-            String permissionNode =  (relatedPermission != null) ? relatedPermission.getName() : "null";
-            Stargate.log(Level.CONFIG, String.format(message,permissionNode,hasPermission));
+            String permissionNode = (relatedPermission != null) ? relatedPermission.getName() : "null";
+            Stargate.log(Level.CONFIG, String.format(message, permissionNode, hasPermission));
             if (!hasPermission) {
                 denyMessage = determineTranslatableMessageFromPermission(relatedPermission);
                 return false;
@@ -117,22 +115,29 @@ public class PermissionManager {
         }
         return true;
     }
-    
+
     /**
      * Check if entity has permission to access portal
+     *
      * @param portal <p> The portal to be accessed </p>
-     * @return       <p> If entity has permission </p>
+     * @return <p> If entity has permission </p>
      */
     public boolean hasAccessPermission(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking access permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getAccessPermissions(portal, target);
-        return hasPermission(relatedPerms);
+        boolean hasPerm = hasPermission(relatedPerms);
+
+        StargateAccessEvent accessEvent = new StargateAccessEvent(target, portal, !hasPerm, this.getDenyMessage());
+        Bukkit.getPluginManager().callEvent(accessEvent);
+        this.denyMessage = accessEvent.getDenyReason();
+        return !accessEvent.getDeny();
     }
-   
+
     /**
      * Check if entity has permission to create portal
+     *
      * @param portal <p> The portal to be created </p>
-     * @return       <p> If entity has permission </p>
+     * @return <p> If entity has permission </p>
      */
     public boolean hasCreatePermissions(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking create permissions");
@@ -143,34 +148,37 @@ public class PermissionManager {
         }
         return hasPermission;
     }
-    
+
     /**
      * Check if entity has permission to destroy portal
-     * @param portal    <p> The portal to be destroyed </p>
-     * @return          <p> If entity has permission </p>
+     *
+     * @param portal <p> The portal to be destroyed </p>
+     * @return <p> If entity has permission </p>
      */
     public boolean hasDestroyPermissions(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking destroy permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getDestroyPermissions(portal, target);
         return hasPermission(relatedPerms);
     }
-    
+
     /**
      * Check if entity has permission to open portal
-     * @param entrance  <p> The portal the entity is opening </p>
-     * @param exit      <p> The destination portal </p>
-     * @return          <p> If entity has permission </p>
+     *
+     * @param entrance <p> The portal the entity is opening </p>
+     * @param exit     <p> The destination portal </p>
+     * @return <p> If entity has permission </p>
      */
     public boolean hasOpenPermissions(RealPortal entrance, Portal exit) {
         Stargate.log(Level.CONFIG, "Checking open permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getOpenPermissions(entrance, exit, target);
         return hasPermission(relatedPerms);
     }
-    
+
     /**
      * Check if the entity has permission to teleport through portal
+     *
      * @param entrance <p> The portal the entity is entering </p>
-     * @return         <p> If entity has permission </p>
+     * @return <p> If entity has permission </p>
      */
     public boolean hasTeleportPermissions(RealPortal entrance) {
         Stargate.log(Level.CONFIG, "Checking teleport permissions");
@@ -183,9 +191,10 @@ public class PermissionManager {
     }
 
     /**
-     * Determine a the message to send the player based out of the permission it was denied.
-     * @param permission <p> The permission node the entity was denied </p>
-     * @return
+     * Determines the message to send the player based out of the permission it was denied.
+     *
+     * @param permission <p>The permission node the entity was denied</p>
+     * @return <p>The error message to display</p>
      */
     public String determineTranslatableMessageFromPermission(Permission permission) {
         String permissionNode = permission.getName();
@@ -212,7 +221,6 @@ public class PermissionManager {
             }
         }
         return languageManager.getErrorMessage(TranslatableMessage.DENY);
-
     }
 
     /**
@@ -239,7 +247,7 @@ public class PermissionManager {
 
             if (existingGatesInNetwork >= maxGates) {
                 denyMessage = languageManager.getErrorMessage(TranslatableMessage.NET_FULL);
-                Stargate.log(Level.CONFIG, String.format(" Network is full, maxGates = %s",maxGates));
+                Stargate.log(Level.CONFIG, String.format(" Network is full, maxGates = %s", maxGates));
                 return true;
             }
         }
@@ -249,6 +257,7 @@ public class PermissionManager {
 
     /**
      * Check the meta can-followthrough and determine if entity has permission
+     *
      * @return <p> If the entity has the meta </p>
      */
     private boolean canFollow() {
@@ -269,7 +278,7 @@ public class PermissionManager {
     /**
      * Checks whether the entity is allowed to create stargates in the given network
      *
-     * @param network <p>The formated name of the network to check</p>
+     * @param network <p>The formatted name of the network to check</p>
      * @return <p>True if the entity is allowed to create stargates</p>
      */
     public boolean canCreateInNetwork(String network) {
@@ -281,24 +290,24 @@ public class PermissionManager {
         String netName = HighlightingStyle.getNameFromHighlightedText(network);
         boolean hasPermission;
 
-        switch(highlight) {
-        case PERSONAL:
-            if (target.getName().equals(netName)) {
-                hasPermission = target.hasPermission(CREATE_PERMISSION + ".personal");
-            } else {
-                hasPermission = target.hasPermission(BypassPermission.PRIVATE.getPermissionString());
-            }
-            break;
-        case BUNGEE:
-            hasPermission = target.hasPermission(CREATE_PERMISSION + ".type." + PortalFlag.FANCY_INTER_SERVER);
-            break;
-        default:
-            if (netName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-                hasPermission = target.hasPermission(CREATE_PERMISSION + ".default");
-            } else {
-                hasPermission = target.hasPermission(CREATE_PERMISSION + ".custom." + netName);
-            }
-            break;
+        switch (highlight) {
+            case PERSONAL:
+                if (target.getName().equals(netName)) {
+                    hasPermission = target.hasPermission(CREATE_PERMISSION + ".personal");
+                } else {
+                    hasPermission = target.hasPermission(BypassPermission.PRIVATE.getPermissionString());
+                }
+                break;
+            case BUNGEE:
+                hasPermission = target.hasPermission(CREATE_PERMISSION + ".type." + PortalFlag.FANCY_INTER_SERVER);
+                break;
+            default:
+                if (netName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
+                    hasPermission = target.hasPermission(CREATE_PERMISSION + ".default");
+                } else {
+                    hasPermission = target.hasPermission(CREATE_PERMISSION + ".custom." + netName);
+                }
+                break;
         }
         if (!hasPermission) {
             denyMessage = languageManager.getErrorMessage(TranslatableMessage.NET_DENY);

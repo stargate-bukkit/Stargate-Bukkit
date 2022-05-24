@@ -33,7 +33,7 @@ public class StargateRegistry implements RegistryAPI {
     private final StorageAPI storageAPI;
     private final HashMap<String, Network> networkMap = new HashMap<>();
     private final HashMap<String, Network> bungeeNetworkMap = new HashMap<>();
-    private final Map<GateStructureType, Map<BlockLocation, Portal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
+    private final Map<GateStructureType, Map<BlockLocation, RealPortal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
 
     /**
      * Instantiates a new Stargate registry
@@ -99,7 +99,7 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public Portal getPortal(BlockLocation blockLocation, GateStructureType structureType) {
+    public RealPortal getPortal(BlockLocation blockLocation, GateStructureType structureType) {
         if (!(portalFromStructureTypeMap.containsKey(structureType))) {
             return null;
         }
@@ -107,9 +107,9 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public Portal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
+    public RealPortal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
         for (GateStructureType key : structureTypes) {
-            Portal portal = getPortal(blockLocation, key);
+            RealPortal portal = getPortal(blockLocation, key);
             if (portal != null) {
                 return portal;
             }
@@ -118,17 +118,17 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public Portal getPortal(Location location, GateStructureType structureType) {
+    public RealPortal getPortal(Location location, GateStructureType structureType) {
         return getPortal(new BlockLocation(location), structureType);
     }
 
     @Override
-    public Portal getPortal(Location location, GateStructureType[] structureTypes) {
+    public RealPortal getPortal(Location location, GateStructureType[] structureTypes) {
         return getPortal(new BlockLocation(location), structureTypes);
     }
 
     @Override
-    public Portal getPortal(Location location) {
+    public RealPortal getPortal(Location location) {
         return getPortal(location, GateStructureType.values());
     }
 
@@ -159,7 +159,7 @@ public class StargateRegistry implements RegistryAPI {
 
 
     @Override
-    public void registerLocations(GateStructureType structureType, Map<BlockLocation, Portal> locationsMap) {
+    public void registerLocations(GateStructureType structureType, Map<BlockLocation, RealPortal> locationsMap) {
         if (!portalFromStructureTypeMap.containsKey(structureType)) {
             portalFromStructureTypeMap.put(structureType, new HashMap<>());
         }
@@ -168,7 +168,7 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public void unRegisterLocation(GateStructureType structureType, BlockLocation blockLocation) {
-        Map<BlockLocation, Portal> map = portalFromStructureTypeMap.get(structureType);
+        Map<BlockLocation, RealPortal> map = portalFromStructureTypeMap.get(structureType);
         if (map != null && map.get(blockLocation) != null) {
             Stargate.log(Level.FINER, "Unregistering portal " + map.get(blockLocation).getName() +
                     " with structType " + structureType + " at location " + blockLocation.toString());

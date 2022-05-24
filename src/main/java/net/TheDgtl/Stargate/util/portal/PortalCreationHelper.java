@@ -26,7 +26,6 @@ import net.TheDgtl.Stargate.util.EconomyHelper;
 import net.TheDgtl.Stargate.util.NameHelper;
 import net.TheDgtl.Stargate.util.SpawnDetectionHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Tag;
@@ -121,23 +120,17 @@ public class PortalCreationHelper {
         return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), alwaysOn, logger);
     }
 
-    
 
-    
     /**
      * Determine the uuid of the owner of this portal
-     * @param network 
-     * @param player
-     * @param flags
-     * @return
      */
     public static UUID getOwnerUUID(Network network, Player player, Set<PortalFlag> flags) {
-        if(network != null) {
+        if (network != null) {
             return flags.contains(PortalFlag.PERSONAL_NETWORK) ? UUID.fromString(network.getName()) : player.getUniqueId();
         }
         return player.getUniqueId();
     }
-    
+
     /**
      * Tries to create a new stargate
      *
@@ -154,17 +147,23 @@ public class PortalCreationHelper {
      * @throws NoFormatFoundException <p>If no known format matches the built stargate</p>
      */
     public static void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation, Set<PortalFlag> flags,
-                                   Player player, int cost, PermissionManager permissionManager, TranslatableMessage errorMessage)
+                                         Player player, int cost, PermissionManager permissionManager, TranslatableMessage errorMessage)
             throws NameErrorException, GateConflictException, NoFormatFoundException {
 
-        UUID ownerUUID = PortalCreationHelper.getOwnerUUID(selectedNetwork,player,flags);
+        UUID ownerUUID = PortalCreationHelper.getOwnerUUID(selectedNetwork, player, flags);
         Gate gate = PortalCreationHelper.createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON), Stargate.getInstance());
         RealPortal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance());
-        StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, cost);
+
+        boolean hasPermission = permissionManager.hasCreatePermissions(portal);
+        StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, !hasPermission,
+                permissionManager.getDenyMessage(), cost);
 
         Bukkit.getPluginManager().callEvent(stargateCreateEvent);
 
-        boolean hasPermission = permissionManager.hasCreatePermissions(portal);
+        if (stargateCreateEvent.isCancelled()) {
+            player.sendMessage(stargateCreateEvent.getDenyReason());
+            return;
+        }
         Stargate.log(Level.CONFIG, " player has perm = " + hasPermission);
 
         if (errorMessage != null) {

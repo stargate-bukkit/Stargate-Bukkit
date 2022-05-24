@@ -1,51 +1,42 @@
-/*
- * Stargate - A portal plugin for Bukkit
- * Copyright (C) 2011, 2012 Steven "Drakia" Scott <Contact@TheDgtl.net>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package net.TheDgtl.Stargate.event;
 
 import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.event.HandlerList;
-import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 /**
- * TODO: inverse of {@link StargateActivateEvent} don't know how to implement those currently
+ * This event should be called whenever a stargate is deactivated
  *
- * @author Thorin
+ * <p>A deactivation is usually caused by no activity for a set amount of time.
+ * This event can only be used to listen for de-activation events.</p>
  */
+@SuppressWarnings("unused")
 public class StargateDeactivateEvent extends StargateEvent {
+
     private static final HandlerList handlers = new HandlerList();
 
-    @NotNull
-    public HandlerList getHandlers() {
-        return handlers;
+    /**
+     * Instantiates a new stargate deactivation event
+     *
+     * @param portal <p>The portal which was deactivated</p>
+     */
+    public StargateDeactivateEvent(Portal portal) {
+        super(portal);
     }
 
-    @NotNull
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
     public static HandlerList getHandlerList() {
         return handlers;
     }
 
-    public StargateDeactivateEvent(@NotNull Portal portal) {
-        super(Objects.requireNonNull(portal));
+    @NotNull
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
+
 }

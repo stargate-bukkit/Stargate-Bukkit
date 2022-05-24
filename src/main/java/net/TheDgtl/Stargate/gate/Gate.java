@@ -322,9 +322,9 @@ public class Gate implements GateAPI {
     /**
      * Check if this gate with the current settings is valid
      *
-     * @param alwaysOn
-     * @return
-     * @throws GateConflictException
+     * @param alwaysOn <p>Whether this gate is always on</p>
+     * @return <p>True if this gate is valid</p>
+     * @throws GateConflictException <p>If this gate conflicts with another gate</p>
      */
     public boolean isValid(boolean alwaysOn) throws GateConflictException {
         if (getFormat().matches(converter, topLeft)) {

@@ -1,59 +1,64 @@
-/*
- * Stargate - A portal plugin for Bukkit
- * Copyright (C) 2011, 2012 Steven "Drakia" Scott <Contact@TheDgtl.net>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package net.TheDgtl.Stargate.event;
 
 import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.event.HandlerList;
-import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
+/**
+ * This event should be called whenever a stargate is closed
+ *
+ * <p>This event can be used to overwrite whether the stargate should be forced to close, even if it's set as
+ * always-on.</p>
+ */
+@SuppressWarnings("unused")
 public class StargateCloseEvent extends StargateEvent {
-    private boolean force;
 
     private static final HandlerList handlers = new HandlerList();
+    private boolean force;
 
-    @NotNull
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
+    /**
+     * Instantiates a new stargate closing event
+     *
+     * @param portal <p>The portal to close</p>
+     * @param force  <p>Whether to force the gate to close, even if set as always-on</p>
+     */
     public StargateCloseEvent(@NotNull Portal portal, boolean force) {
-        super(Objects.requireNonNull(portal));
+        super(portal);
+
         this.force = force;
     }
 
+    /**
+     * Gets whether to force the stargate to close
+     *
+     * @return <p>Whether to force the stargate to close</p>
+     */
     public boolean getForce() {
         return force;
     }
 
+    /**
+     * Sets whether the stargate should be forced to close
+     *
+     * @param force <p>Whether the stargate should be forced to close</p>
+     */
     public void setForce(boolean force) {
         this.force = force;
     }
 
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @NotNull
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
 
 }

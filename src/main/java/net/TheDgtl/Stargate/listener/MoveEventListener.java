@@ -1,13 +1,12 @@
-package net.TheDgtl.Stargate.listeners;
+package net.TheDgtl.Stargate.listener;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.config.ConfigurationHelper;
-import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -31,6 +30,10 @@ public class MoveEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityPortalTeleport(@NotNull EntityPortalEvent event) {
+        if (!(event.getEntity() instanceof Vehicle)) {
+            return;
+        }
+
         if (Stargate.getRegistry().isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
             event.setCancelled(true);
         }
@@ -74,9 +77,7 @@ public class MoveEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleMove(VehicleMoveEvent event) {
-        if (ConfigurationHelper.getBoolean(ConfigurationOption.HANDLE_VEHICLES)) {
-            onAnyMove(event.getVehicle(), event.getTo(), event.getFrom());
-        }
+        onAnyMove(event.getVehicle(), event.getTo(), event.getFrom());
     }
 
     /**

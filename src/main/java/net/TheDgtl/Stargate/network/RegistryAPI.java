@@ -62,7 +62,7 @@ public interface RegistryAPI {
      * @param structureType <p>The structure type to look for</p>
      * @return <p>The found portal, or null if no such portal exists</p>
      */
-    Portal getPortal(BlockLocation blockLocation, GateStructureType structureType);
+    RealPortal getPortal(BlockLocation blockLocation, GateStructureType structureType);
 
     /**
      * Get the portal with any of the given structure types at the given location
@@ -71,7 +71,7 @@ public interface RegistryAPI {
      * @param structureTypes <p>The structure types to look for</p>
      * @return <p>The found portal, or null if no such portal exists</p>
      */
-    Portal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes);
+    RealPortal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes);
 
     /**
      * Gets the portal with the given structure type at the given location
@@ -80,7 +80,7 @@ public interface RegistryAPI {
      * @param structureType <p>The structure type to look for</p>
      * @return <p>The found portal, or null if no portal was found</p>
      */
-    Portal getPortal(Location location, GateStructureType structureType);
+    RealPortal getPortal(Location location, GateStructureType structureType);
 
     /**
      * Gets the portal with any of the given structure types at the given location
@@ -89,7 +89,7 @@ public interface RegistryAPI {
      * @param structureTypes <p>The structure types to look for</p>
      * @return <p>The found portal, or null if no portal was found</p>
      */
-    Portal getPortal(Location location, GateStructureType[] structureTypes);
+    RealPortal getPortal(Location location, GateStructureType[] structureTypes);
 
     /**
      * Get the portal at the given location
@@ -97,7 +97,7 @@ public interface RegistryAPI {
      * @param location <p>The location to check for portal structures</p>
      * @return <p>The found portal, or null if no portal was found</p>
      */
-    Portal getPortal(Location location);
+    RealPortal getPortal(Location location);
 
     /**
      * Checks if any of the given blocks belong to a portal
@@ -128,7 +128,7 @@ public interface RegistryAPI {
      * @param structureType <p>The structure type to register</p>
      * @param locationsMap  <p>The locations and the corresponding portals to register</p>
      */
-    void registerLocations(GateStructureType structureType, Map<BlockLocation, Portal> locationsMap);
+    void registerLocations(GateStructureType structureType, Map<BlockLocation, RealPortal> locationsMap);
 
     /**
      * Un-registers all portal blocks with the given structure type, at the given block location

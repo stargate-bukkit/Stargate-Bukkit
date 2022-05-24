@@ -6,6 +6,8 @@ import net.TheDgtl.Stargate.action.DelayedAction;
 import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
+import net.TheDgtl.Stargate.event.StargateAccessEvent;
+import net.TheDgtl.Stargate.event.StargateCloseEvent;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
@@ -21,7 +23,7 @@ import net.TheDgtl.Stargate.property.VersionImplemented;
 import net.TheDgtl.Stargate.util.NameHelper;
 import net.TheDgtl.Stargate.util.VersionParser;
 import net.TheDgtl.Stargate.util.portal.PortalHelper;
-
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -162,6 +164,13 @@ public abstract class AbstractPortal implements RealPortal {
         if (!isOpen() || (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose)) {
             return;
         }
+        StargateCloseEvent closeEvent = new StargateCloseEvent(this, forceClose);
+        Bukkit.getPluginManager().callEvent(closeEvent);
+        if (closeEvent.isCancelled()) {
+            logger.logMessage(Level.FINE, "Closing event for portal " + getName() + " in netork " + getNetwork().getName() + " was canceled");
+            return;
+        }
+
         logger.logMessage(Level.FINE, "Closing the portal");
         getGate().close();
         drawControlMechanisms();
@@ -170,7 +179,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public boolean isOpenFor(Entity target) {
-        logger.logMessage(Level.FINE, String.format("isOpenForUUID = %s", (openFor == null)?"null":openFor.toString()));
+        logger.logMessage(Level.FINE, String.format("isOpenForUUID = %s", (openFor == null) ? "null" : openFor.toString()));
         return ((openFor == null) || (target.getUniqueId() == openFor));
     }
 
@@ -224,7 +233,7 @@ public abstract class AbstractPortal implements RealPortal {
             useCost = shouldCharge ? ConfigurationHelper.getInteger(ConfigurationOption.USE_COST) : 0;
         }
 
-        Teleporter teleporter = new Teleporter(getExit(), origin, portalFacing, entranceFace, useCost,
+        Teleporter teleporter = new Teleporter(this, origin, portalFacing, entranceFace, useCost,
                 Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT), logger);
 
         teleporter.teleport(target);
@@ -234,8 +243,17 @@ public abstract class AbstractPortal implements RealPortal {
     public void doTeleport(Entity target) {
         Portal destination = getCurrentDestination();
         if (destination == null) {
-            Teleporter teleporter = new Teleporter(this.getExit(), this, gate.getFacing().getOppositeFace(), gate.getFacing(),
+            Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
                     0, Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID), logger);
+            teleporter.teleport(target);
+            return;
+        }
+
+        StargateAccessEvent accessEvent = new StargateAccessEvent(target, this, false, null);
+        Bukkit.getPluginManager().callEvent(accessEvent);
+        if (accessEvent.getDeny()) {
+            Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
+                    0, accessEvent.getDenyReason(), logger);
             teleporter.teleport(target);
             return;
         }
@@ -358,7 +376,11 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public String getDestinationName() {
-        return null;
+        if (destination == null) {
+            return null;
+        } else {
+            return destination.getName();
+        }
     }
 
     /**
