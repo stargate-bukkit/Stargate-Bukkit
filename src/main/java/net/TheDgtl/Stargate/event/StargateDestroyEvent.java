@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
  *
  * <p>This event can be used to deny or change the cost of a stargate destruction.</p>
  */
-@SuppressWarnings("unused")
 public class StargateDestroyEvent extends StargateEntityEvent {
 
     private static final HandlerList handlers = new HandlerList();

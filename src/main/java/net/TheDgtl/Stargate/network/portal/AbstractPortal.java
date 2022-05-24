@@ -22,6 +22,8 @@ import net.TheDgtl.Stargate.property.VersionImplemented;
 import net.TheDgtl.Stargate.util.NameHelper;
 import net.TheDgtl.Stargate.util.PortalHelper;
 import net.TheDgtl.Stargate.util.VersionParser;
+
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -240,9 +242,12 @@ public abstract class AbstractPortal implements RealPortal {
             return;
         }
 
-        //TODO: Implement the access event properly
-        StargateAccessEvent accessEvent = new StargateAccessEvent(target, this, deny, denyReason);
-
+        StargateAccessEvent accessEvent = new StargateAccessEvent(target, this, false, null);
+        Bukkit.getPluginManager().callEvent(accessEvent);
+        if(accessEvent.getDeny()) {
+            target.sendMessage(accessEvent.getDenyReason());
+        }
+        
         destination.teleportHere(target, this);
         destination.close(false);
         close(false);
