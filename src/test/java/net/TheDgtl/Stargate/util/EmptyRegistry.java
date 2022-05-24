@@ -1,13 +1,5 @@
 package net.TheDgtl.Stargate.util;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
@@ -17,23 +9,35 @@ import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 
-public class EmptyRegistry implements RegistryAPI{
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-    @Override
-    public void loadPortals() {}
-
-    @Override
-    public void removePortal(Portal portal, PortalType portalType) { }
-
-    @Override
-    public void savePortal(RealPortal portal, PortalType portalType) {}
+public class EmptyRegistry implements RegistryAPI {
 
     @Override
-    public void updateAllPortals() {}
+    public void loadPortals() {
+    }
 
     @Override
-    public void updatePortals(Map<String, ? extends Network> networkMap) {}
+    public void removePortal(Portal portal, PortalType portalType) {
+    }
+
+    @Override
+    public void savePortal(RealPortal portal, PortalType portalType) {
+    }
+
+    @Override
+    public void updateAllPortals() {
+    }
+
+    @Override
+    public void updatePortals(Map<String, ? extends Network> networkMap) {
+    }
 
     @Override
     public Portal getPortal(BlockLocation blockLocation, GateStructureType structureType) {

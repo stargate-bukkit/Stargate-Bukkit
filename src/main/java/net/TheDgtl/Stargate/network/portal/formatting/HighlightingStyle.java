@@ -29,13 +29,13 @@ public enum HighlightingStyle {
      * The highlighting to use for personal networks
      */
     PERSONAL("{", "}"),
-    
+
     /**
      * No highlighting at all. Just a workaround, really
      */
     NOTHING("", "");
 
-    
+
     private final String prefix;
     private final String suffix;
 
@@ -62,8 +62,9 @@ public enum HighlightingStyle {
 
     public static HighlightingStyle getHighlightType(String highlightedText) {
         for (HighlightingStyle highlight : HighlightingStyle.values()) {
-            if (highlight == HighlightingStyle.NOTHING)
+            if (highlight == HighlightingStyle.NOTHING) {
                 continue;
+            }
 
             if (highlightedText.startsWith(highlight.prefix) && highlightedText.endsWith(highlight.suffix)) {
                 return highlight;
@@ -71,9 +72,10 @@ public enum HighlightingStyle {
         }
         return NOTHING;
     }
-    
+
     /**
      * Get the name that is highlighted
+     *
      * @param highlightedName <p> The name that is highlighted </p>
      * @return
      */

@@ -29,7 +29,7 @@ public class StargateDestroyEvent extends StargateEntityEvent {
     public StargateDestroyEvent(@NotNull Portal portal, @NotNull Player player, boolean deny, @NotNull String denyMsg,
                                 int cost) {
         super(portal, player);
-        
+
         //TODO: Perhaps alter or add an event for a stargate destroyed by an explosion?
         this.deny = deny;
         this.denyReason = denyMsg;

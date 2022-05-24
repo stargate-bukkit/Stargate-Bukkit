@@ -181,7 +181,6 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         } catch (NameErrorException ignored) {
         }
 
-        
 
     }
 

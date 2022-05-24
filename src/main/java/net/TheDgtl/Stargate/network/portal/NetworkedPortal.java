@@ -293,13 +293,13 @@ public class NetworkedPortal extends AbstractPortal {
         if (!permissionManager.hasAccessPermission(this)) {
             return false;
         }
-        StargateActivateEvent event = new StargateActivateEvent(this, player, getPortalNames(destinations), 
+        StargateActivateEvent event = new StargateActivateEvent(this, player, getPortalNames(destinations),
                 destination.getDestinationName());
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
         }
-        
+
         //Update this sign's displayed destinations
         destinations = getPortals(event.getDestinations());
         destination = network.getPortal(event.getDestination());
@@ -309,7 +309,7 @@ public class NetworkedPortal extends AbstractPortal {
 
     /**
      * Gets a list of portals from a list of portal names
-     * 
+     *
      * @param names <p>The list of portal names to get portals from</p>
      * @return <p>The portals corresponding to the names</p>
      */
@@ -321,7 +321,7 @@ public class NetworkedPortal extends AbstractPortal {
 
     /**
      * Gets a list of portal names from a list of portals
-     * 
+     *
      * @param portals <p>The list of portals to get the names of</p>
      * @return <p>The names of the portals</p>
      */

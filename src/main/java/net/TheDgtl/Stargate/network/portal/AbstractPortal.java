@@ -23,7 +23,6 @@ import net.TheDgtl.Stargate.property.VersionImplemented;
 import net.TheDgtl.Stargate.util.NameHelper;
 import net.TheDgtl.Stargate.util.PortalHelper;
 import net.TheDgtl.Stargate.util.VersionParser;
-
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -167,11 +166,11 @@ public abstract class AbstractPortal implements RealPortal {
         }
         StargateCloseEvent closeEvent = new StargateCloseEvent(this, forceClose);
         Bukkit.getPluginManager().callEvent(closeEvent);
-        if(closeEvent.isCancelled()) {
-            logger.logMessage(Level.FINE, "Closing event for portal " +getName()+ " in netork "+ getNetwork().getName() +" was canceled");
+        if (closeEvent.isCancelled()) {
+            logger.logMessage(Level.FINE, "Closing event for portal " + getName() + " in netork " + getNetwork().getName() + " was canceled");
             return;
         }
-        
+
         logger.logMessage(Level.FINE, "Closing the portal");
         getGate().close();
         drawControlMechanisms();
@@ -180,7 +179,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public boolean isOpenFor(Entity target) {
-        logger.logMessage(Level.FINE, String.format("isOpenForUUID = %s", (openFor == null)?"null":openFor.toString()));
+        logger.logMessage(Level.FINE, String.format("isOpenForUUID = %s", (openFor == null) ? "null" : openFor.toString()));
         return ((openFor == null) || (target.getUniqueId() == openFor));
     }
 
@@ -249,13 +248,13 @@ public abstract class AbstractPortal implements RealPortal {
             teleporter.teleport(target);
             return;
         }
-        
+
         StargateAccessEvent accessEvent = new StargateAccessEvent(target, this, false, null);
         Bukkit.getPluginManager().callEvent(accessEvent);
-        if(accessEvent.getDeny()) {
+        if (accessEvent.getDeny()) {
             target.sendMessage(accessEvent.getDenyReason());
         }
-        
+
         destination.teleportHere(target, this);
         destination.close(false);
         close(false);

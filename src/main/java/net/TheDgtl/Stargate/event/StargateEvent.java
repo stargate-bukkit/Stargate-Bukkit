@@ -42,5 +42,5 @@ public abstract class StargateEvent extends Event implements Cancellable {
     public void setCancelled(boolean cancelled) {
         this.cancelled = cancelled;
     }
-    
+
 }

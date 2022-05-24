@@ -225,7 +225,7 @@ public class BlockEventListener implements Listener {
         RealPortal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance());
 
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
-        StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines,!hasPermission,permissionManager.getDenyMessage(), cost);
+        StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, !hasPermission, permissionManager.getDenyMessage(), cost);
 
         Bukkit.getPluginManager().callEvent(stargateCreateEvent);
 

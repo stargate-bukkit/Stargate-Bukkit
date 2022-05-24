@@ -47,13 +47,13 @@ public class DraftTeleporter {
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
      *
-     * @param destination        <p>The destination location of this teleporter</p>
-     * @param origin             <p>The origin portal the teleportation is originating from</p>
-     * @param destinationFace    <p>The direction the destination's portal is facing</p>
-     * @param entranceFace       <p>The direction the entrance portal is facing</p>
-     * @param cost               <p>The cost of teleportation for any players</p>
-     * @param teleportMessage    <p>The teleportation message to display if the teleportation is successful</p>
-     * @param logger             <p>The logger used for logging messages</p>
+     * @param destination     <p>The destination location of this teleporter</p>
+     * @param origin          <p>The origin portal the teleportation is originating from</p>
+     * @param destinationFace <p>The direction the destination's portal is facing</p>
+     * @param entranceFace    <p>The direction the entrance portal is facing</p>
+     * @param cost            <p>The cost of teleportation for any players</p>
+     * @param teleportMessage <p>The teleportation message to display if the teleportation is successful</p>
+     * @param logger          <p>The logger used for logging messages</p>
      */
     public DraftTeleporter(RealPortal destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
                            int cost, String teleportMessage, StargateLogger logger) {
@@ -95,7 +95,7 @@ public class DraftTeleporter {
         }, getNearbyLeashedEntities(baseEntity));
 
         boolean shouldProceed = dfs.depthFirstSearch(baseEntity);
-        
+
         logger.logMessage(Level.FINEST, "Entities teleporting: " + dfs.getEntitiesToTeleport());
         logger.logMessage(Level.FINEST, "Passenger vehicles: " + dfs.getPassengerVehicles());
         logger.logMessage(Level.FINEST, "Leash holders: " + dfs.getLeashHolders());
@@ -123,12 +123,12 @@ public class DraftTeleporter {
 
     private void stackEntities(Entity parrent, Map<Entity, List<LivingEntity>> leashHolders,
                                Map<Entity, List<Entity>> passengerVehicles, Set<Entity> alreadyDealtWith) {
-        
-        if(alreadyDealtWith.contains(parrent)) {
+
+        if (alreadyDealtWith.contains(parrent)) {
             return;
         }
         alreadyDealtWith.add(parrent);
-        
+
         Supplier<Boolean> action = () -> {
             for (Entity entity : passengerVehicles.get(parrent)) {
                 parrent.addPassenger(entity);
@@ -208,7 +208,7 @@ public class DraftTeleporter {
         Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(ConfigurationHelper.getDouble(
                 ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER));
         if (target instanceof PoweredMinecart) {
-          //A workaround for powered minecarts
+            //A workaround for powered minecarts
             PoweredMinecart poweredMinecart = (PoweredMinecart) target;
             int fuel = poweredMinecart.getFuel();
             poweredMinecart.setFuel(0);

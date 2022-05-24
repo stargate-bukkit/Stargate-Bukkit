@@ -49,12 +49,12 @@ public class Teleporter {
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
      *
-     * @param destination      <p>The destination location of this teleporter</p>
-     * @param origin           <p>The origin portal the teleportation is originating from</p>
-     * @param destinationFace  <p>The direction the destination's portal is facing</p>
-     * @param entranceFace     <p>The direction the entrance portal is facing</p>
-     * @param cost             <p>The cost of teleportation for any players</p>
-     * @param teleportMessage  <p>The teleportation message to display if the teleportation is successful</p>
+     * @param destination     <p>The destination location of this teleporter</p>
+     * @param origin          <p>The origin portal the teleportation is originating from</p>
+     * @param destinationFace <p>The direction the destination's portal is facing</p>
+     * @param entranceFace    <p>The direction the entrance portal is facing</p>
+     * @param cost            <p>The cost of teleportation for any players</p>
+     * @param teleportMessage <p>The teleportation message to display if the teleportation is successful</p>
      */
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
                       int cost, String teleportMessage, StargateLogger logger) {
@@ -83,7 +83,7 @@ public class Teleporter {
 
 
         nearbyLeashed = getNearbyLeashedEntities(baseEntity);
-        
+
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
             //TODO: The access event should be called to allow add-ons cancelling or overriding the teleportation
             PermissionManager permissionManager = new PermissionManager(anyEntity);
@@ -98,11 +98,11 @@ public class Teleporter {
             }
             return true;
         }, nearbyLeashed);
-        
+
         hasPermission = dfs.depthFirstSearch(baseEntity);
-        if(!hasPermission) {
+        if (!hasPermission) {
             rotation = Math.PI;
-            if(origin != null) {
+            if (origin != null) {
                 exit = origin.getExit().add(new Vector(0.5, 0, 0.5));
             } else {
                 exit = baseEntity.getLocation();
@@ -111,23 +111,23 @@ public class Teleporter {
 
         Vector offset = getOffset(baseEntity);
         exit.subtract(offset);
-        
+
         Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
             betterTeleport(baseEntity, rotation);
             return true;
         }));
     }
-    
+
     private Vector getOffset(Entity baseEntity) {
-        if(hasPermission) {
-            return getOffsetFromFacing(baseEntity,destinationFace);
+        if (hasPermission) {
+            return getOffsetFromFacing(baseEntity, destinationFace);
         }
-        if(origin != null) {
-            return getOffsetFromFacing(baseEntity,origin.getGate().getFacing().getOppositeFace());
+        if (origin != null) {
+            return getOffsetFromFacing(baseEntity, origin.getGate().getFacing().getOppositeFace());
         }
         return new Vector();
     }
-    
+
     private Vector getOffsetFromFacing(Entity baseEntity, BlockFace facing) {
         Vector offset = facing.getDirection();
         double targetWidth = baseEntity.getWidth();
@@ -146,7 +146,7 @@ public class Teleporter {
         }
         return surroundingLeashedEntities;
     }
-    
+
     /**
      * Teleports an entity with all its passengers and its vehicle
      *
@@ -220,7 +220,7 @@ public class Teleporter {
             return;
         }
         for (LivingEntity entity : nearbyLeashed) {
-            if (entity.isLeashed() &&  entity.getLeashHolder() == holder) {
+            if (entity.isLeashed() && entity.getLeashHolder() == holder) {
                 Supplier<Boolean> action = () -> {
                     entity.setLeashHolder(null);
                     if (betterTeleport(entity, rotation)) {
