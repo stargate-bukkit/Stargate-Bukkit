@@ -132,7 +132,7 @@ public class PermissionManager {
         StargateAccessEvent accessEvent = new StargateAccessEvent(target, portal, !hasPerm, this.getDenyMessage());
         Bukkit.getPluginManager().callEvent(accessEvent);
         this.denyMessage = accessEvent.getDenyReason();
-        return accessEvent.getDeny();
+        return !accessEvent.getDeny();
     }
    
     /**
@@ -245,7 +245,7 @@ public class PermissionManager {
 
             if (existingGatesInNetwork >= maxGates) {
                 denyMessage = languageManager.getErrorMessage(TranslatableMessage.NET_FULL);
-                Stargate.log(Level.CONFIG, String.format(" Network is full, maxGates = %s",maxGates));
+                Stargate.log(Level.CONFIG, String.format(" Network is full, maxGates = %s", maxGates));
                 return true;
             }
         }

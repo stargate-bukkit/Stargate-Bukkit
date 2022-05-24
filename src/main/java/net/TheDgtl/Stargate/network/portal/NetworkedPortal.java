@@ -294,7 +294,7 @@ public class NetworkedPortal extends AbstractPortal {
             return false;
         }
         StargateActivateEvent event = new StargateActivateEvent(this, player, getPortalNames(destinations), 
-                destination.getDestinationName());
+                this.getDestinationName());
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
@@ -388,5 +388,4 @@ public class NetworkedPortal extends AbstractPortal {
         this.destination = null;
         drawControlMechanisms();
     }
-
 }

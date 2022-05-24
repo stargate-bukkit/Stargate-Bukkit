@@ -253,7 +253,10 @@ public abstract class AbstractPortal implements RealPortal {
         StargateAccessEvent accessEvent = new StargateAccessEvent(target, this, false, null);
         Bukkit.getPluginManager().callEvent(accessEvent);
         if(accessEvent.getDeny()) {
-            target.sendMessage(accessEvent.getDenyReason());
+            Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
+                    0, accessEvent.getDenyReason(), logger);
+            teleporter.teleport(target);
+            return;
         }
         
         destination.teleportHere(target, this);
@@ -374,7 +377,9 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public String getDestinationName() {
-        return null;
+        if(destination == null)
+            return null;
+        return destination.getName();
     }
 
     /**
