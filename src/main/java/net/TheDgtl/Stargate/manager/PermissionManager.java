@@ -130,7 +130,7 @@ public class PermissionManager {
         StargateAccessEvent accessEvent = new StargateAccessEvent(target, portal, !hasPerm, this.getDenyMessage());
         Bukkit.getPluginManager().callEvent(accessEvent);
         this.denyMessage = accessEvent.getDenyReason();
-        return accessEvent.getDeny();
+        return !accessEvent.getDeny();
     }
 
     /**
