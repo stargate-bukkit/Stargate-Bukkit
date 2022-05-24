@@ -1,14 +1,19 @@
-package net.TheDgtl.Stargate.util;
+package net.TheDgtl.Stargate.util.portal;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
+import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
+import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
+import net.TheDgtl.Stargate.manager.PermissionManager;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.FixedPortal;
@@ -16,11 +21,19 @@ import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RandomPortal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
+import net.TheDgtl.Stargate.property.BypassPermission;
+import net.TheDgtl.Stargate.util.EconomyHelper;
+import net.TheDgtl.Stargate.util.NameHelper;
+import net.TheDgtl.Stargate.util.SpawnDetectionHelper;
+import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;
@@ -108,4 +121,96 @@ public class PortalCreationHelper {
         return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), alwaysOn, logger);
     }
 
+    
+
+    
+    /**
+     * Determine the uuid of the owner of this portal
+     * @param network 
+     * @param player
+     * @param flags
+     * @return
+     */
+    public static UUID getOwnerUUID(Network network, Player player, Set<PortalFlag> flags) {
+        if(network != null) {
+            return flags.contains(PortalFlag.PERSONAL_NETWORK) ? UUID.fromString(network.getName()) : player.getUniqueId();
+        }
+        return player.getUniqueId();
+    }
+    
+    /**
+     * Tries to create a new stargate
+     *
+     * @param selectedNetwork   <p>The network selected on the stargate's sign</p>
+     * @param lines             <p>The lines on the stargate's sign</p>
+     * @param signLocation      <p>The location of the changed sign</p>
+     * @param flags             <p>The flags selected by the player</p>
+     * @param player            <p>The player that changed the sign</p>
+     * @param cost              <p>The cost of creating the new stargate</p>
+     * @param permissionManager <p>The permission manager to use for checking the player's permissions</p>
+     * @param errorMessage      <p>The error message to display to the player</p>
+     * @throws NameErrorException     <p>If the name of the stargate does not follow set rules</p>
+     * @throws GateConflictException  <p>If the gate's physical structure is in conflict with another</p>
+     * @throws NoFormatFoundException <p>If no known format matches the built stargate</p>
+     */
+    public static void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation, Set<PortalFlag> flags,
+                                   Player player, int cost, PermissionManager permissionManager, TranslatableMessage errorMessage)
+            throws NameErrorException, GateConflictException, NoFormatFoundException {
+
+        UUID ownerUUID = PortalCreationHelper.getOwnerUUID(selectedNetwork,player,flags);
+        Gate gate = PortalCreationHelper.createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON), Stargate.getInstance());
+        RealPortal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance());
+        StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, cost);
+
+        Bukkit.getPluginManager().callEvent(stargateCreateEvent);
+
+        boolean hasPermission = permissionManager.hasCreatePermissions(portal);
+        Stargate.log(Level.CONFIG, " player has perm = " + hasPermission);
+
+        if (errorMessage != null) {
+            player.sendMessage(Stargate.languageManager.getErrorMessage(errorMessage));
+            return;
+        }
+
+        if (!hasPermission) {
+            Stargate.log(Level.CONFIG, " Event was cancelled due to lack of permission");
+            player.sendMessage(permissionManager.getDenyMessage());
+            return;
+        }
+        if (stargateCreateEvent.isCancelled()) {
+            Stargate.log(Level.CONFIG, " Event was cancelled due an external cancellation");
+            player.sendMessage(stargateCreateEvent.getDenyReason());
+            return;
+        }
+
+        if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_CREATE) &&
+                !Stargate.economyManager.chargeAndTax(player, stargateCreateEvent.getCost())) {
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
+            return;
+        }
+
+        if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
+                && !ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
+            return;
+        }
+        if (flags.contains(PortalFlag.FANCY_INTER_SERVER) && !ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INTER_SERVER_DISABLED));
+            return;
+        }
+
+        if (SpawnDetectionHelper.isInterferingWithSpawnProtection(gate, signLocation.getLocation())) {
+            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
+        }
+
+        selectedNetwork.addPortal(portal, true);
+        selectedNetwork.updatePortals();
+        Stargate.log(Level.FINE, "A Gate format matches");
+        if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
+            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE_PERSONAL));
+        } else {
+            String unformattedMessage = Stargate.languageManager.getMessage(TranslatableMessage.CREATE);
+            player.sendMessage(TranslatableMessageFormatter.formatNetwork(unformattedMessage, selectedNetwork.getName()));
+        }
+    }
 }

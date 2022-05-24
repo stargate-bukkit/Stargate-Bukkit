@@ -19,8 +19,13 @@ import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.property.BypassPermission;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
+import net.TheDgtl.Stargate.util.EconomyHelper;
+import net.TheDgtl.Stargate.util.NetworkCreationHelper;
 import net.TheDgtl.Stargate.util.SpawnDetectionHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
+import net.TheDgtl.Stargate.util.portal.PortalCreationHelper;
+import net.TheDgtl.Stargate.util.portal.PortalDestructionHelper;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -70,7 +75,10 @@ public class BlockEventListener implements Listener {
                 return true;
             };
 
-            destroyPortalIfHasPermissionAndCanPay(event, portal, destroyAction);
+            boolean shouldCancel = PortalDestructionHelper.destroyPortalIfHasPermissionAndCanPay(event.getPlayer(), portal, destroyAction);
+            if(shouldCancel) {
+                event.setCancelled(true);
+            }
             return;
         }
         if (Stargate.getRegistry().getPortal(location, GateStructureType.CONTROL_BLOCK) != null) {
@@ -165,6 +173,7 @@ public class BlockEventListener implements Listener {
         int cost = ConfigurationHelper.getInteger(ConfigurationOption.CREATION_COST);
         Player player = event.getPlayer();
         Set<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
+        
         PermissionManager permissionManager = new PermissionManager(player);
         TranslatableMessage errorMessage = null;
 
@@ -172,6 +181,10 @@ public class BlockEventListener implements Listener {
             flags.add(PortalFlag.NETWORKED);
         }
 
+        if (flags.contains(PortalFlag.PRIVATE)) {
+            flags.add(PortalFlag.PERSONAL_NETWORK);
+        }
+        
         Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
 
         if (disallowedFlags.size() > 0) {
@@ -183,15 +196,23 @@ public class BlockEventListener implements Listener {
         String finalNetworkName;
         Network selectedNetwork = null;
         try {
-            finalNetworkName = interpretNetworkName(network, flags, player, permissionManager);
-            selectedNetwork = selectNetwork(finalNetworkName, flags);
+            Stargate.log(Level.FINER, "....Choosing network name....");
+            Stargate.log(Level.FINER, "initial name is " + network);
+            finalNetworkName = NetworkCreationHelper.interpretNetworkName(network, flags, player, Stargate.getRegistry());
+            Stargate.log(Level.FINER, "Took format " + finalNetworkName);
+            finalNetworkName = NetworkCreationHelper.getAllowedNetworkName(finalNetworkName, permissionManager, player);
+            Stargate.log(Level.FINER, "From allowed permissions took " + finalNetworkName);
+            flags.addAll(NetworkCreationHelper.getNameRelatedFlags(finalNetworkName));
+            finalNetworkName = NetworkCreationHelper.parseNetworknameName(finalNetworkName);
+            Stargate.log(Level.FINER, "Ended upp with name " + finalNetworkName);
+            selectedNetwork = NetworkCreationHelper.selectNetwork(finalNetworkName, flags);
         } catch (NameErrorException nameErrorException) {
             errorMessage = nameErrorException.getErrorMessage();
         }
 
 
         try {
-            tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost, permissionManager, errorMessage);
+            PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost, permissionManager, errorMessage);
         } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINER, "No Gate format matches");
         } catch (GateConflictException gateConflictException) {
@@ -201,6 +222,8 @@ public class BlockEventListener implements Listener {
         }
     }
 
+    
+    
     /**
      * Tries to create a new stargate
      *
@@ -319,33 +342,6 @@ public class BlockEventListener implements Listener {
         }
 
 
-        //Move the legacy bungee stargates to their own network
-        if (flags.contains(PortalFlag.BUNGEE)) {
-            return "§§§§§§#BUNGEE#§§§§§§";
-        }
-        return initialNetworkName;
-    }
-
-    /**
-     * Gets the network with the given name, and creates it if it doesn't already exist
-     *
-     * @param name  <p>The name of the network to get</p>
-     * @param flags <p>The flags of the portal that should belong to this network</p>
-     * @return <p>The network the portal should be connected to</p>
-     * @throws NameErrorException <p>If the network name is invalid</p>
-     */
-    private Network selectNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {
-        try {
-            Stargate.getRegistry().createNetwork(name, flags);
-        } catch (NameErrorException nameErrorException) {
-            TranslatableMessage translatableMessage = nameErrorException.getErrorMessage();
-            if (translatableMessage != null) {
-                throw nameErrorException;
-            }
-        }
-        return Stargate.getRegistry().getNetwork(name, flags.contains(PortalFlag.FANCY_INTER_SERVER));
-    }
-
     /**
      * Listens to and cancels any piston extend events that may break a stargate
      *
@@ -377,19 +373,27 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        Portal portal = Stargate.getRegistry().getPortal(event.getLocation(), new GateStructureType[]{GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK});
-        if (portal != null) {
-            if (ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION)) {
-                portal.destroy();
-                Supplier<Boolean> destroyAction = () -> {
-                    portal.destroy();
-                    Stargate.log(Level.FINEST, "Broke the portal from explosion");
-                    return true;
-                };
-                Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
-                return;
+        Set<Portal> explodedPortals = new HashSet<>();
+
+        for (Block block : event.blockList()) {
+            Portal portal = Stargate.getRegistry().getPortal(block.getLocation(),
+                    new GateStructureType[]{GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK});
+            if (portal != null) {
+                if (!ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION)) {
+                    event.setCancelled(true);
+                    return;
+                }
+                explodedPortals.add(portal);
             }
-            event.setCancelled(true);
+        }
+
+        for (Portal portal : explodedPortals) {
+            Supplier<Boolean> destroyAction = () -> {
+                portal.destroy();
+                Stargate.log(Level.FINEST, "Broke the portal from explosion");
+                return true;
+            };
+            Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
         }
     }
 

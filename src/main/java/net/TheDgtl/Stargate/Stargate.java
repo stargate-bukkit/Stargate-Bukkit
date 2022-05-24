@@ -46,7 +46,9 @@ import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.property.PluginChannel;
 import net.TheDgtl.Stargate.thread.SynchronousPopulator;
 import net.TheDgtl.Stargate.util.BStatsHelper;
+import net.TheDgtl.Stargate.util.BungeeHelper;
 import net.TheDgtl.Stargate.util.FileHelper;
+import net.TheDgtl.Stargate.util.portal.PortalHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -117,10 +119,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     public static final int MAX_TEXT_LENGTH = 40;
 
     public static EconomyManager economyManager;
-    /*
-     * Used in bungee / waterfall
-     */
-    private final HashMap<String, Portal> bungeeQueue = new HashMap<>();
     public static String serverName;
     public static boolean knowsServerName = false;
 
@@ -162,40 +160,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
         //Register bStats metrics
         int pluginId = 13629;
-        //TODO: Nothing is done with the created metrics object
-        Metrics metrics = BStatsHelper.getMetrics(pluginId, this);
-    }
-
-    private void loadBungeeServerName() {
-        Stargate.log(Level.FINEST, DATA_FOLDER);
-        File path = new File(this.getDataFolder(), INTERNAL_FOLDER);
-        if (!path.exists() && path.mkdir()) {
-            try {
-                Files.setAttribute(path.toPath(), "dos:hidden", true);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        File file = new File(path, "serverUUID.txt");
-        if (!file.exists()) {
-            try {
-                if (!file.createNewFile()) {
-                    throw new FileNotFoundException("serverUUID.txt was not found and could not be created");
-                }
-                BufferedWriter writer = FileHelper.getBufferedWriter(file);
-                writer.write(UUID.randomUUID().toString());
-                writer.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        }
-        try {
-            BufferedReader reader = FileHelper.getBufferedReader(file);
-            Stargate.serverUUID = UUID.fromString(reader.readLine());
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        BStatsHelper.getMetrics(pluginId, this);
     }
 
     private void loadColors() {
@@ -316,7 +281,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     private void load() {
         loadColors();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
-            loadBungeeServerName();
+            BungeeHelper.loadBungeeServerName(DATA_FOLDER,INTERNAL_FOLDER);
         }
         economyManager = new EconomyManager();
         String debugLevelString = ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL);
@@ -339,8 +304,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     @Override
     public void onDisable() {
         //Close networked always-on Stargates as they have no destination on next start
-        closeAllPortals(registry.getBungeeNetworkMap());
-        closeAllPortals(registry.getNetworkMap());
+        PortalHelper.closeAllPortals(registry.getBungeeNetworkMap());
+        PortalHelper.closeAllPortals(registry.getNetworkMap());
         /*
          * Replacement for legacy, which used:
          * methodPortal.closeAllGates(this); Portal.clearGates(); managedWorlds.clear();
@@ -358,17 +323,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             return;
         }
         storageAPI.endInterServerConnection();
-    }
-
-    private void closeAllPortals(Map<String, Network> networkMap) {
-        for (Network network : networkMap.values()) {
-            for (Portal portal : network.getAllPortals()) {
-                if (portal.hasFlag(PortalFlag.ALWAYS_ON) && !portal.hasFlag(PortalFlag.FIXED) &&
-                        portal instanceof RealPortal) {
-                    ((RealPortal) portal).getGate().close();
-                }
-            }
-        }
     }
 
     public static void log(Level priorityLevel, String message) {
@@ -416,35 +370,6 @@ public class Stargate extends JavaPlugin implements StargateLogger {
             stargateCommand.setExecutor(new CommandStargate());
             stargateCommand.setTabCompleter(new StargateTabCompleter());
         }
-    }
-
-    public static void addToQueue(String playerName, String portalName, String netName, boolean isInterServer) {
-        Network network = getRegistry().getNetwork(netName, isInterServer);
-
-
-        /*
-         * In some cases, there might be issues with a portal being deleted in a server, but still present in the
-         * inter-server database. Therefore, we have to check for that...
-         */
-        if (network == null) {
-            // Error: This bungee portal's %type% has been removed from the destination server instance.
-            //(See Discussion One) %type% = network.
-            String msg = String.format("Inter-server network ''%s'' could not be found", netName);
-            Stargate.log(Level.WARNING, msg);
-        }
-        Portal portal = network == null ? null : network.getPortal(portalName);
-        if (portal == null) {
-            // Error: This bungee portal's %type% has been removed from the destination server instance.
-            //(See Discussion One) %type% = gate.
-            String msg = String.format("Inter-server portal ''%s'' in network ''%s'' could not be found", portalName, netName);
-            Stargate.log(Level.WARNING, msg);
-        }
-        instance.bungeeQueue.put(playerName, portal);
-    }
-
-
-    public static Portal pullFromQueue(String playerName) {
-        return instance.bungeeQueue.remove(playerName);
     }
 
     public static RegistryAPI getRegistry() {

@@ -12,6 +12,7 @@ import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.property.PluginChannel;
+import net.TheDgtl.Stargate.util.BungeeHelper;
 import net.TheDgtl.Stargate.util.ColorConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -140,7 +141,7 @@ public class PlayerEventListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
+        if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE) || !ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
             return;
         }
 
@@ -151,7 +152,7 @@ public class PlayerEventListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        Portal destination = Stargate.pullFromQueue(player.getName());
+        Portal destination = BungeeHelper.pullFromQueue(player.getName());
 
         if (destination == null) {
             return;

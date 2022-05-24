@@ -33,6 +33,8 @@ import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import net.TheDgtl.Stargate.property.PluginChannel;
 import net.TheDgtl.Stargate.property.StargateProtocolProperty;
 import net.TheDgtl.Stargate.property.StargateProtocolRequestType;
+import net.TheDgtl.Stargate.util.BungeeHelper;
+
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
@@ -89,7 +91,13 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         try {
             DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
             String subChannel = in.readUTF();
-            switch (PluginChannel.parse(subChannel)) {
+            //Ignore any unknown sub-channels to prevent an exception caused by converting null into ordinal
+            PluginChannel subPluginChannel = PluginChannel.parse(subChannel);
+            if (subPluginChannel == null) {
+                Stargate.log(Level.FINEST, "Received unknown message on unknown sub-channel: " + subChannel);
+                return;
+            }
+            switch (subPluginChannel) {
                 case GET_SERVER:
                     Stargate.serverName = in.readUTF();
                     Stargate.knowsServerName = !Stargate.serverName.isEmpty();
@@ -112,7 +120,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     Stargate.log(Level.FINEST, "Received unknown message with a sub-channel: " + subChannel);
                     break;
             }
-        } catch (IOException ex) {
+        } catch (IOException | NameErrorException ex) {
             Stargate.log(Level.WARNING, "[Stargate] Error receiving BungeeCord message");
             ex.printStackTrace();
         }
@@ -138,7 +146,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         Player player = stargate.getServer().getPlayer(playerName);
         if (player == null) {
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
-            Stargate.addToQueue(playerName, destination, bungeeNetwork, false);
+            BungeeHelper.addToQueue(Stargate.getRegistry(),playerName, destination, bungeeNetwork, false);
         } else {
             Network network = Stargate.getRegistry().getNetwork(bungeeNetwork, false);
             Portal destinationPortal = network.getPortal(destination);
@@ -150,8 +158,9 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      * Updates a network according to a "network changed" message
      *
      * @param message <p>The network change message to parse and handle</p>
+     * @throws NameErrorException <p>If the specified network name cannot be used</p>
      */
-    private void updateNetwork(String message) {
+    private void updateNetwork(String message) throws NameErrorException {
         JsonParser parser = new JsonParser();
         Stargate.log(Level.FINEST, message);
         JsonObject json = (JsonObject) parser.parse(message);
@@ -173,14 +182,15 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             switch (requestType) {
                 case PORTAL_ADD:
                     targetNetwork.addPortal(portal, false);
+                    Stargate.log(Level.FINE, String.format("Adding virtual portal %s in interserver network %s", portalName, network));
                     break;
                 case PORTAL_REMOVE:
+                    Stargate.log(Level.FINE, String.format("Removing virtual portal %s in interserver network %s", portalName, network));
                     targetNetwork.removePortal(portal, false);
                     break;
             }
         } catch (NameErrorException ignored) {
         }
-
 
     }
 
@@ -201,7 +211,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         Player player = stargate.getServer().getPlayer(playerName);
         if (player == null) {
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
-            Stargate.addToQueue(playerName, portalName, networkName, true);
+            BungeeHelper.addToQueue(Stargate.getRegistry(), playerName, portalName, networkName, true);
             return;
         }
 
