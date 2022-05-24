@@ -17,6 +17,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,8 +34,9 @@ import java.util.logging.Level;
 public class Teleporter {
 
     private static final double LOOK_FOR_LEASHED_RADIUS = 15;
-    private Location destination;
+    private Location exit;
     private final RealPortal origin;
+    private final RealPortal destination;
     private final int cost;
     private double rotation;
     private final BlockFace destinationFace;
@@ -55,12 +57,13 @@ public class Teleporter {
      * @param teleportMessage  <p>The teleportation message to display if the teleportation is successful</p>
      * @param checkPermissions <p>Whether to check, or totally ignore permissions</p>
      */
-    public Teleporter(Location destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
+    public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
                       int cost, String teleportMessage, StargateLogger logger) {
         // Center the destination in the destination block
-        this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
+        this.exit = destination.getExit().clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
         this.origin = origin;
+        this.destination = destination;
         this.rotation = calculateAngleDifference(entranceFace, destinationFace);
         this.cost = cost;
         this.teleportMessage = teleportMessage;
@@ -101,14 +104,14 @@ public class Teleporter {
         if(!hasPermission) {
             rotation = Math.PI;
             if(origin != null) {
-                destination = origin.getExit().add(new Vector(0.5, 0, 0.5));
+                exit = origin.getExit().add(new Vector(0.5, 0, 0.5));
             } else {
-                destination = baseEntity.getLocation();
+                exit = baseEntity.getLocation();
             }
         }
 
         Vector offset = getOffset(baseEntity);
-        destination.subtract(offset);
+        exit.subtract(offset);
         
         Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
             betterTeleport(baseEntity, rotation);
@@ -167,19 +170,19 @@ public class Teleporter {
         }
 
         if (origin == null) {
-            destination.setDirection(destinationFace.getOppositeFace().getDirection());
-            teleport(target, destination);
+            exit.setDirection(destinationFace.getOppositeFace().getDirection());
+            teleport(target, exit);
             return true;
         }
 
         // To smooth the experienced for highly used portals, or entity teleportation
-        if (!destination.getChunk().isLoaded()) {
-            destination.getChunk().load();
+        if (!exit.getChunk().isLoaded()) {
+            exit.getChunk().load();
         }
 
         logger.logMessage(Level.FINEST, "Trying to teleport surrounding leashed entities");
         teleportNearbyLeashedEntities(target, rotation);
-        teleport(target, destination, rotation);
+        teleport(target, exit, rotation);
         return true;
     }
 
@@ -339,7 +342,7 @@ public class Teleporter {
      * @return <p>True if the entity has the required permissions for performing the teleportation</p>
      */
     private boolean hasPermission(Entity target, PermissionManager permissionManager) {
-        StargatePortalEvent event = new StargatePortalEvent(target, origin);
+        StargatePortalEvent event = new StargatePortalEvent(target, origin, destination, exit);
         Bukkit.getPluginManager().callEvent(event);
         return (permissionManager.hasTeleportPermissions(origin) && !event.isCancelled());
     }

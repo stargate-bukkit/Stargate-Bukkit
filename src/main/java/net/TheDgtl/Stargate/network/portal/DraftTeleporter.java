@@ -35,8 +35,9 @@ import java.util.logging.Level;
 public class DraftTeleporter {
 
     private static final double LOOK_FOR_LEASHED_RADIUS = 15;
-    private final Location destination;
+    private final Location exit;
     private final RealPortal origin;
+    private final RealPortal destination;
     private final int cost;
     private final BlockFace destinationFace;
     private String teleportMessage;
@@ -54,12 +55,13 @@ public class DraftTeleporter {
      * @param teleportMessage    <p>The teleportation message to display if the teleportation is successful</p>
      * @param logger             <p>The logger used for logging messages</p>
      */
-    public DraftTeleporter(Location destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
+    public DraftTeleporter(RealPortal destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
                            int cost, String teleportMessage, StargateLogger logger) {
         // Center the destination in the destination block
-        this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
+        this.exit = destination.getExit().clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
         this.entranceFace = entranceFace;
+        this.destination = destination;
         this.origin = origin;
         this.cost = cost;
         this.teleportMessage = teleportMessage;
@@ -156,7 +158,7 @@ public class DraftTeleporter {
             return origin.getExit().clone().subtract(offset);
         } else {
             Vector offset = getOffset(destinationFace, baseEntity);
-            return this.destination.clone().subtract(offset);
+            return this.exit.clone().subtract(offset);
         }
     }
 
@@ -301,7 +303,7 @@ public class DraftTeleporter {
      * @return <p>True if the entity has the required permissions for performing the teleportation</p>
      */
     private boolean hasPermission(Entity target, PermissionManager permissionManager) {
-        StargatePortalEvent event = new StargatePortalEvent(target, origin);
+        StargatePortalEvent event = new StargatePortalEvent(target, origin, destination, exit);
         Bukkit.getPluginManager().callEvent(event);
         return (permissionManager.hasTeleportPermissions(origin)) && !event.isCancelled();
     }
