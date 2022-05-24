@@ -16,6 +16,7 @@ import net.TheDgtl.Stargate.manager.PermissionManager;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.property.BypassPermission;
 import net.TheDgtl.Stargate.util.PortalCreationHelper;
 import net.TheDgtl.Stargate.util.SpawnDetectionHelper;
@@ -58,7 +59,7 @@ public class BlockEventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Location location = event.getBlock().getLocation();
-        Portal portal = Stargate.getRegistry().getPortal(location, GateStructureType.FRAME);
+        RealPortal portal = Stargate.getRegistry().getPortal(location, GateStructureType.FRAME);
         if (portal != null) {
             Supplier<Boolean> destroyAction = () -> {
                 String msg = Stargate.languageManager.getErrorMessage(TranslatableMessage.DESTROY);
@@ -88,29 +89,31 @@ public class BlockEventListener implements Listener {
      * @param portal        <p>The portal to destroy</p>
      * @param destroyAction <p>The action to run when destroying a portal</p>
      */
-    private void destroyPortalIfHasPermissionAndCanPay(BlockBreakEvent event, Portal portal,
+    private void destroyPortalIfHasPermissionAndCanPay(BlockBreakEvent event, RealPortal portal,
                                                        Supplier<Boolean> destroyAction) {
         int cost = ConfigurationHelper.getInteger(ConfigurationOption.DESTROY_COST);
-        StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, event.getPlayer(), cost);
-        Bukkit.getPluginManager().callEvent(stargateDestroyEvent);
         PermissionManager permissionManager = new PermissionManager(event.getPlayer());
-        if (permissionManager.hasPermission(stargateDestroyEvent) && !stargateDestroyEvent.isCancelled()) {
-            /*
-             * If setting charge free destination is false, destination portal is PortalFlag.Free and portal is of Fixed type
-             * or if player has override cost permission, do not collect money
-             */
-            if (shouldChargePlayer(event.getPlayer(), portal, BypassPermission.COST_DESTROY) &&
-                    !Stargate.economyManager.chargeAndTax(event.getPlayer(),
-                            stargateDestroyEvent.getCost())) {
-                event.getPlayer().sendMessage(
-                        Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
-                event.setCancelled(true);
-                return;
-            }
-            Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
-        } else {
+        boolean hasPermission = permissionManager.hasDestroyPermissions(portal);
+        StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, event.getPlayer(), !hasPermission, permissionManager.getDenyMessage(), cost);
+        Bukkit.getPluginManager().callEvent(stargateDestroyEvent);
+        if (stargateDestroyEvent.isCancelled()) {
             event.setCancelled(true);
+            event.getPlayer().sendMessage(stargateDestroyEvent.getDenyReason());
+            return;
         }
+        /*
+         * If setting charge free destination is false, destination portal is
+         * PortalFlag.Free and portal is of Fixed type or if player has override cost
+         * permission, do not collect money
+         */
+        if (shouldChargePlayer(event.getPlayer(), portal, BypassPermission.COST_DESTROY)
+                && !Stargate.economyManager.chargeAndTax(event.getPlayer(), stargateDestroyEvent.getCost())) {
+            event.getPlayer().sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
+            event.setCancelled(true);
+            return;
+        }
+        Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
+
     }
 
     /**
@@ -219,26 +222,14 @@ public class BlockEventListener implements Listener {
 
         UUID ownerUUID = flags.contains(PortalFlag.PERSONAL_NETWORK) ? UUID.fromString(selectedNetwork.getName()) : player.getUniqueId();
         Gate gate = PortalCreationHelper.createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON), Stargate.getInstance());
-        Portal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance());
-        StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, cost);
+        RealPortal portal = PortalCreationHelper.createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance());
+
+        boolean hasPermission = permissionManager.hasCreatePermissions(portal);
+        StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines,!hasPermission,permissionManager.getDenyMessage(), cost);
 
         Bukkit.getPluginManager().callEvent(stargateCreateEvent);
 
-        boolean hasPermission = permissionManager.hasPermission(stargateCreateEvent);
-        Stargate.log(Level.CONFIG, " player has perm = " + hasPermission);
-
-        if (errorMessage != null) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(errorMessage));
-            return;
-        }
-
-        if (!hasPermission) {
-            Stargate.log(Level.CONFIG, " Event was cancelled due to lack of permission");
-            player.sendMessage(permissionManager.getDenyMessage());
-            return;
-        }
         if (stargateCreateEvent.isCancelled()) {
-            Stargate.log(Level.CONFIG, " Event was cancelled due an external cancellation");
             player.sendMessage(stargateCreateEvent.getDenyReason());
             return;
         }

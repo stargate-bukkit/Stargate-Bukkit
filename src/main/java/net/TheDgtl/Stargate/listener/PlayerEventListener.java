@@ -107,12 +107,13 @@ public class PlayerEventListener implements Listener {
      * @param portal <p>The portal whose sign to apply dye to<p>
      * @return <p>True if the dye should be applied</p>
      */
-    private boolean dyePortalSignText(PlayerInteractEvent event, Portal portal) {
+    private boolean dyePortalSignText(PlayerInteractEvent event, RealPortal portal) {
         ItemStack item = event.getItem();
         PermissionManager permissionManager = new PermissionManager(event.getPlayer());
-        StargateCreateEvent colorSignPermission = new StargateCreateEvent(event.getPlayer(), portal, new String[]{""},
+        boolean hasPermission = permissionManager.hasCreatePermissions(portal);
+        StargateCreateEvent colorSignPermission = new StargateCreateEvent(event.getPlayer(), portal, new String[]{"coloringSign"}, !hasPermission, permissionManager.getDenyMessage(),
                 0);
-        return itemIsDye(item) && permissionManager.hasPermission(colorSignPermission);
+        return itemIsDye(item) && !colorSignPermission.getDeny();
     }
 
     /**

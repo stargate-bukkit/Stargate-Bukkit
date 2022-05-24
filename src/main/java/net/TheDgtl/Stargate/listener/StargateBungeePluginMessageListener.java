@@ -167,20 +167,21 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
         try {
             Stargate.getRegistry().createNetwork(network, flags);
+            InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.getRegistry().getNetwork(network, true);
+            VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
+
+            switch (requestType) {
+                case PORTAL_ADD:
+                    targetNetwork.addPortal(portal, false);
+                    break;
+                case PORTAL_REMOVE:
+                    targetNetwork.removePortal(portal, false);
+                    break;
+            }
         } catch (NameErrorException ignored) {
         }
 
-        InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.getRegistry().getNetwork(network, true);
-        VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
-
-        switch (requestType) {
-            case PORTAL_ADD:
-                targetNetwork.addPortal(portal, false);
-                break;
-            case PORTAL_REMOVE:
-                targetNetwork.removePortal(portal, false);
-                break;
-        }
+        
 
     }
 

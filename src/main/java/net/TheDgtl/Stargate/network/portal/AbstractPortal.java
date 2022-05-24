@@ -241,7 +241,7 @@ public abstract class AbstractPortal implements RealPortal {
             teleporter.teleport(target);
             return;
         }
-
+        
         StargateAccessEvent accessEvent = new StargateAccessEvent(target, this, false, null);
         Bukkit.getPluginManager().callEvent(accessEvent);
         if(accessEvent.getDeny()) {
