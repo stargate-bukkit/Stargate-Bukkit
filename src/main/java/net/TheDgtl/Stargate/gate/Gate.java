@@ -309,7 +309,7 @@ public class Gate implements GateAPI {
             /*
              * Top-left is origin for the format, everything becomes easier if you calculate this position in the world;
              * this is a hypothetical position, calculated from the position of the sign minus a vector of a
-             * hypothetical sign position in formatspace.
+             * hypothetical sign position in format space.
              */
             topLeft = location.clone().subtract(converter.performToRealSpaceOperation(controlBlock));
             if (isValid(alwaysOn)) {

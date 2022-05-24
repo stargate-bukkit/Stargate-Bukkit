@@ -118,7 +118,6 @@ public class NetworkCreationHelper {
      */
     public static String getAllowedNetworkName(String initialNetworkName, PermissionManager permissionManager,
                                                Player player) {
-        //TODO: This is never used
         HighlightingStyle style = HighlightingStyle.getHighlightType(initialNetworkName);
         if (!permissionManager.canCreateInNetwork(initialNetworkName) && style == HighlightingStyle.NOTHING) {
             Stargate.log(Level.CONFIG,
@@ -143,7 +142,6 @@ public class NetworkCreationHelper {
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
     public static Network selectNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {
-        //TODO: This is never used
         try {
             Stargate.getRegistry().createNetwork(name, flags);
         } catch (NameErrorException nameErrorException) {

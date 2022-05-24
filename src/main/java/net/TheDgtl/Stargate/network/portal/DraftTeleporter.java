@@ -80,7 +80,7 @@ public class DraftTeleporter {
         }
         final Entity baseEntity = testForBaseEntity;
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
-            //TODO: The access event should be called to allow add-ons cancelling or overriding the teleportation
+            //TODO: The access event should be able to override the permission check
             PermissionManager permissionManager = new PermissionManager(anyEntity);
             if (!hasPermission(anyEntity, permissionManager)) {
                 teleportMessage = permissionManager.getDenyMessage();
