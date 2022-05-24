@@ -42,7 +42,7 @@ public class Teleporter {
     private final BlockFace destinationFace;
     boolean hasPermission;
     private String teleportMessage;
-    private Set<Entity> teleportedEntities = new HashSet<>();
+    private final Set<Entity> teleportedEntities = new HashSet<>();
     private final StargateLogger logger;
     private List<LivingEntity> nearbyLeashed;
 
@@ -55,7 +55,6 @@ public class Teleporter {
      * @param entranceFace     <p>The direction the entrance portal is facing</p>
      * @param cost             <p>The cost of teleportation for any players</p>
      * @param teleportMessage  <p>The teleportation message to display if the teleportation is successful</p>
-     * @param checkPermissions <p>Whether to check, or totally ignore permissions</p>
      */
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
                       int cost, String teleportMessage, StargateLogger logger) {
@@ -121,15 +120,15 @@ public class Teleporter {
     
     private Vector getOffset(Entity baseEntity) {
         if(hasPermission) {
-            return getOffsettFromFacing(baseEntity,destinationFace);
+            return getOffsetFromFacing(baseEntity,destinationFace);
         }
         if(origin != null) {
-            return getOffsettFromFacing(baseEntity,origin.getGate().getFacing().getOppositeFace());
+            return getOffsetFromFacing(baseEntity,origin.getGate().getFacing().getOppositeFace());
         }
         return new Vector();
     }
     
-    private Vector getOffsettFromFacing(Entity baseEntity, BlockFace facing) {
+    private Vector getOffsetFromFacing(Entity baseEntity, BlockFace facing) {
         Vector offset = facing.getDirection();
         double targetWidth = baseEntity.getWidth();
         offset.multiply(Math.ceil((targetWidth + 1) / 2));
@@ -223,9 +222,9 @@ public class Teleporter {
         for (LivingEntity entity : nearbyLeashed) {
             if (entity.isLeashed() &&  entity.getLeashHolder() == holder) {
                 Supplier<Boolean> action = () -> {
-                    ((LivingEntity) entity).setLeashHolder(null);
+                    entity.setLeashHolder(null);
                     if (betterTeleport(entity, rotation)) {
-                        ((LivingEntity) entity).setLeashHolder(holder);
+                        entity.setLeashHolder(holder);
                     }
 
                     return true;
@@ -253,7 +252,7 @@ public class Teleporter {
         if (target instanceof Player) {
             Player player = (Player) target;
             String msg = "Teleporting player %s to %s";
-            msg = String.format(msg, player.getName(), location.toString());
+            msg = String.format(msg, player.getName(), location);
             if (this.origin != null) {
                 msg = msg + "from portal %s in network %s";
                 msg = String.format(msg, origin.getName(), origin.getNetwork().getName());
@@ -279,7 +278,8 @@ public class Teleporter {
                     setPushZ.invoke(poweredMinecart, -location.getDirection().getBlockZ());
 
                 } catch (NoSuchMethodException ignored) {
-                    logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S -- use Paper 1.18.2+ for this feature.", location.toString()));
+                    logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
+                            " use Paper 1.18.2+ for this feature.", location));
                 } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -311,6 +311,7 @@ public class Teleporter {
      * @return <p>True if all necessary transactions were successfully completed</p>
      */
     private boolean charge(Player target) {
+        //TODO: This is never called. What happened to economy?
         if (origin.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
             return Stargate.economyManager.chargePlayer(target, origin, cost);
         } else {
@@ -342,9 +343,10 @@ public class Teleporter {
      * @return <p>True if the entity has the required permissions for performing the teleportation</p>
      */
     private boolean hasPermission(Entity target, PermissionManager permissionManager) {
+        boolean hasPermission = permissionManager.hasTeleportPermissions(origin);
         StargatePortalEvent event = new StargatePortalEvent(target, origin, destination, exit);
         Bukkit.getPluginManager().callEvent(event);
-        return (permissionManager.hasTeleportPermissions(origin) && !event.isCancelled());
+        return !hasPermission || event.isCancelled();
     }
 
     /**
