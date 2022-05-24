@@ -18,7 +18,7 @@ import java.util.Set;
 public class BStatsHelper {
 
     /**
-     * Creates a new metrics containing relevant portal data
+     * Creates a new metrics containing relevant portal data. Note that the returned class does not need to be used.
      *
      * @param pluginId <p>The id of the Stargate plugin</p>
      * @param plugin   <p>A Stargate plugin instance</p>

@@ -1,7 +1,11 @@
 package net.TheDgtl.Stargate.util;
 
+import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -21,6 +25,23 @@ public class PortalHelper {
             flagsStringBuilder.append(flag.getCharacterRepresentation());
         }
         return flagsStringBuilder.toString();
+    }
+    
+    
+
+    /**
+     * Close all portals in specified map
+     * @param networkMap <p> The map with all portals to close </p>
+     */
+    public static void closeAllPortals(Map<String, Network> networkMap) {
+        for (Network network : networkMap.values()) {
+            for (Portal portal : network.getAllPortals()) {
+                if (portal.hasFlag(PortalFlag.ALWAYS_ON) && !portal.hasFlag(PortalFlag.FIXED) &&
+                        portal instanceof RealPortal) {
+                    ((RealPortal) portal).getGate().close();
+                }
+            }
+        }
     }
 
 }
