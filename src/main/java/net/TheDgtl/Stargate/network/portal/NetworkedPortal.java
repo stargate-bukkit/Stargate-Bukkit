@@ -290,7 +290,6 @@ public class NetworkedPortal extends AbstractPortal {
      * @return <p>True if the given player is allowed to activate this portal</p>
      */
     private boolean hasActivatePermissions(Player player, PermissionManager permissionManager) {
-        //TODO: Call the Access event before this
         if (!permissionManager.hasAccessPermission(this)) {
             return false;
         }

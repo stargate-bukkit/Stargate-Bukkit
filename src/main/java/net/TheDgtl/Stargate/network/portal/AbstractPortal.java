@@ -7,6 +7,7 @@ import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.event.StargateAccessEvent;
+import net.TheDgtl.Stargate.event.StargateCloseEvent;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
@@ -164,6 +165,13 @@ public abstract class AbstractPortal implements RealPortal {
         if (!isOpen() || (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose)) {
             return;
         }
+        StargateCloseEvent closeEvent = new StargateCloseEvent(this, forceClose);
+        Bukkit.getPluginManager().callEvent(closeEvent);
+        if(closeEvent.isCancelled()) {
+            logger.logMessage(Level.FINE, "Closing event for portal " +getName()+ " in netork "+ getNetwork().getName() +" was canceled");
+            return;
+        }
+        
         logger.logMessage(Level.FINE, "Closing the portal");
         getGate().close();
         drawControlMechanisms();
