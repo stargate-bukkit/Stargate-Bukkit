@@ -23,7 +23,6 @@ import net.TheDgtl.Stargate.property.VersionImplemented;
 import net.TheDgtl.Stargate.util.NameHelper;
 import net.TheDgtl.Stargate.util.VersionParser;
 import net.TheDgtl.Stargate.util.portal.PortalHelper;
-
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -249,7 +248,7 @@ public abstract class AbstractPortal implements RealPortal {
             teleporter.teleport(target);
             return;
         }
-        
+
         StargateAccessEvent accessEvent = new StargateAccessEvent(target, this, false, null);
         Bukkit.getPluginManager().callEvent(accessEvent);
         if (accessEvent.getDeny()) {
@@ -258,7 +257,7 @@ public abstract class AbstractPortal implements RealPortal {
             teleporter.teleport(target);
             return;
         }
-        
+
         destination.teleportHere(target, this);
         destination.close(false);
         close(false);

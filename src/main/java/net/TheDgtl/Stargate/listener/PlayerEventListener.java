@@ -110,9 +110,10 @@ public class PlayerEventListener implements Listener {
      */
     private boolean dyePortalSignText(PlayerInteractEvent event, RealPortal portal) {
         ItemStack item = event.getItem();
-        if(!itemIsDye(item))
+        if (!itemIsDye(item)) {
             return false;
-        
+        }
+
         PermissionManager permissionManager = new PermissionManager(event.getPlayer());
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         StargateCreateEvent colorSignPermission = new StargateCreateEvent(event.getPlayer(), portal, new String[]{"coloringSign"}, !hasPermission, permissionManager.getDenyMessage(),

@@ -34,7 +34,6 @@ import net.TheDgtl.Stargate.property.PluginChannel;
 import net.TheDgtl.Stargate.property.StargateProtocolProperty;
 import net.TheDgtl.Stargate.property.StargateProtocolRequestType;
 import net.TheDgtl.Stargate.util.BungeeHelper;
-
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
@@ -146,7 +145,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         Player player = stargate.getServer().getPlayer(playerName);
         if (player == null) {
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
-            BungeeHelper.addToQueue(Stargate.getRegistry(),playerName, destination, bungeeNetwork, false);
+            BungeeHelper.addToQueue(Stargate.getRegistry(), playerName, destination, bungeeNetwork, false);
         } else {
             Network network = Stargate.getRegistry().getNetwork(bungeeNetwork, false);
             Portal destinationPortal = network.getPortal(destination);

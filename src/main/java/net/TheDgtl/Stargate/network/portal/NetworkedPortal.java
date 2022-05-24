@@ -293,7 +293,7 @@ public class NetworkedPortal extends AbstractPortal {
         if (!permissionManager.hasAccessPermission(this)) {
             return false;
         }
-        StargateActivateEvent event = new StargateActivateEvent(this, player, getPortalNames(destinations), 
+        StargateActivateEvent event = new StargateActivateEvent(this, player, getPortalNames(destinations),
                 this.getDestinationName());
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {

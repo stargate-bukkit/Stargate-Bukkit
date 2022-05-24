@@ -37,20 +37,14 @@ import net.TheDgtl.Stargate.listener.PluginEventListener;
 import net.TheDgtl.Stargate.listener.StargateBungeePluginMessageListener;
 import net.TheDgtl.Stargate.manager.EconomyManager;
 import net.TheDgtl.Stargate.migration.DataMigrator;
-import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
-import net.TheDgtl.Stargate.network.portal.Portal;
-import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.property.PluginChannel;
 import net.TheDgtl.Stargate.thread.SynchronousPopulator;
 import net.TheDgtl.Stargate.util.BStatsHelper;
 import net.TheDgtl.Stargate.util.BungeeHelper;
-import net.TheDgtl.Stargate.util.FileHelper;
 import net.TheDgtl.Stargate.util.portal.PortalHelper;
 import net.md_5.bungee.api.ChatColor;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -61,15 +55,10 @@ import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -281,7 +270,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     private void load() {
         loadColors();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
-            BungeeHelper.loadBungeeServerName(DATA_FOLDER,INTERNAL_FOLDER);
+            BungeeHelper.loadBungeeServerName(DATA_FOLDER, INTERNAL_FOLDER);
         }
         economyManager = new EconomyManager();
         String debugLevelString = ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL);

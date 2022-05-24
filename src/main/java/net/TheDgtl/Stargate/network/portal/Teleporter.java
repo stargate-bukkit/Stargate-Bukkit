@@ -339,11 +339,11 @@ public class Teleporter {
      */
     private boolean hasPermission(Entity target, PermissionManager permissionManager) {
         if (origin == null) {
-            // TODO origin == null means interserver teleportation. Make a permission check for this or something?
+            // TODO origin == null means inter-server teleportation. Make a permission check for this or something?
             return true;
         }
         boolean hasPermission = permissionManager.hasTeleportPermissions(origin);
-        StargatePortalEvent event = new StargatePortalEvent(target, origin);
+        StargatePortalEvent event = new StargatePortalEvent(target, origin, destination, exit);
         Bukkit.getPluginManager().callEvent(event);
         return !hasPermission || event.isCancelled();
     }
