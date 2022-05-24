@@ -36,27 +36,27 @@ public class EmptyRegistry implements RegistryAPI{
     public void updatePortals(Map<String, ? extends Network> networkMap) {}
 
     @Override
-    public Portal getPortal(BlockLocation blockLocation, GateStructureType structureType) {
+    public RealPortal getPortal(BlockLocation blockLocation, GateStructureType structureType) {
         return null;
     }
 
     @Override
-    public Portal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
+    public RealPortal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
         return null;
     }
 
     @Override
-    public Portal getPortal(Location location, GateStructureType structureType) {
+    public RealPortal getPortal(Location location, GateStructureType structureType) {
         return null;
     }
 
     @Override
-    public Portal getPortal(Location location, GateStructureType[] structureTypes) {
+    public RealPortal getPortal(Location location, GateStructureType[] structureTypes) {
         return null;
     }
 
     @Override
-    public Portal getPortal(Location location) {
+    public RealPortal getPortal(Location location) {
         return null;
     }
 
@@ -71,7 +71,7 @@ public class EmptyRegistry implements RegistryAPI{
     }
 
     @Override
-    public void registerLocations(GateStructureType structureType, Map<BlockLocation, Portal> locationsMap) {
+    public void registerLocations(GateStructureType structureType, Map<BlockLocation, RealPortal> locationsMap) {
     }
 
     @Override
