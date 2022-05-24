@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.util;
+package net.TheDgtl.Stargate.util.portal;
 
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;

@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.util;
+package net.TheDgtl.Stargate.util.portal;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -23,7 +23,8 @@ import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
-import net.TheDgtl.Stargate.util.PortalCreationHelper;
+import net.TheDgtl.Stargate.util.portal.PortalCreationHelper;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;

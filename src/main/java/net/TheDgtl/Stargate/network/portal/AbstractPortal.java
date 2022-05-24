@@ -19,8 +19,9 @@ import net.TheDgtl.Stargate.network.portal.formatting.NoLineColorFormatter;
 import net.TheDgtl.Stargate.property.BypassPermission;
 import net.TheDgtl.Stargate.property.VersionImplemented;
 import net.TheDgtl.Stargate.util.NameHelper;
-import net.TheDgtl.Stargate.util.PortalHelper;
 import net.TheDgtl.Stargate.util.VersionParser;
+import net.TheDgtl.Stargate.util.portal.PortalHelper;
+
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
