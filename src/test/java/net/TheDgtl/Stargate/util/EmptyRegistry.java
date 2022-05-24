@@ -1,6 +1,5 @@
 package net.TheDgtl.Stargate.util;
 
-import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PortalType;
@@ -40,27 +39,27 @@ public class EmptyRegistry implements RegistryAPI {
     }
 
     @Override
-    public Portal getPortal(BlockLocation blockLocation, GateStructureType structureType) {
+    public RealPortal getPortal(BlockLocation blockLocation, GateStructureType structureType) {
         return null;
     }
 
     @Override
-    public Portal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
+    public RealPortal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
         return null;
     }
 
     @Override
-    public Portal getPortal(Location location, GateStructureType structureType) {
+    public RealPortal getPortal(Location location, GateStructureType structureType) {
         return null;
     }
 
     @Override
-    public Portal getPortal(Location location, GateStructureType[] structureTypes) {
+    public RealPortal getPortal(Location location, GateStructureType[] structureTypes) {
         return null;
     }
 
     @Override
-    public Portal getPortal(Location location) {
+    public RealPortal getPortal(Location location) {
         return null;
     }
 
@@ -75,7 +74,8 @@ public class EmptyRegistry implements RegistryAPI {
     }
 
     @Override
-    public void registerLocations(GateStructureType structureType, Map<BlockLocation, Portal> locationsMap) {
+    public void registerLocations(GateStructureType structureType, Map<BlockLocation, RealPortal> locationsMap) {
+
     }
 
     @Override
@@ -83,7 +83,7 @@ public class EmptyRegistry implements RegistryAPI {
     }
 
     @Override
-    public void createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
+    public void createNetwork(String networkName, Set<PortalFlag> flags) {
     }
 
     @Override

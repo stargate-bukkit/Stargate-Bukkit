@@ -155,11 +155,10 @@ public class Teleporter {
      *
      * @param target   <p>The entity to teleport</p>
      * @param rotation <p>The rotation to apply to teleported entities, relative to its existing rotation</p>
-     * @return <p>If the teleportation was successfull</p>
      */
-    private boolean betterTeleport(Entity target, double rotation) {
+    private void betterTeleport(Entity target, double rotation) {
         if (teleportedEntities.contains(target)) {
-            return true;
+            return;
         }
         teleportedEntities.add(target);
         List<Entity> passengers = target.getPassengers();
@@ -171,7 +170,7 @@ public class Teleporter {
         if (origin == null) {
             exit.setDirection(destinationFace.getOppositeFace().getDirection());
             teleport(target, exit);
-            return true;
+            return;
         }
 
         // To smooth the experienced for highly used portals, or entity teleportation
@@ -182,7 +181,6 @@ public class Teleporter {
         logger.logMessage(Level.FINEST, "Trying to teleport surrounding leashed entities");
         teleportNearbyLeashedEntities(target, rotation);
         teleport(target, exit, rotation);
-        return true;
     }
 
     /**
@@ -194,9 +192,8 @@ public class Teleporter {
     private void teleportPassengers(Entity target, List<Entity> passengers) {
         for (Entity passenger : passengers) {
             Supplier<Boolean> action = () -> {
-                if (betterTeleport(passenger, rotation)) {
-                    target.addPassenger(passenger);
-                }
+                betterTeleport(passenger, rotation);
+                target.addPassenger(passenger);
                 return true;
             };
 
@@ -223,10 +220,8 @@ public class Teleporter {
             if (entity.isLeashed() && entity.getLeashHolder() == holder) {
                 Supplier<Boolean> action = () -> {
                     entity.setLeashHolder(null);
-                    if (betterTeleport(entity, rotation)) {
-                        entity.setLeashHolder(holder);
-                    }
-
+                    betterTeleport(entity, rotation);
+                    entity.setLeashHolder(holder);
                     return true;
                 };
                 Stargate.syncTickPopulator.addAction(new SupplierAction(action));

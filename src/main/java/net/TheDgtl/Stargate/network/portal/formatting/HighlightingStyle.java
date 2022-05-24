@@ -74,14 +74,15 @@ public enum HighlightingStyle {
     }
 
     /**
-     * Get the name that is highlighted
+     * Gets the plain name from a name with highlighting
      *
-     * @param highlightedName <p> The name that is highlighted </p>
-     * @return
+     * @param highlightedName <p>The highlighted name</p>
+     * @return <p>The plain name</p>
      */
     public static String getNameFromHighlightedText(String highlightedName) {
         HighlightingStyle highlight = getHighlightType(highlightedName);
         return highlightedName.substring(highlight.prefix.length(),
                 highlightedName.length() - highlight.suffix.length());
     }
+
 }

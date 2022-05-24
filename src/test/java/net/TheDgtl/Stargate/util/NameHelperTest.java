@@ -9,7 +9,7 @@ import java.util.Map;
 
 class NameHelperTest {
 
-    static Map<String, String> nameTests = new HashMap<>();
+    static final Map<String, String> nameTests = new HashMap<>();
 
     @BeforeAll
     public static void setUp() {

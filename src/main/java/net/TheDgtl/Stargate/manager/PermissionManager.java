@@ -32,7 +32,6 @@ import java.util.logging.Level;
  * @author Thorin
  * @author Pheotis
  */
-
 public class PermissionManager {
 
     private final Entity target;
@@ -98,10 +97,10 @@ public class PermissionManager {
     }
 
     /**
-     * Scrolls through a list of permissions and notes if
+     * Checks if the target entity has the given permissions
      *
-     * @param permissions
-     * @return
+     * @param permissions <p>The list of permissions required for some action</p>
+     * @return <p>True if the entity has all the given permissions</p>
      */
     private boolean hasPermission(List<Permission> permissions) {
         for (Permission relatedPermission : permissions) {
@@ -192,10 +191,10 @@ public class PermissionManager {
     }
 
     /**
-     * Determine a the message to send the player based out of the permission it was denied.
+     * Determines the message to send the player based out of the permission it was denied.
      *
-     * @param permission <p> The permission node the entity was denied </p>
-     * @return
+     * @param permission <p>The permission node the entity was denied</p>
+     * @return <p>The error message to display</p>
      */
     public String determineTranslatableMessageFromPermission(Permission permission) {
         String permissionNode = permission.getName();
@@ -222,7 +221,6 @@ public class PermissionManager {
             }
         }
         return languageManager.getErrorMessage(TranslatableMessage.DENY);
-
     }
 
     /**
@@ -280,7 +278,7 @@ public class PermissionManager {
     /**
      * Checks whether the entity is allowed to create stargates in the given network
      *
-     * @param network <p>The formated name of the network to check</p>
+     * @param network <p>The formatted name of the network to check</p>
      * @return <p>True if the entity is allowed to create stargates</p>
      */
     public boolean canCreateInNetwork(String network) {

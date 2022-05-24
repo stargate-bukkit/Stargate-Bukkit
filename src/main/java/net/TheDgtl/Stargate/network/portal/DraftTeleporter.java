@@ -224,7 +224,7 @@ public class DraftTeleporter {
                     setPushZ.invoke(poweredMinecart, -location.getDirection().getBlockZ());
 
                 } catch (NoSuchMethodException ignored) {
-                    logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %s -- use Paper 1.18.2+ for this feature.", location.toString()));
+                    logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %s -- use Paper 1.18.2+ for this feature.", location));
                 } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     e.printStackTrace();
                 }

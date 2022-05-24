@@ -32,14 +32,13 @@ public class NetworkCreationHelper {
      * @param player             <p>The player that wrote the network name</p>
      * @param registry           <p>The registry of all portals</p>
      * @return <p>The interpreted network name</p>
-     * @throws NameErrorException <p>If the network name does not follow all rules</p>
      */
     public static String interpretNetworkName(String initialNetworkName, Set<PortalFlag> flags, Player player,
-                                              RegistryAPI registry) throws NameErrorException {
+                                              RegistryAPI registry) {
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(initialNetworkName);
         if (highlight != HighlightingStyle.NOTHING) {
             UUID possiblePlayer = getPlayerUUID(HighlightingStyle.getNameFromHighlightedText(initialNetworkName));
-            if (possiblePlayer != null && registry.getNetwork(possiblePlayer.toString(), false) != null) {
+            if (registry.getNetwork(possiblePlayer.toString(), false) != null) {
                 initialNetworkName = HighlightingStyle.getNameFromHighlightedText(initialNetworkName);
             } else {
                 return initialNetworkName;
@@ -61,8 +60,7 @@ public class NetworkCreationHelper {
         if (registry.getNetwork(initialNetworkName, false) != null) {
             return initialNetworkName;
         }
-        if (getPlayerUUID(initialNetworkName) != null
-                && registry.getNetwork(getPlayerUUID(initialNetworkName).toString(), false) != null) {
+        if (registry.getNetwork(getPlayerUUID(initialNetworkName).toString(), false) != null) {
             return HighlightingStyle.PERSONAL.getHighlightedName(initialNetworkName);
         }
 
@@ -77,20 +75,18 @@ public class NetworkCreationHelper {
      * Check the name of a network, and insert the related flags into the flags collection
      *
      * @param networkName <p> The name of the network </p>
-     * @param flags       <p> The collection of flags to be inserted into </p>
      */
     public static List<PortalFlag> getNameRelatedFlags(String networkName) {
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(networkName);
         List<PortalFlag> flags = new ArrayList<>();
         switch (highlight) {
-            case NOTHING:
-                break;
             case PERSONAL:
                 flags.add(PortalFlag.PERSONAL_NETWORK);
                 break;
             case BUNGEE:
                 flags.add(PortalFlag.FANCY_INTER_SERVER);
                 break;
+            case NOTHING:
             default:
                 break;
         }
@@ -99,21 +95,18 @@ public class NetworkCreationHelper {
 
     /**
      * Remove notations from the network name and make it ready for use
-     *
-     * @param name
-     * @return
      */
-    public static String parseNetworknameName(String initialName) throws NameErrorException {
+    public static String parseNetworkNameName(String initialName) throws NameErrorException {
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(initialName);
-        String unhiglightedName = HighlightingStyle.getNameFromHighlightedText(initialName);
+        String unHighlightedName = HighlightingStyle.getNameFromHighlightedText(initialName);
         if (highlight == HighlightingStyle.PERSONAL) {
             try {
-                return getPlayerUUID(unhiglightedName).toString();
+                return getPlayerUUID(unHighlightedName).toString();
             } catch (IllegalArgumentException | NullPointerException e) {
                 throw new NameErrorException(TranslatableMessage.INVALID_NAME);
             }
         }
-        return unhiglightedName;
+        return unHighlightedName;
     }
 
     /**
@@ -122,10 +115,10 @@ public class NetworkCreationHelper {
      * @param initialNetworkName <p> The name to change </p>
      * @param permissionManager  <p> A permission manager for the actor player </p>
      * @param player             <P> The player that initiated the call </p>
-     * @return
      */
     public static String getAllowedNetworkName(String initialNetworkName, PermissionManager permissionManager,
                                                Player player) {
+        //TODO: This is never used
         HighlightingStyle style = HighlightingStyle.getHighlightType(initialNetworkName);
         if (!permissionManager.canCreateInNetwork(initialNetworkName) && style == HighlightingStyle.NOTHING) {
             Stargate.log(Level.CONFIG,
@@ -150,6 +143,7 @@ public class NetworkCreationHelper {
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
     public static Network selectNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {
+        //TODO: This is never used
         try {
             Stargate.getRegistry().createNetwork(name, flags);
         } catch (NameErrorException nameErrorException) {
@@ -164,4 +158,5 @@ public class NetworkCreationHelper {
     private static UUID getPlayerUUID(String playerName) {
         return Bukkit.getOfflinePlayer(playerName).getUniqueId();
     }
+
 }

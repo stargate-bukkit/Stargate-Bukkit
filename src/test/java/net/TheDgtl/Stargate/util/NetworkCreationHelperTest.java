@@ -10,7 +10,7 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -21,17 +21,17 @@ import java.util.Map;
 import java.util.Set;
 
 class NetworkCreationHelperTest {
+
     private static Map<String, TwoTuple<PortalFlag, String>> interpretNameTest;
     private static Map<String, PortalFlag> insertNameRelatedFlagsTest;
     private static Map<String, String> parseNetworkNameTest;
 
-    private static ServerMock server;
     private static PlayerMock player;
     private static RegistryAPI registry;
 
     @BeforeAll
     static void setup() {
-        server = MockBukkit.mock();
+        ServerMock server = MockBukkit.mock();
         player = new PlayerMock(server, "playerName");
         String invalidPlayerName = "invalid";
         server.addPlayer(player);
@@ -39,12 +39,12 @@ class NetworkCreationHelperTest {
         String name = "name";
 
         interpretNameTest = new HashMap<>();
-        interpretNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(name), new TwoTuple<PortalFlag, String>(PortalFlag.PERSONAL_NETWORK, name));
-        interpretNameTest.put(HighlightingStyle.BUNGEE.getHighlightedName(name), new TwoTuple<PortalFlag, String>(PortalFlag.FANCY_INTER_SERVER, name));
-        interpretNameTest.put(name, new TwoTuple<PortalFlag, String>(null, name));
-        interpretNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(player.getName()), new TwoTuple<PortalFlag, String>(null, player.getName()));
-        interpretNameTest.put(invalidPlayerName, new TwoTuple<PortalFlag, String>(null, invalidPlayerName));
-        interpretNameTest.put(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK), new TwoTuple<PortalFlag, String>(null, ""));
+        interpretNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(name), new TwoTuple<>(PortalFlag.PERSONAL_NETWORK, name));
+        interpretNameTest.put(HighlightingStyle.BUNGEE.getHighlightedName(name), new TwoTuple<>(PortalFlag.FANCY_INTER_SERVER, name));
+        interpretNameTest.put(name, new TwoTuple<>(null, name));
+        interpretNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(player.getName()), new TwoTuple<>(null, player.getName()));
+        interpretNameTest.put(invalidPlayerName, new TwoTuple<>(null, invalidPlayerName));
+        interpretNameTest.put(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK), new TwoTuple<>(null, ""));
 
         insertNameRelatedFlagsTest = new HashMap<>();
         insertNameRelatedFlagsTest.put(HighlightingStyle.PERSONAL.getHighlightedName(name), PortalFlag.PERSONAL_NETWORK);
@@ -61,7 +61,7 @@ class NetworkCreationHelperTest {
     }
 
     @Test
-    void interpretNameTest() throws NameErrorException {
+    void interpretNameTest() {
         for (String expectedName : interpretNameTest.keySet()) {
             TwoTuple<PortalFlag, String> data = interpretNameTest.get(expectedName);
             Set<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
@@ -70,7 +70,7 @@ class NetworkCreationHelperTest {
                 flags.add(flag);
             }
             String resultingName = NetworkCreationHelper.interpretNetworkName(data.getSecondValue(), flags, player, registry);
-            Assert.assertEquals(expectedName, resultingName);
+            Assertions.assertEquals(expectedName, resultingName);
         }
     }
 
@@ -83,18 +83,19 @@ class NetworkCreationHelperTest {
             if (flags.size() > 0) {
                 resultFlag = flags.get(0);
             }
-            Assert.assertTrue(String.format("Expected flag %s, got flag %s. ", expectedFlag.toString(), (resultFlag == null) ? "null" : resultFlag.toString()), flags.contains(expectedFlag));
+            Assertions.assertTrue(flags.contains(expectedFlag), String.format("Expected flag %s, got flag %s. ", expectedFlag.toString(), (resultFlag == null) ? "null" : resultFlag.toString()));
         }
     }
 
     @Test
-    void parseNameTest() throws NameErrorException {
+    void parseNameTest() {
         for (String nameToTest : parseNetworkNameTest.keySet()) {
             try {
-                String result = NetworkCreationHelper.parseNetworknameName(nameToTest);
-                Assert.assertEquals(parseNetworkNameTest.get(nameToTest), result);
+                String result = NetworkCreationHelper.parseNetworkNameName(nameToTest);
+                Assertions.assertEquals(parseNetworkNameTest.get(nameToTest), result);
             } catch (NameErrorException ignored) {
             }
         }
     }
+
 }
