@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.util.portal;
 import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import net.TheDgtl.Stargate.Stargate;
@@ -34,29 +35,30 @@ public class PortalDestructionHelper {
      *                      <p>
      *                      The action to run when destroying a portal
      *                      </p>
+     * @return true if event should be canceled
      */
-    public static void destroyPortalIfHasPermissionAndCanPay(BlockBreakEvent event, Portal portal,
+    public static boolean destroyPortalIfHasPermissionAndCanPay(Player player, Portal portal,
             Supplier<Boolean> destroyAction) {
         int cost = ConfigurationHelper.getInteger(ConfigurationOption.DESTROY_COST);
-        StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, event.getPlayer(), cost);
+        StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, player, cost);
         Bukkit.getPluginManager().callEvent(stargateDestroyEvent);
-        PermissionManager permissionManager = new PermissionManager(event.getPlayer());
+        PermissionManager permissionManager = new PermissionManager(player);
         if (permissionManager.hasDestroyPermissions((RealPortal) portal) && !stargateDestroyEvent.isCancelled()) {
             /*
              * If setting charge free destination is false, destination portal is
              * PortalFlag.Free and portal is of Fixed type or if player has override cost
              * permission, do not collect money
              */
-            if (EconomyHelper.shouldChargePlayer(event.getPlayer(), portal, BypassPermission.COST_DESTROY)
-                    && !Stargate.economyManager.chargeAndTax(event.getPlayer(), stargateDestroyEvent.getCost())) {
-                event.getPlayer()
+            if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_DESTROY)
+                    && !Stargate.economyManager.chargeAndTax(player, stargateDestroyEvent.getCost())) {
+                player
                         .sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
-                event.setCancelled(true);
-                return;
+                return true;
             }
             Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
         } else {
-            event.setCancelled(true);
+            return true;
         }
+        return false;
     }
 }

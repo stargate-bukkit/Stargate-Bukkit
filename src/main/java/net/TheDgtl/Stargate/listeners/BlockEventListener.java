@@ -78,7 +78,10 @@ public class BlockEventListener implements Listener {
                 return true;
             };
 
-            PortalDestructionHelper.destroyPortalIfHasPermissionAndCanPay(event, portal, destroyAction);
+            boolean shouldCancel = PortalDestructionHelper.destroyPortalIfHasPermissionAndCanPay(event.getPlayer(), portal, destroyAction);
+            if(shouldCancel) {
+                event.setCancelled(true);
+            }
             return;
         }
         if (Stargate.getRegistry().getPortal(location, GateStructureType.CONTROL_BLOCK) != null) {
