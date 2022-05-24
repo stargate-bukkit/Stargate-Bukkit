@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.manager;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
+import net.TheDgtl.Stargate.event.StargateAccessEvent;
 import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.event.StargateEvent;
 import net.TheDgtl.Stargate.event.StargatePortalEvent;
@@ -126,7 +127,12 @@ public class PermissionManager {
     public boolean hasAccessPermission(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking access permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getAccessPermissions(portal, target);
-        return hasPermission(relatedPerms);
+        boolean hasPerm = hasPermission(relatedPerms);
+        
+        StargateAccessEvent accessEvent = new StargateAccessEvent(target, portal, !hasPerm, this.getDenyMessage());
+        Bukkit.getPluginManager().callEvent(accessEvent);
+        this.denyMessage = accessEvent.getDenyReason();
+        return accessEvent.getDeny();
     }
    
     /**
