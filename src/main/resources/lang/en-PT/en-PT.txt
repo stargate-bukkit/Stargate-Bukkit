@@ -1,0 +1,37 @@
+# General Styling
+prefix=[Ye Old Port] 
+
+# Sign Formatting
+signNonFixedL2=Starboard Jab
+signNonFixedL3=to walk the port
+signRandom=Mystery Port
+signDisconnected=Dead End
+signTerminalL2=Up for Bargain
+
+# Gate Actions
+gateDestroy=Scuttled ye Port
+gateCreateSpecified=Port built on %network% Isle!
+gateCreatePersonal=Built yer ol landlubber port.
+gateTerminalSold=Scavenged port %gateName% in Isle of the %terminalName% for %cost% doubloons!
+gateTerminalSale=Surrendered yer ol port %gateName% for auction in %terminalName% for %cost% doubloons!
+
+# Gate Construction Problems
+faultNetwork=Avast ye! tis'her network in't for scallywags like ye!
+faultLayout=Ahoy Biscuit Eater! tis'her port map in't for dogs like ye!
+faultLength=Blimey! Yer name be too short 'r long matey!
+faultExists=A port wit' thar name be claimed fer booty already!
+faultFull=Thar crew be full!
+faultWorldDeny=Blimey! Yer ain't have access to world %world% ye scallywag!
+faultConflict=The port be scuffling wit' another island port.
+faultFlag=yar'nt able to raise the %flags% flags; yer port been made with em missing!
+
+# Bungee Problems
+
+# Gate Usage
+
+# Access
+
+# Economy
+
+#Admin
+translatedBy=KittyClaus and Captain Crunch

@@ -25,6 +25,8 @@ faultFull=That network is full!
 faultWorldDeny=You do not have access to world %world%!
 faultConflict=This gate conflicts with an existing gate.
 faultFlag=You lack permission to use the %flags% flags; your portal has been created without them!
+faultControls=This gate's design has too few control blocks to accommodate the flags you have selected!
+faultAddon=An add-on has prevented you from doing that!
 
 # Bungee Problems
 bungeePerms=You do not have permission to make bungee gates!
