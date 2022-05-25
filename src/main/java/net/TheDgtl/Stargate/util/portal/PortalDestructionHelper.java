@@ -47,10 +47,7 @@ public final class PortalDestructionHelper {
             player.sendMessage(stargateDestroyEvent.getDenyReason());
             return true;
         }
-        if (stargateDestroyEvent.isCancelled()) {
-            //TODO: Inform the user of cancellation?
-            return true;
-        }
+        
         /*
          * If setting charge free destination is false, destination portal is
          * PortalFlag.Free and portal is of Fixed type or if player has override cost

@@ -116,12 +116,6 @@ public final class PortalCreationHelper {
             player.sendMessage(stargateCreateEvent.getDenyReason());
             return;
         }
-        //If the create event is cancelled, tell the user and abort
-        if (stargateCreateEvent.isCancelled()) {
-            Stargate.log(Level.CONFIG, " Event was cancelled by an add-on");
-            player.sendMessage("An add-on cancelled the portal creation");
-            return;
-        }
 
         //Display an error if trying to create portals across servers while the feature is disabled
         if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))

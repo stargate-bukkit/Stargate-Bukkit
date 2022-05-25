@@ -11,11 +11,9 @@ import org.jetbrains.annotations.NotNull;
  * <p>This event can be used to deny or change the cost of a stargate destruction.</p>
  */
 @SuppressWarnings("unused")
-public class StargateDestroyEvent extends StargateEntityEvent {
+public class StargateDestroyEvent extends DeniableStargateEvent {
 
     private static final HandlerList handlers = new HandlerList();
-    private boolean deny;
-    private String denyReason;
     private int cost;
 
     /**
@@ -27,50 +25,12 @@ public class StargateDestroyEvent extends StargateEntityEvent {
      * @param denyReason <p>The message to display if the event is denied</p>
      * @param cost       <p>The cost of destroying the portal</p>
      */
-    public StargateDestroyEvent(@NotNull Portal portal, @NotNull Player player, boolean deny, @NotNull String denyReason,
+    public StargateDestroyEvent(@NotNull Portal portal, @NotNull Player player, boolean deny, String denyReason,
                                 int cost) {
-        super(portal, player);
+        super(portal, player, deny, denyReason);
 
         //TODO: Perhaps alter or add an event for a stargate destroyed by an explosion?
-        this.deny = deny;
-        this.denyReason = denyReason;
         this.cost = cost;
-    }
-
-    /**
-     * Gets whether this event should be denied
-     *
-     * @return <p>Whether this event should be denied</p>
-     */
-    public boolean getDeny() {
-        return deny;
-    }
-
-    /**
-     * Sets whether this event should be denied
-     *
-     * @param deny <p>Whether this event should be denied</p>
-     */
-    public void setDeny(boolean deny) {
-        this.deny = deny;
-    }
-
-    /**
-     * Gets the reason the event was denied
-     *
-     * @return <p>The reason the event was denied</p>
-     */
-    public String getDenyReason() {
-        return denyReason;
-    }
-
-    /**
-     * Sets the reason the event was denied
-     *
-     * @param denyReason <p>The reason the event was denied</p>
-     */
-    public void setDenyReason(@NotNull String denyReason) {
-        this.denyReason = denyReason;
     }
 
     /**

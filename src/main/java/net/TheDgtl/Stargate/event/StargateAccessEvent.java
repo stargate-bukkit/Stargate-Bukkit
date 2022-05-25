@@ -12,10 +12,9 @@ import org.jetbrains.annotations.NotNull;
  * whether the player should be allowed to access the stargate.</p>
  */
 @SuppressWarnings("unused")
-public class StargateAccessEvent extends StargateEntityEvent {
+public class StargateAccessEvent extends DeniableStargateEvent {
 
     private static final HandlerList handlers = new HandlerList();
-    private boolean deny;
     private String denyReason;
     private Entity travellingEntity;
 
@@ -28,45 +27,7 @@ public class StargateAccessEvent extends StargateEntityEvent {
      * @param denyReason       <p>The reason stargate access was denied</p>
      */
     public StargateAccessEvent(Entity travellingEntity, Portal portal, boolean deny, String denyReason) {
-        super(portal, travellingEntity);
-
-        this.deny = deny;
-    }
-
-    /**
-     * Gets whether the entity should be denied access
-     *
-     * @return <p>Whether the entity should be denied access</p>
-     */
-    public boolean getDeny() {
-        return this.deny;
-    }
-
-    /**
-     * Sets whether to deny access to the entity
-     *
-     * @param deny <p>Whether to deny access to the entity</p>
-     */
-    public void setDeny(boolean deny) {
-        this.deny = deny;
-    }
-
-    /**
-     * Gets the reason the stargate access was denied
-     *
-     * @return <p>The reason the stargate access was denied</p>
-     */
-    public String getDenyReason() {
-        return denyReason;
-    }
-
-    /**
-     * Sets the reason the stargate access was denied
-     *
-     * @param denyReason <p>The new reason why the stargate access was denied</p>
-     */
-    public void setDenyReason(String denyReason) {
-        this.denyReason = denyReason;
+        super(portal, travellingEntity, deny, denyReason);
     }
 
     /**

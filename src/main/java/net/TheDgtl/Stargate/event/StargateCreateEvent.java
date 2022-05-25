@@ -11,12 +11,10 @@ import org.jetbrains.annotations.NotNull;
  * <p>This event can be used to deny or change the cost of a stargate creation.</p>
  */
 @SuppressWarnings("unused")
-public class StargateCreateEvent extends StargateEntityEvent {
+public class StargateCreateEvent extends DeniableStargateEvent {
 
     private static final HandlerList handlers = new HandlerList();
     private final String[] lines;
-    private boolean deny;
-    private String denyReason;
     private int cost;
 
     /**
@@ -30,12 +28,10 @@ public class StargateCreateEvent extends StargateEntityEvent {
      * @param cost       <p>The cost of creating the new star gate</p>
      */
     public StargateCreateEvent(@NotNull Player player, @NotNull Portal portal, @NotNull String[] lines, boolean deny,
-                               @NotNull String denyReason, int cost) {
-        super(portal, player);
+                               String denyReason, int cost) {
+        super(portal, player, deny, denyReason);
 
         this.lines = lines;
-        this.deny = deny;
-        this.denyReason = denyReason;
         this.cost = cost;
     }
 
@@ -48,42 +44,6 @@ public class StargateCreateEvent extends StargateEntityEvent {
      */
     public String getLine(int index) throws IndexOutOfBoundsException {
         return lines[index];
-    }
-
-    /**
-     * Gets whether the stargate creation should be denied
-     *
-     * @return <p>Whether the stargate creation should be denied</p>
-     */
-    public boolean getDeny() {
-        return deny;
-    }
-
-    /**
-     * Sets whether the stargate creation should be denied
-     *
-     * @param deny <p>Whether the stargate creation should be denied</p>
-     */
-    public void setDeny(boolean deny) {
-        this.deny = deny;
-    }
-
-    /**
-     * Gets the reason the stargate creation was denied
-     *
-     * @return <p>The reason the stargate creation was denied</p>
-     */
-    public String getDenyReason() {
-        return denyReason;
-    }
-
-    /**
-     * Sets the reason the stargate creation was denied
-     *
-     * @param denyReason <p>The new reason why the stargate creation was denied</p>
-     */
-    public void setDenyReason(@NotNull String denyReason) {
-        this.denyReason = denyReason;
     }
 
     /**
