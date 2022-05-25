@@ -1,77 +1,90 @@
-/*
- * Stargate - A portal plugin for Bukkit
- * Copyright (C) 2011, 2012 Steven "Drakia" Scott <Contact@TheDgtl.net>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package net.TheDgtl.Stargate.event;
 
 import net.TheDgtl.Stargate.network.portal.Portal;
-import net.TheDgtl.Stargate.network.portal.PortalFlag;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
-import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 
-public class StargateActivateEvent extends StargateEvent {
-    private final Player player;
-    private List<Portal> destinations;
-    private String destination;
+/**
+ * This event should be called whenever a player activates a stargate
+ *
+ * <p>Activation of a stargate happens when a player right-clicks the sign of a stargate.
+ * This event can be used to overwrite the selected destination, and all destinations the player can see.</p>
+ */
+@SuppressWarnings("unused")
+public class StargateActivateEvent extends StargateEntityEvent {
 
     private static final HandlerList handlers = new HandlerList();
+    private List<String> destinations;
+    private String destination;
 
+    /**
+     * Instantiates a new stargate activate event
+     *
+     * @param portal       <p>The activated portal</p>
+     * @param entity       <p>The entity activating the portal</p>
+     * @param destinations <p>The destinations available to the player using the portal</p>
+     * @param destination  <p>The currently selected destination</p>
+     */
+    public StargateActivateEvent(@NotNull Portal portal, @NotNull Entity entity, @NotNull List<String> destinations,
+                                 String destination) {
+        super(portal, entity);
+
+        this.destinations = destinations;
+        this.destination = destination;
+    }
+
+    /**
+     * Gets the destinations available for the portal
+     *
+     * @return <p>The destinations available for the portal</p>
+     */
+    public List<String> getDestinations() {
+        return destinations;
+    }
+
+    /**
+     * Sets the destinations available to the player using the portal
+     *
+     * @param destinations <p>The new list of available destinations</p>
+     */
+    public void setDestinations(@NotNull List<String> destinations) {
+        this.destinations = destinations;
+    }
+
+    /**
+     * Gets the selected destination
+     *
+     * @return <p>The selected destination</p>
+     */
+    public String getDestination() {
+        return destination;
+    }
+
+    /**
+     * Sets (changes) the selected destination
+     *
+     * @param destination <p>The new selected destination</p>
+     */
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
     @NotNull
     public HandlerList getHandlers() {
         return handlers;
     }
 
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    public StargateActivateEvent(@NotNull Portal portal, @NotNull Player player, @NotNull List<Portal> destinations) {
-        super(Objects.requireNonNull(portal));
-        this.player = Objects.requireNonNull(player);
-        this.destinations = Objects.requireNonNull(destinations);
-    }
-
-    @NotNull
-    public Player getPlayer() {
-        return player;
-    }
-
-    @NotNull
-    public List<Portal> getDestinations() {
-        return destinations;
-    }
-
-    public void setDestinations(@NotNull List<Portal> destinations) {
-        this.destinations = Objects.requireNonNull(destinations);
-    }
-
-    @NotNull
-    public String getDestination() {
-        return destination;
-    }
-
-    public void setDestination(@NotNull String destination) {
-        this.destination = Objects.requireNonNull(destination);
-    }
 }

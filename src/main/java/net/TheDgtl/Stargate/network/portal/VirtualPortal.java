@@ -202,6 +202,6 @@ public class VirtualPortal implements Portal {
 
     @Override
     public String getID() {
-        return NameHelper.getID(name);
+        return NameHelper.getNormalizedName(name);
     }
 }

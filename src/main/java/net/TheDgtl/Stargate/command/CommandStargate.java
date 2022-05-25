@@ -33,5 +33,5 @@ public class CommandStargate implements CommandExecutor {
             return true;
         }
     }
-    
+
 }

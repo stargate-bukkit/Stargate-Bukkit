@@ -309,7 +309,7 @@ public class Gate implements GateAPI {
             /*
              * Top-left is origin for the format, everything becomes easier if you calculate this position in the world;
              * this is a hypothetical position, calculated from the position of the sign minus a vector of a
-             * hypothetical sign position in formatspace.
+             * hypothetical sign position in format space.
              */
             topLeft = location.clone().subtract(converter.performToRealSpaceOperation(controlBlock));
             if (isValid(alwaysOn)) {
@@ -322,9 +322,9 @@ public class Gate implements GateAPI {
     /**
      * Check if this gate with the current settings is valid
      *
-     * @param alwaysOn
-     * @return
-     * @throws GateConflictException
+     * @param alwaysOn <p>Whether this gate is always on</p>
+     * @return <p>True if this gate is valid</p>
+     * @throws GateConflictException <p>If this gate conflicts with another gate</p>
      */
     public boolean isValid(boolean alwaysOn) throws GateConflictException {
         if (getFormat().matches(converter, topLeft)) {

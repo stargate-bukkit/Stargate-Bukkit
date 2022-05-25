@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.TheDgtl.Stargate.listeners;
+package net.TheDgtl.Stargate.listener;
 
 
 import com.google.gson.JsonObject;
@@ -34,7 +34,6 @@ import net.TheDgtl.Stargate.property.PluginChannel;
 import net.TheDgtl.Stargate.property.StargateProtocolProperty;
 import net.TheDgtl.Stargate.property.StargateProtocolRequestType;
 import net.TheDgtl.Stargate.util.BungeeHelper;
-
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
@@ -146,7 +145,8 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         Player player = stargate.getServer().getPlayer(playerName);
         if (player == null) {
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
-            BungeeHelper.addToQueue(Stargate.getRegistryStatic(),playerName, destination, bungeeNetwork, false);
+
+            BungeeHelper.addToQueue(Stargate.getRegistryStatic(), playerName, destination, bungeeNetwork, false);
         } else {
             Network network = Stargate.getRegistryStatic().getNetwork(bungeeNetwork, false);
             Portal destinationPortal = network.getPortal(destination);
@@ -176,23 +176,21 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
         try {
             Stargate.getRegistryStatic().createNetwork(network, flags);
+            InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.getRegistryStatic().getNetwork(network, true);
+            VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
+
+            switch (requestType) {
+                case PORTAL_ADD:
+                    targetNetwork.addPortal(portal, false);
+                    Stargate.log(Level.FINE, String.format("Adding virtual portal %s in interserver network %s", portalName, network));
+                    break;
+                case PORTAL_REMOVE:
+                    Stargate.log(Level.FINE, String.format("Removing virtual portal %s in interserver network %s", portalName, network));
+                    targetNetwork.removePortal(portal, false);
+                    break;
+            }
         } catch (NameErrorException ignored) {
         }
-
-        InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.getRegistryStatic().getNetwork(network, true);
-        VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
-
-        switch (requestType) {
-            case PORTAL_ADD:
-                targetNetwork.addPortal(portal, false);
-                Stargate.log(Level.FINE, String.format("Adding virtual portal %s in interserver network %s", portalName, network));
-                break;
-            case PORTAL_REMOVE:
-                Stargate.log(Level.FINE, String.format("Removing virtual portal %s in interserver network %s", portalName, network));
-                targetNetwork.removePortal(portal, false);
-                break;
-        }
-
     }
 
     /**

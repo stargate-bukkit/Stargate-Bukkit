@@ -56,9 +56,10 @@ public class StargateLanguageManager implements LanguageManager {
 
     @Override
     public String getString(TranslatableMessage translatableMessage) {
-        if(translatedStrings == null)
+        if (translatedStrings == null) {
             return null;
-        
+        }
+
         String translatedMessage = translatedStrings.get(translatableMessage);
         if (translatedMessage == null) {
             translatedMessage = backupStrings.get(translatableMessage);

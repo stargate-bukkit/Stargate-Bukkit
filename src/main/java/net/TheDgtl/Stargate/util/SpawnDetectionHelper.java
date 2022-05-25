@@ -13,6 +13,8 @@ import java.util.Objects;
 
 /**
  * A helper class for deciding if a given gate is interfering with the spawn protection area
+ *
+ * @author Kristian Knarvik (EpicKnarvik97)
  */
 public final class SpawnDetectionHelper {
 

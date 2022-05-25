@@ -156,9 +156,9 @@ public class EconomyManager {
     /**
      * Check if player has enough money
      *
-     * @param target
-     * @param amount
-     * @return
+     * @param target <p>The player to check</p>
+     * @param amount <p>The amount required</p>
+     * @return <p>True if the player has the required amount</p>
      */
     public boolean has(OfflinePlayer target, int amount) {
         if (!this.hasVault) {

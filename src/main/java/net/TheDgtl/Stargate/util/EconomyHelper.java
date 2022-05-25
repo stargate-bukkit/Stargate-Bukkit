@@ -1,15 +1,20 @@
 package net.TheDgtl.Stargate.util;
 
-import org.bukkit.entity.Player;
-
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.property.BypassPermission;
+import org.bukkit.entity.Player;
 
-public class EconomyHelper {
+/**
+ * A helper class for dealing with economy
+ */
+public final class EconomyHelper {
 
+    private EconomyHelper() {
+
+    }
 
     /**
      * Checks whether the given player should be charged for destroying a portal
@@ -28,4 +33,5 @@ public class EconomyHelper {
                 !portal.hasFlag(PortalFlag.FIXED) ||
                 !portal.getDestination().hasFlag(PortalFlag.FREE);
     }
+
 }

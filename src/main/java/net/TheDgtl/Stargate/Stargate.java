@@ -31,11 +31,11 @@ import net.TheDgtl.Stargate.formatting.LanguageManager;
 import net.TheDgtl.Stargate.formatting.StargateLanguageManager;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
-import net.TheDgtl.Stargate.listeners.BlockEventListener;
-import net.TheDgtl.Stargate.listeners.MoveEventListener;
-import net.TheDgtl.Stargate.listeners.PlayerEventListener;
-import net.TheDgtl.Stargate.listeners.PluginEventListener;
-import net.TheDgtl.Stargate.listeners.StargateBungeePluginMessageListener;
+import net.TheDgtl.Stargate.listener.BlockEventListener;
+import net.TheDgtl.Stargate.listener.MoveEventListener;
+import net.TheDgtl.Stargate.listener.PlayerEventListener;
+import net.TheDgtl.Stargate.listener.PluginEventListener;
+import net.TheDgtl.Stargate.listener.StargateBungeePluginMessageListener;
 import net.TheDgtl.Stargate.manager.EconomyManager;
 import net.TheDgtl.Stargate.migration.DataMigrator;
 import net.TheDgtl.Stargate.network.RegistryAPI;
@@ -271,7 +271,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI 
     private void load() {
         loadColors();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
-            BungeeHelper.loadBungeeServerName(DATA_FOLDER,INTERNAL_FOLDER);
+            BungeeHelper.getServerId(DATA_FOLDER, INTERNAL_FOLDER);
         }
         economyManager = new EconomyManager();
         String debugLevelString = ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL);

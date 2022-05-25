@@ -4,7 +4,14 @@ import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.md_5.bungee.api.ChatColor;
 
-public class NameHelper {
+/**
+ * A helper class for dealing with portal and network names
+ */
+public final class NameHelper {
+
+    private NameHelper() {
+
+    }
 
     /**
      * Trims a name and replaces whitespace with normal spaces
@@ -18,7 +25,7 @@ public class NameHelper {
     }
 
     /**
-     * Gets the id of this name
+     * Gets the normalized version of the given name
      *
      * <p>This basically just lower-cases the name, and strips color if enabled. This is to make names
      * case-agnostic and optionally color-agnostic.</p>
@@ -26,7 +33,7 @@ public class NameHelper {
      * @param name <p>The name to "hash"</p>
      * @return <p>The "hashed" name</p>
      */
-    public static String getID(String name) {
+    public static String getNormalizedName(String name) {
         String normalizedName = name.toLowerCase();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.DISABLE_CUSTOM_COLORED_NAMES)) {
             normalizedName = ChatColor.stripColor(normalizedName);

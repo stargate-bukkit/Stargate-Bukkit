@@ -26,11 +26,11 @@ public class PortalHelper {
         }
         return flagsStringBuilder.toString();
     }
-    
-    
+
 
     /**
      * Close all portals in specified map
+     *
      * @param networkMap <p> The map with all portals to close </p>
      */
     public static void closeAllPortals(Map<String, Network> networkMap) {

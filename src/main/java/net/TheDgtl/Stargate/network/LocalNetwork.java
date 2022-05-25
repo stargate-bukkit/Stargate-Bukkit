@@ -59,7 +59,7 @@ public class LocalNetwork implements Network {
 
     @Override
     public String getId() {
-        return NameHelper.getID(this.name);
+        return NameHelper.getNormalizedName(this.name);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class LocalNetwork implements Network {
         if (name == null) {
             return null;
         }
-        return nameToPortalMap.get(NameHelper.getID(name));
+        return nameToPortalMap.get(NameHelper.getNormalizedName(name));
     }
 
     @Override
@@ -96,7 +96,7 @@ public class LocalNetwork implements Network {
                 if (locations == null) {
                     continue;
                 }
-                registry.registerLocations(key, generateLocationMap(locations, portal));
+                registry.registerLocations(key, generateLocationMap(locations, (RealPortal) portal));
             }
             if (saveToDatabase) {
                 savePortal((RealPortal) portal);
@@ -107,7 +107,7 @@ public class LocalNetwork implements Network {
 
     @Override
     public boolean isPortalNameTaken(String name) {
-        return nameToPortalMap.containsKey(NameHelper.getID(name));
+        return nameToPortalMap.containsKey(NameHelper.getNormalizedName(name));
     }
 
     @Override
@@ -180,8 +180,8 @@ public class LocalNetwork implements Network {
      * @param portal    <p>The portal with blocks at the given locations</p>
      * @return <p>The resulting location to portal mapping</p>
      */
-    private Map<BlockLocation, Portal> generateLocationMap(List<BlockLocation> locations, Portal portal) {
-        Map<BlockLocation, Portal> output = new HashMap<>();
+    private Map<BlockLocation, RealPortal> generateLocationMap(List<BlockLocation> locations, RealPortal portal) {
+        Map<BlockLocation, RealPortal> output = new HashMap<>();
         for (BlockLocation location : locations) {
             output.put(location, portal);
         }

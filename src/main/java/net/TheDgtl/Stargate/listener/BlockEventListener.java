@@ -1,35 +1,24 @@
-package net.TheDgtl.Stargate.listeners;
+package net.TheDgtl.Stargate.listener;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
-import net.TheDgtl.Stargate.event.StargateCreateEvent;
-import net.TheDgtl.Stargate.event.StargateDestroyEvent;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
-import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.manager.PermissionManager;
-import net.TheDgtl.Stargate.network.LocalNetwork;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
-import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
-import net.TheDgtl.Stargate.property.BypassPermission;
-import net.TheDgtl.Stargate.util.EconomyHelper;
 import net.TheDgtl.Stargate.util.NetworkCreationHelper;
-import net.TheDgtl.Stargate.util.SpawnDetectionHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import net.TheDgtl.Stargate.util.portal.PortalCreationHelper;
 import net.TheDgtl.Stargate.util.portal.PortalDestructionHelper;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
@@ -47,7 +36,6 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
@@ -67,7 +55,7 @@ public class BlockEventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Location location = event.getBlock().getLocation();
-        Portal portal = Stargate.getRegistryStatic().getPortal(location, GateStructureType.FRAME);
+        RealPortal portal = Stargate.getRegistryStatic().getPortal(location, GateStructureType.FRAME);
         if (portal != null) {
             Supplier<Boolean> destroyAction = () -> {
                 String msg = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.DESTROY);
@@ -79,7 +67,7 @@ public class BlockEventListener implements Listener {
             };
 
             boolean shouldCancel = PortalDestructionHelper.destroyPortalIfHasPermissionAndCanPay(event.getPlayer(), portal, destroyAction);
-            if(shouldCancel) {
+            if (shouldCancel) {
                 event.setCancelled(true);
             }
             return;
@@ -124,7 +112,7 @@ public class BlockEventListener implements Listener {
         int cost = ConfigurationHelper.getInteger(ConfigurationOption.CREATION_COST);
         Player player = event.getPlayer();
         Set<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
-        
+
         PermissionManager permissionManager = new PermissionManager(player);
         TranslatableMessage errorMessage = null;
 
@@ -135,7 +123,7 @@ public class BlockEventListener implements Listener {
         if (flags.contains(PortalFlag.PRIVATE)) {
             flags.add(PortalFlag.PERSONAL_NETWORK);
         }
-        
+
         Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
 
         if (disallowedFlags.size() > 0) {
@@ -154,7 +142,7 @@ public class BlockEventListener implements Listener {
             finalNetworkName = NetworkCreationHelper.getAllowedNetworkName(finalNetworkName, permissionManager, player);
             Stargate.log(Level.FINER, "From allowed permissions took " + finalNetworkName);
             flags.addAll(NetworkCreationHelper.getNameRelatedFlags(finalNetworkName));
-            finalNetworkName = NetworkCreationHelper.parseNetworknameName(finalNetworkName);
+            finalNetworkName = NetworkCreationHelper.parseNetworkNameName(finalNetworkName);
             Stargate.log(Level.FINER, "Ended upp with name " + finalNetworkName);
             selectedNetwork = NetworkCreationHelper.selectNetwork(finalNetworkName, flags);
         } catch (NameErrorException nameErrorException) {
@@ -172,9 +160,6 @@ public class BlockEventListener implements Listener {
             player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(nameErrorException.getErrorMessage()));
         }
     }
-
-    
-    
 
     /**
      * Listens to and cancels any piston extend events that may break a stargate

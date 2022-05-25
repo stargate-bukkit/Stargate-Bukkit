@@ -17,6 +17,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,34 +34,35 @@ import java.util.logging.Level;
 public class Teleporter {
 
     private static final double LOOK_FOR_LEASHED_RADIUS = 15;
-    private Location destination;
+    private Location exit;
     private final RealPortal origin;
+    private final RealPortal destination;
     private final int cost;
     private double rotation;
     private final BlockFace destinationFace;
     boolean hasPermission;
     private String teleportMessage;
-    private Set<Entity> teleportedEntities = new HashSet<>();
+    private final Set<Entity> teleportedEntities = new HashSet<>();
     private final StargateLogger logger;
     private List<LivingEntity> nearbyLeashed;
 
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
      *
-     * @param destination      <p>The destination location of this teleporter</p>
-     * @param origin           <p>The origin portal the teleportation is originating from</p>
-     * @param destinationFace  <p>The direction the destination's portal is facing</p>
-     * @param entranceFace     <p>The direction the entrance portal is facing</p>
-     * @param cost             <p>The cost of teleportation for any players</p>
-     * @param teleportMessage  <p>The teleportation message to display if the teleportation is successful</p>
-     * @param checkPermissions <p>Whether to check, or totally ignore permissions</p>
+     * @param destination     <p>The destination location of this teleporter</p>
+     * @param origin          <p>The origin portal the teleportation is originating from</p>
+     * @param destinationFace <p>The direction the destination's portal is facing</p>
+     * @param entranceFace    <p>The direction the entrance portal is facing</p>
+     * @param cost            <p>The cost of teleportation for any players</p>
+     * @param teleportMessage <p>The teleportation message to display if the teleportation is successful</p>
      */
-    public Teleporter(Location destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
+    public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
                       int cost, String teleportMessage, StargateLogger logger) {
         // Center the destination in the destination block
-        this.destination = destination.clone().add(new Vector(0.5, 0, 0.5));
+        this.exit = destination.getExit().clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
         this.origin = origin;
+        this.destination = destination;
         this.rotation = calculateAngleDifference(entranceFace, destinationFace);
         this.cost = cost;
         this.teleportMessage = teleportMessage;
@@ -81,7 +83,7 @@ public class Teleporter {
 
 
         nearbyLeashed = getNearbyLeashedEntities(baseEntity);
-        
+
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
             //TODO: The access event should be called to allow add-ons cancelling or overriding the teleportation
             PermissionManager permissionManager = new PermissionManager(anyEntity);
@@ -96,37 +98,37 @@ public class Teleporter {
             }
             return true;
         }, nearbyLeashed);
-        
+
         hasPermission = dfs.depthFirstSearch(baseEntity);
-        if(!hasPermission) {
+        if (!hasPermission) {
             rotation = Math.PI;
-            if(origin != null) {
-                destination = origin.getExit().add(new Vector(0.5, 0, 0.5));
+            if (origin != null) {
+                exit = origin.getExit().add(new Vector(0.5, 0, 0.5));
             } else {
-                destination = baseEntity.getLocation();
+                exit = baseEntity.getLocation();
             }
         }
 
         Vector offset = getOffset(baseEntity);
-        destination.subtract(offset);
-        
+        exit.subtract(offset);
+
         Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
             betterTeleport(baseEntity, rotation);
             return true;
         }));
     }
-    
+
     private Vector getOffset(Entity baseEntity) {
-        if(hasPermission) {
-            return getOffsettFromFacing(baseEntity,destinationFace);
+        if (hasPermission) {
+            return getOffsetFromFacing(baseEntity, destinationFace);
         }
-        if(origin != null) {
-            return getOffsettFromFacing(baseEntity,origin.getGate().getFacing().getOppositeFace());
+        if (origin != null) {
+            return getOffsetFromFacing(baseEntity, origin.getGate().getFacing().getOppositeFace());
         }
         return new Vector();
     }
-    
-    private Vector getOffsettFromFacing(Entity baseEntity, BlockFace facing) {
+
+    private Vector getOffsetFromFacing(Entity baseEntity, BlockFace facing) {
         Vector offset = facing.getDirection();
         double targetWidth = baseEntity.getWidth();
         offset.multiply(Math.ceil((targetWidth + 1) / 2));
@@ -144,7 +146,7 @@ public class Teleporter {
         }
         return surroundingLeashedEntities;
     }
-    
+
     /**
      * Teleports an entity with all its passengers and its vehicle
      *
@@ -153,11 +155,10 @@ public class Teleporter {
      *
      * @param target   <p>The entity to teleport</p>
      * @param rotation <p>The rotation to apply to teleported entities, relative to its existing rotation</p>
-     * @return <p>If the teleportation was successfull</p>
      */
-    private boolean betterTeleport(Entity target, double rotation) {
+    private void betterTeleport(Entity target, double rotation) {
         if (teleportedEntities.contains(target)) {
-            return true;
+            return;
         }
         teleportedEntities.add(target);
         List<Entity> passengers = target.getPassengers();
@@ -167,20 +168,19 @@ public class Teleporter {
         }
 
         if (origin == null) {
-            destination.setDirection(destinationFace.getOppositeFace().getDirection());
-            teleport(target, destination);
-            return true;
+            exit.setDirection(destinationFace.getOppositeFace().getDirection());
+            teleport(target, exit);
+            return;
         }
 
         // To smooth the experienced for highly used portals, or entity teleportation
-        if (!destination.getChunk().isLoaded()) {
-            destination.getChunk().load();
+        if (!exit.getChunk().isLoaded()) {
+            exit.getChunk().load();
         }
 
         logger.logMessage(Level.FINEST, "Trying to teleport surrounding leashed entities");
         teleportNearbyLeashedEntities(target, rotation);
-        teleport(target, destination, rotation);
-        return true;
+        teleport(target, exit, rotation);
     }
 
     /**
@@ -192,9 +192,8 @@ public class Teleporter {
     private void teleportPassengers(Entity target, List<Entity> passengers) {
         for (Entity passenger : passengers) {
             Supplier<Boolean> action = () -> {
-                if (betterTeleport(passenger, rotation)) {
-                    target.addPassenger(passenger);
-                }
+                betterTeleport(passenger, rotation);
+                target.addPassenger(passenger);
                 return true;
             };
 
@@ -218,13 +217,11 @@ public class Teleporter {
             return;
         }
         for (LivingEntity entity : nearbyLeashed) {
-            if (entity.isLeashed() &&  entity.getLeashHolder() == holder) {
+            if (entity.isLeashed() && entity.getLeashHolder() == holder) {
                 Supplier<Boolean> action = () -> {
-                    ((LivingEntity) entity).setLeashHolder(null);
-                    if (betterTeleport(entity, rotation)) {
-                        ((LivingEntity) entity).setLeashHolder(holder);
-                    }
-
+                    entity.setLeashHolder(null);
+                    betterTeleport(entity, rotation);
+                    entity.setLeashHolder(holder);
                     return true;
                 };
                 Stargate.syncTickPopulator.addAction(new SupplierAction(action));
@@ -250,7 +247,7 @@ public class Teleporter {
         if (target instanceof Player) {
             Player player = (Player) target;
             String msg = "Teleporting player %s to %s";
-            msg = String.format(msg, player.getName(), location.toString());
+            msg = String.format(msg, player.getName(), location);
             if (this.origin != null) {
                 msg = msg + "from portal %s in network %s";
                 msg = String.format(msg, origin.getName(), origin.getNetwork().getName());
@@ -276,7 +273,8 @@ public class Teleporter {
                     setPushZ.invoke(poweredMinecart, -location.getDirection().getBlockZ());
 
                 } catch (NoSuchMethodException ignored) {
-                    logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S -- use Paper 1.18.2+ for this feature.", location.toString()));
+                    logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
+                            " use Paper 1.18.2+ for this feature.", location));
                 } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -308,6 +306,7 @@ public class Teleporter {
      * @return <p>True if all necessary transactions were successfully completed</p>
      */
     private boolean charge(Player target) {
+        //TODO: This is never called. What happened to economy?
         if (origin.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
             return Stargate.economyManager.chargePlayer(target, origin, cost);
         } else {
@@ -339,13 +338,14 @@ public class Teleporter {
      * @return <p>True if the entity has the required permissions for performing the teleportation</p>
      */
     private boolean hasPermission(Entity target, PermissionManager permissionManager) {
-        if(origin == null) {
-           // TODO origin == null means interserver teleportation. Make a permission check for this or something?
-           return true;
-        } 
-        StargatePortalEvent event = new StargatePortalEvent(target, origin);
+        if (origin == null) {
+            // TODO origin == null means inter-server teleportation. Make a permission check for this or something?
+            return true;
+        }
+        boolean hasPermission = permissionManager.hasTeleportPermissions(origin);
+        StargatePortalEvent event = new StargatePortalEvent(target, origin, destination, exit);
         Bukkit.getPluginManager().callEvent(event);
-        return (permissionManager.hasTeleportPermissions(origin) && !event.isCancelled());
+        return !hasPermission || event.isCancelled();
     }
 
     /**
