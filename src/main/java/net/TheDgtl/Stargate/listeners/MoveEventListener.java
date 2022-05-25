@@ -31,7 +31,7 @@ public class MoveEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityPortalTeleport(@NotNull EntityPortalEvent event) {
-        if (Stargate.getRegistry().isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
+        if (Stargate.getRegistryStatic().isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
             event.setCancelled(true);
         }
     }
@@ -52,7 +52,7 @@ public class MoveEventListener implements Listener {
             return;
         }
 
-        if (Stargate.getRegistry().isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
+        if (Stargate.getRegistryStatic().isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
             event.setCancelled(true);
         }
     }
@@ -95,7 +95,7 @@ public class MoveEventListener implements Listener {
             return;
         }
 
-        Portal portal = Stargate.getRegistry().getPortal(toLocation, GateStructureType.IRIS);
+        Portal portal = Stargate.getRegistryStatic().getPortal(toLocation, GateStructureType.IRIS);
         if (portal == null || !portal.isOpen()) {
             return;
         }

@@ -59,7 +59,7 @@ public class PlayerEventListener implements Listener {
         }
 
         // TODO material optimisation?
-        Portal portal = Stargate.getRegistry().getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
+        Portal portal = Stargate.getRegistryStatic().getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
         if (portal == null) {
             return;
         }
@@ -187,7 +187,7 @@ public class PlayerEventListener implements Listener {
      */
     private void updateServerName() {
         ConditionalDelayedAction action = new ConditionalDelayedAction(() -> {
-            Stargate.getStorageAPI().startInterServerConnection();
+            Stargate.getStorageAPIStatic().startInterServerConnection();
             return true;
         }, () -> Stargate.knowsServerName);
         Stargate.syncSecPopulator.addAction(action, true);

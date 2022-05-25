@@ -108,10 +108,10 @@ public class PortalDatabaseAPI implements StorageAPI {
     public void loadFromStorage() {
         try {
             logger.logMessage(Level.FINER, "Loading portals from base database");
-            loadAllPortals(database, PortalType.LOCAL, Stargate.getRegistry());
+            loadAllPortals(database, PortalType.LOCAL, Stargate.getRegistryStatic());
             if (useInterServerNetworks) {
                 logger.logMessage(Level.FINER, "Loading portals from inter-server bungee database");
-                loadAllPortals(database, PortalType.INTER_SERVER, Stargate.getRegistry());
+                loadAllPortals(database, PortalType.INTER_SERVER, Stargate.getRegistryStatic());
             }
         } catch (SQLException exception) {
             exception.printStackTrace();

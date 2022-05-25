@@ -67,10 +67,10 @@ public class BlockEventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Location location = event.getBlock().getLocation();
-        Portal portal = Stargate.getRegistry().getPortal(location, GateStructureType.FRAME);
+        Portal portal = Stargate.getRegistryStatic().getPortal(location, GateStructureType.FRAME);
         if (portal != null) {
             Supplier<Boolean> destroyAction = () -> {
-                String msg = Stargate.languageManager.getErrorMessage(TranslatableMessage.DESTROY);
+                String msg = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.DESTROY);
                 event.getPlayer().sendMessage(msg);
 
                 portal.destroy();
@@ -84,11 +84,11 @@ public class BlockEventListener implements Listener {
             }
             return;
         }
-        if (Stargate.getRegistry().getPortal(location, GateStructureType.CONTROL_BLOCK) != null) {
+        if (Stargate.getRegistryStatic().getPortal(location, GateStructureType.CONTROL_BLOCK) != null) {
             event.setCancelled(true);
             return;
         }
-        if (Stargate.getRegistry().getPortal(location, GateStructureType.IRIS) != null && ConfigurationHelper.getBoolean(ConfigurationOption.PROTECT_ENTRANCE)) {
+        if (Stargate.getRegistryStatic().getPortal(location, GateStructureType.IRIS) != null && ConfigurationHelper.getBoolean(ConfigurationOption.PROTECT_ENTRANCE)) {
             event.setCancelled(true);
         }
     }
@@ -101,7 +101,7 @@ public class BlockEventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Location loc = event.getBlock().getLocation();
-        Portal portal = Stargate.getRegistry().getPortal(loc, GateStructureType.IRIS);
+        Portal portal = Stargate.getRegistryStatic().getPortal(loc, GateStructureType.IRIS);
         if (portal != null && ConfigurationHelper.getBoolean(ConfigurationOption.PROTECT_ENTRANCE)) {
             event.setCancelled(true);
         }
@@ -139,7 +139,7 @@ public class BlockEventListener implements Listener {
         Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
 
         if (disallowedFlags.size() > 0) {
-            String unformattedMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
+            String unformattedMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
             player.sendMessage(TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
         }
         flags.removeAll(disallowedFlags);
@@ -149,7 +149,7 @@ public class BlockEventListener implements Listener {
         try {
             Stargate.log(Level.FINER, "....Choosing network name....");
             Stargate.log(Level.FINER, "initial name is " + network);
-            finalNetworkName = NetworkCreationHelper.interpretNetworkName(network, flags, player, Stargate.getRegistry());
+            finalNetworkName = NetworkCreationHelper.interpretNetworkName(network, flags, player, Stargate.getRegistryStatic());
             Stargate.log(Level.FINER, "Took format " + finalNetworkName);
             finalNetworkName = NetworkCreationHelper.getAllowedNetworkName(finalNetworkName, permissionManager, player);
             Stargate.log(Level.FINER, "From allowed permissions took " + finalNetworkName);
@@ -167,9 +167,9 @@ public class BlockEventListener implements Listener {
         } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINER, "No Gate format matches");
         } catch (GateConflictException gateConflictException) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.GATE_CONFLICT));
         } catch (NameErrorException nameErrorException) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(nameErrorException.getErrorMessage()));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(nameErrorException.getErrorMessage()));
         }
     }
 
@@ -183,7 +183,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        if (Stargate.getRegistry().isPartOfPortal(event.getBlocks())) {
+        if (Stargate.getRegistryStatic().isPartOfPortal(event.getBlocks())) {
             event.setCancelled(true);
         }
     }
@@ -195,7 +195,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        if (Stargate.getRegistry().isPartOfPortal(event.getBlocks())) {
+        if (Stargate.getRegistryStatic().isPartOfPortal(event.getBlocks())) {
             event.setCancelled(true);
         }
     }
@@ -210,7 +210,7 @@ public class BlockEventListener implements Listener {
         Set<Portal> explodedPortals = new HashSet<>();
 
         for (Block block : event.blockList()) {
-            Portal portal = Stargate.getRegistry().getPortal(block.getLocation(),
+            Portal portal = Stargate.getRegistryStatic().getPortal(block.getLocation(),
                     new GateStructureType[]{GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK});
             if (portal != null) {
                 if (!ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION)) {
@@ -240,8 +240,8 @@ public class BlockEventListener implements Listener {
     public void onBlockFromTo(BlockFromToEvent event) {
         Block toBlock = event.getToBlock();
         Block fromBlock = event.getBlock();
-        if ((Stargate.getRegistry().getPortal(toBlock.getLocation(), GateStructureType.IRIS) != null)
-                || (Stargate.getRegistry().getPortal(fromBlock.getLocation(), GateStructureType.IRIS) != null)) {
+        if ((Stargate.getRegistryStatic().getPortal(toBlock.getLocation(), GateStructureType.IRIS) != null)
+                || (Stargate.getRegistryStatic().getPortal(fromBlock.getLocation(), GateStructureType.IRIS) != null)) {
             event.setCancelled(true);
         }
     }
@@ -258,7 +258,7 @@ public class BlockEventListener implements Listener {
         }
 
         Location location = event.getBlock().getLocation();
-        Portal portal = Stargate.getRegistry().getPortal(location, GateStructureType.IRIS);
+        Portal portal = Stargate.getRegistryStatic().getPortal(location, GateStructureType.IRIS);
         if (portal != null) {
             event.setCancelled(true);
         }

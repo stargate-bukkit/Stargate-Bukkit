@@ -72,7 +72,7 @@ public class BungeePortal extends AbstractPortal {
          * target server is stored as a replacement to network.
          */
         fakeNetwork = new LocalNetwork(destinationServer, null, null);
-        String possibleBungeeString = Stargate.languageManager.getString(TranslatableMessage.BUNGEE_SIGN_LINE_4);
+        String possibleBungeeString = Stargate.getLanguageManagerStatic().getString(TranslatableMessage.BUNGEE_SIGN_LINE_4);
         bungeeString = (possibleBungeeString == null) ? "[PlaceHolder]" : possibleBungeeString ;
     }
 

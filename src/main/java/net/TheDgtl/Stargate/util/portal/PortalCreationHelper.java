@@ -168,7 +168,7 @@ public class PortalCreationHelper {
         Stargate.log(Level.CONFIG, " player has perm = " + hasPermission);
 
         if (errorMessage != null) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(errorMessage));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(errorMessage));
             return;
         }
 
@@ -185,31 +185,31 @@ public class PortalCreationHelper {
 
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_CREATE) &&
                 !Stargate.economyManager.chargeAndTax(player, stargateCreateEvent.getCost())) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return;
         }
 
         if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
                 && !ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
             return;
         }
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER) && !ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INTER_SERVER_DISABLED));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.INTER_SERVER_DISABLED));
             return;
         }
 
         if (SpawnDetectionHelper.isInterferingWithSpawnProtection(gate, signLocation.getLocation())) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
 
         selectedNetwork.addPortal(portal, true);
         selectedNetwork.updatePortals();
         Stargate.log(Level.FINE, "A Gate format matches");
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE_PERSONAL));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.CREATE_PERSONAL));
         } else {
-            String unformattedMessage = Stargate.languageManager.getMessage(TranslatableMessage.CREATE);
+            String unformattedMessage = Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.CREATE);
             player.sendMessage(TranslatableMessageFormatter.formatNetwork(unformattedMessage, selectedNetwork.getName()));
         }
     }

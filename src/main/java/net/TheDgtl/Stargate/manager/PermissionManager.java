@@ -52,7 +52,7 @@ public class PermissionManager {
      * @param target <p>The entity to check permissions for</p>
      */
     public PermissionManager(Entity target) {
-        this(target, Stargate.languageManager);
+        this(target, Stargate.getLanguageManagerStatic());
     }
 
     public PermissionManager(Entity target, LanguageManager languageManager) {

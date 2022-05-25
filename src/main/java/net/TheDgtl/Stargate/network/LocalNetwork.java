@@ -81,7 +81,7 @@ public class LocalNetwork implements Network {
         if (!removeFromDatabase) {
             return;
         }
-        Stargate.getRegistry().removePortal(portal, PortalType.LOCAL);
+        Stargate.getRegistryStatic().removePortal(portal, PortalType.LOCAL);
     }
 
     @Override

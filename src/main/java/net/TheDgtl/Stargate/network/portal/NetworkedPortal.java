@@ -80,7 +80,7 @@ public class NetworkedPortal extends AbstractPortal {
         boolean previouslyActivated = this.isActive;
         activate(actor);
         if (destinations.size() < 1) {
-            String message = Stargate.languageManager.getErrorMessage(TranslatableMessage.DESTINATION_EMPTY);
+            String message = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.DESTINATION_EMPTY);
             event.getPlayer().sendMessage(message);
             this.isActive = false;
             return;
@@ -180,8 +180,8 @@ public class NetworkedPortal extends AbstractPortal {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
         if (!isActive) {
-            lines[1] = super.colorDrawer.formatLine(Stargate.languageManager.getString(TranslatableMessage.RIGHT_CLICK));
-            lines[2] = super.colorDrawer.formatLine(Stargate.languageManager.getString(TranslatableMessage.TO_USE));
+            lines[1] = super.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.RIGHT_CLICK));
+            lines[2] = super.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.TO_USE));
             lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(network.getHighlightedName()) : "";
         } else {
             drawActiveSign(lines);

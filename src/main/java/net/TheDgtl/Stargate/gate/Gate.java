@@ -417,7 +417,7 @@ public class Gate implements GateAPI {
      * @return <p>True if there is a conflict</p>
      */
     private boolean hasGateFrameConflict() {
-        RegistryAPI registryAPI = Stargate.getRegistry();
+        RegistryAPI registryAPI = Stargate.getRegistryStatic();
         List<BlockLocation> frameLocations = this.getLocations(GateStructureType.FRAME);
         for (BlockLocation blockLocation : frameLocations) {
             if (registryAPI.getPortal(blockLocation, GateStructureType.values()) != null) {
@@ -433,7 +433,7 @@ public class Gate implements GateAPI {
      * @return <p>True if there is a conflict</p>
      */
     private boolean hasGateControlConflict() {
-        RegistryAPI registryAPI = Stargate.getRegistry();
+        RegistryAPI registryAPI = Stargate.getRegistryStatic();
         //TODO: If we allow add-ons to add new controls after creation, this should be expanded to all control blocks
         List<PortalPosition> portalPositions = this.getPortalPositions();
         for (PortalPosition portalPosition : portalPositions) {
