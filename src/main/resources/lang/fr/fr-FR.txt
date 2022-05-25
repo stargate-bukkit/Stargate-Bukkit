@@ -24,7 +24,8 @@ faultExists=Un portail portant ce nom existe déjà !
 faultFull=Ce réseau est plein !
 faultWorldDeny=Vous n'avez pas accès au monde %world%!
 faultConflict=Ce portail entre en conflit avec un portail existant.
-faultFlag=Vous n'avez pas la permission d'utiliser les drapeaux %flags% ; votre portail a été créé sans eux !
+faultFlag=Vous n'avez pas la permission d'utiliser l'option %flags% ; votre portail a été créé sans lui !
+faultControls=Le design de ce portail a trop peu de blocs de contrôle pour accommoder les options que vous avez sélectionnées !
 
 # Bungee Problems
 bungeePerms=Vous n'avez pas la permission de faire des Portail bungee !

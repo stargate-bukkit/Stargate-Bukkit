@@ -96,7 +96,7 @@ public final class PortalCreationHelper {
                                          Player player, int cost, PermissionManager permissionManager, TranslatableMessage errorMessage)
             throws NameErrorException, GateConflictException, NoFormatFoundException {
         if (errorMessage != null) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(errorMessage));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(errorMessage));
             return;
         }
 
@@ -120,24 +120,24 @@ public final class PortalCreationHelper {
         //Display an error if trying to create portals across servers while the feature is disabled
         if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
                 && !ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
             return;
         }
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER) && !ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INTER_SERVER_DISABLED));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.INTER_SERVER_DISABLED));
             return;
         }
 
         //Charge the player as necessary for the portal creation
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_CREATE) &&
                 !Stargate.economyManager.chargeAndTax(player, stargateCreateEvent.getCost())) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return;
         }
 
         //Warn the player if their portal is interfering with spawn protection
         if (SpawnDetectionHelper.isInterferingWithSpawnProtection(gate, signLocation.getLocation())) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
 
         //Save the portal and inform the user
@@ -145,9 +145,9 @@ public final class PortalCreationHelper {
         selectedNetwork.updatePortals();
         Stargate.log(Level.FINE, "A Gate format matches");
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            player.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.CREATE_PERSONAL));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.CREATE_PERSONAL));
         } else {
-            String unformattedMessage = Stargate.languageManager.getMessage(TranslatableMessage.CREATE);
+            String unformattedMessage = Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.CREATE);
             player.sendMessage(TranslatableMessageFormatter.formatNetwork(unformattedMessage, selectedNetwork.getName()));
         }
     }

@@ -234,7 +234,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         Teleporter teleporter = new Teleporter(this, origin, portalFacing, entranceFace, useCost,
-                Stargate.languageManager.getMessage(TranslatableMessage.TELEPORT), logger);
+                Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.TELEPORT), logger);
 
         teleporter.teleport(target);
     }
@@ -244,7 +244,7 @@ public abstract class AbstractPortal implements RealPortal {
         Portal destination = getCurrentDestination();
         if (destination == null) {
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID), logger);
+                    0, Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.INVALID), logger);
             teleporter.teleport(target);
             return;
         }
@@ -299,7 +299,7 @@ public abstract class AbstractPortal implements RealPortal {
 
         Portal destination = getDestination();
         if (destination == null) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.INVALID));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.INVALID));
             return;
         }
         PermissionManager permissionManager = new PermissionManager(player);
@@ -356,7 +356,7 @@ public abstract class AbstractPortal implements RealPortal {
         for (GateStructureType formatType : GateStructureType.values()) {
             for (BlockLocation loc : this.getGate().getLocations(formatType)) {
                 Stargate.log(Level.FINEST, "Unregistering type: " + formatType + " location, at: " + loc);
-                Stargate.getRegistry().unRegisterLocation(formatType, loc);
+                Stargate.getRegistryStatic().unRegisterLocation(formatType, loc);
             }
         }
         network.updatePortals();

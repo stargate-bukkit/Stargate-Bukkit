@@ -17,10 +17,10 @@ public class CommandAbout implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
                              @NotNull String[] strings) {
         if (!commandSender.hasPermission(CommandPermission.ABOUT.getPermissionNode())) {
-            commandSender.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.DENY));
+            commandSender.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.DENY));
             return true;
         }
-        commandSender.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.COMMAND_HELP));
+        commandSender.sendMessage(Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.COMMAND_HELP));
         return true;
     }
 

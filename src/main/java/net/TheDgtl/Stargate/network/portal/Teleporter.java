@@ -93,7 +93,7 @@ public class Teleporter {
             }
 
             if (anyEntity instanceof Player && !Stargate.economyManager.has((Player) anyEntity, this.cost)) {
-                teleportMessage = Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
+                teleportMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS);
                 return false;
             }
             return true;

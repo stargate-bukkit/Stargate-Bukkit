@@ -37,6 +37,7 @@ public final class PortalDestructionHelper {
                                                                 Supplier<Boolean> destroyAction) {
         int cost = ConfigurationHelper.getInteger(ConfigurationOption.DESTROY_COST);
         PermissionManager permissionManager = new PermissionManager(player);
+
         boolean hasPermission = permissionManager.hasDestroyPermissions((RealPortal) portal);
         StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, player, !hasPermission,
                 permissionManager.getDenyMessage(), cost);
@@ -56,7 +57,7 @@ public final class PortalDestructionHelper {
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_DESTROY)
                 && !Stargate.economyManager.chargeAndTax(player, stargateDestroyEvent.getCost())) {
             player
-                    .sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
+                    .sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return true;
         }
         Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));

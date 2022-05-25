@@ -64,7 +64,6 @@ public class DataMigratorTest {
         }
 
         logger = new FakeStargate();
-        Stargate.languageManager = new FakeLanguageManager();
         defaultConfigFile = new File("src/main/resources", "config.yml");
         sqlDatabaseFile = new File("src/test/resources", "test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);

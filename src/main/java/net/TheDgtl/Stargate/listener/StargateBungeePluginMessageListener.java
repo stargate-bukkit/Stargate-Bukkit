@@ -145,9 +145,10 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         Player player = stargate.getServer().getPlayer(playerName);
         if (player == null) {
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
-            BungeeHelper.addToQueue(Stargate.getRegistry(), playerName, destination, bungeeNetwork, false);
+
+            BungeeHelper.addToQueue(Stargate.getRegistryStatic(), playerName, destination, bungeeNetwork, false);
         } else {
-            Network network = Stargate.getRegistry().getNetwork(bungeeNetwork, false);
+            Network network = Stargate.getRegistryStatic().getNetwork(bungeeNetwork, false);
             Portal destinationPortal = network.getPortal(destination);
             destinationPortal.teleportHere(player, null);
         }
@@ -174,8 +175,8 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         UUID ownerUUID = UUID.fromString(json.get(StargateProtocolProperty.OWNER.toString()).getAsString());
 
         try {
-            Stargate.getRegistry().createNetwork(network, flags);
-            InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.getRegistry().getNetwork(network, true);
+            Stargate.getRegistryStatic().createNetwork(network, flags);
+            InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.getRegistryStatic().getNetwork(network, true);
             VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
 
             switch (requestType) {
@@ -190,7 +191,6 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             }
         } catch (NameErrorException ignored) {
         }
-
     }
 
     /**
@@ -210,19 +210,19 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         Player player = stargate.getServer().getPlayer(playerName);
         if (player == null) {
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
-            BungeeHelper.addToQueue(Stargate.getRegistry(), playerName, portalName, networkName, true);
+            BungeeHelper.addToQueue(Stargate.getRegistryStatic(), playerName, portalName, networkName, true);
             return;
         }
 
         Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
-        Network network = Stargate.getRegistry().getNetwork(networkName, true);
+        Network network = Stargate.getRegistryStatic().getNetwork(networkName, true);
         if (network == null) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_NETWORK));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.BUNGEE_INVALID_NETWORK));
             return;
         }
         Portal destinationPortal = network.getPortal(portalName);
         if (destinationPortal == null) {
-            player.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_GATE));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.BUNGEE_INVALID_GATE));
             return;
         }
         destinationPortal.teleportHere(player, null);

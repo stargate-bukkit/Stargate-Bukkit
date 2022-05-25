@@ -150,14 +150,14 @@ public final class NetworkCreationHelper {
      */
     public static Network selectNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {
         try {
-            Stargate.getRegistry().createNetwork(name, flags);
+            Stargate.getRegistryStatic().createNetwork(name, flags);
         } catch (NameErrorException nameErrorException) {
             TranslatableMessage translatableMessage = nameErrorException.getErrorMessage();
             if (translatableMessage != null) {
                 throw nameErrorException;
             }
         }
-        return Stargate.getRegistry().getNetwork(name, flags.contains(PortalFlag.FANCY_INTER_SERVER));
+        return Stargate.getRegistryStatic().getNetwork(name, flags.contains(PortalFlag.FANCY_INTER_SERVER));
     }
 
     /**

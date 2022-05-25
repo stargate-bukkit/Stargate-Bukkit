@@ -25,6 +25,8 @@ faultFull=¡llnɟ sᴉ ʞɹoʍʇǝu ʇɐɥ┴
 faultWorldDeny=¡%world% plɹoʍ oʇ ssǝɔɔɐ ǝʌɐɥ ʇou op no⅄
 faultConflict=˙ǝʇɐƃ ƃuᴉʇsᴉxǝ uɐ ɥʇᴉʍ sʇɔᴉlɟuoɔ ǝʇɐƃ sᴉɥ┴
 faultFlag=¡ɯǝɥʇ ʇnoɥʇᴉʍ pǝʇɐǝɹɔ uǝǝq sɐɥ lɐʇɹod ɹnoʎ ;sƃɐlɟ %flags% ǝɥʇ ǝsn oʇ uoᴉssᴉɯɹǝd ʞɔɐl no⅄
+faultControls=¡pǝʇɔǝlǝs ǝʌɐɥ noʎ sƃɐlɟ ǝɥʇ ǝʇɐpoɯɯoɔɔɐ oʇ sʞɔolq loɹʇuoɔ ʍǝɟ ooʇ sɐɥ uƃᴉsǝp s,ǝʇɐƃ sᴉɥ┴
+faultAddon=¡ʇɐɥʇ ƃuᴉop ɯoɹɟ noʎ pǝʇuǝʌǝɹd sɐɥ uo-ppɐ u∀
 
 # Bungee Problems
 bungeePerms=¡sǝʇɐƃ ǝǝƃunq ǝʞɐɯ oʇ uoᴉssᴉɯɹǝd ǝʌɐɥ ʇou op no⅄

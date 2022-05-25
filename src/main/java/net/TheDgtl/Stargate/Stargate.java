@@ -17,6 +17,7 @@
  */
 package net.TheDgtl.Stargate;
 
+import net.TheDgtl.Stargate.api.StargateAPI;
 import net.TheDgtl.Stargate.command.CommandStargate;
 import net.TheDgtl.Stargate.command.StargateTabCompleter;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
@@ -78,7 +79,7 @@ import java.util.logging.Level;
  * @author Drakia (2011-2013)
  * @author Dinnerbone (2010-2011)
  */
-public class Stargate extends JavaPlugin implements StargateLogger {
+public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI {
     private static Stargate instance;
 
     private Level lowestMessageLevel = Level.INFO;//setting before config loads
@@ -90,8 +91,8 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     private PluginManager pluginManager;
 
-    private static StorageAPI storageAPI;
-    public static LanguageManager languageManager;
+    private StorageAPI storageAPI;
+    private LanguageManager languageManager;
     public static final int CURRENT_CONFIG_VERSION = 7;
     /**
      * Goes through every action in the queue every 1 tick. Should be used in tasks that need to be finished within a short time frame
@@ -118,7 +119,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
 
     private FileConfiguration config;
 
-    private static StargateRegistry registry;
+    private StargateRegistry registry;
     private static final FileConfiguration staticConfig = new StargateYamlConfiguration();
 
     @Override
@@ -361,12 +362,33 @@ public class Stargate extends JavaPlugin implements StargateLogger {
         }
     }
 
-    public static RegistryAPI getRegistry() {
+    public static RegistryAPI getRegistryStatic() {
+        return instance.registry;
+    }
+
+    public static StorageAPI getStorageAPIStatic() {
+        return instance.storageAPI;
+    }
+    
+    public static LanguageManager getLanguageManagerStatic() {
+        return instance.languageManager;
+    }
+
+    @Override
+    public RegistryAPI getRegistry() {
         return registry;
     }
 
-    public static StorageAPI getStorageAPI() {
+    @Override
+    public StorageAPI getStorageAPI() {
         return storageAPI;
     }
+
+    @Override
+    public LanguageManager getLanguageManager() {
+        return languageManager;
+    }
+    
+    
 
 }

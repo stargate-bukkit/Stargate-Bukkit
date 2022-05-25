@@ -20,7 +20,7 @@ public class CommandReload implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
                              @NotNull String[] args) {
         if (!commandSender.hasPermission(CommandPermission.RELOAD.getPermissionNode())) {
-            commandSender.sendMessage(Stargate.languageManager.getErrorMessage(TranslatableMessage.DENY));
+            commandSender.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.DENY));
             return true;
         }
 
@@ -31,7 +31,7 @@ public class CommandReload implements CommandExecutor {
         stargate.reloadConfig();
         stargate.reload();
         Stargate.log(Level.INFO, "Reloaded stargate.");
-        commandSender.sendMessage(Stargate.languageManager.getMessage(TranslatableMessage.COMMAND_RELOAD));
+        commandSender.sendMessage(Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.COMMAND_RELOAD));
         return true;
     }
 
