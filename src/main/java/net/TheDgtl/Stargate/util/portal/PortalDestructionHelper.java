@@ -16,14 +16,22 @@ import org.bukkit.entity.Player;
 
 import java.util.function.Supplier;
 
-public class PortalDestructionHelper {
+/**
+ * A helper class for removing an existing portal
+ */
+public final class PortalDestructionHelper {
+    
+    private PortalDestructionHelper() {
+        
+    }
 
     /**
      * Destroys a portal if the entity has permission and can pay any fees
      *
-     * @param portal        <p>The portal to destroy</p>
-     * @param destroyAction <p>The action to run when destroying a portal</p>
-     * @return true if event should be canceled
+     * @param player <p>The player that initiated the destruction</p>
+     * @param portal        <p>The portal to be destroyed</p>
+     * @param destroyAction <p>The action to run if the destruction is performed</p>
+     * @return <p>True if the destruction has been cancelled</p>
      */
     public static boolean destroyPortalIfHasPermissionAndCanPay(Player player, Portal portal,
                                                                 Supplier<Boolean> destroyAction) {
@@ -33,7 +41,14 @@ public class PortalDestructionHelper {
         StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, player, !hasPermission,
                 permissionManager.getDenyMessage(), cost);
         Bukkit.getPluginManager().callEvent(stargateDestroyEvent);
-        if (stargateDestroyEvent.isCancelled() || stargateDestroyEvent.getDeny()) {
+        
+        //Inform the player why the destruction was denied
+        if (stargateDestroyEvent.getDeny()) {
+            player.sendMessage(stargateDestroyEvent.getDenyReason());
+            return true;
+        }
+        if (stargateDestroyEvent.isCancelled()) {
+            //TODO: Inform the user of cancellation?
             return true;
         }
         /*

@@ -11,7 +11,11 @@ import java.util.Set;
 /**
  * A helper class for dealing with portals
  */
-public class PortalHelper {
+public final class PortalHelper {
+    
+    private PortalHelper() {
+        
+    }
 
     /**
      * Gets the string representation of a set of portal flags
