@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * <p>This event can be used to deny or change the cost of a stargate destruction.</p>
  */
+@SuppressWarnings("unused")
 public class StargateDestroyEvent extends StargateEntityEvent {
 
     private static final HandlerList handlers = new HandlerList();
@@ -20,19 +21,19 @@ public class StargateDestroyEvent extends StargateEntityEvent {
     /**
      * Instantiates a new Stargate Destroy Event
      *
-     * @param portal  <p>The destroyed portal</p>
-     * @param player  <p>The player destroying the portal</p>
-     * @param deny    <p>Whether the event should be denied (cancelled)</p>
-     * @param denyMsg <p>The message to display if the event is denied</p>
-     * @param cost    <p>The cost of destroying the portal</p>
+     * @param portal     <p>The destroyed portal</p>
+     * @param player     <p>The player destroying the portal</p>
+     * @param deny       <p>Whether the event should be denied (cancelled)</p>
+     * @param denyReason <p>The message to display if the event is denied</p>
+     * @param cost       <p>The cost of destroying the portal</p>
      */
-    public StargateDestroyEvent(@NotNull Portal portal, @NotNull Player player, boolean deny, @NotNull String denyMsg,
+    public StargateDestroyEvent(@NotNull Portal portal, @NotNull Player player, boolean deny, @NotNull String denyReason,
                                 int cost) {
         super(portal, player);
 
         //TODO: Perhaps alter or add an event for a stargate destroyed by an explosion?
         this.deny = deny;
-        this.denyReason = denyMsg;
+        this.denyReason = denyReason;
         this.cost = cost;
     }
 
