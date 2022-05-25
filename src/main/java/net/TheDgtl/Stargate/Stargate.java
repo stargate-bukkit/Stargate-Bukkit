@@ -270,7 +270,7 @@ public class Stargate extends JavaPlugin implements StargateLogger {
     private void load() {
         loadColors();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
-            BungeeHelper.loadBungeeServerName(DATA_FOLDER, INTERNAL_FOLDER);
+            BungeeHelper.getServerId(DATA_FOLDER, INTERNAL_FOLDER);
         }
         economyManager = new EconomyManager();
         String debugLevelString = ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL);

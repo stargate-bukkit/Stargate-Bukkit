@@ -19,7 +19,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class NetworkCreationHelper {
+/**
+ * A helper class for creating a new network
+ */
+public final class NetworkCreationHelper {
+
+    private NetworkCreationHelper() {
+
+    }
 
     /**
      * Interprets a network name and removes any characters with special behavior
@@ -153,6 +160,12 @@ public class NetworkCreationHelper {
         return Stargate.getRegistry().getNetwork(name, flags.contains(PortalFlag.FANCY_INTER_SERVER));
     }
 
+    /**
+     * Gets a player's UUID from the player's name
+     *
+     * @param playerName <p>The name of a player</p>
+     * @return <p>The player's unique ID</p>
+     */
     private static UUID getPlayerUUID(String playerName) {
         return Bukkit.getOfflinePlayer(playerName).getUniqueId();
     }

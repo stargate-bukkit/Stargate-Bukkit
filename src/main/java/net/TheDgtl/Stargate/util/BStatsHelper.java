@@ -15,7 +15,10 @@ import java.util.Set;
 /**
  * A helper for preparing bStats metrics
  */
-public class BStatsHelper {
+public final class BStatsHelper {
+
+    private BStatsHelper() {
+    }
 
     /**
      * Creates a new metrics containing relevant portal data. Note that the returned class does not need to be used.

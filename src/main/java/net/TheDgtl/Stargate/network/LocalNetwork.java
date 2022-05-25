@@ -59,7 +59,7 @@ public class LocalNetwork implements Network {
 
     @Override
     public String getId() {
-        return NameHelper.getID(this.name);
+        return NameHelper.getNormalizedName(this.name);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class LocalNetwork implements Network {
         if (name == null) {
             return null;
         }
-        return nameToPortalMap.get(NameHelper.getID(name));
+        return nameToPortalMap.get(NameHelper.getNormalizedName(name));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class LocalNetwork implements Network {
 
     @Override
     public boolean isPortalNameTaken(String name) {
-        return nameToPortalMap.containsKey(NameHelper.getID(name));
+        return nameToPortalMap.containsKey(NameHelper.getNormalizedName(name));
     }
 
     @Override

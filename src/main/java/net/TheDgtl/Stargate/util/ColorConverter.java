@@ -10,7 +10,7 @@ import java.util.EnumMap;
 /**
  * A converter for converting between different types of colors
  */
-public class ColorConverter {
+public final class ColorConverter {
 
     private static final EnumMap<Material, DyeColor> materialToColorsConversionMap = new EnumMap<>(Material.class);
     private static final EnumMap<DyeColor, Material> dyeColorToMaterialColorsConversionMap = new EnumMap<>(DyeColor.class);
@@ -21,6 +21,10 @@ public class ColorConverter {
             materialToColorsConversionMap.put(dye, color);
             dyeColorToMaterialColorsConversionMap.put(color, dye);
         }
+    }
+
+    private ColorConverter() {
+
     }
 
     /**

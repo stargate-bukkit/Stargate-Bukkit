@@ -398,6 +398,6 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public String getID() {
-        return NameHelper.getID(name);
+        return NameHelper.getNormalizedName(name);
     }
 }

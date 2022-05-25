@@ -17,7 +17,11 @@ import java.util.Map;
 /**
  * Utility class for helping with file reading and writing
  */
-public class FileHelper {
+public final class FileHelper {
+
+    private FileHelper() {
+
+    }
 
     /**
      * Gets a buffered reader for reading the given file
