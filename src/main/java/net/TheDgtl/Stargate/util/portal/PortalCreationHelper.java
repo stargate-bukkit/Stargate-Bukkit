@@ -113,7 +113,11 @@ public final class PortalCreationHelper {
         //If the create event has been denied, tell the user and abort
         if (stargateCreateEvent.getDeny()) {
             Stargate.log(Level.CONFIG, " Event was denied due to lack of permission or an add-on");
-            player.sendMessage(stargateCreateEvent.getDenyReason());
+            if (stargateCreateEvent.getDenyReason() == null) {
+                player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
+            } else if (!stargateCreateEvent.getDenyReason().isEmpty()) {
+                player.sendMessage(stargateCreateEvent.getDenyReason());
+            }
             return;
         }
 

@@ -20,15 +20,15 @@ import java.util.function.Supplier;
  * A helper class for removing an existing portal
  */
 public final class PortalDestructionHelper {
-    
+
     private PortalDestructionHelper() {
-        
+
     }
 
     /**
      * Destroys a portal if the entity has permission and can pay any fees
      *
-     * @param player <p>The player that initiated the destruction</p>
+     * @param player        <p>The player that initiated the destruction</p>
      * @param portal        <p>The portal to be destroyed</p>
      * @param destroyAction <p>The action to run if the destruction is performed</p>
      * @return <p>True if the destruction has been cancelled</p>
@@ -42,13 +42,17 @@ public final class PortalDestructionHelper {
         StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, player, !hasPermission,
                 permissionManager.getDenyMessage(), cost);
         Bukkit.getPluginManager().callEvent(stargateDestroyEvent);
-        
+
         //Inform the player why the destruction was denied
         if (stargateDestroyEvent.getDeny()) {
-            player.sendMessage(stargateDestroyEvent.getDenyReason());
+            if (stargateDestroyEvent.getDenyReason() == null) {
+                player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
+            } else if (!stargateDestroyEvent.getDenyReason().isEmpty()) {
+                player.sendMessage(stargateDestroyEvent.getDenyReason());
+            }
             return true;
         }
-        
+
         /*
          * If setting charge free destination is false, destination portal is
          * PortalFlag.Free and portal is of Fixed type or if player has override cost

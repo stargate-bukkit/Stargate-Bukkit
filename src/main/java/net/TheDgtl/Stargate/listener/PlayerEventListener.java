@@ -5,7 +5,6 @@ import net.TheDgtl.Stargate.action.ConditionalDelayedAction;
 import net.TheDgtl.Stargate.action.ConditionalRepeatedTask;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
-import net.TheDgtl.Stargate.event.StargateCreateEvent;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.manager.PermissionManager;
 import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
@@ -59,12 +58,12 @@ public class PlayerEventListener implements Listener {
         }
 
         // TODO material optimisation?
-        Portal portal = Stargate.getRegistryStatic().getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
+        RealPortal portal = Stargate.getRegistryStatic().getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
         if (portal == null) {
             return;
         }
 
-        handleRelevantClickEvent(block, (RealPortal) portal, event);
+        handleRelevantClickEvent(block, portal, event);
     }
 
     /**
@@ -116,9 +115,10 @@ public class PlayerEventListener implements Listener {
 
         PermissionManager permissionManager = new PermissionManager(event.getPlayer());
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
-        StargateCreateEvent colorSignPermission = new StargateCreateEvent(event.getPlayer(), portal, new String[]{"coloringSign"}, !hasPermission, permissionManager.getDenyMessage(),
-                0);
-        return !colorSignPermission.getDeny();
+        if (!hasPermission) {
+            event.getPlayer().sendMessage(permissionManager.getDenyMessage());
+        }
+        return hasPermission;
     }
 
     /**
