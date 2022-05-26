@@ -232,7 +232,7 @@ public abstract class AbstractPortal implements RealPortal {
                     && target instanceof Player && !target.hasPermission(BypassPermission.COST_USE.getPermissionString());
             useCost = shouldCharge ? ConfigurationHelper.getInteger(ConfigurationOption.USE_COST) : 0;
         }
-
+        
         Teleporter teleporter = new Teleporter(this, origin, portalFacing, entranceFace, useCost,
                 Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.TELEPORT), logger);
 
@@ -252,6 +252,7 @@ public abstract class AbstractPortal implements RealPortal {
         StargateAccessEvent accessEvent = new StargateAccessEvent(target, this, false, null);
         Bukkit.getPluginManager().callEvent(accessEvent);
         if (accessEvent.getDeny()) {
+            logger.logMessage(Level.CONFIG, " Access event was canceled by an external plugin");
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
                     0, accessEvent.getDenyReason(), logger);
             teleporter.teleport(target);

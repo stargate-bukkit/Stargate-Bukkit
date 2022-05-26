@@ -130,6 +130,9 @@ public class PermissionManager {
         StargateAccessEvent accessEvent = new StargateAccessEvent(target, portal, !hasPerm, this.getDenyMessage());
         Bukkit.getPluginManager().callEvent(accessEvent);
         this.denyMessage = accessEvent.getDenyReason();
+        if(hasPerm && accessEvent.getDeny()) {
+            Stargate.log(Level.CONFIG, " Access event was denied externaly");
+        }
         return !accessEvent.getDeny();
     }
 
