@@ -13,7 +13,7 @@ import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
-import net.TheDgtl.Stargate.manager.PermissionManager;
+import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.FixedPortal;
@@ -93,7 +93,7 @@ public final class PortalCreationHelper {
      * @throws NoFormatFoundException <p>If no known format matches the built stargate</p>
      */
     public static void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation, Set<PortalFlag> flags,
-                                         Player player, int cost, PermissionManager permissionManager, TranslatableMessage errorMessage)
+                                         Player player, int cost, StargatePermissionManager permissionManager, TranslatableMessage errorMessage)
             throws NameErrorException, GateConflictException, NoFormatFoundException {
         if (errorMessage != null) {
             player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(errorMessage));

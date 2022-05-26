@@ -9,7 +9,7 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.exception.NoFormatFoundException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
-import net.TheDgtl.Stargate.manager.PermissionManager;
+import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -113,7 +113,7 @@ public class BlockEventListener implements Listener {
         Player player = event.getPlayer();
         Set<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
 
-        PermissionManager permissionManager = new PermissionManager(player);
+        StargatePermissionManager permissionManager = new StargatePermissionManager(player);
         TranslatableMessage errorMessage = null;
 
         if (lines[1].trim().isEmpty()) {

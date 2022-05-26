@@ -37,6 +37,8 @@ import net.TheDgtl.Stargate.listener.PlayerEventListener;
 import net.TheDgtl.Stargate.listener.PluginEventListener;
 import net.TheDgtl.Stargate.listener.StargateBungeePluginMessageListener;
 import net.TheDgtl.Stargate.manager.EconomyManager;
+import net.TheDgtl.Stargate.manager.PermissionManager;
+import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.migration.DataMigrator;
 import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
@@ -50,6 +52,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
@@ -387,6 +390,11 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI 
     @Override
     public LanguageManager getLanguageManager() {
         return languageManager;
+    }
+
+    @Override
+    public PermissionManager getPermissionManager(Entity entity) {
+        return new StargatePermissionManager(entity);
     }
     
     

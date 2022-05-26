@@ -5,7 +5,7 @@ import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
-import net.TheDgtl.Stargate.manager.PermissionManager;
+import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -123,7 +123,7 @@ public final class NetworkCreationHelper {
      * @param permissionManager  <p> A permission manager for the actor player </p>
      * @param player             <P> The player that initiated the call </p>
      */
-    public static String getAllowedNetworkName(String initialNetworkName, PermissionManager permissionManager,
+    public static String getAllowedNetworkName(String initialNetworkName, StargatePermissionManager permissionManager,
                                                Player player) {
         HighlightingStyle style = HighlightingStyle.getHighlightType(initialNetworkName);
         if (!permissionManager.canCreateInNetwork(initialNetworkName) && style == HighlightingStyle.NOTHING) {

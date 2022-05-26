@@ -13,7 +13,7 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
-import net.TheDgtl.Stargate.manager.PermissionManager;
+import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.LineColorFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.LineFormatter;
@@ -303,7 +303,7 @@ public abstract class AbstractPortal implements RealPortal {
             player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.INVALID));
             return;
         }
-        PermissionManager permissionManager = new PermissionManager(player);
+        StargatePermissionManager permissionManager = new StargatePermissionManager(player);
         StargateOpenEvent stargateOpenEvent = new StargateOpenEvent(player, this, false);
         if (!permissionManager.hasOpenPermissions(this, destination)) {
             event.getPlayer().sendMessage(permissionManager.getDenyMessage());

@@ -6,7 +6,7 @@ import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.event.StargateDestroyEvent;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
-import net.TheDgtl.Stargate.manager.PermissionManager;
+import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.property.BypassPermission;
@@ -36,7 +36,7 @@ public final class PortalDestructionHelper {
     public static boolean destroyPortalIfHasPermissionAndCanPay(Player player, Portal portal,
                                                                 Supplier<Boolean> destroyAction) {
         int cost = ConfigurationHelper.getInteger(ConfigurationOption.DESTROY_COST);
-        PermissionManager permissionManager = new PermissionManager(player);
+        StargatePermissionManager permissionManager = new StargatePermissionManager(player);
 
         boolean hasPermission = permissionManager.hasDestroyPermissions((RealPortal) portal);
         StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, player, !hasPermission,

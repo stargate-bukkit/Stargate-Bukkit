@@ -10,7 +10,7 @@ import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
-import net.TheDgtl.Stargate.manager.PermissionManager;
+import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
 import org.bukkit.Bukkit;
@@ -68,7 +68,7 @@ public class NetworkedPortal extends AbstractPortal {
             return;
         }
 
-        PermissionManager permissionManager = new PermissionManager(event.getPlayer());
+        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer());
         if (!hasActivatePermissions(actor, permissionManager)) {
             if (permissionManager.getDenyMessage() != null) {
                 actor.sendMessage(permissionManager.getDenyMessage());
@@ -289,7 +289,7 @@ public class NetworkedPortal extends AbstractPortal {
      * @param player <p>The player to check permissions of</p>
      * @return <p>True if the given player is allowed to activate this portal</p>
      */
-    private boolean hasActivatePermissions(Player player, PermissionManager permissionManager) {
+    private boolean hasActivatePermissions(Player player, StargatePermissionManager permissionManager) {
         if (!permissionManager.hasAccessPermission(this)) {
             return false;
         }

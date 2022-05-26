@@ -6,7 +6,7 @@ import net.TheDgtl.Stargate.action.ConditionalRepeatedTask;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
-import net.TheDgtl.Stargate.manager.PermissionManager;
+import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
@@ -113,7 +113,7 @@ public class PlayerEventListener implements Listener {
             return false;
         }
 
-        PermissionManager permissionManager = new PermissionManager(event.getPlayer());
+        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer());
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         if (!hasPermission) {
             event.getPlayer().sendMessage(permissionManager.getDenyMessage());

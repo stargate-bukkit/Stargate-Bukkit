@@ -8,7 +8,7 @@ import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
-import net.TheDgtl.Stargate.manager.PermissionManager;
+import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -86,7 +86,7 @@ public class Teleporter {
 
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
             //TODO: The access event should be called to allow add-ons cancelling or overriding the teleportation
-            PermissionManager permissionManager = new PermissionManager(anyEntity);
+            StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity);
             if (!hasPermission(anyEntity, permissionManager)) {
                 teleportMessage = permissionManager.getDenyMessage();
                 return false;
@@ -337,7 +337,7 @@ public class Teleporter {
      * @param permissionManager <p>The permission manager to use for checking for relevant permissions</p>
      * @return <p>True if the entity has the required permissions for performing the teleportation</p>
      */
-    private boolean hasPermission(Entity target, PermissionManager permissionManager) {
+    private boolean hasPermission(Entity target, StargatePermissionManager permissionManager) {
         if (origin == null) {
             // TODO origin == null means inter-server teleportation. Make a permission check for this or something?
             return true;
