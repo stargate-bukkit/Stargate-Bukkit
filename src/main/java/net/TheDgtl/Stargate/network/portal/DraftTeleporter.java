@@ -35,7 +35,7 @@ import java.util.logging.Level;
 public class DraftTeleporter {
 
     private static final double LOOK_FOR_LEASHED_RADIUS = 15;
-    private final Location exit;
+    private Location exit;
     private final RealPortal origin;
     private final RealPortal destination;
     private final int cost;
@@ -305,7 +305,8 @@ public class DraftTeleporter {
     private boolean hasPermission(Entity target, PermissionManager permissionManager) {
         StargatePortalEvent event = new StargatePortalEvent(target, origin, destination, exit);
         Bukkit.getPluginManager().callEvent(event);
-        return (permissionManager.hasTeleportPermissions(origin)) && !event.isCancelled();
+        exit = event.getExit();
+        return permissionManager.hasTeleportPermissions(origin);
     }
 
 }

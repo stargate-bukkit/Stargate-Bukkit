@@ -25,6 +25,7 @@ faultFull=Tato síť je plná!
 faultWorldDeny=Nemáte přístup k světu %world%!
 faultConflict=Tato brána je v konfliktu s existující branou.
 faultFlag=Nemáte oprávnění používat flagy %flags% . Váš portál byl vytvořen bez nich!
+faultControls=Tato definice brány má příliš málo ovládacích bloků na to, aby vyhovovala navoleným parametrům!
 
 # Bungee Problems
 bungeePerms=Nemáte oprávnění vytvářet bungee brány!

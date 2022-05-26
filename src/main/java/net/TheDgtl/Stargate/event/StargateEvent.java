@@ -1,7 +1,6 @@
 package net.TheDgtl.Stargate.event;
 
 import net.TheDgtl.Stargate.network.portal.Portal;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,10 +8,9 @@ import org.jetbrains.annotations.NotNull;
  * An abstract event describing any stargate event
  */
 @SuppressWarnings("unused")
-public abstract class StargateEvent extends Event implements Cancellable {
+public abstract class StargateEvent extends Event {
 
     private final Portal portal;
-    private boolean cancelled;
 
     /**
      * Instantiates a new stargate event
@@ -21,7 +19,6 @@ public abstract class StargateEvent extends Event implements Cancellable {
      */
     StargateEvent(@NotNull Portal portal) {
         this.portal = portal;
-        this.cancelled = false;
     }
 
     /**
@@ -31,16 +28,6 @@ public abstract class StargateEvent extends Event implements Cancellable {
      */
     public Portal getPortal() {
         return portal;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return this.cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
     }
 
 }

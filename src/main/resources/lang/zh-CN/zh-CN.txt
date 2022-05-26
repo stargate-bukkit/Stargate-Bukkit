@@ -25,6 +25,7 @@ faultFull=该星门网络已满!
 faultWorldDeny=你没有链接世界 %world% 的权限!
 faultConflict=这个星门与现有星门冲突.
 faultFlag=你没有使用 %flags% 的权限; 已从星门中去除!
+faultControls=这个星门的控制方块太少了, 无法容纳你选择的标志!
 
 # Bungee Problems
 bungeePerms=你没有创建跨服星门的权限!

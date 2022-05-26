@@ -293,12 +293,10 @@ public class NetworkedPortal extends AbstractPortal {
         if (!permissionManager.hasAccessPermission(this)) {
             return false;
         }
+        //Call the activate event to notify add-ons
         StargateActivateEvent event = new StargateActivateEvent(this, player, getPortalNames(destinations),
                 this.getDestinationName());
         Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            return false;
-        }
 
         //Update this sign's displayed destinations
         destinations = getPortals(event.getDestinations());
@@ -377,11 +375,10 @@ public class NetworkedPortal extends AbstractPortal {
         if (!isActive) {
             return;
         }
+        //Call the deactivate event to notify add-ons
         StargateDeactivateEvent event = new StargateDeactivateEvent(this);
         Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            return;
-        }
+
         this.activator = null;
         this.destinations.clear();
         this.isActive = false;

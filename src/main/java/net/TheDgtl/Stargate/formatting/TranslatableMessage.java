@@ -81,10 +81,16 @@ public enum TranslatableMessage {
      * The message to display when a player does not have access to a world
      */
     WORLD_DENY("faultWorldDeny"),
+	
     /**
      * The message to display when a portal or network name exceeds the max length
      */
     INVALID_NAME("faultLength"),
+	
+	/**
+     * A generic message to display when an addon prevents the user from doing something
+     */
+    ADDON_INTERFERE("faultAddon"),
 
     /**
      * The message to display when a new stargate's name is already in use

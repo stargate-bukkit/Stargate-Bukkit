@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * always-on.</p>
  */
 @SuppressWarnings("unused")
-public class StargateCloseEvent extends StargateEvent {
+public class StargateCloseEvent extends CancellableStargateEvent {
 
     private static final HandlerList handlers = new HandlerList();
     private boolean force;
