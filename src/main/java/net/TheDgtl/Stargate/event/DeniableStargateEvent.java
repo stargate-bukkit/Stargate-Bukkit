@@ -21,6 +21,8 @@ public abstract class DeniableStargateEvent extends StargateEntityEvent {
      */
     DeniableStargateEvent(Portal portal, Entity travellingEntity, boolean deny, String denyReason) {
         super(portal, travellingEntity);
+        this.deny = deny;
+        this.denyReason = denyReason;
     }
 
     /**
