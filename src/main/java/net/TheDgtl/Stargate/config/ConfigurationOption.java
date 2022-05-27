@@ -235,7 +235,7 @@ public enum ConfigurationOption {
      *
      * @return <p>The config file string node corresponding to this setting</p>
      */
-    String getConfigNode() {
+    public String getConfigNode() {
         return configNode;
     }
 
