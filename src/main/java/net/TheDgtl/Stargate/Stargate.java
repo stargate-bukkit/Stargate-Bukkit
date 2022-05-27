@@ -20,6 +20,7 @@ package net.TheDgtl.Stargate;
 import net.TheDgtl.Stargate.api.StargateAPI;
 import net.TheDgtl.Stargate.command.CommandStargate;
 import net.TheDgtl.Stargate.command.StargateTabCompleter;
+import net.TheDgtl.Stargate.config.ConfigurationAPI;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.config.StargateYamlConfiguration;
@@ -82,7 +83,7 @@ import java.util.logging.Level;
  * @author Drakia (2011-2013)
  * @author Dinnerbone (2010-2011)
  */
-public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI {
+public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI, ConfigurationAPI {
     private static Stargate instance;
 
     private Level lowestMessageLevel = Level.INFO;//setting before config loads
@@ -266,6 +267,21 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI 
         }
     }
 
+    @Override
+    public void setConfigurationOptionValue(ConfigurationOption configurationOption, Object newValue) {
+        config.set(configurationOption.getConfigNode(), newValue);
+    }
+
+    @Override
+    public Object getConfigurationOptionValue(ConfigurationOption configurationOption) {
+        return config.get(configurationOption.getConfigNode());
+    }
+
+    @Override
+    public void saveConfiguration() {
+        saveConfig();
+    }
+
     public void reload() {
         loadGateFormats();
         load();
@@ -372,7 +388,12 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI 
     public static StorageAPI getStorageAPIStatic() {
         return instance.storageAPI;
     }
-    
+
+    @SuppressWarnings("unused")
+    public static ConfigurationAPI getConfigAPIStatic() {
+        return instance;
+    }
+
     public static LanguageManager getLanguageManagerStatic() {
         return instance.languageManager;
     }
@@ -396,7 +417,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI 
     public PermissionManager getPermissionManager(Entity entity) {
         return new StargatePermissionManager(entity);
     }
-    
-    
+
+    @Override
+    public ConfigurationAPI getConfigurationAPI() {
+        return this;
+    }
 
 }

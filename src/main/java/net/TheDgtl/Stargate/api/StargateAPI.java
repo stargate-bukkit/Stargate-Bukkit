@@ -1,10 +1,10 @@
 package net.TheDgtl.Stargate.api;
 
+import net.TheDgtl.Stargate.config.ConfigurationAPI;
 import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.formatting.LanguageManager;
 import net.TheDgtl.Stargate.manager.PermissionManager;
 import net.TheDgtl.Stargate.network.RegistryAPI;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Entity;
 
 /**
@@ -12,6 +12,7 @@ import org.bukkit.entity.Entity;
  *
  * @author Thorin
  */
+@SuppressWarnings("unused")
 public interface StargateAPI {
 
     /**
@@ -19,41 +20,35 @@ public interface StargateAPI {
      *
      * @return <p>The registry used to register and unregister Stargates</p>
      */
-    public RegistryAPI getRegistry();
+    RegistryAPI getRegistry();
 
     /**
      * Gets the storage API used to store and load Stargates
      *
      * @return <p>The storage API used to store and load stargates</p>
      */
-    public StorageAPI getStorageAPI();
-    
+    StorageAPI getStorageAPI();
+
     /**
      * Gets permission manager for specified entity
+     *
      * @param entity <p> The entity to check permissions on </p>
      * @return <p> A permission manager </p>
      */
-    public PermissionManager getPermissionManager(Entity entity);
+    PermissionManager getPermissionManager(Entity entity);
 
     /**
-     * Reloads the Stargate configuration from disk
-     */
-    public void reload();
-
-    /**
-     * Gets Stargate's configuration
+     * Gets the configuration API used to interact with the configuration file
      *
-     * @return <p>Stargate's configuration</p>
+     * @return <p>The configuration API</p>
      */
-    public Configuration getConfig();
+    ConfigurationAPI getConfigurationAPI();
 
     /**
      * Gets the language manager used for translating strings
      *
      * @return <p>The language manager used for translating strings</p>
      */
-    public LanguageManager getLanguageManager();
-    
-    
+    LanguageManager getLanguageManager();
 
 }
