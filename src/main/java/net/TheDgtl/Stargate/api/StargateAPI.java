@@ -5,6 +5,7 @@ import net.TheDgtl.Stargate.formatting.LanguageManager;
 import net.TheDgtl.Stargate.manager.PermissionManager;
 import net.TheDgtl.Stargate.network.RegistryAPI;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 
 /**
@@ -45,7 +46,7 @@ public interface StargateAPI {
      *
      * @return <p>Stargate's configuration</p>
      */
-    public Configuration getConfig();
+    public FileConfiguration getConfig();
 
     /**
      * Gets the language manager used for translating strings
