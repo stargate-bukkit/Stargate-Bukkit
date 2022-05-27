@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import net.TheDgtl.Stargate.property.CommandPermission;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,8 +43,11 @@ public class StargateTabCompleter implements TabCompleter {
     private List<String> getAvailableCommands(CommandSender commandSender) {
         List<String> commands = new ArrayList<>();
         commands.add("about");
-        if (!(commandSender instanceof Player) || commandSender.hasPermission("stargate.admin.reload")) {
+        if (commandSender.hasPermission(CommandPermission.RELOAD.getPermissionNode())) {
             commands.add("reload");
+        }
+        if (commandSender.hasPermission(CommandPermission.TRACE.getPermissionNode())) {
+            commands.add("trace");
         }
         return commands;
     }

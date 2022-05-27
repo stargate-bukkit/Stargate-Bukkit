@@ -30,6 +30,8 @@ permissions:
         children:
           sg.admin.reload:
             description: Reloads the plugin's config.yml (/sg reload)
+          sg.admin.trace:
+            description: Dumps all data about this instance into a file (/sg trace)
           sg.admin.bypass:
             description: Bypasses restricted portal aspects.
             children:

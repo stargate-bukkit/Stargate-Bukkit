@@ -20,12 +20,16 @@ public class CommandStargate implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
                              @NotNull String[] args) {
         if (args.length > 0) {
-            if (args[0].equalsIgnoreCase("about")) {
+            switch (args[0]) {
+            case "about":
                 return new CommandAbout().onCommand(commandSender, command, s, args);
-            } else if (args[0].equalsIgnoreCase("reload")) {
+            case "reload":
                 return new CommandReload().onCommand(commandSender, command, s, args);
+            case "trace":
+                return new CommandTrace().onCommand(commandSender, command, s, args);
+            default:
+                return false;
             }
-            return false;
         } else {
             String unformattedMessage = Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.COMMAND_INFO);
             commandSender.sendMessage(TranslatableMessageFormatter.formatVersion(unformattedMessage,
