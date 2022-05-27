@@ -88,10 +88,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private Level lowestMessageLevel = Level.INFO;//setting before config loads
 
-    final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
-    final String GATE_FOLDER = "gates";
-    final String LANGUAGE_FOLDER = "lang";
-    final String INTERNAL_FOLDER = ".internal";
+    public final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
+    public final String GATE_FOLDER = "gates";
+    public final String LANGUAGE_FOLDER = "lang";
+    public final String INTERNAL_FOLDER = ".internal";
 
     private PluginManager pluginManager;
 
