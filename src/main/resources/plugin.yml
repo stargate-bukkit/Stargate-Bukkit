@@ -172,6 +172,7 @@ permissions:
           #NOT IMPL.    sg.create.type.v:
           #NOT IMPL.      description: Can create gates with invisible signs.
           sg.create.design:
+            default: true
             description: Can create any portal, regardless of the design (gatefile)
             children:
               #sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be created.
@@ -192,6 +193,7 @@ permissions:
             description: Can destroy portals, regardless of network
             children:
               sg.destroy.network.personal:
+                default: true
                 description: Can destroy any portals on your personal network.
               sg.destroy.network.default:
                 description: Can destroy any portals on the default network. (central)
@@ -229,7 +231,13 @@ permissions:
           #NOT IMPL.    sg.destroy.type.v:
           #NOT IMPL.      description: Can destroy gates with invisible signs.
           sg.destroy.design:
+            default: true
             description: Can destroy portals, regardless of design (gatefile).
+            children:
+              #sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be created.
+              sg.create.design.nether.gate: true
+              sg.create.design.water.gate: true
+              sg.create.design.wool.gate: true
       #sg.destroy.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be destroyed.
 
       sg.preset:
