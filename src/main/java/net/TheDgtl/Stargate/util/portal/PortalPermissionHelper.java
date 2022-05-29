@@ -200,6 +200,10 @@ public final class PortalPermissionHelper {
         if (parent != null) {
             custom.addParent(parent, true);
         }
+        Stargate.log(Level.FINEST,"Children of permissionnode '" + permissionIdentifier + ".network.custom");
+        for(String node : parent.getChildren().keySet()) {
+            Stargate.log(Level.FINEST, node);
+        }
         return custom;
     }
 
@@ -221,6 +225,10 @@ public final class PortalPermissionHelper {
         if (parent != null) {
             worldPermission.addParent(parent, true);
         }
+        Stargate.log(Level.FINEST,"Children of permissionnode '" + permissionIdentifier + ".world");
+        for(String node : parent.getChildren().keySet()) {
+            Stargate.log(Level.FINEST, node);
+        }
         return worldPermission;
     }
 
@@ -231,13 +239,17 @@ public final class PortalPermissionHelper {
      * @param portal         <p> The portal which design to check </p>
      * @param permIdentifier <p> The beginning of every permission node generated </p>
      */
-    private static Permission compileDesignPerm(RealPortal portal, String permIdentifier) {
+    private static Permission compileDesignPerm(RealPortal portal, String permissionIdentifier) {
         PluginManager pm = Bukkit.getPluginManager();
-        Permission parent = pm.getPermission(permIdentifier + ".design");
-        String permNode = permIdentifier + ".design." + portal.getGate().getFormat().getFileName();
+        Permission parent = pm.getPermission(permissionIdentifier + ".design");
+        String permNode = permissionIdentifier + ".design." + portal.getGate().getFormat().getFileName();
         Permission design = new Permission(permNode);
         if (parent != null) {
             design.addParent(parent, true);
+        }
+        Stargate.log(Level.FINEST,"Children of permissionnode '" + permissionIdentifier + ".design");
+        for(String node : parent.getChildren().keySet()) {
+            Stargate.log(Level.FINEST, node);
         }
         return design;
     }
