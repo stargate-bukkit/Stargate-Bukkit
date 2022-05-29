@@ -40,8 +40,9 @@ public class StargatePermissionManager implements PermissionManager{
     private final boolean canProcessMetaData;
     private final LanguageManager languageManager;
 
-    private static final String FLAG_PERMISSION = "sg.create.type.";
-    private static final String CREATE_PERMISSION = "sg.create.network";
+    private static final String CREATE_PERMISSION = "sg.create";
+    private static final String NETWORK_CREATE_PERMISSION = CREATE_PERMISSION + ".network";
+    private static final String FLAG_PERMISSION = CREATE_PERMISSION + ".type.";
 
     /**
      * Instantiates a new permission manager
@@ -265,19 +266,19 @@ public class StargatePermissionManager implements PermissionManager{
         switch (highlight) {
             case PERSONAL:
                 if (target.getName().equals(netName)) {
-                    hasPermission = target.hasPermission(CREATE_PERMISSION + ".personal");
+                    hasPermission = target.hasPermission(NETWORK_CREATE_PERMISSION + ".personal");
                 } else {
                     hasPermission = target.hasPermission(BypassPermission.PRIVATE.getPermissionString());
                 }
                 break;
             case BUNGEE:
-                hasPermission = target.hasPermission(CREATE_PERMISSION + ".type." + PortalFlag.FANCY_INTER_SERVER);
+                hasPermission = target.hasPermission(NETWORK_CREATE_PERMISSION + ".type." + PortalFlag.FANCY_INTER_SERVER);
                 break;
             default:
                 if (netName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-                    hasPermission = target.hasPermission(CREATE_PERMISSION + ".default");
+                    hasPermission = target.hasPermission(NETWORK_CREATE_PERMISSION + ".default");
                 } else {
-                    hasPermission = target.hasPermission(CREATE_PERMISSION + ".custom." + netName);
+                    hasPermission = target.hasPermission(PortalPermissionHelper.compileCustomNetworkPerm(CREATE_PERMISSION, netName));
                 }
                 break;
         }

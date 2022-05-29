@@ -195,15 +195,20 @@ public final class PortalPermissionHelper {
         if (portal.getNetwork().getName().equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
             return pluginManager.getPermission(permissionIdentifier + ".network.default");
         }
-        Permission custom = new Permission(permissionIdentifier + ".network.custom." + portal.getNetwork().getName());
-        Permission parent = pluginManager.getPermission(permissionIdentifier + ".network.custom");
-        if (parent != null) {
-            custom.addParent(parent, true);
-        }
-        Stargate.log(Level.FINEST,"Children of permissionnode '" + permissionIdentifier + ".network.custom");
-        for(String node : parent.getChildren().keySet()) {
-            Stargate.log(Level.FINEST, node);
-        }
+        return compileCustomNetworkPerm(permissionIdentifier, portal.getNetwork().getName());
+    }
+    
+    /**
+     * Compile the permission required for creating a custom network
+     * @param permissionIdentifier <p> The start of the permission, for example 'sg.create' </p>
+     * @param netName   <p> The name of the custom network </p>
+     * @return <p> The permission required for creating the network </p>
+     */
+    public static Permission compileCustomNetworkPerm(String permissionIdentifier, String netName) {
+        Permission custom = new Permission(permissionIdentifier + ".network.custom." + netName);
+        Permission parrent = Bukkit.getPluginManager().getPermission(permissionIdentifier + ".network.custom");
+        custom.addParent(parrent, true);
+        parrent.recalculatePermissibles();
         return custom;
     }
 
@@ -224,11 +229,9 @@ public final class PortalPermissionHelper {
         Permission worldPermission = new Permission(permissionNode);
         if (parent != null) {
             worldPermission.addParent(parent, true);
+            parent.recalculatePermissibles();
         }
-        Stargate.log(Level.FINEST,"Children of permissionnode '" + permissionIdentifier + ".world");
-        for(String node : parent.getChildren().keySet()) {
-            Stargate.log(Level.FINEST, node);
-        }
+        
         return worldPermission;
     }
 
@@ -246,10 +249,7 @@ public final class PortalPermissionHelper {
         Permission design = new Permission(permNode);
         if (parent != null) {
             design.addParent(parent, true);
-        }
-        Stargate.log(Level.FINEST,"Children of permissionnode '" + permissionIdentifier + ".design");
-        for(String node : parent.getChildren().keySet()) {
-            Stargate.log(Level.FINEST, node);
+            parent.recalculatePermissibles();
         }
         return design;
     }
