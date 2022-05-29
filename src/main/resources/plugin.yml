@@ -267,6 +267,8 @@ permissions:
             description: A set of permissions intended to be given to staff who will be making advanced stargates for server usage.
             children:
               sg.preset.gatemaker: true
+              sg.create.network.custom: true
+              sg.destroy.network.custom: true
               sg.create.network.default: true
               sg.create.type.a: true
               sg.create.type.b: true
