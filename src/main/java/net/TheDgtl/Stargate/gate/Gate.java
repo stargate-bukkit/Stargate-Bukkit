@@ -242,6 +242,8 @@ public class Gate implements GateAPI {
         //TODO: Add support for using solid blocks as the gate-closed material for underwater portals
         switch (portalClosedMaterial) {
             case AIR:
+            case CAVE_AIR:
+            case VOID_AIR:
                 return DEFAULT_BUTTON;
             case WATER:
                 return DEFAULT_WATER_BUTTON;
