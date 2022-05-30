@@ -55,6 +55,8 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.ServicePriority;
+import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -78,7 +80,7 @@ import java.util.logging.Level;
  * Lead Developers:
  *
  * @author Thorin (2020-Present)
- * @author EpicKnarvik (2021-Present)
+ * @author EpicKnarvik97 (2021-Present)
  * @author PseudoKnight (2015-2020)
  * @author Drakia (2011-2013)
  * @author Dinnerbone (2010-2011)
@@ -113,6 +115,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     public static final int MAX_TEXT_LENGTH = 40;
 
     public static EconomyManager economyManager;
+    private static ServicesManager servicesManager;
     public static String serverName;
     public static boolean knowsServerName = false;
 
@@ -155,6 +158,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         //Register bStats metrics
         int pluginId = 13629;
         BStatsHelper.getMetrics(pluginId, this);
+        servicesManager = this.getServer().getServicesManager();
+        servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
     }
 
     private void loadColors() {
@@ -179,19 +184,25 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         return ChatColor.of(colorString);
     }
 
+    /**
+     * Registers all necessary listeners for this plugin
+     */
     private void registerListeners() {
         pluginManager.registerEvents(new BlockEventListener(), this);
         pluginManager.registerEvents(new MoveEventListener(), this);
         pluginManager.registerEvents(new PlayerEventListener(), this);
         pluginManager.registerEvents(new PluginEventListener(), this);
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
-            Messenger msgr = Bukkit.getMessenger();
+            Messenger messenger = Bukkit.getMessenger();
 
-            msgr.registerOutgoingPluginChannel(this, PluginChannel.BUNGEE.getChannel());
-            msgr.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(), new StargateBungeePluginMessageListener(this));
+            messenger.registerOutgoingPluginChannel(this, PluginChannel.BUNGEE.getChannel());
+            messenger.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(), new StargateBungeePluginMessageListener(this));
         }
     }
 
+    /**
+     * Saves all the default gate designs to the gate folder
+     */
     private void saveDefaultGates() {
         //TODO is there a way to check all files in a resource-folder? Possible solution seems unnecessarily complex
         String[] gateList = {"nether.gate", "water.gate", "wool.gate", "end.gate"};
@@ -332,6 +343,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             return;
         }
         storageAPI.endInterServerConnection();
+        servicesManager.unregisterAll(this);
     }
 
     public static void log(Level priorityLevel, String message) {

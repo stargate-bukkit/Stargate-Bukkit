@@ -11,6 +11,11 @@ public class FakeLanguageManager implements LanguageManager {
     }
 
     @Override
+    public String getWarningMessage(TranslatableMessage translatableMessage) {
+        return "";
+    }
+
+    @Override
     public String getMessage(TranslatableMessage translatableMessage) {
         return "";
     }
