@@ -176,6 +176,10 @@ public class StargatePermissionManager implements PermissionManager{
      */
     private String determineTranslatableMessageFromPermission(Permission permission) {
         String permissionNode = permission.getName();
+        if(permissionNode.equals("sg.use.follow")) {
+            return languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED);
+        }
+        
         if (permissionNode.contains("create") || permissionNode.contains("use")) {
             if (permissionNode.contains("world")) {
                 String unformattedMessage = languageManager.getErrorMessage(TranslatableMessage.WORLD_DENY);
@@ -248,7 +252,7 @@ public class StargatePermissionManager implements PermissionManager{
 
         Stargate.log(Level.CONFIG, String.format(" Checking 'can-followthrough' meta. Returned %s", canFollowThrough));
         if (!canFollowThrough) {
-            denyMessage = languageManager.getErrorMessage(TranslatableMessage.DENY);
+            denyMessage = languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED);
         }
         return canFollowThrough;
     }

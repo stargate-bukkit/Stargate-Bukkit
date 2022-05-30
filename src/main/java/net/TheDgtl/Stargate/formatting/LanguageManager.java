@@ -11,6 +11,14 @@ public interface LanguageManager {
     String getErrorMessage(TranslatableMessage translatableMessage);
 
     /**
+     * Gets a formatted warning message
+     *
+     * @param translatableMessage <p>The translatable message to display as an error</p>
+     * @return <p>The formatted warning message</p>
+     */
+    String getWarningMessage(TranslatableMessage translatableMessage);
+    
+    /**
      * Gets a formatted message
      *
      * @param translatableMessage <p>The translatable message to display</p>
@@ -34,4 +42,5 @@ public interface LanguageManager {
      * @param language <p>The language to change to</p>
      */
     void setLanguage(String language);
+
 }

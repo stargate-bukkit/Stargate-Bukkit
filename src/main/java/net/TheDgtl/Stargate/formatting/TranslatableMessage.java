@@ -42,6 +42,11 @@ public enum TranslatableMessage {
      * The message to be displayed when a player is missing the required permissions to teleport to a destination
      */
     DENY("conflictPerms"),
+    
+    /**
+     * The message to be displayed when gate is used by another player
+     */
+    TELEPORTATION_OCCUPIED("tpOccupied"),
 
     /**
      * The message to be displayed if a player is missing the sufficient funds to perform an action
@@ -177,6 +182,11 @@ public enum TranslatableMessage {
      * The message to display if a stargate is created within the spawn area
      */
     SPAWN_CHUNKS_CONFLICTING("conflictSpawn"),
+    
+    /**
+     * The message to display during portal creation if the chosen network changed
+     */
+    GATE_CREATE_FALLBACK("gateCreateFallback"),
 
     /**
      * The message to display whenever the reload command is executed

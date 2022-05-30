@@ -244,7 +244,7 @@ public abstract class AbstractPortal implements RealPortal {
         Portal destination = getCurrentDestination();
         if (destination == null) {
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.INVALID), logger);
+                    0, Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED), logger);
             teleporter.teleport(target);
             return;
         }

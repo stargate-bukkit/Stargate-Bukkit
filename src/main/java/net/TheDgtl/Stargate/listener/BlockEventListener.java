@@ -127,7 +127,7 @@ public class BlockEventListener implements Listener {
         Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
 
         if (disallowedFlags.size() > 0) {
-            String unformattedMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
+            String unformattedMessage = Stargate.getLanguageManagerStatic().getWarningMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
             player.sendMessage(TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
         }
         flags.removeAll(disallowedFlags);

@@ -141,7 +141,7 @@ public final class PortalCreationHelper {
 
         //Warn the player if their portal is interfering with spawn protection
         if (SpawnDetectionHelper.isInterferingWithSpawnProtection(gate, signLocation.getLocation())) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getWarningMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
 
         //Save the portal and inform the user

@@ -46,12 +46,17 @@ public class StargateLanguageManager implements LanguageManager {
 
     @Override
     public String getErrorMessage(TranslatableMessage translatableMessage) {
-        return formatMessage(translatableMessage, true);
+        return formatMessage(translatableMessage, ChatColor.RED);
     }
 
     @Override
+    public String getWarningMessage(TranslatableMessage translatableMessage) {
+        return formatMessage(translatableMessage, ChatColor.YELLOW);
+    }
+    
+    @Override
     public String getMessage(TranslatableMessage translatableMessage) {
-        return formatMessage(translatableMessage, false);
+        return formatMessage(translatableMessage, ChatColor.GREEN);
     }
 
     @Override
@@ -104,11 +109,11 @@ public class StargateLanguageManager implements LanguageManager {
      * <p>The stargate prefix and the appropriate color is added to the returned translated message.</p>
      *
      * @param translatableMessage <p>The translatable message to display</p>
-     * @param isError             <p>Whether the message should be formatted as an error message</p>
+     * @param prefixColor         <p>The color of the prefix</p>
      * @return <p>A translated and formatted message</p>
      */
-    private String formatMessage(TranslatableMessage translatableMessage, boolean isError) {
-        String prefix = (isError ? ChatColor.RED : ChatColor.GREEN) + getString(TranslatableMessage.PREFIX);
+    private String formatMessage(TranslatableMessage translatableMessage, ChatColor prefixColor) {
+        String prefix = prefixColor + getString(TranslatableMessage.PREFIX);
         String message = getString(translatableMessage).replaceAll("(&([a-f0-9]))", "\u00A7$2");
         Stargate.log(Level.FINE, String.format("Formated TranslatableMessage '%s' to '%s'", translatableMessage.toString(), message));
         return prefix + ChatColor.WHITE + message;

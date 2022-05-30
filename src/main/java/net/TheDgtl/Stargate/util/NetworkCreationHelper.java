@@ -125,19 +125,25 @@ public final class NetworkCreationHelper {
      */
     public static String getAllowedNetworkName(String initialNetworkName, StargatePermissionManager permissionManager,
                                                Player player) {
-        HighlightingStyle style = HighlightingStyle.getHighlightType(initialNetworkName);
-        if (!permissionManager.canCreateInNetwork(initialNetworkName) && style == HighlightingStyle.NOTHING) {
+        String modifiedNetworkName = initialNetworkName;
+        HighlightingStyle style = HighlightingStyle.getHighlightType(modifiedNetworkName);
+        if (!permissionManager.canCreateInNetwork(modifiedNetworkName) && style == HighlightingStyle.NOTHING) {
             Stargate.log(Level.CONFIG,
-                    String.format(" Player does not have perms to create on current network %s. Checking for private with same network name...", initialNetworkName));
-            initialNetworkName = HighlightingStyle.PERSONAL.getHighlightedName(initialNetworkName);
+                    String.format(" Player does not have perms to create on current network %s. Checking for private with same network name...", modifiedNetworkName));
+            modifiedNetworkName = HighlightingStyle.PERSONAL.getHighlightedName(modifiedNetworkName);
         }
 
-        if (!permissionManager.canCreateInNetwork(initialNetworkName)) {
+        if (!permissionManager.canCreateInNetwork(modifiedNetworkName)) {
             Stargate.log(Level.CONFIG,
-                    String.format(" Player does not have perms to create on current network %s. Replacing to private network with the players name...", initialNetworkName));
-            return HighlightingStyle.PERSONAL.getHighlightedName(player.getName());
+                    String.format(" Player does not have perms to create on current network %s. Replacing to private network with the players name...", modifiedNetworkName));
+            modifiedNetworkName = HighlightingStyle.PERSONAL.getHighlightedName(player.getName());
         }
-        return initialNetworkName;
+        if(!initialNetworkName.equals(modifiedNetworkName)) {
+            String unformatedMessage = Stargate.getLanguageManagerStatic().getWarningMessage(TranslatableMessage.GATE_CREATE_FALLBACK);
+            player.sendMessage(TranslatableMessageFormatter.formatNetwork(unformatedMessage, initialNetworkName));
+        }
+        
+        return modifiedNetworkName;
     }
 
     /**
