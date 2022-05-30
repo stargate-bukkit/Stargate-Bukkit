@@ -15,6 +15,7 @@ gateCreateSpecified=Gate created on %network% network!
 gateCreatePersonal=Creating gate on personal network.
 gateTerminalSold=Purchased gate %gateName% in %terminalName% for %cost%.
 gateTerminalSale=Listed gate %gateName% for sale in %terminalName% for %cost%.
+gateCreateFallback=Unable to create your gate on the %network% network; trying your personal network instead!
 
 # Gate Construction Problems
 faultNetwork=You do not have access to that network!
@@ -42,6 +43,7 @@ bungeeTargetOffline=The proxy is currently down; bungee portals are temporarily 
 tpSuccess=Teleported!
 tpDestInvalid=Invalid destination!
 tpEmptyNet=Destination list empty!
+tpOccupied=Another player is currently using this portal; try again in a few moments!
 
 # Access
 conflictPerms=Access denied!

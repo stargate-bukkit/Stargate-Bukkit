@@ -15,6 +15,7 @@ gateCreateSpecified=¡ʞɹoʍʇǝu %network% uo pǝʇɐǝɹɔ ǝʇɐפ
 gateCreatePersonal=˙ʞɹoʍʇǝu lɐuosɹǝd uo ǝʇɐƃ ƃuᴉʇɐǝɹƆ
 gateTerminalSold=%cost% ɹoɟ %terminalName% uᴉ %gateName% ǝʇɐƃ pǝsɐɥɔɹnԀ
 gateTerminalSale=%cost% ɹoɟ %terminalName% uᴉ ǝlɐs ɹoɟ %gateName% ǝʇɐƃ pǝʇsᴉ˥
+gateCreateFallback=¡pɐǝʇsuᴉ ʞɹoʍʇǝu lɐuosɹǝd ɹnoʎ ƃuᴉʎɹʇ ;ʞɹoʍʇǝu %network% ǝɥʇ uo ǝʇɐƃ ɹnoʎ ǝʇɐǝɹɔ oʇ ǝlqɐu∩
 
 # Gate Construction Problems
 faultNetwork=¡ʞɹoʍʇǝu ʇɐɥʇ oʇ ssǝɔɔɐ ǝʌɐɥ ʇou op no⅄
@@ -42,6 +43,7 @@ bungeeTargetOffline=˙pǝlqɐsᴉp ʎlᴉɹɐɹodɯǝʇ ǝɹɐ slɐʇɹod ǝǝƃ
 tpSuccess=¡pǝʇɹodǝlǝ┴
 tpDestInvalid=¡uoᴉʇɐuᴉʇsǝp pᴉlɐʌuI
 tpEmptyNet=¡ʎʇdɯǝ ʇsᴉl uoᴉʇɐuᴉʇsǝp
+tpOccupied=¡sʇuǝɯoɯ ʍǝɟ ɐ uᴉ uᴉɐƃɐ ʎɹʇ ;lɐʇɹod sᴉɥʇ ƃuᴉsn ʎlʇuǝɹɹnɔ sᴉ ɹǝʎɐld ɹǝɥʇou∀
 
 # Access
 conflictPerms=¡pǝᴉuǝp ssǝɔɔ∀
