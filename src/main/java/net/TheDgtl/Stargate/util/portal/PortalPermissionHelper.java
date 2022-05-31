@@ -39,24 +39,24 @@ public final class PortalPermissionHelper {
             return new ArrayList<>();
         }
         String identifier = "sg.use";
-        List<Permission> permsList = defaultPortalPermCompile(portal, identifier, actor.getUniqueId().toString());
+        List<Permission> permissionList = generateDefaultPortalPermissionList(portal, identifier, actor.getUniqueId().toString());
         if (portal.hasFlag(PortalFlag.PRIVATE) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
-            permsList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
+            permissionList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
         }
         Permission baseTypePermission = Bukkit.getPluginManager().getPermission(identifier + ".type");
         if (baseTypePermission != null) {
             if (portal.hasFlag(PortalFlag.FIXED)) {
                 Permission fixedPerm = new Permission(identifier + ".type.fixed");
                 fixedPerm.addParent(baseTypePermission, true);
-                permsList.add(fixedPerm);
+                permissionList.add(fixedPerm);
             }
             if (portal.hasFlag(PortalFlag.NETWORKED)) {
                 Permission fixedPerm = new Permission(identifier + ".type.networked");
                 fixedPerm.addParent(baseTypePermission, true);
-                permsList.add(fixedPerm);
+                permissionList.add(fixedPerm);
             }
         }
-        return permsList;
+        return permissionList;
     }
 
     /**
@@ -71,7 +71,7 @@ public final class PortalPermissionHelper {
             return new ArrayList<>();
         }
         String identifier = "sg.create";
-        List<Permission> permList = defaultPortalPermCompile(portal, identifier, actor.getUniqueId().toString());
+        List<Permission> permList = generateDefaultPortalPermissionList(portal, identifier, actor.getUniqueId().toString());
         if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
             permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
         }
@@ -90,7 +90,7 @@ public final class PortalPermissionHelper {
             return new ArrayList<>();
         }
         String identifier = "sg.destroy";
-        List<Permission> permList = defaultPortalPermCompile(portal, identifier, actor.getUniqueId().toString());
+        List<Permission> permList = generateDefaultPortalPermissionList(portal, identifier, actor.getUniqueId().toString());
         if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
             permList.add(Bukkit.getPluginManager().getPermission("sg.admin.bypass.private"));
         }
@@ -110,9 +110,9 @@ public final class PortalPermissionHelper {
             return new ArrayList<>();
         }
         String identifier = "sg.use";
-        List<Permission> permList = defaultPortalPermCompile(entrance, identifier, actor.getUniqueId().toString());
+        List<Permission> permList = generateDefaultPortalPermissionList(entrance, identifier, actor.getUniqueId().toString());
         if (exit instanceof RealPortal) {
-            permList.add(compileWorldPerm((RealPortal) exit, identifier));
+            permList.add(generateWorldPermission((RealPortal) exit, identifier));
         }
         return permList;
     }
@@ -130,7 +130,7 @@ public final class PortalPermissionHelper {
 
         List<Permission> permList;
         if (entrance.hasFlag(PortalFlag.ALWAYS_ON)) {
-            permList = defaultPortalPermCompile(entrance, identifier, target.getUniqueId().toString());
+            permList = generateDefaultPortalPermissionList(entrance, identifier, target.getUniqueId().toString());
         } else {
             permList = new ArrayList<>();
         }
@@ -195,19 +195,19 @@ public final class PortalPermissionHelper {
         if (portal.getNetwork().getName().equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
             return pluginManager.getPermission(permissionIdentifier + ".network.default");
         }
-        return compileCustomNetworkPerm(permissionIdentifier, portal.getNetwork().getName());
+        return generateCustomNetworkPermission(permissionIdentifier, portal.getNetwork().getName());
     }
 
     /**
-     * Compile the permission required for creating a custom network
+     * Generates the permission required for creating a custom network
      *
-     * @param permissionIdentifier <p> The start of the permission, for example 'sg.create' </p>
-     * @param netName              <p> The name of the custom network </p>
-     * @return <p> The permission required for creating the network </p>
+     * @param permissionRootNode <p>The root node (stargate/sg) of any generated permission</p>
+     * @param networkName              <p>The name of the custom network</p>
+     * @return <p>The permission required for creating the network</p>
      */
-    public static Permission compileCustomNetworkPerm(String permissionIdentifier, String netName) {
-        Permission custom = new Permission(permissionIdentifier + ".network.custom." + netName);
-        Permission parent = Bukkit.getPluginManager().getPermission(permissionIdentifier + ".network.custom");
+    public static Permission generateCustomNetworkPermission(String permissionRootNode, String networkName) {
+        Permission custom = new Permission(permissionRootNode + ".network.custom." + networkName);
+        Permission parent = Bukkit.getPluginManager().getPermission(permissionRootNode + ".network.custom");
         if (parent != null) {
             custom.addParent(parent, true);
             parent.recalculatePermissibles();
@@ -216,19 +216,20 @@ public final class PortalPermissionHelper {
     }
 
     /**
-     * Compile all permissions that by default will be used related to the portals position in the world for any action
+     * Generates the permission required for using the given portal's world
      *
-     * @param portal               <p> The portal which location to check </p>
-     * @param permissionIdentifier <p> The beginning of every permission node generated </p>
+     * @param portal               <p>The portal to generate the permission for</p>
+     * @param permissionRootNode <p>The root node (stargate/sg) of any generated permission</p>
+     * @return <p>The permission required for the given portal's world</p>
      */
-    private static Permission compileWorldPerm(RealPortal portal, String permissionIdentifier) {
-        PluginManager pm = Bukkit.getPluginManager();
-        Permission parent = pm.getPermission(permissionIdentifier + ".world");
+    private static Permission generateWorldPermission(RealPortal portal, String permissionRootNode) {
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        Permission parent = pluginManager.getPermission(permissionRootNode + ".world");
         World world = portal.getGate().getTopLeft().getWorld();
         if (world == null) {
             return null;
         }
-        String permissionNode = permissionIdentifier + ".world." + world.getName();
+        String permissionNode = permissionRootNode + ".world." + world.getName();
         Permission worldPermission = new Permission(permissionNode);
         if (parent != null) {
             worldPermission.addParent(parent, true);
@@ -238,18 +239,18 @@ public final class PortalPermissionHelper {
         return worldPermission;
     }
 
-
     /**
-     * Compile all permissions that by default will be used related to gate designs for any action
+     * Generates the permission required for using the given portal's design
      *
-     * @param portal               <p> The portal which design to check </p>
-     * @param permissionIdentifier <p> The beginning of every permission node generated </p>
+     * @param portal               <p>The portal which design to check</p>
+     * @param permissionRootNode <p>The root node (stargate/sg) of any generated permission</p>
+     * @return <p>The permission required for the given portal's design</p>
      */
-    private static Permission compileDesignPerm(RealPortal portal, String permissionIdentifier) {
-        PluginManager pm = Bukkit.getPluginManager();
-        Permission parent = pm.getPermission(permissionIdentifier + ".design");
-        String permNode = permissionIdentifier + ".design." + portal.getGate().getFormat().getFileName();
-        Permission design = new Permission(permNode);
+    private static Permission generateDesignPermission(RealPortal portal, String permissionRootNode) {
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        Permission parent = pluginManager.getPermission(permissionRootNode + ".design");
+        String permissionNode = permissionRootNode + ".design." + portal.getGate().getFormat().getFileName();
+        Permission design = new Permission(permissionNode);
         if (parent != null) {
             design.addParent(parent, true);
             parent.recalculatePermissibles();
@@ -261,17 +262,18 @@ public final class PortalPermissionHelper {
      * Compile the permissions that by default will be used for any action,
      * the only uniqueness depending on the action comes from the start of the string for each node
      *
-     * @param portal         <p> The portal affected </p>
-     * @param permIdentifier <p> The beginning of every permission node generated </p>
-     * @param activatorUUID  <p> UUID of the activator </p>
-     * @return <p> A list with related permissions </p>
+     * @param portal         <p>The portal affected</p>
+     * @param permissionRootNode <p>The beginning of every permission node generated</p>
+     * @param activatorUUID  <p>UUID of the activator</p>
+     * @return <p>A list with related permissions</p>
      */
-    private static List<Permission> defaultPortalPermCompile(RealPortal portal, String permIdentifier, String activatorUUID) {
-        List<Permission> permList = new ArrayList<>(compileFlagPerms(portal, permIdentifier));
-        permList.add(compileWorldPerm(portal, permIdentifier));
-        permList.add(compileNetworkPerm(portal, permIdentifier, activatorUUID));
-        permList.add(compileDesignPerm(portal, permIdentifier));
-        return permList;
+    private static List<Permission> generateDefaultPortalPermissionList(RealPortal portal, String permissionRootNode, 
+                                                                        String activatorUUID) {
+        List<Permission> permissionList = new ArrayList<>(compileFlagPerms(portal, permissionRootNode));
+        permissionList.add(generateWorldPermission(portal, permissionRootNode));
+        permissionList.add(compileNetworkPerm(portal, permissionRootNode, activatorUUID));
+        permissionList.add(generateDesignPermission(portal, permissionRootNode));
+        return permissionList;
     }
 
 }

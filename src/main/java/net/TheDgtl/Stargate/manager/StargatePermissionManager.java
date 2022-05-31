@@ -273,7 +273,7 @@ public class StargatePermissionManager implements PermissionManager {
                 if (netName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
                     hasPermission = target.hasPermission(NETWORK_CREATE_PERMISSION + ".default");
                 } else {
-                    hasPermission = target.hasPermission(PortalPermissionHelper.compileCustomNetworkPerm(CREATE_PERMISSION, netName));
+                    hasPermission = target.hasPermission(PortalPermissionHelper.generateCustomNetworkPermission(CREATE_PERMISSION, netName));
                 }
                 break;
         }
