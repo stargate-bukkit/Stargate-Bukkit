@@ -17,7 +17,6 @@ import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.EnumSet;
@@ -92,37 +91,78 @@ public class StargatePermissionManager implements PermissionManager {
     }
 
     /**
-     * Checks if the target entity has the given permissions
+     * Checks whether the given entity has the given permission nodes
      *
-     * @param permissions <p>The list of permissions required for some action</p>
-     * @return <p>True if the entity has all the given permissions</p>
+     * @param entity      <p>The entity to check</p>
+     * @param permissions <p>The permissions required</p>
+     * @return <p>True if the entity has the given permissions</p>
      */
-    private boolean hasPermission(List<Permission> permissions) {
-        for (Permission relatedPermission : permissions) {
-            String message = " Checking permission '%s'. returned %s";
-            boolean hasPermission = relatedPermission == null || target.hasPermission(relatedPermission);
-            String permissionNode = (relatedPermission != null) ? relatedPermission.getName() : "null";
-            Stargate.log(Level.CONFIG, String.format(message, permissionNode, hasPermission));
-            if (!hasPermission) {
-                denyMessage = determineTranslatableMessageFromPermission(relatedPermission);
+    private boolean hasPermissions(Entity entity, List<String> permissions) {
+        for (String permission : permissions) {
+            if (!hasPermission(entity, permission)) {
+                denyMessage = determineTranslatableMessageFromPermission(permission);
                 return false;
             }
         }
         return true;
     }
 
+    /**
+     * Checks whether the given entity has the given permission node
+     *
+     * @param entity     <p>The entity to check</p>
+     * @param permission <p>The permission required</p>
+     * @return <p>True if the entity has the given permission</p>
+     */
+    private boolean hasPermission(Entity entity, String permission) {
+        //Assume a null permission means no permission needed
+        if (permission == null) {
+            return true;
+        }
+        String message = " Checking permission '%s'. returned %s";
+        boolean hasGivenPermission = entity.hasPermission(permission);
+        Stargate.log(Level.CONFIG, String.format(message, permission, hasGivenPermission));
+
+        String parentPermission = getParentPermission(permission);
+        if (parentPermission == null) {
+            return hasGivenPermission;
+        }
+
+        //If the entity has the parent permission, allow unless explicitly defined
+        if (hasPermission(entity, parentPermission)) {
+            if (!entity.isPermissionSet(permission)) {
+                return true;
+            }
+        }
+        return hasGivenPermission;
+    }
+
+    /**
+     * Gets the parent node of a given permission node
+     *
+     * @param permissionNode <p>The permission node to get the parent of</p>
+     * @return <p>The permission's parent node</p>
+     */
+    private String getParentPermission(String permissionNode) {
+        //Return null if no parent exists
+        if (!permissionNode.contains(".")) {
+            return null;
+        }
+        return permissionNode.substring(0, permissionNode.lastIndexOf("."));
+    }
+
     @Override
     public boolean hasAccessPermission(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking access permissions");
-        List<Permission> relatedPerms = PortalPermissionHelper.getAccessPermissions(portal, target);
-        return hasPermission(relatedPerms);
+        List<String> relatedPerms = PortalPermissionHelper.getAccessPermissions(portal, target);
+        return hasPermissions(target, relatedPerms);
     }
 
     @Override
     public boolean hasCreatePermissions(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking create permissions");
-        List<Permission> relatedPerms = PortalPermissionHelper.getCreatePermissions(portal, target);
-        boolean hasPermission = hasPermission(relatedPerms);
+        List<String> relatedPerms = PortalPermissionHelper.getCreatePermissions(portal, target);
+        boolean hasPermission = hasPermissions(target, relatedPerms);
         if (hasPermission && portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && canProcessMetaData && target instanceof Player) {
             return !isNetworkFull(portal.getNetwork());
         }
@@ -132,15 +172,15 @@ public class StargatePermissionManager implements PermissionManager {
     @Override
     public boolean hasDestroyPermissions(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking destroy permissions");
-        List<Permission> relatedPerms = PortalPermissionHelper.getDestroyPermissions(portal, target);
-        return hasPermission(relatedPerms);
+        List<String> relatedPerms = PortalPermissionHelper.getDestroyPermissions(portal, target);
+        return hasPermissions(target, relatedPerms);
     }
 
     @Override
     public boolean hasOpenPermissions(RealPortal entrance, Portal exit) {
         Stargate.log(Level.CONFIG, "Checking open permissions");
-        List<Permission> relatedPerms = PortalPermissionHelper.getOpenPermissions(entrance, exit, target);
-        return hasPermission(relatedPerms);
+        List<String> relatedPerms = PortalPermissionHelper.getOpenPermissions(entrance, exit, target);
+        return hasPermissions(target, relatedPerms);
     }
 
     /**
@@ -151,8 +191,8 @@ public class StargatePermissionManager implements PermissionManager {
      */
     public boolean hasTeleportPermissions(RealPortal entrance) {
         Stargate.log(Level.CONFIG, "Checking teleport permissions");
-        List<Permission> relatedPerms = PortalPermissionHelper.getTeleportPermissions(entrance, target);
-        boolean hasPermission = hasPermission(relatedPerms);
+        List<String> relatedPerms = PortalPermissionHelper.getTeleportPermissions(entrance, target);
+        boolean hasPermission = hasPermissions(target, relatedPerms);
         if (hasPermission && !entrance.isOpenFor(target) && target instanceof Player) {
             return canFollow();
         }
@@ -162,11 +202,10 @@ public class StargatePermissionManager implements PermissionManager {
     /**
      * Determines the message to send the player based out of the permission it was denied.
      *
-     * @param permission <p>The permission node the entity was denied</p>
+     * @param permissionNode <p>The permission node the entity was denied</p>
      * @return <p>The error message to display</p>
      */
-    private String determineTranslatableMessageFromPermission(Permission permission) {
-        String permissionNode = permission.getName();
+    private String determineTranslatableMessageFromPermission(String permissionNode) {
         if (permissionNode.equals("sg.use.follow")) {
             return languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED);
         }
