@@ -15,6 +15,7 @@ gateCreateSpecified=Portail créée sur le réseau %network% !
 gateCreatePersonal=Création d'un Portail sur le réseau personnel.
 gateTerminalSold=Portail %gateName% acheté en %terminalName% pour %cost%.
 gateTerminalSale=Portail listé %gateName% en vente à %terminalName% pour %cost%.
+gateCreateFallback=Impossible de créer votre portail sur le réseau %network% ; essais de votre réseau personnel à la place !
 
 # Gate Construction Problems
 faultNetwork=Vous n'avez pas accès à ce réseau !
@@ -26,6 +27,7 @@ faultWorldDeny=Vous n'avez pas accès au monde %world%!
 faultConflict=Ce portail entre en conflit avec un portail existant.
 faultFlag=Vous n'avez pas la permission d'utiliser l'option %flags% ; votre portail a été créé sans lui !
 faultControls=Le design de ce portail a trop peu de blocs de contrôle pour accommoder les options que vous avez sélectionnées !
+faultAddon=Un module vous a empêché de faire ça !
 
 # Bungee Problems
 bungeePerms=Vous n'avez pas la permission de faire des Portail bungee !
@@ -41,6 +43,7 @@ bungeeTargetOffline=Le proxy est actuellement en panne; les portails bungee sont
 tpSuccess=Téléporté !
 tpDestInvalid=Destination invalide !
 tpEmptyNet=Liste de destination vide !
+tpOccupied=Un autre joueur utilise actuellement ce portail ; réessayez dans quelques instants !
 
 # Access
 conflictPerms=Accès refusé !
