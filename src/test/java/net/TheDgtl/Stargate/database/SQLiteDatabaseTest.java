@@ -92,7 +92,7 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(3)
-    void createInterPortalPositioTableTest() throws SQLException {
+    void createPortalPositionTableTest() throws SQLException {
         tester.createPortalPositionTableTest();
     }
 

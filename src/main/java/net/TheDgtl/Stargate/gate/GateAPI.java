@@ -11,7 +11,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * An API describing a Gate
+ */
 public interface GateAPI {
+    
     /**
      * Set button and draw sign
      *
@@ -109,4 +113,5 @@ public interface GateAPI {
      * @param type     <p> The type of position </p>
      */
     void addPortalPosition(Location location, PositionType type);
+
 }

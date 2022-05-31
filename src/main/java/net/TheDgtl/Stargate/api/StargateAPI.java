@@ -5,7 +5,6 @@ import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.formatting.LanguageManager;
 import net.TheDgtl.Stargate.manager.PermissionManager;
 import net.TheDgtl.Stargate.network.RegistryAPI;
-
 import org.bukkit.entity.Entity;
 
 /**

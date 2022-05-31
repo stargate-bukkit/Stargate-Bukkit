@@ -6,6 +6,7 @@ import org.bukkit.entity.Entity;
 /**
  * A Stargate event which can be denied
  */
+@SuppressWarnings("unused")
 public abstract class DeniableStargateEvent extends StargateEntityEvent {
 
     private boolean deny;

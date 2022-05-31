@@ -42,7 +42,7 @@ public enum TranslatableMessage {
      * The message to be displayed when a player is missing the required permissions to teleport to a destination
      */
     DENY("conflictPerms"),
-    
+
     /**
      * The message to be displayed when gate is used by another player
      */
@@ -86,13 +86,13 @@ public enum TranslatableMessage {
      * The message to display when a player does not have access to a world
      */
     WORLD_DENY("faultWorldDeny"),
-	
+
     /**
      * The message to display when a portal or network name exceeds the max length
      */
     INVALID_NAME("faultLength"),
-	
-	/**
+
+    /**
      * A generic message to display when an addon prevents the user from doing something
      */
     ADDON_INTERFERE("faultAddon"),
@@ -182,7 +182,7 @@ public enum TranslatableMessage {
      * The message to display if a stargate is created within the spawn area
      */
     SPAWN_CHUNKS_CONFLICTING("conflictSpawn"),
-    
+
     /**
      * The message to display during portal creation if the chosen network changed
      */

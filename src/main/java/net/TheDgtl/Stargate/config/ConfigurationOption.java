@@ -219,7 +219,7 @@ public enum ConfigurationOption {
         this.defaultValue = defaultValue;
         this.dataType = dataType;
     }
-    
+
     /**
      * Gets the data type used for storing this config option
      *

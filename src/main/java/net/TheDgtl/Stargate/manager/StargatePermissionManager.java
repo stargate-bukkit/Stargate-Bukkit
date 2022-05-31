@@ -3,7 +3,6 @@ package net.TheDgtl.Stargate.manager;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
-import net.TheDgtl.Stargate.event.StargateAccessEvent;
 import net.TheDgtl.Stargate.formatting.LanguageManager;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.network.Network;
@@ -32,7 +31,7 @@ import java.util.logging.Level;
  * @author Thorin
  * @author Pheotis
  */
-public class StargatePermissionManager implements PermissionManager{
+public class StargatePermissionManager implements PermissionManager {
 
     private final Entity target;
     private String denyMessage;
@@ -168,10 +167,10 @@ public class StargatePermissionManager implements PermissionManager{
      */
     private String determineTranslatableMessageFromPermission(Permission permission) {
         String permissionNode = permission.getName();
-        if(permissionNode.equals("sg.use.follow")) {
+        if (permissionNode.equals("sg.use.follow")) {
             return languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED);
         }
-        
+
         if (permissionNode.contains("create") || permissionNode.contains("use")) {
             if (permissionNode.contains("world")) {
                 String unformattedMessage = languageManager.getErrorMessage(TranslatableMessage.WORLD_DENY);

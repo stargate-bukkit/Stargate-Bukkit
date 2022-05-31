@@ -9,6 +9,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -88,9 +89,7 @@ public final class GateFormatReader {
             Material id = Material.getMaterial(stringId.toUpperCase().trim());
 
             if (id == Material.AIR) {
-                for (Material airtype : allAirTypes) {
-                    foundIDs.add(airtype);
-                }
+                foundIDs.addAll(Arrays.asList(allAirTypes));
                 continue;
             }
 

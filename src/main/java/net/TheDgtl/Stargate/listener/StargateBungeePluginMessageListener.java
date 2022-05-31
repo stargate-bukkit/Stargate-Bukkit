@@ -119,7 +119,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     Stargate.log(Level.FINEST, "Received unknown message with a sub-channel: " + subChannel);
                     break;
             }
-        } catch (IOException | NameErrorException ex) {
+        } catch (IOException ex) {
             Stargate.log(Level.WARNING, "[Stargate] Error receiving BungeeCord message");
             ex.printStackTrace();
         }
@@ -158,9 +158,8 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      * Updates a network according to a "network changed" message
      *
      * @param message <p>The network change message to parse and handle</p>
-     * @throws NameErrorException <p>If the specified network name cannot be used</p>
      */
-    private void updateNetwork(String message) throws NameErrorException {
+    private void updateNetwork(String message) {
         JsonParser parser = new JsonParser();
         Stargate.log(Level.FINEST, message);
         JsonObject json = (JsonObject) parser.parse(message);
@@ -182,10 +181,10 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             switch (requestType) {
                 case PORTAL_ADD:
                     targetNetwork.addPortal(portal, false);
-                    Stargate.log(Level.FINE, String.format("Adding virtual portal %s in interserver network %s", portalName, network));
+                    Stargate.log(Level.FINE, String.format("Adding virtual portal %s in inter-server network %s", portalName, network));
                     break;
                 case PORTAL_REMOVE:
-                    Stargate.log(Level.FINE, String.format("Removing virtual portal %s in interserver network %s", portalName, network));
+                    Stargate.log(Level.FINE, String.format("Removing virtual portal %s in inter-server network %s", portalName, network));
                     targetNetwork.removePortal(portal, false);
                     break;
             }

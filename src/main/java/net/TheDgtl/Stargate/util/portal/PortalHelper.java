@@ -12,9 +12,9 @@ import java.util.Set;
  * A helper class for dealing with portals
  */
 public final class PortalHelper {
-    
+
     private PortalHelper() {
-        
+
     }
 
     /**

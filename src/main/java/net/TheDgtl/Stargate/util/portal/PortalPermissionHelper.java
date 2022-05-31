@@ -197,18 +197,21 @@ public final class PortalPermissionHelper {
         }
         return compileCustomNetworkPerm(permissionIdentifier, portal.getNetwork().getName());
     }
-    
+
     /**
      * Compile the permission required for creating a custom network
+     *
      * @param permissionIdentifier <p> The start of the permission, for example 'sg.create' </p>
-     * @param netName   <p> The name of the custom network </p>
+     * @param netName              <p> The name of the custom network </p>
      * @return <p> The permission required for creating the network </p>
      */
     public static Permission compileCustomNetworkPerm(String permissionIdentifier, String netName) {
         Permission custom = new Permission(permissionIdentifier + ".network.custom." + netName);
-        Permission parrent = Bukkit.getPluginManager().getPermission(permissionIdentifier + ".network.custom");
-        custom.addParent(parrent, true);
-        parrent.recalculatePermissibles();
+        Permission parent = Bukkit.getPluginManager().getPermission(permissionIdentifier + ".network.custom");
+        if (parent != null) {
+            custom.addParent(parent, true);
+            parent.recalculatePermissibles();
+        }
         return custom;
     }
 
@@ -231,7 +234,7 @@ public final class PortalPermissionHelper {
             worldPermission.addParent(parent, true);
             parent.recalculatePermissibles();
         }
-        
+
         return worldPermission;
     }
 
@@ -239,8 +242,8 @@ public final class PortalPermissionHelper {
     /**
      * Compile all permissions that by default will be used related to gate designs for any action
      *
-     * @param portal         <p> The portal which design to check </p>
-     * @param permIdentifier <p> The beginning of every permission node generated </p>
+     * @param portal               <p> The portal which design to check </p>
+     * @param permissionIdentifier <p> The beginning of every permission node generated </p>
      */
     private static Permission compileDesignPerm(RealPortal portal, String permissionIdentifier) {
         PluginManager pm = Bukkit.getPluginManager();

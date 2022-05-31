@@ -32,7 +32,7 @@ public class GateFormatHandler {
     public static int formatsStored() {
         return knownGateFormats.size();
     }
-    
+
     public static Set<String> getAllGateFormatNames() {
         return knownGateFormats.keySet();
     }

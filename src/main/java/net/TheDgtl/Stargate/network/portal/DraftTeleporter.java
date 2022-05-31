@@ -121,21 +121,21 @@ public class DraftTeleporter {
         return offset;
     }
 
-    private void stackEntities(Entity parrent, Map<Entity, List<LivingEntity>> leashHolders,
+    private void stackEntities(Entity parent, Map<Entity, List<LivingEntity>> leashHolders,
                                Map<Entity, List<Entity>> passengerVehicles, Set<Entity> alreadyDealtWith) {
 
-        if (alreadyDealtWith.contains(parrent)) {
+        if (alreadyDealtWith.contains(parent)) {
             return;
         }
-        alreadyDealtWith.add(parrent);
+        alreadyDealtWith.add(parent);
 
         Supplier<Boolean> action = () -> {
-            for (Entity entity : passengerVehicles.get(parrent)) {
-                parrent.addPassenger(entity);
+            for (Entity entity : passengerVehicles.get(parent)) {
+                parent.addPassenger(entity);
                 stackEntities(entity, leashHolders, passengerVehicles, alreadyDealtWith);
             }
-            for (LivingEntity entity : leashHolders.get(parrent)) {
-                entity.setLeashHolder(parrent);
+            for (LivingEntity entity : leashHolders.get(parent)) {
+                entity.setLeashHolder(parent);
                 stackEntities(entity, leashHolders, passengerVehicles, alreadyDealtWith);
             }
             return true;

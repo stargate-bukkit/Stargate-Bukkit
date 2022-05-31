@@ -167,7 +167,7 @@ public abstract class AbstractPortal implements RealPortal {
         StargateCloseEvent closeEvent = new StargateCloseEvent(this, forceClose);
         Bukkit.getPluginManager().callEvent(closeEvent);
         if (closeEvent.isCancelled()) {
-            logger.logMessage(Level.FINE, "Closing event for portal " + getName() + " in netork " + getNetwork().getName() + " was canceled");
+            logger.logMessage(Level.FINE, "Closing event for portal " + getName() + " in network " + getNetwork().getName() + " was canceled");
             return;
         }
 
@@ -184,6 +184,7 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
+    @SuppressWarnings("unused")
     public void overrideDestination(Portal destination) {
         this.overriddenDestination = destination;
     }
@@ -232,7 +233,7 @@ public abstract class AbstractPortal implements RealPortal {
                     && target instanceof Player && !target.hasPermission(BypassPermission.COST_USE.getPermissionString());
             useCost = shouldCharge ? ConfigurationHelper.getInteger(ConfigurationOption.USE_COST) : 0;
         }
-        
+
         Teleporter teleporter = new Teleporter(this, origin, portalFacing, entranceFace, useCost,
                 Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.TELEPORT), logger);
 

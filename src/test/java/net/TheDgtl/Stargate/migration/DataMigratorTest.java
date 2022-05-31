@@ -3,7 +3,6 @@ package net.TheDgtl.Stargate.migration;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import com.google.common.io.Files;
-import net.TheDgtl.Stargate.FakeLanguageManager;
 import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
@@ -46,7 +45,7 @@ public class DataMigratorTest {
     static private StargateLogger logger;
     static private File defaultConfigFile;
     static private Database sqlDatabase;
-    static private final Map<String, DataMigrator> refactorerMap = new HashMap<>();
+    static private final Map<String, DataMigrator> migratorMap = new HashMap<>();
     static private Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> configTestMap;
     private static final File testGatesDir = new File("src/test/resources/gates");
 
@@ -163,7 +162,7 @@ public class DataMigratorTest {
             }
 
             dataMigrator.updateFileConfiguration(fileConfig, config);
-            refactorerMap.put(configFile.getName(), dataMigrator);
+            migratorMap.put(configFile.getName(), dataMigrator);
             fileConfig.load(configFile);
         }
     }
@@ -171,9 +170,9 @@ public class DataMigratorTest {
     @Test
     @Order(2)
     public void doOtherRefactorCheck() {
-        for (String key : refactorerMap.keySet()) {
+        for (String key : migratorMap.keySet()) {
             System.out.printf("####### Performing misc. refactoring based on the config-file %s%n", key);
-            DataMigrator dataMigrator = refactorerMap.get(key);
+            DataMigrator dataMigrator = migratorMap.get(key);
             dataMigrator.run();
         }
     }
