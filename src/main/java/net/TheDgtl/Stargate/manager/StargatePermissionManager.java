@@ -116,15 +116,7 @@ public class StargatePermissionManager implements PermissionManager{
     public boolean hasAccessPermission(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking access permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getAccessPermissions(portal, target);
-        boolean hasPerm = hasPermission(relatedPerms);
-
-        StargateAccessEvent accessEvent = new StargateAccessEvent(target, portal, !hasPerm, this.getDenyMessage());
-        Bukkit.getPluginManager().callEvent(accessEvent);
-        this.denyMessage = accessEvent.getDenyReason();
-        if(hasPerm && accessEvent.getDeny()) {
-            Stargate.log(Level.CONFIG, " Access event was denied externaly");
-        }
-        return !accessEvent.getDeny();
+        return hasPermission(relatedPerms);
     }
 
     @Override
