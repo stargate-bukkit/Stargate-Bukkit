@@ -13,8 +13,8 @@ public enum CommandPermission {
     /**
      * The permission necessary for executing the about command
      */
-    ABOUT("sg.info.help"), 
-    
+    ABOUT("sg.info.help"),
+
     /**
      * The permission necessary for executing the trace command
      */

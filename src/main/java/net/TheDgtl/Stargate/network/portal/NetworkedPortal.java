@@ -5,6 +5,7 @@ import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.action.DelayedAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
+import net.TheDgtl.Stargate.event.StargateAccessEvent;
 import net.TheDgtl.Stargate.event.StargateActivateEvent;
 import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
 import net.TheDgtl.Stargate.exception.NameErrorException;
@@ -61,7 +62,6 @@ public class NetworkedPortal extends AbstractPortal {
      * @param event <p>The triggered player interact event</p>
      */
     public void onSignClick(PlayerInteractEvent event) {
-
         Player actor = event.getPlayer();
         if ((this.activator != null && !actor.getUniqueId().equals(this.activator))
                 || (this.isOpen() && !hasFlag(PortalFlag.ALWAYS_ON))) {
@@ -70,9 +70,6 @@ public class NetworkedPortal extends AbstractPortal {
 
         StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer());
         if (!hasActivatePermissions(actor, permissionManager)) {
-            if (permissionManager.getDenyMessage() != null) {
-                actor.sendMessage(permissionManager.getDenyMessage());
-            }
             Stargate.log(Level.CONFIG, "Player did not have permission to activate portal");
             return;
         }
@@ -290,9 +287,22 @@ public class NetworkedPortal extends AbstractPortal {
      * @return <p>True if the given player is allowed to activate this portal</p>
      */
     private boolean hasActivatePermissions(Player player, StargatePermissionManager permissionManager) {
-        if (!permissionManager.hasAccessPermission(this)) {
+        boolean hasPermission = permissionManager.hasAccessPermission(this);
+        StargateAccessEvent accessEvent = new StargateAccessEvent(player, this, !hasPermission,
+                permissionManager.getDenyMessage());
+        Bukkit.getPluginManager().callEvent(accessEvent);
+        if (accessEvent.getDeny()) {
+            if (accessEvent.getDenyReason() == null) {
+                player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
+            } else if (!accessEvent.getDenyReason().isEmpty()) {
+                player.sendMessage(accessEvent.getDenyReason());
+            }
+            if (hasPermission) {
+                Stargate.log(Level.CONFIG, " Access event was denied externally");
+            }
             return false;
         }
+
         //Call the activate event to notify add-ons
         StargateActivateEvent event = new StargateActivateEvent(this, player, getPortalNames(destinations),
                 this.getDestinationName());

@@ -3,7 +3,6 @@ package net.TheDgtl.Stargate.manager;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
-import net.TheDgtl.Stargate.event.StargateAccessEvent;
 import net.TheDgtl.Stargate.formatting.LanguageManager;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.network.Network;
@@ -32,7 +31,7 @@ import java.util.logging.Level;
  * @author Thorin
  * @author Pheotis
  */
-public class StargatePermissionManager implements PermissionManager{
+public class StargatePermissionManager implements PermissionManager {
 
     private final Entity target;
     private String denyMessage;
@@ -116,15 +115,7 @@ public class StargatePermissionManager implements PermissionManager{
     public boolean hasAccessPermission(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking access permissions");
         List<Permission> relatedPerms = PortalPermissionHelper.getAccessPermissions(portal, target);
-        boolean hasPerm = hasPermission(relatedPerms);
-
-        StargateAccessEvent accessEvent = new StargateAccessEvent(target, portal, !hasPerm, this.getDenyMessage());
-        Bukkit.getPluginManager().callEvent(accessEvent);
-        this.denyMessage = accessEvent.getDenyReason();
-        if(hasPerm && accessEvent.getDeny()) {
-            Stargate.log(Level.CONFIG, " Access event was denied externaly");
-        }
-        return !accessEvent.getDeny();
+        return hasPermission(relatedPerms);
     }
 
     @Override
@@ -176,10 +167,10 @@ public class StargatePermissionManager implements PermissionManager{
      */
     private String determineTranslatableMessageFromPermission(Permission permission) {
         String permissionNode = permission.getName();
-        if(permissionNode.equals("sg.use.follow")) {
+        if (permissionNode.equals("sg.use.follow")) {
             return languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED);
         }
-        
+
         if (permissionNode.contains("create") || permissionNode.contains("use")) {
             if (permissionNode.contains("world")) {
                 String unformattedMessage = languageManager.getErrorMessage(TranslatableMessage.WORLD_DENY);
@@ -282,7 +273,7 @@ public class StargatePermissionManager implements PermissionManager{
                 if (netName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
                     hasPermission = target.hasPermission(NETWORK_CREATE_PERMISSION + ".default");
                 } else {
-                    hasPermission = target.hasPermission(PortalPermissionHelper.compileCustomNetworkPerm(CREATE_PERMISSION, netName));
+                    hasPermission = target.hasPermission(PortalPermissionHelper.generateCustomNetworkPermission(CREATE_PERMISSION, netName));
                 }
                 break;
         }

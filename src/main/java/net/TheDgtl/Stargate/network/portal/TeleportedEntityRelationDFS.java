@@ -78,7 +78,7 @@ public class TeleportedEntityRelationDFS {
         boolean isSuccess = true;
         // Should be here to avoid checking the same node twice
         if (entitiesToTeleport.contains(node)) {
-            return isSuccess;
+            return true;
         }
         entitiesToTeleport.add(node);
 

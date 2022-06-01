@@ -472,7 +472,7 @@ public class PortalDatabaseAPI implements StorageAPI {
             } catch (InvalidStructureException e) {
                 logger.logMessage(Level.WARNING, String.format(
                         "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
-                        name, (portalType == PortalType.INTER_SERVER ? "interserver" : ""), networkName,
+                        name, (portalType == PortalType.INTER_SERVER ? "inter-server-" : ""), networkName,
                         block.getLocation()));
             } catch (GateConflictException ignored) {
             }

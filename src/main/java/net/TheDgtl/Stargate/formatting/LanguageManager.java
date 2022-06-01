@@ -17,7 +17,7 @@ public interface LanguageManager {
      * @return <p>The formatted warning message</p>
      */
     String getWarningMessage(TranslatableMessage translatableMessage);
-    
+
     /**
      * Gets a formatted message
      *

@@ -300,7 +300,7 @@ public class Gate implements GateAPI {
      * TODO: symmetric formats will be checked twice, make a way to determine if a format is symmetric to avoid this
      * </p>
      *
-     * @param location <p>The location of a controllblock</p>
+     * @param location <p>The location of a control-block</p>
      * @param alwaysOn <p>Whether the new portal is set as always-on</p>
      * @return <p>True if the built stargate matches this format</p>
      * @throws GateConflictException <p>If the built stargate conflicts with another gate</p>
@@ -466,7 +466,7 @@ public class Gate implements GateAPI {
     @Override
     public void addPortalPosition(Location location, PositionType type) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
-        logger.logMessage(Level.FINEST, String.format("Addding portalposition %s with relative position %s", type.toString(), relativeBlockVector));
+        logger.logMessage(Level.FINEST, String.format("Adding portal position %s with relative position %s", type.toString(), relativeBlockVector));
         this.addPortalPosition(relativeBlockVector, type);
     }
 

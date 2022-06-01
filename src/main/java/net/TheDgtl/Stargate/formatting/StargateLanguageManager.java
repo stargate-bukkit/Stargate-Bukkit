@@ -53,7 +53,7 @@ public class StargateLanguageManager implements LanguageManager {
     public String getWarningMessage(TranslatableMessage translatableMessage) {
         return formatMessage(translatableMessage, ChatColor.YELLOW);
     }
-    
+
     @Override
     public String getMessage(TranslatableMessage translatableMessage) {
         return formatMessage(translatableMessage, ChatColor.GREEN);
@@ -115,7 +115,7 @@ public class StargateLanguageManager implements LanguageManager {
     private String formatMessage(TranslatableMessage translatableMessage, ChatColor prefixColor) {
         String prefix = prefixColor + getString(TranslatableMessage.PREFIX);
         String message = getString(translatableMessage).replaceAll("(&([a-f0-9]))", "\u00A7$2");
-        Stargate.log(Level.FINE, String.format("Formated TranslatableMessage '%s' to '%s'", translatableMessage.toString(), message));
+        Stargate.log(Level.FINE, String.format("Formatted TranslatableMessage '%s' to '%s'", translatableMessage.toString(), message));
         return prefix + ChatColor.WHITE + message;
     }
 
