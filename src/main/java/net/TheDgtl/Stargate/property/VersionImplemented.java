@@ -8,34 +8,31 @@ public enum VersionImplemented {
     /**
      * The version that added chat color
      */
-    CHAT_COLOR(1, 16);
+    CHAT_COLOR("net.md_5.bungee.api.ChatColor");
 
-    private final int releaseVersion;
-    private final int majorVersion;
+    private boolean isImplemented;
 
     /**
      * Instantiates a new version implemented
      *
-     * @param releaseVersion <p>The release version part of the version</p>
-     * @param majorVersion   <p>The major version part of the version</p>
+     * @param classToCheckFor <p> A class which is specific for the version implemented </p>
      */
-    VersionImplemented(int releaseVersion, int majorVersion) {
-        this.releaseVersion = releaseVersion;
-        this.majorVersion = majorVersion;
+    VersionImplemented(String classToCheckFor) {
+        try {
+            Class.forName(classToCheckFor);
+            isImplemented = true;
+        } catch(ClassNotFoundException ignored) {
+            isImplemented = false;
+        }
     }
+
 
     /**
-     * Checks whether the version this feature was implemented is older than the given version
+     * Checks whether the version this feature was implemented is imlemented in the given bukkit instance
      *
-     * <p>If the version this feature was added is older than the given version, that means the given version is newer,
-     * and is thus able to support this feature.</p>
-     *
-     * @param releaseVersion <p>The release version part of the version to check</p>
-     * @param majorVersion   <p>The major version part of the version to check</p>
-     * @return <p>True if this feature version is older than the given version</p>
+     * @return <p> True if the feature is implemented</p>
      */
-    public boolean isOlderThan(int releaseVersion, int majorVersion) {
-        return releaseVersion >= this.releaseVersion && majorVersion >= this.majorVersion;
+    public boolean getIsImplemented() {
+        return isImplemented;
     }
-
 }

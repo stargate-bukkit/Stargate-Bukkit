@@ -18,14 +18,13 @@ import java.util.logging.Level;
 /**
  * A line formatter that applies coloring to formatted lines
  */
-public class LineColorFormatter implements LineFormatter {
+public class LineColorFormatter extends AbstractLineColorFormatter {
 
     private static final ChatColor GRAY_SELECTOR_COLOR = ChatColor.of("#808080");
     private static final ChatColor ERROR_COLOR = ChatColor.RED;
     private static Map<PortalFlag, ChatColor[]> flagColors;
 
     private final DyeColor dyeColor;
-    private final boolean isLightSign;
 
     static {
         loadFlagColors();
@@ -38,8 +37,8 @@ public class LineColorFormatter implements LineFormatter {
      * @param signMaterial <p>The material used for the sign</p>
      */
     public LineColorFormatter(DyeColor dyeColor, Material signMaterial) {
+        super(signMaterial);
         this.dyeColor = dyeColor;
-        this.isLightSign = isLightSign(signMaterial);
     }
 
     @Override
@@ -81,25 +80,6 @@ public class LineColorFormatter implements LineFormatter {
     @Override
     public String formatErrorLine(String error, HighlightingStyle highlightingStyle) {
         return getColor(isLightSign) + highlightingStyle.getHighlightedName(ERROR_COLOR + error + getColor(isLightSign));
-    }
-
-    /**
-     * Checks whether the given sign material represents a light sign or a dark sign
-     *
-     * @param signMaterial <p>The sign material to check</p>
-     * @return <p>True if the material represents a light sign</p>
-     */
-    static protected boolean isLightSign(Material signMaterial) {
-        switch (signMaterial) {
-            // Dark signs
-            case DARK_OAK_WALL_SIGN:
-            case WARPED_WALL_SIGN:
-            case CRIMSON_WALL_SIGN:
-            case SPRUCE_WALL_SIGN:
-                return false;
-            default:
-                return true;
-        }
     }
 
     /**

@@ -15,13 +15,13 @@ import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.formatting.LegacyLineColorFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.LineColorFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.LineFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.NoLineColorFormatter;
 import net.TheDgtl.Stargate.property.BypassPermission;
 import net.TheDgtl.Stargate.property.VersionImplemented;
 import net.TheDgtl.Stargate.util.NameHelper;
-import net.TheDgtl.Stargate.util.VersionParser;
 import net.TheDgtl.Stargate.util.portal.PortalHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -328,11 +328,13 @@ public abstract class AbstractPortal implements RealPortal {
                 continue;
             }
             Sign sign = (Sign) location.getBlock().getState();
-            if (VersionParser.bukkitIsNewerThan(VersionImplemented.CHAT_COLOR)) {
+            if (VersionImplemented.CHAT_COLOR.getIsImplemented()) {
                 if (color == null) {
                     color = sign.getColor();
                 }
                 colorDrawer = new LineColorFormatter(color, sign.getType());
+            } else {
+                colorDrawer = new LegacyLineColorFormatter(sign.getType());
             }
         }
         // Has to be done one tick later to avoid a bukkit bug
