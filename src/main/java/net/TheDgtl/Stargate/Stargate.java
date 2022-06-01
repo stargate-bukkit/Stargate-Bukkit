@@ -122,8 +122,15 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     public static UUID serverUUID;
 
-    public static ChatColor defaultLightSignColor = ChatColor.BLACK;
-    public static ChatColor defaultDarkColor = ChatColor.WHITE;
+    public static ChatColor defaultLightSignColor;
+    public static ChatColor defaultDarkColor;
+    static {
+        if(VersionImplemented.CHAT_COLOR.getIsImplemented()) {
+            defaultLightSignColor = ChatColor.BLACK;
+            defaultDarkColor = ChatColor.WHITE;
+        }
+            
+    }
     
     public static org.bukkit.ChatColor legacyDefaultLightSignColor = org.bukkit.ChatColor.BLACK;
     public static org.bukkit.ChatColor legacyDefaultDarkSignColor = org.bukkit.ChatColor.WHITE;
