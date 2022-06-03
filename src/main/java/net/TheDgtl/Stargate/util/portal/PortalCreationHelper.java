@@ -69,6 +69,7 @@ public final class PortalCreationHelper {
         name = NameHelper.getTrimmedName(name);
 
         if (flags.contains(PortalFlag.BUNGEE)) {
+            flags.add(PortalFlag.FIXED);
             Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), new HashSet<>());
             return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, gate, ownerUUID, logger);
         } else if (flags.contains(PortalFlag.RANDOM)) {
