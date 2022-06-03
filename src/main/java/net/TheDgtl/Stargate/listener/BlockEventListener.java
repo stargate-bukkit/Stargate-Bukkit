@@ -135,10 +135,10 @@ public class BlockEventListener implements Listener {
 
         String finalNetworkName;
         Network selectedNetwork = null;
-        if (flags.contains(PortalFlag.BUNGEE)) {
-            selectedNetwork = BungeePortal.getLegacyNetwork();
-        } else {
-            try {
+        try {
+            if (flags.contains(PortalFlag.BUNGEE)) {
+                selectedNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), flags);
+            } else {
                 Stargate.log(Level.FINER, "....Choosing network name....");
                 Stargate.log(Level.FINER, "initial name is " + network);
                 finalNetworkName = NetworkCreationHelper.interpretNetworkName(network, flags, player, Stargate.getRegistryStatic());
@@ -149,11 +149,10 @@ public class BlockEventListener implements Listener {
                 finalNetworkName = NetworkCreationHelper.parseNetworkNameName(finalNetworkName);
                 Stargate.log(Level.FINER, "Ended upp with name " + finalNetworkName);
                 selectedNetwork = NetworkCreationHelper.selectNetwork(finalNetworkName, flags);
-            } catch (NameErrorException nameErrorException) {
-                errorMessage = nameErrorException.getErrorMessage();
             }
+        } catch (NameErrorException nameErrorException) {
+            errorMessage = nameErrorException.getErrorMessage();
         }
-
 
         try {
             PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost, permissionManager, errorMessage);

@@ -294,12 +294,12 @@ public class StargatePermissionManager implements PermissionManager {
         }
 
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(network);
-        String netName = HighlightingStyle.getNameFromHighlightedText(network);
+        String networkName = HighlightingStyle.getNameFromHighlightedText(network);
         boolean hasPermission;
 
         switch (highlight) {
             case PERSONAL:
-                if (target.getName().equals(netName)) {
+                if (target.getName().equals(networkName)) {
                     hasPermission = target.hasPermission(NETWORK_CREATE_PERMISSION + ".personal");
                 } else {
                     hasPermission = target.hasPermission(BypassPermission.PRIVATE.getPermissionString());
@@ -309,10 +309,13 @@ public class StargatePermissionManager implements PermissionManager {
                 hasPermission = target.hasPermission(NETWORK_CREATE_PERMISSION + ".type." + PortalFlag.FANCY_INTER_SERVER);
                 break;
             default:
-                if (netName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
+                if (networkName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
                     hasPermission = target.hasPermission(NETWORK_CREATE_PERMISSION + ".default");
+                } else if (networkName.equals(ConfigurationHelper.getStringOrDefault(ConfigurationOption.LEGACY_BUNGEE_NETWORK))) {
+                    //It's not possible to create a non-bungee portal on this network
+                    hasPermission = false;
                 } else {
-                    hasPermission = target.hasPermission(PortalPermissionHelper.generateCustomNetworkPermission(CREATE_PERMISSION, netName));
+                    hasPermission = target.hasPermission(PortalPermissionHelper.generateCustomNetworkPermission(CREATE_PERMISSION, networkName));
                 }
                 break;
         }

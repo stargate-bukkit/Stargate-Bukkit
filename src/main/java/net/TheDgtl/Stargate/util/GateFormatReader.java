@@ -41,9 +41,9 @@ public final class GateFormatReader {
      * @param design               <p>The list to store the loaded design/layout to</p>
      * @param config               <p>The map of config values to store to</p>
      * @return <p>The column count/width of the loaded gate</p>
-     * @throws ParsingErrorException  <p>If the gate file cannot be parsed</p>
+     * @throws ParsingErrorException <p>If the gate file cannot be parsed</p>
      */
-    public static int readGateFile(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap, 
+    public static int readGateFile(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
                                    List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
         int columns;
         try {
@@ -112,7 +112,7 @@ public final class GateFormatReader {
      * @throws ParsingErrorException <p>If the gate file cannot be parsed</p>
      */
     private static int readGateFileContents(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
-                                            List<List<Character>> design, Map<String, String> config) throws ParsingErrorException  {
+                                            List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
         String line;
         boolean designing = false;
         int columns = 0;

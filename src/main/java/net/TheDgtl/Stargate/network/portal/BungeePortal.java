@@ -2,6 +2,8 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.config.ConfigurationHelper;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
@@ -21,24 +23,15 @@ import java.util.logging.Level;
  */
 public class BungeePortal extends AbstractPortal {
 
-    private static final String legacyNetworkName = "§§§§§§#BUNGEE#§§§§§§";
-    private static Network LEGACY_NETWORK;
     private final Network fakeNetwork;
     private final LegacyVirtualPortal targetPortal;
     private final String serverDestination;
     private final String bungeeString;
 
-    static {
-        try {
-            LEGACY_NETWORK = new LocalNetwork(getLegacyNetworkName(), null, null);
-        } catch (NameErrorException e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * Instantiates a new Bungee Portal
      *
+     * @param network           <p>A reference to the Legacy Bungee network</p>
      * @param name              <p>The name of the portal</p>
      * @param destination       <p>The destination of the portal</p>
      * @param destinationServer <p>The destination server to connect to</p>
@@ -46,10 +39,9 @@ public class BungeePortal extends AbstractPortal {
      * @param ownerUUID         <p>The UUID of this portal's owner</p>
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    public BungeePortal(String name, String destination, String destinationServer,
+    public BungeePortal(Network network, String name, String destination, String destinationServer,
                         Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger) throws NameErrorException {
-        super(getLegacyNetwork(), name, flags, gate, ownerUUID, logger);
-
+        super(network, name, flags, gate, ownerUUID, logger);
 
         if (destination == null || destination.trim().isEmpty() || destinationServer == null || destinationServer.trim().isEmpty()) {
             throw new NameErrorException(TranslatableMessage.BUNGEE_LACKING_SIGN_INFORMATION);
@@ -63,7 +55,7 @@ public class BungeePortal extends AbstractPortal {
          * Note that this is only used locally inside this portal
          * and can not be found (should not) in any network anywhere.
          */
-        targetPortal = new LegacyVirtualPortal(this, destinationServer, destination, LEGACY_NETWORK,
+        targetPortal = new LegacyVirtualPortal(this, destinationServer, destination, network,
                 EnumSet.noneOf(PortalFlag.class), ownerUUID);
         this.serverDestination = destinationServer;
         /*
@@ -81,16 +73,7 @@ public class BungeePortal extends AbstractPortal {
      * @return <p>The name of the legacy network</p>
      */
     public static String getLegacyNetworkName() {
-        return legacyNetworkName;
-    }
-
-    /**
-     * Gets the legacy network used for all legacy BungeeCord portals
-     *
-     * @return <p>The legacy network</p>
-     */
-    public static Network getLegacyNetwork() {
-        return LEGACY_NETWORK;
+        return ConfigurationHelper.getStringOrDefault(ConfigurationOption.LEGACY_BUNGEE_NETWORK);
     }
 
     @Override
