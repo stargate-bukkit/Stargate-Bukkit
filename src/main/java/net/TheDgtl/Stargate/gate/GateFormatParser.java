@@ -73,7 +73,7 @@ public class GateFormatParser {
         Map<Character, Set<Material>> characterMaterialMap = new HashMap<>();
         List<List<Character>> design = new ArrayList<>();
         Map<String, String> config = new HashMap<>();
-        int columns = GateFormatReader.readGateFile(scanner, characterMaterialMap, filename, design, config, logger);
+        int columns = GateFormatReader.readGateFile(scanner, characterMaterialMap, design, config);
 
         loadGateConfigValues(config);
         iris = new GateIris(irisOpen, irisClosed);
