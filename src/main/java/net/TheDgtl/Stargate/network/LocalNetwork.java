@@ -125,8 +125,9 @@ public class LocalNetwork implements Network {
             Set<String> removeList = new HashSet<>();
             for (String portalName : tempPortalList) {
                 Portal target = getPortal(portalName);
-                if (target.hasFlag(PortalFlag.HIDDEN) &&
-                        (player != null && !player.hasPermission(BypassPermission.HIDDEN.getPermissionString()))) {
+                if (target.hasFlag(PortalFlag.HIDDEN) && player != null
+                        && !player.hasPermission(BypassPermission.HIDDEN.getPermissionString())
+                        && target.getOwnerUUID().equals(player.getUniqueId())) {
                     removeList.add(portalName);
                 }
                 if (target.hasFlag(PortalFlag.PRIVATE) && player != null &&
