@@ -118,8 +118,6 @@ public class BlockEventListener implements Listener {
 
         if (lines[1].trim().isEmpty()) {
             flags.add(PortalFlag.NETWORKED);
-        } else {
-            flags.add(PortalFlag.FIXED);
         }
 
         if (flags.contains(PortalFlag.PRIVATE)) {
