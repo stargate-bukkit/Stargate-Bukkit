@@ -73,7 +73,7 @@ public class BungeePortal extends AbstractPortal {
      * @return <p>The name of the legacy network</p>
      */
     public static String getLegacyNetworkName() {
-        return ConfigurationHelper.getStringOrDefault(ConfigurationOption.LEGACY_BUNGEE_NETWORK);
+        return ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK);
     }
 
     @Override

@@ -8,7 +8,7 @@ public enum VersionImplemented {
     /**
      * The version that added chat color as non enum object
      */
-    CHAT_COLOR("net.md_5.bungee.api.ChatColor","of", String.class);
+    CHAT_COLOR("net.md_5.bungee.api.ChatColor", "of", String.class);
 
     private boolean isImplemented;
 
@@ -25,13 +25,13 @@ public enum VersionImplemented {
             isImplemented = false;
         }
     }
-    
-    VersionImplemented(String classToCheckFor, String methodInClassToCheckFor, Class<?>... parameterTypes ){
+
+    VersionImplemented(String classToCheckFor, String methodInClassToCheckFor, Class<?>... parameterTypes) {
         try {
             Class<?> aClass = Class.forName(classToCheckFor);
             aClass.getMethod(methodInClassToCheckFor, parameterTypes);
             isImplemented = true;
-        } catch(ClassNotFoundException | NoSuchMethodException ignored) {
+        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
             isImplemented = false;
         }
     }

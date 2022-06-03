@@ -311,7 +311,7 @@ public class StargatePermissionManager implements PermissionManager {
             default:
                 if (networkName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
                     hasPermission = target.hasPermission(NETWORK_CREATE_PERMISSION + ".default");
-                } else if (networkName.equals(ConfigurationHelper.getStringOrDefault(ConfigurationOption.LEGACY_BUNGEE_NETWORK))) {
+                } else if (networkName.equals(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK))) {
                     //It's not possible to create a non-bungee portal on this network
                     hasPermission = false;
                 } else {

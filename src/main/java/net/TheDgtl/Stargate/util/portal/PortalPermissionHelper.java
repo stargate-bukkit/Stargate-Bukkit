@@ -180,7 +180,7 @@ public final class PortalPermissionHelper {
         if (portal.getNetwork().getName().equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
             return permissionIdentifier + ".network.default";
         }
-        if (portal.getNetwork().getName().equals(ConfigurationHelper.getStringOrDefault(
+        if (portal.getNetwork().getName().equals(ConfigurationHelper.getString(
                 ConfigurationOption.LEGACY_BUNGEE_NETWORK))) {
             if (!portal.hasFlag(PortalFlag.BUNGEE)) {
                 //A creation of a non-bungee portal on the legacy bungee network should never be allowed

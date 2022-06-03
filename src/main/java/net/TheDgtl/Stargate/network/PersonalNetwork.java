@@ -35,7 +35,7 @@ public class PersonalNetwork extends LocalNetwork {
         if (possiblePlayerName != null
                 && (possiblePlayerName.equalsIgnoreCase(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))
                 || possiblePlayerName.equalsIgnoreCase(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME))
-                || possiblePlayerName.equalsIgnoreCase(ConfigurationHelper.getStringOrDefault(ConfigurationOption.LEGACY_BUNGEE_NETWORK)))) {
+                || possiblePlayerName.equalsIgnoreCase(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK)))) {
             possiblePlayerName = uuid.toString().split("-")[0];
         }
         playerName = possiblePlayerName;

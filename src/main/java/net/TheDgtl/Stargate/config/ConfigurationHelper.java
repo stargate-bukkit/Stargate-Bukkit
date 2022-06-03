@@ -18,7 +18,11 @@ public final class ConfigurationHelper {
      * @return <p>The value of the setting</p>
      */
     public static int getInteger(ConfigurationOption configurationOption) {
-        return Stargate.getFileConfiguration().getInt(configurationOption.getConfigNode());
+        if (Stargate.getFileConfiguration().isSet(configurationOption.getConfigNode())) {
+            return Stargate.getFileConfiguration().getInt(configurationOption.getConfigNode());
+        } else {
+            return (int) configurationOption.getDefaultValue();
+        }
     }
 
     /**
@@ -28,7 +32,11 @@ public final class ConfigurationHelper {
      * @return <p>The value of the setting</p>
      */
     public static double getDouble(ConfigurationOption configurationOption) {
-        return Stargate.getFileConfiguration().getDouble(configurationOption.getConfigNode());
+        if (Stargate.getFileConfiguration().isSet(configurationOption.getConfigNode())) {
+            return Stargate.getFileConfiguration().getDouble(configurationOption.getConfigNode());
+        } else {
+            return (double) configurationOption.getDefaultValue();
+        }
     }
 
     /**
@@ -38,16 +46,6 @@ public final class ConfigurationHelper {
      * @return <p>The value of the setting</p>
      */
     public static String getString(ConfigurationOption configurationOption) {
-        return Stargate.getFileConfiguration().getString(configurationOption.getConfigNode());
-    }
-
-    /**
-     * Gets the string value of a setting, or the default value if not set
-     *
-     * @param configurationOption <p>The setting to get</p>
-     * @return <p>The value of the setting, or the default if not set</p>
-     */
-    public static String getStringOrDefault(ConfigurationOption configurationOption) {
         if (Stargate.getFileConfiguration().isSet(configurationOption.getConfigNode())) {
             return Stargate.getFileConfiguration().getString(configurationOption.getConfigNode());
         } else {
@@ -62,7 +60,11 @@ public final class ConfigurationHelper {
      * @return <p>The value of the setting</p>
      */
     public static boolean getBoolean(ConfigurationOption configurationOption) {
-        return Stargate.getFileConfiguration().getBoolean(configurationOption.getConfigNode());
+        if (Stargate.getFileConfiguration().isSet(configurationOption.getConfigNode())) {
+            return Stargate.getFileConfiguration().getBoolean(configurationOption.getConfigNode());
+        } else {
+            return (boolean) configurationOption.getDefaultValue();
+        }
     }
 
 }
