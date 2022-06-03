@@ -45,16 +45,16 @@ public final class GateFormatReader {
      * @param config               <p>The map of config values to store to</p>
      * @param logger               <p>The logger to use for logging</p>
      * @return <p>The column count/width of the loaded gate</p>
+     * @throws ParsingErrorException 
      */
     public static int readGateFile(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap, String fileName,
                                    List<List<Character>> design, Map<String, String> config,
-                                   StargateLogger logger) {
+                                   StargateLogger logger) throws ParsingErrorException {
         int columns;
         try {
             columns = readGateFileContents(scanner, characterMaterialMap, design, config);
-        } catch (Exception exception) {
-            logger.logMessage(Level.SEVERE, String.format("Could not load Gate %s - %s", fileName, exception.getMessage()));
-            return -1;
+        } catch (ParsingErrorException reThrown) {
+            throw reThrown;
         } finally {
             if (scanner != null) {
                 scanner.close();
@@ -116,9 +116,11 @@ public final class GateFormatReader {
      * @param design               <p>The list to store the loaded design/layout to</p>
      * @param config               <p>The map of config values to store to</p>
      * @return <p>The column count/width of the loaded gate</p>
+     * @throws ParsingErrorException 
+     * @throws Exception 
      */
     private static int readGateFileContents(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
-                                            List<List<Character>> design, Map<String, String> config) throws Exception {
+                                            List<List<Character>> design, Map<String, String> config) throws ParsingErrorException  {
         String line;
         boolean designing = false;
         int columns = 0;
@@ -187,10 +189,11 @@ public final class GateFormatReader {
      * @param line                 <p>The line to read</p>
      * @param characterMaterialMap <p>The character to material map to store to</p>
      * @param config               <p>The config value map to store to</p>
+     * @throws ParsingErrorException 
      * @throws Exception <p>If an invalid material is encountered</p>
      */
     private static void readGateConfigValue(String line, Map<Character, Set<Material>> characterMaterialMap,
-                                            Map<String, String> config) throws Exception {
+                                            Map<String, String> config) throws ParsingErrorException {
         String[] split = line.split("=");
         String key = split[0].trim();
         String value = split[1].trim();
