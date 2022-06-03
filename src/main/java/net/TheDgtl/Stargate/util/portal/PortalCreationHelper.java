@@ -73,6 +73,7 @@ public final class PortalCreationHelper {
         } else if (flags.contains(PortalFlag.NETWORKED)) {
             return new NetworkedPortal(network, name, flags, gate, ownerUUID, logger);
         } else {
+            flags.add(PortalFlag.FIXED);
             return new FixedPortal(network, name, destination, flags, gate, ownerUUID, logger);
         }
     }
