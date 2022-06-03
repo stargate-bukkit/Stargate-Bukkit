@@ -38,7 +38,6 @@ public class BungeePortal extends AbstractPortal {
     /**
      * Instantiates a new Bungee Portal
      *
-     * @param network           <p>The network the portal belongs to</p>
      * @param name              <p>The name of the portal</p>
      * @param destination       <p>The destination of the portal</p>
      * @param destinationServer <p>The destination server to connect to</p>
@@ -46,9 +45,9 @@ public class BungeePortal extends AbstractPortal {
      * @param ownerUUID         <p>The UUID of this portal's owner</p>
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
-    public BungeePortal(Network network, String name, String destination, String destinationServer,
+    public BungeePortal(String name, String destination, String destinationServer,
                         Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger) throws NameErrorException {
-        super(network, name, flags, gate, ownerUUID, logger);
+        super(getLegacyNetwork(), name, flags, gate, ownerUUID, logger);
 
 
         if (destination == null || destination.trim().isEmpty() || destinationServer == null || destinationServer.trim().isEmpty()) {
@@ -74,6 +73,15 @@ public class BungeePortal extends AbstractPortal {
         fakeNetwork = new LocalNetwork(destinationServer, null, null);
         String possibleBungeeString = Stargate.getLanguageManagerStatic().getString(TranslatableMessage.BUNGEE_SIGN_LINE_4);
         bungeeString = (possibleBungeeString == null) ? "[PlaceHolder]" : possibleBungeeString;
+    }
+
+    /**
+     * Gets the legacy network used for all legacy BungeeCord portals
+     *
+     * @return <p>The legacy network</p>
+     */
+    public static Network getLegacyNetwork() {
+        return LEGACY_NETWORK;
     }
 
     @Override

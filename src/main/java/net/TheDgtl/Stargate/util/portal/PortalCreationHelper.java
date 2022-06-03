@@ -67,7 +67,7 @@ public final class PortalCreationHelper {
         name = NameHelper.getTrimmedName(name);
 
         if (flags.contains(PortalFlag.BUNGEE)) {
-            return new BungeePortal(network, name, destination, targetServer, flags, gate, ownerUUID, logger);
+            return new BungeePortal(name, destination, targetServer, flags, gate, ownerUUID, logger);
         } else if (flags.contains(PortalFlag.RANDOM)) {
             return new RandomPortal(network, name, flags, gate, ownerUUID, logger);
         } else if (flags.contains(PortalFlag.NETWORKED)) {

@@ -21,7 +21,7 @@ public enum VersionImplemented {
         try {
             Class.forName(classToCheckFor);
             isImplemented = true;
-        } catch(ClassNotFoundException ignored) {
+        } catch (ClassNotFoundException ignored) {
             isImplemented = false;
         }
     }

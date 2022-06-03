@@ -11,6 +11,7 @@ import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
@@ -134,19 +135,23 @@ public class BlockEventListener implements Listener {
 
         String finalNetworkName;
         Network selectedNetwork = null;
-        try {
-            Stargate.log(Level.FINER, "....Choosing network name....");
-            Stargate.log(Level.FINER, "initial name is " + network);
-            finalNetworkName = NetworkCreationHelper.interpretNetworkName(network, flags, player, Stargate.getRegistryStatic());
-            Stargate.log(Level.FINER, "Took format " + finalNetworkName);
-            finalNetworkName = NetworkCreationHelper.getAllowedNetworkName(finalNetworkName, permissionManager, player);
-            Stargate.log(Level.FINER, "From allowed permissions took " + finalNetworkName);
-            flags.addAll(NetworkCreationHelper.getNameRelatedFlags(finalNetworkName));
-            finalNetworkName = NetworkCreationHelper.parseNetworkNameName(finalNetworkName);
-            Stargate.log(Level.FINER, "Ended upp with name " + finalNetworkName);
-            selectedNetwork = NetworkCreationHelper.selectNetwork(finalNetworkName, flags);
-        } catch (NameErrorException nameErrorException) {
-            errorMessage = nameErrorException.getErrorMessage();
+        if (flags.contains(PortalFlag.BUNGEE)) {
+            selectedNetwork = BungeePortal.getLegacyNetwork();
+        } else {
+            try {
+                Stargate.log(Level.FINER, "....Choosing network name....");
+                Stargate.log(Level.FINER, "initial name is " + network);
+                finalNetworkName = NetworkCreationHelper.interpretNetworkName(network, flags, player, Stargate.getRegistryStatic());
+                Stargate.log(Level.FINER, "Took format " + finalNetworkName);
+                finalNetworkName = NetworkCreationHelper.getAllowedNetworkName(finalNetworkName, permissionManager, player);
+                Stargate.log(Level.FINER, "From allowed permissions took " + finalNetworkName);
+                flags.addAll(NetworkCreationHelper.getNameRelatedFlags(finalNetworkName));
+                finalNetworkName = NetworkCreationHelper.parseNetworkNameName(finalNetworkName);
+                Stargate.log(Level.FINER, "Ended upp with name " + finalNetworkName);
+                selectedNetwork = NetworkCreationHelper.selectNetwork(finalNetworkName, flags);
+            } catch (NameErrorException nameErrorException) {
+                errorMessage = nameErrorException.getErrorMessage();
+            }
         }
 
 

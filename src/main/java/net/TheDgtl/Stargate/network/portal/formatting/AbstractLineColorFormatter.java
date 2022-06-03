@@ -2,12 +2,14 @@ package net.TheDgtl.Stargate.network.portal.formatting;
 
 import org.bukkit.Material;
 
-public abstract class AbstractLineColorFormatter implements LineFormatter{
-    
+public abstract class AbstractLineColorFormatter implements LineFormatter {
+
     protected final boolean isLightSign;
+
     public AbstractLineColorFormatter(Material signMaterial) {
         this.isLightSign = isLightSign(signMaterial);
     }
+
     /**
      * Checks whether the given sign material represents a light sign or a dark sign
      *
