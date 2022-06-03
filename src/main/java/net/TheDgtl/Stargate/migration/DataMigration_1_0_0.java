@@ -117,7 +117,7 @@ public class DataMigration_1_0_0 extends DataMigration {
             logger.logMessage(Level.INFO, "The following portals have been migrated:");
             for (Portal portal : portals) {
                 logger.logMessage(Level.INFO, String.format("Name: %s, Network: %s, Owner: %s, Flags: %s",
-                        portal.getName(), portal.getNetwork(), portal.getOwnerUUID(),
+                        portal.getName(), portal.getNetwork().getName(), portal.getOwnerUUID(),
                         portal.getAllFlagsString()));
             }
         }
