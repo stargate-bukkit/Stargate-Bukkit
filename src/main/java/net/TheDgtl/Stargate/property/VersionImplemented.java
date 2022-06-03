@@ -6,7 +6,7 @@ package net.TheDgtl.Stargate.property;
 public enum VersionImplemented {
 
     /**
-     * The version that added chat color
+     * The version that added chat color as non enum object
      */
     CHAT_COLOR("net.md_5.bungee.api.ChatColor","of", String.class);
 
