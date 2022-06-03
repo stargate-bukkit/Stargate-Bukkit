@@ -1,7 +1,5 @@
 package net.TheDgtl.Stargate.config;
 
-import net.TheDgtl.Stargate.Stargate;
-
 /**
  * An enum containing all available settings/configuration options
  *
@@ -110,7 +108,7 @@ public enum ConfigurationOption {
     /**
      * The version of the configuration. Use for updating the config file
      */
-    CONFIG_VERSION("configVersion", "The version of the configuration. Use for updating the config file", Stargate.CURRENT_CONFIG_VERSION, OptionDataType.INTEGER, false),
+    CONFIG_VERSION("configVersion", "The version of the configuration. Use for updating the config file", "1", OptionDataType.INTEGER, false),
 
     /**
      * The name of the .db file if using SQLite
