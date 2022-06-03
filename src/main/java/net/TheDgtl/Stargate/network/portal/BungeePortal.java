@@ -21,6 +21,7 @@ import java.util.logging.Level;
  */
 public class BungeePortal extends AbstractPortal {
 
+    private static final String legacyNetworkName = "§§§§§§#BUNGEE#§§§§§§";
     private static Network LEGACY_NETWORK;
     private final Network fakeNetwork;
     private final LegacyVirtualPortal targetPortal;
@@ -29,7 +30,7 @@ public class BungeePortal extends AbstractPortal {
 
     static {
         try {
-            LEGACY_NETWORK = new LocalNetwork("§§§§§§#BUNGEE#§§§§§§", null, null);
+            LEGACY_NETWORK = new LocalNetwork(getLegacyNetworkName(), null, null);
         } catch (NameErrorException e) {
             e.printStackTrace();
         }
@@ -54,7 +55,6 @@ public class BungeePortal extends AbstractPortal {
             throw new NameErrorException(TranslatableMessage.BUNGEE_LACKING_SIGN_INFORMATION);
         }
 
-
         /*
          * Create a virtual portal that handles everything related
          * to moving the player to a different server. This is set
@@ -73,6 +73,15 @@ public class BungeePortal extends AbstractPortal {
         fakeNetwork = new LocalNetwork(destinationServer, null, null);
         String possibleBungeeString = Stargate.getLanguageManagerStatic().getString(TranslatableMessage.BUNGEE_SIGN_LINE_4);
         bungeeString = (possibleBungeeString == null) ? "[PlaceHolder]" : possibleBungeeString;
+    }
+
+    /**
+     * Gets the name of the legacy network used for all legacy BungeeCord portals
+     *
+     * @return <p>The name of the legacy network</p>
+     */
+    public static String getLegacyNetworkName() {
+        return legacyNetworkName;
     }
 
     /**
