@@ -96,7 +96,6 @@ public class PlayerEventListener implements Listener {
             portal.onButtonClick(event);
             return;
         }
-        Stargate.log(Level.WARNING, "This should never be triggered, an unknown glitch is occurring");
 
     }
 
