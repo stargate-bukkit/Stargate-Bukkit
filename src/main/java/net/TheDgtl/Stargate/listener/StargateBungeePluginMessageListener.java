@@ -27,6 +27,7 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.network.InterServerNetwork;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
@@ -133,7 +134,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      * @param message <p>The legacy connect message to parse and handle</p>
      */
     private void legacyPlayerConnect(String message) {
-        String bungeeNetwork = "§§§§§§#BUNGEE#§§§§§§";
+        String bungeeNetwork = BungeePortal.getLegacyNetworkName();
         String[] parts = message.split("#@#");
 
         String playerName = parts[0];

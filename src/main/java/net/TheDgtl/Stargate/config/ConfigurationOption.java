@@ -15,6 +15,11 @@ public enum ConfigurationOption {
     DEFAULT_NETWORK("defaultGateNetwork", "The default network if no network is specified", "central", OptionDataType.STRING),
 
     /**
+     * The network used for all legacy BungeeCord Stargates
+     */
+    LEGACY_BUNGEE_NETWORK("legacyBungeeNetwork", "The network used for all legacy BungeeCord stargates", "LegacyBungee", OptionDataType.STRING),
+
+    /**
      * The language used for all translatable messages
      */
     LANGUAGE("language", "The language used for all translatable messages", "en", OptionDataType.LANGUAGE),

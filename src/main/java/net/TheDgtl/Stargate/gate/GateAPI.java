@@ -15,7 +15,7 @@ import java.util.List;
  * An API describing a Gate
  */
 public interface GateAPI {
-    
+
     /**
      * Set button and draw sign
      *

@@ -17,6 +17,7 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PersonalNetwork;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.RegistryAPI;
+import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
@@ -416,7 +417,7 @@ public class PortalDatabaseAPI implements StorageAPI {
 
             String targetNetwork = networkName;
             if (flags.contains(PortalFlag.BUNGEE)) {
-                targetNetwork = "§§§§§§#BUNGEE#§§§§§§";
+                targetNetwork = BungeePortal.getLegacyNetworkName();
             }
 
             try {

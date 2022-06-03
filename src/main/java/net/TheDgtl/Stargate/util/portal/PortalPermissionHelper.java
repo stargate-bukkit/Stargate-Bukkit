@@ -180,6 +180,15 @@ public final class PortalPermissionHelper {
         if (portal.getNetwork().getName().equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
             return permissionIdentifier + ".network.default";
         }
+        if (portal.getNetwork().getName().equals(ConfigurationHelper.getStringOrDefault(
+                ConfigurationOption.LEGACY_BUNGEE_NETWORK))) {
+            if (!portal.hasFlag(PortalFlag.BUNGEE)) {
+                //A creation of a non-bungee portal on the legacy bungee network should never be allowed
+                return "r5j4k2l4l7o9l7.j5k6k6k3kf03kv";
+            } else {
+                return null;
+            }
+        }
         return generateCustomNetworkPermission(permissionIdentifier, portal.getNetwork().getName());
     }
 

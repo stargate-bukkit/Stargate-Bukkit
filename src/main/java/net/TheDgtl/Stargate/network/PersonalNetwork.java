@@ -33,9 +33,9 @@ public class PersonalNetwork extends LocalNetwork {
         Stargate.log(Level.FINER, "Matching player name: " + Bukkit.getOfflinePlayer(uuid).getName());
         String possiblePlayerName = Bukkit.getOfflinePlayer(uuid).getName();
         if (possiblePlayerName != null
-                && (possiblePlayerName.toLowerCase().equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK).toLowerCase())
-                || possiblePlayerName.toLowerCase()
-                .equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME).toLowerCase()))) {
+                && (possiblePlayerName.equalsIgnoreCase(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))
+                || possiblePlayerName.equalsIgnoreCase(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME))
+                || possiblePlayerName.equalsIgnoreCase(ConfigurationHelper.getStringOrDefault(ConfigurationOption.LEGACY_BUNGEE_NETWORK)))) {
             possiblePlayerName = uuid.toString().split("-")[0];
         }
         playerName = possiblePlayerName;

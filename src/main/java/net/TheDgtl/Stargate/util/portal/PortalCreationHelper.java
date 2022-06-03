@@ -24,6 +24,7 @@ import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.property.BypassPermission;
 import net.TheDgtl.Stargate.util.EconomyHelper;
 import net.TheDgtl.Stargate.util.NameHelper;
+import net.TheDgtl.Stargate.util.NetworkCreationHelper;
 import net.TheDgtl.Stargate.util.SpawnDetectionHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import org.bukkit.Bukkit;
@@ -34,6 +35,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -67,7 +69,8 @@ public final class PortalCreationHelper {
         name = NameHelper.getTrimmedName(name);
 
         if (flags.contains(PortalFlag.BUNGEE)) {
-            return new BungeePortal(network, name, destination, targetServer, flags, gate, ownerUUID, logger);
+            Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), new HashSet<>());
+            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, gate, ownerUUID, logger);
         } else if (flags.contains(PortalFlag.RANDOM)) {
             return new RandomPortal(network, name, flags, gate, ownerUUID, logger);
         } else if (flags.contains(PortalFlag.NETWORKED)) {

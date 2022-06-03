@@ -42,6 +42,20 @@ public final class ConfigurationHelper {
     }
 
     /**
+     * Gets the string value of a setting, or the default value if not set
+     *
+     * @param configurationOption <p>The setting to get</p>
+     * @return <p>The value of the setting, or the default if not set</p>
+     */
+    public static String getStringOrDefault(ConfigurationOption configurationOption) {
+        if (Stargate.getFileConfiguration().isSet(configurationOption.getConfigNode())) {
+            return Stargate.getFileConfiguration().getString(configurationOption.getConfigNode());
+        } else {
+            return (String) configurationOption.getDefaultValue();
+        }
+    }
+
+    /**
      * Gets the boolean value of a setting
      *
      * @param configurationOption <p>The setting to get</p>

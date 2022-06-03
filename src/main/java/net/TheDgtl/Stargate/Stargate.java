@@ -124,14 +124,15 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     public static ChatColor defaultLightSignColor;
     public static ChatColor defaultDarkColor;
+
     static {
-        if(VersionImplemented.CHAT_COLOR.getIsImplemented()) {
+        if (VersionImplemented.CHAT_COLOR.getIsImplemented()) {
             defaultLightSignColor = ChatColor.BLACK;
             defaultDarkColor = ChatColor.WHITE;
         }
-            
+
     }
-    
+
     public static org.bukkit.ChatColor legacyDefaultLightSignColor = org.bukkit.ChatColor.BLACK;
     public static org.bukkit.ChatColor legacyDefaultDarkSignColor = org.bukkit.ChatColor.WHITE;
 
@@ -174,13 +175,14 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     }
 
     private void loadColors() {
-        if(!VersionImplemented.CHAT_COLOR.getIsImplemented()) {
-            logMessage(Level.INFO,"Default stargate coloring is not supported on your current server implementation");
+        if (!VersionImplemented.CHAT_COLOR.getIsImplemented()) {
+            logMessage(Level.INFO, "Default stargate coloring is not supported on your current server implementation");
             try {
                 Stargate.legacyDefaultDarkSignColor = org.bukkit.ChatColor.valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_LIGHT_SIGN_COLOR).toUpperCase());
                 Stargate.legacyDefaultLightSignColor = org.bukkit.ChatColor.valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_DARK_SIGN_COLOR).toUpperCase());
-                }  catch(IllegalArgumentException ignored) {}
-            
+            } catch (IllegalArgumentException ignored) {
+            }
+
             return;
         }
         try {
