@@ -108,7 +108,7 @@ public enum ConfigurationOption {
     /**
      * The version of the configuration. Use for updating the config file
      */
-    CONFIG_VERSION("configVersion", "The version of the configuration. Use for updating the config file", "1", OptionDataType.INTEGER, false),
+    CONFIG_VERSION("configVersion", "The version of the configuration. Use for updating the config file", 1, OptionDataType.INTEGER, false),
 
     /**
      * The name of the .db file if using SQLite
