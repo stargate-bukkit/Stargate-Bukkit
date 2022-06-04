@@ -12,6 +12,7 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.property.PluginChannel;
 import net.TheDgtl.Stargate.util.BungeeHelper;
+import net.TheDgtl.Stargate.util.ButtonHelper;
 import net.TheDgtl.Stargate.util.ColorConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -92,9 +93,8 @@ public class PlayerEventListener implements Listener {
                 return;
             }
         }
-        if (Tag.BUTTONS.isTagged(blockMaterial) || (blockMaterial == Material.DEAD_TUBE_CORAL_WALL_FAN)) {
+        if (ButtonHelper.isButton(blockMaterial)) {
             portal.onButtonClick(event);
-            return;
         }
 
     }
