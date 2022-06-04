@@ -8,11 +8,13 @@ import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.event.StargateAccessEvent;
 import net.TheDgtl.Stargate.event.StargateCloseEvent;
+import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
+import net.TheDgtl.Stargate.manager.PermissionManager;
 import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.LegacyLineColorFormatter;
@@ -72,6 +74,11 @@ public abstract class AbstractPortal implements RealPortal {
     private final Gate gate;
     private final Set<PortalFlag> flags;
     protected final StargateLogger logger;
+
+    protected boolean isActive;
+    protected long activatedTime;
+    protected UUID activator;
+    private static final int ACTIVE_DELAY = 15;
 
     /**
      * Instantiates a new abstract portal
@@ -403,5 +410,82 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public String getID() {
         return NameHelper.getNormalizedName(name);
+    }
+    
+    @Override
+    public void onSignClick(PlayerInteractEvent event) {
+        if(!event.getPlayer().isSneaking()) {
+            this.drawControlMechanisms();
+            return;
+        }
+        PermissionManager permissionManagare = new StargatePermissionManager(event.getPlayer());
+        if(!permissionManagare.hasAccessPermission(this)) {
+            event.getPlayer().sendMessage(permissionManagare.getDenyMessage());
+            return;
+        }
+        String[] signText = {
+                this.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.PREFIX)),
+                this.colorDrawer
+                        .formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.GATE_CREATED_BY)),
+                this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName()),
+                this.colorDrawer.formatLine(getAllFlagsString()) };
+        gate.drawControlMechanisms(signText, false);
+        activate(event.getPlayer());
+    }
+    
+    
+    /**
+     * Activates this portal for the given player
+     *
+     * @param player <p>The player to activate this portal for</p>
+     */
+    protected void activate(Player player) {
+        this.activator = player.getUniqueId();
+        long activationTime = System.currentTimeMillis();
+        this.activatedTime = activationTime;
+
+        //Schedule for deactivation
+        Stargate.syncSecPopulator.addAction(new DelayedAction(ACTIVE_DELAY, () -> {
+            deactivate(activationTime);
+            return true;
+        }));
+
+        if (this.isActive) {
+            return;
+        }
+
+        this.isActive = true;
+    }
+    
+    
+    /**
+     * De-activates this portal if necessary
+     *
+     * <p>The activated time must match to make sure to skip de-activation requests except for the one cancelling the
+     * newest portal activation.</p>
+     *
+     * @param activatedTime <p>The time this portal was activated</p>
+     */
+    protected void deactivate(long activatedTime) {
+        if (!this.isActive || isOpen() || activatedTime != this.activatedTime) {
+            return;
+        }
+        deactivate();
+    }
+    
+    /**
+     * De-activates this portal
+     */
+    protected void deactivate() {
+        if (!this.isActive) {
+            return;
+        }
+        //Call the deactivate event to notify add-ons
+        StargateDeactivateEvent event = new StargateDeactivateEvent(this);
+        Bukkit.getPluginManager().callEvent(event);
+
+        this.activator = null;
+        this.isActive = false;
+        drawControlMechanisms();
     }
 }

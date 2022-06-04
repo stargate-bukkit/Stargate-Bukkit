@@ -38,6 +38,14 @@ public interface RealPortal extends Portal {
     void onButtonClick(PlayerInteractEvent event);
 
     /**
+     * The action to be triggered if this portal sign is interacted with
+     *
+     * @param event <p>The triggered player interact event</p>
+     */
+    void onSignClick(PlayerInteractEvent event);
+    
+    
+    /**
      * Gets the gate belonging to this portal
      *
      * @return <p>The gate belonging to this portal</p>
@@ -72,5 +80,6 @@ public interface RealPortal extends Portal {
      * @return <p>The location of this portal's signs</p>
      */
     List<Location> getPortalPosition(PositionType type);
+
 
 }

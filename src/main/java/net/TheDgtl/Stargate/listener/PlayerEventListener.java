@@ -87,9 +87,7 @@ public class PlayerEventListener implements Listener {
             event.setUseInteractedBlock(Event.Result.DENY);
             if (portal.isOpenFor(player)) {
                 Stargate.log(Level.FINEST, "Player name=" + player.getName());
-                if (portal instanceof NetworkedPortal) {
-                    ((NetworkedPortal) portal).onSignClick(event);
-                }
+                portal.onSignClick(event);
                 return;
             }
         }

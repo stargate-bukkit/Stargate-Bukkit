@@ -201,7 +201,12 @@ public enum TranslatableMessage {
     /**
      * The message to display whenever the admin-help is executed
      */
-    COMMAND_HELP("adminHelp");
+    COMMAND_HELP("adminHelp"),
+    
+    /**
+     * The second line of a portals sign when displaying portal info
+     */
+    GATE_CREATED_BY("portalCreatedBy");
 
 
     /*

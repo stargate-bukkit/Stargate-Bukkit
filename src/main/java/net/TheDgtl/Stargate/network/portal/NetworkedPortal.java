@@ -34,13 +34,9 @@ import java.util.logging.Level;
 public class NetworkedPortal extends AbstractPortal {
 
     private static final int NO_DESTINATION_SELECTED = -1;
-    private static final int ACTIVE_DELAY = 15;
 
     private int selectedDestination = NO_DESTINATION_SELECTED;
     private List<Portal> destinations = new ArrayList<>();
-    private boolean isActive;
-    private long activatedTime;
-    private UUID activator;
 
     /**
      * Instantiates a new networked portal
@@ -56,14 +52,14 @@ public class NetworkedPortal extends AbstractPortal {
         super(network, name, flags, gate, ownerUUID, logger);
     }
 
-    /**
-     * The action to be triggered if this portal sign is interacted with
-     *
-     * @param event <p>The triggered player interact event</p>
-     */
+    @Override
     public void onSignClick(PlayerInteractEvent event) {
+        super.onSignClick(event);
+        if(event.getPlayer().isSneaking()) {
+            return;
+        }
         Player actor = event.getPlayer();
-        if ((this.activator != null && !actor.getUniqueId().equals(this.activator))
+        if ((super.activator != null && !actor.getUniqueId().equals(super.activator))
                 || (this.isOpen() && !hasFlag(PortalFlag.ALWAYS_ON))) {
             return;
         }
@@ -74,12 +70,12 @@ public class NetworkedPortal extends AbstractPortal {
             return;
         }
 
-        boolean previouslyActivated = this.isActive;
+        boolean previouslyActivated = super.isActive;
         activate(actor);
         if (destinations.size() < 1) {
             String message = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.DESTINATION_EMPTY);
             event.getPlayer().sendMessage(message);
-            this.isActive = false;
+            super.isActive = false;
             return;
         }
 
@@ -97,7 +93,7 @@ public class NetworkedPortal extends AbstractPortal {
      * @param previouslyActivated <p>Whether this portal is currently active</p>
      * @return <p>The index of the new destination</p>
      */
-    public int selectNewDestination(Action action, boolean previouslyActivated) {
+    private int selectNewDestination(Action action, boolean previouslyActivated) {
         if (!previouslyActivated) {
             if (!ConfigurationHelper.getBoolean(ConfigurationOption.REMEMBER_LAST_DESTINATION)) {
                 return 0;
@@ -127,7 +123,7 @@ public class NetworkedPortal extends AbstractPortal {
     @Override
     public void updateState() {
         Portal destination = getDestination();
-        if (this.isActive && (destination == null || network.getPortal(destination.getName()) == null)) {
+        if (super.isActive && (destination == null || network.getPortal(destination.getName()) == null)) {
             this.deactivate();
             this.close(true);
         }
@@ -142,7 +138,7 @@ public class NetworkedPortal extends AbstractPortal {
      * @return <p> The position of the selected portal in the destinations list</p>
      */
     private int reloadSelectedDestination() {
-        if (!isActive) {
+        if (!super.isActive) {
             return NO_DESTINATION_SELECTED;
         }
 
@@ -176,7 +172,7 @@ public class NetworkedPortal extends AbstractPortal {
     public void drawControlMechanisms() {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
-        if (!isActive) {
+        if (!super.isActive) {
             lines[1] = super.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.RIGHT_CLICK));
             lines[2] = super.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.TO_USE));
             lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(network.getHighlightedName()) : "";
@@ -339,61 +335,18 @@ public class NetworkedPortal extends AbstractPortal {
         return names;
     }
 
-    /**
-     * Activates this portal for the given player
-     *
-     * @param player <p>The player to activate this portal for</p>
-     */
-    private void activate(Player player) {
-        this.activator = player.getUniqueId();
-        long activationTime = System.currentTimeMillis();
-        this.activatedTime = activationTime;
-
-        //Schedule for deactivation
-        Stargate.syncSecPopulator.addAction(new DelayedAction(ACTIVE_DELAY, () -> {
-            deactivate(activationTime);
-            return true;
-        }));
-
-        if (isActive) {
-            return;
-        }
-
+    @Override
+    protected void activate(Player player) {
+        super.activate(player);
         this.destinations = getDestinations(player);
-        this.isActive = true;
     }
-
-    /**
-     * De-activates this portal if necessary
-     *
-     * <p>The activated time must match to make sure to skip de-activation requests except for the one cancelling the
-     * newest portal activation.</p>
-     *
-     * @param activatedTime <p>The time this portal was activated</p>
-     */
-    private void deactivate(long activatedTime) {
-        if (!isActive || isOpen() || activatedTime != this.activatedTime) {
-            return;
-        }
-        deactivate();
-    }
-
-    /**
-     * De-activates this portal
-     */
-    private void deactivate() {
-        if (!isActive) {
-            return;
-        }
-        //Call the deactivate event to notify add-ons
-        StargateDeactivateEvent event = new StargateDeactivateEvent(this);
-        Bukkit.getPluginManager().callEvent(event);
-
-        this.activator = null;
+    
+    @Override
+    protected void deactivate() {
+        super.deactivate();
         this.destinations.clear();
-        this.isActive = false;
         this.destination = null;
-        drawControlMechanisms();
     }
 
+    
 }
