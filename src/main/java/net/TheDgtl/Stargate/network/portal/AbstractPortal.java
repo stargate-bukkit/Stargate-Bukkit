@@ -474,7 +474,7 @@ public abstract class AbstractPortal implements RealPortal {
      * @param activatedTime <p>The time this portal was activated</p>
      */
     protected void deactivate(long activatedTime) {
-        if (!this.isActive || isOpen() || activatedTime != this.activatedTime) {
+        if (!this.isActive || activatedTime != this.activatedTime) {
             return;
         }
         deactivate();

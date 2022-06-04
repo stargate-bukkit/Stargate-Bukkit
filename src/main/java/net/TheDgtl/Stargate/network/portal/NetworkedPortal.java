@@ -344,6 +344,9 @@ public class NetworkedPortal extends AbstractPortal {
     @Override
     protected void deactivate() {
         super.deactivate();
+        if(isOpen()) {
+            return;
+        }
         this.destinations.clear();
         this.destination = null;
     }
