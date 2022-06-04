@@ -433,7 +433,7 @@ public abstract class AbstractPortal implements RealPortal {
         String[] signText = {
                 this.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.PREFIX)),
                 this.colorDrawer
-                        .formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.GATE_CREATED_BY)),
+                        .formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.GATE_OWNED_BY)),
                 this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName()),
                 this.colorDrawer.formatLine(getAllFlagsString()) };
         gate.drawControlMechanisms(signText, false);

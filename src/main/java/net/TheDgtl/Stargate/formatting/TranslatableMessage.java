@@ -206,7 +206,7 @@ public enum TranslatableMessage {
     /**
      * The second line of a portals sign when displaying portal info
      */
-    GATE_CREATED_BY("portalCreatedBy");
+    GATE_OWNED_BY("signPortalOwner");
 
 
     /*
