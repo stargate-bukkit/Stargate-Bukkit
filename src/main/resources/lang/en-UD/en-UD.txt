@@ -8,6 +8,7 @@ signNonFixedL3=ǝʇɐƃ ǝsn oʇ
 signRandom=ɯopuɐɹ
 signDisconnected=pǝʇɔǝuuoɔsᴉp
 signTerminalL2=ǝlɐS ɹoℲ
+signPortalOwner=:ʎq pǝʇɐǝɹƆ
 
 # Gate Actions
 gateDestroy=¡pǝʎoɹʇsǝp ǝʇɐפ

@@ -8,6 +8,7 @@ signNonFixedL3=2 USE GATE
 signRandom=RANDOM
 signDisconnected=DISCONNECTD
 signTerminalL2=4 SALE
+signPortalOwner=DIS MADE BY:
 
 # Gate Actions
 gateDestroy=GATE DESTROYD!
@@ -15,6 +16,7 @@ gateCreateSpecified=GATE CREATD ON %network% NETWORK!
 gateCreatePersonal=CREATIN GATE ON PERSONAL NETWORK.
 gateTerminalSold=PURCHASD GATE %gateName% IN %terminalName% 4 %cost%.
 gateTerminalSale=LISTD GATE %gateName% 4 SALE IN %terminalName% 4 %cost%.
+gateCreateFallback=CANT MAK UR GATE ON TEH %network% NETWORK; TRYIN UR PERSONAL NETWORK INSTEAD!
 
 # Gate Construction Problems
 faultNetwork=U NO HAV ACCES 2 DAT NETWORK!
@@ -42,6 +44,7 @@ bungeeTargetOffline=TEH PROXY IZ CURRENTLY GONE; BUNGEE PORTALS R TEMPORARILY DI
 tpSuccess=POOFD!
 tpDestInvalid=BAD DESTINASHUN!
 tpEmptyNet=DESTINASHUN LIST EMPTY!
+tpOccupied=SOME1 ELSE IZ NOW USIN DIS PORTAL; TRY AGAIN L8TR!
 
 # Access
 conflictPerms=ACCES DENID!
