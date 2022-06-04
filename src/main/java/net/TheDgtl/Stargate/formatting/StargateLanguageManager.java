@@ -37,11 +37,24 @@ public class StargateLanguageManager implements LanguageManager {
      * @param languageFolder <p>The folder containing all language files</p>
      */
     public StargateLanguageManager(Stargate stargate, File languageFolder) {
-        String defaultLanguage = "en-US";
         this.languageFolder = languageFolder;
 
         this.stargate = stargate;
-        backupStrings = loadLanguage(defaultLanguage);
+        backupStrings = loadBackupLanguage();
+    }
+
+    /**
+     * Load the backup language from the plugin file
+     * @return A
+     */
+    private Map<TranslatableMessage, String> loadBackupLanguage() {
+        Map<String, String> mapToReadInto = new HashMap<>();
+        Map<TranslatableMessage, String> output = new EnumMap<>(TranslatableMessage.class);
+        FileHelper.readInternalFileToMap("/lang/en-GB/en-GB.txt", mapToReadInto);
+        for(TranslatableMessage translatableMessage : TranslatableMessage.values()) {
+            output.put(translatableMessage, mapToReadInto.get(translatableMessage.getMessageKey()));
+        }
+        return output;
     }
 
     @Override
