@@ -29,6 +29,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -248,6 +249,14 @@ public class BlockEventListener implements Listener {
 
         Location location = event.getBlock().getLocation();
         Portal portal = Stargate.getRegistryStatic().getPortal(location, GateStructureType.IRIS);
+        if (portal != null) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockPhysics(BlockPhysicsEvent event) {
+        Portal portal = Stargate.getRegistryStatic().getPortal(event.getBlock().getLocation());
         if (portal != null) {
             event.setCancelled(true);
         }
