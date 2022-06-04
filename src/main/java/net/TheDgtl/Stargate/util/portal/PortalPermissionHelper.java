@@ -226,7 +226,8 @@ public final class PortalPermissionHelper {
      * @return <p>The permission required for the given portal's design</p>
      */
     private static String generateDesignPermission(RealPortal portal, String permissionRootNode) {
-        return permissionRootNode + ".design." + portal.getGate().getFormat().getFileName();
+        String designFileName = portal.getGate().getFormat().getFileName();
+        return permissionRootNode + ".design." + designFileName.subSequence(0, designFileName.length()-5);
     }
 
     /**
