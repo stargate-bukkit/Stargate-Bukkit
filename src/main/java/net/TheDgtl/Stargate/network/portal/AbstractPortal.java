@@ -427,7 +427,7 @@ public abstract class AbstractPortal implements RealPortal {
                 permissionManager.getDenyMessage());
         Bukkit.getPluginManager().callEvent(accessEvent);
         if (accessEvent.getDeny()) {
-            event.getPlayer().sendMessage(permissionManager.getDenyMessage());
+            event.getPlayer().sendMessage(accessEvent.getDenyReason());
             return;
         }
         String[] signText = {
