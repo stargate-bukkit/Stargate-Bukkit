@@ -414,13 +414,20 @@ public abstract class AbstractPortal implements RealPortal {
     
     @Override
     public void onSignClick(PlayerInteractEvent event) {
+        if ((this.activator != null && !event.getPlayer().getUniqueId().equals(this.activator))) {
+            return;
+        }
+        
         if(!event.getPlayer().isSneaking()) {
             this.drawControlMechanisms();
             return;
         }
-        PermissionManager permissionManagare = new StargatePermissionManager(event.getPlayer());
-        if(!permissionManagare.hasAccessPermission(this)) {
-            event.getPlayer().sendMessage(permissionManagare.getDenyMessage());
+        PermissionManager permissionManager = new StargatePermissionManager(event.getPlayer());
+        StargateAccessEvent accessEvent = new StargateAccessEvent(event.getPlayer(), this, !permissionManager.hasAccessPermission(this),
+                permissionManager.getDenyMessage());
+        Bukkit.getPluginManager().callEvent(accessEvent);
+        if (accessEvent.getDeny()) {
+            event.getPlayer().sendMessage(permissionManager.getDenyMessage());
             return;
         }
         String[] signText = {
