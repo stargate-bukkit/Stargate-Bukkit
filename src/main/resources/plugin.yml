@@ -283,14 +283,16 @@ permissions:
               sg.create.type.n: true
               sg.create.type.u: true
               sg.create.type.q: true
-              sg.destroy.type.q: true
               sg.create.type.i: true
+              sg.create.type.s: true
               #NOT IMPL.    sg.create.type.v: true
               sg.destroy.type.a: true
               sg.destroy.type.b: true
               sg.destroy.type.n: true
               sg.destroy.type.u: true
+              sg.destroy.type.q: true
               sg.destroy.type.i: true
+              sg.destroy.type.s: true
           #NOT IMPL.    sg.destroy.type.v: true
           sg.preset.moderator:
             description: A set of permissions intended to be given to staff who will be moderating stargate usage amongst players.
