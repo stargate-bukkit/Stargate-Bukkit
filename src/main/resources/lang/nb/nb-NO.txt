@@ -15,6 +15,7 @@ gateCreateSpecified=Port opprettet på nettverk %network%!
 gateCreatePersonal=Oppretter port på personlig nettverk.
 gateTerminalSold=Kjøpte port %gateName% i %terminalName% for %cost%.
 gateTerminalSale=Listet port %gateName% til salgs i %terminalName% for %cost%.
+gateCreateFallback=Ikke i stand til å opprette porten din på nettverk %network%; prøver ditt personlige nettverk i stedet.
 
 # Gate Construction Problems
 faultNetwork=Du har ikke tilgang til det nettverket!
@@ -25,6 +26,8 @@ faultFull=Det nettverket er fullt!
 faultWorldDeny=Du har ikke tilgang til verden %world%!
 faultConflict=Denne porten er i konflikt med en eksisterende port.
 faultFlag=Du mangler tilgang til å bruke %flags% alternativene; portalen din blir laget uten dem.
+faultControls=Denne porten sitt design har for få kontrollblokker til å benytte flaggene du har valgt.
+faultAddon=Et tillegg har forhindret deg i å utføre den handlingen!
 
 # Bungee Problems
 bungeePerms=Du har ikke tilgang til å opprette bungee-porter!
@@ -40,6 +43,7 @@ bungeeTargetOffline=Mellomtjener-serveren er nede akkurat nå; bungee portaler e
 tpSuccess=Teleporterte!
 tpDestInvalid=Ugyldig destinasjon!
 tpEmptyNet=Det fins ingen tilgjengelige destinasjoner!
+tpOccupied=En annen spiller driver og bruker denne portalen; prøv igjen om noen øyeblikk!
 
 # Access
 conflictPerms=Tilgang avslått!
