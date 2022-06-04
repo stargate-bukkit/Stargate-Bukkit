@@ -10,6 +10,7 @@ import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
+import net.TheDgtl.Stargate.util.ButtonHelper;
 import net.TheDgtl.Stargate.vectorlogic.MatrixVectorOperation;
 import net.TheDgtl.Stargate.vectorlogic.VectorOperation;
 import org.bukkit.Bukkit;
@@ -151,7 +152,7 @@ public class Gate implements GateAPI {
 
             Location buttonLocation = getLocation(portalPosition.getPositionLocation());
             Material blockType = buttonLocation.getBlock().getType();
-            if (Tag.BUTTONS.isTagged(blockType) || Tag.WALL_CORALS.isTagged(blockType)) {
+            if (ButtonHelper.isButton(blockType)) {
                 continue;
             }
             Material buttonMaterial = getButtonMaterial();
@@ -394,7 +395,7 @@ public class Gate implements GateAPI {
 
             if (Tag.WALL_SIGNS.isTagged(material)) {
                 portalPositions.add(new PortalPosition(PositionType.SIGN, blockVector));
-            } else if (!alwaysOn && (Tag.BUTTONS.isTagged(material) || Tag.WALL_CORALS.isTagged(material))) {
+            } else if (!alwaysOn && ButtonHelper.isButton(material)) {
                 portalPositions.add(new PortalPosition(PositionType.BUTTON, blockVector));
             }
             foundVectors.add(blockVector);
@@ -409,8 +410,7 @@ public class Gate implements GateAPI {
      * @return <p>True if the material corresponds to a control</p>
      */
     private boolean isControl(Material material) {
-        return Tag.WALL_SIGNS.isTagged(material) || Tag.BUTTONS.isTagged(material) ||
-                Tag.WALL_CORALS.isTagged(material);
+        return Tag.WALL_SIGNS.isTagged(material) || ButtonHelper.isButton(material);
     }
 
     /**
