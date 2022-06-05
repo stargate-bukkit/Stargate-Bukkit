@@ -47,7 +47,7 @@ public final class NetworkCreationHelper {
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(initialNetworkName);
         if (highlight != HighlightingStyle.NOTHING) {
             String unhighlightedName = HighlightingStyle.getNameFromHighlightedText(initialNetworkName);
-            if(getDefaultNamesTaken().contains(unhighlightedName.toLowerCase())) {
+            if(highlight == HighlightingStyle.PERSONAL) {
                 return initialNetworkName;
             }
             UUID possiblePlayer = getPlayerUUID(unhighlightedName);
