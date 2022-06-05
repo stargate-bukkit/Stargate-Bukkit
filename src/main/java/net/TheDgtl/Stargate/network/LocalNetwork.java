@@ -125,10 +125,10 @@ public class LocalNetwork implements Network {
             Set<String> removeList = new HashSet<>();
             for (String portalName : tempPortalList) {
                 Portal target = getPortal(portalName);
-                if (target.hasFlag(PortalFlag.HIDDEN) && playerCanSeeHiddenPortal(target,player)) {
+                if (target.hasFlag(PortalFlag.HIDDEN) && playerCanSeeHiddenPortal(target, player)) {
                     removeList.add(portalName);
                 }
-                if (target.hasFlag(PortalFlag.PRIVATE) && playerCanSeePrivatePortal(target,player)) {
+                if (target.hasFlag(PortalFlag.PRIVATE) && playerCanSeePrivatePortal(target, player)) {
                     removeList.add(portalName);
                 }
             }
@@ -142,13 +142,13 @@ public class LocalNetwork implements Network {
                 && portalToSee.getOwnerUUID().equals(player.getUniqueId()))
                 || portalToSee.getOwnerUUID().equals(player.getUniqueId()));
     }
-    
+
     private boolean playerCanSeePrivatePortal(Portal portalToSee, Player player) {
-        return  player != null &&
+        return player != null &&
                 !player.hasPermission(BypassPermission.PRIVATE.getPermissionString()) &&
                 !player.getUniqueId().equals(portalToSee.getOwnerUUID());
     }
-    
+
     @Override
     public String getHighlightedName() {
         return HighlightingStyle.NETWORK.getHighlightedName(getName());

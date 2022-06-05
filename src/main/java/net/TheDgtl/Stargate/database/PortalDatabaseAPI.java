@@ -290,11 +290,17 @@ public class PortalDatabaseAPI implements StorageAPI {
         PreparedStatement portalPositionTypesStatement = sqlQueryGenerator.generateCreatePortalPositionTypeTableStatement(connection);
         runStatement(portalPositionTypesStatement);
         addMissingPositionTypes(connection, sqlQueryGenerator);
+        
         PreparedStatement portalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, PortalType.LOCAL);
         runStatement(portalPositionsStatement);
-        PreparedStatement portalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection);
-        runStatement(portalPositionIndex);
-
+        
+        //Ignore any duplicate index creation
+        try {
+            PreparedStatement portalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection);
+            runStatement(portalPositionIndex);
+        } catch (SQLException exception) {
+            logger.logMessage(Level.FINE, "Unable to create the portal position index: " + exception.getMessage());
+        }
 
         PreparedStatement lastKnownNameStatement = sqlQueryGenerator.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);

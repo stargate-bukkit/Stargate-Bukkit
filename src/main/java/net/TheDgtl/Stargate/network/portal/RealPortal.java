@@ -43,8 +43,8 @@ public interface RealPortal extends Portal {
      * @param event <p>The triggered player interact event</p>
      */
     void onSignClick(PlayerInteractEvent event);
-    
-    
+
+
     /**
      * Gets the gate belonging to this portal
      *

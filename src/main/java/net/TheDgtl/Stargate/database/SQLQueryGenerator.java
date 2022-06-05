@@ -179,24 +179,12 @@ public class SQLQueryGenerator {
      * Gets a prepared statement for adding an index on portalName, networkName for
      * the portal position table
      *
-     * @param connection
-     *                   <p>
-     *                   The database connection to use
-     *                   </p>
-     * @return
-     *         <p>
-     *         A prepared statement
-     *         </p>
-     * @throws SQLException
-     *                      <p>
-     *                      If unable to prepare the statement
-     *                      </p>
+     * @param connection <p>The database connection to use</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalPositionIndex(Connection connection) throws SQLException {
-        boolean mySqlSyntax = (driverEnum == DriverEnum.MARIADB || driverEnum == DriverEnum.MYSQL);
-
-        String statementMessage = mySqlSyntax ? "ALTER TABLE {PortalPosition} ADD INDEX (portalName, networkName);"
-                : "CREATE INDEX IF NOT EXISTS {PortalPositionIndex} ON {PortalPosition} (portalName,networkName);";
+        String statementMessage = "CREATE INDEX {PortalPositionIndex} ON {PortalPosition} (portalName, networkName);";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -206,16 +194,13 @@ public class SQLQueryGenerator {
      * Gets a prepared statement for inserting a portal position into the portal
      * position table
      *
-     * @param connection
-     *                   <p>
+     * @param connection <p>
      *                   The database connection to use
      *                   </p>
-     * @return
-     *         <p>
-     *         A prepared statement
-     *         </p>
-     * @throws SQLException
-     *                      <p>
+     * @return <p>
+     * A prepared statement
+     * </p>
+     * @throws SQLException <p>
      *                      If unable to prepare the statement
      *                      </p>
      */

@@ -411,14 +411,14 @@ public abstract class AbstractPortal implements RealPortal {
     public String getID() {
         return NameHelper.getNormalizedName(name);
     }
-    
+
     @Override
     public void onSignClick(PlayerInteractEvent event) {
         if ((this.activator != null && !event.getPlayer().getUniqueId().equals(this.activator))) {
             return;
         }
-        
-        if(!event.getPlayer().isSneaking()) {
+
+        if (!event.getPlayer().isSneaking()) {
             this.drawControlMechanisms();
             return;
         }
@@ -435,12 +435,12 @@ public abstract class AbstractPortal implements RealPortal {
                 this.colorDrawer
                         .formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.GATE_OWNED_BY)),
                 this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName()),
-                this.colorDrawer.formatLine(getAllFlagsString()) };
+                this.colorDrawer.formatLine(getAllFlagsString())};
         gate.drawControlMechanisms(signText, false);
         activate(event.getPlayer());
     }
-    
-    
+
+
     /**
      * Activates this portal for the given player
      *
@@ -463,8 +463,8 @@ public abstract class AbstractPortal implements RealPortal {
 
         this.isActive = true;
     }
-    
-    
+
+
     /**
      * De-activates this portal if necessary
      *
@@ -479,7 +479,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
         deactivate();
     }
-    
+
     /**
      * De-activates this portal
      */

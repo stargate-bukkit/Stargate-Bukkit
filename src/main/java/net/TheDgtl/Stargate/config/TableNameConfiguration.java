@@ -22,7 +22,7 @@ public class TableNameConfiguration {
     private String portalPositionTableName = "PortalPosition";
     private String interPortalPositionTableName = "InterPortalPosition";
     private String portalPositionIndexTableName = "portalPositionIndex";
-    private String interPortalPositionIndexTableName = "interPortalPositinoIndex";
+    private String interPortalPositionIndexTableName = "interPortalPositionIndex";
 
     /**
      * Instantiates a new table config
@@ -56,11 +56,11 @@ public class TableNameConfiguration {
      */
     @SuppressWarnings("unused")
     public TableNameConfiguration(String mainPrefix, String serverPrefix, String portalTableName,
-            String interPortalTableName, String flagTableName, String flagRelationTableName,
-            String interFlagRelationTableName, String portalViewName, String interPortalViewName,
-            String lastKnownNameTableName, String serverInfoTableName, String positionTypeTableName,
-            String portalPositionTableName, String interPortalPositionTableName, String portalPositionIndexTableName,
-            String interPortalPositionIndexTableName) {
+                                  String interPortalTableName, String flagTableName, String flagRelationTableName,
+                                  String interFlagRelationTableName, String portalViewName, String interPortalViewName,
+                                  String lastKnownNameTableName, String serverInfoTableName, String positionTypeTableName,
+                                  String portalPositionTableName, String interPortalPositionTableName, String portalPositionIndexTableName,
+                                  String interPortalPositionIndexTableName) {
         this.mainPrefix = mainPrefix;
         this.serverPrefix = serverPrefix;
         this.portalTableName = portalTableName;
@@ -187,10 +187,20 @@ public class TableNameConfiguration {
         return mainPrefix + interPortalPositionTableName;
     }
 
+    /**
+     * Gets the name of the index for the portal position table
+     * 
+     * @return <p>The name of the index for the portal position table</p>
+     */
     public String getPortalPositionIndexTableName() {
         return mainPrefix + serverPrefix + portalPositionIndexTableName;
     }
 
+    /**
+     * Gets the name of the index for the inter-server portal position table
+     * 
+     * @return <p>The name of the index for the inter-portal position table</p>
+     */
     public String getInterPortalPositionIndexTableName() {
         return mainPrefix + interPortalPositionIndexTableName;
     }

@@ -2,12 +2,10 @@ package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
-import net.TheDgtl.Stargate.action.DelayedAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.event.StargateAccessEvent;
 import net.TheDgtl.Stargate.event.StargateActivateEvent;
-import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
@@ -55,7 +53,7 @@ public class NetworkedPortal extends AbstractPortal {
     @Override
     public void onSignClick(PlayerInteractEvent event) {
         super.onSignClick(event);
-        if(event.getPlayer().isSneaking()) {
+        if (event.getPlayer().isSneaking()) {
             return;
         }
         Player actor = event.getPlayer();
@@ -340,16 +338,16 @@ public class NetworkedPortal extends AbstractPortal {
         super.activate(player);
         this.destinations = getDestinations(player);
     }
-    
+
     @Override
     protected void deactivate() {
         super.deactivate();
-        if(isOpen()) {
+        if (isOpen()) {
             return;
         }
         this.destinations.clear();
         this.destination = null;
     }
 
-    
+
 }
