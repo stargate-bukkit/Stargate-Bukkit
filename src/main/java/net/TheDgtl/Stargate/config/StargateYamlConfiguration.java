@@ -113,26 +113,20 @@ public class StargateYamlConfiguration extends YamlConfiguration {
             //Skip the comment start line, and start comment parsing
             if (possibleComment.startsWith(START_OF_COMMENT)) {
                 isInComment = true;
+                currentIndentation = countSpaces(line);
+                finalText.append("\n");
                 continue;
             }
 
             //Write the comment line or config value
             if (isInComment) {
                 //Use the indentation of the previous comment line when indenting an empty comment line
-                int indentation;
-                if (possibleComment.isEmpty()) {
-                    indentation = currentIndentation;
-                } else {
-                    indentation = countSpaces(line) - 2;
-                    currentIndentation = indentation;
-                }
-                line = addIndentation(indentation) + "# " + possibleComment;
-                finalText.append(line).append("\n");
+                finalText.append(addIndentation(currentIndentation)).append("# ").append(possibleComment).append("\n");
             } else {
-                finalText.append(line).append("\n").append("\n");
+                finalText.append(line).append("\n");
             }
         }
-        return finalText.toString();
+        return finalText.toString().trim();
     }
 
     /**
