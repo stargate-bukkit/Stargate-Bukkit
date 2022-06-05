@@ -157,10 +157,11 @@ public class SQLQueryGenerator {
      * Gets a prepared statement for creating the portal position table
      *
      * @param connection <p>The database connection to use</p>
+     * @param portalType <p>The type of the portal (used to determine which table to select from)</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreatePortalPositionTableStatement(Connection connection, PortalType type) throws SQLException {
+    public PreparedStatement generateCreatePortalPositionTableStatement(Connection connection, PortalType portalType) throws SQLException {
         String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalPosition} (" +
                 "portalName NVARCHAR(180) NOT NULL, " +
                 "networkName NVARCHAR(180) NOT NULL, " +
@@ -169,7 +170,7 @@ public class SQLQueryGenerator {
                 "PRIMARY KEY (portalName, networkName, xCoordinate, yCoordinate, zCoordinate), " +
                 "FOREIGN KEY (portalName, networkName) REFERENCES {Portal}(name, network), " +
                 "FOREIGN KEY (positionType) REFERENCES {PositionType} (id));";
-        statementMessage = adjustStatementForPortalType(statementMessage, type);
+        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -180,11 +181,13 @@ public class SQLQueryGenerator {
      * the portal position table
      *
      * @param connection <p>The database connection to use</p>
+     * @param portalType @param portalType <p>The type of the portal (used to determine which table to select from)</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreatePortalPositionIndex(Connection connection) throws SQLException {
+    public PreparedStatement generateCreatePortalPositionIndex(Connection connection, PortalType portalType) throws SQLException {
         String statementMessage = "CREATE INDEX {PortalPositionIndex} ON {PortalPosition} (portalName, networkName);";
+        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -194,21 +197,16 @@ public class SQLQueryGenerator {
      * Gets a prepared statement for inserting a portal position into the portal
      * position table
      *
-     * @param connection <p>
-     *                   The database connection to use
-     *                   </p>
-     * @return <p>
-     * A prepared statement
-     * </p>
-     * @throws SQLException <p>
-     *                      If unable to prepare the statement
-     *                      </p>
+     * @param connection <p>The database connection to use</p>
+     * @param portalType <p>The type of the portal (used to determine which table to select from)</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateAddPortalPositionStatement(Connection connection, PortalType type) throws SQLException {
+    public PreparedStatement generateAddPortalPositionStatement(Connection connection, PortalType portalType) throws SQLException {
         String statementMessage = "INSERT INTO {PortalPosition} (portalName, networkName, xCoordinate, yCoordinate, " +
                 "zCoordinate, positionType) VALUES (?, ?, ?, ?, ?, (SELECT {PositionType}.id FROM " +
                 "{PositionType} WHERE {PositionType}.positionName = ?));";
-        statementMessage = adjustStatementForPortalType(statementMessage, type);
+        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -218,12 +216,13 @@ public class SQLQueryGenerator {
      * Gets a prepared statement for removing a position
      *
      * @param connection <p>The database connection to use</p>
+     * @param portalType <p>The type of the portal (used to determine which table to select from)</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateRemovePortalPositionsStatement(Connection connection, PortalType type) throws SQLException {
+    public PreparedStatement generateRemovePortalPositionsStatement(Connection connection, PortalType portalType) throws SQLException {
         String statementMessage = "DELETE FROM {PortalPosition} WHERE portalName = ? AND networkName = ?;";
-        statementMessage = adjustStatementForPortalType(statementMessage, type);
+        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -233,13 +232,14 @@ public class SQLQueryGenerator {
      * Gets a prepared statement for getting all portal positions for one portal
      *
      * @param connection <p>The database connection to use</p>
+     * @param portalType <p>The type of the portal (used to determine which table to select from)</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateGetPortalPositionsStatement(Connection connection, PortalType type) throws SQLException {
+    public PreparedStatement generateGetPortalPositionsStatement(Connection connection, PortalType portalType) throws SQLException {
         String statementMessage = "SELECT *, (SELECT {PositionType}.positionName FROM {PositionType} " +
                 "WHERE {PositionType}.id = positionType) as positionName FROM {PortalPosition} WHERE networkName = ? AND portalName = ?";
-        statementMessage = adjustStatementForPortalType(statementMessage, type);
+        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);

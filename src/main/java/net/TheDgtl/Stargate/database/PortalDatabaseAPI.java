@@ -290,13 +290,13 @@ public class PortalDatabaseAPI implements StorageAPI {
         PreparedStatement portalPositionTypesStatement = sqlQueryGenerator.generateCreatePortalPositionTypeTableStatement(connection);
         runStatement(portalPositionTypesStatement);
         addMissingPositionTypes(connection, sqlQueryGenerator);
-        
+
         PreparedStatement portalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, PortalType.LOCAL);
         runStatement(portalPositionsStatement);
-        
+
         //Ignore any duplicate index creation
         try {
-            PreparedStatement portalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection);
+            PreparedStatement portalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, PortalType.LOCAL);
             runStatement(portalPositionIndex);
         } catch (SQLException exception) {
             logger.logMessage(Level.FINE, "Unable to create the portal position index: " + exception.getMessage());
@@ -324,6 +324,15 @@ public class PortalDatabaseAPI implements StorageAPI {
         runStatement(interPortalViewStatement);
         PreparedStatement interPortalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, PortalType.INTER_SERVER);
         runStatement(interPortalPositionsStatement);
+
+        //Ignore any duplicate index creation
+        try {
+            PreparedStatement interPortalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, PortalType.INTER_SERVER);
+            runStatement(interPortalPositionIndex);
+        } catch (SQLException exception) {
+            logger.logMessage(Level.FINE, "Unable to create the inter-portal position index: " + exception.getMessage());
+        }
+
         connection.close();
     }
 

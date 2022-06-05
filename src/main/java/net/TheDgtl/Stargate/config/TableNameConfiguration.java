@@ -189,7 +189,7 @@ public class TableNameConfiguration {
 
     /**
      * Gets the name of the index for the portal position table
-     * 
+     *
      * @return <p>The name of the index for the portal position table</p>
      */
     public String getPortalPositionIndexTableName() {
@@ -198,7 +198,7 @@ public class TableNameConfiguration {
 
     /**
      * Gets the name of the index for the inter-server portal position table
-     * 
+     *
      * @return <p>The name of the index for the inter-portal position table</p>
      */
     public String getInterPortalPositionIndexTableName() {
