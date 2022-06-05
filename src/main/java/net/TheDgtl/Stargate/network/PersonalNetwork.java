@@ -7,6 +7,8 @@ import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
+import net.TheDgtl.Stargate.util.NetworkCreationHelper;
+
 import org.bukkit.Bukkit;
 
 import java.util.UUID;
@@ -33,9 +35,8 @@ public class PersonalNetwork extends LocalNetwork {
         Stargate.log(Level.FINER, "Matching player name: " + Bukkit.getOfflinePlayer(uuid).getName());
         String possiblePlayerName = Bukkit.getOfflinePlayer(uuid).getName();
         if (possiblePlayerName != null
-                && (possiblePlayerName.equalsIgnoreCase(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))
-                || possiblePlayerName.equalsIgnoreCase(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME))
-                || possiblePlayerName.equalsIgnoreCase(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK)))) {
+                && (NetworkCreationHelper.getDefaultNamesTaken().contains(possiblePlayerName.toLowerCase())
+                        || NetworkCreationHelper.getBannedNames().contains(possiblePlayerName.toLowerCase()))) {
             possiblePlayerName = uuid.toString().split("-")[0];
         }
         playerName = possiblePlayerName;

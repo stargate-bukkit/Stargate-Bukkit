@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -42,11 +43,16 @@ public final class NetworkCreationHelper {
      */
     public static String interpretNetworkName(String initialNetworkName, Set<PortalFlag> flags, Player player,
                                               RegistryAPI registry) {
+        
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(initialNetworkName);
         if (highlight != HighlightingStyle.NOTHING) {
-            UUID possiblePlayer = getPlayerUUID(HighlightingStyle.getNameFromHighlightedText(initialNetworkName));
+            String unhighlightedName = HighlightingStyle.getNameFromHighlightedText(initialNetworkName);
+            if(getDefaultNamesTaken().contains(unhighlightedName.toLowerCase())) {
+                return initialNetworkName;
+            }
+            UUID possiblePlayer = getPlayerUUID(unhighlightedName);
             if (registry.getNetwork(possiblePlayer.toString(), false) != null) {
-                initialNetworkName = HighlightingStyle.getNameFromHighlightedText(initialNetworkName);
+                initialNetworkName = unhighlightedName;
             } else {
                 return initialNetworkName;
             }
@@ -76,6 +82,19 @@ public final class NetworkCreationHelper {
         }
 
         return initialNetworkName;
+    }
+
+    public static Set<String> getBannedNames() {
+        Set<String> output = new HashSet<>();
+        output.add(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK).toLowerCase());
+        return output;
+    }
+
+    public static Set<String> getDefaultNamesTaken() {
+        Set<String> output = new HashSet<>();
+        output.add(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK).toLowerCase());
+        output.add(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME).toLowerCase());
+        return output;
     }
 
     /**
