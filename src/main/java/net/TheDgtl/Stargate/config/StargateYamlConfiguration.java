@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A configuration that supports comments
+ * A YAML configuration which keeps all comments
  *
  * @author Thorin
  */
@@ -42,87 +42,86 @@ public class StargateYamlConfiguration extends YamlConfiguration {
      * the {@link FileConfiguration#save(File)} method. The config
      * needs to be saved if a config value has changed.</p>
      */
-    private String convertCommentsToYAMLMappings(String yamlString) {
-        StringBuilder newText = new StringBuilder();
-        /*
-         * A list of each stored comment (which is a list of comment lines) A comment
-         * is defined as a set of lines that start with #, this set can not contain an
-         * empty line.
-         */
-        List<List<String>> comments = new ArrayList<>();
-        int counter = 0;
-        int commentNameCounter = 0;
-        int indentation;
-        List<String> currentComment;
-        for (String line : yamlString.split("\n")) {
-            if (line.trim().isEmpty()) {
-                //A cheesy way to move to the next comment
-                counter = comments.size();
-            } else if (line.trim().startsWith("#")) {
-                if (counter >= comments.size()) {
-                    comments.add(new ArrayList<>());
-                }
-                currentComment = comments.get(counter);
+    private String convertCommentsToYAMLMappings(String configString) {
+        StringBuilder yamlBuilder = new StringBuilder();
+        List<String> currentComment = new ArrayList<>();
+        int commentId = 0;
+
+        for (String line : configString.split("\n")) {
+            if (line.trim().startsWith("#")) {
+                //Temporarily store the comment line
                 currentComment.add(line.trim().replaceFirst("#", ""));
-            } else if (!comments.isEmpty()) {
-                indentation = this.countSpaces(line);
-                for (List<String> comment : comments)
-                    newText.append(compileCommentMapping(comment, commentNameCounter++, indentation));
-                newText.append(line).append("\n");
-                comments.clear();
-                counter = 0;
             } else {
-                newText.append(line).append("\n");
+                //Write the full formatted comment to the StringBuilder
+                if (!currentComment.isEmpty()) {
+                    int indentation = getIndentation(line);
+                    generateCommentYAML(yamlBuilder, currentComment, commentId++, indentation);
+                    currentComment = new ArrayList<>();
+                }
+                //Add the non-comment line assuming it isn't empty
+                if (!line.trim().isEmpty()) {
+                    yamlBuilder.append(line).append("\n");
+                }
             }
         }
-        return newText.toString();
+        return yamlBuilder.toString();
     }
 
-    private String compileCommentMapping(List<String> commentLines, int counter, int indentation) {
-        StringBuilder commentYamlMapping = new StringBuilder(this.addIndentation(indentation) + START_OF_COMMENT +
-                counter + ": |\n");
-        commentLines.add(this.addIndentation(indentation + 2) + END_OF_COMMENT);
+    /**
+     * Generates a YAML-compatible string for one comment block
+     *
+     * @param yamlBuilder  <p>The string builder to add the generated YAML to</p>
+     * @param commentLines <p>The lines of the comment to convert into YAML</p>
+     * @param commentId    <p>The unique id of the comment</p>
+     * @param indentation  <p>The indentation to add to every line</p>
+     */
+    private void generateCommentYAML(StringBuilder yamlBuilder, List<String> commentLines, int commentId, int indentation) {
+        String subIndentation = this.addIndentation(indentation + 2);
+        //Add the comment start marker
+        yamlBuilder.append(this.addIndentation(indentation)).append(START_OF_COMMENT).append(commentId).append(": |\n");
         for (String commentLine : commentLines) {
-            commentYamlMapping.append(this.addIndentation(indentation + 2)).append(commentLine).append("\n");
+            //Add each comment line with the proper indentation
+            yamlBuilder.append(subIndentation).append(commentLine).append("\n");
         }
-        return commentYamlMapping.toString();
+        //Add the comment end marker
+        yamlBuilder.append(subIndentation).append(subIndentation).append(END_OF_COMMENT).append("\n");
     }
 
     /**
      * Converts the internal YAML mapping format to a readable config file
+     *
+     * <p>The internal YAML structure is converted to a string with the same format as a standard configuration file.
+     * The internal structure has comments in the format: START_OF_COMMENT + id + multi-line YAML string +
+     * END_OF_COMMENT.</p>
      *
      * @param yamlString <p>A string using the YAML format</p>
      * @return <p>The corresponding comment string</p>
      */
     private String convertYAMLMappingsToComments(String yamlString) {
         StringBuilder finalText = new StringBuilder();
-        boolean isInComment = false;
-        int currentIndentation = 0;
+        boolean isReadingCommentBlock = false;
+        int commentIndentation = 0;
         for (String line : yamlString.split("\n")) {
-            //Skip the line signifying the end of a comment
-            if (isInComment && line.contains(END_OF_COMMENT)) {
-                isInComment = false;
-                continue;
-            }
             String possibleComment = line.trim();
-            //Output the empty line as-is
-            if (line.isEmpty() && !isInComment) {
-                finalText.append("\n");
-                continue;
-            }
-            //Skip the comment start line, and start comment parsing
-            if (possibleComment.startsWith(START_OF_COMMENT)) {
-                isInComment = true;
-                currentIndentation = countSpaces(line);
-                finalText.append("\n");
-                continue;
-            }
 
-            //Write the comment line or config value
-            if (isInComment) {
-                //Use the indentation of the previous comment line when indenting an empty comment line
-                finalText.append(addIndentation(currentIndentation)).append("# ").append(possibleComment).append("\n");
+            if (isReadingCommentBlock && line.contains(END_OF_COMMENT)) {
+                //Skip the line signifying the end of a comment
+                isReadingCommentBlock = false;
+            } else if (possibleComment.startsWith(START_OF_COMMENT)) {
+                //Skip the comment start line, and start comment parsing
+                isReadingCommentBlock = true;
+                //Get the indentation to use for the comment block
+                commentIndentation = getIndentation(line);
+                //Add an empty line before every comment block
+                finalText.append("\n");
+            } else if (line.isEmpty() && !isReadingCommentBlock) {
+                //Output the empty line as-is, as it's not part of a comment
+                finalText.append("\n");
+            } else if (isReadingCommentBlock) {
+                //Output the comment with correct indentation
+                finalText.append(addIndentation(commentIndentation)).append("# ").append(possibleComment).append("\n");
             } else {
+                //Output the configuration key
                 finalText.append(line).append("\n");
             }
         }
@@ -145,12 +144,12 @@ public class StargateYamlConfiguration extends YamlConfiguration {
 
 
     /**
-     * Counts the spaces at the start of a line
+     * Gets the indentation (number of spaces) of the given line
      *
-     * @param line <p>The line to count spaces for</p>
-     * @return <p>The number of found spaces</p>
+     * @param line <p>The line to get indentation of</p>
+     * @return <p>The number of spaces in the line's indentation</p>
      */
-    private int countSpaces(String line) {
+    private int getIndentation(String line) {
         int spacesFound = 0;
         for (char aCharacter : line.toCharArray()) {
             if (aCharacter == ' ') {
