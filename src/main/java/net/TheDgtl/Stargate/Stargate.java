@@ -43,8 +43,8 @@ import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.migration.DataMigrator;
 import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
+import net.TheDgtl.Stargate.property.NonLegacyMethod;
 import net.TheDgtl.Stargate.property.PluginChannel;
-import net.TheDgtl.Stargate.property.VersionImplemented;
 import net.TheDgtl.Stargate.thread.SynchronousPopulator;
 import net.TheDgtl.Stargate.util.BStatsHelper;
 import net.TheDgtl.Stargate.util.BungeeHelper;
@@ -126,7 +126,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     public static ChatColor defaultDarkColor;
 
     static {
-        if (VersionImplemented.CHAT_COLOR.getIsImplemented()) {
+        if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
             defaultLightSignColor = ChatColor.BLACK;
             defaultDarkColor = ChatColor.WHITE;
         }
@@ -175,7 +175,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     }
 
     private void loadColors() {
-        if (!VersionImplemented.CHAT_COLOR.getIsImplemented()) {
+        if (!NonLegacyMethod.CHAT_COLOR.isImplemented()) {
             logMessage(Level.INFO, "Default stargate coloring is not supported on your current server implementation");
             try {
                 Stargate.legacyDefaultDarkSignColor = org.bukkit.ChatColor.valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_LIGHT_SIGN_COLOR).toUpperCase());

@@ -9,6 +9,7 @@ import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.manager.StargatePermissionManager;
+import net.TheDgtl.Stargate.property.NonLegacyMethod;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -18,8 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.util.Vector;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -217,16 +216,13 @@ public class DraftTeleporter {
                 teleport(poweredMinecart, exit);
                 poweredMinecart.setFuel(fuel);
                 poweredMinecart.setVelocity(targetVelocity);
-                try {
-                    Method setPushX = PoweredMinecart.class.getMethod("setPushX", double.class);
-                    Method setPushZ = PoweredMinecart.class.getMethod("setPushZ", double.class);
-                    setPushX.invoke(poweredMinecart, -location.getDirection().getBlockX());
-                    setPushZ.invoke(poweredMinecart, -location.getDirection().getBlockZ());
-
-                } catch (NoSuchMethodException ignored) {
-                    logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %s -- use Paper 1.18.2+ for this feature.", location));
-                } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                    e.printStackTrace();
+                
+                if (NonLegacyMethod.PUSH_X.isImplemented() && NonLegacyMethod.PUSH_Z.isImplemented()) {
+                    NonLegacyMethod.PUSH_X.invoke(poweredMinecart, -location.getDirection().getBlockX());
+                    NonLegacyMethod.PUSH_Z.invoke(poweredMinecart, -location.getDirection().getBlockZ());
+                } else {
+                    logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
+                            " use Paper 1.18.2+ for this feature.", location));
                 }
             }, 1);
         } else {

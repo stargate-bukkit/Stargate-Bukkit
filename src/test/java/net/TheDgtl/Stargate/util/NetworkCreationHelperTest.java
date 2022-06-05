@@ -53,7 +53,7 @@ class NetworkCreationHelperTest {
 
         parseNetworkNameTest = new HashMap<>();
         parseNetworkNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(player.getName()), player.getUniqueId().toString());
-        parseNetworkNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(invalidPlayerName), 
+        parseNetworkNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(invalidPlayerName),
                 Bukkit.getOfflinePlayer(invalidPlayerName).getUniqueId().toString());
         parseNetworkNameTest.put(HighlightingStyle.BUNGEE.getHighlightedName(name), name);
         parseNetworkNameTest.put(HighlightingStyle.DESTINATION.getHighlightedName(name), name);
