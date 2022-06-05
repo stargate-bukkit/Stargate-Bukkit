@@ -127,8 +127,10 @@ public class StargateYamlConfiguration extends YamlConfiguration {
                     currentIndentation = indentation;
                 }
                 line = addIndentation(indentation) + "# " + possibleComment;
+                finalText.append(line).append("\n");
+            } else {
+                finalText.append(line).append("\n").append("\n");
             }
-            finalText.append(line).append("\n");
         }
         return finalText.toString();
     }
