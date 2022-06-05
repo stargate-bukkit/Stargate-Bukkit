@@ -64,7 +64,7 @@ public class DataMigratorTest {
 
         logger = new FakeStargate();
         defaultConfigFile = new File("src/main/resources", "config.yml");
-        sqlDatabaseFile = new File("src/test/resources", "test.db");
+        sqlDatabaseFile = new File("src/test/resources", "migrate-test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);
         StorageAPI storageAPI = new PortalDatabaseAPI(sqlDatabase, false, false, logger);
         registry = new StargateRegistry(storageAPI);
