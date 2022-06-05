@@ -57,6 +57,7 @@ public final class FileHelper {
      *
      * @param file <p>The file to read</p>
      * @return <p>An input stream for the file</p>
+     * @throws IOException 
      */
     public static InputStream getInputStreamForInternalFile(String file) {
         return FileHelper.class.getResourceAsStream(file);
@@ -67,8 +68,9 @@ public final class FileHelper {
      *
      * @param inputStream <p>The input stream to read</p>
      * @return <p>A buffered reader reading the input stream</p>
+     * @throws IOException 
      */
-    public static BufferedReader getBufferedReaderFromInputStream(InputStream inputStream) {
+    public static BufferedReader getBufferedReaderFromInputStream(InputStream inputStream){
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
         return new BufferedReader(inputStreamReader);
     }
@@ -82,8 +84,11 @@ public final class FileHelper {
     public static void readInternalFileToMap(String file, Map<String, String> targetMap) {
         Map<String, String> readPairs;
         try {
-            readPairs = FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(
-                    FileHelper.getInputStreamForInternalFile(file)));
+            InputStream stream = FileHelper.getInputStreamForInternalFile(file);
+            if(stream == null) {
+                return;
+            }
+            readPairs = FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(stream));
             for (String key : readPairs.keySet()) {
                 String value = readPairs.get(key);
                 if (value.trim().isEmpty()) {

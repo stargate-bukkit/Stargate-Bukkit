@@ -5,8 +5,14 @@ import net.TheDgtl.Stargate.util.FileHelper;
 import org.bukkit.ChatColor;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,6 +119,7 @@ public class StargateLanguageManager implements LanguageManager {
         if (!language.equals(this.language)) {
             this.language = language;
             translatedStrings = loadLanguage(language);
+            updateLanguage(language, translatedStrings);
         }
     }
 
@@ -218,7 +225,10 @@ public class StargateLanguageManager implements LanguageManager {
         Map<TranslatableMessage, String> output = new EnumMap<>(TranslatableMessage.class);
 
         String line = bufferedReader.readLine();
+        if(line == null)
+            return output;
         line = FileHelper.removeUTF8BOM(line);
+        
         while (line != null) {
             // Split at first "="
             int equalsIndex = line.indexOf('=');
@@ -236,8 +246,70 @@ public class StargateLanguageManager implements LanguageManager {
             output.put(key, value);
             line = bufferedReader.readLine();
         }
-
         return output;
     }
 
+    
+    /**
+     * Updates files in the plugin directory with contents from the compiled .jar
+     *
+     * @param language <p>The language to update</p>
+     * @param translatedStrings <p> The already set strings </p>
+     */
+    private void updateLanguage(String language, Map<TranslatableMessage, String> translatedStrings) {
+        Map<TranslatableMessage, String> internalTranslatedValues = new EnumMap<>(TranslatableMessage.class);
+        Map<String, String> internalInputMap = new HashMap<>();
+        File chosenLanguageFile = null;
+        File[] internalTargatFiles = findTargetFiles(language, new File("lang"));
+        File[] externalTargetFiles = findTargetFiles(language, this.languageFolder);
+        
+        
+        for (int i = 0; i < internalTargatFiles.length; i++) {
+            FileHelper.readInternalFileToMap("/" + internalTargatFiles[i].getPath().replace("\\", "/"), internalInputMap);
+            Stargate.log(Level.FINE, "Checking internal language file '" + internalTargatFiles[i].getPath() + "'");
+            if (!internalInputMap.isEmpty()) {
+                chosenLanguageFile = externalTargetFiles[i];
+                break;
+            }
+        }
+        if (chosenLanguageFile == null) {
+            Stargate.log(Level.INFO, "Could not load a internal language backup for your specified language");
+            return;
+        }
+        for (TranslatableMessage key : TranslatableMessage.values()) {
+            internalTranslatedValues.put(key, internalInputMap.get(key.getMessageKey()));
+        }
+        if (translatedStrings.size() >= internalTranslatedValues.size()) {
+            return;
+        }
+        addMissingInternalTranslations(chosenLanguageFile,translatedStrings,internalTranslatedValues);
+    }
+    
+    /**
+     * Adds the missing translations into the external language file
+     * 
+     * @param language
+     *                 <p>
+     *                 The language to update
+     *                 </p>
+     */
+    private void addMissingInternalTranslations(File languageFile, Map<TranslatableMessage, String> translatedStrings,
+            Map<TranslatableMessage, String> internalTranslatedValues) {
+        try {
+            String textToAppend = "";
+            for (TranslatableMessage key : internalTranslatedValues.keySet()) {
+                if (translatedStrings.containsKey(key)) {
+                    continue;
+                }
+                translatedStrings.put(key, internalTranslatedValues.get(key));
+                Stargate.log(Level.FINE, String.format("\n Adding a line of translations of key %s to languagefile '%s'",
+                        key.toString(), languageFile));
+                textToAppend = textToAppend + "\n"
+                        + String.format("%s=%s", key.getMessageKey(), internalTranslatedValues.get(key));
+            }
+            Files.write(Paths.get(languageFile.getPath()), textToAppend.getBytes(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
