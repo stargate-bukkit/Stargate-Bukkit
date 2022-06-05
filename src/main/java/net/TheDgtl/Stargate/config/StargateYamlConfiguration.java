@@ -34,18 +34,15 @@ public class StargateYamlConfiguration extends YamlConfiguration {
         return "";
     }
 
-
     /**
      * Reads a file with comments, and recreates them into yaml mappings
      *
-     * <p>
-     * A mapping follows this format: comment_{CommentNumber}: "The comment"
-     * <p>
+     * <p>A mapping follows this format: comment_{CommentNumber}: "The comment"
      * This needs to be done as comments otherwise get removed using
      * the {@link FileConfiguration#save(File)} method. The config
      * needs to be saved if a config value has changed.</p>
      */
-    public String convertCommentsToYAMLMappings(String yamlString) {
+    private String convertCommentsToYAMLMappings(String yamlString) {
         StringBuilder newText = new StringBuilder();
         /*
          * A list of each stored comment (which is a list of comment lines) A comment
@@ -61,26 +58,22 @@ public class StargateYamlConfiguration extends YamlConfiguration {
             if (line.trim().isEmpty()) {
                 //A cheesy way to move to the next comment
                 counter = comments.size();
-                continue;
-            }
-            if (line.trim().startsWith("#")) {
+            } else if (line.trim().startsWith("#")) {
                 if (counter >= comments.size()) {
                     comments.add(new ArrayList<>());
                 }
                 currentComment = comments.get(counter);
                 currentComment.add(line.trim().replaceFirst("#", ""));
-                continue;
-            }
-            if (!comments.isEmpty()) {
+            } else if (!comments.isEmpty()) {
                 indentation = this.countSpaces(line);
                 for (List<String> comment : comments)
                     newText.append(compileCommentMapping(comment, commentNameCounter++, indentation));
                 newText.append(line).append("\n");
                 comments.clear();
                 counter = 0;
-                continue;
+            } else {
+                newText.append(line).append("\n");
             }
-            newText.append(line).append("\n");
         }
         return newText.toString();
     }
@@ -95,39 +88,45 @@ public class StargateYamlConfiguration extends YamlConfiguration {
         return commentYamlMapping.toString();
     }
 
-    public String convertYAMLMappingsToComments(String yamlString) {
+    /**
+     * Converts the internal YAML mapping format to a readable config file
+     *
+     * @param yamlString <p>A string using the YAML format</p>
+     * @return <p>The corresponding comment string</p>
+     */
+    private String convertYAMLMappingsToComments(String yamlString) {
         StringBuilder finalText = new StringBuilder();
-        boolean isSkippingComment = false;
+        boolean isInComment = false;
+        int currentIndentation = 0;
         for (String line : yamlString.split("\n")) {
-            if (isSkippingComment) {
-                if (line.contains(END_OF_COMMENT)) {
-                    isSkippingComment = false;
-                }
+            //Skip the line signifying the end of a comment
+            if (isInComment && line.contains(END_OF_COMMENT)) {
+                isInComment = false;
                 continue;
             }
-            // TODO: Create a custom method with Java 11's String.strip() if necessary
             String possibleComment = line.trim();
+            //Output the empty line as-is
+            if (line.isEmpty() && !isInComment) {
+                finalText.append("\n");
+                continue;
+            }
+            //Skip the comment start line, and start comment parsing
             if (possibleComment.startsWith(START_OF_COMMENT)) {
-                int indentation = countSpaces(line);
-                String lastKeyName = possibleComment.split(":")[0];
-                String key = "";
-                for (String possibleKey : getKeys(true)) {
-                    if (possibleKey.contains(lastKeyName)) {
-                        key = possibleKey;
-                    }
+                isInComment = true;
+                continue;
+            }
+
+            //Write the comment line or config value
+            if (isInComment) {
+                //Use the indentation of the previous comment line when indenting an empty comment line
+                int indentation;
+                if (possibleComment.isEmpty()) {
+                    indentation = currentIndentation;
+                } else {
+                    indentation = countSpaces(line) - 2;
+                    currentIndentation = indentation;
                 }
-                String comment = getString(key);
-                if (comment == null) {
-                    continue;
-                }
-                String[] commentLines = comment.split("\n");
-                //Go through every line, except the last one, which is just going to be an END_OF_COMMENT identifier
-                StringBuilder lineBuilder = new StringBuilder();
-                for (int i = 0; i < commentLines.length - 1; i++) {
-                    lineBuilder.append("\n").append(addIndentation(indentation)).append("# ").append(commentLines[i]);
-                }
-                line = lineBuilder.toString();
-                isSkippingComment = true;
+                line = addIndentation(indentation) + "# " + possibleComment;
             }
             finalText.append(line).append("\n");
         }
