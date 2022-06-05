@@ -22,7 +22,7 @@ import net.TheDgtl.Stargate.network.portal.formatting.LineColorFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.LineFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.NoLineColorFormatter;
 import net.TheDgtl.Stargate.property.BypassPermission;
-import net.TheDgtl.Stargate.property.VersionImplemented;
+import net.TheDgtl.Stargate.property.NonLegacyMethod;
 import net.TheDgtl.Stargate.util.NameHelper;
 import net.TheDgtl.Stargate.util.portal.PortalHelper;
 import org.bukkit.Bukkit;
@@ -336,7 +336,7 @@ public abstract class AbstractPortal implements RealPortal {
                 continue;
             }
             Sign sign = (Sign) location.getBlock().getState();
-            if (VersionImplemented.CHAT_COLOR.getIsImplemented()) {
+            if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
                 if (color == null) {
                     color = sign.getColor();
                 }
