@@ -10,6 +10,7 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
+import org.bukkit.Bukkit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,8 @@ class NetworkCreationHelperTest {
 
         parseNetworkNameTest = new HashMap<>();
         parseNetworkNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(player.getName()), player.getUniqueId().toString());
-        parseNetworkNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(invalidPlayerName), null);
+        parseNetworkNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(invalidPlayerName), 
+                Bukkit.getOfflinePlayer(invalidPlayerName).getUniqueId().toString());
         parseNetworkNameTest.put(HighlightingStyle.BUNGEE.getHighlightedName(name), name);
         parseNetworkNameTest.put(HighlightingStyle.DESTINATION.getHighlightedName(name), name);
         parseNetworkNameTest.put(HighlightingStyle.NETWORK.getHighlightedName(name), name);
