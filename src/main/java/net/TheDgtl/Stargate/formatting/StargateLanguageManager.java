@@ -288,10 +288,9 @@ public class StargateLanguageManager implements LanguageManager {
     /**
      * Adds the missing translations into the external language file
      * 
-     * @param language
-     *                 <p>
-     *                 The language to update
-     *                 </p>
+     * @param languageFile <p> The file to add missing translations to</p>
+     * @param translatedStrings <p> The strings that already has been translated</p>
+     * @param internalTranslatedValues <p> The translated strings from internal file </p>
      */
     private void addMissingInternalTranslations(File languageFile, Map<TranslatableMessage, String> translatedStrings,
             Map<TranslatableMessage, String> internalTranslatedValues) {
@@ -307,7 +306,9 @@ public class StargateLanguageManager implements LanguageManager {
                 textToAppend = textToAppend + "\n"
                         + String.format("%s=%s", key.getMessageKey(), internalTranslatedValues.get(key));
             }
-            Files.write(Paths.get(languageFile.getPath()), textToAppend.getBytes(), StandardOpenOption.APPEND);
+            if (!textToAppend.isEmpty()) {
+                Files.write(Paths.get(languageFile.getPath()), textToAppend.getBytes(), StandardOpenOption.APPEND);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

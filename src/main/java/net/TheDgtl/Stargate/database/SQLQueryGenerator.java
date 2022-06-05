@@ -184,7 +184,7 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateCreatePortalPositionIndex(Connection connection) throws SQLException {
         String statementMessage =
-                "CREATE INDEX IF NOT EXISTS PortalPositionIndex ON {PortalPosition} (portalName, networkName);";
+                "CREATE INDEX IF NOT EXISTS {PortalPositionIndex} ON {PortalPosition} (portalName, networkName);";
         statementMessage = replaceKnownTableNames(statementMessage);
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return connection.prepareStatement(statementMessage);
@@ -546,6 +546,8 @@ public class SQLQueryGenerator {
         prefixedTableNames.put("PositionType", tableNameConfiguration.getPositionTypeTableName());
         prefixedTableNames.put("PortalPosition", tableNameConfiguration.getPortalPositionTableName());
         prefixedTableNames.put("InterPortalPosition", tableNameConfiguration.getInterPortalPositionTableName());
+        prefixedTableNames.put("PortalPositionIndex", tableNameConfiguration.getPortalPositionIndexTableName());
+        prefixedTableNames.put("InterPortalPositionIndex", tableNameConfiguration.getInterPortalPositionIndexTableName());
         return prefixedTableNames;
     }
 

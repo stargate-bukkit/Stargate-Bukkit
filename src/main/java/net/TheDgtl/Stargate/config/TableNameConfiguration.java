@@ -21,6 +21,8 @@ public class TableNameConfiguration {
     private String positionTypeTableName = "PortalPositionType";
     private String portalPositionTableName = "PortalPosition";
     private String interPortalPositionTableName = "InterPortalPosition";
+    private String portalPositionIndexTableName = "portalPositionIndex";
+    private String interPortalPositionIndexTableName = "interPortalPositinoIndex";
 
     /**
      * Instantiates a new table config
@@ -53,11 +55,12 @@ public class TableNameConfiguration {
      * @param interPortalPositionTableName <p>The name of the table storing inter-server portal positions</p>
      */
     @SuppressWarnings("unused")
-    public TableNameConfiguration(String mainPrefix, String serverPrefix, String portalTableName, String interPortalTableName,
-                                  String flagTableName, String flagRelationTableName, String interFlagRelationTableName,
-                                  String portalViewName, String interPortalViewName, String lastKnownNameTableName,
-                                  String serverInfoTableName, String positionTypeTableName,
-                                  String portalPositionTableName, String interPortalPositionTableName) {
+    public TableNameConfiguration(String mainPrefix, String serverPrefix, String portalTableName,
+            String interPortalTableName, String flagTableName, String flagRelationTableName,
+            String interFlagRelationTableName, String portalViewName, String interPortalViewName,
+            String lastKnownNameTableName, String serverInfoTableName, String positionTypeTableName,
+            String portalPositionTableName, String interPortalPositionTableName, String portalPositionIndexTableName,
+            String interPortalPositionIndexTableName) {
         this.mainPrefix = mainPrefix;
         this.serverPrefix = serverPrefix;
         this.portalTableName = portalTableName;
@@ -72,6 +75,8 @@ public class TableNameConfiguration {
         this.positionTypeTableName = positionTypeTableName;
         this.portalPositionTableName = portalPositionTableName;
         this.interPortalPositionTableName = interPortalPositionTableName;
+        this.portalPositionIndexTableName = portalPositionIndexTableName;
+        this.interPortalPositionIndexTableName = interPortalPositionIndexTableName;
     }
 
     /**
@@ -180,6 +185,14 @@ public class TableNameConfiguration {
      */
     public String getInterPortalPositionTableName() {
         return mainPrefix + interPortalPositionTableName;
+    }
+
+    public String getPortalPositionIndexTableName() {
+        return mainPrefix + serverPrefix + portalPositionIndexTableName;
+    }
+
+    public String getInterPortalPositionIndexTableName() {
+        return mainPrefix + interPortalPositionIndexTableName;
     }
 
 }
