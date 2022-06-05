@@ -35,6 +35,7 @@ public class DataMigrator {
      */
     public DataMigrator(File configurationFile, StargateLogger logger, Server server,
                         StargateRegistry registry) throws IOException, InvalidConfigurationException {
+        //WARNING: Migrators must be defined from oldest to newest to prevent partial migration
         MIGRATIONS = new DataMigration[]{
                 new DataMigration_1_0_0(server, registry, logger)
         };
@@ -55,7 +56,7 @@ public class DataMigrator {
      */
     public boolean isMigrationNecessary() {
         for (DataMigration migration : MIGRATIONS) {
-            if (migration.getConfigVersion() >= configVersion) {
+            if (isMigrationNecessary(migration)) {
                 return true;
             }
         }
@@ -71,7 +72,7 @@ public class DataMigrator {
      */
     public Map<String, Object> getUpdatedConfig() {
         for (DataMigration migration : MIGRATIONS) {
-            if (migration.getConfigVersion() >= configVersion) {
+            if (isMigrationNecessary(migration)) {
                 configModifications = migration.getUpdatedConfigValues(configModifications);
             }
         }
@@ -83,10 +84,9 @@ public class DataMigrator {
      */
     public void run() {
         for (DataMigration migration : MIGRATIONS) {
-            int migrationConfigVersion = migration.getConfigVersion();
-            if (migrationConfigVersion >= configVersion) {
+            if (isMigrationNecessary(migration)) {
                 migration.run();
-                configVersion = migrationConfigVersion;
+                configVersion = migration.getConfigVersion();
             }
         }
     }
@@ -107,6 +107,16 @@ public class DataMigrator {
         }
         config.set("configVersion", Stargate.CURRENT_CONFIG_VERSION);
         config.save(configFile);
+    }
+
+    /**
+     * Gets whether a migration is necessary for the given data migration
+     *
+     * @param dataMigration <p>The data migration to check</p>
+     * @return <p>True if a migration is necessary</p>
+     */
+    private boolean isMigrationNecessary(DataMigration dataMigration) {
+        return dataMigration.getConfigVersion() > configVersion;
     }
 
 }
