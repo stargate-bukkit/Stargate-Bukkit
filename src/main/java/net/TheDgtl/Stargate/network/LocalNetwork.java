@@ -125,10 +125,10 @@ public class LocalNetwork implements Network {
             Set<String> removeList = new HashSet<>();
             for (String portalName : tempPortalList) {
                 Portal target = getPortal(portalName);
-                if (target.hasFlag(PortalFlag.HIDDEN) && playerCanSeeHiddenPortal(target, player)) {
+                if (target.hasFlag(PortalFlag.HIDDEN) && !playerCanSeeHiddenPortal(target, player)) {
                     removeList.add(portalName);
                 }
-                if (target.hasFlag(PortalFlag.PRIVATE) && playerCanSeePrivatePortal(target, player)) {
+                if (target.hasFlag(PortalFlag.PRIVATE) && !playerCanSeePrivatePortal(target, player)) {
                     removeList.add(portalName);
                 }
             }
@@ -138,15 +138,13 @@ public class LocalNetwork implements Network {
     }
 
     private boolean playerCanSeeHiddenPortal(Portal portalToSee, Player player) {
-        return player != null && ((!player.hasPermission(BypassPermission.HIDDEN.getPermissionString())
-                && portalToSee.getOwnerUUID().equals(player.getUniqueId()))
+        return player != null && (player.hasPermission(BypassPermission.HIDDEN.getPermissionString())
                 || portalToSee.getOwnerUUID().equals(player.getUniqueId()));
     }
 
     private boolean playerCanSeePrivatePortal(Portal portalToSee, Player player) {
-        return player != null &&
-                !player.hasPermission(BypassPermission.PRIVATE.getPermissionString()) &&
-                !player.getUniqueId().equals(portalToSee.getOwnerUUID());
+        return player != null && (player.hasPermission(BypassPermission.PRIVATE.getPermissionString())
+                || player.getUniqueId().equals(portalToSee.getOwnerUUID()));
     }
 
     @Override
