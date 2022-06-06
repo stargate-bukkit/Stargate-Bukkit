@@ -123,6 +123,7 @@ public class NetworkedPortal extends AbstractPortal {
         Portal destination = getDestination();
         if (super.isActive && (destination == null || network.getPortal(destination.getName()) == null)) {
             this.deactivate();
+            super.isActive = false; // in case of alwaysOn portal
             this.close(true);
         }
 
@@ -145,15 +146,7 @@ public class NetworkedPortal extends AbstractPortal {
         if (destinations.contains(destination)) {
             return destinations.indexOf(destination);
         }
-
-        int possibleDestination = getNextDestination(0, this.selectedDestination);
-        if (possibleDestination == NO_DESTINATION_SELECTED) {
-            this.deactivate();
-            if (isOpen()) {
-                this.close(true);
-            }
-        }
-        return possibleDestination;
+        return NO_DESTINATION_SELECTED;
     }
 
 

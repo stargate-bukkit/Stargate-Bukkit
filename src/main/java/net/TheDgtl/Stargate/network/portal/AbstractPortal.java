@@ -440,7 +440,7 @@ public abstract class AbstractPortal implements RealPortal {
                 this.colorDrawer
                         .formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.GATE_OWNED_BY)),
                 this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName()),
-                this.colorDrawer.formatLine(getAllFlagsString())};
+                this.colorDrawer.formatLine(getAllFlagsString().replaceAll("[0-9]", ""))};
         gate.drawControlMechanisms(signText, false);
         activate(event.getPlayer());
     }
@@ -497,7 +497,9 @@ public abstract class AbstractPortal implements RealPortal {
         Bukkit.getPluginManager().callEvent(event);
 
         this.activator = null;
-        this.isActive = false;
+        if(!this.hasFlag(PortalFlag.ALWAYS_ON)) {
+            this.isActive = false;
+        }
         drawControlMechanisms();
     }
 }
