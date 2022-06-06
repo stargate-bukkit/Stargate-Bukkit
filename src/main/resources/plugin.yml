@@ -51,6 +51,13 @@ permissions:
                     description: Bypass the cost associated with creating a portal.
                   sg.admin.bypass.cost.use:
                     description: Bypass the cost associated with using a portal.
+      
+      sg.owned:
+        default: true
+        description: Can use and destroy portal if it is owned.
+        children:
+          sg.use.owned: true
+          sg.destroy.owned: true
 
       sg.use:
         default: true
