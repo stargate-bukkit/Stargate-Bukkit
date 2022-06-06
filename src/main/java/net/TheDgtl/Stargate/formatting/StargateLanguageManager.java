@@ -5,8 +5,10 @@ import net.TheDgtl.Stargate.util.FileHelper;
 import org.bukkit.ChatColor;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -297,7 +299,7 @@ public class StargateLanguageManager implements LanguageManager {
     private void addMissingInternalTranslations(File languageFile, Map<TranslatableMessage, String> translatedStrings,
                                                 Map<TranslatableMessage, String> internalTranslatedValues) {
         try {
-            StringBuilder textToAppend = new StringBuilder();
+            BufferedWriter writer = FileHelper.getBufferedWriter(languageFile,true);
             for (TranslatableMessage key : internalTranslatedValues.keySet()) {
                 if (translatedStrings.containsKey(key)) {
                     continue;
@@ -305,11 +307,10 @@ public class StargateLanguageManager implements LanguageManager {
                 translatedStrings.put(key, internalTranslatedValues.get(key));
                 Stargate.log(Level.FINE, String.format("\n Adding a line of translations of key %s to languagefile '%s'",
                         key.toString(), languageFile));
-                textToAppend.append("\n").append(String.format("%s=%s", key.getMessageKey(), internalTranslatedValues.get(key)));
+                writer.newLine();
+                writer.write(String.format("%s=%s", key.getMessageKey(), internalTranslatedValues.get(key)));
             }
-            if (textToAppend.length() > 0) {
-                Files.write(Paths.get(languageFile.getPath()), textToAppend.toString().getBytes(), StandardOpenOption.APPEND);
-            }
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

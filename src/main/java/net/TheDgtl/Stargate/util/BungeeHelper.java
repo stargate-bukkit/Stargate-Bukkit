@@ -50,7 +50,7 @@ public final class BungeeHelper {
                 if (!file.createNewFile()) {
                     throw new FileNotFoundException("serverUUID.txt was not found and could not be created");
                 }
-                BufferedWriter writer = FileHelper.getBufferedWriter(file);
+                BufferedWriter writer = FileHelper.getBufferedWriter(file,false);
                 writer.write(UUID.randomUUID().toString());
                 writer.close();
             } catch (IOException e1) {

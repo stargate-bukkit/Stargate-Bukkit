@@ -43,8 +43,8 @@ public final class FileHelper {
      * @return <p>A buffered writer for writing to the given file</p>
      * @throws FileNotFoundException <p>If the given file does not exist</p>
      */
-    public static BufferedWriter getBufferedWriter(File file) throws FileNotFoundException {
-        FileOutputStream outputStream = new FileOutputStream(file);
+    public static BufferedWriter getBufferedWriter(File file, boolean appendToFile) throws FileNotFoundException {
+        FileOutputStream outputStream = new FileOutputStream(file, appendToFile);
         OutputStreamWriter outputStreamReader = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         return new BufferedWriter(outputStreamReader);
     }
