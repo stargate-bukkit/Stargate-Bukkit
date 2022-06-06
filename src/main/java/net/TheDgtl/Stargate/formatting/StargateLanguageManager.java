@@ -275,9 +275,12 @@ public class StargateLanguageManager implements LanguageManager {
             Stargate.log(Level.INFO, "Could not load a internal language backup for your specified language");
             return;
         }
-        for (TranslatableMessage key : TranslatableMessage.values()) {
-            internalTranslatedValues.put(key, internalInputMap.get(key.getMessageKey()));
-        }
+        for(String key : internalInputMap.keySet()){
+            TranslatableMessage translatableMessageKey = TranslatableMessage.parse(key);
+            if(translatableMessageKey != null) {
+                internalTranslatedValues.put(translatableMessageKey, internalInputMap.get(key));
+            }
+         }
         if (translatedStrings.size() >= internalTranslatedValues.size()) {
             return;
         }
