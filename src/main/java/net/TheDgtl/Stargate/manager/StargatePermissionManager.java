@@ -42,6 +42,9 @@ public class StargatePermissionManager implements PermissionManager {
     private static final String NETWORK_CREATE_PERMISSION = CREATE_PERMISSION + ".network";
     private static final String FLAG_PERMISSION = CREATE_PERMISSION + ".type.";
 
+
+    private static final String DESTROY_OWNED = "sg.destroy.owned";
+    private static final String USE_OWNED = "sg.use.owned";
     /**
      * Instantiates a new permission manager
      *
@@ -155,7 +158,7 @@ public class StargatePermissionManager implements PermissionManager {
     @Override
     public boolean hasAccessPermission(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking access permissions");
-        if (portal.getOwnerUUID().equals(target.getUniqueId())) {
+        if (portal.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, USE_OWNED)) {
             Stargate.log(Level.CONFIG, "The player owns the portal, therefore has permission");
             return true;
         }
@@ -177,7 +180,7 @@ public class StargatePermissionManager implements PermissionManager {
     @Override
     public boolean hasDestroyPermissions(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking destroy permissions");
-        if (portal.getOwnerUUID().equals(target.getUniqueId())) {
+        if (portal.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, DESTROY_OWNED)) {
             Stargate.log(Level.CONFIG, "The player owns the portal, therefore has permission");
             return true;
         }
@@ -188,7 +191,7 @@ public class StargatePermissionManager implements PermissionManager {
     @Override
     public boolean hasOpenPermissions(RealPortal entrance, Portal exit) {
         Stargate.log(Level.CONFIG, "Checking open permissions");
-        if (entrance.getOwnerUUID().equals(target.getUniqueId())) {
+        if (entrance.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, USE_OWNED)) {
             Stargate.log(Level.CONFIG, "The player owns the portal, therefore has permission");
             return true;
         }
