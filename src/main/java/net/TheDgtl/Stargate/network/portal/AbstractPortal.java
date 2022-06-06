@@ -44,6 +44,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 /**
@@ -359,10 +360,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void destroy() {
-        close(true);
         this.network.removePortal(this, true);
-        String[] lines = new String[]{name, "", "", ""};
-        getGate().drawControlMechanisms(lines, false);
 
         for (GateStructureType formatType : GateStructureType.values()) {
             for (BlockLocation loc : this.getGate().getLocations(formatType)) {
@@ -370,7 +368,14 @@ public abstract class AbstractPortal implements RealPortal {
                 Stargate.getRegistryStatic().unRegisterLocation(formatType, loc);
             }
         }
-        network.updatePortals();
+        
+        Supplier<Boolean> destroyAction = () -> {
+            String[] lines = new String[]{name, "", "", ""};
+            getGate().drawControlMechanisms(lines, false);
+            network.updatePortals();
+            return true;
+        };
+        Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
     }
 
     @Override

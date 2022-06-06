@@ -125,7 +125,6 @@ public class Gate implements GateAPI {
             if (portalPosition.getPositionType() != PositionType.SIGN) {
                 continue;
             }
-
             Location signLocation = getLocation(portalPosition.getPositionLocation());
             BlockState signState = signLocation.getBlock().getState();
             if (!(signState instanceof Sign)) {

@@ -59,13 +59,12 @@ public class BlockEventListener implements Listener {
         Location location = event.getBlock().getLocation();
         RealPortal portal = Stargate.getRegistryStatic().getPortal(location, GateStructureType.FRAME);
         if (portal != null) {
-            Supplier<Boolean> destroyAction = () -> {
+            Runnable destroyAction = () -> {
                 String msg = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.DESTROY);
                 event.getPlayer().sendMessage(msg);
 
                 portal.destroy();
                 Stargate.log(Level.FINE, "Broke portal " + portal.getName());
-                return true;
             };
 
             boolean shouldCancel = PortalDestructionHelper.destroyPortalIfHasPermissionAndCanPay(event.getPlayer(), portal, destroyAction);
@@ -208,12 +207,8 @@ public class BlockEventListener implements Listener {
         }
 
         for (Portal portal : explodedPortals) {
-            Supplier<Boolean> destroyAction = () -> {
-                portal.destroy();
-                Stargate.log(Level.FINEST, "Broke the portal from explosion");
-                return true;
-            };
-            Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
+            portal.destroy();
+            Stargate.log(Level.FINEST, "Broke the portal from explosion");
         }
     }
 

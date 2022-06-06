@@ -33,8 +33,7 @@ public final class PortalDestructionHelper {
      * @param destroyAction <p>The action to run if the destruction is performed</p>
      * @return <p>True if the destruction has been cancelled</p>
      */
-    public static boolean destroyPortalIfHasPermissionAndCanPay(Player player, Portal portal,
-                                                                Supplier<Boolean> destroyAction) {
+    public static boolean destroyPortalIfHasPermissionAndCanPay(Player player, Portal portal, Runnable destroyAction) {
         int cost = ConfigurationHelper.getInteger(ConfigurationOption.DESTROY_COST);
         StargatePermissionManager permissionManager = new StargatePermissionManager(player);
 
@@ -43,10 +42,11 @@ public final class PortalDestructionHelper {
                 permissionManager.getDenyMessage(), cost);
         Bukkit.getPluginManager().callEvent(stargateDestroyEvent);
 
-        //Inform the player why the destruction was denied
+        // Inform the player why the destruction was denied
         if (stargateDestroyEvent.getDeny()) {
             if (stargateDestroyEvent.getDenyReason() == null) {
-                player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
+                player.sendMessage(
+                        Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
             } else if (!stargateDestroyEvent.getDenyReason().isEmpty()) {
                 player.sendMessage(stargateDestroyEvent.getDenyReason());
             }
@@ -60,11 +60,10 @@ public final class PortalDestructionHelper {
          */
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_DESTROY)
                 && !Stargate.economyManager.chargeAndTax(player, stargateDestroyEvent.getCost())) {
-            player
-                    .sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS));
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return true;
         }
-        Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
+        destroyAction.run();
         return false;
     }
 
