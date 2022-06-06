@@ -204,7 +204,14 @@ public enum ConfigurationOption {
     /**
      * TODO: Unimplemented
      */
-    DEFAULT_TERMINAL_NAME("defaultTerminalNetwork", null, null, null, true);
+    DEFAULT_TERMINAL_NAME("defaultTerminalNetwork", null, null, null, true), 
+
+    /**
+     * Allows users to use/break any gates they create, regardless of any permissions that may prevent them from doing so
+     */
+    ENABLE_OWNED_GATES("enableOwnedGates",
+            "Allows users to use/break any gates they create, regardless of any permissions that may prevent them from doing so",
+            true, OptionDataType.BOOLEAN, true);
 
     private final String configNode;
     private final String description;

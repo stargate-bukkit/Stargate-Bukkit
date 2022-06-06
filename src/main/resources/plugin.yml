@@ -51,13 +51,6 @@ permissions:
                     description: Bypass the cost associated with creating a portal.
                   sg.admin.bypass.cost.use:
                     description: Bypass the cost associated with using a portal.
-      
-      sg.owned:
-        default: true
-        description: Can use and destroy portal if it is owned.
-        children:
-          sg.use.owned: true
-          sg.destroy.owned: true
 
       sg.use:
         default: true
@@ -115,8 +108,15 @@ permissions:
                 description: Can use gates without a specified destination (networked gates).
           sg.use.design:
             description: Can use any portal, regardless of its portal's design (gatefile).
+            children:
+              #sg.destroy.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be destroyed.
+              sg.use.design.nether: true
+              sg.use.design.water: true
+              sg.use.design.wool: true
+              sg.use.design.end: true
           #sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be used.
           sg.use.owned:
+            default: true
             description: Can use any owned portal.
 
       sg.create:
@@ -185,9 +185,10 @@ permissions:
             description: Can create any portal, regardless of the design (gatefile)
             children:
               #sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be created.
-              sg.create.design.nether.gate: true
-              sg.create.design.water.gate: true
-              sg.create.design.wool.gate: true
+              sg.create.design.nether: true
+              sg.create.design.water: true
+              sg.create.design.wool: true
+              sg.create.design.end: true
 
 
       sg.destroy:
@@ -244,10 +245,12 @@ permissions:
             description: Can destroy portals, regardless of design (gatefile).
             children:
               #sg.destroy.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be destroyed.
-              sg.create.design.nether.gate: true
-              sg.create.design.water.gate: true
-              sg.create.design.wool.gate: true
-          sg.use.owned:
+              sg.destroy.design.nether: true
+              sg.destroy.design.water: true
+              sg.destroy.design.wool: true
+              sg.destroy.design.end: true
+          sg.destroy.owned:
+            default: true
             description: Can destroy any owned portal.
 
       sg.preset:
@@ -269,6 +272,8 @@ permissions:
               sg.destroy.type.p: true
               sg.create.design: true
               sg.destroy.design: true
+              sg.use.owned: true
+              sg.destroy.owned: true
           #NOT IMPL.    sg.create.type.o: true
           #NOT IMPL.    sg.destroy.type.o: true
           #NOT IMPL.sg.preset.terminaluser:
@@ -286,7 +291,6 @@ permissions:
             children:
               sg.preset.gatemaker: true
               sg.create.network.custom: true
-              sg.destroy.network.custom: true
               sg.create.network.default: true
               sg.create.type.a: true
               sg.create.type.b: true

@@ -158,7 +158,7 @@ public class StargatePermissionManager implements PermissionManager {
     @Override
     public boolean hasAccessPermission(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking access permissions");
-        if (portal.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, USE_OWNED)) {
+        if (portal.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, USE_OWNED) && ConfigurationHelper.getBoolean(ConfigurationOption.ENABLE_OWNED_GATES)) {
             Stargate.log(Level.CONFIG, "The player owns the portal, therefore has permission");
             return true;
         }
@@ -180,7 +180,7 @@ public class StargatePermissionManager implements PermissionManager {
     @Override
     public boolean hasDestroyPermissions(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking destroy permissions");
-        if (portal.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, DESTROY_OWNED)) {
+        if (portal.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, DESTROY_OWNED) && ConfigurationHelper.getBoolean(ConfigurationOption.ENABLE_OWNED_GATES)) {
             Stargate.log(Level.CONFIG, "The player owns the portal, therefore has permission");
             return true;
         }
@@ -191,7 +191,7 @@ public class StargatePermissionManager implements PermissionManager {
     @Override
     public boolean hasOpenPermissions(RealPortal entrance, Portal exit) {
         Stargate.log(Level.CONFIG, "Checking open permissions");
-        if (entrance.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, USE_OWNED)) {
+        if (entrance.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, USE_OWNED) && ConfigurationHelper.getBoolean(ConfigurationOption.ENABLE_OWNED_GATES)) {
             Stargate.log(Level.CONFIG, "The player owns the portal, therefore has permission");
             return true;
         }
@@ -317,7 +317,7 @@ public class StargatePermissionManager implements PermissionManager {
                 }
                 break;
             case BUNGEE:
-                hasPermission = target.hasPermission(NETWORK_CREATE_PERMISSION + ".type." + PortalFlag.FANCY_INTER_SERVER);
+                hasPermission = hasPermission(target, NETWORK_CREATE_PERMISSION + ".type." + PortalFlag.FANCY_INTER_SERVER);
                 break;
             default:
                 if (networkName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
@@ -326,7 +326,7 @@ public class StargatePermissionManager implements PermissionManager {
                     //It's not possible to create a non-bungee portal on this network
                     hasPermission = false;
                 } else {
-                    hasPermission = target.hasPermission(PortalPermissionHelper.generateCustomNetworkPermission(CREATE_PERMISSION, networkName));
+                    hasPermission = hasPermission(target, PortalPermissionHelper.generateCustomNetworkPermission(CREATE_PERMISSION, networkName));
                 }
                 break;
         }

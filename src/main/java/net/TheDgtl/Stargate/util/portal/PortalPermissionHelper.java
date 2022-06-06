@@ -229,7 +229,7 @@ public final class PortalPermissionHelper {
      */
     private static String generateDesignPermission(RealPortal portal, String permissionRootNode) {
         String designFileName = portal.getGate().getFormat().getFileName();
-        return permissionRootNode + ".design." + designFileName.subSequence(0, designFileName.length() - 5);
+        return permissionRootNode + ".design." + designFileName.subSequence(0, designFileName.length() - 5); // remove .gate thing
     }
 
     /**
