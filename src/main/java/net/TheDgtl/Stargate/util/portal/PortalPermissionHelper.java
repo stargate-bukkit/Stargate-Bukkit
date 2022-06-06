@@ -6,6 +6,8 @@ import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
+import net.TheDgtl.Stargate.property.BypassPermission;
+
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -38,7 +40,7 @@ public final class PortalPermissionHelper {
         String identifier = "sg.use";
         List<String> permissionList = generateDefaultPortalPermissionList(portal, identifier);
         if (portal.hasFlag(PortalFlag.PRIVATE) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
-            permissionList.add("sg.admin.bypass.private");
+            permissionList.add(BypassPermission.PRIVATE.getPermissionString());
         }
         if (portal.hasFlag(PortalFlag.FIXED)) {
             permissionList.add(identifier + ".type.fixed");
@@ -63,7 +65,7 @@ public final class PortalPermissionHelper {
         String identifier = "sg.create";
         List<String> permList = generateDefaultPortalPermissionList(portal, identifier);
         if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
-            permList.add("sg.admin.bypass.private");
+            permList.add(BypassPermission.PRIVATE.getPermissionString());
         }
         return permList;
     }
@@ -82,7 +84,7 @@ public final class PortalPermissionHelper {
         String identifier = "sg.destroy";
         List<String> permList = generateDefaultPortalPermissionList(portal, identifier);
         if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
-            permList.add("sg.admin.bypass.private");
+            permList.add(BypassPermission.PRIVATE.getPermissionString());
         }
         return permList;
     }
@@ -133,7 +135,7 @@ public final class PortalPermissionHelper {
             }
             if (entrance.hasFlag(PortalFlag.PRIVATE) && !entrance.getOwnerUUID().equals(target.getUniqueId())) {
                 Stargate.log(Level.FINER, " Adding a bypass constraint for private portals");
-                permList.add("sg.admin.bypass.private");
+                permList.add(BypassPermission.PRIVATE.getPermissionString());
             }
         }
 

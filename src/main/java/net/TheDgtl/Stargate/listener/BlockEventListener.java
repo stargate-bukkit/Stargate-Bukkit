@@ -122,10 +122,6 @@ public class BlockEventListener implements Listener {
             flags.add(PortalFlag.NETWORKED);
         }
 
-        if (flags.contains(PortalFlag.PRIVATE)) {
-            flags.add(PortalFlag.PERSONAL_NETWORK);
-        }
-
         Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
 
         if (disallowedFlags.size() > 0) {
