@@ -275,9 +275,11 @@ public class Teleporter {
                 }
             }, 1);
         } else {
-            charge(target);
-            teleport(target, exit);
-            target.setVelocity(targetVelocity);
+            if (charge(target)) {
+                teleport(target, exit);
+                target.setVelocity(targetVelocity);
+            }
+            //TODO: Inform the user that the payment couldn't be processed or something
         }
     }
 
@@ -306,11 +308,7 @@ public class Teleporter {
             return true;
         }
         Player player = (Player) target;
-        if (origin.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
-            return Stargate.economyManager.chargePlayer(player, origin, cost);
-        } else {
-            return Stargate.economyManager.chargeAndTax(player, cost);
-        }
+        return Stargate.economyManager.chargePlayer(player, origin, cost);
     }
 
     /**

@@ -326,7 +326,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
             BungeeHelper.getServerId(DATA_FOLDER, INTERNAL_FOLDER);
         }
-        economyManager = new EconomyManager();
         String debugLevelString = ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL);
         if (debugLevelString == null) {
             lowestMessageLevel = Level.INFO;
@@ -334,6 +333,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             lowestMessageLevel = Level.parse(debugLevelString);
         }
         languageManager.setLanguage(ConfigurationHelper.getString(ConfigurationOption.LANGUAGE));
+        economyManager = new EconomyManager(languageManager);
 
         try {
             storageAPI = new PortalDatabaseAPI(this);

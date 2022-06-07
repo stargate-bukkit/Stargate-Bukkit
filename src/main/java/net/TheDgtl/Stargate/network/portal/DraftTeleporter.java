@@ -251,11 +251,7 @@ public class DraftTeleporter {
      * @return <p>True if all necessary transactions were successfully completed</p>
      */
     private boolean charge(Player target) {
-        if (origin.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
-            return Stargate.economyManager.chargePlayer(target, origin, cost);
-        } else {
-            return Stargate.economyManager.chargeAndTax(target, cost);
-        }
+        return Stargate.economyManager.chargePlayer(target, origin, cost);
     }
 
     /**
