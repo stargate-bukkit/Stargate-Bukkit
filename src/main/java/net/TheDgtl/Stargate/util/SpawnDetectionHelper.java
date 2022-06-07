@@ -3,8 +3,11 @@ package net.TheDgtl.Stargate.util;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
+import net.TheDgtl.Stargate.property.NonLegacyMethod;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -34,9 +37,9 @@ public final class SpawnDetectionHelper {
         int spawnRadius = Bukkit.getSpawnRadius();
 
         Location spawnMinLocation = new Location(spawnLocation.getWorld(), spawnLocation.getBlockX() - spawnRadius,
-                someLocation.getWorld().getMinHeight(), spawnLocation.getBlockZ() - spawnRadius);
+                getWorldMinHeight(someLocation.getWorld()), spawnLocation.getBlockZ() - spawnRadius);
         Location spawnMaxLocation = new Location(spawnLocation.getWorld(), spawnLocation.getBlockX() + spawnRadius,
-                someLocation.getWorld().getMaxHeight(), spawnLocation.getBlockZ() + spawnRadius);
+                getWorldMaxHeight(someLocation.getWorld()), spawnLocation.getBlockZ() + spawnRadius);
         GateFormat format = gate.getFormat();
         Location gateMinLocation = getStargateMinCorner(gate, format.getHeight(), format.getWidth(), 0);
         Location gateMaxLocation = getStargateMaxCorner(gate, format.getWidth(), 0);
@@ -56,6 +59,21 @@ public final class SpawnDetectionHelper {
         return false;
     }
 
+    
+    private static int getWorldMaxHeight(World world) {
+        if(NonLegacyMethod.GET_WORLD_MAX.isImplemented()) {
+            return world.getMaxHeight();
+        }
+        return 255;
+    }
+    
+    private static int getWorldMinHeight(World world) {
+        if(NonLegacyMethod.GET_WORLD_MIN.isImplemented()) {
+            return world.getMinHeight();
+        }
+        return 0;
+    }
+    
     /**
      * Checks if the given location is intersecting with the hit-box defined by the given location pair
      *

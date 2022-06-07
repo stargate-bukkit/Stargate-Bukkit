@@ -275,6 +275,7 @@ public class Teleporter {
                 }
             }, 1);
         } else {
+            charge(target);
             teleport(target, exit);
             target.setVelocity(targetVelocity);
         }
@@ -300,12 +301,15 @@ public class Teleporter {
      * @param target <p>The target player to charge</p>
      * @return <p>True if all necessary transactions were successfully completed</p>
      */
-    private boolean charge(Player target) {
-        //TODO: This is never called. What happened to economy?
+    private boolean charge(Entity target) {
+        if(!(target instanceof Player) || cost <= 0){
+            return true;
+        }
+        Player player = (Player) target;
         if (origin.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
-            return Stargate.economyManager.chargePlayer(target, origin, cost);
+            return Stargate.economyManager.chargePlayer(player, origin, cost);
         } else {
-            return Stargate.economyManager.chargeAndTax(target, cost);
+            return Stargate.economyManager.chargeAndTax(player, cost);
         }
     }
 
