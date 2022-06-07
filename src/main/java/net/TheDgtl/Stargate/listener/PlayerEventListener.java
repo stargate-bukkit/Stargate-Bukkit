@@ -146,24 +146,19 @@ public class PlayerEventListener implements Listener {
         Player player = event.getPlayer();
         Portal destination = BungeeHelper.pullFromQueue(player.getName());
 
-        if (destination == null) {
-            Stargate.log(Level.FINE, "Destination was null");
-            return;
+        if (destination != null) {
+            destination.teleportHere(player, null);
         }
-        destination.teleportHere(player, null);
         
         if(!ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
             return;
         }
-        
         
         //Gets the name of this server if it's still unknown
         if (!Stargate.knowsServerName) {
             Stargate.log(Level.FINEST, "First time player join");
             getBungeeServerName();
         }
-
-        
     }
 
     /**
