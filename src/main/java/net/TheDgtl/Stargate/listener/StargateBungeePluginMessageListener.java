@@ -157,8 +157,11 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             if (network == null) {
                 return;
             }
+            //If the destination is invalid, just let the player teleport to their last location
             Portal destinationPortal = network.getPortal(destination);
-            destinationPortal.teleportHere(player, null);
+            if (destinationPortal != null) {
+                destinationPortal.teleportHere(player, null);
+            }
         }
     }
 
