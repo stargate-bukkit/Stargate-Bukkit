@@ -53,7 +53,7 @@ public class InterServerNetwork extends LocalNetwork {
          * Save one local partition of every bungee gate on this server. Also save it to the inter-server database, so
          * that it can be seen on other servers
          */
-        Stargate.syncSecPopulator.addAction(new SupplierAction(() -> {
+        Stargate.addSynchronousSecAction(new SupplierAction(() -> {
             Stargate.getRegistryStatic().savePortal(portal, PortalType.INTER_SERVER);
             return true;
         }), true);
@@ -71,7 +71,7 @@ public class InterServerNetwork extends LocalNetwork {
     private void updateInterServerNetwork(Portal portal, StargateProtocolRequestType requestType) {
         Stargate stargate = Stargate.getPlugin(Stargate.class);
 
-        Stargate.syncSecPopulator.addAction(new ForcibleFunctionAction((forceEnd) -> {
+        Stargate.addSynchronousSecAction(new ForcibleFunctionAction((forceEnd) -> {
             if (stargate.getServer().getOnlinePlayers().size() > 0 || forceEnd) {
                 try {
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -83,7 +83,7 @@ public class InterServerNetwork extends LocalNetwork {
                     jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(requestType.toString()));
                     jsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getName()));
                     jsonData.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(portal.getName()));
-                    jsonData.add(StargateProtocolProperty.SERVER.toString(), new JsonPrimitive(Stargate.serverName));
+                    jsonData.add(StargateProtocolProperty.SERVER.toString(), new JsonPrimitive(Stargate.getServerName()));
                     jsonData.add(StargateProtocolProperty.PORTAL_FLAG.toString(), new JsonPrimitive(portal.getAllFlagsString()));
                     jsonData.add(StargateProtocolProperty.OWNER.toString(), new JsonPrimitive(portal.getOwnerUUID().toString()));
                     dataOutputStream.writeUTF(jsonData.toString());

@@ -15,7 +15,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -425,7 +424,7 @@ public class SQLQueryGenerator {
         statement.setBoolean(11, gate.getFlipZ());
 
         if (isInterServer) {
-            statement.setString(12, Stargate.serverUUID.toString());
+            statement.setString(12, Stargate.getServerUUID().toString());
             statement.setBoolean(13, true);
         }
 
@@ -487,12 +486,12 @@ public class SQLQueryGenerator {
      * @return <p>The prepared statement for updating the server info</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateUpdateServerInfoStatus(Connection connection, UUID serverUUID, String serverName) throws SQLException {
+    public PreparedStatement generateUpdateServerInfoStatus(Connection connection, String serverUUID, String serverName) throws SQLException {
         String statementString = "REPLACE INTO {ServerInfo} (serverId, serverName) VALUES(?, ?);";
         String statementMessage = replaceKnownTableNames(statementString);
         logger.logMessage(Level.FINEST, statementMessage);
         PreparedStatement statement = connection.prepareStatement(statementMessage);
-        statement.setString(1, serverUUID.toString());
+        statement.setString(1, serverUUID);
         statement.setString(2, serverName);
         return statement;
     }

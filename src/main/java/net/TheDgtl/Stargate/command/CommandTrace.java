@@ -60,7 +60,7 @@ public class CommandTrace implements CommandExecutor {
 
     private String getGates() {
         Set<String> approvedGateFiles = GateFormatHandler.getAllGateFormatNames();
-        File dir = new File(Stargate.getInstance().DATA_FOLDER, Stargate.getInstance().GATE_FOLDER);
+        File dir = new File(Stargate.getInstance().getAbsoluteDataFolder(), Stargate.getInstance().getGateFolder());
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".gate")) : new File[0];
         StringBuilder stringBuilder = new StringBuilder();
         if (files == null) {

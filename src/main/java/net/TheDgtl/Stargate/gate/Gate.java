@@ -136,7 +136,7 @@ public class Gate implements GateAPI {
             for (int i = 0; i < 4; i++) {
                 sign.setLine(i, signLines[i]);
             }
-            Stargate.syncTickPopulator.addAction(new BlockSetAction(sign, true));
+            Stargate.addSynchronousTickAction(new BlockSetAction(sign, true));
         }
     }
 

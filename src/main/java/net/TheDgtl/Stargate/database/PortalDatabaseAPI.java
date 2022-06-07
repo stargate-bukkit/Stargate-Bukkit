@@ -77,7 +77,7 @@ public class PortalDatabaseAPI implements StorageAPI {
         this.database = database;
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
         String PREFIX = usingRemoteDatabase ? ConfigurationHelper.getString(ConfigurationOption.BUNGEE_INSTANCE_NAME) : "";
-        String serverPrefix = usingRemoteDatabase ? Stargate.serverUUID.toString() : "";
+        String serverPrefix = usingRemoteDatabase ? Stargate.getServerUUID().toString() : "";
         TableNameConfiguration config = new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
         DriverEnum databaseEnum = usingRemoteDatabase ? DriverEnum.MYSQL : DriverEnum.SQLITE;
         this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
@@ -122,8 +122,8 @@ public class PortalDatabaseAPI implements StorageAPI {
     public void startInterServerConnection() {
         try {
             Connection conn = database.getConnection();
-            PreparedStatement statement = sqlQueryGenerator.generateUpdateServerInfoStatus(conn, Stargate.serverUUID,
-                    Stargate.serverName);
+            PreparedStatement statement = sqlQueryGenerator.generateUpdateServerInfoStatus(conn, Stargate.getServerUUID(),
+                    Stargate.getServerName());
             statement.execute();
             statement.close();
             conn.close();
@@ -258,7 +258,7 @@ public class PortalDatabaseAPI implements StorageAPI {
             }
         } else {
             String databaseName = ConfigurationHelper.getString(ConfigurationOption.DATABASE_NAME);
-            File file = new File(stargate.getDataFolder().getAbsoluteFile(), databaseName + ".db");
+            File file = new File(stargate.getAbsoluteDataFolder(), databaseName + ".db");
             return new SQLiteDatabase(file);
         }
     }
@@ -444,7 +444,7 @@ public class PortalDatabaseAPI implements StorageAPI {
             if (portalType == PortalType.INTER_SERVER) {
                 String serverUUID = resultSet.getString("homeServerId");
                 logger.logMessage(Level.FINEST, "serverUUID = " + serverUUID);
-                if (!serverUUID.equals(Stargate.serverUUID.toString())) {
+                if (!serverUUID.equals(Stargate.getServerUUID().toString())) {
                     String serverName = resultSet.getString("serverName");
                     Portal virtualPortal = new VirtualPortal(serverName, name, network, flags, ownerUUID);
                     try {

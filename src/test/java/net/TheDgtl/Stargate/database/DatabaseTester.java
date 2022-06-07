@@ -80,7 +80,7 @@ public class DatabaseTester {
 
         DatabaseTester.serverName = "aServerName";
         DatabaseTester.serverUUID = UUID.randomUUID();
-        Stargate.serverUUID = serverUUID;
+        Stargate.setServerUUID(serverUUID);
         StargateLogger logger = new FakeStargate();
         this.portalDatabaseAPI = new PortalDatabaseAPI(database, false, isMySQL, logger, nameConfig);
 
@@ -302,7 +302,7 @@ public class DatabaseTester {
      * @throws SQLException <p>If a database error occurs</p>
      */
     public void updateServerInfoTest() throws SQLException {
-        PreparedStatement statement = generator.generateUpdateServerInfoStatus(connection, serverUUID, serverName);
+        PreparedStatement statement = generator.generateUpdateServerInfoStatus(connection, serverUUID.toString(), serverName);
         finishStatement(statement);
     }
 

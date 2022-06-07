@@ -30,7 +30,7 @@ public class SynchronousPopulator implements Runnable {
         populatorQueue.addAll(addList);
         addList.clear();
 
-        if (Stargate.knowsServerName) {
+        if (Stargate.knowsServerName()) {
             bungeePopulatorQueue.addAll(bungeeAddList);
             bungeeAddList.clear();
         }
@@ -77,7 +77,7 @@ public class SynchronousPopulator implements Runnable {
      */
     private void cycleQueues(boolean forceAction) {
         cycleQueue(populatorQueue, forceAction);
-        if (!Stargate.knowsServerName) {
+        if (!Stargate.knowsServerName()) {
             return;
         }
         cycleQueue(bungeePopulatorQueue, forceAction);
