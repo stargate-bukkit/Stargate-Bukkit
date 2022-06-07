@@ -99,7 +99,7 @@ public abstract class AbstractPortal implements RealPortal {
         this.gate = gate;
         this.logger = logger;
 
-        if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH)) {
+        if (name.trim().isEmpty() || (name.length() >= Stargate.getMaxTextLength())) {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         }
 
@@ -161,7 +161,7 @@ public abstract class AbstractPortal implements RealPortal {
         long openTime = System.currentTimeMillis();
         this.openTime = openTime;
 
-        Stargate.syncSecPopulator.addAction(new DelayedAction(openDelay, () -> {
+        Stargate.addSynchronousSecAction(new DelayedAction(openDelay, () -> {
             close(openTime);
             return true;
         }));
@@ -347,7 +347,7 @@ public abstract class AbstractPortal implements RealPortal {
             }
         }
         // Has to be done one tick later to avoid a bukkit bug
-        Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
+        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
             this.drawControlMechanisms();
             return true;
         }));
@@ -376,7 +376,7 @@ public abstract class AbstractPortal implements RealPortal {
             network.updatePortals();
             return true;
         };
-        Stargate.syncTickPopulator.addAction(new SupplierAction(destroyAction));
+        Stargate.addSynchronousTickAction(new SupplierAction(destroyAction));
     }
 
     @Override
@@ -458,7 +458,7 @@ public abstract class AbstractPortal implements RealPortal {
         this.activatedTime = activationTime;
 
         //Schedule for deactivation
-        Stargate.syncSecPopulator.addAction(new DelayedAction(ACTIVE_DELAY, () -> {
+        Stargate.addSynchronousSecAction(new DelayedAction(ACTIVE_DELAY, () -> {
             deactivate(activationTime);
             return true;
         }));

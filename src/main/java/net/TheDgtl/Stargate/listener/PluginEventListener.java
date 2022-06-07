@@ -21,8 +21,8 @@ public class PluginEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPluginEnable(PluginEnableEvent event) {
-        if (Stargate.economyManager.isValidEconomyPlugin(event.getPlugin())) {
-            Stargate.economyManager.setupEconomy();
+        if (Stargate.getEconomyManager().isValidEconomyPlugin(event.getPlugin())) {
+            Stargate.getEconomyManager().setupEconomy();
         }
     }
 
@@ -33,7 +33,7 @@ public class PluginEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPluginDisable(PluginDisableEvent event) {
-        if (event.getPlugin().equals(Stargate.economyManager.getEconomyPlugin())) {
+        if (event.getPlugin().equals(Stargate.getEconomyManager().getEconomyPlugin())) {
             Stargate.log(Level.WARNING, "Vault plugin lost.");
         }
     }

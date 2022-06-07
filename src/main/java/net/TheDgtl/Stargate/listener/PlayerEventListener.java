@@ -154,7 +154,7 @@ public class PlayerEventListener implements Listener {
         }
 
         //Gets the name of this server if it's still unknown
-        if (!Stargate.knowsServerName) {
+        if (!Stargate.knowsServerName()) {
             Stargate.log(Level.FINEST, "First time player join");
             getBungeeServerName();
         }
@@ -181,8 +181,8 @@ public class PlayerEventListener implements Listener {
         });
 
         //Repeatedly try to load bungee server id until either the id is known, or no player is able to send bungee messages.
-        Stargate.syncSecPopulator.addAction(new ConditionalRepeatedTask(action,
-                () -> !((Stargate.knowsServerName) || (1 > Bukkit.getServer().getOnlinePlayers().size()))));
+        Stargate.addSynchronousSecAction(new ConditionalRepeatedTask(action,
+                () -> !((Stargate.knowsServerName()) || (1 > Bukkit.getServer().getOnlinePlayers().size()))));
 
         //Update the server name in the database once it's known
         updateServerName();
@@ -195,8 +195,8 @@ public class PlayerEventListener implements Listener {
         ConditionalDelayedAction action = new ConditionalDelayedAction(() -> {
             Stargate.getStorageAPIStatic().startInterServerConnection();
             return true;
-        }, () -> Stargate.knowsServerName);
-        Stargate.syncSecPopulator.addAction(action, true);
+        }, Stargate::knowsServerName);
+        Stargate.addSynchronousSecAction(action, true);
     }
 
     /**

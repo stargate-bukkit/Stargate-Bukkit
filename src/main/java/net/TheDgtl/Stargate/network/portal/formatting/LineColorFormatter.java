@@ -103,7 +103,7 @@ public class LineColorFormatter extends AbstractLineColorFormatter {
      * @return <p>The default color to use for the given type of sign</p>
      */
     private ChatColor getDefaultColor(boolean isLightSign) {
-        return isLightSign ? Stargate.defaultLightSignColor : Stargate.defaultDarkColor;
+        return isLightSign ? Stargate.getDefaultLightSignColor() : Stargate.getDefaultDarkColor();
     }
 
     /**

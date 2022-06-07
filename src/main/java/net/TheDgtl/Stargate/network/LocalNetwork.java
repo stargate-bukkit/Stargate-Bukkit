@@ -41,7 +41,7 @@ public class LocalNetwork implements Network {
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
     public LocalNetwork(String name) throws NameErrorException {
-        if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH)) {
+        if (name.trim().isEmpty() || (name.length() >= Stargate.getMaxTextLength())) {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         }
         this.name = name.trim();

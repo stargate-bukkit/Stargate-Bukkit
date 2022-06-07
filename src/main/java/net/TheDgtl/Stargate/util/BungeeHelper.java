@@ -67,7 +67,7 @@ public final class BungeeHelper {
         }
         try {
             BufferedReader reader = FileHelper.getBufferedReader(file);
-            Stargate.serverUUID = UUID.fromString(reader.readLine());
+            Stargate.setServerUUID(UUID.fromString(reader.readLine()));
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();

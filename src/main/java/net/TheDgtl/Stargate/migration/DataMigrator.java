@@ -105,7 +105,7 @@ public class DataMigrator {
         for (String configKey : updatedConfig.keySet()) {
             config.set(configKey, updatedConfig.get(configKey));
         }
-        config.set("configVersion", Stargate.CURRENT_CONFIG_VERSION);
+        config.set("configVersion", Stargate.getCurrentConfigVersion());
         config.save(configFile);
     }
 

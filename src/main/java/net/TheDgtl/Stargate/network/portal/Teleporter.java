@@ -91,7 +91,7 @@ public class Teleporter {
                 return false;
             }
 
-            if (anyEntity instanceof Player && !Stargate.economyManager.has((Player) anyEntity, this.cost)) {
+            if (anyEntity instanceof Player && !Stargate.getEconomyManager().has((Player) anyEntity, this.cost)) {
                 teleportMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS);
                 return false;
             }
@@ -111,7 +111,7 @@ public class Teleporter {
         Vector offset = getOffset(baseEntity);
         exit.subtract(offset);
 
-        Stargate.syncTickPopulator.addAction(new SupplierAction(() -> {
+        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
             betterTeleport(baseEntity, rotation);
             return true;
         }));
@@ -198,10 +198,10 @@ public class Teleporter {
 
             if (passenger instanceof Player) {
                 // Delay action by one tick to avoid client issues
-                Stargate.syncTickPopulator.addAction(new DelayedAction(1, action));
+                Stargate.addSynchronousTickAction(new DelayedAction(1, action));
                 continue;
             }
-            Stargate.syncTickPopulator.addAction(new SupplierAction(action));
+            Stargate.addSynchronousTickAction(new SupplierAction(action));
         }
     }
 
@@ -223,7 +223,7 @@ public class Teleporter {
                     entity.setLeashHolder(holder);
                     return true;
                 };
-                Stargate.syncTickPopulator.addAction(new SupplierAction(action));
+                Stargate.addSynchronousTickAction(new SupplierAction(action));
             }
         }
     }
@@ -309,7 +309,7 @@ public class Teleporter {
             return true;
         }
         Player player = (Player) target;
-        return Stargate.economyManager.chargePlayer(player, origin, cost);
+        return Stargate.getEconomyManager().chargePlayer(player, origin, cost);
     }
 
     /**

@@ -100,8 +100,8 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             }
             switch (subPluginChannel) {
                 case GET_SERVER:
-                    Stargate.serverName = in.readUTF();
-                    Stargate.knowsServerName = !Stargate.serverName.isEmpty();
+                    Stargate.setServerName(in.readUTF());
+                    Stargate.setKnowsServerName(!Stargate.getServerName().isEmpty());
                     break;
                 case PLAYER_CONNECT:
                 case PLUGIN_ENABLE:

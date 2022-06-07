@@ -29,7 +29,7 @@ public class LegacyLineColorFormatter extends AbstractLineColorFormatter {
     }
 
     private ChatColor getColor() {
-        return super.isLightSign ? Stargate.legacyDefaultLightSignColor : Stargate.legacyDefaultDarkSignColor;
+        return super.isLightSign ? Stargate.getLegacyDefaultLightSignColor() : Stargate.getLegacyDefaultDarkSignColor();
     }
 
 }

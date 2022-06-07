@@ -17,6 +17,7 @@
  */
 package net.TheDgtl.Stargate;
 
+import net.TheDgtl.Stargate.action.SimpleAction;
 import net.TheDgtl.Stargate.api.StargateAPI;
 import net.TheDgtl.Stargate.command.CommandStargate;
 import net.TheDgtl.Stargate.command.StargateTabCompleter;
@@ -87,54 +88,41 @@ import java.util.logging.Level;
  * @author Dinnerbone (2010-2011)
  */
 public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI, ConfigurationAPI {
+
     private static Stargate instance;
 
     private Level lowestMessageLevel = Level.INFO;//setting before config loads
 
-    public final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
-    public final String GATE_FOLDER = "gates";
-    public final String LANGUAGE_FOLDER = "lang";
-    public final String INTERNAL_FOLDER = ".internal";
+    private final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
+    private final String GATE_FOLDER = "gates";
 
     private PluginManager pluginManager;
 
     private StorageAPI storageAPI;
     private LanguageManager languageManager;
-    public static final int CURRENT_CONFIG_VERSION = 7;
-    /**
-     * Goes through every action in the queue every 1 tick. Should be used in tasks that need to be finished within a short time frame
-     */
-    public static final SynchronousPopulator syncTickPopulator = new SynchronousPopulator();
-    /**
-     * Goes through every action it the queue every 1 second (20 ticks). Should be used in delayed actions
-     */
-    public static final SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
-    /**
-     * The string length of a name consisting of only 'i'. This will fill a sign (including <>)
-     * Note that this is a terribly relaxed restriction, mainly done to prevent any from arising in an SQL database.
-     */
-    public static final int MAX_TEXT_LENGTH = 40;
+    private static final int CURRENT_CONFIG_VERSION = 7;
+    private static final SynchronousPopulator synchronousTickPopulator = new SynchronousPopulator();
+    private static final SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
+    private static final int MAX_TEXT_LENGTH = 40;
 
-    public static EconomyManager economyManager;
+    private static EconomyManager economyManager;
     private static ServicesManager servicesManager;
-    public static String serverName;
-    public static boolean knowsServerName = false;
+    private static String serverName;
+    private static boolean knowsServerName = false;
 
-    public static UUID serverUUID;
+    private static UUID serverUUID;
 
-    public static ChatColor defaultLightSignColor;
-    public static ChatColor defaultDarkColor;
+    private static ChatColor defaultLightSignColor;
+    private static ChatColor defaultDarkColor;
+    private static org.bukkit.ChatColor legacyDefaultLightSignColor = org.bukkit.ChatColor.BLACK;
+    private static org.bukkit.ChatColor legacyDefaultDarkSignColor = org.bukkit.ChatColor.WHITE;
 
     static {
         if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
             defaultLightSignColor = ChatColor.BLACK;
             defaultDarkColor = ChatColor.WHITE;
         }
-
     }
-
-    public static org.bukkit.ChatColor legacyDefaultLightSignColor = org.bukkit.ChatColor.BLACK;
-    public static org.bukkit.ChatColor legacyDefaultDarkSignColor = org.bukkit.ChatColor.WHITE;
 
     private FileConfiguration config;
 
@@ -149,6 +137,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         }
 
         loadGateFormats();
+        String LANGUAGE_FOLDER = "lang";
         languageManager = new StargateLanguageManager(this, new File(DATA_FOLDER, LANGUAGE_FOLDER));
         if (ConfigurationHelper.getInteger(ConfigurationOption.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
             try {
@@ -163,7 +152,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         pluginManager = getServer().getPluginManager();
         registerListeners();
         BukkitScheduler scheduler = getServer().getScheduler();
-        scheduler.scheduleSyncRepeatingTask(this, syncTickPopulator, 0L, 1L);
+        scheduler.scheduleSyncRepeatingTask(this, synchronousTickPopulator, 0L, 1L);
         scheduler.scheduleSyncRepeatingTask(this, syncSecPopulator, 0L, 20L);
         registerCommands();
 
@@ -172,6 +161,179 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         BStatsHelper.getMetrics(pluginId, this);
         servicesManager = this.getServer().getServicesManager();
         servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
+    }
+
+    /**
+     * Gets the economy manager used for this plugin
+     *
+     * @return <p>The economy manager used for this plugin</p>
+     */
+    public static EconomyManager getEconomyManager() {
+        return economyManager;
+    }
+
+    /**
+     * Gets the current version of the Stargate configuration
+     *
+     * @return <p>The current version of the Stargate configuration</p>
+     */
+    public static int getCurrentConfigVersion() {
+        return CURRENT_CONFIG_VERSION;
+    }
+
+    /**
+     * Gets the absolute path to Stargate's data folder
+     *
+     * @return <p>The absolute path to the data folder</p>
+     */
+    public String getAbsoluteDataFolder() {
+        return DATA_FOLDER;
+    }
+
+    /**
+     * Gets the gate folder where all .gate files are stored
+     *
+     * @return <p>The gate folder</p>
+     */
+    public String getGateFolder() {
+        return GATE_FOLDER;
+    }
+
+    /**
+     * Adds a 1-tick action
+     *
+     * <p>The task is added to a queue which is processed every tick. Should be used in tasks that need to be finished
+     * within a short time frame</p>
+     *
+     * @param action <p>The action to add</p>
+     */
+    public static void addSynchronousTickAction(SimpleAction action) {
+        synchronousTickPopulator.addAction(action);
+    }
+
+    /**
+     * Adds a 1-second action
+     *
+     * <p>The task is added to a queue which is processed every second (20 ticks). Should be used in delayed actions</p>
+     *
+     * @param action <p>The action to add</p>
+     */
+    public static void addSynchronousSecAction(SimpleAction action) {
+        syncSecPopulator.addAction(action, false);
+    }
+
+    /**
+     * Adds a 1-second action
+     *
+     * <p>The task is added to a queue which is processed every second (20 ticks). Should be used in delayed actions</p>
+     *
+     * @param action   <p>The action to add</p>
+     * @param isBungee <p>Whether the action relies on the server name being known and should be put in the bungee queue</p>
+     */
+    public static void addSynchronousSecAction(SimpleAction action, boolean isBungee) {
+        syncSecPopulator.addAction(action);
+    }
+
+    /**
+     * Gets the max text length which will fit on a sign
+     *
+     * <p>The string length of a name consisting of only 'i'. This will fill a sign (including <>)
+     * Note that this is a terribly relaxed restriction, mainly done to prevent any from arising in an SQL database.</p>
+     *
+     * @return <p>The max text length which will fit on a sign</p>
+     */
+    public static int getMaxTextLength() {
+        return MAX_TEXT_LENGTH;
+    }
+
+    /**
+     * Gets the name of this server as defined by BungeeCord
+     *
+     * @return <p>The name of this server</p>
+     */
+    public static String getServerName() {
+        return serverName;
+    }
+
+    /**
+     * Sets this server's name as defined by BungeeCord
+     *
+     * @param serverName <p>The new name of this server</p>
+     */
+    public static void setServerName(String serverName) {
+        Stargate.serverName = serverName;
+    }
+
+    /**
+     * Gets whether this server knows its own name
+     *
+     * @return <p>True if this server knows its own name</p>
+     */
+    public static boolean knowsServerName() {
+        return knowsServerName;
+    }
+
+    /**
+     * Sets whether this server knows its server name
+     *
+     * @param knowsServerName <p>Whether this server knows its server name</p>
+     */
+    public static void setKnowsServerName(boolean knowsServerName) {
+        Stargate.knowsServerName = knowsServerName;
+    }
+
+    /**
+     * Gets this server's unique id
+     *
+     * @return <p>This server's unique id</p>
+     */
+    public static String getServerUUID() {
+        return serverUUID.toString();
+    }
+
+    /**
+     * Sets this server's unique id
+     *
+     * @param serverUUID <p>This server's new unique id</p>
+     */
+    public static void setServerUUID(UUID serverUUID) {
+        Stargate.serverUUID = serverUUID;
+    }
+
+    /**
+     * Gets the default color used for light signs
+     *
+     * @return <p>The default color used for light signs</p>
+     */
+    public static ChatColor getDefaultLightSignColor() {
+        return defaultLightSignColor;
+    }
+
+    /**
+     * Gets the default color used for dark signs
+     *
+     * @return <p>The default color used for dark signs</p>
+     */
+    public static ChatColor getDefaultDarkColor() {
+        return defaultDarkColor;
+    }
+
+    /**
+     * Gets the default color used for light signs with legacy coloring
+     *
+     * @return <p>The default legacy color used for light signs</p>
+     */
+    public static org.bukkit.ChatColor getLegacyDefaultLightSignColor() {
+        return legacyDefaultLightSignColor;
+    }
+
+    /**
+     * Gets the default color used for dark signs with legacy coloring
+     *
+     * @return <p>The default legacy color used for dark signs</p>
+     */
+    public static org.bukkit.ChatColor getLegacyDefaultDarkSignColor() {
+        return legacyDefaultDarkSignColor;
     }
 
     private void loadColors() {
@@ -324,6 +486,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private void load() {
         loadColors();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
+            String INTERNAL_FOLDER = ".internal";
             BungeeHelper.getServerId(DATA_FOLDER, INTERNAL_FOLDER);
         }
         String debugLevelString = ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL);
@@ -353,7 +516,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
          * Replacement for legacy, which used:
          * methodPortal.closeAllGates(this); Portal.clearGates(); managedWorlds.clear();
          */
-        syncTickPopulator.forceDoAllTasks();
+        synchronousTickPopulator.forceDoAllTasks();
         syncSecPopulator.forceDoAllTasks();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             Messenger messenger = Bukkit.getMessenger();
