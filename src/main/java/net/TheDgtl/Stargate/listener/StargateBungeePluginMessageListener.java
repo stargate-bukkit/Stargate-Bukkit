@@ -27,6 +27,7 @@ import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.network.InterServerNetwork;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -42,6 +43,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -134,7 +136,9 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      * @param message <p>The legacy connect message to parse and handle</p>
      */
     private void legacyPlayerConnect(String message) {
-        String bungeeNetwork = BungeePortal.getLegacyNetworkName();
+        RegistryAPI registry = Stargate.getInstance().getRegistry();
+        String bungeeNetworkName = BungeePortal.getLegacyNetworkName();
+
         String[] parts = message.split("#@#");
 
         String playerName = parts[0];
@@ -147,12 +151,41 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         if (player == null) {
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
 
-            BungeeHelper.addToQueue(Stargate.getRegistryStatic(), playerName, destination, bungeeNetwork, false);
+            BungeeHelper.addToQueue(registry, playerName, destination, bungeeNetworkName, false);
         } else {
-            Network network = Stargate.getRegistryStatic().getNetwork(bungeeNetwork, false);
+            Network network = getLegacyBungeeNetwork(registry, bungeeNetworkName);
+            if (network == null) {
+                return;
+            }
             Portal destinationPortal = network.getPortal(destination);
             destinationPortal.teleportHere(player, null);
         }
+    }
+
+    /**
+     * Gets the legacy bungee network
+     *
+     * <p>If the network doesn't already exist, it will be created</p>
+     *
+     * @param registry      <p>The registry to use</p>
+     * @param bungeeNetwork <p>The name of the legacy bungee network</p>
+     * @return <p>The legacy bungee network, or null if unobtainable</p>
+     */
+    private Network getLegacyBungeeNetwork(RegistryAPI registry, String bungeeNetwork) {
+        Network network = registry.getNetwork(bungeeNetwork, false);
+        //Create the legacy network if it doesn't already exist
+        try {
+            if (network == null) {
+                registry.createNetwork(bungeeNetwork, new HashSet<>());
+                network = registry.getNetwork(bungeeNetwork, false);
+            }
+        } catch (NameErrorException e) {
+            //Ignored as the null check will take care of this
+        }
+        if (network == null) {
+            Stargate.log(Level.WARNING, "Unable to get or create the legacy bungee network");
+        }
+        return network;
     }
 
     /**
