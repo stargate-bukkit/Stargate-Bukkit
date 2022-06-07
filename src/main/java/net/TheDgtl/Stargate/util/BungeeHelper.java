@@ -1,5 +1,7 @@
 package net.TheDgtl.Stargate.util;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
@@ -8,6 +10,7 @@ import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.property.StargateProtocolProperty;
+import org.bukkit.entity.Player;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,11 +22,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.logging.Level;
-
-import org.bukkit.entity.Player;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * A helper class for dealing with BungeeCord
@@ -60,7 +58,7 @@ public final class BungeeHelper {
                 if (!file.createNewFile()) {
                     throw new FileNotFoundException("serverUUID.txt was not found and could not be created");
                 }
-                BufferedWriter writer = FileHelper.getBufferedWriter(file,false);
+                BufferedWriter writer = FileHelper.getBufferedWriter(file, false);
                 writer.write(UUID.randomUUID().toString());
                 writer.close();
             } catch (IOException e1) {
@@ -119,7 +117,7 @@ public final class BungeeHelper {
         return bungeeQueue.remove(playerName);
     }
 
-    
+
     /**
      * Handle the connection of a player using the legacy Stargate method
      *
@@ -147,17 +145,17 @@ public final class BungeeHelper {
         } else {
             Network network = getLegacyBungeeNetwork(registry, bungeeNetworkName);
             if (network == null) {
-                Stargate.log(Level.WARNING,"The legacy bungee network is missing, this is most definitly a bug please contact developers (/sg about)");
+                Stargate.log(Level.WARNING, "The legacy bungee network is missing, this is most definitly a bug please contact developers (/sg about)");
                 return;
             }
             //If the destination is invalid, just let the player teleport to their last location
             Portal destinationPortal = network.getPortal(destination);
             if (destinationPortal == null) {
-                Stargate.log(Level.FINE,String.format("Could not find destination portal with name '%s'", destination));
+                Stargate.log(Level.FINE, String.format("Could not find destination portal with name '%s'", destination));
                 return;
             }
-            
-            Stargate.log(Level.FINE,String.format("Teleporting player to destination portal '%s'", destinationPortal.getName()));
+
+            Stargate.log(Level.FINE, String.format("Teleporting player to destination portal '%s'", destinationPortal.getName()));
             destinationPortal.teleportHere(player, null);
         }
     }
@@ -185,15 +183,8 @@ public final class BungeeHelper {
         if (network == null) {
             Stargate.log(Level.WARNING, "Unable to get or create the legacy bungee network");
         }
-        
-        StringBuilder builder = new StringBuilder("LegacyBungeeNetwork contains the following portals:\n");
-        for(Portal portal : network.getAllPortals() ) {
-            builder.append("    " + portal.getName() + "\n");
-        }
-        Stargate.log(Level.FINEST, builder.toString());
         return network;
     }
-    
 
 
     /**

@@ -5,7 +5,6 @@ import net.TheDgtl.Stargate.action.ConditionalDelayedAction;
 import net.TheDgtl.Stargate.action.ConditionalRepeatedTask;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
-import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -149,11 +148,11 @@ public class PlayerEventListener implements Listener {
         if (destination != null) {
             destination.teleportHere(player, null);
         }
-        
-        if(!ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
+
+        if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
             return;
         }
-        
+
         //Gets the name of this server if it's still unknown
         if (!Stargate.knowsServerName) {
             Stargate.log(Level.FINEST, "First time player join");

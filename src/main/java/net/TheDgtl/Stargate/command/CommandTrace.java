@@ -37,7 +37,7 @@ public class CommandTrace implements CommandExecutor {
         File file = new File(Stargate.getInstance().getDataFolder(), fileName);
         BufferedWriter writer;
         try {
-            writer = FileHelper.getBufferedWriter(file,false);
+            writer = FileHelper.getBufferedWriter(file, false);
             writer.write(getConfiguration());
             writer.write("BukkitInstance: " + Bukkit.getServer().getVersion());
             writer.newLine();

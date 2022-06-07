@@ -4,7 +4,6 @@ import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.property.NonLegacyMethod;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -59,21 +58,21 @@ public final class SpawnDetectionHelper {
         return false;
     }
 
-    
+
     private static int getWorldMaxHeight(World world) {
-        if(NonLegacyMethod.GET_WORLD_MAX.isImplemented()) {
+        if (NonLegacyMethod.GET_WORLD_MAX.isImplemented()) {
             return world.getMaxHeight();
         }
         return 255;
     }
-    
+
     private static int getWorldMinHeight(World world) {
-        if(NonLegacyMethod.GET_WORLD_MIN.isImplemented()) {
+        if (NonLegacyMethod.GET_WORLD_MIN.isImplemented()) {
             return world.getMinHeight();
         }
         return 0;
     }
-    
+
     /**
      * Checks if the given location is intersecting with the hit-box defined by the given location pair
      *

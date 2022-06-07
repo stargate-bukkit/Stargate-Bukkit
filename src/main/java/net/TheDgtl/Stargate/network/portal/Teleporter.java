@@ -302,7 +302,7 @@ public class Teleporter {
      * @return <p>True if all necessary transactions were successfully completed</p>
      */
     private boolean charge(Entity target) {
-        if(!(target instanceof Player) || cost <= 0){
+        if (!(target instanceof Player) || cost <= 0) {
             return true;
         }
         Player player = (Player) target;

@@ -216,7 +216,7 @@ public class DraftTeleporter {
                 teleport(poweredMinecart, exit);
                 poweredMinecart.setFuel(fuel);
                 poweredMinecart.setVelocity(targetVelocity);
-                
+
                 if (NonLegacyMethod.PUSH_X.isImplemented() && NonLegacyMethod.PUSH_Z.isImplemented()) {
                     NonLegacyMethod.PUSH_X.invoke(poweredMinecart, -location.getDirection().getBlockX());
                     NonLegacyMethod.PUSH_Z.invoke(poweredMinecart, -location.getDirection().getBlockZ());

@@ -71,10 +71,12 @@ public enum OptionDataType {
     /**
      * Gets a list of available values for this data type
      *
-     * <p>Null will be returned for option types with an undefined value scope.</p>
+     * <p>Null will be returned for option types with an undefined value scope. This is used for add-ons, and should
+     * not be removed!</p>
      *
      * @return <p>A list of available values</p>
      */
+    @SuppressWarnings("unused")
     public String[] getValues() {
         return values;
     }

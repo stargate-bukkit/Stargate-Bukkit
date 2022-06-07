@@ -2,10 +2,18 @@ package net.TheDgtl.Stargate.network.portal.formatting;
 
 import org.bukkit.Material;
 
+/**
+ * An abstract class containing useful methods for all line color formatters
+ */
 public abstract class AbstractLineColorFormatter implements LineFormatter {
 
     protected final boolean isLightSign;
 
+    /**
+     * Instantiates a new abstract line color formatter
+     *
+     * @param signMaterial <p>The material of the sign to format for</p>
+     */
     public AbstractLineColorFormatter(Material signMaterial) {
         this.isLightSign = isLightSign(signMaterial);
     }
@@ -28,4 +36,5 @@ public abstract class AbstractLineColorFormatter implements LineFormatter {
                 return true;
         }
     }
+
 }

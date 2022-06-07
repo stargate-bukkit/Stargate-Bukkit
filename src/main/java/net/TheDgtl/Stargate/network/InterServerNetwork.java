@@ -5,8 +5,6 @@ import com.google.gson.JsonPrimitive;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.action.ForcibleFunctionAction;
 import net.TheDgtl.Stargate.action.SupplierAction;
-import net.TheDgtl.Stargate.database.Database;
-import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
@@ -29,14 +27,11 @@ public class InterServerNetwork extends LocalNetwork {
     /**
      * Instantiates a new inter-server network
      *
-     * @param networkName    <p>The name of the new inter-server network</p>
-     * @param database       <p>The database to use for saving network data</p>
-     * @param queryGenerator <p>The generator to use for generating SQL queries</p>
+     * @param networkName <p>The name of the new inter-server network</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public InterServerNetwork(String networkName, Database database, SQLQueryGenerator queryGenerator)
-            throws NameErrorException {
-        super(networkName, database, queryGenerator);
+    public InterServerNetwork(String networkName) throws NameErrorException {
+        super(networkName);
     }
 
     @Override

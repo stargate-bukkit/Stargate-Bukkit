@@ -45,6 +45,7 @@ public class StargatePermissionManager implements PermissionManager {
 
     private static final String DESTROY_OWNED = "sg.destroy.owned";
     private static final String USE_OWNED = "sg.use.owned";
+
     /**
      * Instantiates a new permission manager
      *

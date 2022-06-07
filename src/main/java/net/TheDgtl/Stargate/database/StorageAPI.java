@@ -23,6 +23,8 @@ public interface StorageAPI {
 
     /**
      * "Ends" the inter-server connection by setting this server's portals as offline
+     * <p>
+     * TODO: This is not implemented at all. This should either be removed, or properly implemented
      */
     void endInterServerConnection();
 
