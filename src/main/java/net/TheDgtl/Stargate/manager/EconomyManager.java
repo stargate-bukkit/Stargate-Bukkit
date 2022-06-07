@@ -76,12 +76,7 @@ public class EconomyManager {
                 return false;
             }
             //Inform the transaction target that they've received money
-            if (transactionTarget.getPlayer() != null) {
-                String unFormattedMessage = languageManager.getMessage(TranslatableMessage.ECO_OBTAIN);
-                String portalNameCompiledMessage = TranslatableMessageFormatter.formatPortal(unFormattedMessage, origin.getName());
-                String message = TranslatableMessageFormatter.formatCost(portalNameCompiledMessage, amount);
-                transactionTarget.getPlayer().sendMessage(message);
-            }
+            sendObtainSuccessMessage(transactionTarget, amount, origin.getName());
             return true;
         } else {
             //Pay to the server
@@ -209,15 +204,12 @@ public class EconomyManager {
         }
 
         EconomyResponse response = economy.withdrawPlayer(offlinePlayer, amount);
-        Player player = offlinePlayer.getPlayer();
-        boolean successfullyCharged = response.transactionSuccess();
-        if (player != null && successfullyCharged) {
+        boolean chargeSuccessful = response.transactionSuccess();
+        if (chargeSuccessful) {
             //Tell the player that they have been charged
-            String unformattedMessage = languageManager.getMessage(TranslatableMessage.ECO_DEDUCT);
-            String message = TranslatableMessageFormatter.formatCost(unformattedMessage, amount);
-            player.sendMessage(message);
+            sendChargeSuccessMessage(offlinePlayer, amount);
         }
-        return successfullyCharged;
+        return chargeSuccessful;
     }
 
     /**
@@ -247,6 +239,42 @@ public class EconomyManager {
             response = economy.depositPlayer(player, amount);
         }
         return response.transactionSuccess();
+    }
+
+    /**
+     * Sends a message to a player telling them they've been successfully charged
+     *
+     * @param offlinePlayer <p>The player to send the message to</p>
+     * @param amount        <p>The amount the player was charged</p>
+     */
+    private void sendChargeSuccessMessage(OfflinePlayer offlinePlayer, int amount) {
+        Player player = offlinePlayer.getPlayer();
+        if (player == null) {
+            return;
+        }
+        //Tell the player that they have been charged
+        String unformattedMessage = languageManager.getMessage(TranslatableMessage.ECO_DEDUCT);
+        String message = TranslatableMessageFormatter.formatCost(unformattedMessage, amount);
+        player.sendMessage(message);
+    }
+
+    /**
+     * Sends a message to the player telling them they've successfully received funds
+     *
+     * @param offlinePlayer <p>The player to send the message to</p>
+     * @param amount        <p>The amount the player received</p>
+     * @param portalName    <p>The portal used by another player</p>
+     */
+    private void sendObtainSuccessMessage(OfflinePlayer offlinePlayer, int amount, String portalName) {
+        Player player = offlinePlayer.getPlayer();
+        if (player == null) {
+            return;
+        }
+        //Inform the transaction target that they've received money
+        String unFormattedMessage = languageManager.getMessage(TranslatableMessage.ECO_OBTAIN);
+        String portalNameCompiledMessage = TranslatableMessageFormatter.formatPortal(unFormattedMessage, portalName);
+        String message = TranslatableMessageFormatter.formatCost(portalNameCompiledMessage, amount);
+        player.sendMessage(message);
     }
 
 }
