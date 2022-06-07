@@ -21,6 +21,8 @@ package net.TheDgtl.Stargate.listener;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.api.StargateAPI;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.exception.NameErrorException;
@@ -51,15 +53,18 @@ import java.util.logging.Level;
  */
 public class StargateBungeePluginMessageListener implements PluginMessageListener {
 
-    final Stargate stargate;
+    private final StargateAPI stargateAPI;
+    private final StargateLogger stargateLogger;
 
     /**
      * Instantiates a new stargate bungee plugin message listener
      *
-     * @param stargate <p>A stargate instance</p>
+     * @param stargateAPI    <p>Something implementing the Stargate API</p>
+     * @param stargateLogger <p>Something implementing the Stargate logger</p>
      */
-    public StargateBungeePluginMessageListener(Stargate stargate) {
-        this.stargate = stargate;
+    public StargateBungeePluginMessageListener(StargateAPI stargateAPI, StargateLogger stargateLogger) {
+        this.stargateAPI = stargateAPI;
+        this.stargateLogger = stargateLogger;
     }
 
     /**
@@ -77,7 +82,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      */
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {
-        Stargate.log(Level.FINEST, "Received plugin-message");
+        stargateLogger.logMessage(Level.FINEST, "Received plugin-message");
 
         boolean usingBungee = ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE);
         if (!usingBungee || !channel.equals("BungeeCord")) {
@@ -90,7 +95,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             //Ignore any unknown sub-channels to prevent an exception caused by converting null into ordinal
             PluginChannel subPluginChannel = PluginChannel.parse(subChannel);
             if (subPluginChannel == null) {
-                Stargate.log(Level.FINEST, "Received unknown message on unknown sub-channel: " + subChannel);
+                stargateLogger.logMessage(Level.FINEST, "Received unknown message on unknown sub-channel: " + subChannel);
                 return;
             }
             switch (subPluginChannel) {
@@ -106,18 +111,18 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     updateNetwork(in.readUTF());
                     break;
                 case PLAYER_TELEPORT:
-                    Stargate.log(Level.FINEST, "trying to read player join json msg");
+                    stargateLogger.logMessage(Level.FINEST, "trying to read player join json msg");
                     BungeeHelper.playerConnect(in.readUTF());
                     break;
                 case LEGACY_BUNGEE:
                     BungeeHelper.legacyPlayerConnect(in.readUTF());
                     break;
                 default:
-                    Stargate.log(Level.FINEST, "Received unknown message with a sub-channel: " + subChannel);
+                    stargateLogger.logMessage(Level.FINEST, "Received unknown message with a sub-channel: " + subChannel);
                     break;
             }
         } catch (IOException ex) {
-            Stargate.log(Level.WARNING, "[Stargate] Error receiving BungeeCord message");
+            stargateLogger.logMessage(Level.WARNING, "[Stargate] Error receiving BungeeCord message");
             ex.printStackTrace();
         }
     }
@@ -129,7 +134,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      */
     private void updateNetwork(String message) {
         JsonParser parser = new JsonParser();
-        Stargate.log(Level.FINEST, message);
+        stargateLogger.logMessage(Level.FINEST, message);
         JsonObject json = (JsonObject) parser.parse(message);
 
         String requestTypeString = json.get(StargateProtocolProperty.REQUEST_TYPE.toString()).getAsString();
@@ -142,17 +147,17 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         UUID ownerUUID = UUID.fromString(json.get(StargateProtocolProperty.OWNER.toString()).getAsString());
 
         try {
-            Stargate.getRegistryStatic().createNetwork(network, flags);
-            InterServerNetwork targetNetwork = (InterServerNetwork) Stargate.getRegistryStatic().getNetwork(network, true);
+            stargateAPI.getRegistry().createNetwork(network, flags);
+            InterServerNetwork targetNetwork = (InterServerNetwork) stargateAPI.getRegistry().getNetwork(network, true);
             VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
 
             switch (requestType) {
                 case PORTAL_ADD:
                     targetNetwork.addPortal(portal, false);
-                    Stargate.log(Level.FINE, String.format("Adding virtual portal %s in inter-server network %s", portalName, network));
+                    stargateLogger.logMessage(Level.FINE, String.format("Adding virtual portal %s in inter-server network %s", portalName, network));
                     break;
                 case PORTAL_REMOVE:
-                    Stargate.log(Level.FINE, String.format("Removing virtual portal %s in inter-server network %s", portalName, network));
+                    stargateLogger.logMessage(Level.FINE, String.format("Removing virtual portal %s in inter-server network %s", portalName, network));
                     targetNetwork.removePortal(portal, false);
                     break;
             }

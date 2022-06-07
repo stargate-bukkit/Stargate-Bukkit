@@ -1,7 +1,6 @@
 package net.TheDgtl.Stargate.util.portal;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.event.StargateDestroyEvent;
@@ -13,8 +12,6 @@ import net.TheDgtl.Stargate.property.BypassPermission;
 import net.TheDgtl.Stargate.util.EconomyHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import java.util.function.Supplier;
 
 /**
  * A helper class for removing an existing portal

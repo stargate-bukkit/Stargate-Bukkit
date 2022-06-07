@@ -369,7 +369,7 @@ public abstract class AbstractPortal implements RealPortal {
                 Stargate.getRegistryStatic().unRegisterLocation(formatType, loc);
             }
         }
-        
+
         Supplier<Boolean> destroyAction = () -> {
             String[] lines = new String[]{name, "", "", ""};
             getGate().drawControlMechanisms(lines, false);
@@ -498,7 +498,7 @@ public abstract class AbstractPortal implements RealPortal {
         Bukkit.getPluginManager().callEvent(event);
 
         this.activator = null;
-        if(!this.hasFlag(PortalFlag.ALWAYS_ON)) {
+        if (!this.hasFlag(PortalFlag.ALWAYS_ON)) {
             this.isActive = false;
         }
         drawControlMechanisms();

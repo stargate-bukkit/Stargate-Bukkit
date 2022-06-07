@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * A real portal with a physical sign that is located on this server
  */
+@SuppressWarnings("unused")
 public interface RealPortal extends Portal {
 
     /**

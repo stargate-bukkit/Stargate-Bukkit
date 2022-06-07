@@ -275,7 +275,10 @@ public class Teleporter {
                 }
             }, 1);
         } else {
-            charge(target);
+            if (target instanceof Player && !charge(target)) {
+                //TODO: Inform the user that the payment couldn't be processed or something
+                return;
+            }
             teleport(target, exit);
             target.setVelocity(targetVelocity);
         }
@@ -302,15 +305,11 @@ public class Teleporter {
      * @return <p>True if all necessary transactions were successfully completed</p>
      */
     private boolean charge(Entity target) {
-        if(!(target instanceof Player) || cost <= 0){
+        if (!(target instanceof Player) || cost <= 0) {
             return true;
         }
         Player player = (Player) target;
-        if (origin.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
-            return Stargate.economyManager.chargePlayer(player, origin, cost);
-        } else {
-            return Stargate.economyManager.chargeAndTax(player, cost);
-        }
+        return Stargate.economyManager.chargePlayer(player, origin, cost);
     }
 
     /**

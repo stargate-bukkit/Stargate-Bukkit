@@ -43,11 +43,11 @@ public final class NetworkCreationHelper {
      */
     public static String interpretNetworkName(String initialNetworkName, Set<PortalFlag> flags, Player player,
                                               RegistryAPI registry) {
-        
+
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(initialNetworkName);
         if (highlight != HighlightingStyle.NOTHING) {
             String unhighlightedName = HighlightingStyle.getNameFromHighlightedText(initialNetworkName);
-            if(highlight == HighlightingStyle.PERSONAL) {
+            if (highlight == HighlightingStyle.PERSONAL) {
                 return initialNetworkName;
             }
             UUID possiblePlayer = getPlayerUUID(unhighlightedName);

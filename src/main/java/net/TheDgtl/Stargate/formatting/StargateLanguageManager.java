@@ -8,10 +8,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -277,12 +273,12 @@ public class StargateLanguageManager implements LanguageManager {
             Stargate.log(Level.INFO, "Could not load a internal language backup for your specified language");
             return;
         }
-        for(String key : internalInputMap.keySet()){
+        for (String key : internalInputMap.keySet()) {
             TranslatableMessage translatableMessageKey = TranslatableMessage.parse(key);
-            if(translatableMessageKey != null) {
+            if (translatableMessageKey != null) {
                 internalTranslatedValues.put(translatableMessageKey, internalInputMap.get(key));
             }
-         }
+        }
         if (translatedStrings.size() >= internalTranslatedValues.size()) {
             return;
         }
@@ -299,7 +295,7 @@ public class StargateLanguageManager implements LanguageManager {
     private void addMissingInternalTranslations(File languageFile, Map<TranslatableMessage, String> translatedStrings,
                                                 Map<TranslatableMessage, String> internalTranslatedValues) {
         try {
-            BufferedWriter writer = FileHelper.getBufferedWriter(languageFile,true);
+            BufferedWriter writer = FileHelper.getBufferedWriter(languageFile, true);
             for (TranslatableMessage key : internalTranslatedValues.keySet()) {
                 if (translatedStrings.containsKey(key)) {
                     continue;

@@ -468,6 +468,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateSetPortalOnlineStatusStatement(Connection connection, Portal portal, boolean isOnline) throws SQLException {
+        //TODO: This is unimplemented
         String statementString = "UPDATE {InterPortal} SET isOnline = ? WHERE network = ? AND name = ?;";
         String statementMessage = replaceKnownTableNames(statementString);
         PreparedStatement statement = connection.prepareStatement(statementMessage);

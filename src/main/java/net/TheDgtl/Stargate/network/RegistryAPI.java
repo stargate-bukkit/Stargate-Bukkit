@@ -20,6 +20,7 @@ import java.util.Set;
  *
  * @author Thorin
  */
+@SuppressWarnings("unused")
 public interface RegistryAPI {
     /**
      * Loads all portals from storage

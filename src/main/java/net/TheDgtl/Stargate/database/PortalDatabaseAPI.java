@@ -140,13 +140,13 @@ public class PortalDatabaseAPI implements StorageAPI {
     @Override
     public Network createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
-            return new InterServerNetwork(networkName, database, sqlQueryGenerator);
+            return new InterServerNetwork(networkName);
         }
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
             UUID uuid = UUID.fromString(networkName);
-            return new PersonalNetwork(uuid, database, sqlQueryGenerator);
+            return new PersonalNetwork(uuid);
         } else {
-            return new LocalNetwork(networkName, database, sqlQueryGenerator);
+            return new LocalNetwork(networkName);
         }
     }
 

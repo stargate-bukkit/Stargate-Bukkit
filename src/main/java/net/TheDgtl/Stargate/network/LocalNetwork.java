@@ -4,7 +4,6 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.database.Database;
-import net.TheDgtl.Stargate.database.SQLQueryGenerator;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
@@ -33,18 +32,15 @@ public class LocalNetwork implements Network {
     protected Map<String, Portal> nameToPortalMap;
     protected Database database;
     protected String name;
-    protected SQLQueryGenerator sqlQueryGenerator;
     private RegistryAPI registry;
 
     /**
      * Instantiates a new network
      *
-     * @param name           <p>The name of the new network</p>
-     * @param database       <p>The database to use for saving network data</p>
-     * @param queryGenerator <p>The generator to use for generating SQL queries</p>
+     * @param name <p>The name of the new network</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public LocalNetwork(String name, Database database, SQLQueryGenerator queryGenerator) throws NameErrorException {
+    public LocalNetwork(String name) throws NameErrorException {
         if (name.trim().isEmpty() || (name.length() >= Stargate.MAX_TEXT_LENGTH)) {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         }
@@ -52,8 +48,6 @@ public class LocalNetwork implements Network {
         if (ConfigurationHelper.getBoolean(ConfigurationOption.DISABLE_CUSTOM_COLORED_NAMES)) {
             this.name = ChatColor.stripColor(this.name);
         }
-        this.database = database;
-        this.sqlQueryGenerator = queryGenerator;
         nameToPortalMap = new HashMap<>();
     }
 

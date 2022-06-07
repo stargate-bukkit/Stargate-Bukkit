@@ -6,7 +6,12 @@ import net.TheDgtl.Stargate.network.portal.RealPortal;
 
 import java.util.Set;
 
+/**
+ * An interface describing a permission manager
+ */
+@SuppressWarnings("unused")
 public interface PermissionManager {
+
     /**
      * Gets all flags usable by the entity
      *

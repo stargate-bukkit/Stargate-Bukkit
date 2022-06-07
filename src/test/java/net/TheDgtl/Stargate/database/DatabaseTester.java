@@ -86,7 +86,7 @@ public class DatabaseTester {
 
         Network testNetwork = null;
         try {
-            testNetwork = new LocalNetwork("test", database, generator);
+            testNetwork = new LocalNetwork("test");
         } catch (NameErrorException e) {
             e.printStackTrace();
         }

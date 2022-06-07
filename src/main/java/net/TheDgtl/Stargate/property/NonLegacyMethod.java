@@ -31,17 +31,17 @@ public enum NonLegacyMethod {
      * <p>This was added to Paper to change a powered minecart's z-push</p>
      */
     PUSH_Z("org.bukkit.entity.minecart.PoweredMinecart", "setPushZ", double.class),
-    
+
     /**
      * The world get getMinHeight() method
-     * 
+     *
      * <p> This was added as a cause of the cave update </p>
      */
     GET_WORLD_MIN("org.bukkit.World", "getMinHeight"),
-    
+
     /**
      * The world get getMaxHeight() method
-     * 
+     *
      * <p> This was added as a cause of the cave update </p>
      */
     GET_WORLD_MAX("org.bukkit.World", "getMaxHeight");

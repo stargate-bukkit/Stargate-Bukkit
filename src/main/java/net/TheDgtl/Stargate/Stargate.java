@@ -210,7 +210,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * Registers all necessary listeners for this plugin
      */
     private void registerListeners() {
-        pluginManager.registerEvents(new BlockEventListener(), this);
+        pluginManager.registerEvents(new BlockEventListener(getRegistry()), this);
         pluginManager.registerEvents(new MoveEventListener(), this);
         pluginManager.registerEvents(new PlayerEventListener(), this);
         pluginManager.registerEvents(new PluginEventListener(), this);
@@ -218,7 +218,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             Messenger messenger = Bukkit.getMessenger();
 
             messenger.registerOutgoingPluginChannel(this, PluginChannel.BUNGEE.getChannel());
-            messenger.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(), new StargateBungeePluginMessageListener(this));
+            messenger.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(),
+                    new StargateBungeePluginMessageListener(this, this));
         }
     }
 
@@ -325,7 +326,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
             BungeeHelper.getServerId(DATA_FOLDER, INTERNAL_FOLDER);
         }
-        economyManager = new EconomyManager();
         String debugLevelString = ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL);
         if (debugLevelString == null) {
             lowestMessageLevel = Level.INFO;
@@ -333,6 +333,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             lowestMessageLevel = Level.parse(debugLevelString);
         }
         languageManager.setLanguage(ConfigurationHelper.getString(ConfigurationOption.LANGUAGE));
+        economyManager = new EconomyManager(languageManager);
 
         try {
             storageAPI = new PortalDatabaseAPI(this);

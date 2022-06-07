@@ -10,6 +10,7 @@ import java.util.Set;
 /**
  * A description of a network
  */
+@SuppressWarnings("unused")
 public interface Network {
 
     /**
