@@ -361,6 +361,7 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void destroy() {
         this.network.removePortal(this, true);
+        this.close(true);
 
         for (GateStructureType formatType : GateStructureType.values()) {
             for (BlockLocation loc : this.getGate().getLocations(formatType)) {
