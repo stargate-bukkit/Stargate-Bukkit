@@ -10,32 +10,38 @@ public enum ConfigurationOption {
     /**
      * The default network if no network is specified
      */
-    DEFAULT_NETWORK("defaultGateNetwork", "The default network if no network is specified", "central", OptionDataType.STRING, false),
+    DEFAULT_NETWORK("defaultGateNetwork", "The default network if no network is specified",
+            "central", OptionDataType.STRING, false),
 
     /**
      * The network used for all legacy BungeeCord Stargates
      */
-    LEGACY_BUNGEE_NETWORK("legacyBungeeNetwork", "The network used for all legacy BungeeCord stargates", "LegacyBungee", OptionDataType.STRING, true),
+    LEGACY_BUNGEE_NETWORK("legacyBungeeNetwork", "The network used for all legacy BungeeCord stargates",
+            "LegacyBungee", OptionDataType.STRING, true),
 
     /**
      * The language used for all translatable messages
      */
-    LANGUAGE("language", "The language used for all translatable messages", "en", OptionDataType.LANGUAGE, false),
+    LANGUAGE("language", "The language used for all translatable messages", "en",
+            OptionDataType.LANGUAGE, false),
 
     /**
      * Whether BungeeCord functionality is enabled
      */
-    USING_BUNGEE("bungee.usingBungee", "Whether BungeeCord functionality is enabled", false, OptionDataType.BOOLEAN, false),
+    USING_BUNGEE("bungee.usingBungee", "Whether BungeeCord functionality is enabled", false,
+            OptionDataType.BOOLEAN, false),
 
     /**
      * The maximum number of stargates on a single network
      */
-    GATE_LIMIT("networkLimit", "The maximum number of stargates on a single network", -1, OptionDataType.INTEGER, false),
+    GATE_LIMIT("networkLimit", "The maximum number of stargates on a single network", -1,
+            OptionDataType.INTEGER, false),
 
     /**
      * Whether to enable economy functionality for stargate interaction
      */
-    USE_ECONOMY("useEconomy", "Whether to enable economy functionality for stargate interaction", false, OptionDataType.BOOLEAN, false),
+    USE_ECONOMY("useEconomy", "Whether to enable economy functionality for stargate interaction",
+            false, OptionDataType.BOOLEAN, false),
 
     /**
      * The UUID to pay any taxes to
@@ -60,32 +66,39 @@ public enum ConfigurationOption {
     /**
      * Whether to send any transaction fees to the gate owner's balance
      */
-    GATE_OWNER_REVENUE("gateOwnerRevenue", "Whether to send any transaction fees to the gate owner's balance", true, OptionDataType.BOOLEAN, false),
+    GATE_OWNER_REVENUE("gateOwnerRevenue", "Whether to send any transaction fees to the gate owner's balance",
+            true, OptionDataType.BOOLEAN, false),
 
     /**
      * Whether to charge for a teleportation from a non-free stargate even if the destination is free
      */
-    CHARGE_FREE_DESTINATION("chargeFreeDestination", "Whether to charge for a teleportation from a non-free stargate even if the destination is free", true, OptionDataType.BOOLEAN, false),
+    CHARGE_FREE_DESTINATION("chargeFreeDestination",
+            "Whether to charge for a teleportation from a non-free stargate even if the destination is free",
+            true, OptionDataType.BOOLEAN, false),
 
     /**
      * The default color to use for "light" signs
      */
-    DEFAULT_LIGHT_SIGN_COLOR("signStyle.defaultForeground", "The default color to use for \"light\" signs", "BLACK", OptionDataType.COLOR, false),
+    DEFAULT_LIGHT_SIGN_COLOR("signStyle.defaultForeground", "The default color to use for \"light\" signs",
+            "BLACK", OptionDataType.COLOR, false),
 
     /**
      * The default color to use for "dark" signs
      */
-    DEFAULT_DARK_SIGN_COLOR("signStyle.defaultBackground", "The default color to use for \"dark\" signs", "WHITE", OptionDataType.COLOR, false),
+    DEFAULT_DARK_SIGN_COLOR("signStyle.defaultBackground", "The default color to use for \"dark\" signs",
+            "WHITE", OptionDataType.COLOR, false),
 
     /**
      * The color style to use for the destination names displayed on a sign
      */
-    NAME_STYLE("signStyle.listing", "The color style to use for the destination names displayed on a sign", 1, OptionDataType.INTEGER, false),
+    NAME_STYLE("signStyle.listing", "The color style to use for the destination names displayed on a sign",
+            1, OptionDataType.INTEGER, false),
 
     /**
      * The color style to use for the pointers displayed on a sign
      */
-    POINTER_STYLE("signStyle.pointer", "The color style to use for the pointers displayed on a sign", 2, OptionDataType.INTEGER, false),
+    POINTER_STYLE("signStyle.pointer", "The color style to use for the pointers displayed on a sign",
+            2, OptionDataType.INTEGER, false),
 
     /**
      * The multiplier to use for the exit speed when leaving a Stargate
@@ -93,98 +106,127 @@ public enum ConfigurationOption {
      * <p>If the multiplier is 0, the behavior is the same as in legacy. If the multiplier is 1, it's the same as the
      * entry speed. 2 = double, 0.5 = half.</p>
      */
-    GATE_EXIT_SPEED_MULTIPLIER("gateExitSpeedMultiplier", "The multiplier to use for the exit speed when leaving a Stargate", 1.0, OptionDataType.DOUBLE, false),
+    GATE_EXIT_SPEED_MULTIPLIER("gateExitSpeedMultiplier",
+            "The multiplier to use for the exit speed when leaving a Stargate", 1.0, OptionDataType.DOUBLE, false),
 
     /**
      * Whether to strip any color tags from stargate names and inter-server networks
      */
-    DISABLE_CUSTOM_COLORED_NAMES("disableCustomColoredNames", "Whether to strip any color tags from stargate names and inter-server networks", false, OptionDataType.BOOLEAN, false),
+    DISABLE_CUSTOM_COLORED_NAMES("disableCustomColoredNames",
+            "Whether to strip any color tags from stargate names and inter-server networks", false,
+            OptionDataType.BOOLEAN, false),
 
     /**
      * The level of debugging/warning messages to display
      */
-    DEBUG_LEVEL("loggingLevel", "The level of debugging/warning messages to display", "INFO", OptionDataType.LOGGING_LEVEL, false),
+    DEBUG_LEVEL("loggingLevel", "The level of debugging/warning messages to display", "INFO",
+            OptionDataType.LOGGING_LEVEL, false),
 
     /**
      * The version of the configuration. Use for updating the config file
      */
-    CONFIG_VERSION("configVersion", "The version of the configuration. Use for updating the config file", 1, OptionDataType.INTEGER, false),
+    CONFIG_VERSION("configVersion", "The version of the configuration. Use for updating the config file",
+            1, OptionDataType.INTEGER, false),
 
     /**
      * The name of the .db file if using SQLite
      */
-    DATABASE_NAME("portalFile", "The name of the .db file if using SQLite", "stargate", OptionDataType.STRING, false),
+    DATABASE_NAME("portalFile", "The name of the .db file if using SQLite", "stargate",
+            OptionDataType.STRING, false),
 
     /**
      * Whether to use a "real" database instead of just a .db file
      */
-    USING_REMOTE_DATABASE("bungee.useRemoteDatabase", "Whether to use a \"real\" database instead of just a .db file", false, OptionDataType.BOOLEAN, false),
+    USING_REMOTE_DATABASE("bungee.useRemoteDatabase",
+            "Whether to use a \"real\" database instead of just a .db file", false,
+            OptionDataType.BOOLEAN, false),
 
     /**
      * Whether to use database settings from a Hikari config file instead of the settings in the config file
      */
-    SHOW_HIKARI_CONFIG("bungee.remoteDatabaseSettings.advancedDatabaseConfiguration", "Whether to use database settings from a Hikari config file instead of the settings in the config file", false, OptionDataType.BOOLEAN, false),
+    SHOW_HIKARI_CONFIG("bungee.remoteDatabaseSettings.advancedDatabaseConfiguration",
+            "Whether to use database settings from a Hikari config file instead of the settings in the config file",
+            false, OptionDataType.BOOLEAN, false),
 
     /**
      * The database driver to use, if using a remote database
      */
-    BUNGEE_DRIVER("bungee.remoteDatabaseSettings.driver", "The database driver to use, if using a remote database", "MySQL", OptionDataType.REMOTE_DATABASE_DRIVER, false),
+    BUNGEE_DRIVER("bungee.remoteDatabaseSettings.driver",
+            "The database driver to use, if using a remote database", "MySQL",
+            OptionDataType.REMOTE_DATABASE_DRIVER, false),
 
     /**
      * The name of the used database, if using a remote database
      */
-    BUNGEE_DATABASE("bungee.remoteDatabaseSettings.database", "The name of the used database, if using a remote database", "stargate", OptionDataType.STRING, false),
+    BUNGEE_DATABASE("bungee.remoteDatabaseSettings.database",
+            "The name of the used database, if using a remote database", "stargate",
+            OptionDataType.STRING, false),
 
     /**
      * The port of the used database, if using a remote database
      */
-    BUNGEE_PORT("bungee.remoteDatabaseSettings.port", "The port of the used database, if using a remote database", 3306, OptionDataType.INTEGER, false),
+    BUNGEE_PORT("bungee.remoteDatabaseSettings.port",
+            "The port of the used database, if using a remote database", 3306, OptionDataType.INTEGER, false),
 
     /**
      * The address of the used database, if using a remote database
      */
-    BUNGEE_ADDRESS("bungee.remoteDatabaseSettings.address", "The address of the used database, if using a remote database", "localhost", OptionDataType.STRING, false),
+    BUNGEE_ADDRESS("bungee.remoteDatabaseSettings.address",
+            "The address of the used database, if using a remote database", "localhost",
+            OptionDataType.STRING, false),
 
     /**
      * The username for the used database, if using a remote database
      */
-    BUNGEE_USERNAME("bungee.remoteDatabaseSettings.username", "The username for the used database, if using a remote database", "root", OptionDataType.STRING, false),
+    BUNGEE_USERNAME("bungee.remoteDatabaseSettings.username",
+            "The username for the used database, if using a remote database", "root",
+            OptionDataType.STRING, false),
 
     /**
      * The password for the used database, if using a remote database
      */
-    BUNGEE_PASSWORD("bungee.remoteDatabaseSettings.password", "The password for the used database, if using a remote database", "", OptionDataType.STRING, false),
+    BUNGEE_PASSWORD("bungee.remoteDatabaseSettings.password",
+            "The password for the used database, if using a remote database", "",
+            OptionDataType.STRING, false),
 
     /**
      * Whether to use an SSL connection, if using a remote database
      */
-    BUNGEE_USE_SSL("bungee.remoteDatabaseSettings.useSSL", "Whether to use an SSL connection, if using a remote database", true, OptionDataType.BOOLEAN, false),
-
+    BUNGEE_USE_SSL("bungee.remoteDatabaseSettings.useSSL",
+            "Whether to use an SSL connection, if using a remote database", true,
+            OptionDataType.BOOLEAN, false),
 
     /**
      * When using remote database, what should the name of the proxy be?
      */
-    BUNGEE_INSTANCE_NAME("customRemoteDatabasePrefix", " When using remote database, what should the name of the proxy be?", "SG_", OptionDataType.STRING, false),
+    BUNGEE_INSTANCE_NAME("customRemoteDatabasePrefix",
+            "When using remote database, what should the name of the proxy be?", "SG_",
+            OptionDataType.STRING, false),
 
     /**
      * Allow explosions to destroy portals
      */
-    DESTROY_ON_EXPLOSION("destroyOnExplosion", "Allow explosions to destroy portals", false, OptionDataType.BOOLEAN, false),
+    DESTROY_ON_EXPLOSION("destroyOnExplosion", "Allow explosions to destroy portals", false,
+            OptionDataType.BOOLEAN, false),
 
     /**
      * Allow vehicles to teleport without any player inside
      */
-    HANDLE_VEHICLES("handleVehicles", "Allow vehicles to teleport without any player inside", true, OptionDataType.BOOLEAN, false),
+    HANDLE_VEHICLES("handleVehicles", "Allow vehicles to teleport without any player inside", true,
+            OptionDataType.BOOLEAN, false),
 
     /**
      * Protect the entrance of a portal from entity based events
      */
-    PROTECT_ENTRANCE("protectEntrance", "Protect the entrance of a portal from entity based events", true, OptionDataType.BOOLEAN, false),
+    PROTECT_ENTRANCE("protectEntrance", "Protect the entrance of a portal from entity based events", true,
+            OptionDataType.BOOLEAN, false),
 
     /**
      * Remember the last destination a networked portal was connected to
      */
-    REMEMBER_LAST_DESTINATION("rememberLastDestination", "Remember the last destination a networked portal was connected to", false, OptionDataType.BOOLEAN, false),
+    REMEMBER_LAST_DESTINATION("rememberLastDestination",
+            "Remember the last destination a networked portal was connected to", false,
+            OptionDataType.BOOLEAN, false),
 
     /**
      * TODO: Unimplemented
@@ -194,23 +236,26 @@ public enum ConfigurationOption {
     /**
      * Check if the portal is valid on startup (prevent zombie portals)
      */
-    CHECK_PORTAL_VALIDITY("checkPortalValidity", "Check if the portal is valid on startup (prevent zombie portals)", true, OptionDataType.BOOLEAN, false),
+    CHECK_PORTAL_VALIDITY("checkPortalValidity",
+            "Check if the portal is valid on startup (prevent zombie portals)", true,
+            OptionDataType.BOOLEAN, false),
 
     /**
      * Handle leashed entities during teleportation
      */
-    HANDLE_LEASHES("handleLeashedCreatures", "Handle leashed entities during teleportation", true, OptionDataType.BOOLEAN, false),
+    HANDLE_LEASHES("handleLeashedCreatures", "Handle leashed entities during teleportation", true,
+            OptionDataType.BOOLEAN, false),
 
     /**
      * TODO: Unimplemented
      */
-    DEFAULT_TERMINAL_NAME("defaultTerminalNetwork", null, null, null, true), 
+    DEFAULT_TERMINAL_NAME("defaultTerminalNetwork", null, null, null, true),
 
     /**
      * Allows users to use/break any gates they create, regardless of any permissions that may prevent them from doing so
      */
-    ENABLE_OWNED_GATES("enableOwnedGates",
-            "Allows users to use/break any gates they create, regardless of any permissions that may prevent them from doing so",
+    ENABLE_OWNED_GATES("enableOwnedGates", "Allows users to use/break any gates they create, " +
+            "regardless of any permissions that may prevent them from doing so",
             true, OptionDataType.BOOLEAN, true);
 
     private final String configNode;
