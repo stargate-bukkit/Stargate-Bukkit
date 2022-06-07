@@ -103,7 +103,8 @@ public class EconomyManager {
             return true;
         }
         if (ConfigurationHelper.getBoolean(ConfigurationOption.GATE_OWNER_REVENUE)) {
-            if (chargeAndDepositPlayer(player, Bukkit.getServer().getOfflinePlayer(origin.getOwnerUUID()), amount)) {
+            OfflinePlayer transactionTarget = Bukkit.getServer().getOfflinePlayer(origin.getOwnerUUID());
+            if (!transactionTarget.equals(player) && chargeAndDepositPlayer(player, transactionTarget, amount)) {
                 if (player.getPlayer() != null) {
                     String unFormattedMessage = Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.ECO_OBTAIN);
                     String portalNameCompiledMessage = TranslatableMessageFormatter.formatPortal(unFormattedMessage, origin.getName());
@@ -143,10 +144,9 @@ public class EconomyManager {
     }
 
     private boolean chargeAndDepositPlayer(OfflinePlayer player, OfflinePlayer transactionTarget, int amount) {
-        if (amount == 0) {
+        if (amount == 0 || player.equals(transactionTarget)) {
             return true;
         }
-
         if (chargePlayer(player, amount)) {
             return depositPlayer(transactionTarget, amount);
         }
