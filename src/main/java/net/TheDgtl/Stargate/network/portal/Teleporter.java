@@ -275,11 +275,12 @@ public class Teleporter {
                 }
             }, 1);
         } else {
-            if (charge(target)) {
-                teleport(target, exit);
-                target.setVelocity(targetVelocity);
+            if (target instanceof Player && !charge(target)) {
+                //TODO: Inform the user that the payment couldn't be processed or something
+                return;
             }
-            //TODO: Inform the user that the payment couldn't be processed or something
+            teleport(target, exit);
+            target.setVelocity(targetVelocity);
         }
     }
 
