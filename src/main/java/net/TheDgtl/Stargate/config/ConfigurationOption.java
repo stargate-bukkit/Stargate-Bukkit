@@ -93,7 +93,7 @@ public enum ConfigurationOption {
      * <p>If the multiplier is 0, the behavior is the same as in legacy. If the multiplier is 1, it's the same as the
      * entry speed. 2 = double, 0.5 = half.</p>
      */
-    GATE_EXIT_SPEED_MULTIPLIER("gateExitSpeedMultiplier", "The multiplier to use for the exit speed when leaving a Stargate", 1, OptionDataType.DOUBLE, false),
+    GATE_EXIT_SPEED_MULTIPLIER("gateExitSpeedMultiplier", "The multiplier to use for the exit speed when leaving a Stargate", 1.0, OptionDataType.DOUBLE, false),
 
     /**
      * Whether to strip any color tags from stargate names and inter-server networks
