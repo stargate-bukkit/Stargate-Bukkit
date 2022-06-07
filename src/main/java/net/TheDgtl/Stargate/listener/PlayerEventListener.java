@@ -5,6 +5,7 @@ import net.TheDgtl.Stargate.action.ConditionalDelayedAction;
 import net.TheDgtl.Stargate.action.ConditionalRepeatedTask;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
+import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -138,23 +139,31 @@ public class PlayerEventListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE) || !ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
+        if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             return;
-        }
-
-        //Gets the name of this server if it's still unknown
-        if (!Stargate.knowsServerName) {
-            Stargate.log(Level.FINEST, "First time player join");
-            getBungeeServerName();
         }
 
         Player player = event.getPlayer();
         Portal destination = BungeeHelper.pullFromQueue(player.getName());
 
         if (destination == null) {
+            Stargate.log(Level.FINE, "Destination was null");
             return;
         }
         destination.teleportHere(player, null);
+        
+        if(!ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
+            return;
+        }
+        
+        
+        //Gets the name of this server if it's still unknown
+        if (!Stargate.knowsServerName) {
+            Stargate.log(Level.FINEST, "First time player join");
+            getBungeeServerName();
+        }
+
+        
     }
 
     /**

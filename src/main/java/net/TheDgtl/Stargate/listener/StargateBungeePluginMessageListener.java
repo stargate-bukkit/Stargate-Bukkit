@@ -24,12 +24,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.exception.NameErrorException;
-import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.network.InterServerNetwork;
-import net.TheDgtl.Stargate.network.Network;
-import net.TheDgtl.Stargate.network.RegistryAPI;
-import net.TheDgtl.Stargate.network.portal.BungeePortal;
-import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import net.TheDgtl.Stargate.property.PluginChannel;
@@ -43,7 +38,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -113,10 +107,10 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     break;
                 case PLAYER_TELEPORT:
                     Stargate.log(Level.FINEST, "trying to read player join json msg");
-                    playerConnect(in.readUTF());
+                    BungeeHelper.playerConnect(in.readUTF());
                     break;
                 case LEGACY_BUNGEE:
-                    legacyPlayerConnect(in.readUTF());
+                    BungeeHelper.legacyPlayerConnect(in.readUTF());
                     break;
                 default:
                     Stargate.log(Level.FINEST, "Received unknown message with a sub-channel: " + subChannel);
@@ -126,69 +120,6 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             Stargate.log(Level.WARNING, "[Stargate] Error receiving BungeeCord message");
             ex.printStackTrace();
         }
-    }
-
-    /**
-     * Handle the connection of a player using the legacy Stargate method
-     *
-     * <p>This is done to let servers on any of the old Stargate forks connect to this version.</p>
-     *
-     * @param message <p>The legacy connect message to parse and handle</p>
-     */
-    private void legacyPlayerConnect(String message) {
-        RegistryAPI registry = Stargate.getInstance().getRegistry();
-        String bungeeNetworkName = BungeePortal.getLegacyNetworkName();
-
-        String[] parts = message.split("#@#");
-
-        String playerName = parts[0];
-        String destination = parts[1];
-
-        Stargate.log(Level.FINER, "destination=" + destination + ",player=" + playerName);
-
-        // Check if the player is online, if so, teleport, otherwise, queue
-        Player player = stargate.getServer().getPlayer(playerName);
-        if (player == null) {
-            Stargate.log(Level.FINEST, "Player was null; adding to queue");
-
-            BungeeHelper.addToQueue(registry, playerName, destination, bungeeNetworkName, false);
-        } else {
-            Network network = getLegacyBungeeNetwork(registry, bungeeNetworkName);
-            if (network == null) {
-                return;
-            }
-            //If the destination is invalid, just let the player teleport to their last location
-            Portal destinationPortal = network.getPortal(destination);
-            if (destinationPortal != null) {
-                destinationPortal.teleportHere(player, null);
-            }
-        }
-    }
-
-    /**
-     * Gets the legacy bungee network
-     *
-     * <p>If the network doesn't already exist, it will be created</p>
-     *
-     * @param registry      <p>The registry to use</p>
-     * @param bungeeNetwork <p>The name of the legacy bungee network</p>
-     * @return <p>The legacy bungee network, or null if unobtainable</p>
-     */
-    private Network getLegacyBungeeNetwork(RegistryAPI registry, String bungeeNetwork) {
-        Network network = registry.getNetwork(bungeeNetwork, false);
-        //Create the legacy network if it doesn't already exist
-        try {
-            if (network == null) {
-                registry.createNetwork(bungeeNetwork, new HashSet<>());
-                network = registry.getNetwork(bungeeNetwork, false);
-            }
-        } catch (NameErrorException e) {
-            //Ignored as the null check will take care of this
-        }
-        if (network == null) {
-            Stargate.log(Level.WARNING, "Unable to get or create the legacy bungee network");
-        }
-        return network;
     }
 
     /**
@@ -227,42 +158,6 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             }
         } catch (NameErrorException ignored) {
         }
-    }
-
-    /**
-     * Handles a player teleport message
-     *
-     * @param message <p>The player teleport message to parse and handle</p>
-     */
-    private void playerConnect(String message) {
-        JsonParser parser = new JsonParser();
-        Stargate.log(Level.FINEST, message);
-
-        JsonObject json = (JsonObject) parser.parse(message);
-        String playerName = json.get(StargateProtocolProperty.PLAYER.toString()).getAsString();
-        String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
-        String networkName = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
-
-        Player player = stargate.getServer().getPlayer(playerName);
-        if (player == null) {
-            Stargate.log(Level.FINEST, "Player was null; adding to queue");
-            BungeeHelper.addToQueue(Stargate.getRegistryStatic(), playerName, portalName, networkName, true);
-            return;
-        }
-
-        Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
-        Network network = Stargate.getRegistryStatic().getNetwork(networkName, true);
-        if (network == null) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.BUNGEE_INVALID_NETWORK));
-            return;
-        }
-        Portal destinationPortal = network.getPortal(portalName);
-        if (destinationPortal == null) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.BUNGEE_INVALID_GATE));
-            return;
-        }
-        destinationPortal.teleportHere(player, null);
-
     }
 
 }

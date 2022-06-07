@@ -1,9 +1,13 @@
 package net.TheDgtl.Stargate.util;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.RegistryAPI;
+import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.property.StargateProtocolProperty;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,8 +16,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.logging.Level;
+
+import org.bukkit.entity.Player;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * A helper class for dealing with BungeeCord
@@ -109,4 +119,116 @@ public final class BungeeHelper {
         return bungeeQueue.remove(playerName);
     }
 
+    
+    /**
+     * Handle the connection of a player using the legacy Stargate method
+     *
+     * <p>This is done to let servers on any of the old Stargate forks connect to this version.</p>
+     *
+     * @param message <p>The legacy connect message to parse and handle</p>
+     */
+    public static void legacyPlayerConnect(String message) {
+        RegistryAPI registry = Stargate.getInstance().getRegistry();
+        String bungeeNetworkName = BungeePortal.getLegacyNetworkName();
+
+        String[] parts = message.split("#@#");
+
+        String playerName = parts[0];
+        String destination = parts[1];
+
+        Stargate.log(Level.FINER, "destination=" + destination + ",player=" + playerName);
+
+        // Check if the player is online, if so, teleport, otherwise, queue
+        Player player = Stargate.getInstance().getServer().getPlayer(playerName);
+        if (player == null) {
+            Stargate.log(Level.FINEST, "Player was null; adding to queue");
+
+            BungeeHelper.addToQueue(registry, playerName, destination, bungeeNetworkName, false);
+        } else {
+            Network network = getLegacyBungeeNetwork(registry, bungeeNetworkName);
+            if (network == null) {
+                Stargate.log(Level.WARNING,"The legacy bungee network is missing, this is most definitly a bug please contact developers (/sg about)");
+                return;
+            }
+            //If the destination is invalid, just let the player teleport to their last location
+            Portal destinationPortal = network.getPortal(destination);
+            if (destinationPortal == null) {
+                Stargate.log(Level.FINE,String.format("Could not find destination portal with name '%s'", destination));
+                return;
+            }
+            
+            Stargate.log(Level.FINE,String.format("Teleporting player to destination portal '%s'", destinationPortal.getName()));
+            destinationPortal.teleportHere(player, null);
+        }
+    }
+
+    /**
+     * Gets the legacy bungee network
+     *
+     * <p>If the network doesn't already exist, it will be created</p>
+     *
+     * @param registry      <p>The registry to use</p>
+     * @param bungeeNetwork <p>The name of the legacy bungee network</p>
+     * @return <p>The legacy bungee network, or null if unobtainable</p>
+     */
+    private static Network getLegacyBungeeNetwork(RegistryAPI registry, String bungeeNetwork) {
+        Network network = registry.getNetwork(bungeeNetwork, false);
+        //Create the legacy network if it doesn't already exist
+        try {
+            if (network == null) {
+                registry.createNetwork(bungeeNetwork, new HashSet<>());
+                network = registry.getNetwork(bungeeNetwork, false);
+            }
+        } catch (NameErrorException e) {
+            //Ignored as the null check will take care of this
+        }
+        if (network == null) {
+            Stargate.log(Level.WARNING, "Unable to get or create the legacy bungee network");
+        }
+        
+        StringBuilder builder = new StringBuilder("LegacyBungeeNetwork contains the following portals:\n");
+        for(Portal portal : network.getAllPortals() ) {
+            builder.append("    " + portal.getName() + "\n");
+        }
+        Stargate.log(Level.FINEST, builder.toString());
+        return network;
+    }
+    
+
+
+    /**
+     * Handles a player teleport message
+     *
+     * @param message <p>The player teleport message to parse and handle</p>
+     */
+    public static void playerConnect(String message) {
+        JsonParser parser = new JsonParser();
+        Stargate.log(Level.FINEST, message);
+
+        JsonObject json = (JsonObject) parser.parse(message);
+        String playerName = json.get(StargateProtocolProperty.PLAYER.toString()).getAsString();
+        String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
+        String networkName = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
+
+        Player player = Stargate.getInstance().getServer().getPlayer(playerName);
+        if (player == null) {
+            Stargate.log(Level.FINEST, "Player was null; adding to queue");
+            BungeeHelper.addToQueue(Stargate.getRegistryStatic(), playerName, portalName, networkName, true);
+            return;
+        }
+
+        Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
+        Network network = Stargate.getRegistryStatic().getNetwork(networkName, true);
+        if (network == null) {
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.BUNGEE_INVALID_NETWORK));
+            return;
+        }
+        Portal destinationPortal = network.getPortal(portalName);
+        if (destinationPortal == null) {
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.BUNGEE_INVALID_GATE));
+            return;
+        }
+        destinationPortal.teleportHere(player, null);
+
+    }
 }
