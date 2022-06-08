@@ -115,6 +115,9 @@ public class DataMigratorTest {
                 lcloPortalChecks);
         output.put("config-lclo.yml", lcloChecks);
 
+        
+        output.put("config-legacyOldest.yml", new TwoTuple<>(new HashMap<>(), new HashMap<>()));
+        
         return output;
     }
 
