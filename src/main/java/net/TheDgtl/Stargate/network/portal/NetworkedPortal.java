@@ -36,6 +36,8 @@ public class NetworkedPortal extends AbstractPortal {
     private int selectedDestination = NO_DESTINATION_SELECTED;
     private List<Portal> destinations = new ArrayList<>();
 
+    private boolean isActive;
+
     /**
      * Instantiates a new networked portal
      *
@@ -68,12 +70,12 @@ public class NetworkedPortal extends AbstractPortal {
             return;
         }
 
-        boolean previouslyActivated = super.isActive;
+        boolean previouslyActivated = this.isActive;
         activate(actor);
         if (destinations.size() < 1) {
             String message = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.DESTINATION_EMPTY);
             event.getPlayer().sendMessage(message);
-            super.isActive = false;
+            this.isActive = false;
             return;
         }
 
@@ -121,9 +123,9 @@ public class NetworkedPortal extends AbstractPortal {
     @Override
     public void updateState() {
         Portal destination = getDestination();
-        if (super.isActive && (destination == null || network.getPortal(destination.getName()) == null)) {
+        if (this.isActive && (destination == null || network.getPortal(destination.getName()) == null)) {
             this.deactivate();
-            super.isActive = false; // in case of alwaysOn portal
+            this.isActive = false; // in case of alwaysOn portal
             this.close(true);
         }
 
@@ -137,7 +139,7 @@ public class NetworkedPortal extends AbstractPortal {
      * @return <p> The position of the selected portal in the destinations list</p>
      */
     private int reloadSelectedDestination() {
-        if (!super.isActive) {
+        if (!this.isActive) {
             return NO_DESTINATION_SELECTED;
         }
 
@@ -163,7 +165,7 @@ public class NetworkedPortal extends AbstractPortal {
     public void drawControlMechanisms() {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
-        if (!super.isActive) {
+        if (!this.isActive) {
             lines[1] = super.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.RIGHT_CLICK));
             lines[2] = super.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.TO_USE));
             lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(network.getHighlightedName()) : "";
@@ -330,16 +332,21 @@ public class NetworkedPortal extends AbstractPortal {
     protected void activate(Player player) {
         super.activate(player);
         this.destinations = getDestinations(player);
+        if (this.isActive) {
+            return;
+        }
+
+        this.isActive = true;
     }
 
     @Override
     protected void deactivate() {
-        super.deactivate();
-        if (isOpen()) {
-            return;
+        if (!isOpen() && this.isActive) {
+            this.destinations.clear();
+            this.destination = null;
+            this.isActive = false;
         }
-        this.destinations.clear();
-        this.destination = null;
+        super.deactivate();
     }
 
 

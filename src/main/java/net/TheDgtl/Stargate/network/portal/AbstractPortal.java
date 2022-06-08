@@ -76,7 +76,6 @@ public abstract class AbstractPortal implements RealPortal {
     private final Set<PortalFlag> flags;
     protected final StargateLogger logger;
 
-    protected boolean isActive;
     protected long activatedTime;
     protected UUID activator;
     private static final int ACTIVE_DELAY = 15;
@@ -462,12 +461,6 @@ public abstract class AbstractPortal implements RealPortal {
             deactivate(activationTime);
             return true;
         }));
-
-        if (this.isActive) {
-            return;
-        }
-
-        this.isActive = true;
     }
 
 
@@ -480,7 +473,7 @@ public abstract class AbstractPortal implements RealPortal {
      * @param activatedTime <p>The time this portal was activated</p>
      */
     protected void deactivate(long activatedTime) {
-        if (!this.isActive || activatedTime != this.activatedTime) {
+        if (activatedTime != this.activatedTime) {
             return;
         }
         deactivate();
@@ -490,17 +483,11 @@ public abstract class AbstractPortal implements RealPortal {
      * De-activates this portal
      */
     protected void deactivate() {
-        if (!this.isActive) {
-            return;
-        }
         //Call the deactivate event to notify add-ons
         StargateDeactivateEvent event = new StargateDeactivateEvent(this);
         Bukkit.getPluginManager().callEvent(event);
 
         this.activator = null;
-        if (!this.hasFlag(PortalFlag.ALWAYS_ON)) {
-            this.isActive = false;
-        }
         drawControlMechanisms();
     }
 }

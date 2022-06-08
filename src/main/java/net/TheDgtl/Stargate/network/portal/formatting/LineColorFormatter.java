@@ -56,13 +56,13 @@ public class LineColorFormatter extends AbstractLineColorFormatter {
 
         switch (ConfigurationHelper.getInteger(ConfigurationOption.POINTER_STYLE)) {
             case 1:
-                selectorColor = getDefaultColor(isLightSign);
+                selectorColor = getColor(isLightSign);
                 break;
             case 2:
                 selectorColor = getNameColor(portal, isLightSign);
                 break;
             case 4:
-                selectorColor = getDefaultColor(!isLightSign);
+                selectorColor = getInvertedColor(isLightSign);
                 break;
             default:
                 selectorColor = GRAY_SELECTOR_COLOR;
@@ -93,6 +93,19 @@ public class LineColorFormatter extends AbstractLineColorFormatter {
             return ColorConverter.getChatColorFromDyeColor(dyeColor);
         } else {
             return getDefaultColor(isLightSign);
+        }
+    }
+
+    /**
+     * 
+     * @param isLightSign <p>Whether to get the color for a light sign or a dark sign</p>
+     * @return
+     */
+    private ChatColor getInvertedColor(boolean isLightSign) {
+        if (dyeColor != null && dyeColor != DyeColor.BLACK) {
+            return ColorConverter.getInvertedChatColorFromDyeColor(dyeColor);
+        } else {
+            return getDefaultColor(!isLightSign);
         }
     }
 

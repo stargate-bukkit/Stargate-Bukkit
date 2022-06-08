@@ -172,7 +172,7 @@ public class StargatePermissionManager implements PermissionManager {
         Stargate.log(Level.CONFIG, "Checking create permissions");
         List<String> relatedPerms = PortalPermissionHelper.getCreatePermissions(portal, target);
         boolean hasPermission = hasPermissions(target, relatedPerms);
-        if (hasPermission && portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && canProcessMetaData && target instanceof Player) {
+        if (hasPermission && portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && target instanceof Player) {
             return !isNetworkFull(portal.getNetwork());
         }
         return hasPermission;
@@ -255,12 +255,14 @@ public class StargatePermissionManager implements PermissionManager {
      */
     private boolean isNetworkFull(Network network) {
         Player player = (Player) target;
-        String metaString = "gate-limit";
-
-        int maxGates = metadataProvider.getPlayerInfoInteger(target.getWorld().getName(), player, metaString, -1);
-        if (maxGates == -1) {
-            metadataProvider.getGroupInfoInteger(target.getWorld(),
-                    metadataProvider.getPrimaryGroup(player), metaString, -1);
+        int maxGates = -1;
+        if(canProcessMetaData) {
+            String metaString = "gate-limit";
+            maxGates = metadataProvider.getPlayerInfoInteger(target.getWorld().getName(), player, metaString, -1);
+            if (maxGates == -1) {
+                metadataProvider.getGroupInfoInteger(target.getWorld(),
+                        metadataProvider.getPrimaryGroup(player), metaString, -1);
+            }
         }
         if (maxGates == -1) {
             maxGates = ConfigurationHelper.getInteger(ConfigurationOption.GATE_LIMIT);
@@ -275,7 +277,7 @@ public class StargatePermissionManager implements PermissionManager {
                 return true;
             }
         }
-        Stargate.log(Level.CONFIG, " Network is not full, maxGates = %s");
+        Stargate.log(Level.CONFIG, String.format(" Network is not full, maxGates = %s", maxGates));
         return false;
     }
 

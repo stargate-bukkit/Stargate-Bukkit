@@ -58,4 +58,9 @@ public final class ColorConverter {
         return dyeColorToMaterialColorsConversionMap.get(dye);
     }
 
+    public static ChatColor getInvertedChatColorFromDyeColor(DyeColor dyeColor) {
+        Color color = dyeColor.getColor();
+        return ChatColor.of(String.format("#%02X%02X%02X", 255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue()));
+    }
+
 }
