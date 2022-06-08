@@ -147,9 +147,10 @@ public class BlockEventListener implements Listener {
             } else {
                 Stargate.log(Level.FINER, "....Choosing network name....");
                 Stargate.log(Level.FINER, "initial name is " + network);
+                boolean shouldShowFallBackMessage = !network.isEmpty();
                 finalNetworkName = NetworkCreationHelper.interpretNetworkName(network, flags, player, registry);
                 Stargate.log(Level.FINER, "Took format " + finalNetworkName);
-                finalNetworkName = NetworkCreationHelper.getAllowedNetworkName(finalNetworkName, permissionManager, player);
+                finalNetworkName = NetworkCreationHelper.getAllowedNetworkName(finalNetworkName, permissionManager, player, shouldShowFallBackMessage);
                 Stargate.log(Level.FINER, "From allowed permissions took " + finalNetworkName);
                 flags.addAll(NetworkCreationHelper.getNameRelatedFlags(finalNetworkName));
                 finalNetworkName = NetworkCreationHelper.parseNetworkNameName(finalNetworkName);

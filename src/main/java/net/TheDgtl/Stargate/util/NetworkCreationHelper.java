@@ -143,7 +143,7 @@ public final class NetworkCreationHelper {
      * @param player             <P> The player that initiated the call </p>
      */
     public static String getAllowedNetworkName(String initialNetworkName, StargatePermissionManager permissionManager,
-                                               Player player) {
+                                               Player player, boolean shouldShowFallbackMessage) {
         String modifiedNetworkName = initialNetworkName;
         HighlightingStyle style = HighlightingStyle.getHighlightType(modifiedNetworkName);
         if (!permissionManager.canCreateInNetwork(modifiedNetworkName) && style == HighlightingStyle.NOTHING) {
@@ -157,9 +157,7 @@ public final class NetworkCreationHelper {
                     String.format(" Player does not have perms to create on current network %s. Replacing to private network with the players name...", modifiedNetworkName));
             modifiedNetworkName = HighlightingStyle.PERSONAL.getHighlightedName(player.getName());
         }
-        if (!initialNetworkName.equals(modifiedNetworkName)
-                && !HighlightingStyle.getNameFromHighlightedText(initialNetworkName)
-                        .equalsIgnoreCase(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
+        if (!initialNetworkName.equals(modifiedNetworkName) && shouldShowFallbackMessage) {
             String plainMessage = Stargate.getLanguageManagerStatic()
                     .getWarningMessage(TranslatableMessage.GATE_CREATE_FALLBACK);
             player.sendMessage(TranslatableMessageFormatter.formatNetwork(plainMessage, initialNetworkName));
