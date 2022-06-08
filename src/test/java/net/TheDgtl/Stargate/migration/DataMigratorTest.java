@@ -6,6 +6,7 @@ import com.google.common.io.Files;
 import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
+import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.config.StargateYamlConfiguration;
 import net.TheDgtl.Stargate.container.TwoTuple;
 import net.TheDgtl.Stargate.database.Database;
@@ -36,6 +37,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DataMigratorTest {
@@ -160,10 +162,19 @@ public class DataMigratorTest {
                 Assertions.assertTrue(
                         fileConfig.getKeys(true).contains(key) || key.contains(StargateYamlConfiguration.START_OF_COMMENT), String.format("The key %s was added to the new config of %s", key, configFile.getName()));
             }
-
+            
             dataMigrator.updateFileConfiguration(fileConfig, config);
             migratorMap.put(configFile.getName(), dataMigrator);
             fileConfig.load(configFile);
+
+            for(ConfigurationOption option : ConfigurationOption.values()){
+                if(option.isHidden()) {
+                    continue;
+                }
+                Assertions.assertTrue(fileConfig.getKeys(true).contains(option.getConfigNode()), String.format("The option %s is missing in the configuration", option.getConfigNode()));
+            }
+            
+            logger.logMessage(Level.FINEST, "End config for file '"+configFile.getName()+"': \n" + fileConfig.saveToString());
         }
     }
 
