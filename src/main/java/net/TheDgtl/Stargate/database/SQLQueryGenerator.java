@@ -94,7 +94,7 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateCreatePortalTableStatement(Connection connection, PortalType portalType) throws SQLException {
         String interServerExtraFields = (portalType == PortalType.INTER_SERVER)
-                ? " isOnline BOOLEAN, homeServerId VARCHAR(36),"
+                ? " homeServerId VARCHAR(36),"
                 : "";
         String statementMessage = String
                 .format("CREATE TABLE IF NOT EXISTS {Portal} (name NVARCHAR(180) NOT NULL, network NVARCHAR(180) NOT NULL,"
@@ -393,8 +393,8 @@ public class SQLQueryGenerator {
     public PreparedStatement generateAddPortalStatement(Connection connection, RealPortal portal,
                                                         PortalType portalType) throws SQLException {
         boolean isInterServer = (portalType == PortalType.INTER_SERVER);
-        String extraKeys = (isInterServer ? ", homeServerId, isOnline" : "");
-        String extraValues = (isInterServer ? ", ?, ?" : "");
+        String extraKeys = (isInterServer ? ", homeServerId" : "");
+        String extraValues = (isInterServer ? ", ?" : "");
         String statementMessage = String.format("INSERT INTO {Portal} (network, name, destination, world, x, y, z, " +
                         "ownerUUID, gateFileName, facing, flipZ%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?%s);", extraKeys,
                 extraValues);
@@ -424,7 +424,7 @@ public class SQLQueryGenerator {
         statement.setBoolean(11, gate.getFlipZ());
 
         if (isInterServer) {
-            statement.setString(12, Stargate.getServerUUID().toString());
+            statement.setString(12, Stargate.getServerUUID());
             statement.setBoolean(13, true);
         }
 
@@ -451,29 +451,6 @@ public class SQLQueryGenerator {
         statement.setString(1, portal.getName());
         statement.setString(2, portal.getNetwork().getName());
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return statement;
-    }
-
-    /**
-     * Gets a prepared statement for changing the online status of a portal
-     *
-     * <p>An online portal is one that can be teleported to, while an offline portal cannot be teleported to until it
-     * comes online again.</p>
-     *
-     * @param connection <p>The database connection to use</p>
-     * @param portal     <p>The portal to update</p>
-     * @param isOnline   <p>Whether the given portal is currently online</p>
-     * @return <p>A prepared statement</p>
-     * @throws SQLException <p>If unable to prepare the statement</p>
-     */
-    public PreparedStatement generateSetPortalOnlineStatusStatement(Connection connection, Portal portal, boolean isOnline) throws SQLException {
-        //TODO: This is unimplemented
-        String statementString = "UPDATE {InterPortal} SET isOnline = ? WHERE network = ? AND name = ?;";
-        String statementMessage = replaceKnownTableNames(statementString);
-        PreparedStatement statement = connection.prepareStatement(statementMessage);
-        statement.setBoolean(1, isOnline);
-        statement.setString(2, portal.getNetwork().getName());
-        statement.setString(3, portal.getName());
         return statement;
     }
 
