@@ -86,6 +86,7 @@ public class InterServerNetwork extends LocalNetwork {
                     jsonData.add(StargateProtocolProperty.SERVER.toString(), new JsonPrimitive(Stargate.getServerName()));
                     jsonData.add(StargateProtocolProperty.PORTAL_FLAG.toString(), new JsonPrimitive(portal.getAllFlagsString()));
                     jsonData.add(StargateProtocolProperty.OWNER.toString(), new JsonPrimitive(portal.getOwnerUUID().toString()));
+                    Stargate.log(Level.FINER, String.format("Sending bungee message:\n%s", jsonData.toString()));
                     dataOutputStream.writeUTF(jsonData.toString());
                     Bukkit.getServer().sendPluginMessage(stargate, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
                 } catch (IOException ex) {
