@@ -157,8 +157,11 @@ public final class NetworkCreationHelper {
                     String.format(" Player does not have perms to create on current network %s. Replacing to private network with the players name...", modifiedNetworkName));
             modifiedNetworkName = HighlightingStyle.PERSONAL.getHighlightedName(player.getName());
         }
-        if (!initialNetworkName.equals(modifiedNetworkName)) {
-            String plainMessage = Stargate.getLanguageManagerStatic().getWarningMessage(TranslatableMessage.GATE_CREATE_FALLBACK);
+        if (!initialNetworkName.equals(modifiedNetworkName)
+                && !HighlightingStyle.getNameFromHighlightedText(initialNetworkName)
+                        .equalsIgnoreCase(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
+            String plainMessage = Stargate.getLanguageManagerStatic()
+                    .getWarningMessage(TranslatableMessage.GATE_CREATE_FALLBACK);
             player.sendMessage(TranslatableMessageFormatter.formatNetwork(plainMessage, initialNetworkName));
         }
 
