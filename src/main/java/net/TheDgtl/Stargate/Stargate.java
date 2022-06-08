@@ -100,7 +100,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private StorageAPI storageAPI;
     private LanguageManager languageManager;
-    private static final int CURRENT_CONFIG_VERSION = 7;
+    private static final int CURRENT_CONFIG_VERSION = 6;
     private static final SynchronousPopulator synchronousTickPopulator = new SynchronousPopulator();
     private static final SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
     private static final int MAX_TEXT_LENGTH = 40;

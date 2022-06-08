@@ -224,4 +224,4 @@ loggingLevel: INFO
 
 # An internal value used by the plugin to determine how old your config is.
 # Please do not change this.
-configVersion: 7
+configVersion: 6
