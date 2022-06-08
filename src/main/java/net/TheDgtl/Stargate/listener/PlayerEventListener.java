@@ -128,7 +128,7 @@ public class PlayerEventListener implements Listener {
             return false;
         }
         String itemName = item.getType().toString();
-        return (itemName.contains("DYE") || itemName.contains("GLOW_INK_SAC"));
+        return (itemName.contains("DYE") || item.getType() == Material.GLOW_INK_SAC);
     }
 
     /**
