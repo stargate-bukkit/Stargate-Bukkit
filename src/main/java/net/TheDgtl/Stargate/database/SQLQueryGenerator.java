@@ -271,7 +271,6 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateCreatePortalViewStatement(Connection connection,
                                                                PortalType portalType) throws SQLException {
-        //TODO: If MySQL; Only run if the view doesn't already exists
         if (portalType == PortalType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_VIEW_PORTAL));
         } else {
