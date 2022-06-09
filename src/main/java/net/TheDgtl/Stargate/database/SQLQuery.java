@@ -18,7 +18,7 @@ public enum SQLQuery {
     /**
      * The query for creating the position type table
      */
-    CREATE_TABLE_POSITION_TYPE,
+    CREATE_TABLE_PORTAL_POSITION_TYPE,
 
     /**
      * The query for creating the portal position table

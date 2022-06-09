@@ -150,6 +150,10 @@ public class DatabaseTester {
         finishStatement(generator.generateCreatePortalPositionTableStatement(connection, type));
     }
 
+    void createPortalPositionIndexTest(PortalType type) throws SQLException {
+        finishStatement(generator.generateCreatePortalPositionIndex(connection, type));
+    }
+
     void getFlagsTest() throws SQLException {
         printTableInfo("SG_Test_Flag");
 

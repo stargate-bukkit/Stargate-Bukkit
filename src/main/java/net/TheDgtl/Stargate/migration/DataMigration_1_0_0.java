@@ -48,7 +48,7 @@ public class DataMigration_1_0_0 extends DataMigration {
         Map<String, Object> newConfig = super.getUpdatedConfigValues(oldConfig);
         this.oldConfig = oldConfig;
 
-        for(String oldMaxGatesSetting : new String[]{"maxGatesEachNetwork", "maxgates"} ) {
+        for (String oldMaxGatesSetting : new String[]{"maxGatesEachNetwork", "maxgates"}) {
             if (oldConfig.get(oldMaxGatesSetting) != null) {
                 if ((int) oldConfig.get(oldMaxGatesSetting) == 0) {
                     newConfig.put("networkLimit", -1);
@@ -57,9 +57,8 @@ public class DataMigration_1_0_0 extends DataMigration {
                 }
             }
         }
-        
-        
-        
+
+
         Level logLevel = Level.INFO;
         if ((oldConfig.get("permdebug") != null && (boolean) oldConfig.get("permdebug")) ||
                 (oldConfig.get("debugging.permdebug") != null) && (boolean) oldConfig.get("debugging.permdebug")) {

@@ -256,7 +256,7 @@ public class StargatePermissionManager implements PermissionManager {
     private boolean isNetworkFull(Network network) {
         Player player = (Player) target;
         int maxGates = -1;
-        if(canProcessMetaData) {
+        if (canProcessMetaData) {
             String metaString = "gate-limit";
             maxGates = metadataProvider.getPlayerInfoInteger(target.getWorld().getName(), player, metaString, -1);
             if (maxGates == -1) {

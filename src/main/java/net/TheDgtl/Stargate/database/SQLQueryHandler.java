@@ -45,7 +45,7 @@ public class SQLQueryHandler {
      * @param sqlQuery <p>The SQL query to get</p>
      * @return <p>The query</p>
      */
-    public static String getQuery(SQLQuery sqlQuery) {
+    private static String getQuery(SQLQuery sqlQuery) {
         Map<DatabaseDriver, String> query = queries.get(sqlQuery);
         if (query == null) {
             return null;
