@@ -79,7 +79,7 @@ public class PortalDatabaseAPI implements StorageAPI {
         String PREFIX = usingRemoteDatabase ? ConfigurationHelper.getString(ConfigurationOption.BUNGEE_INSTANCE_NAME) : "";
         String serverPrefix = usingRemoteDatabase ? Stargate.getServerUUID().toString() : "";
         TableNameConfiguration config = new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
-        DriverEnum databaseEnum = usingRemoteDatabase ? DriverEnum.MYSQL : DriverEnum.SQLITE;
+        DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
         this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
         createTables();
     }
@@ -99,7 +99,7 @@ public class PortalDatabaseAPI implements StorageAPI {
         this.logger = logger;
         this.database = database;
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
-        DriverEnum databaseEnum = usingRemoteDatabase ? DriverEnum.MYSQL : DriverEnum.SQLITE;
+        DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
         this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
         createTables();
     }
@@ -241,7 +241,7 @@ public class PortalDatabaseAPI implements StorageAPI {
                 return new MySqlDatabase(stargate);
             }
 
-            DriverEnum driver = DriverEnum.valueOf(ConfigurationHelper.getString(ConfigurationOption.BUNGEE_DRIVER).toUpperCase());
+            DatabaseDriver driver = DatabaseDriver.valueOf(ConfigurationHelper.getString(ConfigurationOption.BUNGEE_DRIVER).toUpperCase());
             String bungeeDatabaseName = ConfigurationHelper.getString(ConfigurationOption.BUNGEE_DATABASE);
             int port = ConfigurationHelper.getInteger(ConfigurationOption.BUNGEE_PORT);
             String address = ConfigurationHelper.getString(ConfigurationOption.BUNGEE_ADDRESS);

@@ -37,7 +37,7 @@ public class MySqlDatabase implements Database {
      * @param port     <p>The port of the MySQL server</p>
      * @param database <p>The database to store Stargate tables in</p>
      */
-    public MySqlDatabase(DriverEnum driver, String address, int port, String database, String userName, String password,
+    public MySqlDatabase(DatabaseDriver driver, String address, int port, String database, String userName, String password,
                          boolean useSSL) {
 
         switch (driver) {
@@ -90,7 +90,7 @@ public class MySqlDatabase implements Database {
      * @param useSSL   <p>Whether to use SSL for connections</p>
      * @return <p>A Hikari config with the given settings</p>
      */
-    private HikariConfig setupConfig(DriverEnum driver, String address, int port, String database, String username,
+    private HikariConfig setupConfig(DatabaseDriver driver, String address, int port, String database, String username,
                                      String password, boolean useSSL) {
         HikariConfig config = new HikariConfig();
 

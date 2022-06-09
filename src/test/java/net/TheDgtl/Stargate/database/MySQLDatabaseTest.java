@@ -24,7 +24,7 @@ public class MySQLDatabaseTest {
     @BeforeAll
     public static void setUp() throws SQLException, InvalidStructureException, NameErrorException {
         System.out.println("Setting up test data");
-        DriverEnum driver = DriverEnum.MARIADB;
+        DatabaseDriver driver = DatabaseDriver.MARIADB;
         String address = "LOCALHOST";
         int port = 3306;
         String databaseName = "stargate";
@@ -33,7 +33,7 @@ public class MySQLDatabaseTest {
 
         Database database = new MySqlDatabase(driver, address, port, databaseName, username, password, true);
         MySQLDatabaseTest.nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
-        SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DriverEnum.MYSQL);
+        SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DatabaseDriver.MYSQL);
         tester = new DatabaseTester(database, nameConfig, generator, true);
         MySQLDatabaseTest.database = database;
     }

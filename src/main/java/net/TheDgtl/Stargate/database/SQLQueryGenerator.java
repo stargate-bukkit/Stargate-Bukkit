@@ -24,7 +24,7 @@ public class SQLQueryGenerator {
 
     private final StargateLogger logger;
     private final TableNameConfiguration tableNameConfiguration;
-    private final DriverEnum driverEnum;
+    private final DatabaseDriver databaseDriver;
     private final Map<String, String> prefixedTableNames;
 
     /**
@@ -32,12 +32,12 @@ public class SQLQueryGenerator {
      *
      * @param tableNameConfiguration <p>The config to use for table names</p>
      * @param logger                 <p>The logger to use for logging error messages</p>
-     * @param driverEnum             <p>The currently used database driver (for syntax variations)</p>
+     * @param databaseDriver         <p>The currently used database driver (for syntax variations)</p>
      */
-    public SQLQueryGenerator(TableNameConfiguration tableNameConfiguration, StargateLogger logger, DriverEnum driverEnum) {
+    public SQLQueryGenerator(TableNameConfiguration tableNameConfiguration, StargateLogger logger, DatabaseDriver databaseDriver) {
         this.tableNameConfiguration = tableNameConfiguration;
         this.logger = logger;
-        this.driverEnum = driverEnum;
+        this.databaseDriver = databaseDriver;
         this.prefixedTableNames = getPrefixedTableNamesMap();
     }
 
@@ -115,7 +115,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalPositionTypeTableStatement(Connection connection) throws SQLException {
-        String autoIncrement = (driverEnum == DriverEnum.MARIADB || driverEnum == DriverEnum.MYSQL) ?
+        String autoIncrement = (databaseDriver == DatabaseDriver.MARIADB || databaseDriver == DatabaseDriver.MYSQL) ?
                 "AUTO_INCREMENT" : "AUTOINCREMENT";
         String statementMessage = "CREATE TABLE IF NOT EXISTS {PositionType} (id INTEGER PRIMARY KEY " +
                 autoIncrement + ", positionName NVARCHAR(16));";
@@ -252,7 +252,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreateFlagTableStatement(Connection connection) throws SQLException {
-        String autoIncrement = (driverEnum == DriverEnum.MARIADB || driverEnum == DriverEnum.MYSQL) ?
+        String autoIncrement = (databaseDriver == DatabaseDriver.MARIADB || databaseDriver == DatabaseDriver.MYSQL) ?
                 "AUTO_INCREMENT" : "AUTOINCREMENT";
         String statementMessage = String.format("CREATE TABLE IF NOT EXISTS {Flag} (id INTEGER PRIMARY KEY %s, `character` CHAR(1) " +
                 "UNIQUE NOT NULL);", autoIncrement);
@@ -425,7 +425,6 @@ public class SQLQueryGenerator {
 
         if (isInterServer) {
             statement.setString(12, Stargate.getServerUUID());
-            statement.setBoolean(13, true);
         }
 
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);

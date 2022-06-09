@@ -10,38 +10,41 @@ package net.TheDgtl.Stargate.database;
  *
  * @author Frostalf
  */
-public enum DriverEnum {
+public enum DatabaseDriver {
 
     /**
      * Represents a MySQL driver
      */
-    MYSQL("mysql"),
+    MYSQL("mysql", "mysql-queries.properties"),
 
     /**
      * Represents a MariaDB driver
      */
-    MARIADB("mysql"),
+    MARIADB("mysql", "mysql-queries.properties"),
 
     /**
      * Represents an SQLite driver
      */
-    SQLITE(""),
+    SQLITE("", "sqlite-queries.properties"),
 
     /**
      * Represents a PostgreSQL driver
      * TODO: This is never used
      */
-    POSTGRESQL("");
+    POSTGRESQL("", "");
 
     private final String driver;
+    private final String queryFile;
 
     /**
      * Instantiates a new driver enum
      *
-     * @param driver <p>The string representation of the database driver</p>
+     * @param driver    <p>The string representation of the database driver</p>
+     * @param queryFile <p>The name of the file containing this driver's queries</p>
      */
-    DriverEnum(String driver) {
+    DatabaseDriver(String driver, String queryFile) {
         this.driver = driver;
+        this.queryFile = queryFile;
     }
 
     /**
@@ -50,6 +53,16 @@ public enum DriverEnum {
      * @return <p>The string representation of this database driver</p>
      */
     public String getDriver() {
-        return driver;
+        return this.driver;
     }
+
+    /**
+     * Gets the name of the query file containing this driver's queries
+     *
+     * @return <p>The name of the query file containing this driver's queries</p>
+     */
+    public String getQueryFile() {
+        return this.queryFile;
+    }
+
 }
