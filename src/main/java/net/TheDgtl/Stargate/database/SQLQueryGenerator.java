@@ -154,7 +154,6 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalPositionIndex(Connection connection, PortalType portalType) throws SQLException {
-        //TODO: If MySQL, only run if the index doesn't already exist
         if (portalType == PortalType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_INDEX_PORTAL_POSITION));
         } else {
