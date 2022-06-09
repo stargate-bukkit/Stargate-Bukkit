@@ -2,7 +2,6 @@ package net.TheDgtl.Stargate.database;
 
 import net.TheDgtl.Stargate.util.FileHelper;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -47,7 +46,12 @@ public class SQLQueryHandler {
      * @return <p>The query</p>
      */
     public static String getQuery(SQLQuery sqlQuery) {
-        return queries.get(sqlQuery).get(DatabaseDriver.SQLITE);
+        Map<DatabaseDriver, String> query = queries.get(sqlQuery);
+        if (query == null) {
+            return null;
+        } else {
+            return query.get(DatabaseDriver.SQLITE);
+        }
     }
 
     /**
@@ -78,12 +82,9 @@ public class SQLQueryHandler {
             if (readQueryFiles.containsKey(queryFile)) {
                 continue;
             }
-            try {
-                readQueryFiles.put(queryFile, FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(
-                        FileHelper.getInputStreamForInternalFile("database/" + queryFile))));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Map<String, String> readValues = new HashMap<>();
+            FileHelper.readInternalFileToMap("/database/" + queryFile, readValues);
+            readQueryFiles.put(queryFile, readValues);
         }
         return readQueryFiles;
     }
