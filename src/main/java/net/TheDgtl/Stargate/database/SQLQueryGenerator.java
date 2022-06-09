@@ -155,7 +155,7 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateCreatePortalPositionIndex(Connection connection, PortalType portalType) throws SQLException {
         //Skip for MySQL if the index already exists
-        if (databaseDriver == DatabaseDriver.MYSQL) {
+        if (databaseDriver == DatabaseDriver.MYSQL || databaseDriver == DatabaseDriver.MARIADB) {
             if (portalType == PortalType.LOCAL && hasRows(connection, SQLQuery.SHOW_INDEX_PORTAL_POSITION)) {
                 return null;
             } else if (portalType == PortalType.INTER_SERVER && hasRows(connection, SQLQuery.SHOW_INDEX_INTER_PORTAL_POSITION)) {
