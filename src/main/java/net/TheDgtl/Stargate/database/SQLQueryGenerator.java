@@ -154,6 +154,15 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalPositionIndex(Connection connection, PortalType portalType) throws SQLException {
+        //Skip for MySQL if the index already exists
+        if (databaseDriver == DatabaseDriver.MYSQL) {
+            if (portalType == PortalType.LOCAL && hasRows(connection, SQLQuery.SHOW_INDEX_PORTAL_POSITION)) {
+                return null;
+            } else if (portalType == PortalType.INTER_SERVER && hasRows(connection, SQLQuery.SHOW_INDEX_INTER_PORTAL_POSITION)) {
+                return null;
+            }
+        }
+
         if (portalType == PortalType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_INDEX_PORTAL_POSITION));
         } else {
@@ -416,6 +425,21 @@ public class SQLQueryGenerator {
         statement.setString(1, serverUUID);
         statement.setString(2, serverName);
         return statement;
+    }
+
+    /**
+     * Checks whether the given query returns any rows
+     *
+     * @param connection <p>The database connection to use</p>
+     * @param query      <p>The query to run</p>
+     * @return <p>True if at least one row was found</p>
+     * @throws SQLException <p>If a problem occurs</p>
+     */
+    private boolean hasRows(Connection connection, SQLQuery query) throws SQLException {
+        PreparedStatement statement = prepareQuery(connection, getQuery(query));
+        boolean hasRow = statement.executeQuery().next();
+        statement.close();
+        return hasRow;
     }
 
     /**

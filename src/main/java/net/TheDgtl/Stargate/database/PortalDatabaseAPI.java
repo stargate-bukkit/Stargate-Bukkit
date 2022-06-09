@@ -294,7 +294,9 @@ public class PortalDatabaseAPI implements StorageAPI {
         PreparedStatement portalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, PortalType.LOCAL);
         runStatement(portalPositionsStatement);
         PreparedStatement portalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, PortalType.LOCAL);
-        runStatement(portalPositionIndex);
+        if (portalPositionIndex != null) {
+            runStatement(portalPositionIndex);
+        }
 
         PreparedStatement lastKnownNameStatement = sqlQueryGenerator.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);
@@ -319,7 +321,9 @@ public class PortalDatabaseAPI implements StorageAPI {
         PreparedStatement interPortalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, PortalType.INTER_SERVER);
         runStatement(interPortalPositionsStatement);
         PreparedStatement interPortalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, PortalType.INTER_SERVER);
-        runStatement(interPortalPositionIndex);
+        if (interPortalPositionIndex != null) {
+            runStatement(interPortalPositionIndex);
+        }
 
         connection.close();
     }

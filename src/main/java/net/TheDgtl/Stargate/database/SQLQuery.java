@@ -185,4 +185,14 @@ public enum SQLQuery {
      */
     DELETE_INTER_PORTAL,
 
+    /**
+     * The query for checking if the portal position index exists
+     */
+    SHOW_INDEX_PORTAL_POSITION,
+
+    /**
+     * The query for checking if the inter-portal position index exists
+     */
+    SHOW_INDEX_INTER_PORTAL_POSITION,
+
 }
