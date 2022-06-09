@@ -146,9 +146,9 @@ public enum SQLQuery {
     INSERT_INTER_PORTAL,
 
     /**
-     * The query for updating the last known name of a player
+     * The query for replacing the last known name of a player
      */
-    UPDATE_LAST_KNOWN_NAME,
+    REPLACE_LAST_KNOWN_NAME,
 
     /**
      * The query for replacing the known information about a server
