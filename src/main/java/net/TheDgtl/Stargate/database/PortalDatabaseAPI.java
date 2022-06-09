@@ -77,7 +77,7 @@ public class PortalDatabaseAPI implements StorageAPI {
         this.database = database;
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
         String PREFIX = usingRemoteDatabase ? ConfigurationHelper.getString(ConfigurationOption.BUNGEE_INSTANCE_NAME) : "";
-        String serverPrefix = usingRemoteDatabase ? Stargate.getServerUUID().toString() : "";
+        String serverPrefix = usingRemoteDatabase ? Stargate.getServerUUID() : "";
         TableNameConfiguration config = new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
         this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
@@ -293,14 +293,8 @@ public class PortalDatabaseAPI implements StorageAPI {
 
         PreparedStatement portalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, PortalType.LOCAL);
         runStatement(portalPositionsStatement);
-
-        //Ignore any duplicate index creation
-        try {
-            PreparedStatement portalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, PortalType.LOCAL);
-            runStatement(portalPositionIndex);
-        } catch (SQLException exception) {
-            logger.logMessage(Level.FINE, "Unable to create the portal position index: " + exception.getMessage());
-        }
+        PreparedStatement portalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, PortalType.LOCAL);
+        runStatement(portalPositionIndex);
 
         PreparedStatement lastKnownNameStatement = sqlQueryGenerator.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);
@@ -324,14 +318,8 @@ public class PortalDatabaseAPI implements StorageAPI {
         runStatement(interPortalViewStatement);
         PreparedStatement interPortalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, PortalType.INTER_SERVER);
         runStatement(interPortalPositionsStatement);
-
-        //Ignore any duplicate index creation
-        try {
-            PreparedStatement interPortalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, PortalType.INTER_SERVER);
-            runStatement(interPortalPositionIndex);
-        } catch (SQLException exception) {
-            logger.logMessage(Level.FINE, "Unable to create the inter-portal position index: " + exception.getMessage());
-        }
+        PreparedStatement interPortalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, PortalType.INTER_SERVER);
+        runStatement(interPortalPositionIndex);
 
         connection.close();
     }
@@ -444,7 +432,7 @@ public class PortalDatabaseAPI implements StorageAPI {
             if (portalType == PortalType.INTER_SERVER) {
                 String serverUUID = resultSet.getString("homeServerId");
                 logger.logMessage(Level.FINEST, "serverUUID = " + serverUUID);
-                if (!serverUUID.equals(Stargate.getServerUUID().toString())) {
+                if (!serverUUID.equals(Stargate.getServerUUID())) {
                     String serverName = resultSet.getString("serverName");
                     Portal virtualPortal = new VirtualPortal(serverName, name, network, flags, ownerUUID);
                     try {
