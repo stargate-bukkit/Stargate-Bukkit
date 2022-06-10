@@ -129,6 +129,18 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(4)
+    void portalPositionIndexExistsTest() throws SQLException {
+        tester.portalPositionIndexExistsTest(PortalType.LOCAL);
+    }
+
+    @Test
+    @Order(4)
+    void interPortalPositionIndexExistsTest() throws SQLException {
+        tester.portalPositionIndexExistsTest(PortalType.INTER_SERVER);
+    }
+
+    @Test
+    @Order(4)
     void getFlagsTest() throws SQLException {
         tester.getFlagsTest();
     }

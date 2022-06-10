@@ -1,5 +1,8 @@
 package net.TheDgtl.Stargate.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A config for keeping track of the names of all database tables in use
  *
@@ -23,6 +26,7 @@ public class TableNameConfiguration {
     private String interPortalPositionTableName = "InterPortalPosition";
     private String portalPositionIndexTableName = "portalPositionIndex";
     private String interPortalPositionIndexTableName = "interPortalPositionIndex";
+    private final Map<String, String> prefixedTableNames;
 
     /**
      * Instantiates a new table config
@@ -33,6 +37,7 @@ public class TableNameConfiguration {
     public TableNameConfiguration(String mainPrefix, String serverPrefix) {
         this.mainPrefix = mainPrefix;
         this.serverPrefix = serverPrefix;
+        this.prefixedTableNames = getPrefixedTableNamesMap();
     }
 
     /**
@@ -77,6 +82,7 @@ public class TableNameConfiguration {
         this.interPortalPositionTableName = interPortalPositionTableName;
         this.portalPositionIndexTableName = portalPositionIndexTableName;
         this.interPortalPositionIndexTableName = interPortalPositionIndexTableName;
+        this.prefixedTableNames = getPrefixedTableNamesMap();
     }
 
     /**
@@ -203,6 +209,43 @@ public class TableNameConfiguration {
      */
     public String getInterPortalPositionIndexTableName() {
         return mainPrefix + interPortalPositionIndexTableName;
+    }
+
+    /**
+     * Replaces known table name keys with their proper name values
+     *
+     * @param query <p>The input query string to replace in</p>
+     * @return <p>The query string with keys replaced</p>
+     */
+    public String replaceKnownTableNames(String query) {
+        for (String key : prefixedTableNames.keySet()) {
+            query = query.replace("{" + key + "}", prefixedTableNames.get(key));
+        }
+        return query;
+    }
+
+    /**
+     * Gets the map between table name placeholders and the correct prefixed table names
+     *
+     * @return <p>The map between table name placeholders and the correct prefixed table names</p>
+     */
+    private Map<String, String> getPrefixedTableNamesMap() {
+        Map<String, String> prefixedTableNames = new HashMap<>();
+        prefixedTableNames.put("Portal", this.getPortalTableName());
+        prefixedTableNames.put("PortalView", this.getPortalViewName());
+        prefixedTableNames.put("Flag", this.getFlagTableName());
+        prefixedTableNames.put("PortalFlagRelation", this.getFlagRelationTableName());
+        prefixedTableNames.put("InterPortal", this.getInterPortalTableName());
+        prefixedTableNames.put("InterPortalView", this.getInterPortalViewName());
+        prefixedTableNames.put("InterPortalFlagRelation", this.getInterFlagRelationTableName());
+        prefixedTableNames.put("LastKnownName", this.getLastKnownNameTableName());
+        prefixedTableNames.put("ServerInfo", this.getServerInfoTableName());
+        prefixedTableNames.put("PositionType", this.getPositionTypeTableName());
+        prefixedTableNames.put("PortalPosition", this.getPortalPositionTableName());
+        prefixedTableNames.put("InterPortalPosition", this.getInterPortalPositionTableName());
+        prefixedTableNames.put("PortalPositionIndex", this.getPortalPositionIndexTableName());
+        prefixedTableNames.put("InterPortalPositionIndex", this.getInterPortalPositionIndexTableName());
+        return prefixedTableNames;
     }
 
 }
