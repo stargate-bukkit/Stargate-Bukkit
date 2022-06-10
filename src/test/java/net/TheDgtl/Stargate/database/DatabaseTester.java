@@ -151,7 +151,10 @@ public class DatabaseTester {
     }
 
     void createPortalPositionIndexTest(PortalType type) throws SQLException {
-        finishStatement(generator.generateCreatePortalPositionIndex(connection, type));
+        PreparedStatement preparedStatement = generator.generateCreatePortalPositionIndex(connection, type);
+        if (preparedStatement != null) {
+            finishStatement(preparedStatement);
+        }
     }
 
     void getFlagsTest() throws SQLException {
