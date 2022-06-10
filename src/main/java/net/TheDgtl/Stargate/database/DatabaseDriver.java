@@ -29,9 +29,8 @@ public enum DatabaseDriver {
 
     /**
      * Represents a PostgreSQL driver
-     * TODO: This is never used
      */
-    POSTGRESQL("", "");
+    POSTGRESQL("postgresql", "postgresql-queries.properties");
 
     private final String driver;
     private final String queryFile;
