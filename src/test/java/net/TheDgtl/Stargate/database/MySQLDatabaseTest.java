@@ -25,12 +25,12 @@ public class MySQLDatabaseTest {
     @BeforeAll
     public static void setUp() throws SQLException, InvalidStructureException, NameErrorException {
         System.out.println("Setting up test data");
-        DatabaseDriver driver = DatabaseDriver.MYSQL;
-        String address = "141.95.107.126";
+        DatabaseDriver driver = DatabaseDriver.MARIADB;
+        String address = "LOCALHOST";
         int port = 3306;
         String databaseName = "stargate";
-        String username = "debian";
-        String password = "password";
+        String username = "root";
+        String password = "root";
 
         Database database = new MySqlDatabase(driver, address, port, databaseName, username, password, true);
         MySQLDatabaseTest.nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
