@@ -157,6 +157,13 @@ public class DatabaseTester {
         }
     }
 
+    void portalPositionIndexExistsTest(PortalType portalType) throws SQLException {
+        PreparedStatement preparedStatement = generator.generateShowPortalPositionIndexesStatement(connection, portalType);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        Assertions.assertTrue(resultSet.next());
+        preparedStatement.close();
+    }
+
     void getFlagsTest() throws SQLException {
         printTableInfo("SG_Test_Flag");
 

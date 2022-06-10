@@ -13,8 +13,6 @@ import org.bukkit.World;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 
 /**
@@ -25,7 +23,6 @@ public class SQLQueryGenerator {
     private final StargateLogger logger;
     private final TableNameConfiguration tableNameConfiguration;
     private final DatabaseDriver databaseDriver;
-    private final Map<String, String> prefixedTableNames;
 
     /**
      * Instantiates a new SQL query generator
@@ -38,7 +35,6 @@ public class SQLQueryGenerator {
         this.tableNameConfiguration = tableNameConfiguration;
         this.logger = logger;
         this.databaseDriver = databaseDriver;
-        this.prefixedTableNames = getPrefixedTableNamesMap();
     }
 
     /**
@@ -154,13 +150,10 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalPositionIndex(Connection connection, PortalType portalType) throws SQLException {
-        //Skip for MySQL if the index already exists
-        if (databaseDriver == DatabaseDriver.MYSQL || databaseDriver == DatabaseDriver.MARIADB) {
-            if (portalType == PortalType.LOCAL && hasRows(connection, SQLQuery.SHOW_INDEX_PORTAL_POSITION)) {
-                return null;
-            } else if (portalType == PortalType.INTER_SERVER && hasRows(connection, SQLQuery.SHOW_INDEX_INTER_PORTAL_POSITION)) {
-                return null;
-            }
+        //Skip for non-SQLite if the index already exists
+        if (databaseDriver != DatabaseDriver.SQLITE &&
+                hasRows(generateShowPortalPositionIndexesStatement(connection, portalType))) {
+            return null;
         }
 
         if (portalType == PortalType.LOCAL) {
@@ -349,7 +342,7 @@ public class SQLQueryGenerator {
         } else {
             statementMessage = getQuery(SQLQuery.INSERT_PORTAL);
         }
-        statementMessage = replaceKnownTableNames(statementMessage);
+        statementMessage = tableNameConfiguration.replaceKnownTableNames(statementMessage);
 
         PreparedStatement statement = connection.prepareStatement(statementMessage);
 
@@ -399,7 +392,7 @@ public class SQLQueryGenerator {
         } else {
             statementMessage = getQuery(SQLQuery.DELETE_INTER_PORTAL);
         }
-        statementMessage = replaceKnownTableNames(statementMessage);
+        statementMessage = tableNameConfiguration.replaceKnownTableNames(statementMessage);
 
         PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, portal.getName());
@@ -419,7 +412,7 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateUpdateServerInfoStatus(Connection connection, String serverUUID, String serverName) throws SQLException {
         String statementString = getQuery(SQLQuery.REPLACE_SERVER_INFO);
-        String statementMessage = replaceKnownTableNames(statementString);
+        String statementMessage = tableNameConfiguration.replaceKnownTableNames(statementString);
         logger.logMessage(Level.FINEST, statementMessage);
         PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, serverUUID);
@@ -428,17 +421,31 @@ public class SQLQueryGenerator {
     }
 
     /**
-     * Checks whether the given query returns any rows
+     * Gets a prepared statement for getting the portal position index
      *
      * @param connection <p>The database connection to use</p>
-     * @param query      <p>The query to run</p>
+     * @param portalType <p>The type of the portal (used to determine which index to get)</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateShowPortalPositionIndexesStatement(Connection connection, PortalType portalType) throws SQLException {
+        if (portalType == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.SHOW_INDEX_PORTAL_POSITION));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.SHOW_INDEX_INTER_PORTAL_POSITION));
+        }
+    }
+
+    /**
+     * Checks whether the given query returns any rows
+     *
+     * @param preparedStatement <p>A prepared statement with the prepared query</p>
      * @return <p>True if at least one row was found</p>
      * @throws SQLException <p>If a problem occurs</p>
      */
-    private boolean hasRows(Connection connection, SQLQuery query) throws SQLException {
-        PreparedStatement statement = prepareQuery(connection, getQuery(query));
-        boolean hasRow = statement.executeQuery().next();
-        statement.close();
+    private boolean hasRows(PreparedStatement preparedStatement) throws SQLException {
+        boolean hasRow = preparedStatement.executeQuery().next();
+        preparedStatement.close();
         return hasRow;
     }
 
@@ -461,57 +468,9 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the query for execution</p>
      */
     private PreparedStatement prepareQuery(Connection connection, String query) throws SQLException {
-        query = replaceKnownTableNames(query);
+        query = tableNameConfiguration.replaceKnownTableNames(query);
         logger.logMessage(Level.FINEST, query);
         return connection.prepareStatement(query);
-    }
-
-    /**
-     * Replaces known table keys with their proper names
-     *
-     * @param input <p>The input query string to replace in</p>
-     * @return <p>The query string with keys replaced</p>
-     */
-    private String replaceKnownTableNames(String input) {
-        return replaceTableNames(input, this.prefixedTableNames);
-    }
-
-    /**
-     * Replaces the table name keys with the table name values
-     *
-     * @param query          <p>The query to replace keys for</p>
-     * @param replacementMap <p>The map</p>
-     * @return <p>The query with the values replaced</p>
-     */
-    private String replaceTableNames(String query, Map<String, String> replacementMap) {
-        for (String key : replacementMap.keySet()) {
-            query = query.replace("{" + key + "}", replacementMap.get(key));
-        }
-        return query;
-    }
-
-    /**
-     * Gets the map between table name placeholders and the correct prefixed table names
-     *
-     * @return <p>The map between table name placeholders and the correct prefixed table names</p>
-     */
-    private Map<String, String> getPrefixedTableNamesMap() {
-        Map<String, String> prefixedTableNames = new HashMap<>();
-        prefixedTableNames.put("Portal", tableNameConfiguration.getPortalTableName());
-        prefixedTableNames.put("PortalView", tableNameConfiguration.getPortalViewName());
-        prefixedTableNames.put("Flag", tableNameConfiguration.getFlagTableName());
-        prefixedTableNames.put("PortalFlagRelation", tableNameConfiguration.getFlagRelationTableName());
-        prefixedTableNames.put("InterPortal", tableNameConfiguration.getInterPortalTableName());
-        prefixedTableNames.put("InterPortalView", tableNameConfiguration.getInterPortalViewName());
-        prefixedTableNames.put("InterPortalFlagRelation", tableNameConfiguration.getInterFlagRelationTableName());
-        prefixedTableNames.put("LastKnownName", tableNameConfiguration.getLastKnownNameTableName());
-        prefixedTableNames.put("ServerInfo", tableNameConfiguration.getServerInfoTableName());
-        prefixedTableNames.put("PositionType", tableNameConfiguration.getPositionTypeTableName());
-        prefixedTableNames.put("PortalPosition", tableNameConfiguration.getPortalPositionTableName());
-        prefixedTableNames.put("InterPortalPosition", tableNameConfiguration.getInterPortalPositionTableName());
-        prefixedTableNames.put("PortalPositionIndex", tableNameConfiguration.getPortalPositionIndexTableName());
-        prefixedTableNames.put("InterPortalPositionIndex", tableNameConfiguration.getInterPortalPositionIndexTableName());
-        return prefixedTableNames;
     }
 
 }
