@@ -50,10 +50,11 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateGetAllPortalsStatement(Connection connection, PortalType portalType) throws SQLException {
-        String statementMessage = "SELECT * FROM {PortalView};";
-        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-        logger.logMessage(Level.FINEST, statementMessage);
-        return connection.prepareStatement(statementMessage);
+        if (portalType == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.GET_ALL_PORTALS));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.GET_ALL_INTER_PORTALS));
+        }
     }
 
     /**
@@ -64,10 +65,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateGetAllFlagsStatement(Connection connection) throws SQLException {
-        String statementMessage = "SELECT id, `character` FROM {Flag};";
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, statementMessage);
-        return connection.prepareStatement(statementMessage);
+        return prepareQuery(connection, getQuery(SQLQuery.GET_ALL_PORTAL_FLAGS));
     }
 
     /**
@@ -78,10 +76,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateUpdateLastKnownNameStatement(Connection connection) throws SQLException {
-        String statementMessage = "REPLACE INTO {LastKnownName} (uuid, lastKnownName) VALUES (?, ?);";
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, statementMessage);
-        return connection.prepareStatement(statementMessage);
+        return prepareQuery(connection, getQuery(SQLQuery.REPLACE_LAST_KNOWN_NAME));
     }
 
     /**
@@ -93,18 +88,11 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalTableStatement(Connection connection, PortalType portalType) throws SQLException {
-        String interServerExtraFields = (portalType == PortalType.INTER_SERVER)
-                ? " homeServerId VARCHAR(36),"
-                : "";
-        String statementMessage = String
-                .format("CREATE TABLE IF NOT EXISTS {Portal} (name NVARCHAR(180) NOT NULL, network NVARCHAR(180) NOT NULL,"
-                        + " destination NVARCHAR(180), world NVARCHAR(255) NOT NULL, x INTEGER, y INTEGER,"
-                        + " z INTEGER, ownerUUID VARCHAR(36), gateFileName NVARCHAR(255), facing INTEGER,"
-                        + " flipZ BOOLEAN,%s PRIMARY KEY (name, network));", interServerExtraFields);
-        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-        // TODO: Add CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci') equivalent for SQLite
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        if (portalType == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_PORTAL));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_INTER_PORTAL));
+        }
     }
 
     /**
@@ -115,13 +103,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalPositionTypeTableStatement(Connection connection) throws SQLException {
-        String autoIncrement = (databaseDriver == DatabaseDriver.MARIADB || databaseDriver == DatabaseDriver.MYSQL) ?
-                "AUTO_INCREMENT" : "AUTOINCREMENT";
-        String statementMessage = "CREATE TABLE IF NOT EXISTS {PositionType} (id INTEGER PRIMARY KEY " +
-                autoIncrement + ", positionName NVARCHAR(16));";
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_PORTAL_POSITION_TYPE));
     }
 
     /**
@@ -132,10 +114,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateAddPortalPositionTypeStatement(Connection connection) throws SQLException {
-        String statementMessage = "INSERT INTO {PositionType} (positionName) VALUES (?);";
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        return prepareQuery(connection, getQuery(SQLQuery.INSERT_PORTAL_POSITION_TYPE));
     }
 
     /**
@@ -146,10 +125,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateGetAllPortalPositionTypesStatement(Connection connection) throws SQLException {
-        String statementMessage = "SELECT id, positionName FROM {PositionType};";
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, statementMessage);
-        return connection.prepareStatement(statementMessage);
+        return prepareQuery(connection, getQuery(SQLQuery.GET_ALL_PORTAL_POSITION_TYPES));
     }
 
     /**
@@ -161,18 +137,11 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalPositionTableStatement(Connection connection, PortalType portalType) throws SQLException {
-        String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalPosition} (" +
-                "portalName NVARCHAR(180) NOT NULL, " +
-                "networkName NVARCHAR(180) NOT NULL, " +
-                "xCoordinate INTEGER NOT NULL, yCoordinate INTEGER NOT NULL, zCoordinate INTEGER NOT NULL, " +
-                "positionType INTEGER NOT NULL, " +
-                "PRIMARY KEY (portalName, networkName, xCoordinate, yCoordinate, zCoordinate), " +
-                "FOREIGN KEY (portalName, networkName) REFERENCES {Portal}(name, network), " +
-                "FOREIGN KEY (positionType) REFERENCES {PositionType} (id));";
-        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        if (portalType == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_PORTAL_POSITION));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_INTER_PORTAL_POSITION));
+        }
     }
 
     /**
@@ -185,11 +154,20 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalPositionIndex(Connection connection, PortalType portalType) throws SQLException {
-        String statementMessage = "CREATE INDEX {PortalPositionIndex} ON {PortalPosition} (portalName, networkName);";
-        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        //Skip for MySQL if the index already exists
+        if (databaseDriver == DatabaseDriver.MYSQL || databaseDriver == DatabaseDriver.MARIADB) {
+            if (portalType == PortalType.LOCAL && hasRows(connection, SQLQuery.SHOW_INDEX_PORTAL_POSITION)) {
+                return null;
+            } else if (portalType == PortalType.INTER_SERVER && hasRows(connection, SQLQuery.SHOW_INDEX_INTER_PORTAL_POSITION)) {
+                return null;
+            }
+        }
+
+        if (portalType == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.CREATE_INDEX_PORTAL_POSITION));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.CREATE_INDEX_INTER_PORTAL_POSITION));
+        }
     }
 
     /**
@@ -202,13 +180,11 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateAddPortalPositionStatement(Connection connection, PortalType portalType) throws SQLException {
-        String statementMessage = "INSERT INTO {PortalPosition} (portalName, networkName, xCoordinate, yCoordinate, " +
-                "zCoordinate, positionType) VALUES (?, ?, ?, ?, ?, (SELECT {PositionType}.id FROM " +
-                "{PositionType} WHERE {PositionType}.positionName = ?));";
-        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        if (portalType == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.INSERT_PORTAL_POSITION));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.INSERT_INTER_PORTAL_POSITION));
+        }
     }
 
     /**
@@ -220,11 +196,11 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateRemovePortalPositionsStatement(Connection connection, PortalType portalType) throws SQLException {
-        String statementMessage = "DELETE FROM {PortalPosition} WHERE portalName = ? AND networkName = ?;";
-        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        if (portalType == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_POSITIONS));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_POSITIONS));
+        }
     }
 
     /**
@@ -236,12 +212,11 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateGetPortalPositionsStatement(Connection connection, PortalType portalType) throws SQLException {
-        String statementMessage = "SELECT *, (SELECT {PositionType}.positionName FROM {PositionType} " +
-                "WHERE {PositionType}.id = positionType) as positionName FROM {PortalPosition} WHERE networkName = ? AND portalName = ?";
-        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        if (portalType == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.GET_PORTAL_POSITIONS));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.GET_INTER_PORTAL_POSITIONS));
+        }
     }
 
     /**
@@ -252,13 +227,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreateFlagTableStatement(Connection connection) throws SQLException {
-        String autoIncrement = (databaseDriver == DatabaseDriver.MARIADB || databaseDriver == DatabaseDriver.MYSQL) ?
-                "AUTO_INCREMENT" : "AUTOINCREMENT";
-        String statementMessage = String.format("CREATE TABLE IF NOT EXISTS {Flag} (id INTEGER PRIMARY KEY %s, `character` CHAR(1) " +
-                "UNIQUE NOT NULL);", autoIncrement);
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_PORTAL_FLAG));
     }
 
     /**
@@ -269,11 +238,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreateServerInfoTableStatement(Connection connection) throws SQLException {
-        String statementMessage = "CREATE TABLE IF NOT EXISTS {ServerInfo} (serverId VARCHAR(36) NOT NULL, serverName NVARCHAR(255), " +
-                " PRIMARY KEY (serverId));";
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_SERVER_INFO));
     }
 
     /**
@@ -284,11 +249,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreateLastKnownNameTableStatement(Connection connection) throws SQLException {
-        String statementMessage = "CREATE TABLE IF NOT EXISTS {LastKnownName} (uuid VARCHAR(36) NOT NULL, " +
-                "lastKnownName VARCHAR(16), PRIMARY KEY (uuid));";
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_LAST_KNOWN_NAME));
     }
 
     /**
@@ -301,13 +262,11 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateCreateFlagRelationTableStatement(Connection connection,
                                                                       PortalType portalType) throws SQLException {
-        String statementMessage = "CREATE TABLE IF NOT EXISTS {PortalFlagRelation} (name NVARCHAR(180) NOT NULL, " +
-                "network NVARCHAR(180) NOT NULL, flag INTEGER NOT NULL, PRIMARY KEY (name, network, flag), " +
-                "FOREIGN KEY (name, network) REFERENCES {Portal} (name, network), FOREIGN KEY (flag) " +
-                "REFERENCES {Flag} (id));";
-        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        if (portalType == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_PORTAL_FLAG_RELATION));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_INTER_PORTAL_FLAG_RELATION));
+        }
     }
 
     /**
@@ -320,18 +279,11 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateCreatePortalViewStatement(Connection connection,
                                                                PortalType portalType) throws SQLException {
-        String selectServerName = portalType == PortalType.INTER_SERVER ? ", {ServerInfo}.serverName" : "";
-        String joinServerName = portalType == PortalType.INTER_SERVER ?
-                " LEFT OUTER JOIN {ServerInfo} ON {ServerInfo}.serverId = {InterPortal}.homeServerId" : "";
-        String statementMessage = String.format("CREATE VIEW IF NOT EXISTS {PortalView} AS SELECT {Portal}.*, " +
-                "COALESCE(GROUP_CONCAT({Flag}.`character`, ''), '') AS flags, {LastKnownName}.lastKnownName%s FROM " +
-                "{Portal} LEFT OUTER JOIN {PortalFlagRelation} ON {Portal}.name = {PortalFlagRelation}.name AND " +
-                "{Portal}.network = {PortalFlagRelation}.network LEFT OUTER JOIN {Flag} ON {PortalFlagRelation}.flag = " +
-                "{Flag}.id LEFT OUTER JOIN {LastKnownName} ON {Portal}.network = {LastKnownName}.uuid%s GROUP BY " +
-                "{Portal}.name, {Portal}.network;", selectServerName, joinServerName);
-        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        if (portalType == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.CREATE_VIEW_PORTAL));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.CREATE_VIEW_INTER_PORTAL));
+        }
     }
 
     /**
@@ -342,10 +294,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateAddFlagStatement(Connection connection) throws SQLException {
-        String statementMessage = "INSERT INTO {Flag} (`character`) VALUES (?);";
-        statementMessage = replaceKnownTableNames(statementMessage);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        return prepareQuery(connection, getQuery(SQLQuery.INSERT_PORTAL_FLAG));
     }
 
     /**
@@ -358,11 +307,11 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateAddPortalFlagRelationStatement(Connection connection,
                                                                     PortalType portalType) throws SQLException {
-        String statementMessage = "INSERT INTO {PortalFlagRelation} (name, network, flag) VALUES (?, ?, " +
-                "(SELECT id FROM {Flag} WHERE `character` = ?));";
-        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        if (portalType == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.INSERT_PORTAL_FLAG_RELATION));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.INSERT_INTER_PORTAL_FLAG_RELATION));
+        }
     }
 
     /**
@@ -375,10 +324,11 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateRemoveFlagStatement(Connection connection,
                                                          PortalType portalType) throws SQLException {
-        String statementMessage = "DELETE FROM {PortalFlagRelation} WHERE name = ? AND network = ?";
-        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-        return connection.prepareStatement(statementMessage);
+        if (portalType == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATION));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATION));
+        }
     }
 
     /**
@@ -393,12 +343,13 @@ public class SQLQueryGenerator {
     public PreparedStatement generateAddPortalStatement(Connection connection, RealPortal portal,
                                                         PortalType portalType) throws SQLException {
         boolean isInterServer = (portalType == PortalType.INTER_SERVER);
-        String extraKeys = (isInterServer ? ", homeServerId" : "");
-        String extraValues = (isInterServer ? ", ?" : "");
-        String statementMessage = String.format("INSERT INTO {Portal} (network, name, destination, world, x, y, z, " +
-                        "ownerUUID, gateFileName, facing, flipZ%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?%s);", extraKeys,
-                extraValues);
-        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
+        String statementMessage;
+        if (isInterServer) {
+            statementMessage = getQuery(SQLQuery.INSERT_INTER_PORTAL);
+        } else {
+            statementMessage = getQuery(SQLQuery.INSERT_PORTAL);
+        }
+        statementMessage = replaceKnownTableNames(statementMessage);
 
         PreparedStatement statement = connection.prepareStatement(statementMessage);
 
@@ -428,7 +379,6 @@ public class SQLQueryGenerator {
         }
 
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
-
         return statement;
     }
 
@@ -443,8 +393,13 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateRemovePortalStatement(Connection connection, Portal portal,
                                                            PortalType portalType) throws SQLException {
-        String statementMessage = "DELETE FROM {Portal} WHERE name = ? AND network = ?";
-        statementMessage = adjustStatementForPortalType(statementMessage, portalType);
+        String statementMessage;
+        if (portalType == PortalType.LOCAL) {
+            statementMessage = getQuery(SQLQuery.DELETE_PORTAL);
+        } else {
+            statementMessage = getQuery(SQLQuery.DELETE_INTER_PORTAL);
+        }
+        statementMessage = replaceKnownTableNames(statementMessage);
 
         PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, portal.getName());
@@ -463,7 +418,7 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateUpdateServerInfoStatus(Connection connection, String serverUUID, String serverName) throws SQLException {
-        String statementString = "REPLACE INTO {ServerInfo} (serverId, serverName) VALUES(?, ?);";
+        String statementString = getQuery(SQLQuery.REPLACE_SERVER_INFO);
         String statementMessage = replaceKnownTableNames(statementString);
         logger.logMessage(Level.FINEST, statementMessage);
         PreparedStatement statement = connection.prepareStatement(statementMessage);
@@ -473,17 +428,42 @@ public class SQLQueryGenerator {
     }
 
     /**
-     * Adjusts table names for portal type and replaces known table names
+     * Checks whether the given query returns any rows
      *
-     * @param statementMessage <p>The statement to replace values for</p>
-     * @param portalType       <p>The type of portal to adjust for</p>
-     * @return <p>The statement with values replaced</p>
+     * @param connection <p>The database connection to use</p>
+     * @param query      <p>The query to run</p>
+     * @return <p>True if at least one row was found</p>
+     * @throws SQLException <p>If a problem occurs</p>
      */
-    private String adjustStatementForPortalType(String statementMessage, PortalType portalType) {
-        if (portalType == PortalType.INTER_SERVER) {
-            statementMessage = statementMessage.replace("{Portal", "{InterPortal");
-        }
-        return replaceKnownTableNames(statementMessage);
+    private boolean hasRows(Connection connection, SQLQuery query) throws SQLException {
+        PreparedStatement statement = prepareQuery(connection, getQuery(query));
+        boolean hasRow = statement.executeQuery().next();
+        statement.close();
+        return hasRow;
+    }
+
+    /**
+     * Gets the query string for the given SQL query
+     *
+     * @param sqlQuery <p>The SQL query to get</p>
+     * @return <p>The query string</p>
+     */
+    private String getQuery(SQLQuery sqlQuery) {
+        return SQLQueryHandler.getQuery(sqlQuery, databaseDriver);
+    }
+
+    /**
+     * Prepares the given query for execution
+     *
+     * @param connection <p>The database connection to use</p>
+     * @param query      <p>The query to run</p>
+     * @return <p>The resulting prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the query for execution</p>
+     */
+    private PreparedStatement prepareQuery(Connection connection, String query) throws SQLException {
+        query = replaceKnownTableNames(query);
+        logger.logMessage(Level.FINEST, query);
+        return connection.prepareStatement(query);
     }
 
     /**

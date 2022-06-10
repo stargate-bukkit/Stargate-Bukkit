@@ -53,6 +53,7 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>4.0.2</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.xerial</groupId>
@@ -74,10 +75,10 @@
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <artifactId>slf4j-log4j12</artifactId>
             <version>2.0.0-alpha5</version>
-            <scope>test</scope>
-        </dependency>
+            <scope>compile</scope>
+        </dependency>  
         <dependency>
             <groupId>com.github.seeseemelk</groupId>
             <artifactId>MockBukkit-v1.16</artifactId>
@@ -111,8 +112,9 @@
                     <artifactSet>
                         <includes>
                             <include>org.bstats:*</include>
-                            <include>com.zaxxer:*</include>
-                            <include>com.github.cryptomorin:*</include>
+                            <include>com.zaxxer:HikariCP</include>
+                            <include>com.github.cryptomorin:XSeries</include>
+                            <include>org.slf4j:slf4j-api</include>
                         </includes>
                     </artifactSet>
                     <relocations>
@@ -127,7 +129,7 @@
                     </relocations>
                     <filters>
                         <filter>
-                            <artifact>*:*</artifact>
+                            <artifact>com.github.cryptomorin:XSeries</artifact>
                             <excludes>
                                 <exclude>com/cryptomorin/xseries/particles/*</exclude>
                                 <exclude>com/cryptomorin/xseries/messages/*</exclude>

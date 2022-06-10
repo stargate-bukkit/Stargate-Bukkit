@@ -5,6 +5,7 @@ import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.config.TableNameConfiguration;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.network.PortalType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -41,11 +42,7 @@ public class MySQLDatabaseTest {
     @AfterAll
     public static void tearDown() throws SQLException {
         MockBukkit.unmock();
-        try {
-            DatabaseTester.deleteAllTables(nameConfig);
-        } finally {
-            database.getConnection().close();
-        }
+        database.getConnection().close();
     }
 
     @Test
@@ -118,6 +115,18 @@ public class MySQLDatabaseTest {
     @Order(3)
     void createInterPortalViewTest() throws SQLException {
         tester.createInterPortalViewTest();
+    }
+
+    @Test
+    @Order(3)
+    void createPortalPositionIndexTest() throws SQLException {
+        tester.createPortalPositionIndexTest(PortalType.LOCAL);
+    }
+
+    @Test
+    @Order(3)
+    void createInterPortalPositionIndexTest() throws SQLException {
+        tester.createPortalPositionIndexTest(PortalType.INTER_SERVER);
     }
 
     @Test

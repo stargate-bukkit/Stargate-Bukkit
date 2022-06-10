@@ -115,9 +115,9 @@ public class DataMigratorTest {
                 lcloPortalChecks);
         output.put("config-lclo.yml", lcloChecks);
 
-        
+
         output.put("config-legacyOldest.yml", new TwoTuple<>(new HashMap<>(), new HashMap<>()));
-        
+
         return output;
     }
 
@@ -165,19 +165,19 @@ public class DataMigratorTest {
                 Assertions.assertTrue(
                         fileConfig.getKeys(true).contains(key) || key.contains(StargateYamlConfiguration.START_OF_COMMENT), String.format("The key %s was added to the new config of %s", key, configFile.getName()));
             }
-            
+
             dataMigrator.updateFileConfiguration(fileConfig, config);
             migratorMap.put(configFile.getName(), dataMigrator);
             fileConfig.load(configFile);
 
-            for(ConfigurationOption option : ConfigurationOption.values()){
-                if(option.isHidden()) {
+            for (ConfigurationOption option : ConfigurationOption.values()) {
+                if (option.isHidden()) {
                     continue;
                 }
                 Assertions.assertTrue(fileConfig.getKeys(true).contains(option.getConfigNode()), String.format("The option %s is missing in the configuration", option.getConfigNode()));
             }
-            
-            logger.logMessage(Level.FINEST, "End config for file '"+configFile.getName()+"': \n" + fileConfig.saveToString());
+
+            logger.logMessage(Level.FINEST, "End config for file '" + configFile.getName() + "': \n" + fileConfig.saveToString());
         }
     }
 

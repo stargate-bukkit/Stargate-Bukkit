@@ -97,7 +97,6 @@ public class LineColorFormatter extends AbstractLineColorFormatter {
     }
 
     /**
-     * 
      * @param isLightSign <p>Whether to get the color for a light sign or a dark sign</p>
      * @return
      */

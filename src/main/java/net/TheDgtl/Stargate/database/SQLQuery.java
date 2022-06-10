@@ -18,7 +18,7 @@ public enum SQLQuery {
     /**
      * The query for creating the position type table
      */
-    CREATE_TABLE_POSITION_TYPE,
+    CREATE_TABLE_PORTAL_POSITION_TYPE,
 
     /**
      * The query for creating the portal position table
@@ -184,5 +184,15 @@ public enum SQLQuery {
      * The query for deleting an inter-portal
      */
     DELETE_INTER_PORTAL,
+
+    /**
+     * The query for checking if the portal position index exists
+     */
+    SHOW_INDEX_PORTAL_POSITION,
+
+    /**
+     * The query for checking if the inter-portal position index exists
+     */
+    SHOW_INDEX_INTER_PORTAL_POSITION,
 
 }
