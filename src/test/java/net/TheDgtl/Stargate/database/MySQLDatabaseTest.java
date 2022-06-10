@@ -42,11 +42,7 @@ public class MySQLDatabaseTest {
     @AfterAll
     public static void tearDown() throws SQLException {
         MockBukkit.unmock();
-        try {
-            DatabaseTester.deleteAllTables(nameConfig);
-        } finally {
-            database.getConnection().close();
-        }
+        database.getConnection().close();
     }
 
     @Test
