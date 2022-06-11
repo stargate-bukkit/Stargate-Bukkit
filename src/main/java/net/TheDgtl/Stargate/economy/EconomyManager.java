@@ -5,7 +5,6 @@ import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.formatting.LanguageManager;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.network.portal.Portal;
-import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -31,13 +30,7 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
 
     @Override
     public UUID getTransactionReceiver(OfflinePlayer player, Portal origin) {
-        boolean isOwner = origin.getOwnerUUID() == player.getUniqueId();
-        boolean ownerRevenue = ConfigurationHelper.getBoolean(ConfigurationOption.GATE_OWNER_REVENUE);
-        //The receiver is the player itself
-        if (isOwner && ownerRevenue && origin.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
-            return player.getUniqueId();
-        }
-        if (ownerRevenue) {
+        if (ConfigurationHelper.getBoolean(ConfigurationOption.GATE_OWNER_REVENUE)) {
             //If owner revenue is enabled, pay the portal owner
             return origin.getOwnerUUID();
         } else {
@@ -45,10 +38,11 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
             String bankUUIDString = ConfigurationHelper.getString(ConfigurationOption.TAX_DESTINATION);
             if (!bankUUIDString.isEmpty()) {
                 return UUID.fromString(bankUUIDString);
+            } else {
+                //Pay to the void
+                return null;
             }
         }
-        //Pay to the void
-        return null;
     }
 
     @Override
