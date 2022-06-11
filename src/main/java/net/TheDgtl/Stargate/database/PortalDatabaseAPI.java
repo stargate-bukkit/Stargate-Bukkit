@@ -133,11 +133,6 @@ public class PortalDatabaseAPI implements StorageAPI {
     }
 
     @Override
-    public void endInterServerConnection() {
-        //TODO: Why is this method here if it does nothing
-    }
-
-    @Override
     public Network createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             return new InterServerNetwork(networkName);
@@ -442,8 +437,7 @@ public class PortalDatabaseAPI implements StorageAPI {
                     try {
                         network.addPortal(virtualPortal, false);
                     } catch (NameErrorException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        //Ignored
                     }
                     logger.logMessage(Level.FINEST, "Added as virtual portal");
                     continue;
