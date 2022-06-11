@@ -38,9 +38,10 @@ import net.TheDgtl.Stargate.listener.MoveEventListener;
 import net.TheDgtl.Stargate.listener.PlayerEventListener;
 import net.TheDgtl.Stargate.listener.PluginEventListener;
 import net.TheDgtl.Stargate.listener.StargateBungeePluginMessageListener;
-import net.TheDgtl.Stargate.manager.EconomyManager;
 import net.TheDgtl.Stargate.manager.PermissionManager;
+import net.TheDgtl.Stargate.manager.StargateEconomyAPI;
 import net.TheDgtl.Stargate.manager.StargatePermissionManager;
+import net.TheDgtl.Stargate.manager.VaultEconomyManager;
 import net.TheDgtl.Stargate.migration.DataMigrator;
 import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.StargateRegistry;
@@ -105,7 +106,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private static final SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
     private static final int MAX_TEXT_LENGTH = 40;
 
-    private static EconomyManager economyManager;
+    private static StargateEconomyAPI economyManager;
     private static ServicesManager servicesManager;
     private static String serverName;
     private static boolean knowsServerName = false;
@@ -168,7 +169,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      *
      * @return <p>The economy manager used for this plugin</p>
      */
-    public static EconomyManager getEconomyManager() {
+    public static StargateEconomyAPI getEconomyManager() {
         return economyManager;
     }
 
@@ -496,7 +497,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             lowestMessageLevel = Level.parse(debugLevelString);
         }
         languageManager.setLanguage(ConfigurationHelper.getString(ConfigurationOption.LANGUAGE));
-        economyManager = new EconomyManager(languageManager);
+        economyManager = new VaultEconomyManager(languageManager);
 
         try {
             storageAPI = new PortalDatabaseAPI(this);

@@ -1,11 +1,13 @@
 package net.TheDgtl.Stargate.listener;
 
 import net.TheDgtl.Stargate.Stargate;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.plugin.Plugin;
 
 import java.util.logging.Level;
 
@@ -21,7 +23,7 @@ public class PluginEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPluginEnable(PluginEnableEvent event) {
-        if (Stargate.getEconomyManager().isValidEconomyPlugin(event.getPlugin())) {
+        if (isValidEconomyPlugin(event.getPlugin())) {
             Stargate.getEconomyManager().setupEconomy();
         }
     }
@@ -33,9 +35,29 @@ public class PluginEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPluginDisable(PluginDisableEvent event) {
-        if (event.getPlugin().equals(Stargate.getEconomyManager().getEconomyPlugin())) {
+        if (event.getPlugin().equals(getEconomyPlugin())) {
             Stargate.log(Level.WARNING, "Vault plugin lost.");
         }
+    }
+
+    /**
+     * Gets a Vault instance
+     *
+     * @return <p>A Vault instance</p>
+     */
+    private Plugin getEconomyPlugin() {
+        return Bukkit.getPluginManager().getPlugin("Vault");
+    }
+
+    /**
+     * Checks whether the given plugin is an instance of Vault
+     *
+     * @param plugin <p>The plugin to check</p>
+     * @return <p>True if the plugin is an instance of Vault</p>
+     */
+    private boolean isValidEconomyPlugin(Plugin plugin) {
+        Plugin vault = getEconomyPlugin();
+        return vault != null && vault.equals(plugin);
     }
 
 }
