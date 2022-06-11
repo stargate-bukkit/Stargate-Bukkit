@@ -315,20 +315,6 @@ public class Teleporter {
     }
 
     /**
-     * Charges the given player as necessary
-     *
-     * @param target <p>The target player to charge</p>
-     * @return <p>True if all necessary transactions were successfully completed</p>
-     */
-    private boolean charge(Entity target) {
-        if (!(target instanceof Player) || cost <= 0) {
-            return true;
-        }
-        Player player = (Player) target;
-        return Stargate.getEconomyManager().chargePlayer(player, origin, cost);
-    }
-
-    /**
      * Calculates the relative angle difference between two block faces
      *
      * @param originFace      <p>The block face the origin portal is pointing towards</p>
