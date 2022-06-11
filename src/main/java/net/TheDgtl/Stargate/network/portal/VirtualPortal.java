@@ -204,4 +204,8 @@ public class VirtualPortal implements Portal {
     public String getID() {
         return NameHelper.getNormalizedName(name);
     }
+    
+    public String getServer() {
+        return server;
+    }
 }

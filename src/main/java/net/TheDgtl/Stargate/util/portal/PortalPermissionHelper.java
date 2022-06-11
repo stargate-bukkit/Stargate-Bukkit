@@ -6,6 +6,7 @@ import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
+import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import net.TheDgtl.Stargate.property.BypassPermission;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -102,6 +103,10 @@ public final class PortalPermissionHelper {
         }
         String identifier = "sg.use";
         List<String> permList = generateDefaultPortalPermissionList(entrance, identifier);
+        if(exit instanceof VirtualPortal) {
+            String server = ((VirtualPortal) exit).getServer();
+            permList.add(identifier + ".server." + server);
+        }
         if (exit instanceof RealPortal) {
             permList.add(generateWorldPermission((RealPortal) exit, identifier));
         }

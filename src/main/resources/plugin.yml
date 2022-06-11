@@ -109,15 +109,17 @@ permissions:
           sg.use.design:
             description: Can use any portal, regardless of its portal's design (gatefile).
             children:
-              #sg.destroy.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be destroyed.
               sg.use.design.nether: true
               sg.use.design.water: true
               sg.use.design.wool: true
               sg.use.design.end: true
-          #sg.use.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be used.
+              #sg.use.design.<NAME> is a sub-node that allows for portals of a specific gate file design to be used.
           sg.use.owned:
             default: true
             description: Can use any owned portal.
+          sg.use.server:
+            description: Can use portals on specified server
+            #sg.use.server.<NAME> is a sub-node that allows for portal connections to be established to specific servers
 
       sg.create:
         default: op
@@ -244,7 +246,7 @@ permissions:
             default: true
             description: Can destroy portals, regardless of design (gatefile).
             children:
-              #sg.destroy.design.<NAME>.gate is a sub-node that allows for portals of a specific gate file design to be destroyed.
+              #sg.destroy.design.<NAME> is a sub-node that allows for portals of a specific gate file design to be destroyed.
               sg.destroy.design.nether: true
               sg.destroy.design.water: true
               sg.destroy.design.wool: true
