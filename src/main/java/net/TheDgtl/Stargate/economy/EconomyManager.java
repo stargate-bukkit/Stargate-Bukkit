@@ -30,34 +30,48 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
     }
 
     @Override
+    public UUID getTransactionReceiver(OfflinePlayer player, Portal origin) {
+        boolean isOwner = origin.getOwnerUUID() == player.getUniqueId();
+        boolean ownerRevenue = ConfigurationHelper.getBoolean(ConfigurationOption.GATE_OWNER_REVENUE);
+        //The receiver is the player itself
+        if (isOwner && ownerRevenue && origin.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
+            return player.getUniqueId();
+        }
+        if (ownerRevenue) {
+            //If owner revenue is enabled, pay the portal owner
+            return origin.getOwnerUUID();
+        } else {
+            //Pay the tax account if set
+            String bankUUIDString = ConfigurationHelper.getString(ConfigurationOption.TAX_DESTINATION);
+            if (!bankUUIDString.isEmpty()) {
+                return UUID.fromString(bankUUIDString);
+            }
+        }
+        //Pay to the void
+        return null;
+    }
+
+    @Override
     public boolean chargePlayer(OfflinePlayer player, Portal origin, int amount) {
         //Skip if no payment is necessary
         if (amount == 0) {
             return true;
         }
-        boolean isOwner = origin.getOwnerUUID() == player.getUniqueId();
-        boolean ownerRevenue = ConfigurationHelper.getBoolean(ConfigurationOption.GATE_OWNER_REVENUE);
-        //Skip payment if the player would pay to itself
-        if (isOwner && ownerRevenue && origin.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
+        UUID transactionReceiverId = getTransactionReceiver(player, origin);
+        if (transactionReceiverId == player.getUniqueId()) {
             return true;
         }
-        if (ownerRevenue) {
-            //Pay to the owner
-            OfflinePlayer transactionTarget = Bukkit.getServer().getOfflinePlayer(origin.getOwnerUUID());
-            //If the owner is the player, there is nothing to do
-            if (transactionTarget.equals(player)) {
-                return true;
-            }
+        if (transactionReceiverId != null) {
+            OfflinePlayer transactionReceiver = Bukkit.getOfflinePlayer(transactionReceiverId);
             //Failed payment
-            if (!chargeAndDepositPlayer(player, transactionTarget, amount)) {
+            if (!chargeAndDepositPlayer(player, transactionReceiver, amount)) {
                 return false;
             }
             //Inform the transaction target that they've received money
-            sendObtainSuccessMessage(transactionTarget, amount, origin.getName());
+            sendObtainSuccessMessage(transactionReceiver, amount, origin.getName());
             return true;
         } else {
-            //Pay to the server
-            return chargeAndTax(player, amount);
+            return chargePlayer(player, amount);
         }
     }
 
