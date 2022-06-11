@@ -22,13 +22,6 @@ public interface StorageAPI {
     void startInterServerConnection();
 
     /**
-     * "Ends" the inter-server connection by setting this server's portals as offline
-     * <p>
-     * TODO: This is not implemented at all. This should either be removed, or properly implemented
-     */
-    void endInterServerConnection();
-
-    /**
      * Creates a new network unassigned to a registry
      *
      * @param networkName <p>The name of the new network</p>

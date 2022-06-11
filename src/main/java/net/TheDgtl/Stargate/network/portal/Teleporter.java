@@ -86,7 +86,6 @@ public class Teleporter {
         List<Player> playersToRefund = new ArrayList<>();
 
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
-            //TODO: The access event should be called to allow add-ons cancelling or overriding the teleportation
             StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity);
             if (!hasPermission(anyEntity, permissionManager)) {
                 teleportMessage = permissionManager.getDenyMessage();

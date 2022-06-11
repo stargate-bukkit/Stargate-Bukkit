@@ -529,7 +529,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             return;
         }
-        storageAPI.endInterServerConnection();
         servicesManager.unregisterAll(this);
     }
 
