@@ -26,6 +26,16 @@ public interface StargateEconomyAPI extends EconomyAPI {
     boolean chargePlayer(OfflinePlayer player, Portal origin, int amount);
 
     /**
+     * Refunds a player's payment for using a portal
+     *
+     * @param player <p>The player that used a portal</p>
+     * @param origin <p>The portal the player used</p>
+     * @param amount <p>The amount to refund the player</p>
+     * @return <p>True if the player was successfully refunded</p>
+     */
+    boolean refundPlayer(OfflinePlayer player, Portal origin, int amount);
+
+    /**
      * Gets the receiver of a transaction for using the given portal
      *
      * @param player <p>The player using the portal</p>

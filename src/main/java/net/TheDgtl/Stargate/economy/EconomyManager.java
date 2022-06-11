@@ -75,6 +75,27 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
         }
     }
 
+    @Override
+    public boolean refundPlayer(OfflinePlayer player, Portal origin, int amount) {
+        //Skip if no payment is necessary
+        if (amount == 0) {
+            return true;
+        }
+        UUID transactionPayerId = getTransactionReceiver(player, origin);
+        //Skip payments to self
+        if (transactionPayerId != null && transactionPayerId.equals(player.getUniqueId())) {
+            return true;
+        }
+        if (transactionPayerId != null) {
+            //Pay the correct receiver
+            OfflinePlayer transactionPayer = Bukkit.getOfflinePlayer(transactionPayerId);
+            return chargeAndDepositPlayer(transactionPayer, player, amount);
+        } else {
+            //Give the money to the void
+            return depositPlayer(player, amount);
+        }
+    }
+
     /**
      * Charges the given player and deposits it into the other given player's account
      *
