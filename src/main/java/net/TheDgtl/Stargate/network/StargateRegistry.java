@@ -200,4 +200,11 @@ public class StargateRegistry implements RegistryAPI {
         return networkMap;
     }
 
+    public void load() {
+        networkMap.clear();
+        bungeeNetworkMap.clear();
+        portalFromStructureTypeMap.clear();
+        this.loadPortals();
+    }
+
 }

@@ -1,5 +1,7 @@
 package net.TheDgtl.Stargate.database;
 
+import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PortalType;
@@ -7,6 +9,7 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 
+import java.sql.SQLException;
 import java.util.Set;
 
 public interface StorageAPI {
@@ -46,5 +49,14 @@ public interface StorageAPI {
      * @param portalType <p>The type of portal to remove</p>
      */
     void removePortalFromStorage(Portal portal, PortalType portalType);
+
+    /**
+     * Loads all settings 
+     * 
+     * @param stargate <p>An instance of stargate</p>
+     * @throws SQLException 
+     */
+    void load(Stargate stargate) throws SQLException;
+
 
 }

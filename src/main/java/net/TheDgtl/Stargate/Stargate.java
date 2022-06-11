@@ -436,7 +436,9 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     @Override
     public void reloadConfig() {
-        config = new StargateYamlConfiguration();
+        if(config == null) {
+            config = new StargateYamlConfiguration();
+        }
         try {
             config.load(new File(this.getDataFolder(), "config.yml"));
         } catch (IOException | InvalidConfigurationException e) {
@@ -481,7 +483,12 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     public void reload() {
         loadGateFormats();
-        load();
+        try {
+            storageAPI.load(this);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        registry.load();
     }
 
     private void load() {

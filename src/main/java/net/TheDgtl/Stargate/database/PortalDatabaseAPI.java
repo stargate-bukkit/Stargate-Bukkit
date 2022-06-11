@@ -47,10 +47,10 @@ import java.util.logging.Level;
  */
 public class PortalDatabaseAPI implements StorageAPI {
 
-    private final Database database;
-    private final SQLQueryGenerator sqlQueryGenerator;
-    private final boolean useInterServerNetworks;
-    private final StargateLogger logger;
+    private Database database;
+    private SQLQueryGenerator sqlQueryGenerator;
+    private boolean useInterServerNetworks;
+    private StargateLogger logger;
 
     /**
      * Instantiates a new stargate registry
@@ -59,9 +59,8 @@ public class PortalDatabaseAPI implements StorageAPI {
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
     public PortalDatabaseAPI(Stargate stargate) throws SQLException {
-        this(loadDatabase(stargate), ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE), ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE), stargate);
+        load(stargate);
     }
-
     /**
      * Instantiates a new stargate registry
      *
@@ -73,15 +72,7 @@ public class PortalDatabaseAPI implements StorageAPI {
      */
     public PortalDatabaseAPI(Database database, boolean usingBungee, boolean usingRemoteDatabase,
                              StargateLogger logger) throws SQLException {
-        this.logger = logger;
-        this.database = database;
-        useInterServerNetworks = usingRemoteDatabase && usingBungee;
-        String PREFIX = usingRemoteDatabase ? ConfigurationHelper.getString(ConfigurationOption.BUNGEE_INSTANCE_NAME) : "";
-        String serverPrefix = usingRemoteDatabase ? Stargate.getServerUUID() : "";
-        TableNameConfiguration config = new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
-        DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
-        this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
-        createTables();
+        load(database,usingBungee,usingRemoteDatabase,logger);
     }
 
     /**
@@ -561,6 +552,26 @@ public class PortalDatabaseAPI implements StorageAPI {
             addFlagStatement.setString(3, String.valueOf(character));
             addFlagStatement.execute();
         }
+    }
+
+    @Override
+    public void load(Stargate stargate) throws SQLException {
+        load(loadDatabase(stargate), ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE),
+                ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE), stargate);
+    }
+
+    private void load(Database database, boolean usingBungee, boolean usingRemoteDatabase, StargateLogger logger)
+            throws SQLException {
+        this.logger = logger;
+        this.database = database;
+        useInterServerNetworks = usingRemoteDatabase && usingBungee;
+        String PREFIX = usingRemoteDatabase ? ConfigurationHelper.getString(ConfigurationOption.BUNGEE_INSTANCE_NAME)
+                : "";
+        String serverPrefix = usingRemoteDatabase ? Stargate.getServerUUID() : "";
+        TableNameConfiguration config = new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
+        DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
+        this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
+        createTables();
     }
 
 }
