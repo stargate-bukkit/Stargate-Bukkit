@@ -78,7 +78,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     protected long activatedTime;
     protected UUID activator;
-    private boolean isDestroye = false
+    private boolean isDestroyed = false;
     private static final int ACTIVE_DELAY = 15;
 
     /**
