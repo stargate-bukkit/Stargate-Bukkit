@@ -78,6 +78,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     protected long activatedTime;
     protected UUID activator;
+    private boolean isDestroye = false
     private static final int ACTIVE_DELAY = 15;
 
     /**
@@ -359,6 +360,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void destroy() {
+        this.isDestroyed = true;
         this.network.removePortal(this, true);
         this.close(true);
 
@@ -473,7 +475,7 @@ public abstract class AbstractPortal implements RealPortal {
      * @param activatedTime <p>The time this portal was activated</p>
      */
     protected void deactivate(long activatedTime) {
-        if (activatedTime != this.activatedTime) {
+        if (activatedTime != this.activatedTime || this.isDestroyed) {
             return;
         }
         deactivate();
