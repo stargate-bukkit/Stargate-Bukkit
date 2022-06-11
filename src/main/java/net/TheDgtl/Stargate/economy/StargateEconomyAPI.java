@@ -1,4 +1,4 @@
-package net.TheDgtl.Stargate.manager;
+package net.TheDgtl.Stargate.economy;
 
 import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.OfflinePlayer;

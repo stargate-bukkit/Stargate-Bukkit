@@ -103,7 +103,7 @@ public final class PortalPermissionHelper {
         }
         String identifier = "sg.use";
         List<String> permList = generateDefaultPortalPermissionList(entrance, identifier);
-        if(exit instanceof VirtualPortal) {
+        if (exit instanceof VirtualPortal) {
             String server = ((VirtualPortal) exit).getServer();
             permList.add(identifier + ".server." + server);
         }
