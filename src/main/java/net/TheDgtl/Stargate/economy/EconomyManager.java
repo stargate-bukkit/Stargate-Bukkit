@@ -52,19 +52,23 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
             return true;
         }
         UUID transactionReceiverId = getTransactionReceiver(player, origin);
+        //Skip payments to self
         if (transactionReceiverId == player.getUniqueId()) {
             return true;
         }
         if (transactionReceiverId != null) {
+            //Pay the correct receiver
             OfflinePlayer transactionReceiver = Bukkit.getOfflinePlayer(transactionReceiverId);
-            //Failed payment
-            if (!chargeAndDepositPlayer(player, transactionReceiver, amount)) {
+            if (chargeAndDepositPlayer(player, transactionReceiver, amount)) {
+                //Inform the transaction target that they've received money
+                sendObtainSuccessMessage(transactionReceiver, amount, origin.getName());
+                return true;
+            } else {
+                //Failed payment
                 return false;
             }
-            //Inform the transaction target that they've received money
-            sendObtainSuccessMessage(transactionReceiver, amount, origin.getName());
-            return true;
         } else {
+            //Give the money to the void
             return chargePlayer(player, amount);
         }
     }
