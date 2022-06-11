@@ -275,10 +275,6 @@ public class Teleporter {
                 }
             }, 1);
         } else {
-            if (target instanceof Player && !charge(target)) {
-                //TODO: Inform the user that the payment couldn't be processed or something
-                return;
-            }
             teleport(target, exit);
             target.setVelocity(targetVelocity);
         }
