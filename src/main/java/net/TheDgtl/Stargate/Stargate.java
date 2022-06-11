@@ -489,6 +489,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             e.printStackTrace();
         }
         registry.load();
+        economyManager.setupEconomy();
     }
 
     private void load() {
