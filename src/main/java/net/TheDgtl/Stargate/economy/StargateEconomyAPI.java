@@ -16,23 +16,14 @@ public interface StargateEconomyAPI extends EconomyAPI {
     void setupEconomy();
 
     /**
-     * Charges the given player
+     * Charges the given player for using the given portal
      *
      * @param player <p>The player to charge</p>
-     * @param origin <p>The portal the player entered from</p>
+     * @param origin <p>The portal the player entered from, or null if not portal usage</p>
      * @param amount <p>The amount to charge the player</p>
      * @return <p>True if there were no problems in processing the payment</p>
      */
     boolean chargePlayer(OfflinePlayer player, Portal origin, int amount);
-
-    /**
-     * Money for the tax gods. May you live in wealth
-     *
-     * @param player <p>The player to charge and tax</p>
-     * @param amount <p>The amount the player should be charged</p>
-     * @return <p>True if the player was charged and/or taxed</p>
-     */
-    boolean chargeAndTax(OfflinePlayer player, int amount);
 
     /**
      * Gets the receiver of a transaction for using the given portal

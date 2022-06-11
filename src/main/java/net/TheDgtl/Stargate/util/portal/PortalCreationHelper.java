@@ -139,7 +139,7 @@ public final class PortalCreationHelper {
 
         //Charge the player as necessary for the portal creation
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_CREATE) &&
-                !Stargate.getEconomyManager().chargeAndTax(player, stargateCreateEvent.getCost())) {
+                !Stargate.getEconomyManager().chargePlayer(player, null, stargateCreateEvent.getCost())) {
             player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return;
         }

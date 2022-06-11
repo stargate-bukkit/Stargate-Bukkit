@@ -30,7 +30,7 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
 
     @Override
     public UUID getTransactionReceiver(OfflinePlayer player, Portal origin) {
-        if (ConfigurationHelper.getBoolean(ConfigurationOption.GATE_OWNER_REVENUE)) {
+        if (origin != null && ConfigurationHelper.getBoolean(ConfigurationOption.GATE_OWNER_REVENUE)) {
             //If owner revenue is enabled, pay the portal owner
             return origin.getOwnerUUID();
         } else {
@@ -53,7 +53,7 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
         }
         UUID transactionReceiverId = getTransactionReceiver(player, origin);
         //Skip payments to self
-        if (transactionReceiverId == player.getUniqueId()) {
+        if (transactionReceiverId != null && transactionReceiverId.equals(player.getUniqueId())) {
             return true;
         }
         if (transactionReceiverId != null) {
@@ -61,7 +61,9 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
             OfflinePlayer transactionReceiver = Bukkit.getOfflinePlayer(transactionReceiverId);
             if (chargeAndDepositPlayer(player, transactionReceiver, amount)) {
                 //Inform the transaction target that they've received money
-                sendObtainSuccessMessage(transactionReceiver, amount, origin.getName());
+                if (origin != null) {
+                    sendObtainSuccessMessage(transactionReceiver, amount, origin.getName());
+                }
                 return true;
             } else {
                 //Failed payment
@@ -69,22 +71,6 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
             }
         } else {
             //Give the money to the void
-            return chargePlayer(player, amount);
-        }
-    }
-
-    @Override
-    public boolean chargeAndTax(OfflinePlayer player, int amount) {
-        //Skip if no payment is necessary
-        if (amount == 0) {
-            return true;
-        }
-        String bankUUIDString = ConfigurationHelper.getString(ConfigurationOption.TAX_DESTINATION);
-        if (!bankUUIDString.isEmpty()) {
-            //Charge the player and put the money on the tax account
-            OfflinePlayer bankAccount = Bukkit.getOfflinePlayer(UUID.fromString(bankUUIDString));
-            return chargeAndDepositPlayer(player, bankAccount, amount);
-        } else {
             return chargePlayer(player, amount);
         }
     }

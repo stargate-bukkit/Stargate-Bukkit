@@ -56,7 +56,7 @@ public final class PortalDestructionHelper {
          * permission, do not collect money
          */
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_DESTROY)
-                && !Stargate.getEconomyManager().chargeAndTax(player, stargateDestroyEvent.getCost())) {
+                && !Stargate.getEconomyManager().chargePlayer(player, null, stargateDestroyEvent.getCost())) {
             player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return true;
         }
