@@ -29,29 +29,12 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
     }
 
     @Override
-    public UUID getTransactionReceiver(OfflinePlayer player, Portal origin) {
-        if (origin != null && ConfigurationHelper.getBoolean(ConfigurationOption.GATE_OWNER_REVENUE)) {
-            //If owner revenue is enabled, pay the portal owner
-            return origin.getOwnerUUID();
-        } else {
-            //Pay the tax account if set
-            String bankUUIDString = ConfigurationHelper.getString(ConfigurationOption.TAX_DESTINATION);
-            if (!bankUUIDString.isEmpty()) {
-                return UUID.fromString(bankUUIDString);
-            } else {
-                //Pay to the void
-                return null;
-            }
-        }
-    }
-
-    @Override
     public boolean chargePlayer(OfflinePlayer player, Portal origin, int amount) {
         //Skip if no payment is necessary
         if (amount == 0) {
             return true;
         }
-        UUID transactionReceiverId = getTransactionReceiver(player, origin);
+        UUID transactionReceiverId = getTransactionReceiver(origin);
         //Skip payments to self
         if (transactionReceiverId != null && transactionReceiverId.equals(player.getUniqueId())) {
             return true;
@@ -81,7 +64,7 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
         if (amount == 0) {
             return true;
         }
-        UUID transactionPayerId = getTransactionReceiver(player, origin);
+        UUID transactionPayerId = getTransactionReceiver(origin);
         //Skip payments to self
         if (transactionPayerId != null && transactionPayerId.equals(player.getUniqueId())) {
             return true;
@@ -150,6 +133,28 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
         String portalNameCompiledMessage = TranslatableMessageFormatter.formatPortal(unFormattedMessage, portalName);
         String message = TranslatableMessageFormatter.formatCost(portalNameCompiledMessage, amount);
         player.sendMessage(message);
+    }
+
+    /**
+     * Gets the receiver of a transaction for using the given portal
+     *
+     * @param origin <p>The portal used</p>
+     * @return <p>The target account's UUID, or null for no receiver</p>
+     */
+    private UUID getTransactionReceiver(Portal origin) {
+        if (origin != null && ConfigurationHelper.getBoolean(ConfigurationOption.GATE_OWNER_REVENUE)) {
+            //If owner revenue is enabled, pay the portal owner
+            return origin.getOwnerUUID();
+        } else {
+            //Pay the tax account if set
+            String bankUUIDString = ConfigurationHelper.getString(ConfigurationOption.TAX_DESTINATION);
+            if (!bankUUIDString.isEmpty()) {
+                return UUID.fromString(bankUUIDString);
+            } else {
+                //Pay to the void
+                return null;
+            }
+        }
     }
 
 }
