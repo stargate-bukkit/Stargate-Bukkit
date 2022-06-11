@@ -83,6 +83,8 @@ public class Teleporter {
 
         nearbyLeashed = getNearbyLeashedEntities(baseEntity);
 
+        List<Player> playersToRefund = new ArrayList<>();
+
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
             //TODO: The access event should be called to allow add-ons cancelling or overriding the teleportation
             StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity);
@@ -91,9 +93,14 @@ public class Teleporter {
                 return false;
             }
 
-            if (anyEntity instanceof Player && !Stargate.getEconomyManager().has((Player) anyEntity, this.cost)) {
-                teleportMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS);
-                return false;
+            if (anyEntity instanceof Player) {
+                if (Stargate.getEconomyManager().chargePlayer((Player) anyEntity, origin, this.cost)) {
+                    playersToRefund.add((Player) anyEntity);
+                } else {
+                    teleportMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS);
+                    refundPlayers(playersToRefund);
+                    return false;
+                }
             }
             return true;
         }, nearbyLeashed);
@@ -115,6 +122,19 @@ public class Teleporter {
             betterTeleport(baseEntity, rotation);
             return true;
         }));
+    }
+
+    /**
+     * Refunds the teleportation cost to the given list of users
+     *
+     * @param playersToRefund <p>The players to refund</p>
+     */
+    private void refundPlayers(List<Player> playersToRefund) {
+        for (Player player : playersToRefund) {
+            if (!Stargate.getEconomyManager().refundPlayer(player, this.origin, this.cost)) {
+                logger.logMessage(Level.WARNING, "Unable to refund player " + player + " " + this.cost);
+            }
+        }
     }
 
     private Vector getOffset(Entity baseEntity) {
@@ -275,10 +295,6 @@ public class Teleporter {
                 }
             }, 1);
         } else {
-            if (target instanceof Player && !charge(target)) {
-                //TODO: Inform the user that the payment couldn't be processed or something
-                return;
-            }
             teleport(target, exit);
             target.setVelocity(targetVelocity);
         }

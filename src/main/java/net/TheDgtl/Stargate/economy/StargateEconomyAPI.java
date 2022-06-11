@@ -8,7 +8,7 @@ import java.util.UUID;
 /**
  * An API describing the economy methods required by Stargate
  */
-public interface StargateEconomyAPI extends EconomyAPI {
+public interface StargateEconomyAPI {
 
     /**
      * Sets up economy to make it ready for transactions
