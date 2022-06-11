@@ -27,14 +27,7 @@ public class VaultEconomyManager extends EconomyManager {
      */
     public VaultEconomyManager(LanguageManager languageManager) {
         super(languageManager);
-        if (!ConfigurationHelper.getBoolean(ConfigurationOption.USE_ECONOMY)) {
-            hasVault = false;
-            return;
-        }
-        hasVault = setupEconomyService();
-        if (!hasVault) {
-            Stargate.log(Level.WARNING, "Dependency ''Vault'' is unavailable; economy features are disabled");
-        }
+        setupEconomy();
     }
 
     @Override
@@ -92,7 +85,14 @@ public class VaultEconomyManager extends EconomyManager {
 
     @Override
     public void setupEconomy() {
+        if (!ConfigurationHelper.getBoolean(ConfigurationOption.USE_ECONOMY)) {
+            hasVault = false;
+            return;
+        }
         hasVault = setupEconomyService();
+        if (!hasVault) {
+            Stargate.log(Level.WARNING, "Dependency ''Vault'' is unavailable; economy features are disabled");
+        }
     }
 
     /**
