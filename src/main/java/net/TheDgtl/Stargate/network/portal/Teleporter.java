@@ -98,7 +98,6 @@ public class Teleporter {
                     playersToRefund.add((Player) anyEntity);
                 } else {
                     teleportMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS);
-                    refundPlayers(playersToRefund);
                     return false;
                 }
             }
@@ -107,6 +106,7 @@ public class Teleporter {
 
         hasPermission = dfs.depthFirstSearch(baseEntity);
         if (!hasPermission) {
+            refundPlayers(playersToRefund);
             rotation = Math.PI;
             if (origin != null) {
                 exit = origin.getExit().add(new Vector(0.5, 0, 0.5));
