@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -25,14 +26,14 @@ public class MySQLDatabaseTest {
     @BeforeAll
     public static void setUp() throws SQLException, InvalidStructureException, NameErrorException {
         System.out.println("Setting up test data");
-        DatabaseDriver driver = DatabaseDriver.MARIADB;
+        DatabaseDriver driver = DatabaseDriver.MYSQL;
         String address = "LOCALHOST";
         int port = 3306;
         String databaseName = "stargate";
         String username = "root";
         String password = "root";
 
-        Database database = new MySqlDatabase(driver, address, port, databaseName, username, password, true);
+        Database database = new MySqlDatabase(driver, address, port, databaseName, username, password, false);
         MySQLDatabaseTest.nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DatabaseDriver.MYSQL);
         tester = new DatabaseTester(database, nameConfig, generator, true);
@@ -42,7 +43,14 @@ public class MySQLDatabaseTest {
     @AfterAll
     public static void tearDown() throws SQLException {
         MockBukkit.unmock();
-        database.getConnection().close();
+
+        Connection connection = database.getConnection();
+        try {
+            connection.prepareStatement("DROP DATABASE stargate;").execute();
+            connection.prepareStatement("CREATE DATABASE stargate;").execute();
+        } finally {
+            connection.close();
+        }
     }
 
     @Test
