@@ -154,7 +154,7 @@ public class NetworkedPortal extends AbstractPortal {
 
     @Override
     public void close(boolean force) {
-        if (hasFlag(PortalFlag.ALWAYS_ON) && !force) {
+        if (hasFlag(PortalFlag.ALWAYS_ON) && !force || super.isDestroyed) {
             return;
         }
         super.close(force);
@@ -346,6 +346,7 @@ public class NetworkedPortal extends AbstractPortal {
             this.destination = null;
             this.isActive = false;
         }
+        logger.logMessage(Level.FINE, "Ping 3");
         super.deactivate();
     }
 

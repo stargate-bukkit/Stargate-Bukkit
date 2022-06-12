@@ -78,7 +78,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     protected long activatedTime;
     protected UUID activator;
-    private boolean isDestroyed = false;
+    protected boolean isDestroyed = false;
     private static final int ACTIVE_DELAY = 15;
 
     /**
@@ -169,7 +169,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void close(boolean forceClose) {
-        if (!isOpen() || (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose)) {
+        if (!isOpen() || (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose) || this.isDestroyed) {
             return;
         }
         StargateCloseEvent closeEvent = new StargateCloseEvent(this, forceClose);
@@ -360,7 +360,6 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void destroy() {
-        this.isDestroyed = true;
         this.network.removePortal(this, true);
         this.close(true);
 
@@ -370,6 +369,7 @@ public abstract class AbstractPortal implements RealPortal {
                 Stargate.getRegistryStatic().unRegisterLocation(formatType, loc);
             }
         }
+        this.isDestroyed = true;
 
         Supplier<Boolean> destroyAction = () -> {
             String[] lines = new String[]{name, "", "", ""};
@@ -475,7 +475,7 @@ public abstract class AbstractPortal implements RealPortal {
      * @param activatedTime <p>The time this portal was activated</p>
      */
     protected void deactivate(long activatedTime) {
-        if (activatedTime != this.activatedTime || this.isDestroyed) {
+        if (activatedTime != this.activatedTime) {
             return;
         }
         deactivate();
@@ -485,10 +485,14 @@ public abstract class AbstractPortal implements RealPortal {
      * De-activates this portal
      */
     protected void deactivate() {
+        if(this.isDestroyed) {
+            return;
+        }
+        
         //Call the deactivate event to notify add-ons
         StargateDeactivateEvent event = new StargateDeactivateEvent(this);
         Bukkit.getPluginManager().callEvent(event);
-
+        
         this.activator = null;
         drawControlMechanisms();
     }
