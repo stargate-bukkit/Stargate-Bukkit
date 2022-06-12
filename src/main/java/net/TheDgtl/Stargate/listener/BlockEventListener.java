@@ -21,20 +21,25 @@ import net.TheDgtl.Stargate.util.portal.PortalCreationHelper;
 import net.TheDgtl.Stargate.util.portal.PortalDestructionHelper;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Fire;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.util.Vector;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -222,6 +227,38 @@ public class BlockEventListener implements Listener {
             Stargate.log(Level.FINEST, "Broke the portal from explosion");
         }
     }
+    
+    /**
+     * Listens to and cancels any block burn events that may break a stargate
+     *
+     * @param event <p>The triggered burn event</p>
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockBurn(BlockBurnEvent event) {
+        Portal portal = registry.getPortal(event.getBlock().getLocation());
+        if(portal != null)  {
+            if(ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_FIRE)) {
+                portal.destroy();
+            } else {
+                event.setCancelled(true);
+            }
+                    
+        }
+    }
+    
+    /**
+     * Listens to and cancels any fire form events touching portal
+     *
+     * @param event <p>The triggered ignition event</p>
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockIgnite(BlockIgniteEvent event) {
+        if (!ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_FIRE)
+                && registry.isNextToPortal(event.getBlock().getLocation(), GateStructureType.FRAME)) {
+            event.setCancelled(true);
+        }
+    }
+    
 
     /**
      * Listens to and cancels any water or lava flowing from or into a stargate's entrance

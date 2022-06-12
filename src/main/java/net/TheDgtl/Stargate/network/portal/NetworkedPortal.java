@@ -346,7 +346,6 @@ public class NetworkedPortal extends AbstractPortal {
             this.destination = null;
             this.isActive = false;
         }
-        logger.logMessage(Level.FINE, "Ping 3");
         super.deactivate();
     }
 

@@ -256,7 +256,12 @@ public enum ConfigurationOption {
      */
     ENABLE_OWNED_GATES("enableOwnedGates", "Allows users to use/break any gates they create, " +
             "regardless of any permissions that may prevent them from doing so",
-            true, OptionDataType.BOOLEAN, true);
+            true, OptionDataType.BOOLEAN, true), 
+    
+    /**
+     * Allow fires to destroy portals
+     */
+    DESTROY_ON_FIRE("destroyOnFire", "Allow fires to destroy portals",false,OptionDataType.BOOLEAN, true);
 
     private final String configNode;
     private final String description;
