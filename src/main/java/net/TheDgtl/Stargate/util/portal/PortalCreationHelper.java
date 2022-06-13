@@ -125,6 +125,10 @@ public final class PortalCreationHelper {
             }
             return;
         }
+        
+        if(selectedNetwork.isPortalNameTaken(portal.getName())) {
+            throw new NameErrorException(TranslatableMessage.ALREADY_EXIST);
+        }
 
         //Display an error if trying to create portals across servers while the feature is disabled
         if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))

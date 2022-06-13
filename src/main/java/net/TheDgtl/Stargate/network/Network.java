@@ -41,6 +41,7 @@ public interface Network {
      *
      * @param portal         <p>The portal to add</p>
      * @param saveToDatabase <p>Whether to also save the portal to the database, only instances of RealPortal can be saved</p>
+     * @throws NameErrorException if portal a portal with that name already exist in the network
      */
     void addPortal(Portal portal, boolean saveToDatabase) throws NameErrorException;
 
