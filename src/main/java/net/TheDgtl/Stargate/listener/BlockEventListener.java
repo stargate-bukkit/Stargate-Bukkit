@@ -15,6 +15,7 @@ import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
+import net.TheDgtl.Stargate.property.BlockEventType;
 import net.TheDgtl.Stargate.util.NetworkCreationHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import net.TheDgtl.Stargate.util.portal.PortalCreationHelper;
@@ -104,9 +105,17 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        Location loc = event.getBlock().getLocation();
-        Portal portal = registry.getPortal(loc, GateStructureType.IRIS);
-        if (portal != null && ConfigurationHelper.getBoolean(ConfigurationOption.PROTECT_ENTRANCE)) {
+        Portal portal = registry.getPortal(event.getBlock().getLocation());
+        if (portal == null) {
+            return;
+        }
+        if(registry.getPortal(event.getBlock().getLocation(), GateStructureType.IRIS) != null) {
+            if(ConfigurationHelper.getBoolean(ConfigurationOption.PROTECT_ENTRANCE)) {
+                event.setCancelled(true);
+            }
+            return;
+        }
+        if(!BlockEventType.BlockPlaceEvent.isDestroyPortal()) {
             event.setCancelled(true);
         }
     }
@@ -227,38 +236,6 @@ public class BlockEventListener implements Listener {
             Stargate.log(Level.FINEST, "Broke the portal from explosion");
         }
     }
-    
-    /**
-     * Listens to and cancels any block burn events that may break a stargate
-     *
-     * @param event <p>The triggered burn event</p>
-     */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onBlockBurn(BlockBurnEvent event) {
-        Portal portal = registry.getPortal(event.getBlock().getLocation());
-        if(portal != null)  {
-            if(ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_FIRE)) {
-                portal.destroy();
-            } else {
-                event.setCancelled(true);
-            }
-                    
-        }
-    }
-    
-    /**
-     * Listens to and cancels any fire form events touching portal
-     *
-     * @param event <p>The triggered ignition event</p>
-     */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onBlockIgnite(BlockIgniteEvent event) {
-        if (!ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_FIRE)
-                && registry.isNextToPortal(event.getBlock().getLocation(), GateStructureType.FRAME)) {
-            event.setCancelled(true);
-        }
-    }
-    
 
     /**
      * Listens to and cancels any water or lava flowing from or into a stargate's entrance
@@ -301,4 +278,34 @@ public class BlockEventListener implements Listener {
         }
     }
 
+    /**
+     * Listens to and cancels any block burn events that may break a stargate
+     *
+     * @param event <p>The triggered burn event</p>
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockBurn(BlockBurnEvent event) {
+        Portal portal = registry.getPortal(event.getBlock().getLocation());
+        if(portal != null)  {
+            if(BlockEventType.BlockBurnEvent.isDestroyPortal()) {
+                portal.destroy();
+            } else {
+                event.setCancelled(true);
+            }
+                    
+        }
+    }
+    
+    /**
+     * Listens to and cancels any fire form events touching portal
+     *
+     * @param event <p>The triggered ignition event</p>
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockIgnite(BlockIgniteEvent event) {
+        if (!BlockEventType.BlockBurnEvent.isDestroyPortal()
+                && registry.isNextToPortal(event.getBlock().getLocation(), GateStructureType.FRAME)) {
+            event.setCancelled(true);
+        }
+    }
 }

@@ -259,9 +259,9 @@ public enum ConfigurationOption {
             true, OptionDataType.BOOLEAN, true), 
     
     /**
-     * Allow fires to destroy portals
+     * Allows for specific events to destroy portals
      */
-    DESTROY_ON_FIRE("destroyOnFire", "Allow fires to destroy portals",false,OptionDataType.BOOLEAN, true);
+    SPECIFIC_PROTECTION_OVERRIDE("specificProtectionOverrides", "Allows for specific events to destroy portals",null,OptionDataType.STRING_LIST, true);
 
     private final String configNode;
     private final String description;

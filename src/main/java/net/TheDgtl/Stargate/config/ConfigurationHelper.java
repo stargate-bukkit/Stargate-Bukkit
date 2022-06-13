@@ -1,5 +1,7 @@
 package net.TheDgtl.Stargate.config;
 
+import java.util.List;
+
 import net.TheDgtl.Stargate.Stargate;
 
 /**
@@ -67,4 +69,16 @@ public final class ConfigurationHelper {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public static List<String> getStringList(ConfigurationOption configurationOption){
+        if (Stargate.getFileConfiguration().isSet(configurationOption.getConfigNode())) {
+            return Stargate.getFileConfiguration().getStringList(configurationOption.getConfigNode());
+        } else {
+            if(configurationOption.getDefaultValue() == null) {
+                return null;
+            }
+            return (List<String>) configurationOption.getDefaultValue();
+        }
+    }
+    
 }
