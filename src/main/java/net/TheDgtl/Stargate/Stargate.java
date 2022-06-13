@@ -52,6 +52,7 @@ import net.TheDgtl.Stargate.util.BStatsHelper;
 import net.TheDgtl.Stargate.util.BungeeHelper;
 import net.TheDgtl.Stargate.util.portal.PortalHelper;
 import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -436,9 +437,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     @Override
     public void reloadConfig() {
-        if(config == null) {
-            config = new StargateYamlConfiguration();
-        }
+        config = new StargateYamlConfiguration();
         try {
             config.load(new File(this.getDataFolder(), "config.yml"));
         } catch (IOException | InvalidConfigurationException e) {
