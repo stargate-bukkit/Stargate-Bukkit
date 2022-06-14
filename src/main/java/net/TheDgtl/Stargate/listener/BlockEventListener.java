@@ -16,6 +16,7 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.property.BlockEventType;
+import net.TheDgtl.Stargate.util.BlockEventHelper;
 import net.TheDgtl.Stargate.util.NetworkCreationHelper;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import net.TheDgtl.Stargate.util.portal.PortalCreationHelper;
@@ -23,26 +24,41 @@ import net.TheDgtl.Stargate.util.portal.PortalDestructionHelper;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.data.type.Fire;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
+import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.block.SpongeAbsorbEvent;
+import org.bukkit.event.entity.EntityBreakDoorEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityPlaceEvent;
+import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -115,7 +131,7 @@ public class BlockEventListener implements Listener {
             }
             return;
         }
-        if(!BlockEventType.BlockPlaceEvent.isDestroyPortal()) {
+        if(!BlockEventType.BLOCK_PLACE.canDestroyPortal()) {
             event.setCancelled(true);
         }
     }
@@ -193,11 +209,8 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        if (registry.isPartOfPortal(event.getBlocks())) {
-            event.setCancelled(true);
-        }
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_EXTEND, event.getBlocks());
     }
-
     /**
      * Listens to and cancels any piston retract events that may break a stargate
      *
@@ -205,9 +218,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        if (registry.isPartOfPortal(event.getBlocks())) {
-            event.setCancelled(true);
-        }
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_RETRACT, event.getBlocks());
     }
 
     /**
@@ -217,24 +228,8 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        Set<Portal> explodedPortals = new HashSet<>();
-
-        for (Block block : event.blockList()) {
-            Portal portal = registry.getPortal(block.getLocation(),
-                    new GateStructureType[]{GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK});
-            if (portal != null) {
-                if (!ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION)) {
-                    event.setCancelled(true);
-                    return;
-                }
-                explodedPortals.add(portal);
-            }
-        }
-
-        for (Portal portal : explodedPortals) {
-            portal.destroy();
-            Stargate.log(Level.FINEST, "Broke the portal from explosion");
-        }
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION),
+                event.blockList());
     }
 
     /**
@@ -249,7 +244,9 @@ public class BlockEventListener implements Listener {
         if ((registry.getPortal(toBlock.getLocation(), GateStructureType.IRIS) != null)
                 || (registry.getPortal(fromBlock.getLocation(), GateStructureType.IRIS) != null)) {
             event.setCancelled(true);
+            return;
         }
+        BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.BLOCK_FROM_TO,toBlock.getLocation());
     }
 
     /**
@@ -259,23 +256,20 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockFormEvent(BlockFormEvent event) {
-        if (!ConfigurationHelper.getBoolean(ConfigurationOption.PROTECT_ENTRANCE)) {
+        Location location = event.getBlock().getLocation();
+        Portal portalFromIris = registry.getPortal(location, GateStructureType.IRIS);
+        if (portalFromIris != null) {
+            if (ConfigurationHelper.getBoolean(ConfigurationOption.PROTECT_ENTRANCE)) {
+                event.setCancelled(true);
+            }
             return;
         }
-
-        Location location = event.getBlock().getLocation();
-        Portal portal = registry.getPortal(location, GateStructureType.IRIS);
-        if (portal != null) {
-            event.setCancelled(true);
-        }
+        BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.BLOCK_FORM,event.getBlock().getLocation());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPhysics(BlockPhysicsEvent event) {
-        Portal portal = registry.getPortal(event.getBlock().getLocation());
-        if (portal != null) {
-            event.setCancelled(true);
-        }
+        BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.BLOCK_PHYSICS,event.getBlock().getLocation());
     }
 
     /**
@@ -285,27 +279,70 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBurn(BlockBurnEvent event) {
-        Portal portal = registry.getPortal(event.getBlock().getLocation());
-        if(portal != null)  {
-            if(BlockEventType.BlockBurnEvent.isDestroyPortal()) {
-                portal.destroy();
-            } else {
-                event.setCancelled(true);
-            }
-                    
-        }
+        BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.BLOCK_BURN,event.getBlock().getLocation());
     }
     
     /**
-     * Listens to and cancels any fire form events touching portal
+     * Listens to and cancels any fire ignition events touching portal (avoids infinite fires)
      *
      * @param event <p>The triggered ignition event</p>
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockIgnite(BlockIgniteEvent event) {
-        if (!BlockEventType.BlockBurnEvent.isDestroyPortal()
+        if (!BlockEventType.BLOCK_BURN.canDestroyPortal()
                 && registry.isNextToPortal(event.getBlock().getLocation(), GateStructureType.FRAME)) {
             event.setCancelled(true);
         }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockFade(BlockFadeEvent event) {
+        BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.BLOCK_FADE,event.getBlock().getLocation());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockFertilize(BlockFertilizeEvent event) {
+        BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.BLOCK_FERTILIZE,event.getBlock().getLocation());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockMultiPlace(BlockMultiPlaceEvent event) {
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_MULTI_PLACE,
+                BlockEventHelper.getBlockList(event.getReplacedBlockStates()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onEntityBlockForm(EntityBlockFormEvent event) {
+        BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.ENTITY_BLOCK_FORM,event.getBlock().getLocation());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onLeavesDecay(LeavesDecayEvent event) {
+        BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.LEAVES_DECAY,event.getBlock().getLocation());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onSpongeAbsorb(SpongeAbsorbEvent event) {
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event,BlockEventType.SPONGE_ABSORB,BlockEventHelper.getBlockList(event.getBlocks()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+        BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.ENTITY_CHANGE_EVENT_BLOCK,event.getBlock().getLocation());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onEntityBreakDoor(EntityBreakDoorEvent event) {
+        BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.ENTITY_BREAK_DOOR,event.getBlock().getLocation());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPortalCreate(PortalCreateEvent event) {
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event,BlockEventType.PORTAL_CREATE,BlockEventHelper.getBlockList(event.getBlocks()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onEntityPlace(EntityPlaceEvent event) {
+        BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.ENTITY_PLACE,event.getBlock().getLocation());
     }
 }
