@@ -68,8 +68,7 @@ public class BlockEventHelper {
         Set<Portal> affectedPortals = new HashSet<>();
 
         for (Block block : blocks) {
-            Portal portal = Stargate.getRegistryStatic().getPortal(block.getLocation(),
-                    new GateStructureType[]{GateStructureType.FRAME, GateStructureType.CONTROL_BLOCK});
+            Portal portal = Stargate.getRegistryStatic().getPortal(block.getLocation());
             if (portal != null) {
                 if (!canDestroy) {
                     event.setCancelled(true);
