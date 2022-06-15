@@ -38,7 +38,12 @@ public enum BlockEventType {
     
     PORTAL_CREATE("PortalCreateEvent"),
     
-    ENTITY_PLACE("EntityPlaceEvent");
+    ENTITY_PLACE("EntityPlaceEvent"), 
+    
+    PLAYER_BUCKET_EMPTY("PlayerBucketEmptyEvent"),
+    
+    BLOCK_DISPENSE("BlockDispenseEvent");
+    
     
     private String eventName;
 

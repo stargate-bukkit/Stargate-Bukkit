@@ -25,6 +25,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.Fire;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
@@ -35,6 +36,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockFormEvent;
@@ -53,6 +55,7 @@ import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityPlaceEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 
 import java.util.Set;
@@ -340,5 +343,20 @@ public class BlockEventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityPlace(EntityPlaceEvent event) {
         BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.ENTITY_PLACE,event.getBlock().getLocation());
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
+        BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.PLAYER_BUCKET_EMPTY,event.getBlock().getLocation());
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockDispense(BlockDispenseEvent event) {
+        if(!(event.getBlock().getBlockData() instanceof Directional)) {
+            return;
+        }
+        Directional dispenser = (Directional) event.getBlock().getBlockData();
+        Location dispensedLocation = event.getBlock().getLocation().clone().add(dispenser.getFacing().getDirection());
+        BlockEventHelper.onAnyBlockChangeEvent(event,BlockEventType.BLOCK_DISPENSE,dispensedLocation);
     }
 }
