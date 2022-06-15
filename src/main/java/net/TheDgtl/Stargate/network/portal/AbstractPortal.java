@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.network.portal;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.action.DelayedAction;
+import net.TheDgtl.Stargate.action.SimpleAction;
 import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
@@ -443,7 +444,11 @@ public abstract class AbstractPortal implements RealPortal {
                         .formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.GATE_OWNED_BY)),
                 this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName()),
                 this.colorDrawer.formatLine(getAllFlagsString().replaceAll("[0-9]", ""))};
-        gate.drawControlMechanisms(signText, false);
+        
+        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
+            gate.drawControlMechanisms(signText, false);
+            return true;
+        }));;
         activate(event.getPlayer());
     }
 

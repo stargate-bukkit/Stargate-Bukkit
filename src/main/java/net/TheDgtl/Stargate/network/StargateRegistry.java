@@ -156,7 +156,6 @@ public class StargateRegistry implements RegistryAPI {
         BlockVector[] testVectors = new BlockVector[] {x,y,z,minusX,minusY,minusZ};
         
         for (BlockVector adjacentVector : testVectors) {
-            Stargate.log(Level.INFO, adjacentVector.toString());
             Location adjacentLocation = location.clone().add(adjacentVector);
             if (getPortal(adjacentLocation, structureType) != null) {
                 return true;
