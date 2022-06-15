@@ -146,13 +146,21 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public boolean isNextToPortal(Location location, GateStructureType structureType) {
-        BlockVector adjacentVector = new BlockVector(1, 0, 0);
-        for (int i = 0; i < 4; i++) {
+        BlockVector x = new BlockVector(1, 0, 0);
+        BlockVector y = new BlockVector(0, 1, 0);
+        BlockVector z = new BlockVector(0, 0, 1);
+        BlockVector minusX = new BlockVector(-1, 0, 0);
+        BlockVector minusY = new BlockVector(0, -1, 0);
+        BlockVector minusZ = new BlockVector(0, 0, -1);
+        
+        BlockVector[] testVectors = new BlockVector[] {x,y,z,minusX,minusY,minusZ};
+        
+        for (BlockVector adjacentVector : testVectors) {
+            Stargate.log(Level.INFO, adjacentVector.toString());
             Location adjacentLocation = location.clone().add(adjacentVector);
             if (getPortal(adjacentLocation, structureType) != null) {
                 return true;
             }
-            adjacentVector.rotateAroundY(Math.PI / 2);
         }
         return false;
     }
