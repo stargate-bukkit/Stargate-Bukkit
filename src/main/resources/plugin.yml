@@ -9,7 +9,12 @@ softdepend: [ Vault ]
 commands:
   stargate:
     description: Used to interact with the Stargate plugin at a system level.
-    usage: "/<command> - Prints the version of StarGate the server is running.\n/<command> about - Provides a link to StarGate's documentation./<command> reload - Used to reload the plugin.\n"
+    usage: | 
+      /<command> - Prints the version of StarGate the server is running.
+      /<command> about - Provides a link to StarGate's documentation.
+      /<command> reload - Used to reload the plugin.
+      /<command> trace - Saves all data to a file, to be used for developer debugging
+      /<command> version - Prints the version of StarGate the server is running.
     aliases: [ sg ]
 permissions:
   sg:
