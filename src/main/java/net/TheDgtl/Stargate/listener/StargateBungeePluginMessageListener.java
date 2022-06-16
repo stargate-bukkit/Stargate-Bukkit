@@ -163,6 +163,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     targetNetwork.removePortal(portal, false);
                     break;
             }
+            targetNetwork.updatePortals();
         } catch (NameErrorException ignored) {
         }
     }
