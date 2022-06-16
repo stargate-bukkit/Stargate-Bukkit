@@ -39,7 +39,10 @@ public class InterServerNetwork extends LocalNetwork {
         super.removePortal(portal, removeFromDatabase);
 
         Stargate.getRegistryStatic().removePortal(portal, PortalType.INTER_SERVER);
-        updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
+        
+        if(removeFromDatabase) {
+            updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
+        }
     }
 
     @Override
