@@ -363,6 +363,8 @@ public abstract class AbstractPortal implements RealPortal {
     public void destroy() {
         this.network.removePortal(this, true);
         this.close(true);
+        String[] lines = new String[]{name, "", "", ""};
+        getGate().drawControlMechanisms(lines, false);
 
         for (GateStructureType formatType : GateStructureType.values()) {
             for (BlockLocation loc : this.getGate().getLocations(formatType)) {
@@ -373,8 +375,6 @@ public abstract class AbstractPortal implements RealPortal {
         this.isDestroyed = true;
 
         Supplier<Boolean> destroyAction = () -> {
-            String[] lines = new String[]{name, "", "", ""};
-            getGate().drawControlMechanisms(lines, false);
             network.updatePortals();
             return true;
         };

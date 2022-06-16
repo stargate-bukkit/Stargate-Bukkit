@@ -3,6 +3,7 @@ package net.TheDgtl.Stargate.gate;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.action.BlockSetAction;
+import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
@@ -104,7 +105,11 @@ public class Gate implements GateAPI {
 
     @Override
     public void drawControlMechanisms(String[] signLines, boolean drawButton) {
-        drawSigns(signLines);
+        Stargate.addSynchronousTickAction(new SupplierAction(()-> {
+            drawSigns(signLines);
+            return true;
+        }));
+        
         if (drawButton) {
             drawButtons();
         }

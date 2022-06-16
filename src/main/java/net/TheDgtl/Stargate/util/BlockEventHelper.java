@@ -49,7 +49,7 @@ public class BlockEventHelper {
     }
     
     /**
-     Does event handling for any event that changes multiple block
+     * Does event handling for any event that changes multiple block
      * @param event <p> The event to possibly cancel </p>
      * @param type  <p> The type of event </p>
      * @param blocks <p> The blocks affected </p>
@@ -59,7 +59,7 @@ public class BlockEventHelper {
     }
     
     /**
-    Does event handling for any event that changes multiple block
+    * Does event handling for any event that changes multiple block
     * @param event <p> The event to possibly cancel </p>
     * @param type  <p> If the event could destroy a portal </p>
     * @param blocks <p> The blocks affected </p>
