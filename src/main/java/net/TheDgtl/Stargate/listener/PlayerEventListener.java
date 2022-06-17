@@ -92,6 +92,7 @@ public class PlayerEventListener implements Listener {
         }
         if (ButtonHelper.isButton(blockMaterial)) {
             portal.onButtonClick(event);
+            event.setUseInteractedBlock(Event.Result.DENY);
         }
 
     }
