@@ -230,11 +230,14 @@ public class PlayerEventListener implements Listener {
         EquipmentSlot hand = event.getHand();
         if (hand != null && (PermissionHelper.hasPermission(player, "stargate.admin.dye") ||
                 portal.isOwner(player))) {
-            String itemName = player.getInventory().getItem(hand).getType().toString();
-            if (itemName.endsWith("DYE") || itemName.endsWith("INK_SAC")) {
-                event.setUseInteractedBlock(Event.Result.ALLOW);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), portal::drawSign, 1);
-                return;
+            ItemStack item = player.getInventory().getItem(hand);
+            if (item != null) {
+                String itemName = item.getType().toString();
+                if (itemName.endsWith("DYE") || itemName.endsWith("INK_SAC")) {
+                    event.setUseInteractedBlock(Event.Result.ALLOW);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), portal::drawSign, 1);
+                    return;
+                }
             }
         }
 
@@ -325,7 +328,7 @@ public class PlayerEventListener implements Listener {
         } else {
             //Display information about the portal if it has no sign
             ItemStack heldItem = player.getInventory().getItem(hand);
-            if (heldItem.getType().isAir() || !heldItem.getType().isBlock()) {
+            if (heldItem != null && (heldItem.getType().isAir() || !heldItem.getType().isBlock())) {
                 displayPortalInfo(block, player);
             }
         }

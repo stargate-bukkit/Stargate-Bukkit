@@ -57,9 +57,9 @@ gates:
     # enableCraftBookRemoveOnEjectFix - Whether to enable a fix that causes loss of NBT data, but allows vehicle teleportation to work when CraftBook's remove minecart/boat on eject setting is enabled
     enableCraftBookRemoveOnEjectFix: false
 
-# I------------I-------------I #
+#############################
 # stargate economy options #
-# I------------I-------------I #
+############################
 economy:
   # useEconomy - Whether to use an economy plugin
   useEconomy: false
@@ -78,9 +78,9 @@ economy:
   # freeGatesColor - The color to use for marking free gates
   freeGatesColor: DARK_GREEN
 
-# I-------I-------I #
+#################
 # Debug options #
-# I-------I-------I #
+#################
 debugging:
   # debug - Debug -- Only enable if you have issues, massive console output
   debug: false

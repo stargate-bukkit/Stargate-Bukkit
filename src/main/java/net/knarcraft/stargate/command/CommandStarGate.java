@@ -2,11 +2,12 @@ package net.knarcraft.stargate.command;
 
 import net.knarcraft.stargate.Stargate;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 /**
  * This command represents any command which starts with stargate
@@ -25,7 +26,7 @@ public class CommandStarGate implements CommandExecutor {
             } else if (args[0].equalsIgnoreCase("reload")) {
                 return new CommandReload().onCommand(commandSender, command, s, args);
             } else if (args[0].equalsIgnoreCase("config")) {
-                String[] subArgs = (String[]) ArrayUtils.remove(args, 0);
+                String[] subArgs = Arrays.copyOfRange(args, 1, args.length);
                 return new CommandConfig().onCommand(commandSender, command, s, subArgs);
             }
             return false;

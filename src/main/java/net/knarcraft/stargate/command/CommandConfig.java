@@ -8,7 +8,6 @@ import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.portal.PortalSignDrawer;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -416,7 +415,7 @@ public class CommandConfig implements CommandExecutor {
         Object defaultValue = option.getDefaultValue();
         String stringValue = String.valueOf(defaultValue);
         if (option.getDataType() == OptionDataType.STRING_LIST) {
-            stringValue = "[" + StringUtils.join((String[]) defaultValue, ",") + "]";
+            stringValue = "[" + String.join(",", (String[]) defaultValue) + "]";
         }
         return ChatColor.GOLD + option.getName() + ChatColor.WHITE + " - " + ChatColor.GREEN + option.getDescription() +
                 ChatColor.DARK_GRAY + " (Default: " + ChatColor.GRAY + stringValue + ChatColor.DARK_GRAY + ")";

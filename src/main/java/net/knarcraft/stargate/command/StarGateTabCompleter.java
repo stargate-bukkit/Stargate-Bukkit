@@ -1,6 +1,5 @@
 package net.knarcraft.stargate.command;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -9,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,7 +29,7 @@ public class StarGateTabCompleter implements TabCompleter {
             }
             return matchingCommands;
         } else if (args.length > 1 && args[0].equalsIgnoreCase("config")) {
-            String[] subArgs = (String[]) ArrayUtils.remove(args, 0);
+            String[] subArgs = Arrays.copyOfRange(args, 1, args.length);
             return new ConfigTabCompleter().onTabComplete(commandSender, command, s, subArgs);
         } else {
             return new ArrayList<>();

@@ -4,7 +4,7 @@
 
     <groupId>net.knarcraft</groupId>
     <artifactId>Stargate</artifactId>
-    <version>0.9.3.7</version>
+    <version>0.9.4.0</version>
 
     <licenses>
         <license>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.18.1-R0.1-SNAPSHOT</version>
+            <version>1.19-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
