@@ -5,52 +5,55 @@ package net.TheDgtl.Stargate.formatting;
  */
 public enum Language {
 
-    AF_ZA("af-ZA"),
-    AR_SA("ar-SA"),
-    CA_ES("ca-ES"),
-    CS_CZ("cs-CZ"),
-    DA_DK("da-DK"),
-    DE_DE("de-DE"),
-    EL_GR("el-GR"),
-    EN_CA("en-CA"),
-    EN_GB("en-GB"),
-    EN_PT("en-PT"),
-    EN_UD("en-UD"),
-    EN_US("en-US"),
-    ES_ES("es-ES"),
-    FI_FI("fi-FI"),
-    FR_FR("fr-FR"),
-    HE_IL("he-IL"),
-    HU_HU("hu-HU"),
-    IT_IT("it-IT"),
-    JA_JP("ja-JP"),
-    KO_KR("ko-KR"),
-    LOL_US("lol-US"),
-    NB_NO("nb-NO"),
-    NL_NL("nl-NL"),
-    NN_NO("nn-NO"),
-    PL_PL("pl-PL"),
-    PT_BR("pt-BR"),
-    PT_PT("pt-PT"),
-    RO_RO("ro-RO"),
-    RU_RU("ru-RU"),
-    SR_SP("sr-SP"),
-    SV_SE("sv-SE"),
-    TR_TR("tr-TR"),
-    UK_UA("uk-UA"),
-    VI_VN("vi-VN"),
-    ZH_CN("zh-CN"),
-    ZH_TW("zh-TW");
+    AF_ZA("af-ZA", "af"),
+    AR_SA("ar-SA", "ar"),
+    CA_ES("ca-ES", "ca"),
+    CS_CZ("cs-CZ", "cs"),
+    DA_DK("da-DK", "da"),
+    DE_DE("de-DE", "de"),
+    EL_GR("el-GR", "el"),
+    EN_CA("en-CA", "en-CA"),
+    EN_GB("en-GB", "en-GB"),
+    EN_PT("en-PT", "en-PT"),
+    EN_UD("en-UD", "en-UD"),
+    EN_US("en-US", "en-US"),
+    ES_ES("es-ES", "es-ES"),
+    FI_FI("fi-FI", "fi"),
+    FR_FR("fr-FR", "fr"),
+    HE_IL("he-IL", "he"),
+    HU_HU("hu-HU", "hu"),
+    IT_IT("it-IT", "it"),
+    JA_JP("ja-JP", "ja"),
+    KO_KR("ko-KR", "ko"),
+    LOL_US("lol-US", "lol"),
+    NB_NO("nb-NO", "nb"),
+    NL_NL("nl-NL", "nl"),
+    NN_NO("nn-NO", "nn-NO"),
+    PL_PL("pl-PL", "pl"),
+    PT_BR("pt-BR", "pt-BR"),
+    PT_PT("pt-PT", "pt-PT"),
+    RO_RO("ro-RO", "ro"),
+    RU_RU("ru-RU", "ru"),
+    SR_SP("sr-SP", "sr"),
+    SV_SE("sv-SE", "sv-SE"),
+    TR_TR("tr-TR", "tr"),
+    UK_UA("uk-UA", "uk"),
+    VI_VN("vi-VN", "vi"),
+    ZH_CN("zh-CN", "zh-CN"),
+    ZH_TW("zh-TW", "zh-TW");
 
     private final String languageCode;
+    private final String languageFolder;
 
     /**
      * Instantiates a new language
      *
-     * @param languageCode <p>The language code for the new language</p>
+     * @param languageCode   <p>The language code for the new language</p>
+     * @param languageFolder <p>The name of the language's relative folder containing all its language files</p>
      */
-    Language(String languageCode) {
+    Language(String languageCode, String languageFolder) {
         this.languageCode = languageCode;
+        this.languageFolder = languageFolder;
     }
 
     /**
@@ -79,6 +82,15 @@ public enum Language {
      */
     public String getLanguageCode() {
         return this.languageCode;
+    }
+
+    /**
+     * Gets the relative language folder containing this language's files
+     *
+     * @return <p>The relative language folder</p>
+     */
+    public String getLanguageFolder() {
+        return this.languageFolder;
     }
 
 }

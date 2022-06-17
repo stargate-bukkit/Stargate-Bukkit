@@ -300,7 +300,7 @@ public class StargateLanguageManager implements LanguageManager {
      * @return <p>The file containing the given language's translations</p>
      */
     private File getLanguageFile(File folder, Language language) {
-        return new File(new File(folder, language.getLanguage()), language.getLanguageCode() + ".txt");
+        return new File(new File(folder, language.getLanguageFolder()), language.getLanguageCode() + ".txt");
     }
 
     /**
