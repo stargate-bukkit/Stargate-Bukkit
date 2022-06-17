@@ -1,9 +1,5 @@
 package net.TheDgtl.Stargate.formatting;
 
-import net.TheDgtl.Stargate.Stargate;
-
-import java.util.Map;
-
 /**
  * A representation of all potentially available languages
  */
@@ -47,7 +43,6 @@ public enum Language {
     ZH_TW("zh-TW");
 
     private final String languageCode;
-    private final String languageShorthand;
 
     /**
      * Instantiates a new language
@@ -56,8 +51,6 @@ public enum Language {
      */
     Language(String languageCode) {
         this.languageCode = languageCode;
-        Map<String, String> languageShorthands = Stargate.getInstance().getLanguageManager().getLanguageShorthands();
-        languageShorthand = getKeyFromValue(languageShorthands, languageCode);
     }
 
     /**
@@ -67,8 +60,7 @@ public enum Language {
      * @return <p>True if the specified language matches this language</p>
      */
     public boolean matches(String language) {
-        return this.languageShorthand.equalsIgnoreCase(language) ||
-                this.languageCode.equalsIgnoreCase(language);
+        return this.languageCode.equalsIgnoreCase(language);
     }
 
     /**
@@ -87,22 +79,6 @@ public enum Language {
      */
     public String getLanguageCode() {
         return this.languageCode;
-    }
-
-    /**
-     * Gets the key for the given value
-     *
-     * @param map   <p>The map to search</p>
-     * @param value <p>The value to search for</p>
-     * @return <p>The key mapping to the given value</p>
-     */
-    private String getKeyFromValue(Map<String, String> map, String value) {
-        for (String key : map.keySet()) {
-            if (map.get(key).equals(value)) {
-                return key;
-            }
-        }
-        return null;
     }
 
 }

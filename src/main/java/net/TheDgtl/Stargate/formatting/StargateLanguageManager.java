@@ -28,10 +28,10 @@ public class StargateLanguageManager implements LanguageManager {
 
     private final StargateLogger logger;
 
-    private static final Map<String, String> LANGUAGE_EDGE_CASES = new HashMap<>();
+    private static final Map<String, String> LANGUAGE_SHORTHANDS = new HashMap<>();
 
     static {
-        FileHelper.readInternalFileToMap("/language-edge-cases.properties", LANGUAGE_EDGE_CASES);
+        FileHelper.readInternalFileToMap("/language-edge-cases.properties", LANGUAGE_SHORTHANDS);
     }
 
     /**
@@ -96,9 +96,15 @@ public class StargateLanguageManager implements LanguageManager {
 
     @Override
     public void setLanguage(String languageSpecification) {
+        //Replace any shorthands with the full language code
+        if (LANGUAGE_SHORTHANDS.containsKey(languageSpecification)) {
+            languageSpecification = LANGUAGE_SHORTHANDS.get(languageSpecification);
+        }
+
         //Find the specified language if possible
         Language language = getLanguage(languageSpecification);
         if (language != null) {
+            logger.logMessage(Level.FINE, String.format("Found supported language %s", language.getLanguageCode()));
             languageSpecification = language.getLanguageCode();
         }
 
@@ -113,11 +119,6 @@ public class StargateLanguageManager implements LanguageManager {
         }
     }
 
-    @Override
-    public Map<String, String> getLanguageShorthands() {
-        return new HashMap<>(LANGUAGE_EDGE_CASES);
-    }
-
     /**
      * Loads the given language
      *
@@ -129,7 +130,13 @@ public class StargateLanguageManager implements LanguageManager {
         try {
             return loadLanguageFile(language, languageSpecification);
         } catch (IOException exception) {
-            logger.logMessage(Level.WARNING, String.format("Unable to load the language file for %s", language));
+            if (language == null) {
+                logger.logMessage(Level.WARNING, String.format("Unable to load the language file for %s",
+                        languageSpecification));
+            } else {
+                logger.logMessage(Level.FINER, String.format("Unable to load the language file for %s. This is " +
+                        "expected if the file has not been copied to disk yet", languageSpecification));
+            }
             return new EnumMap<>(TranslatableMessage.class);
         }
     }
@@ -161,7 +168,8 @@ public class StargateLanguageManager implements LanguageManager {
     private String formatMessage(TranslatableMessage translatableMessage, ChatColor prefixColor) {
         String prefix = prefixColor + getString(TranslatableMessage.PREFIX);
         String message = getString(translatableMessage).replaceAll("(&([a-f0-9]))", "\u00A7$2");
-        logger.logMessage(Level.FINE, String.format("Formatted TranslatableMessage '%s' to '%s'", translatableMessage.toString(), message));
+        logger.logMessage(Level.FINE, String.format("Formatted TranslatableMessage '%s' to '%s'",
+                translatableMessage.toString(), message));
         return prefix + ChatColor.WHITE + message;
     }
 
@@ -178,9 +186,13 @@ public class StargateLanguageManager implements LanguageManager {
         if (language != null) {
             //For a known language file, we know the correct path
             languageFile = getLanguageFile(this.languageFolder, language);
+            logger.logMessage(Level.FINER, String.format("Loading known language %s from file %s",
+                    language.getLanguageCode(), languageFile));
         } else {
             //For a custom language file, try all possible paths
             languageFile = findCustomLanguageFile(languageSpecification);
+            logger.logMessage(Level.FINER, String.format("Loading custom language %s from file %s",
+                    languageSpecification, languageFile));
         }
 
         //If no satisfactory language file exists, give up
@@ -202,21 +214,21 @@ public class StargateLanguageManager implements LanguageManager {
      */
     private File findCustomLanguageFile(String languageSpecification) {
         List<File> possibleLanguageFiles = findTargetFiles(languageSpecification, this.languageFolder);
-        File endFile = null;
+        File foundMathcingFile = null;
 
         //Check through the possible language files for any matches
         for (File possibleLanguageFile : possibleLanguageFiles) {
             if (possibleLanguageFile.exists()) {
-                endFile = possibleLanguageFile;
+                foundMathcingFile = possibleLanguageFile;
                 break;
             }
         }
 
-        if (endFile == null) {
+        if (foundMathcingFile == null) {
             logger.logMessage(Level.WARNING, String.format("The selected language, \"%s\", is not supported, and no "
                     + "custom language file exists. Falling back to English.", languageSpecification));
         }
-        return endFile;
+        return foundMathcingFile;
     }
 
     /**
@@ -265,7 +277,8 @@ public class StargateLanguageManager implements LanguageManager {
         for (String key : translations.keySet()) {
             TranslatableMessage translatableMessage = TranslatableMessage.parse(key);
             if (translatableMessage == null) {
-                logger.logMessage(Level.FINER, "Skipping language prompt: " + key + "=" + translations.get(key));
+                logger.logMessage(Level.FINER, String.format("Skipping language prompt: %s = %s", key,
+                        translations.get(key)));
                 continue;
             }
             String value = ChatColor.translateAlternateColorCodes('&', translations.get(key));
@@ -299,10 +312,10 @@ public class StargateLanguageManager implements LanguageManager {
 
         FileHelper.readInternalFileToMap("/" + internalFile.getPath().replace("\\", "/"),
                 internalFileTranslations);
-        logger.logMessage(Level.FINE, "Checking internal language file '" + internalFile.getPath() + "'");
+        logger.logMessage(Level.FINE, String.format("Checking internal language file '%s'", internalFile.getPath()));
         if (internalFileTranslations.isEmpty()) {
-            logger.logMessage(Level.FINE, "Could not find any strings in the internal language file. It could " +
-                    "be that it's missing or that it has no translations");
+            logger.logMessage(Level.FINE, "Could not find any strings in the internal language file. It could" +
+                    " be that it's missing or that it has no translations");
             return;
         }
 
@@ -331,6 +344,10 @@ public class StargateLanguageManager implements LanguageManager {
      */
     private void addMissingInternalTranslations(File languageFile, Map<TranslatableMessage, String> translatedStrings,
                                                 Map<TranslatableMessage, String> internalTranslatedValues) {
+        if (!languageFile.exists() && !languageFile.getParentFile().mkdirs()) {
+            logger.logMessage(Level.WARNING, "Unable to create folders required for copying language file");
+            return;
+        }
         try {
             BufferedWriter writer = FileHelper.getBufferedWriter(languageFile, true);
             for (TranslatableMessage key : internalTranslatedValues.keySet()) {

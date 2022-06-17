@@ -45,11 +45,4 @@ public interface LanguageManager {
      */
     void setLanguage(String language);
 
-    /**
-     * Gets a map between language shorthands (en/nb/nn/fi) and their full language codes
-     *
-     * @return <p>A map containing all used language shorthands</p>
-     */
-    Map<String, String> getLanguageShorthands();
-
 }
