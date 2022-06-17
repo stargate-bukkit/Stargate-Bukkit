@@ -1,6 +1,7 @@
 package net.TheDgtl.Stargate.network;
 
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.database.StorageAPI;
@@ -47,7 +48,10 @@ public class StargateRegistry implements RegistryAPI {
     @Override
     public void loadPortals() {
         storageAPI.loadFromStorage();
-        updateAllPortals();
+        Stargate.addSynchronousTickAction(new SupplierAction(()-> {
+            updateAllPortals();
+            return true;
+        }));
     }
 
     @Override
