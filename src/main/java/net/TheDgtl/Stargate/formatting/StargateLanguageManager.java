@@ -119,6 +119,11 @@ public class StargateLanguageManager implements LanguageManager {
         }
     }
 
+    @Override
+    public Map<String, String> getLanguageShorthands() {
+        return new HashMap<>(LANGUAGE_EDGE_CASES);
+    }
+
     /**
      * Gets a formatted translated message
      *

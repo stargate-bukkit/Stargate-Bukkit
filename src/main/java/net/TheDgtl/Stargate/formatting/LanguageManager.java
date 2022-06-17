@@ -1,5 +1,7 @@
 package net.TheDgtl.Stargate.formatting;
 
+import java.util.Map;
+
 public interface LanguageManager {
 
     /**
@@ -42,5 +44,12 @@ public interface LanguageManager {
      * @param language <p>The language to change to</p>
      */
     void setLanguage(String language);
+
+    /**
+     * Gets a map between language shorthands (en/nb/nn/fi) and their full language codes
+     *
+     * @return <p>A map containing all used language shorthands</p>
+     */
+    Map<String, String> getLanguageShorthands();
 
 }
