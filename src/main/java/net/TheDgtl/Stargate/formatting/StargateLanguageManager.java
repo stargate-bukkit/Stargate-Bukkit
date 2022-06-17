@@ -55,7 +55,7 @@ public class StargateLanguageManager implements LanguageManager {
     private Map<TranslatableMessage, String> loadBackupLanguage() {
         Map<String, String> translatedStrings = new HashMap<>();
         Map<TranslatableMessage, String> output = new EnumMap<>(TranslatableMessage.class);
-        FileHelper.readInternalFileToMap("/lang/en/en-GB.txt", translatedStrings);
+        FileHelper.readInternalFileToMap("/lang/en-GB/en-GB.txt", translatedStrings);
         for (TranslatableMessage translatableMessage : TranslatableMessage.values()) {
             output.put(translatableMessage, translatedStrings.get(translatableMessage.getMessageKey()));
         }
