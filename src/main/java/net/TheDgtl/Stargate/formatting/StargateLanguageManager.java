@@ -97,8 +97,10 @@ public class StargateLanguageManager implements LanguageManager {
     @Override
     public void setLanguage(String languageSpecification) {
         //Replace any shorthands with the full language code
-        if (LANGUAGE_SHORTHANDS.containsKey(languageSpecification)) {
-            languageSpecification = LANGUAGE_SHORTHANDS.get(languageSpecification);
+        for (String languageShorthand : LANGUAGE_SHORTHANDS.keySet()) {
+            if (languageSpecification.equalsIgnoreCase(languageShorthand)) {
+                languageSpecification = LANGUAGE_SHORTHANDS.get(languageShorthand);
+            }
         }
 
         //Find the specified language if possible
