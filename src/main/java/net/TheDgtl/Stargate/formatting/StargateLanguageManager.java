@@ -150,6 +150,8 @@ public class StargateLanguageManager implements LanguageManager {
      * @return <p>The matching language, or null if no language matches</p>
      */
     private Language getLanguage(String languageSpecification) {
+        //Allow "_" as a language-country separator
+        languageSpecification = languageSpecification.replace("_", "-");
         for (Language language : Language.values()) {
             if (language.matches(languageSpecification)) {
                 return language;
@@ -216,21 +218,21 @@ public class StargateLanguageManager implements LanguageManager {
      */
     private File findCustomLanguageFile(String languageSpecification) {
         List<File> possibleLanguageFiles = findTargetFiles(languageSpecification, this.languageFolder);
-        File foundMathcingFile = null;
+        File foundMatchingFile = null;
 
         //Check through the possible language files for any matches
         for (File possibleLanguageFile : possibleLanguageFiles) {
             if (possibleLanguageFile.exists()) {
-                foundMathcingFile = possibleLanguageFile;
+                foundMatchingFile = possibleLanguageFile;
                 break;
             }
         }
 
-        if (foundMathcingFile == null) {
+        if (foundMatchingFile == null) {
             logger.logMessage(Level.WARNING, String.format("The selected language, \"%s\", is not supported, and no "
                     + "custom language file exists. Falling back to English.", languageSpecification));
         }
-        return foundMathcingFile;
+        return foundMatchingFile;
     }
 
     /**
@@ -252,7 +254,7 @@ public class StargateLanguageManager implements LanguageManager {
         List<File> possibleFiles = new ArrayList<>();
         for (String pathName : possibleNames) {
             //Add the files languageCode.txt and language.txt
-            possibleFiles.add(new File(pathName + ".txt"));
+            possibleFiles.add(new File(path, pathName + ".txt"));
 
             File directory = new File(path, pathName);
             for (String fileName : possibleNames) {
