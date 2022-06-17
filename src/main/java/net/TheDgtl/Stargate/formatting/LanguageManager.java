@@ -1,5 +1,7 @@
 package net.TheDgtl.Stargate.formatting;
 
+import java.util.Map;
+
 public interface LanguageManager {
 
     /**
