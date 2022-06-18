@@ -27,6 +27,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -165,6 +167,16 @@ public class PlayerEventListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onPlayerAdvancementCriterionGrant(PlayerAdvancementCriterionGrantEvent event) {
+        if (!event.getCriterion().equals("entered_end_gateway") || !Stargate.getRegistryStatic()
+                .isNextToPortal(event.getPlayer().getLocation(), GateStructureType.IRIS)) {
+            return;
+        }
+        event.setCancelled(true);
+        
+    }
+    
     /**
      * A stupid cheat to get serverName. A client is needed to get this data, hence
      * this stupid solution
@@ -225,5 +237,5 @@ public class PlayerEventListener implements Listener {
         eventTime = System.currentTimeMillis();
         return false;
     }
-
+    
 }
