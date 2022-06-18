@@ -88,8 +88,14 @@ public final class DynmapManager {
                     location.getZ()));
             return;
         }
-        String markerDescription = String.format("<b>Name:</b> %s<br /><b>Network:</b> %s<br /><b>Destination:</b> " +
-                        "%s<br /><b>Owner:</b> %s<br />", portal.getName(), portal.getNetwork(),
+        String networkPrompt;
+        if (portal.getOptions().isBungee()) {
+            networkPrompt = "Server";
+        } else {
+            networkPrompt = "Network";
+        }
+        String markerDescription = String.format("<b>Name:</b> %s<br /><b>%s:</b> %s<br /><b>Destination:</b> " +
+                        "%s<br /><b>Owner:</b> %s<br />", portal.getName(), networkPrompt, portal.getNetwork(),
                 portal.getDestinationName(), portal.getOwner().getName());
         marker.setDescription(markerDescription);
         marker.setLabel(portal.getName(), true);
