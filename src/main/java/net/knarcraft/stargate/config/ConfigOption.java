@@ -178,7 +178,18 @@ public enum ConfigOption {
     /**
      * The velocity of players exiting a stargate, relative to the entry velocity
      */
-    EXIT_VELOCITY("gates.exitVelocity", "The velocity of players exiting stargates, relative to the entry velocity", 0.1D);
+    EXIT_VELOCITY("gates.exitVelocity", "The velocity of players exiting stargates, relative to the entry velocity", 0.1D),
+
+    /**
+     * Whether to enable showing Stargates in Dynmap
+     */
+    ENABLE_DYNMAP("dynmap.enableDynmap", "Whether to display Stargates in Dynmap's map", true),
+
+    /**
+     * Whether to hide Dynmap icons by default
+     */
+    DYNMAP_ICONS_DEFAULT_HIDDEN("dynmap.dynmapIconsHiddenByDefault",
+            "Whether to hide Stargate's Dynmap icons by default, requiring the user to enable them.", true);
 
     private final String configNode;
     private final String description;

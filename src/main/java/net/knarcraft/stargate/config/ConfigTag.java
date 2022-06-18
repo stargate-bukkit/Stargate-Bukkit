@@ -9,7 +9,8 @@ public enum ConfigTag {
 
     COLOR(new ConfigOption[]{ConfigOption.FREE_GATES_COLOR, ConfigOption.MAIN_SIGN_COLOR,
             ConfigOption.HIGHLIGHT_SIGN_COLOR, ConfigOption.PER_SIGN_COLORS}),
-    FOLDER(new ConfigOption[]{ConfigOption.GATE_FOLDER, ConfigOption.PORTAL_FOLDER});
+    FOLDER(new ConfigOption[]{ConfigOption.GATE_FOLDER, ConfigOption.PORTAL_FOLDER}),
+    DYNMAP(new ConfigOption[]{ConfigOption.ENABLE_DYNMAP, ConfigOption.DYNMAP_ICONS_DEFAULT_HIDDEN});
 
     private final ConfigOption[] taggedOptions;
 
@@ -50,6 +51,16 @@ public enum ConfigTag {
      */
     public static boolean requiresFullReload(ConfigOption option) {
         return FOLDER.isTagged(option);
+    }
+
+    /**
+     * Checks whether a given config option requires a re-load of all Dynmap markers
+     *
+     * @param configOption <p>The config option to check</p>
+     * @return <p>True if changing the config option requires a reload of all dynmap markers</p>
+     */
+    public static boolean requiresDynmapReload(ConfigOption configOption) {
+        return DYNMAP.isTagged(configOption);
     }
 
     /**

@@ -3,6 +3,7 @@ package net.knarcraft.stargate.command;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.config.ConfigOption;
 import net.knarcraft.stargate.config.ConfigTag;
+import net.knarcraft.stargate.config.DynmapManager;
 import net.knarcraft.stargate.config.OptionDataType;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalRegistry;
@@ -376,6 +377,10 @@ public class CommandConfig implements CommandExecutor {
             if (ConfigTag.requiresEconomyReload(configOption)) {
                 //Load or unload Vault and Economy as necessary
                 Stargate.getStargateConfig().reloadEconomy();
+            }
+            if (ConfigTag.requiresDynmapReload(configOption)) {
+                //Regenerate all Dynmap markers
+                DynmapManager.addAllPortalMarkers();
             }
         }
     }

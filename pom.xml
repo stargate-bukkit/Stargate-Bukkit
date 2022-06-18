@@ -4,7 +4,7 @@
 
     <groupId>net.knarcraft</groupId>
     <artifactId>Stargate</artifactId>
-    <version>0.9.4.0</version>
+    <version>0.9.4.1</version>
 
     <licenses>
         <license>
@@ -27,6 +27,10 @@
         <repository>
             <id>vault-repo</id>
             <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+        </repository>
+        <repository>
+            <id>dynmap</id>
+            <url>https://repo.mikeprimm.com/</url>
         </repository>
     </repositories>
 
@@ -64,6 +68,11 @@
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>us.dynmap</groupId>
+            <artifactId>dynmap-api</artifactId>
+            <version>3.1-beta-2</version>
         </dependency>
     </dependencies>
 

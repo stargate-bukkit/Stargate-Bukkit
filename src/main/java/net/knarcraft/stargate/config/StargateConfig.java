@@ -15,6 +15,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.messaging.Messenger;
+import org.dynmap.DynmapAPI;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,6 +102,11 @@ public final class StargateConfig {
 
         //Set up vault economy if vault has been loaded
         setupVaultEconomy();
+        DynmapAPI dynmapAPI = (DynmapAPI) Bukkit.getPluginManager().getPlugin("dynmap");
+        if (dynmapAPI != null) {
+            DynmapManager.initialize(dynmapAPI);
+            DynmapManager.addAllPortalMarkers();
+        }
     }
 
     /**
@@ -153,6 +159,24 @@ public final class StargateConfig {
     }
 
     /**
+     * Gets whether Dynmap integration is disabled
+     *
+     * @return <p>Whether Dynmap integration is disabled</p>
+     */
+    public boolean isDynmapDisabled() {
+        return !((boolean) configOptions.get(ConfigOption.ENABLE_DYNMAP));
+    }
+
+    /**
+     * Gets whether Dynmap icons should be hidden by default
+     *
+     * @return <p>Whether Dynmap icons should be hidden by default</p>
+     */
+    public boolean hideDynmapIcons() {
+        return (boolean) configOptions.get(ConfigOption.DYNMAP_ICONS_DEFAULT_HIDDEN);
+    }
+
+    /**
      * Gets the object containing economy config values
      *
      * @return <p>The object containing economy config values</p>
@@ -188,6 +212,9 @@ public final class StargateConfig {
         if (oldEnableBungee != stargateGateConfig.enableBungee()) {
             startStopBungeeListener(stargateGateConfig.enableBungee());
         }
+
+        //Reload portal markers
+        DynmapManager.addAllPortalMarkers();
 
         messageSender.sendErrorMessage(sender, languageLoader.getString("reloaded"));
     }

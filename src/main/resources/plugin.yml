@@ -1,12 +1,12 @@
 name: Stargate
 main: net.knarcraft.stargate.Stargate
-version: 0.9.4.0
+version: 0.9.4.1
 description: Stargate mod for Bukkit Revived
 author: EpicKnarvik97
 authors: [ Drakia, PseudoKnight, EpicKnarvik97 ]
 website: https://git.knarcraft.net/EpicKnarvik97/Stargate
-api-version: 1.19
-softdepend: [ Vault ]
+api-version: 1.18
+softdepend: [ Vault, dynmap ]
 commands:
   stargate:
     aliases:

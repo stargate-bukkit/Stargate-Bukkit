@@ -40,7 +40,8 @@ gates:
     destroyedByExplosion: false
     # verifyPortals - Whether all the non-sign blocks are checked to match the gate layout when a stargate is loaded.
     verifyPortals: false
-    # protectEntrance - Whether to protect gate entrance material (More resource intensive. Only enable if using destroyable open/closed material)
+    # protectEntrance - Whether to protect gate entrance material (More resource intensive. Only enable if using 
+    #  destroyable open/closed material)
     protectEntrance: false
   functionality:
     enableBungee: false
@@ -48,18 +49,21 @@ gates:
     handleVehicles: true
     # handleEmptyVehicles - Whether to allow empty vehicles through gates (chest/hopper/tnt/furnace minecarts included)
     handleEmptyVehicles: true
-    # handleCreatureTransportation - Whether to allow players to transport creatures by sending vehicles (minecarts, boats) through gates
+    # handleCreatureTransportation - Whether to allow players to transport creatures by sending vehicles (minecarts, 
+    #  boats) through gates
     handleCreatureTransportation: true
-    # handleNonPlayerVehicles - Whether to allow vehicles with a passenger which is not a player through gates. handleCreatureTransportation must be enabled
+    # handleNonPlayerVehicles - Whether to allow vehicles with a passenger which is not a player through gates. 
+    #  handleCreatureTransportation must be enabled
     handleNonPlayerVehicles: true
     # handleLeashedCreatures - Whether to allow creatures lead by a player to teleport with the player
     handleLeashedCreatures: true
-    # enableCraftBookRemoveOnEjectFix - Whether to enable a fix that causes loss of NBT data, but allows vehicle teleportation to work when CraftBook's remove minecart/boat on eject setting is enabled
+    # enableCraftBookRemoveOnEjectFix - Whether to enable a fix that causes loss of NBT data, but allows vehicle 
+    #  teleportation to work when CraftBook's remove minecart/boat on eject setting is enabled
     enableCraftBookRemoveOnEjectFix: false
 
-#############################
+# ######################## #
 # stargate economy options #
-############################
+# ######################## #
 economy:
   # useEconomy - Whether to use an economy plugin
   useEconomy: false
@@ -78,14 +82,26 @@ economy:
   # freeGatesColor - The color to use for marking free gates
   freeGatesColor: DARK_GREEN
 
-#################
+# ############# #
 # Debug options #
-#################
+# ############# #
 debugging:
   # debug - Debug -- Only enable if you have issues, massive console output
   debug: false
-  # permissionDebug - This will output any and all Permissions checks to console, used for permissions debugging (Requires debug: true)
+  # permissionDebug - This will output any and all Permissions checks to console, used for permissions debugging 
+  #  (Requires debug: true)
   permissionDebug: false
 advanced:
-  # waitForPlayerAfterTeleportDelay - The amount of ticks to wait before adding a player as passenger of a vehicle. On slow servers, a value of 6 is required to avoid client glitches after teleporting on a vehicle.
+  # waitForPlayerAfterTeleportDelay - The amount of ticks to wait before adding a player as passenger of a vehicle. 
+  #  On slow servers, a value of 6 is required to avoid client glitches after teleporting on a vehicle.
   waitForPlayerAfterTeleportDelay: 6
+
+# ############## #
+# Dynmap options #
+# ############## #
+dynmap:
+  # enableDynmap - Whether to display Stargates in Dynmap's map
+  enableDynmap: true
+  # dynmapIconsHiddenByDefault - Whether to hide the set of Stargate icons by default, requiring users to 
+  #  manually enable them with a checkbox.
+  dynmapIconsHiddenByDefault: true

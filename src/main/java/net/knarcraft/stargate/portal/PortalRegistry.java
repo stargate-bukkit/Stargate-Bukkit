@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.DynmapManager;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.World;
@@ -224,6 +225,7 @@ public class PortalRegistry {
 
         PortalFileHelper.saveAllPortals(portal.getWorld());
         portal.setRegistered(false);
+        DynmapManager.removePortalMarker(portal);
     }
 
     /**
@@ -289,6 +291,7 @@ public class PortalRegistry {
 
         allPortals.add(portal);
         portal.setRegistered(true);
+        DynmapManager.addPortalMarker(portal);
     }
 
 }
