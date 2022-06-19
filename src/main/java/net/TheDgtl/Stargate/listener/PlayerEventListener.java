@@ -130,7 +130,7 @@ public class PlayerEventListener implements Listener {
         }
         String itemName = item.getType().toString();
         Material glowInkSac = Material.matchMaterial("GLOW_INK_SAC");
-        if(glowInkSac != null && item.getType() == glowInkSac) {
+        if (glowInkSac != null && item.getType() == glowInkSac) {
             return true;
         }
         return (itemName.contains("DYE") || item.getType() == Material.INK_SAC);
@@ -164,7 +164,7 @@ public class PlayerEventListener implements Listener {
             getBungeeServerName();
         }
     }
-    
+
     /**
      * A stupid cheat to get serverName. A client is needed to get this data, hence
      * this stupid solution
@@ -225,5 +225,5 @@ public class PlayerEventListener implements Listener {
         eventTime = System.currentTimeMillis();
         return false;
     }
-    
+
 }

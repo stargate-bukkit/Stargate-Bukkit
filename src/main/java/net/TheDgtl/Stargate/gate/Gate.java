@@ -105,11 +105,11 @@ public class Gate implements GateAPI {
 
     @Override
     public void drawControlMechanisms(String[] signLines, boolean drawButton) {
-        Stargate.addSynchronousTickAction(new SupplierAction(()-> {
+        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
             drawSigns(signLines);
             return true;
         }));
-        
+
         if (drawButton) {
             drawButtons();
         }

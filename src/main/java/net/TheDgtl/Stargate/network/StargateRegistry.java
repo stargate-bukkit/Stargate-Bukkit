@@ -48,7 +48,7 @@ public class StargateRegistry implements RegistryAPI {
     @Override
     public void loadPortals() {
         storageAPI.loadFromStorage();
-        Stargate.addSynchronousTickAction(new SupplierAction(()-> {
+        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
             updateAllPortals();
             return true;
         }));
@@ -156,9 +156,9 @@ public class StargateRegistry implements RegistryAPI {
         BlockVector minusX = new BlockVector(-1, 0, 0);
         BlockVector minusY = new BlockVector(0, -1, 0);
         BlockVector minusZ = new BlockVector(0, 0, -1);
-        
-        BlockVector[] testVectors = new BlockVector[] {x,y,z,minusX,minusY,minusZ};
-        
+
+        BlockVector[] testVectors = new BlockVector[]{x, y, z, minusX, minusY, minusZ};
+
         for (BlockVector adjacentVector : testVectors) {
             Location adjacentLocation = location.clone().add(adjacentVector);
             if (getPortal(adjacentLocation, structureType) != null) {

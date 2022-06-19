@@ -31,6 +31,7 @@ import net.TheDgtl.Stargate.database.SQLiteDatabase;
 import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.economy.StargateEconomyAPI;
 import net.TheDgtl.Stargate.economy.VaultEconomyManager;
+import net.TheDgtl.Stargate.exception.StargateInitializationException;
 import net.TheDgtl.Stargate.formatting.LanguageManager;
 import net.TheDgtl.Stargate.formatting.StargateLanguageManager;
 import net.TheDgtl.Stargate.gate.GateFormat;
@@ -52,7 +53,6 @@ import net.TheDgtl.Stargate.util.BStatsHelper;
 import net.TheDgtl.Stargate.util.BungeeHelper;
 import net.TheDgtl.Stargate.util.portal.PortalHelper;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -133,36 +133,40 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     @Override
     public void onEnable() {
-        instance = this;
-        if (!new File(this.getDataFolder(), "config.yml").exists()) {
-            super.saveDefaultConfig();
-        }
-
-        loadGateFormats();
-        String LANGUAGE_FOLDER = "lang";
-        languageManager = new StargateLanguageManager(this, new File(DATA_FOLDER, LANGUAGE_FOLDER));
-        if (ConfigurationHelper.getInteger(ConfigurationOption.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
-            try {
-                this.migrateConfigurationAndData();
-            } catch (IOException | InvalidConfigurationException | SQLException e) {
-                e.printStackTrace();
+        try {
+            instance = this;
+            if (!new File(this.getDataFolder(), "config.yml").exists()) {
+                super.saveDefaultConfig();
             }
+
+            loadGateFormats();
+            String LANGUAGE_FOLDER = "lang";
+            languageManager = new StargateLanguageManager(this, new File(DATA_FOLDER, LANGUAGE_FOLDER));
+            if (ConfigurationHelper.getInteger(ConfigurationOption.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
+                try {
+                    this.migrateConfigurationAndData();
+                } catch (IOException | InvalidConfigurationException | SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            load();
+
+            pluginManager = getServer().getPluginManager();
+            registerListeners();
+            BukkitScheduler scheduler = getServer().getScheduler();
+            scheduler.scheduleSyncRepeatingTask(this, synchronousTickPopulator, 0L, 1L);
+            scheduler.scheduleSyncRepeatingTask(this, syncSecPopulator, 0L, 20L);
+            registerCommands();
+
+            //Register bStats metrics
+            int pluginId = 13629;
+            BStatsHelper.getMetrics(pluginId, this);
+            servicesManager = this.getServer().getServicesManager();
+            servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
+        } catch (StargateInitializationException exception) {
+            getServer().getPluginManager().disablePlugin(this);
         }
-
-        load();
-
-        pluginManager = getServer().getPluginManager();
-        registerListeners();
-        BukkitScheduler scheduler = getServer().getScheduler();
-        scheduler.scheduleSyncRepeatingTask(this, synchronousTickPopulator, 0L, 1L);
-        scheduler.scheduleSyncRepeatingTask(this, syncSecPopulator, 0L, 20L);
-        registerCommands();
-
-        //Register bStats metrics
-        int pluginId = 13629;
-        BStatsHelper.getMetrics(pluginId, this);
-        servicesManager = this.getServer().getServicesManager();
-        servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
     }
 
     /**
@@ -488,16 +492,16 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         loadGateFormats();
         try {
             storageAPI.load(this);
-        } catch (SQLException e) {
+        } catch (SQLException | StargateInitializationException e) {
             e.printStackTrace();
         }
         registry.load();
         economyManager.setupEconomy();
     }
 
-    private void load() {
+    private void load() throws StargateInitializationException {
         loadColors();
-       
+
         languageManager.setLanguage(ConfigurationHelper.getString(ConfigurationOption.LANGUAGE));
         fetchServerId();
         loadConfigLevel();
@@ -506,18 +510,18 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             storageAPI = new PortalDatabaseAPI(this);
             registry = new StargateRegistry(storageAPI);
             registry.loadPortals();
-        } catch (SQLException e) {
+        } catch (SQLException | StargateInitializationException e) {
             e.printStackTrace();
         }
     }
-    
+
     private void fetchServerId() {
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
             String INTERNAL_FOLDER = ".internal";
             BungeeHelper.getServerId(DATA_FOLDER, INTERNAL_FOLDER);
         }
     }
-    
+
     private void loadConfigLevel() {
         String debugLevelString = ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL);
         if (debugLevelString == null) {

@@ -3,7 +3,6 @@ package net.TheDgtl.Stargate.network.portal;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.action.DelayedAction;
-import net.TheDgtl.Stargate.action.SimpleAction;
 import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
@@ -444,11 +443,12 @@ public abstract class AbstractPortal implements RealPortal {
                         .formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.GATE_OWNED_BY)),
                 this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName()),
                 this.colorDrawer.formatLine(getAllFlagsString().replaceAll("[0-9]", ""))};
-        
+
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
             gate.drawControlMechanisms(signText, false);
             return true;
-        }));;
+        }));
+        ;
         activate(event.getPlayer());
     }
 
@@ -490,14 +490,14 @@ public abstract class AbstractPortal implements RealPortal {
      * De-activates this portal
      */
     protected void deactivate() {
-        if(this.isDestroyed) {
+        if (this.isDestroyed) {
             return;
         }
-        
+
         //Call the deactivate event to notify add-ons
         StargateDeactivateEvent event = new StargateDeactivateEvent(this);
         Bukkit.getPluginManager().callEvent(event);
-        
+
         this.activator = null;
         drawControlMechanisms();
     }

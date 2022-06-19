@@ -256,12 +256,12 @@ public enum ConfigurationOption {
      */
     ENABLE_OWNED_GATES("enableOwnedGates", "Allows users to use/break any gates they create, " +
             "regardless of any permissions that may prevent them from doing so",
-            true, OptionDataType.BOOLEAN, true), 
-    
+            true, OptionDataType.BOOLEAN, true),
+
     /**
      * Allows for specific events to destroy portals
      */
-    SPECIFIC_PROTECTION_OVERRIDE("specificProtectionOverrides", "Allows for specific events to destroy portals",null,OptionDataType.STRING_LIST, true);
+    SPECIFIC_PROTECTION_OVERRIDE("specificProtectionOverrides", "Allows for specific events to destroy portals", null, OptionDataType.STRING_LIST, true);
 
     private final String configNode;
     private final String description;

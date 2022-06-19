@@ -9,6 +9,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
 import net.TheDgtl.Stargate.Stargate;
+import net.TheDgtl.Stargate.exception.StargateInitializationException;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -39,7 +40,7 @@ public class MySqlDatabase implements Database {
      * @param database <p>The database to store Stargate tables in</p>
      */
     public MySqlDatabase(DatabaseDriver driver, String address, int port, String database, String userName, String password,
-                         boolean useSSL) {
+                         boolean useSSL) throws StargateInitializationException {
         HikariDataSource dataSource = null;
         try {
             switch (driver) {
@@ -63,6 +64,7 @@ public class MySqlDatabase implements Database {
             Stargate.log(Level.FINE, "Stack trace for the root cause: " +
                     getStackTraceString(cause.getStackTrace()) + "\n");
             Stargate.log(Level.FINER, "Full stack trace: " + getStackTraceString(exception.getStackTrace()));
+            throw new StargateInitializationException("Unable to initialize the database. See the preceding error for details");
         } finally {
             hikariSource = dataSource;
         }

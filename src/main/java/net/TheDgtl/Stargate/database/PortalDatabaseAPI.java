@@ -8,6 +8,7 @@ import net.TheDgtl.Stargate.config.TableNameConfiguration;
 import net.TheDgtl.Stargate.exception.GateConflictException;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.exception.StargateInitializationException;
 import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
@@ -58,9 +59,10 @@ public class PortalDatabaseAPI implements StorageAPI {
      * @param stargate <p>The Stargate instance to use</p>
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
-    public PortalDatabaseAPI(Stargate stargate) throws SQLException {
+    public PortalDatabaseAPI(Stargate stargate) throws SQLException, StargateInitializationException {
         load(stargate);
     }
+
     /**
      * Instantiates a new stargate registry
      *
@@ -72,7 +74,7 @@ public class PortalDatabaseAPI implements StorageAPI {
      */
     public PortalDatabaseAPI(Database database, boolean usingBungee, boolean usingRemoteDatabase,
                              StargateLogger logger) throws SQLException {
-        load(database,usingBungee,usingRemoteDatabase,logger);
+        load(database, usingBungee, usingRemoteDatabase, logger);
     }
 
     /**
@@ -221,7 +223,7 @@ public class PortalDatabaseAPI implements StorageAPI {
      * @return <p>The loaded database</p>
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
-    private static Database loadDatabase(Stargate stargate) throws SQLException {
+    private static Database loadDatabase(Stargate stargate) throws SQLException, StargateInitializationException {
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
             if (ConfigurationHelper.getBoolean(ConfigurationOption.SHOW_HIKARI_CONFIG)) {
                 return new MySqlDatabase(stargate);
@@ -555,7 +557,7 @@ public class PortalDatabaseAPI implements StorageAPI {
     }
 
     @Override
-    public void load(Stargate stargate) throws SQLException {
+    public void load(Stargate stargate) throws SQLException, StargateInitializationException {
         load(loadDatabase(stargate), ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE),
                 ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE), stargate);
     }

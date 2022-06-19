@@ -125,8 +125,8 @@ public final class PortalCreationHelper {
             }
             return;
         }
-        
-        if(selectedNetwork.isPortalNameTaken(portal.getName())) {
+
+        if (selectedNetwork.isPortalNameTaken(portal.getName())) {
             throw new NameErrorException(TranslatableMessage.ALREADY_EXIST);
         }
 

@@ -1,8 +1,8 @@
 package net.TheDgtl.Stargate.database;
 
 import net.TheDgtl.Stargate.Stargate;
-import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.exception.StargateInitializationException;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.Portal;
@@ -51,12 +51,12 @@ public interface StorageAPI {
     void removePortalFromStorage(Portal portal, PortalType portalType);
 
     /**
-     * Loads all settings 
-     * 
+     * Loads all settings
+     *
      * @param stargate <p>An instance of stargate</p>
-     * @throws SQLException 
+     * @throws SQLException
      */
-    void load(Stargate stargate) throws SQLException;
+    void load(Stargate stargate) throws SQLException, StargateInitializationException;
 
 
 }

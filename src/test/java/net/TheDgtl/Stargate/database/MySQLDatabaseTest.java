@@ -5,6 +5,7 @@ import net.TheDgtl.Stargate.FakeStargate;
 import net.TheDgtl.Stargate.config.TableNameConfiguration;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.exception.NameErrorException;
+import net.TheDgtl.Stargate.exception.StargateInitializationException;
 import net.TheDgtl.Stargate.network.PortalType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,7 +25,7 @@ public class MySQLDatabaseTest {
     private static Database database;
 
     @BeforeAll
-    public static void setUp() throws SQLException, InvalidStructureException, NameErrorException {
+    public static void setUp() throws SQLException, InvalidStructureException, NameErrorException, StargateInitializationException {
         System.out.println("Setting up test data");
         DatabaseDriver driver = DatabaseDriver.MYSQL;
         String address = "LOCALHOST";
