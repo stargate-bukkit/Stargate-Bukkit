@@ -7,6 +7,7 @@ package net.TheDgtl.Stargate.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.pool.HikariPool;
 import net.TheDgtl.Stargate.Stargate;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -39,16 +40,32 @@ public class MySqlDatabase implements Database {
      */
     public MySqlDatabase(DatabaseDriver driver, String address, int port, String database, String userName, String password,
                          boolean useSSL) {
-
-        switch (driver) {
-            case MYSQL:
-            case MARIADB:
-                this.config = setupConfig(driver, address, port, database, userName, password, useSSL);
-                break;
-            default:
-                Stargate.log(Level.SEVERE, "Unknown driver, '" + driver + "' Stargate currently supports MariaDB, MySql");
+        HikariDataSource dataSource = null;
+        try {
+            switch (driver) {
+                case MYSQL:
+                case MARIADB:
+                    this.config = setupConfig(driver, address, port, database, userName, password, useSSL);
+                    break;
+                default:
+                    Stargate.log(Level.SEVERE, "Unknown driver, '" + driver + "' Stargate currently supports MariaDB, MySql");
+            }
+            dataSource = setupMySql(this.config);
+        } catch (HikariPool.PoolInitializationException exception) {
+            Throwable cause = exception;
+            //Find the root cause
+            while (cause.getCause() != null) {
+                cause = cause.getCause();
+            }
+            Stargate.log(Level.SEVERE, "Unable to connect to your specified SQL server. Please check your " +
+                    "settings. If the cause is CertPathValidatorException, you need to disable SSL or use a trusted " +
+                    "certificate. Self-signed certificates are generally not supported. \nRoot cause: " + cause + "\n");
+            Stargate.log(Level.FINE, "Stack trace for the root cause: " +
+                    getStackTraceString(cause.getStackTrace()) + "\n");
+            Stargate.log(Level.FINER, "Full stack trace: " + getStackTraceString(exception.getStackTrace()));
+        } finally {
+            hikariSource = dataSource;
         }
-        hikariSource = setupMySql(this.config);
     }
 
     /**
@@ -123,6 +140,20 @@ public class MySqlDatabase implements Database {
 
         // Creates a config based on the properties file
         return new HikariConfig(plugin.getDataFolder() + "/hikari.properties");
+    }
+
+    /**
+     * Gets a stack trace string for the given stack trace
+     *
+     * @param stackTrace <p>The stack trace to display</p>
+     * @return <p>The string used for displaying the stack trace</p>
+     */
+    private String getStackTraceString(StackTraceElement[] stackTrace) {
+        StringBuilder builder = new StringBuilder();
+        for (StackTraceElement element : stackTrace) {
+            builder.append(element).append("\n");
+        }
+        return builder.toString();
     }
 
 }
