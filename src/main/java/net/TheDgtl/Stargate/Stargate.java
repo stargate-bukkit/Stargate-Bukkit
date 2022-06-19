@@ -150,17 +150,16 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
                     e.printStackTrace();
                 }
             }
-
+            
             load();
-        load();
-        economyManager = new VaultEconomyManager(languageManager);
-        try {
-            storageAPI = new PortalDatabaseAPI(this);
-            registry = new StargateRegistry(storageAPI);
-            registry.loadPortals();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            economyManager = new VaultEconomyManager(languageManager);
+            try {
+                storageAPI = new PortalDatabaseAPI(this);
+                registry = new StargateRegistry(storageAPI);
+                registry.loadPortals();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 
             pluginManager = getServer().getPluginManager();
             registerListeners();
@@ -495,16 +494,19 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         saveConfig();
     }
 
+    @Override
     public void reload() {
         try {
             load();
             loadGateFormats();
             storageAPI.load(this);
-        } catch (SQLException | StargateInitializationException e) {
-            e.printStackTrace();
+            registry.load();
+            economyManager.setupEconomy();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        } catch (StargateInitializationException exception) {
+            getServer().getPluginManager().disablePlugin(this);
         }
-        registry.load();
-        economyManager.setupEconomy();
     }
 
     private void load() throws StargateInitializationException {
