@@ -348,7 +348,8 @@ public class StargateLanguageManager implements LanguageManager {
      */
     private void addMissingInternalTranslations(File languageFile, Map<TranslatableMessage, String> translatedStrings,
                                                 Map<TranslatableMessage, String> internalTranslatedValues) {
-        if (!languageFile.exists() && !languageFile.getParentFile().mkdirs()) {
+        File languageFolder = languageFile.getParentFile();
+        if (languageFolder != null && !languageFolder.exists() && !languageFolder.mkdirs()) {
             logger.logMessage(Level.WARNING, "Unable to create folders required for copying language file");
             return;
         }
