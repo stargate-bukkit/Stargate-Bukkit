@@ -515,14 +515,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         languageManager.setLanguage(ConfigurationHelper.getString(ConfigurationOption.LANGUAGE));
         fetchServerId();
         loadConfigLevel();
-        economyManager = new VaultEconomyManager(languageManager);
-        try {
-            storageAPI = new PortalDatabaseAPI(this);
-            registry = new StargateRegistry(storageAPI);
-            registry.loadPortals();
-        } catch (SQLException | StargateInitializationException e) {
-            e.printStackTrace();
-        }
     }
 
     private void fetchServerId() {
