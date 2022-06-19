@@ -37,6 +37,7 @@ import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.listener.BlockEventListener;
 import net.TheDgtl.Stargate.listener.MoveEventListener;
+import net.TheDgtl.Stargate.listener.PlayerAdvancementListener;
 import net.TheDgtl.Stargate.listener.PlayerEventListener;
 import net.TheDgtl.Stargate.listener.PluginEventListener;
 import net.TheDgtl.Stargate.listener.StargateBungeePluginMessageListener;
@@ -378,6 +379,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         pluginManager.registerEvents(new MoveEventListener(), this);
         pluginManager.registerEvents(new PlayerEventListener(), this);
         pluginManager.registerEvents(new PluginEventListener(), this);
+        pluginManager.registerEvents(new PlayerAdvancementListener(), this);
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             Messenger messenger = Bukkit.getMessenger();
 
