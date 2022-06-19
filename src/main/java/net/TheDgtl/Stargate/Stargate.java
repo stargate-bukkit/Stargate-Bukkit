@@ -38,6 +38,7 @@ import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.listener.BlockEventListener;
 import net.TheDgtl.Stargate.listener.MoveEventListener;
+import net.TheDgtl.Stargate.listener.PlayerAdvancementListener;
 import net.TheDgtl.Stargate.listener.PlayerEventListener;
 import net.TheDgtl.Stargate.listener.PluginEventListener;
 import net.TheDgtl.Stargate.listener.StargateBungeePluginMessageListener;
@@ -151,6 +152,15 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             }
 
             load();
+        load();
+        economyManager = new VaultEconomyManager(languageManager);
+        try {
+            storageAPI = new PortalDatabaseAPI(this);
+            registry = new StargateRegistry(storageAPI);
+            registry.loadPortals();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
             pluginManager = getServer().getPluginManager();
             registerListeners();
@@ -382,6 +392,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         pluginManager.registerEvents(new MoveEventListener(), this);
         pluginManager.registerEvents(new PlayerEventListener(), this);
         pluginManager.registerEvents(new PluginEventListener(), this);
+        pluginManager.registerEvents(new PlayerAdvancementListener(), this);
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             Messenger messenger = Bukkit.getMessenger();
 
@@ -485,12 +496,9 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     }
 
     public void reload() {
-        loadColors();
-        languageManager.setLanguage(ConfigurationHelper.getString(ConfigurationOption.LANGUAGE));
-        loadConfigLevel();
-        fetchServerId();
-        loadGateFormats();
         try {
+            load();
+            loadGateFormats();
             storageAPI.load(this);
         } catch (SQLException | StargateInitializationException e) {
             e.printStackTrace();
@@ -516,6 +524,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     }
 
     private void fetchServerId() {
+
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
             String INTERNAL_FOLDER = ".internal";
             BungeeHelper.getServerId(DATA_FOLDER, INTERNAL_FOLDER);
@@ -523,6 +532,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     }
 
     private void loadConfigLevel() {
+
         String debugLevelString = ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL);
         if (debugLevelString == null) {
             lowestMessageLevel = Level.INFO;
@@ -574,12 +584,13 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     @Override
     public void logMessage(Level priorityLevel, String message) {
-        if (priorityLevel.intValue() >= this.lowestMessageLevel.intValue()) {
-            if (priorityLevel.intValue() < Level.INFO.intValue()) {
-                this.getLogger().log(Level.INFO, message);
-            } else {
-                this.getLogger().log(priorityLevel, message);
-            }
+        if (priorityLevel.intValue() < this.lowestMessageLevel.intValue()) {
+            return;
+        }
+        if (priorityLevel.intValue() < Level.INFO.intValue()) {
+            this.getLogger().log(Level.INFO, message);
+        } else {
+            this.getLogger().log(priorityLevel, message);
         }
     }
 
