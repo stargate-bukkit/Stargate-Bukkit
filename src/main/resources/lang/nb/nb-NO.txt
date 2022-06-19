@@ -8,6 +8,7 @@ signNonFixedL3=for å bruke port
 signRandom=Tilfeldig
 signDisconnected=Koblet fra
 signTerminalL2=Til salgs
+signPortalOwner=Eid av:
 
 # Gate Actions
 gateDestroy=Port ødelagt!

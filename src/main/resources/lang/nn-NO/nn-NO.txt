@@ -8,6 +8,7 @@ signNonFixedL3=for å bruka port
 signRandom=Tilfeldig
 signDisconnected=Fråkopla
 signTerminalL2=Til sals
+signPortalOwner=Eigd av:
 
 # Gate Actions
 gateDestroy=Port Øydelagd!

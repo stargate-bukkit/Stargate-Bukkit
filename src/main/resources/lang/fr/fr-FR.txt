@@ -8,6 +8,7 @@ signNonFixedL3=pour utiliser le portail
 signRandom=Aléatoire
 signDisconnected=Déconnecté
 signTerminalL2=À vendre
+signPortalOwner=Crée par :
 
 # Gate Actions
 gateDestroy=Portail détruit !

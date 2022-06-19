@@ -8,6 +8,7 @@ signNonFixedL3=att aktivera port
 signRandom=Slumpad
 signDisconnected=Frånkopplad
 signTerminalL2=Till salu
+signPortalOwner=Ägs av:
 
 # Gate Actions
 gateDestroy=Port förstörd!
@@ -15,6 +16,7 @@ gateCreateSpecified=Port skapad på %network% -nätverket!
 gateCreatePersonal=Port skapad på personligt nätverk.
 gateTerminalSold=Köpt gate %gateName% i %terminalName% för %cost%.
 gateTerminalSale=Listade port %gateName% till salu i %terminalName% för %cost%.
+gateCreateFallback=Det gick inte att skapa din port på %network% -nätverket; försöker på dit personliga nätverk istället
 
 # Gate Construction Problems
 faultNetwork=Du har inte tillgång till det nätverket!
@@ -25,6 +27,8 @@ faultFull=Det nätverket är redan fullt!
 faultWorldDeny=Du har inte tillgång till världen %world%!
 faultConflict=Denna port står i konflikt med en befintlig port.
 faultFlag=Du saknar behörighet att använda markeringarna %flags%; din portal har skapats utan dem!
+faultControls=Portens design har för få kontrollblock för att ackommodera de flaggor du har valt!
+faultAddon=Ett tillägg har hindrat dig från att göra detta!
 
 # Bungee Problems
 bungeePerms=Du har inte behörighet att bygga bungee-portar!
@@ -40,6 +44,7 @@ bungeeTargetOffline=Proxyn är för närvarande nere, bungee portals är tillfä
 tpSuccess=Teleporterad!
 tpDestInvalid=Ogiltig destination!
 tpEmptyNet=Destinationslistan är tom!
+tpOccupied=En annan spelare använder just nu denna portal, försök igen om ett tag!
 
 # Access
 conflictPerms=Åtkomst nekad!

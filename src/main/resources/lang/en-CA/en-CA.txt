@@ -8,7 +8,7 @@ signNonFixedL3=to use gate
 signRandom=Random
 signDisconnected=Disconnected
 signTerminalL2=For Sale
-signPortalOwner=Created By:
+signPortalOwner=Owned By:
 
 # Gate Actions
 gateDestroy=Gate destroyed!
