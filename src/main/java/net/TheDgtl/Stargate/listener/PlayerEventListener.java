@@ -27,8 +27,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -165,16 +163,6 @@ public class PlayerEventListener implements Listener {
             Stargate.log(Level.FINEST, "First time player join");
             getBungeeServerName();
         }
-    }
-
-    @EventHandler
-    public void onPlayerAdvancementCriterionGrant(PlayerAdvancementCriterionGrantEvent event) {
-        if (!event.getCriterion().equals("entered_end_gateway") || !Stargate.getRegistryStatic()
-                .isNextToPortal(event.getPlayer().getLocation(), GateStructureType.IRIS)) {
-            return;
-        }
-        event.setCancelled(true);
-        
     }
     
     /**
