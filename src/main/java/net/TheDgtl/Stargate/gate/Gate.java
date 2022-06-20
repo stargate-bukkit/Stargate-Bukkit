@@ -51,8 +51,6 @@ public class Gate implements GateAPI {
     private boolean isOpen = false;
     private boolean flipped;
 
-    private static final Material DEFAULT_BUTTON = Material.STONE_BUTTON;
-    private static final Material DEFAULT_WATER_BUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
 
     /**
      * Instantiates a new gate
@@ -159,7 +157,7 @@ public class Gate implements GateAPI {
             if (ButtonHelper.isButton(blockType)) {
                 continue;
             }
-            Material buttonMaterial = getButtonMaterial();
+            Material buttonMaterial = ButtonHelper.getButtonMaterial(getFormat().getIrisMaterial(false));
             Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
             buttonData.setFacing(facing);
 
@@ -235,28 +233,6 @@ public class Gate implements GateAPI {
     public Vector getRelativeVector(Location location) {
         Vector vector = location.clone().subtract(topLeft).toVector();
         return converter.performToAbstractSpaceOperation(vector);
-    }
-
-    /**
-     * Gets the button material to use for this gate
-     *
-     * @return <p>The button material to use for this gate</p>
-     */
-    private Material getButtonMaterial() {
-        Material portalClosedMaterial = getFormat().getIrisMaterial(false);
-        //TODO: Add support for using solid blocks as the gate-closed material for underwater portals
-        switch (portalClosedMaterial) {
-            case AIR:
-            case CAVE_AIR:
-            case VOID_AIR:
-                return DEFAULT_BUTTON;
-            case WATER:
-                return DEFAULT_WATER_BUTTON;
-            default:
-                Stargate.log(Level.INFO, portalClosedMaterial.name() +
-                        " is currently not supported as a portal closed material");
-                return DEFAULT_BUTTON;
-        }
     }
 
     /**
