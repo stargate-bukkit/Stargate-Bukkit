@@ -392,13 +392,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         pluginManager.registerEvents(new PlayerEventListener(), this);
         pluginManager.registerEvents(new PluginEventListener(), this);
         pluginManager.registerEvents(new PlayerAdvancementListener(), this);
-        if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
-            Messenger messenger = Bukkit.getMessenger();
-
-            messenger.registerOutgoingPluginChannel(this, PluginChannel.BUNGEE.getChannel());
-            messenger.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(),
-                    new StargateBungeePluginMessageListener(this, this));
-        }
     }
 
     /**
@@ -515,6 +508,13 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         languageManager.setLanguage(ConfigurationHelper.getString(ConfigurationOption.LANGUAGE));
         fetchServerId();
         loadConfigLevel();
+        if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
+            Messenger messenger = Bukkit.getMessenger();
+
+            messenger.registerOutgoingPluginChannel(this, PluginChannel.BUNGEE.getChannel());
+            messenger.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(),
+                    new StargateBungeePluginMessageListener(this, this));
+        }
     }
 
     private void fetchServerId() {
