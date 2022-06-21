@@ -391,7 +391,9 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         pluginManager.registerEvents(new MoveEventListener(), this);
         pluginManager.registerEvents(new PlayerEventListener(), this);
         pluginManager.registerEvents(new PluginEventListener(), this);
-        pluginManager.registerEvents(new PlayerAdvancementListener(), this);
+        if (NonLegacyMethod.PLAYER_ADVANCEMENT_CRITERION_EVENT.isImplemented()) {
+            pluginManager.registerEvents(new PlayerAdvancementListener(), this);
+        }
     }
 
     /**
