@@ -40,12 +40,17 @@ public class StargateTabCompleter implements TabCompleter {
      */
     private List<String> getAvailableCommands(CommandSender commandSender) {
         List<String> commands = new ArrayList<>();
-        commands.add("about");
         if (commandSender.hasPermission(CommandPermission.RELOAD.getPermissionNode())) {
             commands.add("reload");
         }
         if (commandSender.hasPermission(CommandPermission.TRACE.getPermissionNode())) {
             commands.add("trace");
+        }
+        if (commandSender.hasPermission(CommandPermission.ABOUT.getPermissionNode())) {
+            commands.add("about");
+        }
+        if(commandSender.hasPermission(CommandPermission.VERSION.getPermissionNode())) {
+            commands.add("version");
         }
         return commands;
     }

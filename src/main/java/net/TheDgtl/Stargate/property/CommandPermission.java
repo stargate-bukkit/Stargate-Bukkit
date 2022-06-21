@@ -18,7 +18,12 @@ public enum CommandPermission {
     /**
      * The permission necessary for executing the trace command
      */
-    TRACE("sg.admin.trace");
+    TRACE("sg.admin.trace"),
+    
+    /**
+     * The permission necessary for executing the version command
+     */
+    VERSION("sg.info.version");
 
     private final String permissionNode;
 

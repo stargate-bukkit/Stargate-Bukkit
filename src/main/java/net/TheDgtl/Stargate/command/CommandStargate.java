@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.command;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
+import net.TheDgtl.Stargate.property.CommandPermission;
 import net.TheDgtl.Stargate.util.TranslatableMessageFormatter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,24 +19,30 @@ public class CommandStargate implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
-                             @NotNull String[] args) {
+            @NotNull String[] args) {
         if (args.length > 0) {
             switch (args[0]) {
-                case "about":
-                    return new CommandAbout().onCommand(commandSender, command, s, args);
-                case "reload":
-                    return new CommandReload().onCommand(commandSender, command, s, args);
-                case "trace":
-                    return new CommandTrace().onCommand(commandSender, command, s, args);
-                default:
-                    return false;
+            case "about":
+                return new CommandAbout().onCommand(commandSender, command, s, args);
+            case "reload":
+                return new CommandReload().onCommand(commandSender, command, s, args);
+            case "trace":
+                return new CommandTrace().onCommand(commandSender, command, s, args);
+            case "version":
+                break;
+            default:
+                return false;
             }
-        } else {
-            String unformattedMessage = Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.COMMAND_INFO);
-            commandSender.sendMessage(TranslatableMessageFormatter.formatVersion(unformattedMessage,
-                    Stargate.getInstance().getDescription().getVersion()));
+        }
+        if (!commandSender.hasPermission(CommandPermission.VERSION.getPermissionNode())) {
+            commandSender.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.DENY));
             return true;
         }
+        String unformattedMessage = Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.COMMAND_INFO);
+        commandSender.sendMessage(TranslatableMessageFormatter.formatVersion(unformattedMessage,
+                Stargate.getInstance().getDescription().getVersion()));
+        return true;
+
     }
 
 }
