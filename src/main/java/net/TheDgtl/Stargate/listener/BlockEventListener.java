@@ -32,6 +32,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockFormEvent;
@@ -223,6 +224,17 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION),
+                event.blockList());
+    }
+    
+    /**
+     * Listens to and cancels any explosion events that may break a stargate
+     *
+     * @param event <p>The triggered explosion event</p>
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockExplode(BlockExplodeEvent event) {
         BlockEventHelper.onAnyMultiBlockChangeEvent(event, ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION),
                 event.blockList());
     }
