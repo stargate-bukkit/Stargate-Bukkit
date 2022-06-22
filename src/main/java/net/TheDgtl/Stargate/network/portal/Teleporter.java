@@ -279,9 +279,9 @@ public class Teleporter {
             PoweredMinecart poweredMinecart = (PoweredMinecart) target;
             int fuel = poweredMinecart.getFuel();
             poweredMinecart.setFuel(0);
-            Bukkit.getScheduler().runTaskLater(Stargate.getInstance(), () -> {
-                poweredMinecart.setVelocity(new Vector());
-                teleport(poweredMinecart, exit);
+            teleport(poweredMinecart, exit);
+            poweredMinecart.setVelocity(new Vector());
+            Stargate.addSynchronousTickAction(new DelayedAction(1, () -> {
                 poweredMinecart.setFuel(fuel);
                 poweredMinecart.setVelocity(targetVelocity);
 
@@ -292,7 +292,8 @@ public class Teleporter {
                     logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
                             " use Paper 1.18.2+ for this feature.", location));
                 }
-            }, 1);
+                return true;
+            }));
         } else {
             teleport(target, exit);
             target.setVelocity(targetVelocity);
