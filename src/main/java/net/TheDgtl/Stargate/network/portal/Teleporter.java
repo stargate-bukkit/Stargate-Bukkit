@@ -311,8 +311,9 @@ public class Teleporter {
 
             //Use the paper-only methods for setting the powered minecart's actual push
             if (NonLegacyMethod.PUSH_X.isImplemented() && NonLegacyMethod.PUSH_Z.isImplemented()) {
-                double pushX = -location.getDirection().getBlockX();
-                double pushZ = -location.getDirection().getBlockZ();
+                Vector direction = destinationFace.getDirection();
+                double pushX = -direction.getBlockX();
+                double pushZ = -direction.getBlockZ();
                 logger.logMessage(Level.FINEST, "Setting push: X = " + pushX + " Z = " + pushZ);
                 NonLegacyMethod.PUSH_X.invoke(poweredMinecart, pushX);
                 NonLegacyMethod.PUSH_Z.invoke(poweredMinecart, pushZ);
