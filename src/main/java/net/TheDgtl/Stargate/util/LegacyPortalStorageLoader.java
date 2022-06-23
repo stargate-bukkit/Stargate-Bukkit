@@ -77,6 +77,7 @@ public final class LegacyPortalStorageLoader {
 
                 line = reader.readLine();
             }
+            reader.close();
         }
         return portals;
     }

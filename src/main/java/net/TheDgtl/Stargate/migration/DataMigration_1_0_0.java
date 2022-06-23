@@ -10,6 +10,7 @@ import net.TheDgtl.Stargate.util.FileHelper;
 import net.TheDgtl.Stargate.util.LegacyPortalStorageLoader;
 import org.bukkit.Server;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -132,6 +133,20 @@ public class DataMigration_1_0_0 extends DataMigration {
                         portal.getAllFlagsString()));
             }
         }
+
+        File dir = new File(portalFolder);
+        File targetDir = new File("plugins/Stargate/debug/legacy_portals");
+        if(!targetDir.exists()) {
+            targetDir.mkdirs();
+        }
+        if(!dir.exists()) {
+            return;
+        }
+        File[] files = dir.listFiles();
+        for(File file : files) {
+            file.renameTo(new File(targetDir,file.getName()));
+        }
+        dir.delete();
     }
 
     /**
