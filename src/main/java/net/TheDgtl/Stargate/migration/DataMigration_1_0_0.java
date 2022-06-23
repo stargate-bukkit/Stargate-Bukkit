@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.migration;
 
+import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.container.TwoTuple;
 import net.TheDgtl.Stargate.exception.InvalidStructureException;
@@ -75,14 +76,18 @@ public class DataMigration_1_0_0 extends DataMigration {
 
     @Override
     public void run() {
+        String portalFolderValue = null;
         try {
             String[] possiblePortalFolderConfigKeys = {"portal-folder", "folders.portalFolder"};
             for (String portalFolderKey : possiblePortalFolderConfigKeys) {
-                String portalFolderValue = (String) oldConfig.get(portalFolderKey);
+                portalFolderValue = (String) oldConfig.get(portalFolderKey);
                 if (portalFolderValue != null) {
                     migratePortals(portalFolderValue);
-                    return;
+                    break;
                 }
+            }
+            if(portalFolderValue != null) {
+                moveFilesToDebugDirectory(portalFolderValue);
             }
         } catch (IOException | InvalidStructureException | NameErrorException e) {
             e.printStackTrace();
@@ -133,22 +138,32 @@ public class DataMigration_1_0_0 extends DataMigration {
                         portal.getAllFlagsString()));
             }
         }
-
-        File dir = new File(portalFolder);
-        File targetDir = new File("plugins/Stargate/debug/legacy_portals");
-        if (!targetDir.exists()) {
-            targetDir.mkdirs();
-        }
-        if (!dir.exists()) {
-            return;
-        }
-        File[] files = dir.listFiles();
-        for (File file : files) {
-            file.renameTo(new File(targetDir, file.getName()));
-        }
-        dir.delete();
     }
 
+    private void moveFilesToDebugDirectory(String portalFolder) {
+        Map<String, String> filesToMove = new HashMap<>();
+        FileHelper.readInternalFileToMap("/migration/file-migrations-1_0_0.properties", filesToMove);
+        filesToMove.put(portalFolder, "plugins/Stargate/debug/legacy_portals");
+
+        for (String directoryString : filesToMove.keySet()) {
+            Stargate.log(Level.FINE, String.format("Moving files in directory %s to %s", directoryString,
+                    filesToMove.get(directoryString)));
+            File directory = new File(directoryString);
+            File targetDirectory = new File(filesToMove.get(directoryString));
+            if (!directory.exists()) {
+                continue;
+            }
+            if (!targetDirectory.exists()) {
+                targetDirectory.mkdirs();
+            }
+            File[] files = directory.listFiles();
+            for (File file : files) {
+                file.renameTo(new File(targetDirectory, file.getName()));
+            }
+            directory.delete();
+        }
+    }
+    
     /**
      * Loads the configuration conversions used to load legacy configuration files
      */
