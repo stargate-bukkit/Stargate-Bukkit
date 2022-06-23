@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.network.portal;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.minecart.PoweredMinecart;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ public class TeleportedEntityRelationDFS {
     private final Map<Entity, List<LivingEntity>> leashHolders;
     private final Map<Entity, List<Entity>> passengerVehicles;
     private final Set<Entity> entitiesToTeleport;
+    private boolean isBlockTeleportation = false;
 
     /**
      * Instantiates a new entity relation Depth-First-Search
@@ -72,16 +74,18 @@ public class TeleportedEntityRelationDFS {
      * @return <p>If the teleportation should proceed</p>
      */
     public boolean depthFirstSearch(Entity node) {
-        if (!permissionFunction.apply(node)) {
-            return false;
-        }
-        boolean isSuccess = true;
+        //Note that full tree has to be explored to check if anything is an instance of PoweredMinecart
+        boolean isSuccess = permissionFunction.apply(node);
         // Should be here to avoid checking the same node twice
         if (entitiesToTeleport.contains(node)) {
             return true;
         }
         entitiesToTeleport.add(node);
 
+        if(node instanceof PoweredMinecart) {
+            this.isBlockTeleportation  = true;
+        }
+        
         List<Entity> passengers = node.getPassengers();
         for (Entity passenger : node.getPassengers()) {
             isSuccess &= depthFirstSearch(passenger);
@@ -99,4 +103,7 @@ public class TeleportedEntityRelationDFS {
         return isSuccess;
     }
 
+    public boolean isBlockTeleportation() {
+        return this.isBlockTeleportation;
+    }
 }

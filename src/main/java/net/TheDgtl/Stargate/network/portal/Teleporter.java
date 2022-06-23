@@ -104,6 +104,9 @@ public class Teleporter {
         }, nearbyLeashed);
 
         hasPermission = dfs.depthFirstSearch(baseEntity);
+        if(dfs.isBlockTeleportation()) {
+            return;
+        }
         if (!hasPermission) {
             refundPlayers(playersToRefund);
             rotation = Math.PI;
