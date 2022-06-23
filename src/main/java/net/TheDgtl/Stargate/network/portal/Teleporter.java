@@ -87,6 +87,10 @@ public class Teleporter {
 
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
             StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity);
+            if (anyEntity instanceof PoweredMinecart && (anyEntity != baseEntity ||
+                    !anyEntity.getPassengers().isEmpty())) {
+                return false;
+            }
             if (!hasPermission(anyEntity, permissionManager)) {
                 teleportMessage = permissionManager.getDenyMessage();
                 return false;
@@ -99,9 +103,6 @@ public class Teleporter {
                     teleportMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS);
                     return false;
                 }
-            }
-            if (anyEntity instanceof PoweredMinecart) {
-                return false;
             }
             return true;
         }, nearbyLeashed);
@@ -278,29 +279,49 @@ public class Teleporter {
         }
 
         if (target instanceof PoweredMinecart) {
-            //A workaround for powered minecarts
-            PoweredMinecart poweredMinecart = (PoweredMinecart) target;
-            int fuel = poweredMinecart.getFuel();
-            poweredMinecart.setFuel(0);
-            teleport(poweredMinecart, exit);
-            poweredMinecart.setVelocity(new Vector());
-            Stargate.addSynchronousTickAction(new DelayedAction(1, () -> {
-                poweredMinecart.setFuel(fuel);
-                poweredMinecart.setVelocity(targetVelocity);
-
-                if (NonLegacyMethod.PUSH_X.isImplemented() && NonLegacyMethod.PUSH_Z.isImplemented()) {
-                    NonLegacyMethod.PUSH_X.invoke(poweredMinecart, -location.getDirection().getBlockX());
-                    NonLegacyMethod.PUSH_Z.invoke(poweredMinecart, -location.getDirection().getBlockZ());
-                } else {
-                    logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
-                            " use Paper 1.18.2+ for this feature.", location));
-                }
-                return true;
-            }));
+            teleportPoweredMinecart((PoweredMinecart) target, targetVelocity, location);
         } else {
             teleport(target, exit);
             target.setVelocity(targetVelocity);
         }
+    }
+
+    /**
+     * Teleports a powered minecart using necessary workarounds
+     *
+     * @param poweredMinecart <p>The powered Minecart to teleport</p>
+     * @param targetVelocity  <p>The velocity to add to the powered Minecart upon exiting</p>
+     * @param location        <p>The location to teleport the powered minecart to</p>
+     */
+    private void teleportPoweredMinecart(PoweredMinecart poweredMinecart, Vector targetVelocity, Location location) {
+        //Remove fuel and velocity to force the powered minecart to stop
+        int fuel = poweredMinecart.getFuel();
+        poweredMinecart.setFuel(0);
+        poweredMinecart.setVelocity(new Vector());
+
+        //Teleport the powered minecart
+        logger.logMessage(Level.FINEST, "Teleporting Powered Minecart to " + exit);
+        teleport(poweredMinecart, exit);
+
+        Stargate.addSynchronousTickAction(new DelayedAction(1, () -> {
+            //Re-apply fuel and velocity
+            poweredMinecart.setFuel(fuel);
+            logger.logMessage(Level.FINEST, "Setting new velocity " + targetVelocity);
+            poweredMinecart.setVelocity(targetVelocity);
+
+            //Use the paper-only methods for setting the powered minecart's actual push
+            if (NonLegacyMethod.PUSH_X.isImplemented() && NonLegacyMethod.PUSH_Z.isImplemented()) {
+                double pushX = -location.getDirection().getBlockX();
+                double pushZ = -location.getDirection().getBlockZ();
+                logger.logMessage(Level.FINEST, "Setting push: X = " + pushX + " Z = " + pushZ);
+                NonLegacyMethod.PUSH_X.invoke(poweredMinecart, pushX);
+                NonLegacyMethod.PUSH_Z.invoke(poweredMinecart, pushZ);
+            } else {
+                logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
+                        " use Paper 1.18.2+ for this feature.", location));
+            }
+            return true;
+        }));
     }
 
     /**
