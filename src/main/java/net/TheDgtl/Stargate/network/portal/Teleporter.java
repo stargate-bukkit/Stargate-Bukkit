@@ -302,10 +302,10 @@ public class Teleporter {
         //Teleport the powered minecart
         logger.logMessage(Level.FINEST, "Teleporting Powered Minecart to " + exit);
         teleport(poweredMinecart, exit);
+        poweredMinecart.setFuel(fuel);
 
         Stargate.addSynchronousTickAction(new DelayedAction(1, () -> {
             //Re-apply fuel and velocity
-            poweredMinecart.setFuel(fuel);
             logger.logMessage(Level.FINEST, "Setting new velocity " + targetVelocity);
             poweredMinecart.setVelocity(targetVelocity);
 
