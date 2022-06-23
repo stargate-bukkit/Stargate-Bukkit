@@ -150,7 +150,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
                     e.printStackTrace();
                 }
             }
-            
+
             load();
             economyManager = new VaultEconomyManager(languageManager);
             try {

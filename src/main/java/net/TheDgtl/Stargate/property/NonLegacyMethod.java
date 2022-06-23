@@ -45,13 +45,13 @@ public enum NonLegacyMethod {
      * <p> This was added as a cause of the cave update </p>
      */
     GET_WORLD_MAX("org.bukkit.World", "getMaxHeight"),
-    
+
     /**
      * The paper PlayerAdvancementCriterionGrantEvent getPlayer() method
-     * 
+     *
      * <p> PlayerAdvancementCriterionGrantEvent was added to enable cancelling advancements </p>
      */
-    PLAYER_ADVANCEMENT_CRITERION_EVENT("com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent","getPlayer");
+    PLAYER_ADVANCEMENT_CRITERION_EVENT("com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent", "getPlayer");
 
     private String classToCheckFor;
     private String methodInClassToCheckFor;

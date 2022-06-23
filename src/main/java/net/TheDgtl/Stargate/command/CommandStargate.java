@@ -19,19 +19,19 @@ public class CommandStargate implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
-            @NotNull String[] args) {
+                             @NotNull String[] args) {
         if (args.length > 0) {
             switch (args[0]) {
-            case "about":
-                return new CommandAbout().onCommand(commandSender, command, s, args);
-            case "reload":
-                return new CommandReload().onCommand(commandSender, command, s, args);
-            case "trace":
-                return new CommandTrace().onCommand(commandSender, command, s, args);
-            case "version":
-                break;
-            default:
-                return false;
+                case "about":
+                    return new CommandAbout().onCommand(commandSender, command, s, args);
+                case "reload":
+                    return new CommandReload().onCommand(commandSender, command, s, args);
+                case "trace":
+                    return new CommandTrace().onCommand(commandSender, command, s, args);
+                case "version":
+                    break;
+                default:
+                    return false;
             }
         }
         if (!commandSender.hasPermission(CommandPermission.VERSION.getPermissionNode())) {

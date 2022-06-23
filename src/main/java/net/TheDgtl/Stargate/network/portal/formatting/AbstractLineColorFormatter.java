@@ -25,10 +25,10 @@ public abstract class AbstractLineColorFormatter implements LineFormatter {
      * @return <p>True if the material represents a light sign</p>
      */
     static private boolean isLightSign(Material signMaterial) {
-        if(signMaterial != null && Material.getMaterial("MANGROVE_WALL_SIGN") == signMaterial) {
+        if (signMaterial != null && Material.getMaterial("MANGROVE_WALL_SIGN") == signMaterial) {
             return false;
         }
-        
+
         switch (signMaterial) {
             // Dark signs
             case DARK_OAK_WALL_SIGN:

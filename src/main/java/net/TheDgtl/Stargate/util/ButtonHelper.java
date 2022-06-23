@@ -1,11 +1,10 @@
 package net.TheDgtl.Stargate.util;
 
-import java.util.logging.Level;
-
+import net.TheDgtl.Stargate.Stargate;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 
-import net.TheDgtl.Stargate.Stargate;
+import java.util.logging.Level;
 
 /**
  * A helper class for dealing with buttons
@@ -14,7 +13,7 @@ public final class ButtonHelper {
 
     private static final Material DEFAULT_BUTTON = Material.STONE_BUTTON;
     private static final Material DEFAULT_WATER_BUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
-    
+
     private ButtonHelper() {
 
     }
@@ -33,8 +32,6 @@ public final class ButtonHelper {
                 material == Material.DEAD_BUBBLE_CORAL_WALL_FAN ||
                 material == Material.DEAD_BRAIN_CORAL_WALL_FAN;
     }
-
-    
 
 
     /**

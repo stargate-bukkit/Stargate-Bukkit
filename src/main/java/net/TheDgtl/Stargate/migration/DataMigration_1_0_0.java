@@ -136,15 +136,15 @@ public class DataMigration_1_0_0 extends DataMigration {
 
         File dir = new File(portalFolder);
         File targetDir = new File("plugins/Stargate/debug/legacy_portals");
-        if(!targetDir.exists()) {
+        if (!targetDir.exists()) {
             targetDir.mkdirs();
         }
-        if(!dir.exists()) {
+        if (!dir.exists()) {
             return;
         }
         File[] files = dir.listFiles();
-        for(File file : files) {
-            file.renameTo(new File(targetDir,file.getName()));
+        for (File file : files) {
+            file.renameTo(new File(targetDir, file.getName()));
         }
         dir.delete();
     }
