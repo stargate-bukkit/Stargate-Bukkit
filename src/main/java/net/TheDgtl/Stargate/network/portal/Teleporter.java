@@ -100,13 +100,13 @@ public class Teleporter {
                     return false;
                 }
             }
+            if (anyEntity instanceof PoweredMinecart) {
+                return false;
+            }
             return true;
         }, nearbyLeashed);
 
         hasPermission = dfs.depthFirstSearch(baseEntity);
-        if(dfs.isBlockTeleportation()) {
-            return;
-        }
         if (!hasPermission) {
             refundPlayers(playersToRefund);
             rotation = Math.PI;
