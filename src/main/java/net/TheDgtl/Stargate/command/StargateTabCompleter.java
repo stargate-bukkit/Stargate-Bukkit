@@ -49,7 +49,7 @@ public class StargateTabCompleter implements TabCompleter {
         if (commandSender.hasPermission(CommandPermission.ABOUT.getPermissionNode())) {
             commands.add("about");
         }
-        if(commandSender.hasPermission(CommandPermission.VERSION.getPermissionNode())) {
+        if (commandSender.hasPermission(CommandPermission.VERSION.getPermissionNode())) {
             commands.add("version");
         }
         return commands;

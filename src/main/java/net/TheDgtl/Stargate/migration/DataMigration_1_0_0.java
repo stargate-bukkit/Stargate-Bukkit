@@ -138,17 +138,16 @@ public class DataMigration_1_0_0 extends DataMigration {
                         portal.getAllFlagsString()));
             }
         }
-
-        
     }
 
     private void moveFilesToDebugDirectory(String portalFolder) {
-        Map<String,String> filesToMove = new HashMap<>();
+        Map<String, String> filesToMove = new HashMap<>();
         FileHelper.readInternalFileToMap("/migration/file-migrations-1_0_0.properties", filesToMove);
         filesToMove.put(portalFolder, "plugins/Stargate/debug/legacy_portals");
-        
+
         for (String directoryString : filesToMove.keySet()) {
-            Stargate.log(Level.FINE, String.format("Moving files in directory %s to %s", directoryString, filesToMove.get(directoryString)));
+            Stargate.log(Level.FINE, String.format("Moving files in directory %s to %s", directoryString,
+                    filesToMove.get(directoryString)));
             File directory = new File(directoryString);
             File targetDirectory = new File(filesToMove.get(directoryString));
             if (!directory.exists()) {

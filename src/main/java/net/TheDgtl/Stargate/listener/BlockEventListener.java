@@ -227,7 +227,7 @@ public class BlockEventListener implements Listener {
         BlockEventHelper.onAnyMultiBlockChangeEvent(event, ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION),
                 event.blockList());
     }
-    
+
     /**
      * Listens to and cancels any explosion events that may break a stargate
      *

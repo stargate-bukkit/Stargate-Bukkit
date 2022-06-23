@@ -33,8 +33,8 @@ public class CommandTrace implements CommandExecutor {
             sender.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.DENY));
             return true;
         }
-        File directory = new File(Stargate.getInstance().getDataFolder(),"debug");
-        if(!directory.exists()) {
+        File directory = new File(Stargate.getInstance().getDataFolder(), "debug");
+        if (!directory.exists()) {
             directory.mkdir();
         }
         String fileName = "stargate." + System.currentTimeMillis() + ".txt";

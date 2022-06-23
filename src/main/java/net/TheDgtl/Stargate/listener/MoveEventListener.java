@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Level;
@@ -102,8 +103,10 @@ public class MoveEventListener implements Listener {
         }
 
         //Real velocity does not seem to work
-        target.setVelocity(toLocation.toVector().subtract(fromLocation.toVector()));
-        Stargate.log(Level.FINER, "Trying to teleport entity, initial velocity: " + target.getVelocity());
+        Vector newVelocity = toLocation.toVector().subtract(fromLocation.toVector());
+        target.setVelocity(newVelocity);
+        Stargate.log(Level.FINER, "Trying to teleport entity, initial velocity: " + target.getVelocity() +
+                ", new velocity: " + newVelocity);
         portal.doTeleport(target);
     }
 
