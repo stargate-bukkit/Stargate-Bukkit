@@ -261,7 +261,7 @@ public class Gate implements GateAPI {
                 // https://github.com/stargate-bukkit/Stargate-Bukkit/issues/36
                 gateway.setAge(-9223372036854775808L);
                 if (block.getWorld().getEnvironment() == World.Environment.THE_END) {
-                    gateway.setExitLocation(block.getWorld().getSpawnLocation());
+                    gateway.setExitLocation(block.getLocation());
                     gateway.setExactTeleport(true);
                 }
                 gateway.update(false, false);
