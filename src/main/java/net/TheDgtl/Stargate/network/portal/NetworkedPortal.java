@@ -154,7 +154,7 @@ public class NetworkedPortal extends AbstractPortal {
 
     @Override
     public void close(boolean force) {
-        if (hasFlag(PortalFlag.ALWAYS_ON) && !force || super.isDestroyed) {
+        if ((hasFlag(PortalFlag.ALWAYS_ON) && !force ) || super.isDestroyed || !super.isOpen()) {
             return;
         }
         super.close(force);
