@@ -29,7 +29,7 @@ public final class DynmapManager {
      * @param dynmapAPI <p>A reference</p>
      */
     public static void initialize(DynmapAPI dynmapAPI) {
-        if (dynmapAPI == null) {
+        if (dynmapAPI == null || dynmapAPI.getMarkerAPI() == null) {
             markerSet = null;
             portalIcon = null;
         } else {
