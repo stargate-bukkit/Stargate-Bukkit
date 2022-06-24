@@ -6,7 +6,6 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -31,10 +30,6 @@ public class MoveEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityPortalTeleport(@NotNull EntityPortalEvent event) {
-        if (!(event.getEntity() instanceof Vehicle)) {
-            return;
-        }
-
         if (Stargate.getRegistryStatic().isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
             event.setCancelled(true);
         }
