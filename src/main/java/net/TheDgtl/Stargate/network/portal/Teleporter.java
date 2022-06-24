@@ -202,6 +202,7 @@ public class Teleporter {
 
         logger.logMessage(Level.FINEST, "Trying to teleport surrounding leashed entities");
         teleportNearbyLeashedEntities(target, rotation);
+        logger.logMessage(Level.FINEST, "Teleporting entity " + target + " to exit location " + exit);
         teleport(target, exit, rotation);
     }
 
