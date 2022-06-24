@@ -87,10 +87,6 @@ public class Teleporter {
 
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
             StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity);
-            if (anyEntity instanceof PoweredMinecart && (anyEntity != baseEntity ||
-                    !anyEntity.getPassengers().isEmpty())) {
-                return false;
-            }
             if (!hasPermission(anyEntity, permissionManager)) {
                 teleportMessage = permissionManager.getDenyMessage();
                 return false;
