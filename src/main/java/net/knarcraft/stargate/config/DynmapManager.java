@@ -34,7 +34,9 @@ public final class DynmapManager {
             portalIcon = null;
         } else {
             markerSet = dynmapAPI.getMarkerAPI().createMarkerSet("stargate", "Stargate", null, false);
-            markerSet.setHideByDefault(Stargate.getStargateConfig().hideDynmapIcons());
+            if (markerSet != null) {
+                markerSet.setHideByDefault(Stargate.getStargateConfig().hideDynmapIcons());
+            }
             portalIcon = dynmapAPI.getMarkerAPI().getMarkerIcon("portal");
         }
     }
@@ -99,7 +101,9 @@ public final class DynmapManager {
                 portal.getDestinationName(), portal.getOwner().getName());
         marker.setDescription(markerDescription);
         marker.setLabel(portal.getName(), true);
-        marker.setMarkerIcon(portalIcon);
+        if (portalIcon != null) {
+            marker.setMarkerIcon(portalIcon);
+        }
     }
 
     /**
