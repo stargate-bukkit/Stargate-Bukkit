@@ -23,6 +23,9 @@ import java.util.logging.Level;
  */
 public class MoveEventListener implements Listener {
 
+    private static PlayerTeleportEvent.TeleportCause[] causesToCheck = { PlayerTeleportEvent.TeleportCause.END_GATEWAY,
+            PlayerTeleportEvent.TeleportCause.END_PORTAL, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL };
+
     /**
      * Listens for and cancels any default vehicle portal events caused by stargates
      *
@@ -42,19 +45,24 @@ public class MoveEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
-        PlayerTeleportEvent.TeleportCause cause = event.getCause();
         World world = event.getFrom().getWorld();
-
-        if (cause != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL &&
-                (cause != PlayerTeleportEvent.TeleportCause.END_GATEWAY || world == null ||
-                        world.getEnvironment() != World.Environment.THE_END)) {
+        PlayerTeleportEvent.TeleportCause cause = event.getCause();
+        if (cause == PlayerTeleportEvent.TeleportCause.END_GATEWAY && ( world == null ||
+                world.getEnvironment() != World.Environment.THE_END)){
             return;
         }
-
-        if (Stargate.getRegistryStatic().isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
-            event.setCancelled(true);
+        for (PlayerTeleportEvent.TeleportCause causeToCheck : causesToCheck) {
+            if(cause != causeToCheck) {
+                continue;
+            }
+            if (Stargate.getRegistryStatic().isNextToPortal(event.getFrom(), GateStructureType.IRIS)
+                    || Stargate.getRegistryStatic().getPortal(event.getFrom(), GateStructureType.IRIS) != null) {
+                event.setCancelled(true);
+                return;
+            }
         }
     }
+    
 
     /**
      * Listens for any player movement and teleports the player if entering a stargate
