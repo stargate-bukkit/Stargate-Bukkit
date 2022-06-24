@@ -40,8 +40,7 @@ public final class PortalHelper {
     public static void closeAllPortals(Map<String, Network> networkMap) {
         for (Network network : networkMap.values()) {
             for (Portal portal : network.getAllPortals()) {
-                if (portal.hasFlag(PortalFlag.ALWAYS_ON) && !portal.hasFlag(PortalFlag.FIXED) &&
-                        portal instanceof RealPortal) {
+                if (portal.hasFlag(PortalFlag.ALWAYS_ON) && portal instanceof RealPortal) {
                     ((RealPortal) portal).getGate().close();
                 }
             }

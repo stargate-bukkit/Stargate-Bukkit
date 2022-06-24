@@ -491,6 +491,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     @Override
     public void reload() {
+        PortalHelper.closeAllPortals(registry.getBungeeNetworkMap());
+        PortalHelper.closeAllPortals(registry.getNetworkMap());
         try {
             load();
             loadGateFormats();
