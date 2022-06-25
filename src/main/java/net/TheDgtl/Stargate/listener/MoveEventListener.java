@@ -99,7 +99,7 @@ public class MoveEventListener implements Listener {
         if (toLocation != null && toLocation.getWorld() != null &&
                 toLocation.getWorld().getEnvironment() == World.Environment.THE_END) {
             List<Location> relevantLocations = new ArrayList<>();
-            Vector targetVelocity = normalizeVelocity(target.getVelocity());
+            Vector targetVelocity = normalizeVelocity(toLocation.toVector().subtract(fromLocation.toVector()));
             if (targetVelocity.getX() != 0 && targetVelocity.getY() != 0 && targetVelocity.getZ() != 0) {
                 relevantLocations.add(toLocation.clone().add(targetVelocity));
             }
