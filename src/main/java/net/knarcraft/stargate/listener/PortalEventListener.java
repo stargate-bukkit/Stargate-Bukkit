@@ -70,11 +70,13 @@ public class PortalEventListener implements Listener {
             //Remove any old player teleportations in case weird things happen
             playersFromTheEnd.removeIf((teleportation -> teleportation.getPlayer() == player));
             //Decide if the anything stops the player from teleporting
-            if (PermissionHelper.playerCannotTeleport(portal, portal.getPortalActivator().getDestination(), player, null)) {
+            if (PermissionHelper.playerCannotTeleport(portal, portal.getPortalActivator().getDestination(), player, null) ||
+                    portal.getOptions().isBungee()) {
                 //Teleport the player back to the portal they came in, just in case
                 playersFromTheEnd.add(new FromTheEndTeleportation(player, portal));
+            } else {
+                playersFromTheEnd.add(new FromTheEndTeleportation(player, portal.getPortalActivator().getDestination()));
             }
-            playersFromTheEnd.add(new FromTheEndTeleportation(player, portal.getPortalActivator().getDestination()));
         }
     }
 
