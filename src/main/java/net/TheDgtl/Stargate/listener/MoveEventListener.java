@@ -122,13 +122,15 @@ public class MoveEventListener implements Listener {
                 relevantLocations.add(toLocation.clone().add(new Vector(0, 0, targetVelocity.getZ())));
             }
             for (Location headingTo : relevantLocations) {
-                portal = Stargate.getRegistryStatic().getPortal(headingTo, GateStructureType.IRIS);
-                if (portal != null && portal.getGate().getFormat().getIrisMaterial(true) == Material.END_PORTAL) {
+                RealPortal possiblePortal = Stargate.getRegistryStatic().getPortal(headingTo, GateStructureType.IRIS);
+                if (possiblePortal != null && 
+                        possiblePortal.getGate().getFormat().getIrisMaterial(true) == Material.END_PORTAL) {
                     Location middle = new Location(headingTo.getWorld(), headingTo.getBlockX() + 0.5,
                             headingTo.getBlockY() + 0.5, headingTo.getBlockZ() + 0.5);
                     if (Math.abs(middle.getX() - toLocation.getX()) < 0.6 ||
                             Math.abs(middle.getY() - toLocation.getY()) < 0.6 ||
                             Math.abs(middle.getZ() - toLocation.getZ()) < 0.6) {
+                        portal = possiblePortal;
                         break;
                     }
                 }
