@@ -17,6 +17,7 @@ import net.knarcraft.stargate.utility.UpdateChecker;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.AbstractHorse;
@@ -104,6 +105,11 @@ public class PlayerEventListener implements Listener {
             return;
         }
         Portal entrancePortal = PortalHandler.getByEntrance(toLocation);
+        //Check an additional block away in case the portal is a bungee portal using END_PORTAL
+        if (entrancePortal == null) {
+            entrancePortal = PortalHandler.getByAdjacentEntrance(toLocation);
+        }
+
         Portal destination = entrancePortal.getPortalActivator().getDestination(player);
 
         Entity playerVehicle = player.getVehicle();
@@ -163,7 +169,12 @@ public class PlayerEventListener implements Listener {
         //Check if the player moved from a portal
         Portal entrancePortal = PortalHandler.getByEntrance(toLocation);
         if (entrancePortal == null) {
-            return false;
+            //Check an additional block away for BungeeCord portals using END_PORTAL as its material
+            entrancePortal = PortalHandler.getByAdjacentEntrance(toLocation);
+            if (entrancePortal == null || !entrancePortal.getOptions().isBungee() ||
+                    entrancePortal.getGate().getPortalOpenBlock() != Material.END_PORTAL) {
+                return false;
+            }
         }
 
         Portal destination = entrancePortal.getPortalActivator().getDestination(player);
