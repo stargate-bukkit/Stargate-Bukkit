@@ -133,16 +133,21 @@ public class MoveEventListener implements Listener {
      * @return <p>The first found adjacent Stargate using END_PORTAL, or null</p>
      */
     private RealPortal getAdjacentEndPortalStargate(Location fromLocation, Location toLocation) {
-        List<Location> relevantLocations = getRelevantAdjacentLocations(fromLocation, toLocation);
+        Vector velocity = toLocation.toVector().subtract(fromLocation.toVector());
+        List<Location> relevantLocations = getRelevantAdjacentLocations(fromLocation, toLocation, velocity);
         for (Location headingTo : relevantLocations) {
             RealPortal possiblePortal = Stargate.getRegistryStatic().getPortal(headingTo, GateStructureType.IRIS);
             if (possiblePortal != null &&
                     possiblePortal.getGate().getFormat().getIrisMaterial(true) == Material.END_PORTAL) {
                 Location middle = new Location(headingTo.getWorld(), headingTo.getBlockX() + 0.5,
                         headingTo.getBlockY() + 0.5, headingTo.getBlockZ() + 0.5);
-                if (Math.abs(middle.getX() - toLocation.getX()) < 0.6 ||
-                        Math.abs(middle.getY() - toLocation.getY()) < 0.6 ||
-                        Math.abs(middle.getZ() - toLocation.getZ()) < 0.6) {
+                double xMargin = 0.6 + Math.abs(velocity.getX());
+                double yMargin = 0.6 + Math.abs(velocity.getY());
+                double zMargin = 0.6 + Math.abs(velocity.getBlockZ());
+
+                if (Math.abs(middle.getX() - toLocation.getX()) < xMargin ||
+                        Math.abs(middle.getY() - toLocation.getY()) < yMargin ||
+                        Math.abs(middle.getZ() - toLocation.getZ()) < zMargin) {
                     return possiblePortal;
                 }
             }
@@ -157,10 +162,10 @@ public class MoveEventListener implements Listener {
      * @param toLocation   <p>The location the target moved to</p>
      * @return <p>The relevant adjacent locations</p>
      */
-    private List<Location> getRelevantAdjacentLocations(Location fromLocation, Location toLocation) {
+    private List<Location> getRelevantAdjacentLocations(Location fromLocation, Location toLocation, Vector velocity) {
         List<Location> relevantLocations = new ArrayList<>();
         Vector zeroVector = new Vector();
-        Vector targetVelocity = normalizeVelocity(toLocation.toVector().subtract(fromLocation.toVector()));
+        Vector targetVelocity = normalizeVelocity(velocity);
 
         //Calculate all relevant vectors that might point to end portal Stargates
         Set<Vector> relevantVectors = new HashSet<>();
