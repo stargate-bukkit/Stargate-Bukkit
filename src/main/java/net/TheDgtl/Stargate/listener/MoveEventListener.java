@@ -141,10 +141,10 @@ public class MoveEventListener implements Listener {
                     possiblePortal.getGate().getFormat().getIrisMaterial(true) == Material.END_PORTAL) {
                 Location middle = new Location(headingTo.getWorld(), headingTo.getBlockX() + 0.5,
                         headingTo.getBlockY() + 0.5, headingTo.getBlockZ() + 0.5);
-                
+
                 double margin = 1.01;
                 if (Math.abs(middle.getX() - toLocation.getX()) < margin &&
-                        Math.abs(middle.getY() - toLocation.getY()) < 1.5 &&
+                        Math.abs(middle.getY() - toLocation.getY()) < 0.5 &&
                         Math.abs(middle.getZ() - toLocation.getZ()) < margin) {
                     return possiblePortal;
                 }
@@ -156,8 +156,8 @@ public class MoveEventListener implements Listener {
     /**
      * Gets the adjacent locations relevant for END_PORTAL checking based on the given movement
      *
-     * @param toLocation   <p>The location the target moved to</p>
-     * @param velocity  <p>The velocity of the moving entity</p>
+     * @param toLocation <p>The location the target moved to</p>
+     * @param velocity   <p>The velocity of the moving entity</p>
      * @return <p>The relevant adjacent locations</p>
      */
     private List<Location> getRelevantAdjacentLocations(Location toLocation, Vector velocity) {
