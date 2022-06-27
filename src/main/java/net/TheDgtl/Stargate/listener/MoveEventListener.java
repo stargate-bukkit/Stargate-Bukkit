@@ -3,10 +3,12 @@ package net.TheDgtl.Stargate.listener;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
+import net.TheDgtl.Stargate.network.portal.TeleportedEntityRelationDFS;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -99,7 +101,7 @@ public class MoveEventListener implements Listener {
     private void onAnyMove(Entity target, Location toLocation, Location fromLocation) {
         RealPortal portal = null;
         if (toLocation != null && toLocation.getWorld() != null &&
-                toLocation.getWorld().getEnvironment() == World.Environment.THE_END) {
+                toLocation.getWorld().getEnvironment() == World.Environment.THE_END && hasPlayer(target)) {
             portal = getAdjacentEndPortalStargate(fromLocation, toLocation);
         }
 
@@ -126,6 +128,22 @@ public class MoveEventListener implements Listener {
     }
 
     /**
+     * Gets whether the teleportation containing the given target has a player
+     *
+     * @param target <p>The entity about to teleport</p>
+     * @return <p>True if at least one entity in the teleportation is a player</p>
+     */
+    private boolean hasPlayer(Entity target) {
+        Entity rootNode = target;
+        while (rootNode.getVehicle() != null) {
+            rootNode = rootNode.getVehicle();
+        }
+        TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((entity) -> !(entity instanceof Player),
+                new ArrayList<>());
+        return !dfs.depthFirstSearch(rootNode);
+    }
+
+    /**
      * Gets the first adjacent Stargate using END_PORTAL as iris, if any
      *
      * @param fromLocation <p>The location the target moved from</p>
@@ -133,23 +151,37 @@ public class MoveEventListener implements Listener {
      * @return <p>The first found adjacent Stargate using END_PORTAL, or null</p>
      */
     private RealPortal getAdjacentEndPortalStargate(Location fromLocation, Location toLocation) {
+        Stargate.log(Level.FINEST, "Detected player movement in the end");
         Vector velocity = toLocation.toVector().subtract(fromLocation.toVector());
         List<Location> relevantLocations = getRelevantAdjacentLocations(toLocation, velocity);
         for (Location headingTo : relevantLocations) {
             RealPortal possiblePortal = Stargate.getRegistryStatic().getPortal(headingTo, GateStructureType.IRIS);
             if (possiblePortal != null &&
                     possiblePortal.getGate().getFormat().getIrisMaterial(true) == Material.END_PORTAL) {
+                Stargate.log(Level.FINEST, "Found adjacent END_PORTAL Stargate");
                 Location middle = new Location(headingTo.getWorld(), headingTo.getBlockX() + 0.5,
                         headingTo.getBlockY() + 0.5, headingTo.getBlockZ() + 0.5);
 
                 double margin = 1.01;
-                if (Math.abs(middle.getX() - toLocation.getX()) < margin &&
-                        Math.abs(middle.getY() - toLocation.getY()) < 0.5 &&
-                        Math.abs(middle.getZ() - toLocation.getZ()) < margin) {
+                double yMargin = 1.0;
+                double speedThreshold = 0.5;
+                boolean overSpeedThreshold = Math.abs(velocity.getX()) > speedThreshold ||
+                        Math.abs(velocity.getZ()) > speedThreshold;
+                boolean nearX = Math.abs(middle.getX() - toLocation.getX()) < margin;
+                boolean nearY = Math.abs(middle.getY() - toLocation.getY()) < yMargin;
+                boolean nearZ = Math.abs(middle.getZ() - toLocation.getZ()) < margin;
+                Stargate.log(Level.FINEST, "Hit-box detection:");
+                Stargate.log(Level.FINEST, "Over speed threshold: " + overSpeedThreshold);
+                Stargate.log(Level.FINEST, "Near X: " + nearX);
+                Stargate.log(Level.FINEST, "Near Y: " + nearY);
+                Stargate.log(Level.FINEST, "Near Z: " + nearZ);
+                if (overSpeedThreshold || (nearX && nearY && nearZ)) {
+                    Stargate.log(Level.FINEST, "Player is entering END_PORTAL Stargate");
                     return possiblePortal;
                 }
             }
         }
+        Stargate.log(Level.FINEST, "Player is not near am END_PORTAL Stargate");
         return null;
     }
 
