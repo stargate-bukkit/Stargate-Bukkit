@@ -5,7 +5,6 @@ import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.TeleportedEntityRelationDFS;
 import net.TheDgtl.Stargate.property.NonLegacyMethod;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -43,7 +42,8 @@ public class MoveEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityPortalTeleport(@NotNull EntityPortalEvent event) {
-        if(NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
+        //The entity inside block event should already cancel this if necessary
+        if (NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
             return;
         }
         if (Stargate.getRegistryStatic().isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
@@ -59,10 +59,12 @@ public class MoveEventListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
         PlayerTeleportEvent.TeleportCause cause = event.getCause();
-        if(NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented() && cause != PlayerTeleportEvent.TeleportCause.END_GATEWAY ) {
+        //The EntityInsideBlockEvent won't trigger for END_GATEWAY, so treat it as normal
+        if (NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented() &&
+                cause != PlayerTeleportEvent.TeleportCause.END_GATEWAY) {
             return;
         }
-        
+
         World world = event.getFrom().getWorld();
         if (cause == PlayerTeleportEvent.TeleportCause.END_GATEWAY && (world == null ||
                 world.getEnvironment() != World.Environment.THE_END)) {
@@ -110,6 +112,7 @@ public class MoveEventListener implements Listener {
      */
     private void onAnyMove(Entity target, Location toLocation, Location fromLocation) {
         RealPortal portal = null;
+        //The EntityInsideBlockEvent makes the end portal workaround unnecessary
         if (toLocation != null && toLocation.getWorld() != null
                 && toLocation.getWorld().getEnvironment() == World.Environment.THE_END
                 && !NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented() && hasPlayer(target)) {
@@ -159,6 +162,9 @@ public class MoveEventListener implements Listener {
     /**
      * Gets the first adjacent Stargate using END_PORTAL as iris, if any
      *
+     * <p>This method basically looks for END_PORTAL blocks belonging to Stargates just outside the player's hit-box,
+     * and returns the first portal detected, if any.</p>
+     *
      * @param fromLocation <p>The location the target moved from</p>
      * @param toLocation   <p>The location the target moved to</p>
      * @return <p>The first found adjacent Stargate using END_PORTAL, or null</p>
@@ -190,6 +196,7 @@ public class MoveEventListener implements Listener {
                 Stargate.log(Level.FINEST, "Near X: " + nearX);
                 Stargate.log(Level.FINEST, "Near Y: " + nearY);
                 Stargate.log(Level.FINEST, "Near Z: " + nearZ);
+                //Trigger hit-box for great speeds, or if the player hits a sliver of a hit-box outside the Stargate
                 if (overSpeedThreshold || (((nearX && !followsZAxis) || (nearZ && followsZAxis)) && nearY)) {
                     Stargate.log(Level.FINEST, "Player is entering END_PORTAL Stargate");
                     return possiblePortal;
@@ -225,7 +232,7 @@ public class MoveEventListener implements Listener {
 
         //Calculate the locations resulting from the relevant block vectors
         relevantVectors.forEach(relevantVector -> {
-            //It's not necessary to check the actual target block
+            //It's not necessary to check the actual target block, only offsets
             if (!relevantVector.equals(zeroVector)) {
                 relevantLocations.add(toLocation.clone().add(relevantVector));
             }
