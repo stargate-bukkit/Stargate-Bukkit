@@ -7,6 +7,7 @@ import net.TheDgtl.Stargate.network.portal.TeleportedEntityRelationDFS;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -167,15 +168,17 @@ public class MoveEventListener implements Listener {
                 double speedThreshold = 0.5;
                 boolean overSpeedThreshold = Math.abs(velocity.getX()) > speedThreshold ||
                         Math.abs(velocity.getZ()) > speedThreshold;
-                boolean nearX = Math.abs(middle.getX() - toLocation.getX()) < margin;
+                BlockFace facing = possiblePortal.getGate().getFacing();
+                boolean followsZAxis = facing == BlockFace.SOUTH || facing == BlockFace.NORTH;
+                boolean nearX = !followsZAxis && Math.abs(middle.getX() - toLocation.getX()) < margin;
                 boolean nearY = Math.abs(middle.getY() - toLocation.getY()) < yMargin;
-                boolean nearZ = Math.abs(middle.getZ() - toLocation.getZ()) < margin;
+                boolean nearZ = followsZAxis && Math.abs(middle.getZ() - toLocation.getZ()) < margin;
                 Stargate.log(Level.FINEST, "Hit-box detection:");
                 Stargate.log(Level.FINEST, "Over speed threshold: " + overSpeedThreshold);
                 Stargate.log(Level.FINEST, "Near X: " + nearX);
                 Stargate.log(Level.FINEST, "Near Y: " + nearY);
                 Stargate.log(Level.FINEST, "Near Z: " + nearZ);
-                if (overSpeedThreshold || (nearX && nearY && nearZ)) {
+                if (overSpeedThreshold || ((nearX || nearZ) && nearY)) {
                     Stargate.log(Level.FINEST, "Player is entering END_PORTAL Stargate");
                     return possiblePortal;
                 }
