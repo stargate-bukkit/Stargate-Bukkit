@@ -170,15 +170,15 @@ public class MoveEventListener implements Listener {
                         Math.abs(velocity.getZ()) > speedThreshold;
                 BlockFace facing = possiblePortal.getGate().getFacing();
                 boolean followsZAxis = facing == BlockFace.SOUTH || facing == BlockFace.NORTH;
-                boolean nearX = !followsZAxis && Math.abs(middle.getX() - toLocation.getX()) < margin;
+                boolean nearX = Math.abs(middle.getX() - toLocation.getX()) < margin;
                 boolean nearY = Math.abs(middle.getY() - toLocation.getY()) < yMargin;
-                boolean nearZ = followsZAxis && Math.abs(middle.getZ() - toLocation.getZ()) < margin;
+                boolean nearZ = Math.abs(middle.getZ() - toLocation.getZ()) < margin;
                 Stargate.log(Level.FINEST, "Hit-box detection:");
                 Stargate.log(Level.FINEST, "Over speed threshold: " + overSpeedThreshold);
                 Stargate.log(Level.FINEST, "Near X: " + nearX);
                 Stargate.log(Level.FINEST, "Near Y: " + nearY);
                 Stargate.log(Level.FINEST, "Near Z: " + nearZ);
-                if (overSpeedThreshold || ((nearX || nearZ) && nearY)) {
+                if (overSpeedThreshold || (((nearX && !followsZAxis) || (nearZ && followsZAxis)) && nearY)) {
                     Stargate.log(Level.FINEST, "Player is entering END_PORTAL Stargate");
                     return possiblePortal;
                 }
@@ -209,9 +209,7 @@ public class MoveEventListener implements Listener {
         relevantVectors.add(yVector.clone());
         relevantVectors.add(zVector.clone());
         relevantVectors.add(xVector.clone().add(yVector));
-        relevantVectors.add(xVector.clone().add(zVector));
         relevantVectors.add(yVector.clone().add(zVector));
-        relevantVectors.add(yVector.clone().add(zVector).add(xVector));
 
         //Calculate the locations resulting from the relevant block vectors
         relevantVectors.forEach(relevantVector -> {
