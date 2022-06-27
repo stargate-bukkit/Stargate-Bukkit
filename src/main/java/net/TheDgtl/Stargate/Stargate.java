@@ -37,6 +37,7 @@ import net.TheDgtl.Stargate.formatting.StargateLanguageManager;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.listener.BlockEventListener;
+import net.TheDgtl.Stargate.listener.EntityInsideBlockEventListener;
 import net.TheDgtl.Stargate.listener.MoveEventListener;
 import net.TheDgtl.Stargate.listener.PlayerAdvancementListener;
 import net.TheDgtl.Stargate.listener.PlayerEventListener;
@@ -393,6 +394,9 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         pluginManager.registerEvents(new PluginEventListener(), this);
         if (NonLegacyMethod.PLAYER_ADVANCEMENT_CRITERION_EVENT.isImplemented()) {
             pluginManager.registerEvents(new PlayerAdvancementListener(), this);
+        }
+        if (NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
+            pluginManager.registerEvents(new EntityInsideBlockEventListener(), this);
         }
     }
 

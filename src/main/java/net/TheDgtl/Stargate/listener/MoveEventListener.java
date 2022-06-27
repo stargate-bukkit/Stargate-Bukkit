@@ -4,6 +4,8 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.TeleportedEntityRelationDFS;
+import net.TheDgtl.Stargate.property.NonLegacyMethod;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -41,6 +43,9 @@ public class MoveEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityPortalTeleport(@NotNull EntityPortalEvent event) {
+        if(NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
+            return;
+        }
         if (Stargate.getRegistryStatic().isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
             event.setCancelled(true);
         }
@@ -53,8 +58,12 @@ public class MoveEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
-        World world = event.getFrom().getWorld();
         PlayerTeleportEvent.TeleportCause cause = event.getCause();
+        if(NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented() && cause != PlayerTeleportEvent.TeleportCause.END_GATEWAY ) {
+            return;
+        }
+        
+        World world = event.getFrom().getWorld();
         if (cause == PlayerTeleportEvent.TeleportCause.END_GATEWAY && (world == null ||
                 world.getEnvironment() != World.Environment.THE_END)) {
             return;
@@ -101,13 +110,16 @@ public class MoveEventListener implements Listener {
      */
     private void onAnyMove(Entity target, Location toLocation, Location fromLocation) {
         RealPortal portal = null;
-        if (toLocation != null && toLocation.getWorld() != null &&
-                toLocation.getWorld().getEnvironment() == World.Environment.THE_END && hasPlayer(target)) {
+        if (toLocation != null && toLocation.getWorld() != null
+                && toLocation.getWorld().getEnvironment() == World.Environment.THE_END
+                && !NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented() && hasPlayer(target)) {
             portal = getAdjacentEndPortalStargate(fromLocation, toLocation);
         }
 
-        // Check if entity moved one block (its only possible to have entered a portal if that's the case)
-        if (toLocation == null || portal == null && fromLocation.getBlockX() == toLocation.getBlockX() &&
+        // Check if entity moved one block (its only possible to have entered a portal
+        // if that's the case)
+        if (toLocation == null
+                || portal == null && fromLocation.getBlockX() == toLocation.getBlockX() &&
                 fromLocation.getBlockY() == toLocation.getBlockY() &&
                 fromLocation.getBlockZ() == toLocation.getBlockZ()) {
             return;
