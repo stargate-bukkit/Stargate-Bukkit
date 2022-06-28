@@ -51,7 +51,14 @@ public enum NonLegacyMethod {
      *
      * <p> PlayerAdvancementCriterionGrantEvent was added to enable cancelling advancements </p>
      */
-    PLAYER_ADVANCEMENT_CRITERION_EVENT("com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent", "getPlayer");
+    PLAYER_ADVANCEMENT_CRITERION_EVENT("com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent", "getPlayer"),
+
+    /**
+     * The paper EntityInsideBlockEven getBlock() method
+     *
+     * <p> EntityInsideBlockEvent was added to allow cancelling certain blocks from getting triggered by entities </p>
+     */
+    ENTITY_INSIDE_BLOCK_EVENT("io.papermc.paper.event.entity.EntityInsideBlockEvent", "getBlock");
 
     private String classToCheckFor;
     private String methodInClassToCheckFor;

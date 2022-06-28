@@ -86,7 +86,7 @@ public class DataMigration_1_0_0 extends DataMigration {
                     break;
                 }
             }
-            if(portalFolderValue != null) {
+            if (portalFolderValue != null) {
                 moveFilesToDebugDirectory(portalFolderValue);
             }
         } catch (IOException | InvalidStructureException | NameErrorException e) {
@@ -163,7 +163,7 @@ public class DataMigration_1_0_0 extends DataMigration {
             directory.delete();
         }
     }
-    
+
     /**
      * Loads the configuration conversions used to load legacy configuration files
      */
