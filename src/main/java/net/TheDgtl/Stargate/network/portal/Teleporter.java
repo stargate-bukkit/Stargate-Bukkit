@@ -13,6 +13,7 @@ import net.TheDgtl.Stargate.property.NonLegacyMethod;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -33,8 +34,8 @@ import java.util.logging.Level;
 public class Teleporter {
 
     private static final double LOOK_FOR_LEASHED_RADIUS = 15;
-    private static final Set<Entity> entitiesTeleporting = new HashSet<>();
-    
+    private static final Set<Entity> boatsTeleporting = new HashSet<>();
+
     private Location exit;
     private final RealPortal origin;
     private final RealPortal destination;
@@ -104,17 +105,21 @@ public class Teleporter {
             }
             return true;
         }, nearbyLeashed);
-        
+
 
         hasPermission = dfs.depthFirstSearch(baseEntity);
         Set<Entity> entitiesToTeleport = dfs.getEntitiesToTeleport();
         //Check if already is teleporting and prevent entity to teleporting again
-        for(Entity entityToTeleport : entitiesToTeleport) {
-            if(entitiesTeleporting.contains(entityToTeleport)) {
+        for (Entity entityToTeleport : entitiesToTeleport) {
+            if (boatsTeleporting.contains(entityToTeleport)) {
                 return;
             }
         }
-        entitiesTeleporting.addAll(entitiesToTeleport);
+        entitiesToTeleport.forEach((entity) -> {
+            if (entity instanceof Boat) {
+                boatsTeleporting.add(entity);
+            }
+        });
         if (!hasPermission) {
             refundPlayers(playersToRefund);
             rotation = Math.PI;
@@ -341,7 +346,7 @@ public class Teleporter {
      */
     private void teleport(Entity target, Location exitPoint) {
         target.teleport(exitPoint);
-        entitiesTeleporting.remove(target);
+        boatsTeleporting.remove(target);
         if (origin != null && !origin.hasFlag(PortalFlag.SILENT)) {
             logger.logMessage(Level.FINE, "Sending player teleport message" + teleportMessage);
             target.sendMessage(teleportMessage);
