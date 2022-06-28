@@ -27,7 +27,7 @@ public class EntityInsideBlockEventListener implements Listener {
         Block block = event.getBlock();
         //Block any results of entering a default portal block
         if ((block.getType() == Material.END_PORTAL || block.getType() == Material.NETHER_PORTAL) &&
-                Stargate.getRegistryStatic().getPortal(block.getLocation(), GateStructureType.IRIS) == null) {
+                Stargate.getRegistryStatic().getPortal(block.getLocation(), GateStructureType.IRIS) != null) {
             event.setCancelled(true);
         }
     }
