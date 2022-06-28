@@ -59,4 +59,8 @@ public class TeleportedEntityRelationDFS {
         return isSuccess;
     }
 
+    public Set<Entity> getEntitiesToTeleport() {
+        return entitiesToTeleport;
+    }
+
 }

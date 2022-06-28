@@ -33,6 +33,8 @@ import java.util.logging.Level;
 public class Teleporter {
 
     private static final double LOOK_FOR_LEASHED_RADIUS = 15;
+    private static final Set<Entity> entitiesTeleporting = new HashSet<>();
+    
     private Location exit;
     private final RealPortal origin;
     private final RealPortal destination;
@@ -102,8 +104,17 @@ public class Teleporter {
             }
             return true;
         }, nearbyLeashed);
+        
 
         hasPermission = dfs.depthFirstSearch(baseEntity);
+        Set<Entity> entitiesToTeleport = dfs.getEntitiesToTeleport();
+        //Check if already is teleporting and prevent entity to teleporting again
+        for(Entity entityToTeleport : entitiesToTeleport) {
+            if(entitiesTeleporting.contains(entityToTeleport)) {
+                return;
+            }
+        }
+        entitiesTeleporting.addAll(entitiesToTeleport);
         if (!hasPermission) {
             refundPlayers(playersToRefund);
             rotation = Math.PI;
@@ -330,6 +341,7 @@ public class Teleporter {
      */
     private void teleport(Entity target, Location exitPoint) {
         target.teleport(exitPoint);
+        entitiesTeleporting.remove(target);
         if (origin != null && !origin.hasFlag(PortalFlag.SILENT)) {
             logger.logMessage(Level.FINE, "Sending player teleport message" + teleportMessage);
             target.sendMessage(teleportMessage);
