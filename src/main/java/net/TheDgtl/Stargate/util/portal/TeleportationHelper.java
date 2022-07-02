@@ -8,6 +8,7 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,8 +19,15 @@ import java.util.Set;
 public class TeleportationHelper {
 
     private static final int CONE_LENGTH = 7;
-    private static final int MAXIMUM_CONE_EXTENSION = 5;
+    private static final int MAXIMUM_CONE_EXTENSION = 4;
 
+    /**
+     * Tries to find an alternative viable spawn location for the specified entity
+     *
+     * @param entity            <p>The entity to be teleported</p>
+     * @param destinationPortal <p>The portal the entity is about to exit from</p>
+     * @return <p>A possible spawn location, or null if no viable location could be found</p>
+     */
     public static Location findViableSpawnLocation(Entity entity, RealPortal destinationPortal) {
         Vector forward = destinationPortal.getGate().getFacing().getDirection();
         Vector left = forward.rotateAroundY(Math.PI / 2);
@@ -36,11 +44,13 @@ public class TeleportationHelper {
         int width = (int) Math.ceil(entity.getWidth());
         int height = (int) Math.ceil(entity.getHeight());
         Vector centerOffset = width % 2 != 0 ? new Vector(0.5, 0, 0.5) : new Vector();
+        Location portalCenter = destinationPortal.getGate().getExit();
 
         //skip first layer as that was the origin of issue https://github.com/stargate-rewritten/Stargate-Bukkit/issues/231
-        List<Location> coneLocations = getDirectionalConeLayer(irisLocations, forward, left, right, up, down, 0);
+        List<Location> coneLocations = getDirectionalConeLayer(irisLocations, forward, left, right, up, down, 0, portalCenter);
+        //Give up after reaching the max cone length
         for (int coneHeight = 1; coneHeight <= CONE_LENGTH; coneHeight++) {
-            coneLocations = getDirectionalConeLayer(coneLocations, forward, left, right, up, down, coneHeight);
+            coneLocations = getDirectionalConeLayer(coneLocations, forward, left, right, up, down, coneHeight, portalCenter);
             for (Location possibleSpawnLocation : coneLocations) {
                 Location modifiedPossibleSpawnLocation = possibleSpawnLocation.clone().add(centerOffset);
                 if (isViableSpawnLocation(width, height, modifiedPossibleSpawnLocation)) {
@@ -61,10 +71,12 @@ public class TeleportationHelper {
      * @param up              <p>The upwards direction along the y-axis</p>
      * @param down            <p>The downwards direction along the y-axis</p>
      * @param recursionNumber <p>The number of times this method has been run in the current call chain</p>
+     * @param portalCenter    <p>The center of the portal the cone is extending from (used for sorting by distance)</p>
      * @return <p>The locations part of the next cone layer</p>
      */
     private static List<Location> getDirectionalConeLayer(List<Location> locations, Vector outwards, Vector left,
-                                                          Vector right, Vector up, Vector down, int recursionNumber) {
+                                                          Vector right, Vector up, Vector down, int recursionNumber,
+                                                          Location portalCenter) {
         Set<Location> relativeLocations = new HashSet<>();
         for (Location location : locations) {
             /* Store relative locations in a new hashset to make sure the upwards and downwards variations are only 
@@ -72,8 +84,10 @@ public class TeleportationHelper {
             Set<Location> newRelativeLocations = new HashSet<>();
             //Add the three relevant relative locations
             newRelativeLocations.add(location.clone().add(outwards));
-            //Stop after the specified number of recursions to prevent way too big search areas
-            if (recursionNumber < MAXIMUM_CONE_EXTENSION) {
+            
+            /* Stop expanding the cone except outwards after the specified number of recursions to prevent way too big 
+            search areas */
+            if (recursionNumber <= MAXIMUM_CONE_EXTENSION) {
                 newRelativeLocations.add(location.clone().add(outwards).add(left));
                 newRelativeLocations.add(location.clone().add(outwards).add(right));
                 //Check upwards and downwards for a 3-dimensional search
@@ -87,7 +101,8 @@ public class TeleportationHelper {
         }
         List<Location> relativeLocationsList = new ArrayList<>(relativeLocations.size());
         relativeLocationsList.addAll(relativeLocations);
-        //TODO: Sort by closeness (smallest change in x, y and z directions relative to Stargate center)
+        //Sort by distance relative to portal center to prefer the most "normal" locations
+        relativeLocationsList.sort(Comparator.comparingDouble((Location location) -> location.distance(portalCenter)));
         return relativeLocationsList;
     }
 
@@ -102,12 +117,14 @@ public class TeleportationHelper {
     private static boolean isViableSpawnLocation(int width, int height, Location center) {
         Location corner = center.clone().subtract(width / 2.0, 0, width / 2.0);
 
+        //If a single solid block is found, the entity would be crushed to death
         for (Location occupiedLocation : getOccupiedLocations(width, height, corner)) {
             if (occupiedLocation.getBlock().getType().isSolid()) {
                 return false;
             }
         }
 
+        //As long as the entity as a single floor block to spawn on, it won't fall down
         for (Location floorLocation : getFloorLocations(width, corner)) {
             if (floorLocation.getBlock().getType().isBlock()) {
                 return true;
@@ -152,4 +169,5 @@ public class TeleportationHelper {
         }
         return floorLocations;
     }
+
 }
