@@ -59,6 +59,11 @@ public class TeleportedEntityRelationDFS {
         return isSuccess;
     }
 
+    /**
+     * Gets all entities found during the last call to depthFirstSearch
+     *
+     * @return <p>All entities found during the search</p>
+     */
     public Set<Entity> getEntitiesToTeleport() {
         return entitiesToTeleport;
     }
