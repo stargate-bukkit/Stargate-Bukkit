@@ -10,6 +10,8 @@ import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.property.NonLegacyMethod;
+import net.TheDgtl.Stargate.vectorlogic.VectorUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -64,7 +66,7 @@ public class Teleporter {
         this.destinationFace = destinationFace;
         this.origin = origin;
         this.destination = destination;
-        this.rotation = calculateAngleDifference(entranceFace, destinationFace);
+        this.rotation = VectorUtils.calculateAngleDifference(entranceFace, destinationFace);
         this.cost = cost;
         this.teleportMessage = teleportMessage;
         this.logger = logger;
@@ -129,7 +131,7 @@ public class Teleporter {
         exit.subtract(offset);
 
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            betterTeleport(baseEntity, rotation);
+            betterTeleport(baseEntity, exit, rotation);
             return true;
         }));
     }
@@ -185,7 +187,7 @@ public class Teleporter {
      * @param target   <p>The entity to teleport</p>
      * @param rotation <p>The rotation to apply to teleported entities, relative to its existing rotation</p>
      */
-    private void betterTeleport(Entity target, double rotation) {
+    private void betterTeleport(Entity target, Location exit, double rotation) {
         if (teleportedEntities.contains(target)) {
             return;
         }
@@ -193,7 +195,7 @@ public class Teleporter {
         List<Entity> passengers = target.getPassengers();
         if (target.eject()) {
             Stargate.log(Level.FINER, "Ejected all passengers");
-            teleportPassengers(target, passengers);
+            teleportPassengers(target, exit, passengers);
         }
 
         if (origin == null) {
@@ -208,7 +210,7 @@ public class Teleporter {
         }
 
         logger.logMessage(Level.FINEST, "Trying to teleport surrounding leashed entities");
-        teleportNearbyLeashedEntities(target, rotation);
+        teleportNearbyLeashedEntities(target, exit, rotation);
         logger.logMessage(Level.FINEST, "Teleporting entity " + target + " to exit location " + exit);
         teleport(target, exit, rotation);
     }
@@ -219,10 +221,10 @@ public class Teleporter {
      * @param target     <p>The target to teleport</p>
      * @param passengers <p>The ejected passengers of the target entity</p>
      */
-    private void teleportPassengers(Entity target, List<Entity> passengers) {
+    private void teleportPassengers(Entity target, Location exit, List<Entity> passengers) {
         for (Entity passenger : passengers) {
             Supplier<Boolean> action = () -> {
-                betterTeleport(passenger, rotation);
+                betterTeleport(passenger, exit, rotation);
                 target.addPassenger(passenger);
                 return true;
             };
@@ -242,7 +244,7 @@ public class Teleporter {
      * @param holder   <p>The player that may hold entities in a leash</p>
      * @param rotation <p>The rotation to apply to teleported leashed entities, relative to its existing rotation</p>
      */
-    private void teleportNearbyLeashedEntities(Entity holder, double rotation) {
+    private void teleportNearbyLeashedEntities(Entity holder, Location exit, double rotation) {
         if (!ConfigurationHelper.getBoolean(ConfigurationOption.HANDLE_LEASHES)) {
             return;
         }
@@ -250,7 +252,7 @@ public class Teleporter {
             if (entity.isLeashed() && entity.getLeashHolder() == holder) {
                 Supplier<Boolean> action = () -> {
                     entity.setLeashHolder(null);
-                    betterTeleport(entity, rotation);
+                    betterTeleport(entity, exit, rotation);
                     entity.setLeashHolder(holder);
                     return true;
                 };
@@ -348,21 +350,7 @@ public class Teleporter {
         }
     }
 
-    /**
-     * Calculates the relative angle difference between two block faces
-     *
-     * @param originFace      <p>The block face the origin portal is pointing towards</p>
-     * @param destinationFace <p>The block face the destination portal is pointing towards</p>
-     * @return <p>The angle difference between the two block faces</p>
-     */
-    private double calculateAngleDifference(BlockFace originFace, BlockFace destinationFace) {
-        if (originFace != null) {
-            Vector originGateDirection = originFace.getDirection();
-            return directionalAngleOperator(originGateDirection, destinationFace.getDirection());
-        } else {
-            return -directionalAngleOperator(BlockFace.EAST.getDirection(), destinationFace.getDirection());
-        }
-    }
+    
 
     /**
      * Checks whether the given entity has the required permissions for performing the teleportation
@@ -382,21 +370,6 @@ public class Teleporter {
         return hasPermission;
     }
 
-    /**
-     * Gets the angle between two vectors
-     *
-     * <p>The {@link Vector#angle(Vector)} function is not directional, meaning if you exchange position with vectors,
-     * there will be no difference in angle. The behaviour that is needed in some portal methods is for the angle to
-     * change sign if the vectors change places.
-     * <p>
-     * NOTE: ONLY ACCOUNTS FOR Y AXIS ROTATIONS</p>
-     *
-     * @param vector1 <p>The first vector</p>
-     * @param vector2 <p>The second vector</p>
-     * @return <p>The angle between the two vectors</p>
-     */
-    private double directionalAngleOperator(Vector vector1, Vector vector2) {
-        return Math.atan2(vector1.clone().crossProduct(vector2).getY(), vector1.dot(vector2));
-    }
+    
 
 }
