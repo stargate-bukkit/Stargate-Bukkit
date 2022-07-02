@@ -11,7 +11,6 @@ import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.property.NonLegacyMethod;
 import net.TheDgtl.Stargate.vectorlogic.VectorUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -355,7 +354,6 @@ public class Teleporter {
         }
     }
 
-    
 
     /**
      * Checks whether the given entity has the required permissions for performing the teleportation
@@ -375,6 +373,5 @@ public class Teleporter {
         return hasPermission;
     }
 
-    
 
 }

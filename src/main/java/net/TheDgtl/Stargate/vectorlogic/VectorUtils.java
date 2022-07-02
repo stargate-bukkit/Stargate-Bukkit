@@ -7,10 +7,10 @@ import org.bukkit.util.Vector;
 public class VectorUtils {
     /**
      * Get all relative blockvectors that represent a position that represent a block adjacent to (0 0 0)
-     * 
+     *
      * @return <p> A list of all adjacent blocks to the (0 0 0) relative location </p>
      */
-    public static BlockVector[] getAdjacentRelativePositions(){
+    public static BlockVector[] getAdjacentRelativePositions() {
         BlockVector x = new BlockVector(1, 0, 0);
         BlockVector y = new BlockVector(0, 1, 0);
         BlockVector z = new BlockVector(0, 0, 1);
@@ -20,7 +20,7 @@ public class VectorUtils {
 
         return new BlockVector[]{x, y, z, minusX, minusY, minusZ};
     }
-    
+
     /**
      * Calculates the relative angle difference between two block faces
      *
@@ -36,7 +36,7 @@ public class VectorUtils {
             return -directionalAngleOperator(BlockFace.EAST.getDirection(), destinationFace.getDirection());
         }
     }
-    
+
     /**
      * Gets the angle between two vectors
      *
