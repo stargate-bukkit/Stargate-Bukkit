@@ -3,6 +3,8 @@ package net.TheDgtl.Stargate.util.portal;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
@@ -45,6 +47,8 @@ public class TeleportationHelper {
         int height = (int) Math.ceil(entity.getHeight());
         Vector centerOffset = width % 2 != 0 ? new Vector(0.5, 0, 0.5) : new Vector();
         Location portalCenter = destinationPortal.getGate().getExit();
+        World world = destinationPortal.getExit().getWorld();
+        WorldBorder worldBorder = world != null ? world.getWorldBorder() : null;
 
         //skip first layer as that was the origin of issue https://github.com/stargate-rewritten/Stargate-Bukkit/issues/231
         List<Location> coneLocations = getDirectionalConeLayer(irisLocations, forward, left, right, up, down, 0, portalCenter);
@@ -53,7 +57,8 @@ public class TeleportationHelper {
             coneLocations = getDirectionalConeLayer(coneLocations, forward, left, right, up, down, coneHeight, portalCenter);
             for (Location possibleSpawnLocation : coneLocations) {
                 Location modifiedPossibleSpawnLocation = possibleSpawnLocation.clone().add(centerOffset);
-                if (isViableSpawnLocation(width, height, modifiedPossibleSpawnLocation)) {
+                if (isViableSpawnLocation(width, height, modifiedPossibleSpawnLocation) &&
+                        (worldBorder == null || worldBorder.isInside(modifiedPossibleSpawnLocation))) {
                     return modifiedPossibleSpawnLocation;
                 }
             }
