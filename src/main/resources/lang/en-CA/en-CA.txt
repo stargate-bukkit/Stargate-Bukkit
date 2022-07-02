@@ -45,6 +45,7 @@ tpSuccess=Teleported!
 tpDestInvalid=Invalid destination!
 tpEmptyNet=Destination list empty!
 tpOccupied=Another player is currently using this portal; try again in a few moments!
+tpPastBorder=Destination is outside of a worldborder!
 
 # Access
 conflictPerms=Access denied!

@@ -45,6 +45,7 @@ tpSuccess=¡pǝʇɹodǝlǝ┴
 tpDestInvalid=¡uoᴉʇɐuᴉʇsǝp pᴉlɐʌuI
 tpEmptyNet=¡ʎʇdɯǝ ʇsᴉl uoᴉʇɐuᴉʇsǝp
 tpOccupied=¡sʇuǝɯoɯ ʍǝɟ ɐ uᴉ uᴉɐƃɐ ʎɹʇ ;lɐʇɹod sᴉɥʇ ƃuᴉsn ʎlʇuǝɹɹnɔ sᴉ ɹǝʎɐld ɹǝɥʇou∀
+tpPastBorder=¡ɹǝpɹoqplɹoʍ ɐ ɟo ǝpısʇno sı uoıʇɐuıʇsǝp
 
 # Access
 conflictPerms=¡pǝᴉuǝp ssǝɔɔ∀
