@@ -10,9 +10,12 @@ import net.TheDgtl.Stargate.event.StargatePortalEvent;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.property.NonLegacyMethod;
+import net.TheDgtl.Stargate.util.portal.TeleportationHelper;
 import net.TheDgtl.Stargate.vectorlogic.VectorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
@@ -121,6 +124,7 @@ public class Teleporter {
                 boatsTeleporting.add(entity);
             }
         });
+        
         if (!hasPermission) {
             refundPlayers(playersToRefund);
             rotation = Math.PI;
@@ -133,6 +137,8 @@ public class Teleporter {
 
         Vector offset = getOffset(baseEntity);
         exit.subtract(offset);
+        
+        
 
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
             betterTeleport(baseEntity, exit, rotation);
@@ -253,10 +259,16 @@ public class Teleporter {
             return;
         }
         for (LivingEntity entity : nearbyLeashed) {
+            final Location modifiedExit;
+            if(exit.getWorld() != entity.getWorld()) {
+                modifiedExit = TeleportationHelper.findViableSpawnLocation(entity, destination);
+            } else {
+                modifiedExit = exit;
+            }
             if (entity.isLeashed() && entity.getLeashHolder() == holder) {
                 Supplier<Boolean> action = () -> {
                     entity.setLeashHolder(null);
-                    betterTeleport(entity, exit, rotation);
+                    betterTeleport(entity, modifiedExit, rotation);
                     entity.setLeashHolder(holder);
                     return true;
                 };
