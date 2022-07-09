@@ -125,6 +125,9 @@ public class Teleporter {
             }
         });
         
+        
+        
+        
         if (!hasPermission) {
             refundPlayers(playersToRefund);
             rotation = Math.PI;
@@ -137,7 +140,13 @@ public class Teleporter {
 
         Vector offset = getOffset(baseEntity);
         exit.subtract(offset);
-        
+        //Cancel teleportation if outside worldborder
+        WorldBorder border = exit.getWorld().getWorldBorder();
+        if(border != null && border.isInside(exit)) {
+            String worldBorderInterfereMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.OUTSIDE_WORLDBORDER);
+            entitiesToTeleport.forEach((entity) -> entity.sendMessage(worldBorderInterfereMessage));
+            return;
+        }
         
 
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
