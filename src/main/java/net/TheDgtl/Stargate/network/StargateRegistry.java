@@ -12,6 +12,7 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.util.NameHelper;
+import net.TheDgtl.Stargate.vectorlogic.VectorUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -150,16 +151,7 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public boolean isNextToPortal(Location location, GateStructureType structureType) {
-        BlockVector x = new BlockVector(1, 0, 0);
-        BlockVector y = new BlockVector(0, 1, 0);
-        BlockVector z = new BlockVector(0, 0, 1);
-        BlockVector minusX = new BlockVector(-1, 0, 0);
-        BlockVector minusY = new BlockVector(0, -1, 0);
-        BlockVector minusZ = new BlockVector(0, 0, -1);
-
-        BlockVector[] testVectors = new BlockVector[]{x, y, z, minusX, minusY, minusZ};
-
-        for (BlockVector adjacentVector : testVectors) {
+        for (BlockVector adjacentVector : VectorUtils.getAdjacentRelativePositions()) {
             Location adjacentLocation = location.clone().add(adjacentVector);
             if (getPortal(adjacentLocation, structureType) != null) {
                 return true;
