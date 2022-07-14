@@ -5,8 +5,11 @@ import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.exception.ParsingErrorException;
 import org.bukkit.Material;
 
+import com.google.common.io.Files;
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -80,6 +83,9 @@ public class GateFormatHandler {
                 gateFormatMap.add(loadGateFormat(file, logger));
             } catch (FileNotFoundException | ParsingErrorException e) {
                 logger.logMessage(Level.WARNING, "Could not load Gate " + file.getName() + " - " + e.getMessage());
+                if(e instanceof ParsingErrorException && file.exists()) {
+                    file.renameTo(new File(dir,file.getName() + ".invalid"));
+                }
             }
         }
         return gateFormatMap;

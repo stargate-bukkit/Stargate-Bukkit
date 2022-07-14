@@ -63,9 +63,8 @@ public class CommandTrace implements CommandExecutor {
     }
 
     private String getGates() {
-        Set<String> approvedGateFiles = GateFormatHandler.getAllGateFormatNames();
         File dir = new File(Stargate.getInstance().getAbsoluteDataFolder(), Stargate.getInstance().getGateFolder());
-        File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".gate")) : new File[0];
+        File[] files = dir.exists() ? dir.listFiles((directory, name) -> (name.endsWith(".gate") || name.endsWith(".gate.invalid"))) : new File[0];
         StringBuilder stringBuilder = new StringBuilder();
         if (files == null) {
             return stringBuilder.toString();
@@ -73,7 +72,6 @@ public class CommandTrace implements CommandExecutor {
         for (File file : files) {
             stringBuilder.append("\n");
             stringBuilder.append(file.getName()).append("\n");
-            stringBuilder.append("isValidDesign=").append(approvedGateFiles.contains(file.getName())).append("\n");
             try {
                 BufferedReader reader = FileHelper.getBufferedReader(file);
                 Iterator<String> lines = reader.lines().iterator();

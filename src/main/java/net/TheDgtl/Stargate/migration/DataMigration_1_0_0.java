@@ -11,6 +11,8 @@ import net.TheDgtl.Stargate.util.FileHelper;
 import net.TheDgtl.Stargate.util.LegacyPortalStorageLoader;
 import org.bukkit.Server;
 
+import com.google.common.io.Files;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -161,6 +163,23 @@ public class DataMigration_1_0_0 extends DataMigration {
                 file.renameTo(new File(targetDirectory, file.getName()));
             }
             directory.delete();
+        }
+        
+        File gateDirectory = new File(Stargate.getInstance().getDataFolder(), Stargate.getInstance().getGateFolder());
+        if(!gateDirectory.exists()) {
+            return;
+        }
+        File debugGateDirectory = new File(Stargate.getInstance().getDataFolder(), "debug/invalidGates");
+        if(!debugGateDirectory.exists()) {
+            debugGateDirectory.mkdirs();
+        }
+        File[] gateFiles = gateDirectory.listFiles((directory,fileName) -> fileName.endsWith(".gate.invalid"));
+        for(File gateFile : gateFiles) {
+            try {
+                Files.copy(gateFile, new File(debugGateDirectory,gateFile.getName()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
