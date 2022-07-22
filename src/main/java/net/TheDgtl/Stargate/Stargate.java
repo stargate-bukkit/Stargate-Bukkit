@@ -154,13 +154,9 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
             load();
             economyManager = new VaultEconomyManager(languageManager);
-            try {
-                storageAPI = new PortalDatabaseAPI(this);
-                registry = new StargateRegistry(storageAPI);
-                registry.loadPortals();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            storageAPI = new PortalDatabaseAPI(this);
+            registry = new StargateRegistry(storageAPI);
+            registry.loadPortals();
 
             pluginManager = getServer().getPluginManager();
             registerListeners();
@@ -503,14 +499,12 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             storageAPI.load(this);
             registry.load();
             economyManager.setupEconomy();
-        } catch (SQLException exception) {
-            exception.printStackTrace();
         } catch (StargateInitializationException exception) {
             getServer().getPluginManager().disablePlugin(this);
         }
     }
 
-    private void load() throws StargateInitializationException {
+    private void load() {
         loadColors();
 
         languageManager.setLanguage(ConfigurationHelper.getString(ConfigurationOption.LANGUAGE));

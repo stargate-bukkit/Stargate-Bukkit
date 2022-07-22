@@ -206,8 +206,8 @@ public enum TranslatableMessage {
     /**
      * The second line of a portals sign when displaying portal info
      */
-    GATE_OWNED_BY("signPortalOwner"), 
-    
+    GATE_OWNED_BY("signPortalOwner"),
+
     /**
      * The message to send if the player is teleporting past the worldborder
      */

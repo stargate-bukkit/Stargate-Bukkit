@@ -45,7 +45,7 @@ public enum BlockEventType {
     BLOCK_DISPENSE("BlockDispenseEvent");
 
 
-    private String eventName;
+    private final String eventName;
 
     BlockEventType(String eventName) {
         this.eventName = eventName;

@@ -3,10 +3,10 @@ package net.TheDgtl.Stargate.command;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
-import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.property.CommandPermission;
 import net.TheDgtl.Stargate.util.FileHelper;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -34,8 +34,10 @@ public class CommandTrace implements CommandExecutor {
             return true;
         }
         File directory = new File(Stargate.getInstance().getDataFolder(), "debug");
-        if (!directory.exists()) {
-            directory.mkdir();
+        if (!directory.exists() && !directory.mkdir()) {
+            sender.sendMessage(ChatColor.RED + "Unable to create the debug directory. Make sure permissions for " +
+                    "the Stargate folder are correct. Cannot continue.");
+            return true;
         }
         String fileName = "stargate." + System.currentTimeMillis() + ".txt";
         File file = new File(directory, fileName);

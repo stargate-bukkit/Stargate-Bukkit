@@ -448,7 +448,6 @@ public abstract class AbstractPortal implements RealPortal {
             gate.drawControlMechanisms(signText, false);
             return true;
         }));
-        ;
         activate(event.getPlayer());
     }
 

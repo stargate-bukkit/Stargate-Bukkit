@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.migration;
 
+import com.google.common.io.Files;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.container.TwoTuple;
@@ -10,8 +11,6 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.util.FileHelper;
 import net.TheDgtl.Stargate.util.LegacyPortalStorageLoader;
 import org.bukkit.Server;
-
-import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.IOException;
@@ -142,43 +141,84 @@ public class DataMigration_1_0_0 extends DataMigration {
         }
     }
 
+    /**
+     * Moves legacy data to the debug directory to prevent confusion
+     *
+     * @param portalFolder <p>The folder containing all legacy portals</p>
+     */
     private void moveFilesToDebugDirectory(String portalFolder) {
         Map<String, String> filesToMove = new HashMap<>();
         FileHelper.readInternalFileToMap("/migration/file-migrations-1_0_0.properties", filesToMove);
         filesToMove.put(portalFolder, "plugins/Stargate/debug/legacy_portals");
 
         for (String directoryString : filesToMove.keySet()) {
-            Stargate.log(Level.FINE, String.format("Moving files in directory %s to %s", directoryString,
-                    filesToMove.get(directoryString)));
-            File directory = new File(directoryString);
-            File targetDirectory = new File(filesToMove.get(directoryString));
-            if (!directory.exists()) {
-                continue;
-            }
-            if (!targetDirectory.exists()) {
-                targetDirectory.mkdirs();
-            }
-            File[] files = directory.listFiles();
-            for (File file : files) {
-                file.renameTo(new File(targetDirectory, file.getName()));
-            }
-            directory.delete();
+            moveLegacyPortals(directoryString, filesToMove);
         }
-        
+
         File gateDirectory = new File(Stargate.getInstance().getDataFolder(), Stargate.getInstance().getGateFolder());
-        if(!gateDirectory.exists()) {
+        if (!gateDirectory.exists()) {
             return;
         }
         File debugGateDirectory = new File(Stargate.getInstance().getDataFolder(), "debug/invalidGates");
-        if(!debugGateDirectory.exists()) {
-            debugGateDirectory.mkdirs();
+        if (!debugGateDirectory.exists() && !debugGateDirectory.mkdirs()) {
+            logger.logMessage(Level.WARNING, "Unable to create the directory for invalid gates");
+            return;
         }
-        File[] gateFiles = gateDirectory.listFiles((directory,fileName) -> fileName.endsWith(".gate.invalid"));
-        for(File gateFile : gateFiles) {
+        File[] gateFiles = gateDirectory.listFiles((directory, fileName) -> fileName.endsWith(".gate.invalid"));
+        //Gate files being null probably happens if missing read permissions for the folder
+        if (gateFiles == null) {
+            logger.logMessage(Level.WARNING, "Unable to list files in " + gateDirectory + ". Make sure you " +
+                    "have read permission for the folder.");
+            return;
+        }
+        for (File gateFile : gateFiles) {
             try {
-                Files.copy(gateFile, new File(debugGateDirectory,gateFile.getName()));
+                Files.copy(gateFile, new File(debugGateDirectory, gateFile.getName()));
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Moves legacy portal data to another folder to prevent confusion
+     *
+     * @param directoryString <p>The directory to move in this operation</p>
+     * @param filesToMove     <p>All the files that need to be moved</p>
+     */
+    private void moveLegacyPortals(String directoryString, Map<String, String> filesToMove) {
+        Stargate.log(Level.FINE, String.format("Moving files in directory %s to %s", directoryString,
+                filesToMove.get(directoryString)));
+        File directory = new File(directoryString);
+        File targetDirectory = new File(filesToMove.get(directoryString));
+        if (!directory.exists()) {
+            return;
+        }
+        if (!targetDirectory.exists() && !targetDirectory.mkdirs()) {
+            logger.logMessage(Level.WARNING, "Unable to create necessary directory before moving legacy " +
+                    "data. Files in " + targetDirectory + " have not been moved.");
+            return;
+        }
+        File[] files = directory.listFiles();
+        //Files being null probably happens if missing read permissions for the folder
+        if (files == null) {
+            logger.logMessage(Level.WARNING, "Unable to list files in " + directory + ". Make sure you " +
+                    "have read permission for the folder.");
+            return;
+        }
+        boolean renameSuccessful = true;
+        for (File file : files) {
+            File targetFile = new File(targetDirectory, file.getName());
+            if (!file.renameTo(targetFile)) {
+                logger.logMessage(Level.WARNING, "Unable to move the file " + file.getPath() + " to " +
+                        targetFile.getPath());
+                renameSuccessful = false;
+            }
+        }
+        if (renameSuccessful) {
+            if (!directory.delete()) {
+                logger.logMessage(Level.WARNING, "Unable to remove folder " + directory.getPath() + ". " +
+                        "Make sure you have write permissions for the folder.");
             }
         }
     }

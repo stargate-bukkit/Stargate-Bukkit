@@ -62,9 +62,9 @@ public class BlockEventHelper {
     /**
      * Does event handling for any event that changes multiple block
      *
-     * @param event  <p> The event to possibly cancel </p>
-     * @param type   <p> If the event could destroy a portal </p>
-     * @param blocks <p> The blocks affected </p>
+     * @param event      <p>The event to possibly cancel</p>
+     * @param canDestroy <p>If the event could destroy a portal</p>
+     * @param blocks     <p>The blocks affected</p>
      */
     public static void onAnyMultiBlockChangeEvent(Cancellable event, boolean canDestroy, List<Block> blocks) {
         Set<Portal> affectedPortals = new HashSet<>();
