@@ -45,6 +45,7 @@ tpSuccess=Teleporterad!
 tpDestInvalid=Ogiltig destination!
 tpEmptyNet=Destinationslistan är tom!
 tpOccupied=En annan spelare använder just nu denna portal, försök igen om ett tag!
+tpPastBorder=Destinationen ligger utanför världsgränsen!
 
 # Access
 conflictPerms=Åtkomst nekad!

@@ -45,6 +45,7 @@ tpSuccess=Téléporté !
 tpDestInvalid=Destination invalide !
 tpEmptyNet=Liste de destination vide !
 tpOccupied=Un autre joueur utilise actuellement ce portail ; réessayez dans quelques instants !
+tpPastBorder=La destination est en dehors d'une worldborder !
 
 # Access
 conflictPerms=Accès refusé !
