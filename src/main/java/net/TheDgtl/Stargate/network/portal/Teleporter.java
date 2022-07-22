@@ -142,7 +142,7 @@ public class Teleporter {
         exit.subtract(offset);
         //Cancel teleportation if outside worldborder
         WorldBorder border = exit.getWorld().getWorldBorder();
-        if(border != null && border.isInside(exit)) {
+        if(border != null && !border.isInside(exit)) {
             String worldBorderInterfereMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.OUTSIDE_WORLDBORDER);
             entitiesToTeleport.forEach((entity) -> entity.sendMessage(worldBorderInterfereMessage));
             return;
