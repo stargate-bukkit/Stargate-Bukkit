@@ -98,7 +98,7 @@ public class LineColorFormatter extends AbstractLineColorFormatter {
 
     /**
      * @param isLightSign <p>Whether to get the color for a light sign or a dark sign</p>
-     * @return
+     * @return <p>The inverse color of the dye color, or default color if not dyed</p>
      */
     private ChatColor getInvertedColor(boolean isLightSign) {
         if (dyeColor != null && dyeColor != DyeColor.BLACK) {

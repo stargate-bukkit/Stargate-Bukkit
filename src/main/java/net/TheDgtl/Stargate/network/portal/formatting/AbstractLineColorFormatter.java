@@ -29,6 +29,11 @@ public abstract class AbstractLineColorFormatter implements LineFormatter {
             return false;
         }
 
+        //Prevent a potential NullPointerException
+        if (signMaterial == null) {
+            return false;
+        }
+
         switch (signMaterial) {
             // Dark signs
             case DARK_OAK_WALL_SIGN:

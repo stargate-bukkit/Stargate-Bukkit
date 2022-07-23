@@ -57,9 +57,9 @@ public class PortalDatabaseAPI implements StorageAPI {
      * Instantiates a new stargate registry
      *
      * @param stargate <p>The Stargate instance to use</p>
-     * @throws SQLException <p>If an SQL exception occurs</p>
+     * @throws StargateInitializationException <p>If unable to initialize the database</p>
      */
-    public PortalDatabaseAPI(Stargate stargate) throws SQLException, StargateInitializationException {
+    public PortalDatabaseAPI(Stargate stargate) throws StargateInitializationException {
         load(stargate);
     }
 
@@ -557,9 +557,14 @@ public class PortalDatabaseAPI implements StorageAPI {
     }
 
     @Override
-    public void load(Stargate stargate) throws SQLException, StargateInitializationException {
-        load(loadDatabase(stargate), ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE),
-                ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE), stargate);
+    public void load(Stargate stargate) throws StargateInitializationException {
+        try {
+            load(loadDatabase(stargate), ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE),
+                    ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE), stargate);
+        } catch (SQLException exception) {
+            logger.logMessage(Level.SEVERE, exception.getMessage());
+            throw new StargateInitializationException(exception.getMessage());
+        }
     }
 
     private void load(Database database, boolean usingBungee, boolean usingRemoteDatabase, StargateLogger logger)

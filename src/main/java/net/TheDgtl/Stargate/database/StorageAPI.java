@@ -9,7 +9,6 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 
-import java.sql.SQLException;
 import java.util.Set;
 
 public interface StorageAPI {
@@ -54,9 +53,8 @@ public interface StorageAPI {
      * Loads all settings
      *
      * @param stargate <p>An instance of stargate</p>
-     * @throws SQLException
      */
-    void load(Stargate stargate) throws SQLException, StargateInitializationException;
+    void load(Stargate stargate) throws StargateInitializationException;
 
 
 }

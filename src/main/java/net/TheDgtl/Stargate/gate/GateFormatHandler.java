@@ -5,11 +5,8 @@ import net.TheDgtl.Stargate.StargateLogger;
 import net.TheDgtl.Stargate.exception.ParsingErrorException;
 import org.bukkit.Material;
 
-import com.google.common.io.Files;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -36,6 +33,11 @@ public class GateFormatHandler {
         return knownGateFormats.size();
     }
 
+    /**
+     * Gets the names of all known gate formats
+     *
+     * @return <p>The names of all known gate formats</p>
+     */
     public static Set<String> getAllGateFormatNames() {
         return knownGateFormats.keySet();
     }
@@ -81,10 +83,13 @@ public class GateFormatHandler {
         for (File file : files) {
             try {
                 gateFormatMap.add(loadGateFormat(file, logger));
-            } catch (FileNotFoundException | ParsingErrorException e) {
-                logger.logMessage(Level.WARNING, "Could not load Gate " + file.getName() + " - " + e.getMessage());
-                if(e instanceof ParsingErrorException && file.exists()) {
-                    file.renameTo(new File(dir,file.getName() + ".invalid"));
+            } catch (FileNotFoundException | ParsingErrorException exception) {
+                logger.logMessage(Level.WARNING, "Could not load Gate " + file.getName() + " - " + exception.getMessage());
+                if (exception instanceof ParsingErrorException && file.exists()) {
+                    if (!file.renameTo(new File(dir, file.getName() + ".invalid"))) {
+                        logger.logMessage(Level.WARNING, "Could not add .invalid to gate. Make sure file " +
+                                "permissions are set correctly.");
+                    }
                 }
             }
         }

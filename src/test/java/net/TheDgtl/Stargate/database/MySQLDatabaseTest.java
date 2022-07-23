@@ -45,12 +45,9 @@ public class MySQLDatabaseTest {
     public static void tearDown() throws SQLException {
         MockBukkit.unmock();
 
-        Connection connection = database.getConnection();
-        try {
+        try (Connection connection = database.getConnection()) {
             connection.prepareStatement("DROP DATABASE stargate;").execute();
             connection.prepareStatement("CREATE DATABASE stargate;").execute();
-        } finally {
-            connection.close();
         }
     }
 

@@ -15,7 +15,6 @@ import net.TheDgtl.Stargate.vectorlogic.VectorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.WorldBorder;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
@@ -124,10 +123,8 @@ public class Teleporter {
                 boatsTeleporting.add(entity);
             }
         });
-        
-        
-        
-        
+
+
         if (!hasPermission) {
             refundPlayers(playersToRefund);
             rotation = Math.PI;
@@ -140,14 +137,13 @@ public class Teleporter {
 
         Vector offset = getOffset(baseEntity);
         exit.subtract(offset);
-        //Cancel teleportation if outside worldborder
-        WorldBorder border = exit.getWorld().getWorldBorder();
-        if(border != null && !border.isInside(exit)) {
+        //Cancel teleportation if outside world-border
+        World world = exit.getWorld();
+        if (world != null && !world.getWorldBorder().isInside(exit)) {
             String worldBorderInterfereMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.OUTSIDE_WORLDBORDER);
             entitiesToTeleport.forEach((entity) -> entity.sendMessage(worldBorderInterfereMessage));
             return;
         }
-        
 
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
             betterTeleport(baseEntity, exit, rotation);
@@ -269,7 +265,7 @@ public class Teleporter {
         }
         for (LivingEntity entity : nearbyLeashed) {
             final Location modifiedExit;
-            if(exit.getWorld() != entity.getWorld()) {
+            if (exit.getWorld() != entity.getWorld()) {
                 modifiedExit = TeleportationHelper.findViableSpawnLocation(entity, destination);
             } else {
                 modifiedExit = exit;
