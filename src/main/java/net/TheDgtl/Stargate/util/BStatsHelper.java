@@ -65,11 +65,11 @@ public final class BStatsHelper {
 
         metrics.addCustomChart(new SimplePie("listing", () -> String.valueOf(ConfigurationHelper.getInteger(ConfigurationOption.NAME_STYLE))));
 
-        metrics.addCustomChart(new SimplePie("defaultForeground", () -> String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.DEFAULT_LIGHT_SIGN_COLOR))));
+        metrics.addCustomChart(new SimplePie("defaultForeground", () -> String.valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_LIGHT_SIGN_COLOR))));
 
-        metrics.addCustomChart(new SimplePie("defaultBackground", () -> String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.DEFAULT_DARK_SIGN_COLOR))));
+        metrics.addCustomChart(new SimplePie("defaultBackground", () -> String.valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_DARK_SIGN_COLOR))));
 
-        metrics.addCustomChart(new SimplePie("gateExitSpeedMultiplier", () -> String.valueOf(ConfigurationHelper.getBoolean(ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER))));
+        metrics.addCustomChart(new SimplePie("gateExitSpeedMultiplier", () -> String.valueOf(ConfigurationHelper.getInteger(ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER))));
 
         metrics.addCustomChart(new SimplePie("loggingLevel", () -> ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL)));
         return metrics;
