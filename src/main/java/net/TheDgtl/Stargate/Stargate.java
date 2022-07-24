@@ -167,7 +167,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
             //Register bStats metrics
             int pluginId = 13629;
-            BStatsHelper.getMetrics(pluginId, this);
+            BStatsHelper.registerMetrics(pluginId, this);
             servicesManager = this.getServer().getServicesManager();
             servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
         } catch (StargateInitializationException exception) {

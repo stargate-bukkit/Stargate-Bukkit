@@ -21,13 +21,12 @@ public final class BStatsHelper {
     }
 
     /**
-     * Creates a new metrics containing relevant portal data. Note that the returned class does not need to be used.
+     * Registers a metrics with all relevant portal data
      *
      * @param pluginId <p>The id of the Stargate plugin</p>
      * @param plugin   <p>A Stargate plugin instance</p>
-     * @return <p>A metrics object</p>
      */
-    public static Metrics getMetrics(int pluginId, JavaPlugin plugin) {
+    public static void registerMetrics(int pluginId, JavaPlugin plugin) {
         Metrics metrics = new Metrics(plugin, pluginId);
 
         metrics.addCustomChart(new SimplePie("language", () -> ConfigurationHelper.getString(ConfigurationOption.LANGUAGE)));
@@ -72,6 +71,6 @@ public final class BStatsHelper {
         metrics.addCustomChart(new SimplePie("gateExitSpeedMultiplier", () -> String.valueOf(ConfigurationHelper.getInteger(ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER))));
 
         metrics.addCustomChart(new SimplePie("loggingLevel", () -> ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL)));
-        return metrics;
     }
+
 }
