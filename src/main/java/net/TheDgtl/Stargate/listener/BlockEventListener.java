@@ -148,6 +148,8 @@ public class BlockEventListener implements Listener {
         int cost = ConfigurationHelper.getInteger(ConfigurationOption.CREATION_COST);
         Player player = event.getPlayer();
         Set<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
+        //Prevent the player from explicitly setting any internal flags
+        flags.removeIf(PortalFlag::isInternalFlag);
 
         StargatePermissionManager permissionManager = new StargatePermissionManager(player);
         TranslatableMessage errorMessage = null;

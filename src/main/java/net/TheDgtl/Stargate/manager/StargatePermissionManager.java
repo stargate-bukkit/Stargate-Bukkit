@@ -66,7 +66,7 @@ public class StargatePermissionManager implements PermissionManager {
     public Set<PortalFlag> returnDisallowedFlags(Set<PortalFlag> flags) {
         Set<PortalFlag> disallowed = EnumSet.noneOf(PortalFlag.class);
         for (PortalFlag flag : flags) {
-            if (flag == PortalFlag.PERSONAL_NETWORK || flag == PortalFlag.IRON_DOOR || flag == PortalFlag.FIXED || flag == PortalFlag.NETWORKED) {
+            if (flag.isInternalFlag()) {
                 continue;
             }
 

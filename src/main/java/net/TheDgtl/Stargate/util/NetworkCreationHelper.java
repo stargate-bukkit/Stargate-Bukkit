@@ -46,13 +46,13 @@ public final class NetworkCreationHelper {
 
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(initialNetworkName);
         if (highlight != HighlightingStyle.NOTHING) {
-            String unhighlightedName = HighlightingStyle.getNameFromHighlightedText(initialNetworkName);
+            String unHighlightedName = HighlightingStyle.getNameFromHighlightedText(initialNetworkName);
             if (highlight == HighlightingStyle.PERSONAL) {
                 return initialNetworkName;
             }
-            UUID possiblePlayer = getPlayerUUID(unhighlightedName);
+            UUID possiblePlayer = getPlayerUUID(unHighlightedName);
             if (registry.getNetwork(possiblePlayer.toString(), false) != null) {
-                initialNetworkName = unhighlightedName;
+                initialNetworkName = unHighlightedName;
             } else {
                 return initialNetworkName;
             }
