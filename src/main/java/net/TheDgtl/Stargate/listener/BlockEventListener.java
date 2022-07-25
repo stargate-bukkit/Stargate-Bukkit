@@ -181,15 +181,27 @@ public class BlockEventListener implements Listener {
                 Stargate.log(Level.FINER, "From allowed permissions took " + finalNetworkName);
                 flags.addAll(NetworkCreationHelper.getNameRelatedFlags(finalNetworkName));
                 finalNetworkName = NetworkCreationHelper.parseNetworkNameName(finalNetworkName);
-                Stargate.log(Level.FINER, "Ended upp with name " + finalNetworkName);
+                Stargate.log(Level.FINER, "Ended up with name " + finalNetworkName);
                 selectedNetwork = NetworkCreationHelper.selectNetwork(finalNetworkName, flags);
             }
         } catch (NameErrorException nameErrorException) {
             errorMessage = nameErrorException.getErrorMessage();
         }
 
+        //Register the default network and default terminal network flags
+        if (!flags.contains(PortalFlag.PERSONAL_NETWORK)) {
+            if (selectedNetwork != null && selectedNetwork.getName().equalsIgnoreCase(ConfigurationHelper.getString(
+                    ConfigurationOption.DEFAULT_NETWORK))) {
+                flags.add(PortalFlag.DEFAULT_NETWORK);
+            } else if (selectedNetwork != null && selectedNetwork.getName().equalsIgnoreCase(
+                    ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME))) {
+                flags.add(PortalFlag.TERMINAL_NETWORK);
+            }
+        }
+
         try {
-            PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost, permissionManager, errorMessage);
+            PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost,
+                    permissionManager, errorMessage);
         } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINER, "No Gate format matches");
         } catch (GateConflictException gateConflictException) {

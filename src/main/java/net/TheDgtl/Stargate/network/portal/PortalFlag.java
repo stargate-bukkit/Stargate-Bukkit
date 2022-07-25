@@ -99,13 +99,11 @@ public enum PortalFlag {
     /**
      * A stargate on the default network
      */
-    //TODO: Register this flag for as necessary
     DEFAULT_NETWORK('5', false),
 
     /**
      * A stargate on the terminal network
      */
-    //TODO: Register this flag for as necessary
     TERMINAL_NETWORK('6', false);
 
     private final boolean isUserSpecifiable;
