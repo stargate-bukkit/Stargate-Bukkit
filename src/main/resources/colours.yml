@@ -95,46 +95,370 @@ jungle:
   - background: ''
   - pointer: ''
   - listing: ''
+  - a:
+      - foreground: ''
+      - background: ''
+  - b:
+      - foreground: ''
+      - background: ''
+  - f:
+      - foreground: ''
+      - background: ''
+  - h:
+      - foreground: ''
+      - background: ''
+  - i:
+      - foreground: ''
+      - background: ''
+  - n:
+      - foreground: ''
+      - background: ''
+  - p:
+      - foreground: ''
+      - background: ''
+  - q:
+      - foreground: ''
+      - background: ''
+  - r:
+      - foreground: ''
+      - background: ''
+  - s:
+      - foreground: ''
+      - background: ''
+  - u:
+      - foreground: ''
+      - background: ''
+  - v:
+      - foreground: ''
+      - background: ''
 oak:
   - foreground: ''
   - background: ''
   - pointer: ''
   - listing: ''
+  - a:
+      - foreground: ''
+      - background: ''
+  - b:
+      - foreground: ''
+      - background: ''
+  - f:
+      - foreground: ''
+      - background: ''
+  - h:
+      - foreground: ''
+      - background: ''
+  - i:
+      - foreground: ''
+      - background: ''
+  - n:
+      - foreground: ''
+      - background: ''
+  - p:
+      - foreground: ''
+      - background: ''
+  - q:
+      - foreground: ''
+      - background: ''
+  - r:
+      - foreground: ''
+      - background: ''
+  - s:
+      - foreground: ''
+      - background: ''
+  - u:
+      - foreground: ''
+      - background: ''
+  - v:
+      - foreground: ''
+      - background: ''
 birch:
   - foreground: ''
   - background: ''
   - pointer: ''
   - listing: ''
+  - a:
+      - foreground: ''
+      - background: ''
+  - b:
+      - foreground: ''
+      - background: ''
+  - f:
+      - foreground: ''
+      - background: ''
+  - h:
+      - foreground: ''
+      - background: ''
+  - i:
+      - foreground: ''
+      - background: ''
+  - n:
+      - foreground: ''
+      - background: ''
+  - p:
+      - foreground: ''
+      - background: ''
+  - q:
+      - foreground: ''
+      - background: ''
+  - r:
+      - foreground: ''
+      - background: ''
+  - s:
+      - foreground: ''
+      - background: ''
+  - u:
+      - foreground: ''
+      - background: ''
+  - v:
+      - foreground: ''
+      - background: ''
 mangrove:
   - foreground: ''
   - background: ''
   - pointer: ''
   - listing: ''
+  - a:
+      - foreground: ''
+      - background: ''
+  - b:
+      - foreground: ''
+      - background: ''
+  - f:
+      - foreground: ''
+      - background: ''
+  - h:
+      - foreground: ''
+      - background: ''
+  - i:
+      - foreground: ''
+      - background: ''
+  - n:
+      - foreground: ''
+      - background: ''
+  - p:
+      - foreground: ''
+      - background: ''
+  - q:
+      - foreground: ''
+      - background: ''
+  - r:
+      - foreground: ''
+      - background: ''
+  - s:
+      - foreground: ''
+      - background: ''
+  - u:
+      - foreground: ''
+      - background: ''
+  - v:
+      - foreground: ''
+      - background: ''
 crimson:
   - foreground: ''
   - background: ''
   - pointer: ''
   - listing: ''
+  - a:
+      - foreground: ''
+      - background: ''
+  - b:
+      - foreground: ''
+      - background: ''
+  - f:
+      - foreground: ''
+      - background: ''
+  - h:
+      - foreground: ''
+      - background: ''
+  - i:
+      - foreground: ''
+      - background: ''
+  - n:
+      - foreground: ''
+      - background: ''
+  - p:
+      - foreground: ''
+      - background: ''
+  - q:
+      - foreground: ''
+      - background: ''
+  - r:
+      - foreground: ''
+      - background: ''
+  - s:
+      - foreground: ''
+      - background: ''
+  - u:
+      - foreground: ''
+      - background: ''
+  - v:
+      - foreground: ''
+      - background: ''
 warped:
   - foreground: ''
   - background: ''
   - pointer: ''
   - listing: ''
+  - a:
+      - foreground: ''
+      - background: ''
+  - b:
+      - foreground: ''
+      - background: ''
+  - f:
+      - foreground: ''
+      - background: ''
+  - h:
+      - foreground: ''
+      - background: ''
+  - i:
+      - foreground: ''
+      - background: ''
+  - n:
+      - foreground: ''
+      - background: ''
+  - p:
+      - foreground: ''
+      - background: ''
+  - q:
+      - foreground: ''
+      - background: ''
+  - r:
+      - foreground: ''
+      - background: ''
+  - s:
+      - foreground: ''
+      - background: ''
+  - u:
+      - foreground: ''
+      - background: ''
+  - v:
+      - foreground: ''
+      - background: ''
 acacia:
   - foreground: ''
   - background: ''
   - pointer: ''
   - listing: ''
+  - a:
+      - foreground: ''
+      - background: ''
+  - b:
+      - foreground: ''
+      - background: ''
+  - f:
+      - foreground: ''
+      - background: ''
+  - h:
+      - foreground: ''
+      - background: ''
+  - i:
+      - foreground: ''
+      - background: ''
+  - n:
+      - foreground: ''
+      - background: ''
+  - p:
+      - foreground: ''
+      - background: ''
+  - q:
+      - foreground: ''
+      - background: ''
+  - r:
+      - foreground: ''
+      - background: ''
+  - s:
+      - foreground: ''
+      - background: ''
+  - u:
+      - foreground: ''
+      - background: ''
+  - v:
+      - foreground: ''
+      - background: ''
 spruce:
   - foreground: ''
   - background: ''
   - pointer: ''
   - listing: ''
+  - a:
+      - foreground: ''
+      - background: ''
+  - b:
+      - foreground: ''
+      - background: ''
+  - f:
+      - foreground: ''
+      - background: ''
+  - h:
+      - foreground: ''
+      - background: ''
+  - i:
+      - foreground: ''
+      - background: ''
+  - n:
+      - foreground: ''
+      - background: ''
+  - p:
+      - foreground: ''
+      - background: ''
+  - q:
+      - foreground: ''
+      - background: ''
+  - r:
+      - foreground: ''
+      - background: ''
+  - s:
+      - foreground: ''
+      - background: ''
+  - u:
+      - foreground: ''
+      - background: ''
+  - v:
+      - foreground: ''
+      - background: ''
 dark_oak:
   - foreground: ''
   - background: ''
   - pointer: ''
   - listing: ''
+  - a:
+      - foreground: ''
+      - background: ''
+  - b:
+      - foreground: ''
+      - background: ''
+  - f:
+      - foreground: ''
+      - background: ''
+  - h:
+      - foreground: ''
+      - background: ''
+  - i:
+      - foreground: ''
+      - background: ''
+  - n:
+      - foreground: ''
+      - background: ''
+  - p:
+      - foreground: ''
+      - background: ''
+  - q:
+      - foreground: ''
+      - background: ''
+  - r:
+      - foreground: ''
+      - background: ''
+  - s:
+      - foreground: ''
+      - background: ''
+  - u:
+      - foreground: ''
+      - background: ''
+  - v:
+      - foreground: ''
+      - background: ''
   
 
 # +----------------------------------------------------------------------------------------------+ #
