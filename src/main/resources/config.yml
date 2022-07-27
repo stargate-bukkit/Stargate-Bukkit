@@ -117,6 +117,9 @@ protectEntrance: true
 #  [tnt, creepers, etc.]
 destroyOnExplosion: false
 
+# At what speed should players be sent out of portals?
+# When exiting a gate, players retain their original movement velocity, multiplied by this value.
+gateExitSpeedMultiplier: 1
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                            Economy                                           | #
@@ -159,10 +162,9 @@ chargeFreeDestination: true
 # +----------------------------------------------------------------------------------------------+ #
 
 # What colour will StarGate use for all text when formatting gate signs?
-# Note that players can override this with DYE and/or GLOW_INK_SAC
 #
-# All colour names should follow this format:
-# https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html
+# Please note that a more comprehensive theme customisation system is available via colours.yml.
+# For more information, please visit https://sgrewritten.org/l/colour_guide
 signStyle:
   defaultForeground: BLACK
   defaultBackground: WHITE
@@ -179,10 +181,6 @@ disableCustomColoredNames: false
 
 # Will the destination a networked portal last connected to be listed first in its scroll menu?
 rememberLastDestination: false
-
-# At what speed should players be sent out of portals?
-# When exiting a gate, players retain their original movement velocity, multiplied by this value.
-gateExitSpeedMultiplier: 1
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                           Technical                                          | #

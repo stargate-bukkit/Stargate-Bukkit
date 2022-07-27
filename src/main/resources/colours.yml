@@ -1,0 +1,134 @@
+################################################################################## Version: @version@
+# +--------------▄▄▄-- ‚——. -▄--▄-▄--▄-▄-▄▄▄▄▄---------------------------------------------------+ #
+# |              █▄▄▀ (“‡‡”) █▄▄▀ █▄▄▀ █   █         Support available at: discord.gg/mTaHuK6BVa | #
+# |              █▄▄█  \__/  █  █ █  █ █   █                    ‚-.                              | #
+# |         —————————————————————————————————————————————————— ((_)) ——————————————————          | #
+# |                                                             ‘-’                              | #
+# |         .|'''.|  |''||''|     |     '||''|.    ..|'''.|      |     |''||''| '||''''|         | #
+# |         ||..  '     ||       |||     ||   ||  .|'     '     |||       ||     ||  .           | #
+# |          ''|||.     ||      |  ||    ||''|'   ||    ....   |  ||      ||     ||''|           | #
+# |        .     '||    ||     .''''|.   ||   |.  '|.    ||   ;’   |.     ||     ||              | #
+# |         '....|'    .||.   .|.  .||. .||.  '|'  ''|...'|  .|.  .||.   .||.   .||.....|        | #
+# +----------------------------------------------------------------------------------------------+ #
+# |                              ----------------------------------                              | #
+# |                              >    𝐀𝐝𝐯𝐚𝐧𝐜𝐞𝐝 𝐓𝐡𝐞𝐦𝐞 𝐂𝐨𝐧𝐟𝐢𝐠𝐮𝐫𝐚𝐭𝐢𝐨𝐧    <                              | #
+# |                              ----------------------------------                              | #
+# +----------------------------------------------------------------------------------------------+ #
+# |                           https://dev.bukkit.org/projects/stargate                           | #
+# +----------------------------------------------+-----------------------------------------------+ #
+# |      Documentation: https://git.io/JDclf     |       Bug Reports: https://git.io/Jc6jW       | #
+# +----------------------------------------------+-----------------------------------------------+ #
+####################################################################################################
+
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ┃ ╭━━━━╮                                       [INFO]                                
+# ┃ ┃ i ┃       𝐓𝐨 𝐬𝐩𝐞𝐜𝐢𝐟𝐲 𝐚 𝐭𝐡𝐞𝐦𝐞 𝐯𝐢𝐚 𝐭𝐡𝐢𝐬 𝐟𝐢𝐥𝐞, 𝐰𝐞 𝐬𝐭𝐫𝐨𝐧𝐠𝐥𝐲 𝐫𝐞𝐜𝐨𝐦𝐦𝐞𝐧𝐝 𝐮𝐬𝐢𝐧𝐠 𝐨𝐮𝐫 𝐂𝐨𝐥𝐨𝐮𝐫𝐖𝐢𝐳𝐚𝐫𝐝 𝐆𝐔𝐈. 
+# ┃ ╰━━━━╯        𝘊𝘰𝘭𝘰𝘶𝘳𝘞𝘪𝘻𝘢𝘳𝘥 𝘮𝘢𝘺 𝘣𝘦 𝘢𝘤𝘤𝘦𝘴𝘴𝘦𝘥 𝘶𝘴𝘪𝘯𝘨 𝘵𝘩𝘪𝘴 𝘭𝘪𝘯𝘬: https://colour.sgrewritten.org   
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                Advanced  Colour Configuration                                | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# |                                           [ Signs ]                                          | #
+# |__ Granular customisations to the colours and themes used by StarGate when formatting signs __| #
+
+jungle:
+  - foreground: ''
+  - background: ''
+  - pointer: ''
+  - listing: ''
+oak:
+  - foreground: ''
+  - background: ''
+  - pointer: ''
+  - listing: ''
+birch:
+  - foreground: ''
+  - background: ''
+  - pointer: ''
+  - listing: ''
+mangrove:
+  - foreground: ''
+  - background: ''
+  - pointer: ''
+  - listing: ''
+crimson:
+  - foreground: ''
+  - background: ''
+  - pointer: ''
+  - listing: ''
+warped:
+  - foreground: ''
+  - background: ''
+  - pointer: ''
+  - listing: ''
+acacia:
+  - foreground: ''
+  - background: ''
+  - pointer: ''
+  - listing: ''
+spruce:
+  - foreground: ''
+  - background: ''
+  - pointer: ''
+  - listing: ''
+dark_oak:
+  - foreground: ''
+  - background: ''
+  - pointer: ''
+  - listing: ''
+
+# |                                           [ Flags ]                                          | #
+# |__Granular customisations to the colours used by StarGate to represent unique types of gates__| #
+
+a:
+  - foreground: ''
+  - background: ''
+b:
+  - foreground: ''
+  - background: ''
+f:
+  - foreground: ''
+  - background: ''
+h:
+  - foreground: ''
+  - background: ''
+i:
+  - foreground: ''
+  - background: ''
+n:
+  - foreground: ''
+  - background: ''
+p:
+  - foreground: ''
+  - background: ''
+q:
+  - foreground: ''
+  - background: ''
+r:
+  - foreground: ''
+  - background: ''
+s:
+  - foreground: ''
+  - background: ''
+u:
+  - foreground: ''
+  - background: ''
+v:
+  - foreground: ''
+  - background: ''
+  
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                           Internal                                           | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# An internal value used by the plugin to determine how old your theme config is.
+# Please do not change this.
+configVersion: 1
+
+# An internal value used by the plugin to interpret information from the ColourWizard application.
+# Please do not change this.
+importedDefaults: ''
