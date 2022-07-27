@@ -26,6 +26,62 @@
 # ┃ ╰━━━━╯        𝘊𝘰𝘭𝘰𝘶𝘳𝘞𝘪𝘻𝘢𝘳𝘥 𝘮𝘢𝘺 𝘣𝘦 𝘢𝘤𝘤𝘦𝘴𝘴𝘦𝘥 𝘶𝘴𝘪𝘯𝘨 𝘵𝘩𝘪𝘴 𝘭𝘪𝘯𝘬: https://colour.sgrewritten.org   
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+# +---------------------------------------------------------------------------------------------+ #
+# |                                Default  Colour Configuration                                | #
+# +---------------------------------------------------------------------------------------------+ #
+
+# |                                           [ Flags ]                                          | #
+# |__Granular customisations to the colours used by StarGate to represent unique types of gates__| #
+# |__               If "pointer" is set to 2, the specified colors will be used                __| #
+
+# Colors for all always-on Stargates
+a:
+  - foreground: ''
+  - background: ''
+# Colors for all backwards Stargates
+b:
+  - foreground: '#240023'
+  - background: '#b3baff'
+# Colors for all free Stargates
+f:
+  - foreground: '#002402'
+  - background: '#b3ffb8'
+# Colors for all hidden Stargates
+h:
+  - foreground: '#292800'
+  - background: '#fffcb3'
+# Colors for all fancy inter-server Stargates
+i:
+  - foreground: '#240023'
+  - background: '#FFE0FE'
+# Colors for all Stargates with the network name hidden
+n:
+  - foreground: ''
+  - background: ''
+# Colors for all private Stargates
+p:
+  - foreground: '#210000'
+  - background: '#ffb3b3'
+# Colors for all silent Stargates
+q:
+  - foreground: ''
+  - background: ''
+# Colors for all random Stargates
+r:
+  - foreground: ''
+  - background: ''
+# Colors for all Stargates which force display all destinations
+s:
+  - foreground: '#002422'
+  - background: '#b3fffc'
+# Colors for all legacy bungee Stargates
+u:
+  - foreground: ''
+  - background: ''
+# Colors for all Stargates without a sign
+v:
+  - foreground: ''
+  - background: ''
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                Advanced  Colour Configuration                                | #
@@ -79,46 +135,6 @@ dark_oak:
   - background: ''
   - pointer: ''
   - listing: ''
-
-# |                                           [ Flags ]                                          | #
-# |__Granular customisations to the colours used by StarGate to represent unique types of gates__| #
-
-a:
-  - foreground: ''
-  - background: ''
-b:
-  - foreground: ''
-  - background: ''
-f:
-  - foreground: ''
-  - background: ''
-h:
-  - foreground: ''
-  - background: ''
-i:
-  - foreground: ''
-  - background: ''
-n:
-  - foreground: ''
-  - background: ''
-p:
-  - foreground: ''
-  - background: ''
-q:
-  - foreground: ''
-  - background: ''
-r:
-  - foreground: ''
-  - background: ''
-s:
-  - foreground: ''
-  - background: ''
-u:
-  - foreground: ''
-  - background: ''
-v:
-  - foreground: ''
-  - background: ''
   
 
 # +----------------------------------------------------------------------------------------------+ #
