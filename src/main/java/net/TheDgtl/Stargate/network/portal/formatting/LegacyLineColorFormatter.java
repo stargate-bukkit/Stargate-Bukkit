@@ -4,7 +4,6 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 
 public class LegacyLineColorFormatter extends AbstractLineColorFormatter {
@@ -42,8 +41,5 @@ public class LegacyLineColorFormatter extends AbstractLineColorFormatter {
     public String formatStringWithHiglighting(String aString, HighlightingStyle highlightingStyle) {
         return getColor() + highlightingStyle.getHighlightedName(aString);
     }
-
-    @Override
-    public void onSignDyeing(DyeColor signColor) {}
 
 }

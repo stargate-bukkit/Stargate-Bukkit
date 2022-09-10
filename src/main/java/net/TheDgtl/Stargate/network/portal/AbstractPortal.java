@@ -10,6 +10,7 @@ import net.TheDgtl.Stargate.event.StargateAccessEvent;
 import net.TheDgtl.Stargate.event.StargateCloseEvent;
 import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
+import net.TheDgtl.Stargate.event.StargateSignFormatEvent;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
@@ -314,6 +315,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
         StargatePermissionManager permissionManager = new StargatePermissionManager(player);
         StargateOpenEvent stargateOpenEvent = new StargateOpenEvent(player, this, false);
+        Bukkit.getPluginManager().callEvent(stargateOpenEvent);
         if (!permissionManager.hasOpenPermissions(this, destination)) {
             event.getPlayer().sendMessage(permissionManager.getDenyMessage());
             return;
@@ -337,14 +339,17 @@ public abstract class AbstractPortal implements RealPortal {
                 continue;
             }
             Sign sign = (Sign) location.getBlock().getState();
+            if (color == null) {
+                color = sign.getColor();
+            }
             if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
-                if (color == null) {
-                    color = sign.getColor();
-                }
                 colorDrawer = new LineColorFormatter(color, sign.getType());
             } else {
                 colorDrawer = new LegacyLineColorFormatter(sign.getType());
             }
+            StargateSignFormatEvent formatEvent = new StargateSignFormatEvent(this, colorDrawer, color);
+            Bukkit.getPluginManager().callEvent(formatEvent);
+            this.colorDrawer = formatEvent.getLineFormatter();
         }
         // Has to be done one tick later to avoid a bukkit bug
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {

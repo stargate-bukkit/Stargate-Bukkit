@@ -1,14 +1,11 @@
 package net.TheDgtl.Stargate.util;
 
-import net.TheDgtl.Stargate.Stargate;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 
-import java.awt.color.ColorSpace;
 import java.util.EnumMap;
-import java.util.logging.Level;
 
 /**
  * A converter for converting between different types of colors

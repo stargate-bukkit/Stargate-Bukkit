@@ -3,8 +3,6 @@ package net.TheDgtl.Stargate.network.portal.formatting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
-import net.TheDgtl.Stargate.container.TwoTuple;
-import net.TheDgtl.Stargate.network.InterServerNetwork;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
@@ -18,7 +16,6 @@ import org.bukkit.Material;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * A line formatter that applies coloring to formatted lines
@@ -76,11 +73,6 @@ public class LineColorFormatter extends AbstractLineColorFormatter {
     @Override
     public String formatErrorLine(String error, HighlightingStyle highlightingStyle) {
         return ERROR_COLOR + highlightingStyle.getHighlightedName(error);
-    }
-
-    @Override
-    public void onSignDyeing(DyeColor signColor) {
-        this.dyeColor = signColor;
     }
     
     private ChatColor getColor() {

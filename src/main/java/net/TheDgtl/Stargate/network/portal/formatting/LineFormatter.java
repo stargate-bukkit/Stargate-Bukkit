@@ -1,7 +1,5 @@
 package net.TheDgtl.Stargate.network.portal.formatting;
 
-import org.bukkit.DyeColor;
-
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 
@@ -53,11 +51,5 @@ public interface LineFormatter {
      * @return <p>The formatted error</p>
      */
     String formatErrorLine(String error, HighlightingStyle highlightingStyle);
-    
-    /**
-     * What should happen when the sign related to this LineFormatter gets dyed by a user?
-     * @param signColor <p> </p>
-     */
-    void onSignDyeing(DyeColor signColor);
 
 }

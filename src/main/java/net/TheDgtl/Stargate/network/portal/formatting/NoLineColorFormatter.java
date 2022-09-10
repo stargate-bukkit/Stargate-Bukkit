@@ -1,7 +1,5 @@
 package net.TheDgtl.Stargate.network.portal.formatting;
 
-import org.bukkit.DyeColor;
-
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 
@@ -36,8 +34,5 @@ public class NoLineColorFormatter implements LineFormatter {
     public String formatStringWithHiglighting(String aString, HighlightingStyle highlightingStyle) {
         return highlightingStyle.getHighlightedName(aString);
     }
-
-    @Override
-    public void onSignDyeing(DyeColor signColor) {}
 
 }
