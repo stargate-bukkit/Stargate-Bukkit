@@ -116,15 +116,13 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private static UUID serverUUID;
 
-    private static ChatColor defaultLightSignColor;
-    private static ChatColor defaultDarkColor;
-    private static org.bukkit.ChatColor legacyDefaultLightSignColor = org.bukkit.ChatColor.BLACK;
-    private static org.bukkit.ChatColor legacyDefaultDarkSignColor = org.bukkit.ChatColor.WHITE;
+    private static org.bukkit.ChatColor legacySignColor;
+
+    private static ChatColor defaultSignColor;
 
     static {
         if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
-            defaultLightSignColor = ChatColor.BLACK;
-            defaultDarkColor = ChatColor.WHITE;
+            defaultSignColor = ChatColor.BLACK;
         }
     }
 
@@ -317,17 +315,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      *
      * @return <p>The default color used for light signs</p>
      */
-    public static ChatColor getDefaultLightSignColor() {
-        return defaultLightSignColor;
-    }
-
-    /**
-     * Gets the default color used for dark signs
-     *
-     * @return <p>The default color used for dark signs</p>
-     */
-    public static ChatColor getDefaultDarkColor() {
-        return defaultDarkColor;
+    public static ChatColor getDefaultSignColor() {
+        return defaultSignColor;
     }
 
     /**
@@ -335,49 +324,24 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      *
      * @return <p>The default legacy color used for light signs</p>
      */
-    public static org.bukkit.ChatColor getLegacyDefaultLightSignColor() {
-        return legacyDefaultLightSignColor;
+    public static org.bukkit.ChatColor getLegacySignColor() {
+        return legacySignColor;
     }
-
-    /**
-     * Gets the default color used for dark signs with legacy coloring
-     *
-     * @return <p>The default legacy color used for dark signs</p>
-     */
-    public static org.bukkit.ChatColor getLegacyDefaultDarkSignColor() {
-        return legacyDefaultDarkSignColor;
-    }
-
+    
     private void loadColors() {
-        if (!NonLegacyMethod.CHAT_COLOR.isImplemented()) {
-            logMessage(Level.INFO, "Default stargate coloring is not supported on your current server implementation");
-            try {
-                Stargate.legacyDefaultLightSignColor = org.bukkit.ChatColor.valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_LIGHT_SIGN_COLOR).toUpperCase());
-                Stargate.legacyDefaultDarkSignColor = org.bukkit.ChatColor.valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_DARK_SIGN_COLOR).toUpperCase());
-            } catch (IllegalArgumentException ignored) {
-            }
-
-            return;
-        }
         try {
-            Stargate.defaultLightSignColor = getColor(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_LIGHT_SIGN_COLOR));
-            Stargate.defaultDarkColor = getColor(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_DARK_SIGN_COLOR));
+            if (!NonLegacyMethod.CHAT_COLOR.isImplemented()) {
+                logMessage(Level.INFO,
+                        "Default stargate coloring is not supported on your current server implementation");
+                Stargate.legacySignColor = org.bukkit.ChatColor
+                        .valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR).toUpperCase());
+                return;
+            }
+            Stargate.defaultSignColor = ChatColor
+                    .of(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR));
         } catch (IllegalArgumentException | NullPointerException e) {
             Stargate.log(Level.WARNING, "Invalid colors for sign text. Using default colors instead...");
-            Stargate.defaultLightSignColor = ChatColor.BLACK;
-            Stargate.defaultDarkColor = ChatColor.WHITE;
         }
-    }
-
-    /**
-     * Gets the corresponding chat color from the given color string
-     *
-     * @param colorString <p>The color string to parse</p>
-     * @return <p>The color corresponding to the string</p>
-     * @throws IllegalArgumentException <p>If the given color string is invalid</p>
-     */
-    private ChatColor getColor(String colorString) throws IllegalArgumentException {
-        return ChatColor.of(colorString);
     }
 
     /**

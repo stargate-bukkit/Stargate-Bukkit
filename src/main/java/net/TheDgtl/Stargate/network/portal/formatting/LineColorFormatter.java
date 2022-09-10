@@ -3,14 +3,19 @@ package net.TheDgtl.Stargate.network.portal.formatting;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
+import net.TheDgtl.Stargate.container.TwoTuple;
+import net.TheDgtl.Stargate.network.InterServerNetwork;
+import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 import net.TheDgtl.Stargate.util.ColorConverter;
+import net.TheDgtl.Stargate.util.FileHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -22,9 +27,9 @@ public class LineColorFormatter extends AbstractLineColorFormatter {
 
     private static final ChatColor GRAY_SELECTOR_COLOR = ChatColor.of("#808080");
     private static final ChatColor ERROR_COLOR = ChatColor.RED;
-    private static Map<PortalFlag, ChatColor[]> flagColors;
+    private static final Map<PortalFlag, ChatColor> flagColors = new EnumMap<>(PortalFlag.class);
 
-    private final DyeColor dyeColor;
+    private DyeColor dyeColor;
 
     static {
         loadFlagColors();
@@ -43,133 +48,95 @@ public class LineColorFormatter extends AbstractLineColorFormatter {
 
     @Override
     public String formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
-        String name = portal.getName();
-
-        ChatColor nameColor;
-        ChatColor selectorColor;
-
-        if (ConfigurationHelper.getInteger(ConfigurationOption.NAME_STYLE) == 3) {
-            nameColor = getColor(isLightSign);
-        } else {
-            nameColor = getNameColor(portal, isLightSign);
+        ChatColor pointerColor = getPointerColor();
+        if(ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 2 && getFlagColor(portal) != null) {
+            pointerColor =  getFlagColor(portal);
         }
+        ChatColor listingColor = getColor();
+        String portalName = (portal != null) ? portal.getName() : "null";
+        return pointerColor + highlightingStyle.getHighlightedName(listingColor + portalName + pointerColor);
+    }
 
-        switch (ConfigurationHelper.getInteger(ConfigurationOption.POINTER_STYLE)) {
-            case 1:
-                selectorColor = getColor(isLightSign);
-                break;
-            case 2:
-                selectorColor = getNameColor(portal, isLightSign);
-                break;
-            case 4:
-                selectorColor = getInvertedColor(isLightSign);
-                break;
-            default:
-                selectorColor = GRAY_SELECTOR_COLOR;
-        }
+    @Override
+    public String formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
+        String networkName = (network != null) ? network.getName() : "null";
+        return getPointerColor() + highlightingStyle.getHighlightedName(getColor() + networkName + getPointerColor());
+    }
 
-        String coloredName = nameColor + name + selectorColor;
-        return selectorColor + highlightingStyle.getHighlightedName(coloredName);
+    @Override
+    public String formatStringWithHiglighting(String aString, HighlightingStyle highlightingStyle) {
+        return getPointerColor() + highlightingStyle.getHighlightedName(getColor() + aString + getPointerColor());
     }
 
     @Override
     public String formatLine(String line) {
-        return getColor(isLightSign) + line;
+        return getColor() + line;
     }
 
     @Override
     public String formatErrorLine(String error, HighlightingStyle highlightingStyle) {
-        return getColor(isLightSign) + highlightingStyle.getHighlightedName(ERROR_COLOR + error + getColor(isLightSign));
+        return ERROR_COLOR + highlightingStyle.getHighlightedName(error);
     }
 
-    /**
-     * Gets the color to use for normal portals for the given sign type
-     *
-     * @param isLightSign <p>Whether to get the color for a light sign or a dark sign</p>
-     * @return <p>The color to use for normal portals</p>
-     */
-    private ChatColor getColor(boolean isLightSign) {
-        if (dyeColor != null && dyeColor != DyeColor.BLACK) {
+    @Override
+    public void onSignDyeing(DyeColor signColor) {
+        this.dyeColor = signColor;
+    }
+    
+    private ChatColor getColor() {
+        if (shouldUseDyeColor()) {
             return ColorConverter.getChatColorFromDyeColor(dyeColor);
         } else {
-            return getDefaultColor(isLightSign);
+            return Stargate.getDefaultSignColor();
         }
     }
 
-    /**
-     * @param isLightSign <p>Whether to get the color for a light sign or a dark sign</p>
-     * @return <p>The inverse color of the dye color, or default color if not dyed</p>
-     */
-    private ChatColor getInvertedColor(boolean isLightSign) {
-        if (dyeColor != null && dyeColor != DyeColor.BLACK) {
-            return ColorConverter.getInvertedChatColorFromDyeColor(dyeColor);
-        } else {
-            return getDefaultColor(!isLightSign);
+    private ChatColor getPointerColor() {
+        if(shouldUseDyeColor()) {
+            if(ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 3) {
+                return ColorConverter.getInvertedChatColorFromDyeColor(dyeColor);
+            }
+            return ColorConverter.getChatColorFromDyeColor(dyeColor);
         }
-    }
-
-    /**
-     * Gets the default color to use for the given type of sign
-     *
-     * @param isLightSign <p>Whether to get the default color for a light sign or a dark sign</p>
-     * @return <p>The default color to use for the given type of sign</p>
-     */
-    private ChatColor getDefaultColor(boolean isLightSign) {
-        return isLightSign ? Stargate.getDefaultLightSignColor() : Stargate.getDefaultDarkColor();
-    }
-
-    /**
-     * Gets the color to use for displaying the given portal's name
-     *
-     * @param portal      <p>The portal to display the name of</p>
-     * @param isLightSign <p>Whether the sign is a light color as opposed to a dark color</p>
-     * @return <p>The color to use for displaying the portal's name</p>
-     */
-    private ChatColor getNameColor(Portal portal, boolean isLightSign) {
-        Stargate.log(Level.FINER, " Gate " + portal.getName() + " has flags: " + portal.getAllFlagsString());
-        ChatColor[] colors = getNameColors(portal);
-        if (isLightSign) {
-            return colors[0];
-        } else {
-            return colors[1];
+        ChatColor color = getColor();
+        if(ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 3) {
+            return ColorConverter.invertBrightness(color);
         }
+        return color;
+    }
+    
+    private boolean shouldUseDyeColor() {
+        return (dyeColor != null && dyeColor != DyeColor.BLACK);
     }
 
     /**
-     * Gets the name colors to use for the given portal's sign
-     *
-     * @param portal <p>The portal to get colors for</p>
-     * @return <p>The colors used to draw the portal's name</p>
+     * Get flag color 
+     * @param portal <p> The portal to check flags from </p>
+     * @return A color corresponding to a portals flag..
      */
-    private ChatColor[] getNameColors(Portal portal) {
+    private ChatColor getFlagColor(Portal portal) {
+        PortalFlag[] flagPriority = new PortalFlag[] { PortalFlag.PRIVATE, PortalFlag.FREE, PortalFlag.HIDDEN,
+                PortalFlag.FORCE_SHOW, PortalFlag.BACKWARDS };
+        
+        if(portal == null) {
+            return null;
+        }
         if (portal instanceof VirtualPortal) {
             return flagColors.get(PortalFlag.FANCY_INTER_SERVER);
-        } else if (portal.hasFlag(PortalFlag.PRIVATE)) {
-            return flagColors.get(PortalFlag.PRIVATE);
-        } else if (portal.hasFlag(PortalFlag.FREE)) {
-            return flagColors.get(PortalFlag.FREE);
-        } else if (portal.hasFlag(PortalFlag.HIDDEN)) {
-            return flagColors.get(PortalFlag.HIDDEN);
-        } else if (portal.hasFlag(PortalFlag.FORCE_SHOW)) {
-            return flagColors.get(PortalFlag.FORCE_SHOW);
-        } else if (portal.hasFlag(PortalFlag.BACKWARDS)) {
-            return flagColors.get(PortalFlag.BACKWARDS);
-        } else {
-            return new ChatColor[]{getColor(true), getColor(false)};
+        }
+        for (PortalFlag flag : flagPriority) {
+            if (portal.hasFlag(flag)) {
+                return flagColors.get(flag);
+            }
+        }
+        return null;
+    }
+
+    private static void loadFlagColors() {
+        Map<String,String> flagColorsString = new HashMap<>();
+        FileHelper.readInternalFileToMap("flagColors.properties", flagColorsString);
+        for(String key : flagColorsString.keySet()) {
+            flagColors.put(PortalFlag.valueOf(key), ChatColor.of(flagColorsString.get(key)));
         }
     }
-
-    /**
-     * Loads all used flag colors to reduce some overhead
-     */
-    private static void loadFlagColors() {
-        flagColors = new HashMap<>();
-        flagColors.put(PortalFlag.BACKWARDS, new ChatColor[]{ChatColor.of("#240023"), ChatColor.of("#b3baff")});
-        flagColors.put(PortalFlag.FORCE_SHOW, new ChatColor[]{ChatColor.of("#002422"), ChatColor.of("#b3fffc")});
-        flagColors.put(PortalFlag.HIDDEN, new ChatColor[]{ChatColor.of("#292800"), ChatColor.of("#fffcb3")});
-        flagColors.put(PortalFlag.FREE, new ChatColor[]{ChatColor.of("#002402"), ChatColor.of("#b3ffb8")});
-        flagColors.put(PortalFlag.PRIVATE, new ChatColor[]{ChatColor.of("#210000"), ChatColor.of("#ffb3b3")});
-        flagColors.put(PortalFlag.FANCY_INTER_SERVER, new ChatColor[]{ChatColor.of("#240023"), ChatColor.of("#FFE0FE")});
-    }
-
 }

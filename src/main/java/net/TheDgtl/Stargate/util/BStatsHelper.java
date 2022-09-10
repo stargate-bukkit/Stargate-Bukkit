@@ -165,18 +165,12 @@ public final class BStatsHelper {
         metrics.addCustomChart(new SimplePie("useEconomy", () -> String.valueOf(getBoolean(
                 ConfigurationOption.USE_ECONOMY))));
 
-        metrics.addCustomChart(new SimplePie("pointer", () -> String.valueOf(getInteger(
-                ConfigurationOption.POINTER_STYLE))));
-
-        metrics.addCustomChart(new SimplePie("listing", () -> String.valueOf(getInteger(
-                ConfigurationOption.NAME_STYLE))));
-
-        metrics.addCustomChart(new SimplePie("defaultForeground", () -> String.valueOf(getString(
-                ConfigurationOption.DEFAULT_LIGHT_SIGN_COLOR))));
-
-        metrics.addCustomChart(new SimplePie("defaultBackground", () -> String.valueOf(getString(
-                ConfigurationOption.DEFAULT_DARK_SIGN_COLOR))));
-
+        metrics.addCustomChart(new SimplePie("defaultColor", () -> String.valueOf(getString(
+                ConfigurationOption.DEFAULT_SIGN_COLOR))));
+        
+        metrics.addCustomChart(new SimplePie("pointerBehavior", () -> String.valueOf(getInteger(
+                ConfigurationOption.POINTER_BEHAVIOR))));
+        
         metrics.addCustomChart(new SimplePie("gateExitSpeedMultiplier", () -> String.valueOf(getDouble(
                 ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER))));
 

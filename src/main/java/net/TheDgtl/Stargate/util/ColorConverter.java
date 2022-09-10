@@ -1,11 +1,14 @@
 package net.TheDgtl.Stargate.util;
 
+import net.TheDgtl.Stargate.Stargate;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 
+import java.awt.color.ColorSpace;
 import java.util.EnumMap;
+import java.util.logging.Level;
 
 /**
  * A converter for converting between different types of colors
@@ -62,5 +65,12 @@ public final class ColorConverter {
         Color color = dyeColor.getColor();
         return ChatColor.of(String.format("#%02X%02X%02X", 255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue()));
     }
-
+    
+    public static ChatColor invertBrightness(ChatColor initialColor) {
+        java.awt.Color convertedInitialColor = initialColor.getColor();
+        float[] hsb = java.awt.Color.RGBtoHSB(convertedInitialColor.getRed(), convertedInitialColor.getGreen(), convertedInitialColor.getBlue(),  new float[3]);
+        hsb[2] = (float) 1 - hsb[2];
+        java.awt.Color color = java.awt.Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
+        return ChatColor.of(String.format("#%02X%02X%02X", color.getRed(), color.getGreen(),color.getBlue()));
+    }
 }
