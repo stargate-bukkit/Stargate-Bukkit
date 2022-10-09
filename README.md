@@ -405,6 +405,23 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+#### \[Version 0.9.4.2] EpicKnarvik97 fork
+
+- Avoids a NullPointerException if Dynmap is present, but isn't properly loaded.
+- Avoids some potential NullPointerExceptions related to Dynmap integration
+- Fixes end portals hijacking BungeeCord teleportation
+- Fixes a problem where a player might not be properly teleported from an end portal Stargate in the end to the
+  over-world.
+
+#### \[Version 0.9.4.1] EpicKnarvik97 fork
+
+- Reverts to Spigot API 1.18
+- Adds Dynmap integration
+
+#### \[Version 0.9.4.0] EpicKnarvik97 fork
+
+- Updates Stargate to 1.19
+
 #### \[Version 0.9.3.7] EpicKnarvik97 fork
 
 - Adds the Japanese language file provided by spigot user furplag
