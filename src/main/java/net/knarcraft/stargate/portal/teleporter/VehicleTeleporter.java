@@ -169,7 +169,7 @@ public class VehicleTeleporter extends EntityTeleporter {
         //Spawn a new vehicle
         Vehicle newVehicle = vehicleWorld.spawn(exit, teleportingVehicle.getClass());
         if (teleportingVehicle instanceof Boat boat) {
-            ((Boat) newVehicle).setWoodType(boat.getWoodType());
+            ((Boat) newVehicle).setBoatType(boat.getBoatType());
         }
         //Remove the old vehicle
         if (teleportingVehicle.eject()) {
