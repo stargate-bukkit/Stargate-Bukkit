@@ -331,6 +331,17 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void setSignColor(DyeColor color) {
+
+        /* NoLineColorFormatter should only be used during startup, this means if 
+         * that if it has already been changed, and if there's no coor to change to, 
+         * then the lineformatter does not need to be reinstated again
+         * 
+         * Just avoids some unnecessary minute lag
+        */
+        if(!(colorDrawer instanceof NoLineColorFormatter) && color == null) {
+            return;
+        }
+        
         for (Location location : this.getPortalPosition(PositionType.SIGN)) {
             if (!(location.getBlock().getState() instanceof Sign)) {
                 logger.logMessage(Level.WARNING, String.format("Could not find a sign for portal %s in network %s \n"
@@ -342,6 +353,7 @@ public abstract class AbstractPortal implements RealPortal {
             if (color == null) {
                 color = sign.getColor();
             }
+            
             if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
                 colorDrawer = new LineColorFormatter(color, sign.getType());
             } else {

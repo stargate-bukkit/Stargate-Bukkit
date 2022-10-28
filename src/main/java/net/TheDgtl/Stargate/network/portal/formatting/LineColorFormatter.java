@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate.network.portal.formatting;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -33,6 +34,7 @@ public class LineColorFormatter implements LineFormatter{
      * @param signMaterial <p>The material used for the sign</p>
      */
     public LineColorFormatter(DyeColor dyeColor, Material signMaterial) {
+        Stargate.log(Level.FINER, "Instantiating a new LineColorFormater with DyeColor " + dyeColor + " and sign Material " + signMaterial);
         this.dyeColor = dyeColor;
         this.signMaterial = signMaterial;
         
