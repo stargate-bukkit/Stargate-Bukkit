@@ -36,8 +36,8 @@ public class PersonalNetwork extends LocalNetwork {
     }
 
     @Override
-    public String getHighlightedName() {
-        return HighlightingStyle.PERSONAL.getHighlightedName(playerName);
+    public HighlightingStyle getHighlightingStyle() {
+        return HighlightingStyle.PERSONAL;
     }
 
 }

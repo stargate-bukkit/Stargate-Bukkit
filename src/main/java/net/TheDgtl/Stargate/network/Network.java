@@ -2,6 +2,8 @@ package net.TheDgtl.Stargate.network;
 
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.formatting.HighlightingStyle;
+
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -96,11 +98,11 @@ public interface Network {
 
 
     /**
-     * Gets the highlighted name of this network
+     * Gets the style this network should be highlighted with by default
      *
-     * @return <p>The highlighted name of this network</p>
+     * @return <p>The highlighting style of this network</p>
      */
-    String getHighlightedName();
+    HighlightingStyle getHighlightingStyle();
 
     /**
      * Gets the unique identifier for this network

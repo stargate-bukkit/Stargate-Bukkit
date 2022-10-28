@@ -168,7 +168,7 @@ public class NetworkedPortal extends AbstractPortal {
         if (!this.isActive) {
             lines[1] = super.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.RIGHT_CLICK));
             lines[2] = super.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.TO_USE));
-            lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(network.getHighlightedName()) : "";
+            lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()) : "";
         } else {
             drawActiveSign(lines);
         }

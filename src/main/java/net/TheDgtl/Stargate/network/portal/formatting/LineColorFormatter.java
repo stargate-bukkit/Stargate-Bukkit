@@ -1,5 +1,11 @@
 package net.TheDgtl.Stargate.network.portal.formatting;
 
+import java.util.EnumMap;
+import java.util.Map;
+
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
@@ -7,31 +13,19 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
-import net.TheDgtl.Stargate.util.ColorConverter;
-import net.TheDgtl.Stargate.util.FileHelper;
+import net.TheDgtl.Stargate.util.colors.ColorConverter;
+import net.TheDgtl.Stargate.util.colors.ColorProperty;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * A line formatter that applies coloring to formatted lines
- */
-public class LineColorFormatter extends AbstractLineColorFormatter {
-
-    private static final ChatColor GRAY_SELECTOR_COLOR = ChatColor.of("#808080");
+public class LineColorFormatter implements LineFormatter{
     private static final ChatColor ERROR_COLOR = ChatColor.RED;
-    private static final Map<PortalFlag, ChatColor> flagColors = new EnumMap<>(PortalFlag.class);
-
     private DyeColor dyeColor;
-
-    static {
-        loadFlagColors();
-    }
-
+    private Material signMaterial;
+    private Map<PortalFlag, ChatColor> flagColors;
+    
+    private ChatColor color;
+    private ChatColor pointerColor;
+    
     /**
      * Instantiates a new line color formatter for a sign
      *
@@ -39,17 +33,22 @@ public class LineColorFormatter extends AbstractLineColorFormatter {
      * @param signMaterial <p>The material used for the sign</p>
      */
     public LineColorFormatter(DyeColor dyeColor, Material signMaterial) {
-        super(signMaterial);
         this.dyeColor = dyeColor;
+        this.signMaterial = signMaterial;
+        
+        color = this.getColor();
+        pointerColor = this.getPointerColor();
+        
+        flagColors = compileFlagColors();
     }
-
+    
     @Override
     public String formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
-        ChatColor pointerColor = getPointerColor();
+        ChatColor pointerColor = this.pointerColor;
         if(ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 2 && getFlagColor(portal) != null) {
             pointerColor =  getFlagColor(portal);
         }
-        ChatColor listingColor = getColor();
+        ChatColor listingColor = color;
         String portalName = (portal != null) ? portal.getName() : "null";
         return pointerColor + highlightingStyle.getHighlightedName(listingColor + portalName + pointerColor);
     }
@@ -57,54 +56,64 @@ public class LineColorFormatter extends AbstractLineColorFormatter {
     @Override
     public String formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
         String networkName = (network != null) ? network.getName() : "null";
-        return getPointerColor() + highlightingStyle.getHighlightedName(getColor() + networkName + getPointerColor());
+        return pointerColor + highlightingStyle.getHighlightedName(color + networkName + pointerColor);
     }
 
     @Override
     public String formatStringWithHiglighting(String aString, HighlightingStyle highlightingStyle) {
-        return getPointerColor() + highlightingStyle.getHighlightedName(getColor() + aString + getPointerColor());
+        return pointerColor + highlightingStyle.getHighlightedName(color + aString + pointerColor);
     }
 
     @Override
     public String formatLine(String line) {
-        return getColor() + line;
+        return color + line;
     }
 
     @Override
     public String formatErrorLine(String error, HighlightingStyle highlightingStyle) {
         return ERROR_COLOR + highlightingStyle.getHighlightedName(error);
     }
-    
-    private ChatColor getColor() {
-        if (shouldUseDyeColor()) {
-            return ColorConverter.getChatColorFromDyeColor(dyeColor);
-        } else {
-            return Stargate.getDefaultSignColor();
-        }
-    }
 
-    private ChatColor getPointerColor() {
+    /**
+     * Get text color
+     * @return A color to be used on text
+     */
+    private ChatColor getColor() {
         if(shouldUseDyeColor()) {
-            if(ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 3) {
-                return ColorConverter.getInvertedChatColorFromDyeColor(dyeColor);
-            }
             return ColorConverter.getChatColorFromDyeColor(dyeColor);
         }
-        ChatColor color = getColor();
-        if(ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 3) {
-            return ColorConverter.invertBrightness(color);
-        }
-        return color;
-    }
-    
-    private boolean shouldUseDyeColor() {
-        return (dyeColor != null && dyeColor != DyeColor.BLACK);
+        return ColorProperty.getColorFromHue(this.signMaterial,Stargate.getDefaultSignColor(),false);
     }
 
     /**
+     * Get pointer / highlighting color
+     * @return A color to be used on pointer / highlighting
+     */
+    private ChatColor getPointerColor() {
+        if (shouldUseDyeColor()) {
+            if (ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 3) {
+                return ColorConverter.getInvertedChatColor(ColorConverter.getChatColorFromDyeColor(dyeColor));
+            }
+            return ColorConverter.getChatColorFromDyeColor(dyeColor);
+        }
+        if (ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 3) {
+            return ColorProperty.getColorFromHue(this.signMaterial,Stargate.getDefaultSignColor(),true);
+        }
+        return ColorProperty.getColorFromHue(this.signMaterial,Stargate.getDefaultSignColor(),false);
+    }
+    
+    /**
+     * 
+     * @return <p> If the default color should not be applied </p>
+     */
+    private boolean shouldUseDyeColor() {
+        return (dyeColor != null && dyeColor != DyeColor.BLACK);
+    }
+    
+    /**
      * Get flag color 
      * @param portal <p> The portal to check flags from </p>
-     * @return A color corresponding to a portals flag..
+     * @return <p> A color corresponding to a portals flag. </p>
      */
     private ChatColor getFlagColor(Portal portal) {
         PortalFlag[] flagPriority = new PortalFlag[] { PortalFlag.PRIVATE, PortalFlag.FREE, PortalFlag.HIDDEN,
@@ -123,12 +132,16 @@ public class LineColorFormatter extends AbstractLineColorFormatter {
         }
         return null;
     }
-
-    private static void loadFlagColors() {
-        Map<String,String> flagColorsString = new HashMap<>();
-        FileHelper.readInternalFileToMap("flagColors.properties", flagColorsString);
-        for(String key : flagColorsString.keySet()) {
-            flagColors.put(PortalFlag.valueOf(key), ChatColor.of(flagColorsString.get(key)));
+    
+    /**
+     * Compile a map of all the flagcolors, good idea to use, as it avoids having to convert too much between hsb and rgb
+     * @return <p> A map of all the flagcolors </p>
+     */
+    private Map<PortalFlag,ChatColor> compileFlagColors() {
+        Map<PortalFlag,ChatColor> flagColors = new EnumMap<>(PortalFlag.class);
+        for(PortalFlag key : ColorProperty.getFlagColorHues().keySet()) {
+            flagColors.put(key,ColorProperty.getColorFromHue(this.signMaterial, ColorProperty.getFlagColorHues().get(key),false));
         }
+        return flagColors;
     }
 }

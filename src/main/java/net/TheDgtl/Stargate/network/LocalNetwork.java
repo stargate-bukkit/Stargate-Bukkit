@@ -142,8 +142,8 @@ public class LocalNetwork implements Network {
     }
 
     @Override
-    public String getHighlightedName() {
-        return HighlightingStyle.NETWORK.getHighlightedName(getName());
+    public HighlightingStyle getHighlightingStyle() {
+        return HighlightingStyle.NETWORK;
     }
 
     @Override

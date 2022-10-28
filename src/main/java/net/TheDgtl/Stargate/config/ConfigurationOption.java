@@ -77,7 +77,7 @@ public enum ConfigurationOption {
             true, OptionDataType.BOOLEAN, false),
 
     /**
-     * The default color to use for "light" signs
+     * The default color to use for signs
      */
     DEFAULT_SIGN_COLOR("signFormatting.color", "The default color to use for signs",
             "BLACK", OptionDataType.COLOR, false),

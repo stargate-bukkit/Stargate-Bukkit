@@ -53,6 +53,8 @@ import net.TheDgtl.Stargate.property.PluginChannel;
 import net.TheDgtl.Stargate.thread.SynchronousPopulator;
 import net.TheDgtl.Stargate.util.BStatsHelper;
 import net.TheDgtl.Stargate.util.BungeeHelper;
+import net.TheDgtl.Stargate.util.colors.ColorConverter;
+import net.TheDgtl.Stargate.util.colors.ColorNameInterpreter;
 import net.TheDgtl.Stargate.util.portal.PortalHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -118,13 +120,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private static org.bukkit.ChatColor legacySignColor;
 
-    private static ChatColor defaultSignColor;
-
-    static {
-        if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
-            defaultSignColor = ChatColor.BLACK;
-        }
-    }
+    private static short defaultSignColorHue = 0;
 
     private FileConfiguration config;
 
@@ -311,12 +307,12 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     }
 
     /**
-     * Gets the default color used for light signs
+     * Gets the default hue used for light signs
      *
      * @return <p>The default color used for light signs</p>
      */
-    public static ChatColor getDefaultSignColor() {
-        return defaultSignColor;
+    public static short getDefaultSignColor() {
+        return Stargate.defaultSignColorHue;
     }
 
     /**
@@ -337,8 +333,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
                         .valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR).toUpperCase());
                 return;
             }
-            Stargate.defaultSignColor = ChatColor
-                    .of(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR));
+            Stargate.defaultSignColorHue = ColorNameInterpreter
+                    .getHue(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR));
         } catch (IllegalArgumentException | NullPointerException e) {
             Stargate.log(Level.WARNING, "Invalid colors for sign text. Using default colors instead...");
         }

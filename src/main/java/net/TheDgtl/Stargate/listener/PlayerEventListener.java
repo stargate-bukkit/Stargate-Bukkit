@@ -12,7 +12,8 @@ import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.property.PluginChannel;
 import net.TheDgtl.Stargate.util.BungeeHelper;
 import net.TheDgtl.Stargate.util.ButtonHelper;
-import net.TheDgtl.Stargate.util.ColorConverter;
+import net.TheDgtl.Stargate.util.colors.ColorConverter;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Tag;

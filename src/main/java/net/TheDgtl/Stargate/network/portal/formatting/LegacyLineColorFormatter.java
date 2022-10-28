@@ -6,12 +6,7 @@ import net.TheDgtl.Stargate.network.portal.Portal;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
-public class LegacyLineColorFormatter extends AbstractLineColorFormatter {
-
-
-    public LegacyLineColorFormatter(Material signMaterial) {
-        super(signMaterial);
-    }
+public class LegacyLineColorFormatter implements LineFormatter {
 
     @Override
     public String formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {

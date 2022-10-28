@@ -19,9 +19,9 @@ import net.TheDgtl.Stargate.manager.PermissionManager;
 import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.LegacyLineColorFormatter;
-import net.TheDgtl.Stargate.network.portal.formatting.LineColorFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.LineFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.NoLineColorFormatter;
+import net.TheDgtl.Stargate.network.portal.formatting.LineColorFormatter;
 import net.TheDgtl.Stargate.property.BypassPermission;
 import net.TheDgtl.Stargate.property.NonLegacyMethod;
 import net.TheDgtl.Stargate.util.NameHelper;
@@ -345,7 +345,7 @@ public abstract class AbstractPortal implements RealPortal {
             if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
                 colorDrawer = new LineColorFormatter(color, sign.getType());
             } else {
-                colorDrawer = new LegacyLineColorFormatter(sign.getType());
+                colorDrawer = new LegacyLineColorFormatter();
             }
             StargateSignFormatEvent formatEvent = new StargateSignFormatEvent(this, colorDrawer, color);
             Bukkit.getPluginManager().callEvent(formatEvent);
