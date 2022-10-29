@@ -156,7 +156,7 @@ public final class PortalCreationHelper {
         //Save the portal and inform the user
         selectedNetwork.addPortal(portal, true);
         //Make sure that the portal sign text formats according the default sign dye color
-        portal.setSignColor(Stargate.getDefaultSignDyeColor());
+        portal.setSignColor(Stargate.getDefaultSignDyeColor().get(signLocation.getType()));
         selectedNetwork.updatePortals();
         Stargate.log(Level.FINE, "A Gate format matches");
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {

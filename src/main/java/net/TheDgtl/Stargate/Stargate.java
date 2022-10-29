@@ -55,10 +55,13 @@ import net.TheDgtl.Stargate.util.BStatsHelper;
 import net.TheDgtl.Stargate.util.BungeeHelper;
 import net.TheDgtl.Stargate.util.colors.ColorConverter;
 import net.TheDgtl.Stargate.util.colors.ColorNameInterpreter;
+import net.TheDgtl.Stargate.util.colors.ColorProperty;
 import net.TheDgtl.Stargate.util.portal.PortalHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -75,6 +78,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -122,7 +126,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private static org.bukkit.ChatColor legacySignColor;
 
     private static short defaultSignColorHue = 0;
-    private static DyeColor defaultSignDyeColor = DyeColor.BLACK;
+    private static Map<Material,DyeColor> defaultSignDyeColors;
 
     private FileConfiguration config;
 
@@ -321,8 +325,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * Get the dyecolor that when applied to a sign get's the text converted into the default configuration
      * @return
      */
-    public static DyeColor getDefaultSignDyeColor() {
-        return Stargate.defaultSignDyeColor;
+    public static Map<Material,DyeColor> getDefaultSignDyeColor() {
+        return Stargate.defaultSignDyeColors;
     }
     
     /**
@@ -345,7 +349,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             }
             ChatColor color = ColorNameInterpreter.getColor(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR));
             Stargate.defaultSignColorHue = ColorConverter.getHue(color);
-            Stargate.defaultSignDyeColor = ColorConverter.getClosestDyeColor(color);
+            Stargate.defaultSignDyeColors = new EnumMap<>(Material.class);
+            for(Material signMaterial : Tag.WALL_SIGNS.getValues()) {
+                defaultSignDyeColors.put(signMaterial, ColorConverter.getClosestDyeColor(ColorProperty.getColorFromHue(signMaterial, defaultSignColorHue, false)));
+            }
         } catch (IllegalArgumentException | NullPointerException e) {
             Stargate.log(Level.WARNING, "Invalid colors for sign text. Using default colors instead...");
         }
