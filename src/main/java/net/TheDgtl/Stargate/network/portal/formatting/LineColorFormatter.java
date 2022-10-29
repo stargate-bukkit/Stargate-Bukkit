@@ -84,7 +84,7 @@ public class LineColorFormatter implements LineFormatter{
         if(shouldUseDyeColor()) {
             return ColorConverter.getChatColorFromDyeColor(dyeColor);
         }
-        return ColorProperty.getColorFromHue(this.signMaterial,Stargate.getDefaultSignColor(),false);
+        return ColorProperty.getColorFromHue(this.signMaterial,Stargate.getDefaultSignHue(),false);
     }
 
     /**
@@ -99,9 +99,9 @@ public class LineColorFormatter implements LineFormatter{
             return ColorConverter.getChatColorFromDyeColor(dyeColor);
         }
         if (ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 3) {
-            return ColorProperty.getColorFromHue(this.signMaterial,Stargate.getDefaultSignColor(),true);
+            return ColorProperty.getColorFromHue(this.signMaterial,Stargate.getDefaultSignHue(),true);
         }
-        return ColorProperty.getColorFromHue(this.signMaterial,Stargate.getDefaultSignColor(),false);
+        return ColorProperty.getColorFromHue(this.signMaterial,Stargate.getDefaultSignHue(),false);
     }
     
     /**
@@ -109,7 +109,7 @@ public class LineColorFormatter implements LineFormatter{
      * @return <p> If the default color should not be applied </p>
      */
     private boolean shouldUseDyeColor() {
-        return (dyeColor != null && dyeColor != DyeColor.BLACK);
+        return (dyeColor != null && dyeColor != Stargate.getDefaultSignDyeColor());
     }
     
     /**

@@ -90,6 +90,41 @@ public final class ColorConverter {
     public static short getHue(ChatColor color) {
         java.awt.Color convertedInitialColor = color.getColor();
         float[] hsb = java.awt.Color.RGBtoHSB(convertedInitialColor.getRed(), convertedInitialColor.getGreen(), convertedInitialColor.getBlue(),  new float[3]);
+        
+        if(hsb[1] == 0f || hsb[2] == 0f) {
+            return -1;
+        }
+        
         return (short) Math.round(hsb[0]*360);
+    }
+
+    /**
+     * Gets the dyecolor with closest similarity of the chatcolor
+     * @param color <p> Any chatColor </p>
+     * @return <p> A dyecolor similar to the chatcolor </p>
+     */
+    public static DyeColor getClosestDyeColor(ChatColor color) {
+        int minProximity = -1;
+        DyeColor closestColor = null;
+        for(DyeColor dyeColor : DyeColor.values()) {
+            int proximity = getColorProximiy(color,dyeColor);
+            if(proximity < minProximity || minProximity == -1) {
+                minProximity = proximity;
+                closestColor = dyeColor;
+            }
+        }
+        return closestColor;
+    }
+    
+    /**
+     * Get an index on how similar the colors are
+     * @param color <p> A chatColor </p>
+     * @param dyeColor <p> A dyeColor </p>
+     * @return <p> The proximity of the two colors </p>
+     */
+    private static int getColorProximiy(ChatColor color, DyeColor dyeColor) {
+        Color bukkitColor = dyeColor.getColor();
+        java.awt.Color javaColor = color.getColor();
+        return Math.abs(javaColor.getRed()-bukkitColor.getRed()) + Math.abs(javaColor.getGreen()-bukkitColor.getGreen()) + Math.abs(javaColor.getBlue()-bukkitColor.getBlue());
     }
 }

@@ -11,71 +11,72 @@ import net.md_5.bungee.api.ChatColor;
 public class ColorNameInterpreter {
 
     /**
-     * Determine a possible hue based out of a string
-     * @param color
-     * @return
+     * Determine a possible color based out of a string
+     * Accepts: CSS color codes, DyeColors, ChatColors, java.awt.Colors, hex, rgb, rgba, hsb
+     * @param color <p> A valid color string </p>
+     * @return <p> A color </p>
      */
-    public static short getHue(String color) {
+    public static ChatColor getColor(String color) {
         try {
-            return getHueFromColorCode(color);
+            return getColorFromColorCode(color);
         } catch(IllegalArgumentException | NullPointerException ignored) {}
         
         try {
-            return getHueFromRGBCode(color);
+            return getColorFromRGBCode(color);
         } catch(IllegalArgumentException ignored) {}
         
         try {
-            return getHueFromHexCode(color);
+            return getColorFromHexCode(color);
         } catch(IllegalArgumentException ignored) {}
         
         try {
-            return getHueFromHSBCode(color);
+            return getColorFromHSBCode(color);
         } catch(IllegalArgumentException ignored) {}
         
         throw new IllegalArgumentException();
     }
     
     /**
-     * Look through all types of color enums and other color codes (including css codes) to determine a hue
+     * Look through all types of color enums and other color codes (including css codes) to determine a color
      * @param color <p> A possible colorcode </p>
-     * @return <p> The hue of that colorcode </p>
+     * @return <p> The color of that colorcode </p>
      * @throws IllegalArgumentException <p> If no colorcode could be matched </p> 
      */
-    private static short getHueFromColorCode(String color) throws IllegalArgumentException{
+    private static ChatColor getColorFromColorCode(String color) throws IllegalArgumentException{
         try {
-            return ColorConverter.getHue(ChatColor.valueOf(color.toUpperCase()));
+            return ChatColor.valueOf(color.toUpperCase());
         } catch(IllegalArgumentException ignored) {}
         
         try {
             DyeColor dyeColor = DyeColor.valueOf(color.toUpperCase());
-            return ColorConverter.getHue(ColorConverter.getChatColorFromDyeColor(dyeColor));
+            return ColorConverter.getChatColorFromDyeColor(dyeColor);
         } catch(IllegalArgumentException ignored) {}
         
         try {
-            return ColorConverter.getHue(org.bukkit.ChatColor.valueOf(color.toUpperCase()).asBungee());
+            return org.bukkit.ChatColor.valueOf(color.toUpperCase()).asBungee();
         } catch(IllegalArgumentException ignored) {}
         
         try {
             java.awt.Color javaColor = java.awt.Color.getColor(color.toUpperCase());
-            return ColorConverter.getHue(ColorConverter.colorToChatColor(javaColor));
+            return ColorConverter.colorToChatColor(javaColor);
         } catch(NullPointerException ignored) {}
 
         try {
         Map<String,String> otherColorCodes = new HashMap<>();
         FileHelper.readInternalFileToMap("/colors/colorCodes.properties", otherColorCodes);
-        return getHueFromHexCode(otherColorCodes.get(color.toLowerCase()));
+        return getColorFromHexCode(otherColorCodes.get(color.toLowerCase()));
         } catch(NullPointerException e) {
             throw new IllegalArgumentException();
         }
     }
 
     /**
-     * Determine a hue from a hexcode
+     * Determine a color from a hexcode
      * @param hexCode <p> Any valid hexcode </p>
-     * @return <p> The hue of that hexcode </p>
+     * @return <p> The color of that hexcode </p>
      * @throws IllegalArgumentException <p> If the hexcode is not valid </p>
      */
-    private static short getHueFromHexCode(String hexCode) throws IllegalArgumentException{
+    private static ChatColor getColorFromHexCode(String hexCode) throws IllegalArgumentException{
         if(hexCode.startsWith("HEX(")) {
             hexCode = "#" + hexCode.substring(4,hexCode.length()-1);
         }
@@ -86,16 +87,16 @@ public class ColorNameInterpreter {
         if(hexCode.length() < 5) {
             hexCode = "#" + hexCode.charAt(1) + hexCode.charAt(1) +hexCode.charAt(2) +hexCode.charAt(2) +hexCode.charAt(3) +hexCode.charAt(3);
         }
-        return ColorConverter.getHue(ChatColor.of(hexCode));
+        return ChatColor.of(hexCode);
     }
     
     /**
-     * Determine the hue from any given rgb code
+     * Determine the color from any given rgb code
      * @param rgbCode <p> A valid rgb code </p>
-     * @return <p> The hue of that rgb code </p>
+     * @return <p> The color of that rgb code </p>
      * @throws IllegalArgumentException <p> If the rgb code is not valid </p>
      */
-    private static short getHueFromRGBCode(String rgbCode) throws IllegalArgumentException{
+    private static ChatColor getColorFromRGBCode(String rgbCode) throws IllegalArgumentException{
         if(!(rgbCode.startsWith("(") || rgbCode.toLowerCase().startsWith("rgb"))) {
             throw new IllegalArgumentException();
         }
@@ -103,20 +104,31 @@ public class ColorNameInterpreter {
         String[] values = rgbArgumentsString.replace(" ", "") .split("(,|:)");
         // Check only the 3 first values, as those are the only ones related to hue (for
         // example rgb in rgba)
-        return ColorConverter.getHue(ChatColor.of(String.format("#%02X%02X%02X", Integer.valueOf(values[0]),
-                Integer.valueOf(values[1]), Integer.valueOf(values[2]))));
+        return ChatColor.of(String.format("#%02X%02X%02X", Integer.valueOf(values[0]),
+                Integer.valueOf(values[1]), Integer.valueOf(values[2])));
     }
     
     /**
-     * Determine the hue from a hsb code
+     * Determine the color from a hsb code
      * @param hsbCode <p> A hsb code </p>
-     * @return <p> The hue of that hsb code </p>
+     * @return <p> The color of that hsb code </p>
      * @throws IllegalArgumentException <p> If the hsb code is not valid </p>
      */
-    private static short getHueFromHSBCode(String hsbCode) throws IllegalArgumentException{
+    private static ChatColor getColorFromHSBCode(String hsbCode) throws IllegalArgumentException{
         if(!hsbCode.toLowerCase().startsWith("hsb(")) {
             throw new IllegalArgumentException();
         }
-        return Short.valueOf(hsbCode.substring(4,hsbCode.indexOf(",")).strip());
+        String hsbArgumentsString = hsbCode.substring(hsbCode.indexOf("(")+1, hsbCode.length() - 1);
+        String[] values = hsbArgumentsString.replace(" ", "") .split("(,|:)");
+        
+        try {
+            java.awt.Color color = java.awt.Color.getHSBColor((float) Integer.valueOf(values[0])/360,
+                    (float) Integer.valueOf(values[1])/100, (float) Integer.valueOf(values[2])/100);
+            return ColorConverter.colorToChatColor(color);
+        } catch(IllegalArgumentException e) {
+            java.awt.Color color = java.awt.Color.getHSBColor((float) Integer.valueOf(values[0])/360,
+                    Float.valueOf(values[1]), Float.valueOf(values[2]));
+            return ColorConverter.colorToChatColor(color);
+        }
     }
 }

@@ -71,7 +71,7 @@ public class ColorProperty {
      * @return <p> A color optimised for the sign, given the hue </p>
      */
     public static ChatColor getColorFromHue(Material signMaterial,short hue, boolean isHighlight) {
-        float saturation = (float)getSaturationFromSignMaterial(signMaterial,isHighlight)/100;
+        float saturation = (hue != -1)? (float)getSaturationFromSignMaterial(signMaterial,isHighlight)/100 : 0f;
         float brightness = (float)getBrightnessFromSignMaterial(signMaterial,isHighlight)/100;
 
         return ColorConverter.colorToChatColor(java.awt.Color.getHSBColor((float)hue/360, saturation, brightness));

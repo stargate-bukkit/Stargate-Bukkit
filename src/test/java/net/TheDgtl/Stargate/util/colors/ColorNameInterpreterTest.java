@@ -20,7 +20,8 @@ public class ColorNameInterpreterTest {
         for(String key : conversionTests.keySet()) {
             String testString = conversionTests.get(key);
             short expectedValue = Short.valueOf(key);
-            short value = ColorNameInterpreter.getHue(testString);
+            System.out.println("testing for testString: " + testString);
+            short value = ColorConverter.getHue(ColorNameInterpreter.getColor(testString));
             Assertions.assertEquals(expectedValue,value);
         }
     }
