@@ -117,6 +117,9 @@ protectEntrance: true
 #  [tnt, creepers, etc.]
 destroyOnExplosion: false
 
+# At what speed should players be sent out of portals?
+# When exiting a gate, players retain their original movement velocity, multiplied by this value.
+gateExitSpeedMultiplier: 1
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                            Economy                                           | #
@@ -158,18 +161,19 @@ chargeFreeDestination: true
 # |                                       Aesthetic Tweaks                                       | #
 # +----------------------------------------------------------------------------------------------+ #
 
-# What colour will StarGate use for all text when formatting gate signs?
-# Note that players can override this with DYE and/or GLOW_INK_SAC
-#
-# All colour names should follow this format:
-# https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html
-signStyle:
-  defaultForeground: BLACK
-  defaultBackground: WHITE
-  # [1: foreground, 2: gate type, 3: grey, 4: background]
-  pointer: 2
-  # [1: selected gates coloured, 2: all gates coloured, 3: no gates coloured]
-  listing: 1
+# These settings are used to customise the colors and styles used by SG when formatting signs.
+# For more advanced styling options, please use https://sgrewritten.org/l/extraColours
+signFormatting:
+    # The default text color on all stargate signs (brightness shifts based on sign material)
+    # A list of valid colors can be found at https://sgrewritten.org/l/colourTypes
+    color: BLACK
+    # SG highlights players' selected destinations with a pointer symbol as users scroll.
+    # How should SG style its pointer symbol? (https://sgrewritten.org/l/pointerStyles)
+    #  Options:
+    #    1: No styling (the pointer will be the same default colour used by the sign's text).
+    #    2: Destination type (the pointer will colour-code based on the selected destination)
+    #    3: Accented (pointer brightness will shift to contrast with the sign's default colour)
+    pointerBehaviour: 2
 
 # By default, SG allows users to specify coloured names for their gates via external plugins.
 # Such names override the colours specified for signStyle (above).
@@ -179,10 +183,6 @@ disableCustomColoredNames: false
 
 # Will the destination a networked portal last connected to be listed first in its scroll menu?
 rememberLastDestination: false
-
-# At what speed should players be sent out of portals?
-# When exiting a gate, players retain their original movement velocity, multiplied by this value.
-gateExitSpeedMultiplier: 1
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                           Technical                                          | #
@@ -224,4 +224,4 @@ loggingLevel: INFO
 
 # An internal value used by the plugin to determine how old your config is.
 # Please do not change this.
-configVersion: 6
+configVersion: 7

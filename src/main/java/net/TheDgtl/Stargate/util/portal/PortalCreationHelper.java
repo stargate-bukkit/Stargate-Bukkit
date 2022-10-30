@@ -32,6 +32,7 @@ import org.bukkit.Location;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 
@@ -155,6 +156,10 @@ public final class PortalCreationHelper {
 
         //Save the portal and inform the user
         selectedNetwork.addPortal(portal, true);
+        //Make sure that the portal sign text formats according the default sign dye color
+        Sign sign = (Sign) signLocation.getState();
+        sign.setColor(Stargate.getDefaultSignDyeColor(signLocation.getType()));
+        sign.update();
         selectedNetwork.updatePortals();
         Stargate.log(Level.FINE, "A Gate format matches");
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {

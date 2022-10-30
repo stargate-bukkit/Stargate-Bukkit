@@ -46,8 +46,8 @@ public class InterServerNetwork extends LocalNetwork {
     }
 
     @Override
-    public String getHighlightedName() {
-        return HighlightingStyle.BUNGEE.getHighlightedName(getName());
+    public HighlightingStyle getHighlightingStyle() {
+        return HighlightingStyle.BUNGEE;
     }
 
     @Override

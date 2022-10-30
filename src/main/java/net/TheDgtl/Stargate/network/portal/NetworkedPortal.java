@@ -168,7 +168,7 @@ public class NetworkedPortal extends AbstractPortal {
         if (!this.isActive) {
             lines[1] = super.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.RIGHT_CLICK));
             lines[2] = super.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.TO_USE));
-            lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(network.getHighlightedName()) : "";
+            lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()) : "";
         } else {
             drawActiveSign(lines);
         }
@@ -210,30 +210,22 @@ public class NetworkedPortal extends AbstractPortal {
      * @param lines            <p>The sign lines to update</p>
      */
     private void drawDestination(int lineIndex, int destination, int destinationIndex, String[] lines) {
-        if (ConfigurationHelper.getInteger(ConfigurationOption.NAME_STYLE) == 1) {
-            if (destinationIndex == lineIndex) {
-                lines[lineIndex + 1] = super.colorDrawer.formatPortalName(destinations.get(destination),
-                        HighlightingStyle.DESTINATION);
-            } else {
-                lines[lineIndex + 1] = super.colorDrawer.formatLine(destinations.get(destination).getName());
-            }
-            return;
-        }
-
-        HighlightingStyle highlightingStyle;
-        if (destinationIndex == lineIndex) {
-            highlightingStyle = HighlightingStyle.DESTINATION;
-        } else {
-            highlightingStyle = HighlightingStyle.NOTHING;
-        }
+        HighlightingStyle highlightingStyle = (destinationIndex == lineIndex) ? HighlightingStyle.DESTINATION
+                : HighlightingStyle.NOTHING;
         lines[lineIndex + 1] = super.colorDrawer.formatPortalName(destinations.get(destination), highlightingStyle);
     }
 
     /**
      * Gets the destinations available to the given player
      *
-     * @param player <p>The player to get destinations for</p>
-     * @return <p>The destinations available to the player</p>
+     * @param player
+     *               <p>
+     *               The player to get destinations for
+     *               </p>
+     * @return
+     *         <p>
+     *         The destinations available to the player
+     *         </p>
      */
     private List<Portal> getDestinations(Player player) {
         if (player == null) {

@@ -39,7 +39,7 @@ public class FixedPortal extends AbstractPortal {
     public void drawControlMechanisms() {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
-        lines[2] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(this.network.getHighlightedName()) : "";
+        lines[2] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()) : "";
         Portal destination = getDestination();
         if (destination != null) {
             lines[1] = super.colorDrawer.formatPortalName(destination, HighlightingStyle.DESTINATION);

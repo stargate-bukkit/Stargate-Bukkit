@@ -41,7 +41,7 @@ public class RandomPortal extends AbstractPortal {
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
         lines[1] = super.colorDrawer.formatLine(HighlightingStyle.DESTINATION.getHighlightedName(
                 Stargate.getLanguageManagerStatic().getString(TranslatableMessage.RANDOM)));
-        lines[2] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatLine(network.getHighlightedName()) : "";
+        lines[2] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()) : "";
         lines[3] = "";
         getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }

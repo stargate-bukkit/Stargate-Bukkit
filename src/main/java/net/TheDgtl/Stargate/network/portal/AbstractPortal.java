@@ -10,6 +10,7 @@ import net.TheDgtl.Stargate.event.StargateAccessEvent;
 import net.TheDgtl.Stargate.event.StargateCloseEvent;
 import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
 import net.TheDgtl.Stargate.event.StargateOpenEvent;
+import net.TheDgtl.Stargate.event.StargateSignFormatEvent;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.formatting.TranslatableMessage;
 import net.TheDgtl.Stargate.gate.Gate;
@@ -18,9 +19,9 @@ import net.TheDgtl.Stargate.manager.PermissionManager;
 import net.TheDgtl.Stargate.manager.StargatePermissionManager;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.formatting.LegacyLineColorFormatter;
-import net.TheDgtl.Stargate.network.portal.formatting.LineColorFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.LineFormatter;
 import net.TheDgtl.Stargate.network.portal.formatting.NoLineColorFormatter;
+import net.TheDgtl.Stargate.network.portal.formatting.LineColorFormatter;
 import net.TheDgtl.Stargate.property.BypassPermission;
 import net.TheDgtl.Stargate.property.NonLegacyMethod;
 import net.TheDgtl.Stargate.util.NameHelper;
@@ -314,6 +315,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
         StargatePermissionManager permissionManager = new StargatePermissionManager(player);
         StargateOpenEvent stargateOpenEvent = new StargateOpenEvent(player, this, false);
+        Bukkit.getPluginManager().callEvent(stargateOpenEvent);
         if (!permissionManager.hasOpenPermissions(this, destination)) {
             event.getPlayer().sendMessage(permissionManager.getDenyMessage());
             return;
@@ -329,6 +331,17 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void setSignColor(DyeColor color) {
+
+        /* NoLineColorFormatter should only be used during startup, this means if 
+         * that if it has already been changed, and if there's no coor to change to, 
+         * then the lineformatter does not need to be reinstated again
+         * 
+         * Just avoids some unnecessary minute lag
+        */
+        if(!(colorDrawer instanceof NoLineColorFormatter) && color == null) {
+            return;
+        }
+        
         for (Location location : this.getPortalPosition(PositionType.SIGN)) {
             if (!(location.getBlock().getState() instanceof Sign)) {
                 logger.logMessage(Level.WARNING, String.format("Could not find a sign for portal %s in network %s \n"
@@ -337,14 +350,18 @@ public abstract class AbstractPortal implements RealPortal {
                 continue;
             }
             Sign sign = (Sign) location.getBlock().getState();
+            if (color == null) {
+                color = sign.getColor();
+            }
+            
             if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
-                if (color == null) {
-                    color = sign.getColor();
-                }
                 colorDrawer = new LineColorFormatter(color, sign.getType());
             } else {
-                colorDrawer = new LegacyLineColorFormatter(sign.getType());
+                colorDrawer = new LegacyLineColorFormatter();
             }
+            StargateSignFormatEvent formatEvent = new StargateSignFormatEvent(this, colorDrawer, color);
+            Bukkit.getPluginManager().callEvent(formatEvent);
+            this.colorDrawer = formatEvent.getLineFormatter();
         }
         // Has to be done one tick later to avoid a bukkit bug
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {

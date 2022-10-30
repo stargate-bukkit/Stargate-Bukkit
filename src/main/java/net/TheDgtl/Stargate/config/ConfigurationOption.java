@@ -77,33 +77,20 @@ public enum ConfigurationOption {
             true, OptionDataType.BOOLEAN, false),
 
     /**
-     * The default color to use for "light" signs
+     * The default color to use for signs
      */
-    DEFAULT_LIGHT_SIGN_COLOR("signStyle.defaultForeground", "The default color to use for \"light\" signs",
+    DEFAULT_SIGN_COLOR("signFormatting.color", "The default color to use for signs",
             "BLACK", OptionDataType.COLOR, false),
-
+    
     /**
-     * The default color to use for "dark" signs
+     * How should SG style its pointer symbol?
      */
-    DEFAULT_DARK_SIGN_COLOR("signStyle.defaultBackground", "The default color to use for \"dark\" signs",
-            "WHITE", OptionDataType.COLOR, false),
-
-    /**
-     * The color style to use for the destination names displayed on a sign
-     */
-    NAME_STYLE("signStyle.listing", "The color style to use for the destination names displayed on a sign",
-            1, OptionDataType.INTEGER, false),
-
-    /**
-     * The color style to use for the pointers displayed on a sign
-     */
-    POINTER_STYLE("signStyle.pointer", "The color style to use for the pointers displayed on a sign",
-            2, OptionDataType.INTEGER, false),
-
+    POINTER_BEHAVIOR("signFormatting.pointerBehaviour", "How should SG style its pointer symbol?", 2, OptionDataType.INTEGER, false),
+    
     /**
      * The multiplier to use for the exit speed when leaving a Stargate
      *
-     * <p>If the multiplier is 0, the behavior is the same as in legacy. If the multiplier is 1, it's the same as the
+     * <p>If the multiplier is 0, the behaviour is the same as in legacy. If the multiplier is 1, it's the same as the
      * entry speed. 2 = double, 0.5 = half.</p>
      */
     GATE_EXIT_SPEED_MULTIPLIER("gateExitSpeedMultiplier",

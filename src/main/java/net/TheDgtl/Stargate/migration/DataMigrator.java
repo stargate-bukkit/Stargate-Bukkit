@@ -37,7 +37,8 @@ public class DataMigrator {
                         StargateRegistry registry) throws IOException, InvalidConfigurationException {
         //WARNING: Migrators must be defined from oldest to newest to prevent partial migration
         MIGRATIONS = new DataMigration[]{
-                new DataMigration_1_0_0(server, registry, logger)
+                new DataMigration_1_0_0(server, registry, logger),
+                new DataMigration_1_0_12()
         };
 
         //Not StargateConfiguration, as we don't want to save comments

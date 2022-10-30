@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.network.portal.formatting;
 
+import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.Portal;
 
 /**
@@ -17,7 +18,25 @@ public interface LineFormatter {
     String formatPortalName(Portal portal, HighlightingStyle highlightingStyle);
 
     /**
-     * Formats a line using the default behavior
+     * Formats the name of a portal
+     *
+     * @param network            <p>The network whose name is to be formatted</p>
+     * @param highlightingStyle <p>The highlighting style to use when formatting</p>
+     * @return <p>The formatted name</p>
+     */
+    String formatNetworkName(Network network, HighlightingStyle highlightingStyle);
+    
+    /**
+     * Formats the name of a portal
+     *
+     * @param aString           <p>Any type of string</p>
+     * @param highlightingStyle <p>The highlighting style to use when formatting</p>
+     * @return <p>The formatted string</p>
+     */
+    String formatStringWithHiglighting(String aString, HighlightingStyle highlightingStyle);
+    
+    /**
+     * Formats a line using the default behaviour
      *
      * @param line <p>The line to format</p>
      * @return <p>The formatted line</p>

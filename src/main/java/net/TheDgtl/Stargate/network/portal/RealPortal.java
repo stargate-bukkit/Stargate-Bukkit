@@ -1,6 +1,8 @@
 package net.TheDgtl.Stargate.network.portal;
 
 import net.TheDgtl.Stargate.gate.GateAPI;
+import net.TheDgtl.Stargate.network.portal.formatting.LineFormatter;
+
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
@@ -81,6 +83,6 @@ public interface RealPortal extends Portal {
      * @return <p>The location of this portal's signs</p>
      */
     List<Location> getPortalPosition(PositionType type);
-
+    
 
 }
