@@ -56,5 +56,46 @@ public interface StorageAPI {
      */
     void load(Stargate stargate) throws StargateInitializationException;
 
-
+    /**
+     * Set misc data of a portal, used be addons
+     * 
+     * @param data <p> Any data </p>
+     */
+    void setPortalData(String data);
+    
+    /**
+     * Get misc data of a portal, used be addons
+     * 
+     * @return <p> Data </p>
+     */
+    String getPortalData();
+    
+    /**
+     * Set misc data of a portalposition, used be addons
+     * 
+     * @param data <p> Any data </p>
+     */
+    void setPortalPositionData();
+    
+    /**
+     * Get misc data of a portalposition, used be addons
+     * 
+     * @return <p> Data </p>
+     */
+    String getPortalPositionData();
+    
+    
+    /**
+     * Add a new flagtype
+     * 
+     * @param flagChar
+     */
+    void addFlag(char flagChar);
+    
+    /**
+     * Add a new type of portalPosition
+     * 
+     * @param portalPositionTypeName
+     */
+    void addPortalPositionType(String portalPositionTypeName);
 }
