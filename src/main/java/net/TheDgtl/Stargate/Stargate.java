@@ -323,10 +323,15 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     /**
      * Get the dyecolor that when applied to a sign get's the text converted into the default configuration
-     * @return
+     * @param <p> A type of sign </p>
+     * @return <p> A color related to that sign </p>
      */
-    public static Map<Material,DyeColor> getDefaultSignDyeColor() {
-        return Stargate.defaultSignDyeColors;
+    public static DyeColor getDefaultSignDyeColor(Material signMaterial) {
+        try {
+            return Stargate.defaultSignDyeColors.get(signMaterial);
+        } catch(NullPointerException e) {
+            return DyeColor.WHITE;
+        }
     }
     
     /**

@@ -352,8 +352,6 @@ public abstract class AbstractPortal implements RealPortal {
             Sign sign = (Sign) location.getBlock().getState();
             if (color == null) {
                 color = sign.getColor();
-            } else {
-                sign.setColor(color);
             }
             
             if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
@@ -364,7 +362,6 @@ public abstract class AbstractPortal implements RealPortal {
             StargateSignFormatEvent formatEvent = new StargateSignFormatEvent(this, colorDrawer, color);
             Bukkit.getPluginManager().callEvent(formatEvent);
             this.colorDrawer = formatEvent.getLineFormatter();
-            sign.update();
         }
         // Has to be done one tick later to avoid a bukkit bug
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {

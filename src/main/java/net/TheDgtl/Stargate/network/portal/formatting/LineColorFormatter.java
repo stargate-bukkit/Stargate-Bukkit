@@ -109,7 +109,7 @@ public class LineColorFormatter implements LineFormatter{
      * @return <p> If the default color should not be applied </p>
      */
     private boolean shouldUseDyeColor() {
-        return (dyeColor != null && dyeColor != Stargate.getDefaultSignDyeColor().get(signMaterial));
+        return (dyeColor != null && dyeColor != Stargate.getDefaultSignDyeColor(signMaterial));
     }
     
     /**
