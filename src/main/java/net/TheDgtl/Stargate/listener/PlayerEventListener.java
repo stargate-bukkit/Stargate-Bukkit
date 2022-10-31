@@ -199,7 +199,7 @@ public class PlayerEventListener implements Listener {
      */
     private void updateServerName() {
         ConditionalDelayedAction action = new ConditionalDelayedAction(() -> {
-            Stargate.getStorageAPIStatic().startInterServerConnection();
+            Stargate.getMiscStorageAPIStatic().startInterServerConnection();
             return true;
         }, Stargate::knowsServerName);
         Stargate.addSynchronousSecAction(action, true);

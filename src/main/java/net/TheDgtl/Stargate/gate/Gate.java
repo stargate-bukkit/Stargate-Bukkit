@@ -9,6 +9,7 @@ import net.TheDgtl.Stargate.exception.InvalidStructureException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
+import net.TheDgtl.Stargate.network.portal.PortalData;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.util.ButtonHelper;
@@ -79,26 +80,31 @@ public class Gate implements GateAPI {
             return;
         }
 
-        throw new InvalidStructureException();
+        throw new InvalidStructureException("Format does not match with signlocatino in world");
     }
-
+    
     /**
      * Instantiates a gate from already predetermined parameters, no checking is done to see if format matches
-     *
-     * @param topLeft <p>The location of the origin of the gate</p>
-     * @param facing  <p>The facing of the gate</p>
-     * @param flipZ   <p>If the gateFormat is flipped in the z-axis</p>
-     * @param format  <p>The gate format used by this gate</p>
-     * @throws InvalidStructureException <p>If the facing is invalid</p>
+     * 
+     * @param portalData <p> Data of the portal </p>
+     * @param logger <p> A logger </p>
+     * @throws InvalidStructureException <p>If the facing is invalid or if no format could be found</p>
      */
-    public Gate(Location topLeft, BlockFace facing, boolean flipZ, GateFormat format, StargateLogger logger) throws InvalidStructureException {
-        this.facing = facing;
-        this.topLeft = topLeft;
+    public Gate(PortalData portalData, StargateLogger logger) throws InvalidStructureException {
         this.logger = logger;
-        this.converter = new MatrixVectorOperation(facing, logger);
-        this.converter.setFlipZAxis(flipZ);
+
+        GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);
+        if (format == null) {
+            logger.logMessage(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
+                    "log for more information", portalData.gateFileName));
+            throw new InvalidStructureException("Could not find a matching gateformat");
+        }
+        this.topLeft = portalData.topLeft;
+        this.converter = new MatrixVectorOperation(portalData.facing, logger);
+        this.converter.setFlipZAxis(portalData.flipZ);
         this.format = format;
-        this.flipped = flipZ;
+        this.facing = portalData.facing;
+        this.flipped = portalData.flipZ;
     }
 
     @Override

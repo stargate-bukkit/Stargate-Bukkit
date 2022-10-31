@@ -18,6 +18,7 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.FixedPortal;
 import net.TheDgtl.Stargate.network.portal.NetworkedPortal;
+import net.TheDgtl.Stargate.network.portal.PortalData;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.RandomPortal;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
@@ -83,6 +84,20 @@ public final class PortalCreationHelper {
         }
     }
 
+    /**
+     * Creates a new portal of the correct type
+     *
+     * @param network      <p>The network the portal belongs to</p>
+     * @param portalData   <p>Data of the portal </p>
+     * @param gate         <p>The gate belonging to the portal</p>
+     * @return <p>A new portal</p>
+     * @throws NameErrorException <p>If the portal's name is invalid</p>
+     */
+    public static RealPortal createPortal(Network network, PortalData portalData, Gate gate, StargateLogger logger)
+            throws NameErrorException {
+        return createPortal(network, portalData.name, portalData.destination, portalData.networkName, portalData.flags, gate, portalData.ownerUUID, logger);
+    }
+    
     /**
      * Tries to create a new stargate
      *

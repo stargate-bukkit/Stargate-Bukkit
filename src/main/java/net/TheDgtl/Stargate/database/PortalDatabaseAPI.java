@@ -20,11 +20,14 @@ import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.portal.BungeePortal;
 import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.PortalData;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
+import net.TheDgtl.Stargate.util.database.DataBaseHelper;
+import net.TheDgtl.Stargate.util.database.PortalStorageHelper;
 import net.TheDgtl.Stargate.util.portal.PortalCreationHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -46,7 +49,7 @@ import java.util.logging.Level;
 /**
  * An API for interacting with the portal database
  */
-public class PortalDatabaseAPI implements StorageAPI {
+public class PortalDatabaseAPI implements PortalStorageAPI {
 
     private Database database;
     private SQLQueryGenerator sqlQueryGenerator;
@@ -59,8 +62,8 @@ public class PortalDatabaseAPI implements StorageAPI {
      * @param stargate <p>The Stargate instance to use</p>
      * @throws StargateInitializationException <p>If unable to initialize the database</p>
      */
-    public PortalDatabaseAPI(Stargate stargate) throws StargateInitializationException {
-        load(stargate);
+    public PortalDatabaseAPI(Database database,Stargate stargate) throws StargateInitializationException {
+        load(database,stargate);
     }
 
     /**
@@ -94,47 +97,20 @@ public class PortalDatabaseAPI implements StorageAPI {
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
         this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
-        createTables();
+        DataBaseHelper.createTables(database,this.sqlQueryGenerator, useInterServerNetworks);
     }
 
     @Override
-    public void loadFromStorage() {
+    public void loadFromStorage(RegistryAPI registry) {
         try {
             logger.logMessage(Level.FINER, "Loading portals from base database");
-            loadAllPortals(database, PortalType.LOCAL, Stargate.getRegistryStatic());
+            loadAllPortals(database, PortalType.LOCAL, registry);
             if (useInterServerNetworks) {
                 logger.logMessage(Level.FINER, "Loading portals from inter-server bungee database");
-                loadAllPortals(database, PortalType.INTER_SERVER, Stargate.getRegistryStatic());
+                loadAllPortals(database, PortalType.INTER_SERVER, registry);
             }
         } catch (SQLException exception) {
             exception.printStackTrace();
-        }
-    }
-
-    @Override
-    public void startInterServerConnection() {
-        try {
-            Connection conn = database.getConnection();
-            PreparedStatement statement = sqlQueryGenerator.generateUpdateServerInfoStatus(conn, Stargate.getServerUUID(),
-                    Stargate.getServerName());
-            statement.execute();
-            statement.close();
-            conn.close();
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
-    }
-
-    @Override
-    public Network createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
-        if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
-            return new InterServerNetwork(networkName);
-        }
-        if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            UUID uuid = UUID.fromString(networkName);
-            return new PersonalNetwork(uuid);
-        } else {
-            return new LocalNetwork(networkName);
         }
     }
 
@@ -217,158 +193,6 @@ public class PortalDatabaseAPI implements StorageAPI {
     }
 
     /**
-     * Loads the database
-     *
-     * @param stargate <p>The Stargate instance to use for initialization</p>
-     * @return <p>The loaded database</p>
-     * @throws SQLException <p>If an SQL exception occurs</p>
-     */
-    private static Database loadDatabase(Stargate stargate) throws SQLException, StargateInitializationException {
-        if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
-            if (ConfigurationHelper.getBoolean(ConfigurationOption.SHOW_HIKARI_CONFIG)) {
-                return new MySqlDatabase(stargate);
-            }
-
-            DatabaseDriver driver = DatabaseDriver.valueOf(ConfigurationHelper.getString(ConfigurationOption.BUNGEE_DRIVER).toUpperCase());
-            String bungeeDatabaseName = ConfigurationHelper.getString(ConfigurationOption.BUNGEE_DATABASE);
-            int port = ConfigurationHelper.getInteger(ConfigurationOption.BUNGEE_PORT);
-            String address = ConfigurationHelper.getString(ConfigurationOption.BUNGEE_ADDRESS);
-            String username = ConfigurationHelper.getString(ConfigurationOption.BUNGEE_USERNAME);
-            String password = ConfigurationHelper.getString(ConfigurationOption.BUNGEE_PASSWORD);
-            boolean useSSL = ConfigurationHelper.getBoolean(ConfigurationOption.BUNGEE_USE_SSL);
-
-            switch (driver) {
-                case MARIADB:
-                case MYSQL:
-                    return new MySqlDatabase(driver, address, port, bungeeDatabaseName, username, password, useSSL);
-                default:
-                    throw new SQLException("Unsupported driver: Stargate currently supports MariaDb and MySql for remote databases");
-            }
-        } else {
-            String databaseName = ConfigurationHelper.getString(ConfigurationOption.DATABASE_NAME);
-            File file = new File(stargate.getAbsoluteDataFolder(), databaseName + ".db");
-            return new SQLiteDatabase(file);
-        }
-    }
-
-    /**
-     * Executes and closes the given statement
-     *
-     * @param statement <p>The statement to execute</p>
-     * @throws SQLException <p>If an SQL exception occurs</p>
-     */
-    private void runStatement(PreparedStatement statement) throws SQLException {
-        statement.execute();
-        statement.close();
-    }
-
-    /**
-     * Creates all necessary database tables
-     *
-     * @throws SQLException <p>If an SQL exception occurs</p>
-     */
-    private void createTables() throws SQLException {
-        Connection connection = database.getConnection();
-        PreparedStatement localPortalsStatement = sqlQueryGenerator.generateCreatePortalTableStatement(connection, PortalType.LOCAL);
-        runStatement(localPortalsStatement);
-        PreparedStatement flagStatement = sqlQueryGenerator.generateCreateFlagTableStatement(connection);
-        runStatement(flagStatement);
-        addMissingFlags(connection, sqlQueryGenerator);
-
-        PreparedStatement portalPositionTypesStatement = sqlQueryGenerator.generateCreatePortalPositionTypeTableStatement(connection);
-        runStatement(portalPositionTypesStatement);
-        addMissingPositionTypes(connection, sqlQueryGenerator);
-
-        PreparedStatement portalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, PortalType.LOCAL);
-        runStatement(portalPositionsStatement);
-        PreparedStatement portalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, PortalType.LOCAL);
-        if (portalPositionIndex != null) {
-            runStatement(portalPositionIndex);
-        }
-
-        PreparedStatement lastKnownNameStatement = sqlQueryGenerator.generateCreateLastKnownNameTableStatement(connection);
-        runStatement(lastKnownNameStatement);
-        PreparedStatement portalRelationStatement = sqlQueryGenerator.generateCreateFlagRelationTableStatement(connection, PortalType.LOCAL);
-        runStatement(portalRelationStatement);
-        PreparedStatement portalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, PortalType.LOCAL);
-        runStatement(portalViewStatement);
-
-        if (!useInterServerNetworks) {
-            connection.close();
-            return;
-        }
-
-        PreparedStatement serverInfoStatement = sqlQueryGenerator.generateCreateServerInfoTableStatement(connection);
-        runStatement(serverInfoStatement);
-        PreparedStatement interServerPortalsStatement = sqlQueryGenerator.generateCreatePortalTableStatement(connection, PortalType.INTER_SERVER);
-        runStatement(interServerPortalsStatement);
-        PreparedStatement interServerRelationStatement = sqlQueryGenerator.generateCreateFlagRelationTableStatement(connection, PortalType.INTER_SERVER);
-        runStatement(interServerRelationStatement);
-        PreparedStatement interPortalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, PortalType.INTER_SERVER);
-        runStatement(interPortalViewStatement);
-        PreparedStatement interPortalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, PortalType.INTER_SERVER);
-        runStatement(interPortalPositionsStatement);
-        PreparedStatement interPortalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, PortalType.INTER_SERVER);
-        if (interPortalPositionIndex != null) {
-            runStatement(interPortalPositionIndex);
-        }
-
-        connection.close();
-    }
-
-    /**
-     * Adds any flags not already in the database
-     *
-     * @param connection        <p>The database connection to use</p>
-     * @param sqlQueryGenerator <p>The SQL Query Generator to use for generating queries</p>
-     * @throws SQLException <p>If unable to get from, or update the database</p>
-     */
-    private void addMissingFlags(Connection connection, SQLQueryGenerator sqlQueryGenerator) throws SQLException {
-        PreparedStatement statement = sqlQueryGenerator.generateGetAllFlagsStatement(connection);
-        PreparedStatement addStatement = sqlQueryGenerator.generateAddFlagStatement(connection);
-
-        ResultSet resultSet = statement.executeQuery();
-        List<String> knownFlags = new ArrayList<>();
-        while (resultSet.next()) {
-            knownFlags.add(resultSet.getString("character"));
-        }
-        for (PortalFlag flag : PortalFlag.values()) {
-            if (!knownFlags.contains(String.valueOf(flag.getCharacterRepresentation()))) {
-                addStatement.setString(1, String.valueOf(flag.getCharacterRepresentation()));
-                addStatement.execute();
-            }
-        }
-        statement.close();
-        addStatement.close();
-    }
-
-    /**
-     * Adds any position types not already in the database
-     *
-     * @param connection        <p>The database connection to use</p>
-     * @param sqlQueryGenerator <p>The SQL Query Generator to use for generating queries</p>
-     * @throws SQLException <p>If unable to get from, or update the database</p>
-     */
-    private void addMissingPositionTypes(Connection connection, SQLQueryGenerator sqlQueryGenerator) throws SQLException {
-        PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalPositionTypesStatement(connection);
-        PreparedStatement addStatement = sqlQueryGenerator.generateAddPortalPositionTypeStatement(connection);
-
-        ResultSet resultSet = statement.executeQuery();
-        List<String> knownPositionTypes = new ArrayList<>();
-        while (resultSet.next()) {
-            knownPositionTypes.add(resultSet.getString("positionName"));
-        }
-        for (PositionType type : PositionType.values()) {
-            if (!knownPositionTypes.contains(type.toString())) {
-                addStatement.setString(1, type.toString());
-                addStatement.execute();
-            }
-        }
-        statement.close();
-        addStatement.close();
-    }
-
-    /**
      * Loads all portals from the given database of the given portal type into the given registry
      *
      * @param database   <p>The database to load from</p>
@@ -381,94 +205,59 @@ public class PortalDatabaseAPI implements StorageAPI {
 
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
-            String name = resultSet.getString("name");
-            String networkName = resultSet.getString("network");
-
-            //Skip null rows
-            if (name == null && networkName == null) {
+            PortalData portalData = PortalStorageHelper.loadPortalData(resultSet, portalType);
+            if(portalData == null) {
                 continue;
             }
+            boolean isBungee = portalData.flags.contains(PortalFlag.FANCY_INTER_SERVER);
+            Stargate.log(Level.FINEST,
+                    "Trying to add portal " + portalData.name + ", on network " + portalData.networkName + ",isInterServer = " + isBungee);
 
-            String destination = resultSet.getString("destination");
-            //Make sure to treat no destination as empty, not a null string
-            if (resultSet.wasNull()) {
-                destination = "";
-            }
-            String worldName = resultSet.getString("world");
-            int topLeftX = resultSet.getInt("x");
-            int topLeftY = resultSet.getInt("y");
-            int topLeftZ = resultSet.getInt("z");
-            String flagString = resultSet.getString("flags");
-            UUID ownerUUID = UUID.fromString(resultSet.getString("ownerUUID"));
-            String gateFileName = resultSet.getString("gateFileName");
-            boolean flipZ = resultSet.getBoolean("flipZ");
-            BlockFace facing = getBlockFaceFromOrdinal(Integer.parseInt(resultSet.getString("facing")));
-
-            Set<PortalFlag> flags = PortalFlag.parseFlags(flagString);
-
-            boolean isBungee = flags.contains(PortalFlag.FANCY_INTER_SERVER);
-            logger.logMessage(Level.FINEST, "Trying to add portal " + name + ", on network " + networkName +
-                    ",isInterServer = " + isBungee);
-
-            String targetNetwork = networkName;
-            if (flags.contains(PortalFlag.BUNGEE)) {
+            String targetNetwork = portalData.networkName;
+            if (portalData.flags.contains(PortalFlag.BUNGEE)) {
                 targetNetwork = BungeePortal.getLegacyNetworkName();
             }
 
             try {
-                registry.createNetwork(targetNetwork, flags);
+                registry.createNetwork(targetNetwork, portalData.flags);
             } catch (NameErrorException ignored) {
             }
             Network network = registry.getNetwork(targetNetwork, isBungee);
 
+            //TODO Check if portalType is necessary to keep track of // there's already flags.contains(PortalFlag.FANCY_INTERSERVER)
             if (portalType == PortalType.INTER_SERVER) {
-                String serverUUID = resultSet.getString("homeServerId");
-                logger.logMessage(Level.FINEST, "serverUUID = " + serverUUID);
-                if (!serverUUID.equals(Stargate.getServerUUID())) {
-                    String serverName = resultSet.getString("serverName");
-                    Portal virtualPortal = new VirtualPortal(serverName, name, network, flags, ownerUUID);
+                if (!portalData.serverUUID.equals(Stargate.getServerUUID())) {
+                    Portal virtualPortal = new VirtualPortal(portalData.serverName, portalData.name, network, portalData.flags, portalData.ownerUUID);
                     try {
                         network.addPortal(virtualPortal, false);
-                    } catch (NameErrorException e) {
-                        //Ignored
-                    }
-                    logger.logMessage(Level.FINEST, "Added as virtual portal");
+                    } catch (NameErrorException ignored) {}
+                    Stargate.log(Level.FINEST, "Added as virtual portal");
                     continue;
                 }
             }
 
-            World world = Bukkit.getWorld(worldName);
-            if (world == null) {
-                continue;
-            }
-            Block block = world.getBlockAt(topLeftX, topLeftY, topLeftZ);
-
-            if (destination == null || destination.trim().isEmpty()) {
-                flags.add(PortalFlag.NETWORKED);
+            if (portalData.destination == null || portalData.destination.trim().isEmpty()) {
+                portalData.flags.add(PortalFlag.NETWORKED);
             }
 
             try {
-                GateFormat format = GateFormatHandler.getFormat(gateFileName);
-                if (format == null) {
-                    continue;
-                }
-                List<PortalPosition> portalPositions = getPortalPositions(networkName, name, portalType);
-                Gate gate = new Gate(block.getLocation(), facing, flipZ, format, logger);
+                List<PortalPosition> portalPositions = getPortalPositions(portalData);
+                Gate gate = new Gate(portalData, logger);
                 if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
-                        && !gate.isValid(flags.contains(PortalFlag.ALWAYS_ON))) {
+                        && !gate.isValid(portalData.flags.contains(PortalFlag.ALWAYS_ON))) {
                     throw new InvalidStructureException();
                 }
                 gate.addPortalPositions(portalPositions);
-                Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate, ownerUUID, logger);
+                Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, logger);
                 network.addPortal(portal, false);
-                logger.logMessage(Level.FINEST, "Added as normal portal");
+                Stargate.log(Level.FINEST, "Added as normal portal");
             } catch (NameErrorException e) {
                 e.printStackTrace();
             } catch (InvalidStructureException e) {
-                logger.logMessage(Level.WARNING, String.format(
+                Stargate.log(Level.WARNING, String.format(
                         "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
-                        name, (portalType == PortalType.INTER_SERVER ? "inter-server-" : ""), networkName,
-                        block.getLocation()));
+                        portalData.name, (portalType == PortalType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName,
+                        portalData.topLeft));
             } catch (GateConflictException ignored) {
             }
         }
@@ -484,11 +273,11 @@ public class PortalDatabaseAPI implements StorageAPI {
      * @return <p>The portal positions belonging to the portal</p>
      * @throws SQLException <p>If the SQL query fails to successfully execute</p>
      */
-    private List<PortalPosition> getPortalPositions(String networkName, String portalName, PortalType type) throws SQLException {
+    private List<PortalPosition> getPortalPositions(PortalData portalData) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionsStatement(connection, type);
-        statement.setString(1, networkName);
-        statement.setString(2, portalName);
+        PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionsStatement(connection, portalData.portalType);
+        statement.setString(1, portalData.networkName);
+        statement.setString(2, portalData.name);
 
         List<PortalPosition> portalPositions = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery();
@@ -503,21 +292,6 @@ public class PortalDatabaseAPI implements StorageAPI {
         statement.close();
         connection.close();
         return portalPositions;
-    }
-
-    /**
-     * Gets the correct block face from the given ordinal
-     *
-     * @param ordinal <p>The ordinal to get the block face from</p>
-     * @return <p>The corresponding block face, or null</p>
-     */
-    private BlockFace getBlockFaceFromOrdinal(int ordinal) {
-        for (BlockFace blockFace : BlockFace.values()) {
-            if (blockFace.ordinal() == ordinal) {
-                return blockFace;
-            }
-        }
-        return null;
     }
 
     /**
@@ -555,11 +329,11 @@ public class PortalDatabaseAPI implements StorageAPI {
             addFlagStatement.execute();
         }
     }
-
+    
     @Override
-    public void load(Stargate stargate) throws StargateInitializationException {
+    public void load(Database database, Stargate stargate) throws StargateInitializationException {
         try {
-            load(loadDatabase(stargate), ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE),
+            load(database, ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE),
                     ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE), stargate);
         } catch (SQLException exception) {
             logger.logMessage(Level.SEVERE, exception.getMessage());
@@ -578,7 +352,43 @@ public class PortalDatabaseAPI implements StorageAPI {
         TableNameConfiguration config = new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
         this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
-        createTables();
+        DataBaseHelper.createTables(database,this.sqlQueryGenerator,useInterServerNetworks);
     }
 
+    @Override
+    public void setPortalData(String data) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String getPortalData() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setPortalPositionData() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String getPortalPositionData() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    @Override
+    public Network createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
+        if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
+            return new InterServerNetwork(networkName);
+        }
+        if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
+            UUID uuid = UUID.fromString(networkName);
+            return new PersonalNetwork(uuid);
+        } else {
+            return new LocalNetwork(networkName);
+        }
+    }
 }

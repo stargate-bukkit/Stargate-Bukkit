@@ -26,9 +26,10 @@ import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.config.StargateYamlConfiguration;
 import net.TheDgtl.Stargate.database.Database;
+import net.TheDgtl.Stargate.database.MiscStorageAPI;
 import net.TheDgtl.Stargate.database.PortalDatabaseAPI;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
-import net.TheDgtl.Stargate.database.StorageAPI;
+import net.TheDgtl.Stargate.database.PortalStorageAPI;
 import net.TheDgtl.Stargate.economy.StargateEconomyAPI;
 import net.TheDgtl.Stargate.economy.VaultEconomyManager;
 import net.TheDgtl.Stargate.exception.StargateInitializationException;
@@ -56,6 +57,7 @@ import net.TheDgtl.Stargate.util.BungeeHelper;
 import net.TheDgtl.Stargate.util.colors.ColorConverter;
 import net.TheDgtl.Stargate.util.colors.ColorNameInterpreter;
 import net.TheDgtl.Stargate.util.colors.ColorProperty;
+import net.TheDgtl.Stargate.util.database.DataBaseHelper;
 import net.TheDgtl.Stargate.util.portal.PortalHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -109,7 +111,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private PluginManager pluginManager;
 
-    private StorageAPI storageAPI;
+    private PortalStorageAPI storageAPI;
     private LanguageManager languageManager;
     private static final int CURRENT_CONFIG_VERSION = 6;
     private static final SynchronousPopulator synchronousTickPopulator = new SynchronousPopulator();
@@ -131,6 +133,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private FileConfiguration config;
 
     private StargateRegistry registry;
+
+    private MiscStorageAPI miscStorageAPI;
     private static final FileConfiguration staticConfig = new StargateYamlConfiguration();
 
     @Override
@@ -154,7 +158,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
             load();
             economyManager = new VaultEconomyManager(languageManager);
-            storageAPI = new PortalDatabaseAPI(this);
+            Database database = DataBaseHelper.loadDatabase(this);
+            storageAPI = new PortalDatabaseAPI(database,this);
             registry = new StargateRegistry(storageAPI);
             registry.loadPortals();
 
@@ -172,6 +177,9 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
         } catch (StargateInitializationException exception) {
             getServer().getPluginManager().disablePlugin(this);
+        } catch (SQLException e) {
+            getServer().getPluginManager().disablePlugin(this);
+            e.printStackTrace();
         }
     }
 
@@ -403,7 +411,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         File databaseFile = new File(this.getDataFolder(), "stargate.db");
         Database database = new SQLiteDatabase(databaseFile);
 
-        StorageAPI storageAPI = new PortalDatabaseAPI(database, false, false, this);
+        PortalStorageAPI storageAPI = new PortalDatabaseAPI(database, false, false, this);
         registry = new StargateRegistry(storageAPI);
 
         DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), "config.yml"), this,
@@ -479,11 +487,15 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         try {
             load();
             loadGateFormats();
-            storageAPI.load(this);
+            Database database = DataBaseHelper.loadDatabase(this);
+            storageAPI.load(database,this);
             registry.load();
             economyManager.setupEconomy();
         } catch (StargateInitializationException exception) {
             getServer().getPluginManager().disablePlugin(this);
+        } catch (SQLException e) {
+            getServer().getPluginManager().disablePlugin(this);
+            e.printStackTrace();
         }
     }
 
@@ -596,8 +608,12 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         return instance.registry;
     }
 
-    public static StorageAPI getStorageAPIStatic() {
+    public static PortalStorageAPI getStorageAPIStatic() {
         return instance.storageAPI;
+    }
+    
+    public static MiscStorageAPI getMiscStorageAPIStatic() {
+        return instance.miscStorageAPI;
     }
 
     @SuppressWarnings("unused")
@@ -615,7 +631,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     }
 
     @Override
-    public StorageAPI getStorageAPI() {
+    public PortalStorageAPI getStorageAPI() {
         return storageAPI;
     }
 

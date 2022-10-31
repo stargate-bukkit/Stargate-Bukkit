@@ -11,8 +11,10 @@ import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateRegistry;
 import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.PortalData;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.PositionType;
+import net.TheDgtl.Stargate.util.database.PortalStorageHelper;
 import net.TheDgtl.Stargate.util.portal.PortalCreationHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -37,8 +39,6 @@ import java.util.logging.Level;
  */
 public final class LegacyPortalStorageLoader {
 
-    private static Map<PortalFlag, Integer> LEGACY_FLAG_INDICES;
-
     private LegacyPortalStorageLoader() {
 
     }
@@ -56,8 +56,8 @@ public final class LegacyPortalStorageLoader {
      * @throws NameErrorException        <p>If the name of a portal is invalid</p>
      */
     public static List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server,
-                                                      StargateRegistry registry, StargateLogger logger) throws
-            IOException, InvalidStructureException, NameErrorException {
+            StargateRegistry registry, StargateLogger logger)
+            throws IOException, InvalidStructureException, NameErrorException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".db")) : new File[0];
@@ -93,184 +93,41 @@ public final class LegacyPortalStorageLoader {
      * @throws InvalidStructureException <p>If the portal's structure is invalid</p>
      * @throws NameErrorException        <p>If the name of the portal is invalid</p>
      */
-    private static Portal readPortal(String line, World world, StargateRegistry registry,
-                                     StargateLogger logger) throws InvalidStructureException, NameErrorException {
+    private static Portal readPortal(String line, World world, StargateRegistry registry, StargateLogger logger)
+            throws InvalidStructureException, NameErrorException {
         String[] portalProperties = line.split(":");
-        String name = portalProperties[0];
-        String networkName = (portalProperties.length > 9) ? portalProperties[9] : ConfigurationHelper.getString(
-                ConfigurationOption.DEFAULT_NETWORK);
-        logger.logMessage(Level.FINEST, String.format("-----------------Loading portal %s in network %s--------------" +
-                "--------", name, networkName));
-
-
-        Location signLocation = loadLocation(world, portalProperties[1]);
-        Location buttonLocation = loadLocation(world, portalProperties[2]);
-        int modX = Integer.parseInt(portalProperties[3]);
-        int modZ = Integer.parseInt(portalProperties[4]);
-        double rotation = Double.parseDouble(portalProperties[5]);
-        logger.logMessage(Level.FINEST, String.format("modX = %d, modZ = %d, rotation %f", modX, modZ, rotation));
-
-        BlockFace facing = getFacing(modX, modZ);
-        if (facing == null) {
-            facing = getFacing(Double.parseDouble(portalProperties[5]));
-        }
-        logger.logMessage(Level.FINEST, String.format("chose a facing %s", facing.toString()));
-
-        Location topLeft = loadLocation(world, portalProperties[6]);
-
-        String gateFormatName = portalProperties[7];
-        String destination = (portalProperties.length > 8) ? portalProperties[8] : "";
-        String ownerString = (portalProperties.length > 10) ? portalProperties[10] : "";
-        UUID ownerUUID = getPlayerUUID(ownerString);
-        Set<PortalFlag> flags = parseFlags(portalProperties);
-        if (destination == null || destination.trim().isEmpty()) {
-            flags.add(PortalFlag.NETWORKED);
-        }
+        PortalData portalData = PortalStorageHelper.loadPortalData(portalProperties, world);
         try {
-            registry.createNetwork(networkName, flags);
+            registry.createNetwork(portalData.networkName, portalData.flags);
         } catch (NameErrorException ignored) {
         }
-        if (topLeft == null) {
+        if (portalData.topLeft == null) {
             throw new InvalidStructureException();
         }
 
-        Network network = registry.getNetwork(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER));
+        Network network = registry.getNetwork(portalData.networkName,
+                portalData.flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
-
-        GateFormat format = GateFormatHandler.getFormat(gateFormatName);
-        if (format == null) {
-            logger.logMessage(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
-                    "log for more information", gateFormatName));
-            throw new InvalidStructureException();
-        }
-
-        Gate gate = new Gate(topLeft, facing, false, format, logger);
+        Gate gate = new Gate(portalData, logger);
+        Location signLocation = LegacyDataHandler.loadLocation(world, portalProperties[1]);
+        Location buttonLocation = LegacyDataHandler.loadLocation(world, portalProperties[2]);
         if (signLocation != null) {
             logger.logMessage(Level.FINEST, "signLocation=" + signLocation);
             gate.addPortalPosition(signLocation, PositionType.SIGN);
         }
-        if (buttonLocation != null && !flags.contains(PortalFlag.ALWAYS_ON)) {
+        if (buttonLocation != null && !portalData.flags.contains(PortalFlag.ALWAYS_ON)) {
             logger.logMessage(Level.FINEST, "buttonLocation=" + buttonLocation);
             gate.addPortalPosition(buttonLocation, PositionType.BUTTON);
         }
 
+        Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, logger);
 
-        Portal portal = PortalCreationHelper.createPortal(network, name, destination, networkName, flags, gate,
-                ownerUUID, logger);
-
-        //Add the portal to its network and store it to the database
-        logger.logMessage(Level.FINE, String.format("Saving portal %s in network %s from old storage... ", name,
-                networkName));
+        // Add the portal to its network and store it to the database
+        logger.logMessage(Level.FINE, String.format("Saving portal %s in network %s from old storage... ",
+                portalData.name, portalData.networkName));
         network.addPortal(portal, true);
 
         return portal;
-    }
-
-    /**
-     * Loads a location from the given input string
-     *
-     * @param world <p>The world the location belongs to</p>
-     * @param input <p>The input string to parse to coordinates</p>
-     * @return <p>The loaded location</p>
-     */
-    private static Location loadLocation(World world, String input) {
-        if (input.trim().isEmpty()) {
-            return null;
-        }
-        String[] coordinates = input.split(",");
-        return new Location(
-                world,
-                Double.parseDouble(coordinates[0]),
-                Double.parseDouble(coordinates[1]),
-                Double.parseDouble(coordinates[2]));
-    }
-
-    /**
-     * Gets the UUID from an owner string
-     *
-     * <p>An owner string might be a UUID or a username.</p>
-     *
-     * @param ownerString <p>The owner string to get a UUID from</p>
-     * @return <p>A UUID</p>
-     */
-    @SuppressWarnings("deprecation")
-    private static UUID getPlayerUUID(String ownerString) {
-        if (ownerString.length() > 16) {
-            return UUID.fromString(ownerString);
-        } else {
-            return Bukkit.getOfflinePlayer(ownerString).getUniqueId();
-        }
-    }
-
-    /**
-     * Parses the flags found in a portal file
-     *
-     * @param splitLine <p>The split portal save line</p>
-     * @return <p>The parsed flags</p>
-     */
-    private static Set<PortalFlag> parseFlags(String[] splitLine) {
-        if (LEGACY_FLAG_INDICES == null) {
-            loadFlagIndices();
-        }
-
-        Set<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
-        for (PortalFlag flag : LEGACY_FLAG_INDICES.keySet()) {
-            int position = LEGACY_FLAG_INDICES.get(flag);
-            if (splitLine.length > position && splitLine[position].equalsIgnoreCase("true")) {
-                flags.add(flag);
-            }
-        }
-
-        return flags;
-    }
-
-    /**
-     * Gets the facing direction from the given x and z values
-     *
-     * @param modX <p>The x modifier used in legacy</p>
-     * @param modZ <p>The z modifier used in legacy</p>
-     * @return <p>The corresponding block face, or null if on a fork without modX, modZ</p>
-     */
-    private static BlockFace getFacing(int modX, int modZ) {
-        if (modZ < 0) {
-            return BlockFace.WEST;
-        } else if (modZ > 0) {
-            return BlockFace.EAST;
-        } else if (modX < 0) {
-            return BlockFace.SOUTH;
-        } else if (modX > 0) {
-            return BlockFace.NORTH;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Gets the facing direction from the given rotation
-     *
-     * @param rotation <p>The rotation to get the direction from</p>
-     * @return <p>The corresponding block face</p>
-     */
-    private static BlockFace getFacing(double rotation) {
-        return getFacing(-(int) Math.round(Math.cos(rotation)), -(int) Math.round(Math.sin(rotation)));
-    }
-
-    /**
-     * Loads the map containing all known legacy flag indices
-     */
-    private static void loadFlagIndices() {
-        LEGACY_FLAG_INDICES = new EnumMap<>(PortalFlag.class);
-        LEGACY_FLAG_INDICES.put(PortalFlag.HIDDEN, 11);
-        LEGACY_FLAG_INDICES.put(PortalFlag.ALWAYS_ON, 12);
-        LEGACY_FLAG_INDICES.put(PortalFlag.PRIVATE, 13);
-        LEGACY_FLAG_INDICES.put(PortalFlag.FREE, 15);
-        LEGACY_FLAG_INDICES.put(PortalFlag.BACKWARDS, 16);
-        LEGACY_FLAG_INDICES.put(PortalFlag.FORCE_SHOW, 17);
-        LEGACY_FLAG_INDICES.put(PortalFlag.HIDE_NETWORK, 18);
-        LEGACY_FLAG_INDICES.put(PortalFlag.RANDOM, 19);
-        LEGACY_FLAG_INDICES.put(PortalFlag.BUNGEE, 20);
-        LEGACY_FLAG_INDICES.put(PortalFlag.SILENT, 21);
-        LEGACY_FLAG_INDICES.put(PortalFlag.NO_SIGN, 22);
     }
 
 }

@@ -88,8 +88,11 @@ public class FakePortalGenerator {
         if (format == null) {
             throw new IllegalArgumentException("Gate format not found");
         }
-        Gate gate = new Gate(world.getBlockAt(0, 0, 0).getLocation(), BlockFace.EAST, false, format,
-                logger);
+        PortalData portalData = new PortalData();
+        portalData.topLeft = world.getBlockAt(0, 0, 0).getLocation();
+        portalData.facing = BlockFace.EAST;
+        
+        Gate gate = new Gate(portalData, logger);
 
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON);
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);

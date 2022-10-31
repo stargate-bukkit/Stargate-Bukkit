@@ -7,4 +7,11 @@ public class InvalidStructureException extends Exception {
 
     private static final long serialVersionUID = -5580284561192990683L;
 
+    public InvalidStructureException() {
+        
+    }
+    
+    public InvalidStructureException(String reason) {
+        super(reason);
+    }
 }
