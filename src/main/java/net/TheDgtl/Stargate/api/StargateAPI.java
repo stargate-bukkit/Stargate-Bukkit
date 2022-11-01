@@ -1,7 +1,7 @@
 package net.TheDgtl.Stargate.api;
 
 import net.TheDgtl.Stargate.config.ConfigurationAPI;
-import net.TheDgtl.Stargate.database.PortalStorageAPI;
+import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.formatting.LanguageManager;
 import net.TheDgtl.Stargate.manager.PermissionManager;
 import net.TheDgtl.Stargate.network.RegistryAPI;
@@ -27,7 +27,7 @@ public interface StargateAPI {
      *
      * @return <p>The storage API used to store and load stargates</p>
      */
-    PortalStorageAPI getStorageAPI();
+    StorageAPI getStorageAPI();
 
     /**
      * Gets permission manager for specified entity

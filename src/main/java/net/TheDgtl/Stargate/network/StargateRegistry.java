@@ -4,7 +4,7 @@ import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.action.SupplierAction;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
-import net.TheDgtl.Stargate.database.PortalStorageAPI;
+import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.exception.NameErrorException;
 import net.TheDgtl.Stargate.gate.structure.GateStructureType;
 import net.TheDgtl.Stargate.network.portal.BlockLocation;
@@ -32,7 +32,7 @@ import java.util.logging.Level;
  */
 public class StargateRegistry implements RegistryAPI {
 
-    private final PortalStorageAPI storageAPI;
+    private final StorageAPI storageAPI;
     private final HashMap<String, Network> networkMap = new HashMap<>();
     private final HashMap<String, Network> bungeeNetworkMap = new HashMap<>();
     private final Map<GateStructureType, Map<BlockLocation, RealPortal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
@@ -42,7 +42,7 @@ public class StargateRegistry implements RegistryAPI {
      *
      * @param storageAPI <p>The database API to use for interfacing with the database</p>
      */
-    public StargateRegistry(PortalStorageAPI storageAPI) {
+    public StargateRegistry(StorageAPI storageAPI) {
         this.storageAPI = storageAPI;
     }
 

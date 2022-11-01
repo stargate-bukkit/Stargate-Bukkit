@@ -49,7 +49,7 @@ import java.util.logging.Level;
 /**
  * An API for interacting with the portal database
  */
-public class PortalDatabaseAPI implements PortalStorageAPI {
+public class DatabaseAPI implements StorageAPI {
 
     private Database database;
     private SQLQueryGenerator sqlQueryGenerator;
@@ -62,7 +62,7 @@ public class PortalDatabaseAPI implements PortalStorageAPI {
      * @param stargate <p>The Stargate instance to use</p>
      * @throws StargateInitializationException <p>If unable to initialize the database</p>
      */
-    public PortalDatabaseAPI(Database database,Stargate stargate) throws StargateInitializationException {
+    public DatabaseAPI(Database database,Stargate stargate) throws StargateInitializationException {
         load(database,stargate);
     }
 
@@ -75,7 +75,7 @@ public class PortalDatabaseAPI implements PortalStorageAPI {
      * @param logger              <p>The Stargate logger to use for logging</p>
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
-    public PortalDatabaseAPI(Database database, boolean usingBungee, boolean usingRemoteDatabase,
+    public DatabaseAPI(Database database, boolean usingBungee, boolean usingRemoteDatabase,
                              StargateLogger logger) throws SQLException {
         load(database, usingBungee, usingRemoteDatabase, logger);
     }
@@ -90,7 +90,7 @@ public class PortalDatabaseAPI implements PortalStorageAPI {
      * @param config              <p>The table name configuration to use</p>
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
-    public PortalDatabaseAPI(Database database, boolean usingBungee, boolean usingRemoteDatabase,
+    public DatabaseAPI(Database database, boolean usingBungee, boolean usingRemoteDatabase,
                              StargateLogger logger, TableNameConfiguration config) throws SQLException {
         this.logger = logger;
         this.database = database;
@@ -390,5 +390,31 @@ public class PortalDatabaseAPI implements PortalStorageAPI {
         } else {
             return new LocalNetwork(networkName);
         }
+    }
+    
+    @Override
+    public void startInterServerConnection() {
+        try {
+            Connection conn = database.getConnection();
+            PreparedStatement statement = sqlQueryGenerator.generateUpdateServerInfoStatus(conn, Stargate.getServerUUID(),
+                    Stargate.getServerName());
+            statement.execute();
+            statement.close();
+            conn.close();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void addFlagType(char flagChar) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addPortalPositionType(String portalPositionTypeName) {
+        // TODO Auto-generated method stub
+        
     }
 }

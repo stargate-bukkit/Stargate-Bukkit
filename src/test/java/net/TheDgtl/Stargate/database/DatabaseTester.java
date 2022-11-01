@@ -52,7 +52,7 @@ public class DatabaseTester {
     private static final File testGatesDir = new File("src/test/resources/gates");
     private final Map<String, RealPortal> interServerPortals;
     private final Map<String, RealPortal> localPortals;
-    private final PortalDatabaseAPI portalDatabaseAPI;
+    private final DatabaseAPI portalDatabaseAPI;
 
     /**
      * Instantiates a new database tester
@@ -82,7 +82,7 @@ public class DatabaseTester {
         DatabaseTester.serverUUID = UUID.randomUUID();
         Stargate.setServerUUID(serverUUID);
         StargateLogger logger = new FakeStargate();
-        this.portalDatabaseAPI = new PortalDatabaseAPI(database, false, isMySQL, logger, nameConfig);
+        this.portalDatabaseAPI = new DatabaseAPI(database, false, isMySQL, logger, nameConfig);
 
         Network testNetwork = null;
         try {

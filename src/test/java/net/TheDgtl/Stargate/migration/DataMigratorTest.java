@@ -10,9 +10,9 @@ import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.config.StargateYamlConfiguration;
 import net.TheDgtl.Stargate.container.TwoTuple;
 import net.TheDgtl.Stargate.database.Database;
-import net.TheDgtl.Stargate.database.PortalDatabaseAPI;
+import net.TheDgtl.Stargate.database.DatabaseAPI;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
-import net.TheDgtl.Stargate.database.PortalStorageAPI;
+import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.StargateRegistry;
@@ -68,7 +68,7 @@ public class DataMigratorTest {
         defaultConfigFile = new File("src/main/resources", "config.yml");
         sqlDatabaseFile = new File("src/test/resources", "migrate-test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);
-        PortalStorageAPI storageAPI = new PortalDatabaseAPI(sqlDatabase, false, false, logger);
+        StorageAPI storageAPI = new DatabaseAPI(sqlDatabase, false, false, logger);
         registry = new StargateRegistry(storageAPI);
 
 

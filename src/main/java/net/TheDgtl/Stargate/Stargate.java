@@ -26,10 +26,9 @@ import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.config.StargateYamlConfiguration;
 import net.TheDgtl.Stargate.database.Database;
-import net.TheDgtl.Stargate.database.MiscStorageAPI;
-import net.TheDgtl.Stargate.database.PortalDatabaseAPI;
+import net.TheDgtl.Stargate.database.DatabaseAPI;
 import net.TheDgtl.Stargate.database.SQLiteDatabase;
-import net.TheDgtl.Stargate.database.PortalStorageAPI;
+import net.TheDgtl.Stargate.database.StorageAPI;
 import net.TheDgtl.Stargate.economy.StargateEconomyAPI;
 import net.TheDgtl.Stargate.economy.VaultEconomyManager;
 import net.TheDgtl.Stargate.exception.StargateInitializationException;
@@ -111,7 +110,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private PluginManager pluginManager;
 
-    private PortalStorageAPI storageAPI;
+    private StorageAPI storageAPI;
     private LanguageManager languageManager;
     private static final int CURRENT_CONFIG_VERSION = 6;
     private static final SynchronousPopulator synchronousTickPopulator = new SynchronousPopulator();
@@ -134,7 +133,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private StargateRegistry registry;
 
-    private MiscStorageAPI miscStorageAPI;
     private static final FileConfiguration staticConfig = new StargateYamlConfiguration();
 
     @Override
@@ -159,7 +157,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             load();
             economyManager = new VaultEconomyManager(languageManager);
             Database database = DataBaseHelper.loadDatabase(this);
-            storageAPI = new PortalDatabaseAPI(database,this);
+            storageAPI = new DatabaseAPI(database,this);
             registry = new StargateRegistry(storageAPI);
             registry.loadPortals();
 
@@ -411,7 +409,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         File databaseFile = new File(this.getDataFolder(), "stargate.db");
         Database database = new SQLiteDatabase(databaseFile);
 
-        PortalStorageAPI storageAPI = new PortalDatabaseAPI(database, false, false, this);
+        StorageAPI storageAPI = new DatabaseAPI(database, false, false, this);
         registry = new StargateRegistry(storageAPI);
 
         DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), "config.yml"), this,
@@ -608,12 +606,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         return instance.registry;
     }
 
-    public static PortalStorageAPI getStorageAPIStatic() {
+    public static StorageAPI getStorageAPIStatic() {
         return instance.storageAPI;
-    }
-    
-    public static MiscStorageAPI getMiscStorageAPIStatic() {
-        return instance.miscStorageAPI;
     }
 
     @SuppressWarnings("unused")
@@ -631,7 +625,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     }
 
     @Override
-    public PortalStorageAPI getStorageAPI() {
+    public StorageAPI getStorageAPI() {
         return storageAPI;
     }
 

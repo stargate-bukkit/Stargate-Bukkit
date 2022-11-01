@@ -12,7 +12,7 @@ import net.TheDgtl.Stargate.network.portal.RealPortal;
 
 import java.util.Set;
 
-public interface PortalStorageAPI {
+public interface StorageAPI {
 
     /**
      * Loads all portals from storage and adds them to the portal registry
@@ -81,5 +81,25 @@ public interface PortalStorageAPI {
      * @throws NameErrorException <p>If the given network name is invalid</p>
      */
     Network createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException;
+
+
+    /**
+     * "Starts" the inter-server connection by setting this server's portals as online
+     */
+    void startInterServerConnection();
+    
+    /**
+     * Add a new flagtype
+     * 
+     * @param flagChar
+     */
+    void addFlagType(char flagChar);
+    
+    /**
+     * Add a new type of portalPosition
+     * 
+     * @param portalPositionTypeName
+     */
+    void addPortalPositionType(String portalPositionTypeName);
 
 }
