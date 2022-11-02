@@ -188,12 +188,16 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateRemovePortalPositionsStatement(Connection connection, PortalType portalType) throws SQLException {
+    public PreparedStatement generateRemovePortalPositionsStatement(Connection connection, PortalType portalType, Portal portal) throws SQLException {
+        PreparedStatement removePositionsStatement;
         if (portalType == PortalType.LOCAL) {
-            return prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_POSITIONS));
+            removePositionsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_POSITIONS));
         } else {
-            return prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_POSITIONS));
+            removePositionsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_POSITIONS));
         }
+        removePositionsStatement.setString(1, portal.getName());
+        removePositionsStatement.setString(2, portal.getNetwork().getName());
+        return removePositionsStatement;
     }
 
     /**
@@ -316,12 +320,16 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateRemoveFlagStatement(Connection connection,
-                                                         PortalType portalType) throws SQLException {
+                                                         PortalType portalType, Portal portal) throws SQLException {
+        PreparedStatement removeFlagsStatement;
         if (portalType == PortalType.LOCAL) {
-            return prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATION));
+            removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATION));
         } else {
-            return prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATION));
+            removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATION));
         }
+        removeFlagsStatement.setString(1, portal.getName());
+        removeFlagsStatement.setString(2, portal.getNetwork().getName());
+        return removeFlagsStatement;
     }
 
     /**

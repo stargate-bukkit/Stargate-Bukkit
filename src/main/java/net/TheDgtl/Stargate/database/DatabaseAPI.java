@@ -160,21 +160,9 @@ public class DatabaseAPI implements StorageAPI {
             conn = database.getConnection();
             conn.setAutoCommit(false);
 
-            PreparedStatement removeFlagsStatement = sqlQueryGenerator.generateRemoveFlagStatement(conn, portalType);
-            removeFlagsStatement.setString(1, portal.getName());
-            removeFlagsStatement.setString(2, portal.getNetwork().getName());
-            removeFlagsStatement.execute();
-            removeFlagsStatement.close();
-
-            PreparedStatement removePositionsStatement = sqlQueryGenerator.generateRemovePortalPositionsStatement(conn, portalType);
-            removePositionsStatement.setString(1, portal.getName());
-            removePositionsStatement.setString(2, portal.getNetwork().getName());
-            removePositionsStatement.execute();
-            removePositionsStatement.close();
-
-            PreparedStatement statement = sqlQueryGenerator.generateRemovePortalStatement(conn, portal, portalType);
-            statement.execute();
-            statement.close();
+            DataBaseHelper.runStatement(sqlQueryGenerator.generateRemoveFlagStatement(conn, portalType, portal));
+            DataBaseHelper.runStatement(sqlQueryGenerator.generateRemovePortalPositionsStatement(conn, portalType, portal));
+            DataBaseHelper.runStatement(sqlQueryGenerator.generateRemovePortalStatement(conn, portal, portalType));
 
             conn.commit();
             conn.setAutoCommit(true);
@@ -303,14 +291,18 @@ public class DatabaseAPI implements StorageAPI {
      */
     private void addPortalPositions(PreparedStatement addPositionStatement, RealPortal portal) throws SQLException {
         for (PortalPosition portalPosition : portal.getGate().getPortalPositions()) {
-            addPositionStatement.setString(1, portal.getName());
-            addPositionStatement.setString(2, portal.getNetwork().getName());
-            addPositionStatement.setString(3, String.valueOf(portalPosition.getPositionLocation().getBlockX()));
-            addPositionStatement.setString(4, String.valueOf(portalPosition.getPositionLocation().getBlockY()));
-            addPositionStatement.setString(5, String.valueOf(-portalPosition.getPositionLocation().getBlockZ()));
-            addPositionStatement.setString(6, portalPosition.getPositionType().name());
-            addPositionStatement.execute();
+            addPortalPosition(addPositionStatement, portal, portalPosition);
         }
+    }
+    
+    private void addPortalPosition(PreparedStatement addPositionStatement, RealPortal portal, PortalPosition portalPosition) throws SQLException {
+        addPositionStatement.setString(1, portal.getName());
+        addPositionStatement.setString(2, portal.getNetwork().getName());
+        addPositionStatement.setString(3, String.valueOf(portalPosition.getPositionLocation().getBlockX()));
+        addPositionStatement.setString(4, String.valueOf(portalPosition.getPositionLocation().getBlockY()));
+        addPositionStatement.setString(5, String.valueOf(-portalPosition.getPositionLocation().getBlockZ()));
+        addPositionStatement.setString(6, portalPosition.getPositionType().name());
+        addPositionStatement.execute();
     }
 
     /**
@@ -321,13 +313,17 @@ public class DatabaseAPI implements StorageAPI {
      * @throws SQLException <p>If unable to set the flags</p>
      */
     private void addFlags(PreparedStatement addFlagStatement, Portal portal) throws SQLException {
-        for (Character character : portal.getAllFlagsString().toCharArray()) {
-            Stargate.log(Level.FINER, "Adding flag " + character + " to portal: " + portal);
-            addFlagStatement.setString(1, portal.getName());
-            addFlagStatement.setString(2, portal.getNetwork().getName());
-            addFlagStatement.setString(3, String.valueOf(character));
-            addFlagStatement.execute();
+        for (Character flagCharacter : portal.getAllFlagsString().toCharArray()) {
+            addFlag(addFlagStatement,portal,flagCharacter);
         }
+    }
+    
+    private void addFlag(PreparedStatement addFlagStatement, Portal portal, Character flagCharacter) throws SQLException {
+        Stargate.log(Level.FINER, "Adding flag " + flagCharacter + " to portal: " + portal);
+        addFlagStatement.setString(1, portal.getName());
+        addFlagStatement.setString(2, portal.getNetwork().getName());
+        addFlagStatement.setString(3, String.valueOf(flagCharacter));
+        addFlagStatement.execute();
     }
     
     @Override
@@ -354,30 +350,6 @@ public class DatabaseAPI implements StorageAPI {
         this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
         DataBaseHelper.createTables(database,this.sqlQueryGenerator,useInterServerNetworks);
     }
-
-    @Override
-    public void setPortalData(String data) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public String getPortalData() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void setPortalPositionData() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public String getPortalPositionData() {
-        // TODO Auto-generated method stub
-        return null;
-    }
     
     @Override
     public Network createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
@@ -396,10 +368,8 @@ public class DatabaseAPI implements StorageAPI {
     public void startInterServerConnection() {
         try {
             Connection conn = database.getConnection();
-            PreparedStatement statement = sqlQueryGenerator.generateUpdateServerInfoStatus(conn, Stargate.getServerUUID(),
-                    Stargate.getServerName());
-            statement.execute();
-            statement.close();
+            DataBaseHelper.runStatement(sqlQueryGenerator.generateUpdateServerInfoStatus(conn, Stargate.getServerUUID(),
+                    Stargate.getServerName()));
             conn.close();
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -407,14 +377,93 @@ public class DatabaseAPI implements StorageAPI {
     }
     
     @Override
-    public void addFlagType(char flagChar) {
+    public void addFlagType(Character flagChar) throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement addStatement = sqlQueryGenerator.generateAddFlagStatement(connection);
+        addStatement.setString(1, String.valueOf(flagChar));
+        DataBaseHelper.runStatement(addStatement);
+        connection.close();
+    }
+    
+    @Override
+    public void addFlag(Character flagChar, Portal portal, PortalType portalType) throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement statement = sqlQueryGenerator.generateGetAllFlagsStatement(connection);
+        ResultSet resultSet = statement.executeQuery();
+        List<String> knownFlags = new ArrayList<>();
+        while (resultSet.next()) {
+            knownFlags.add(resultSet.getString("character"));
+        }
+        if (!knownFlags.contains(String.valueOf(flagChar))) {
+            PreparedStatement addFlagStatement = sqlQueryGenerator.generateAddPortalFlagRelationStatement(connection,
+                    portalType);
+            addFlag(addFlagStatement, portal, flagChar);
+            addFlagStatement.close();
+            connection.close();
+        }
+    }
+
+    @Override
+    public void addPortalPositionType(String portalPositionTypeName) throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalPositionTypesStatement(connection);
+        ResultSet resultSet = statement.executeQuery();
+        List<String> knownPositionTypes = new ArrayList<>();
+        while (resultSet.next()) {
+            knownPositionTypes.add(resultSet.getString("positionName"));
+        }
+        if (!knownPositionTypes.contains(portalPositionTypeName)) {
+            PreparedStatement addStatement = sqlQueryGenerator.generateAddPortalPositionTypeStatement(connection);
+            addStatement.setString(1, portalPositionTypeName);
+            DataBaseHelper.runStatement(addStatement);
+        }
+        connection.close();
+    }
+    
+    @Override
+    public void addPortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement addPositionStatement = sqlQueryGenerator.generateAddPortalPositionStatement(connection, portalType);
+        this.addPortalPosition(addPositionStatement, portal, portalPosition);
+        addPositionStatement.close();
+        connection.close();
+    }
+
+    @Override
+    public void removeFlag(Character flagChar, Portal portal, PortalType portalType) throws SQLException {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void addPortalPositionType(String portalPositionTypeName) {
+    public void removePortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition)
+            throws SQLException {
         // TODO Auto-generated method stub
         
     }
+
+    @Override
+    public void setPortalMetaData(Portal portal, String data) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String getPortalMetaData(Portal portal) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setPortalPositionMetaData(Portal portal, PortalPosition portalPosition, String data) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
 }

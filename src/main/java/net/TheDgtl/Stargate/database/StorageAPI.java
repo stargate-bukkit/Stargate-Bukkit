@@ -8,8 +8,10 @@ import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.RegistryAPI;
 import net.TheDgtl.Stargate.network.portal.Portal;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 
+import java.sql.SQLException;
 import java.util.Set;
 
 public interface StorageAPI {
@@ -45,32 +47,38 @@ public interface StorageAPI {
     void load(Database database, Stargate stargate) throws StargateInitializationException;
 
     /**
-     * Set misc data of a portal, used be addons
+     * Set misc data of a portal
      * 
+     * @param portal <p> A portal </p>
      * @param data <p> Any data </p>
      */
-    void setPortalData(String data);
+    void setPortalMetaData(Portal portal, String data);
     
     /**
-     * Get misc data of a portal, used be addons
+     * Get misc data of a portal
      * 
+     * @param portal <p> A portal </p>
      * @return <p> Data </p>
      */
-    String getPortalData();
+    String getPortalMetaData(Portal portal);
     
     /**
-     * Set misc data of a portalposition, used be addons
+     * Set misc data of a portalposition
      * 
+     * @param portal <p> A portal </p>
+     * @param portalPosition <p> A portalPosition </p>
      * @param data <p> Any data </p>
      */
-    void setPortalPositionData();
+    void setPortalPositionMetaData(Portal portal, PortalPosition portalPosition, String data);
     
     /**
-     * Get misc data of a portalposition, used be addons
+     * Get misc data of a portalposition
      * 
+     * @param portal <p> A portal </p>
+     * @param portalPosition <p> A portalPosition </p>
      * @return <p> Data </p>
      */
-    String getPortalPositionData();
+    String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition);
     
     /**
      * Creates a new network unassigned to a registry
@@ -92,14 +100,52 @@ public interface StorageAPI {
      * Add a new flagtype
      * 
      * @param flagChar
+     * @throws SQLException 
      */
-    void addFlagType(char flagChar);
+    void addFlagType(Character flagChar) throws SQLException;
     
     /**
      * Add a new type of portalPosition
      * 
      * @param portalPositionTypeName
+     * @throws SQLException 
      */
-    void addPortalPositionType(String portalPositionTypeName);
+    void addPortalPositionType(String portalPositionTypeName) throws SQLException;
+
+    /**
+     * Add a flag to a portal in the database
+     * @param flagChar  <p> The character representation of that flag </p>
+     * @param portal    <p> A portal </p>
+     * @param portalType    <p>How the portal should be considered by the database </p>
+     * @throws SQLException
+     */
+    void addFlag(Character flagChar, Portal portal, PortalType portalType) throws SQLException;
+
+    /**
+     * Remove a flag to a portal in the database
+     * @param flagChar  <p> The character representation of that flag </p>
+     * @param portal    <p> A portal </p>
+     * @param portalType    <p>How the portal should be considered by the database </p>
+     * @throws SQLException
+     */
+    void removeFlag(Character flagChar, Portal portal, PortalType portalType) throws SQLException;
+    
+    /**
+     * Add a portalPosition to a portal in the database
+     * @param portal    <p> A portal</p>
+     * @param portalType    <p> How the portal should be considered by the database </p>
+     * @param portalPosition    <p>A portal position</p>
+     * @throws SQLException
+     */
+    void addPortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws SQLException;
+
+    /**
+     * Remove a portalPosition to a portal in the database
+     * @param portal    <p> A portal</p>
+     * @param portalType    <p> How the portal should be considered by the database </p>
+     * @param portalPosition    <p> A portal position</p>
+     * @throws SQLException
+     */
+    void removePortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws SQLException;
 
 }

@@ -41,7 +41,7 @@ public class DataBaseHelper {
      * @param statement <p>The statement to execute</p>
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
-    private static void runStatement(PreparedStatement statement) throws SQLException {
+    public static void runStatement(PreparedStatement statement) throws SQLException {
         statement.execute();
         statement.close();
     }
