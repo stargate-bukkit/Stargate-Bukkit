@@ -537,26 +537,47 @@ public class SQLQueryGenerator {
         return connection.prepareStatement(query);
     }
 
-    public PreparedStatement getPortalMetaData(Portal portal, PortalType portalType) {
-        // TODO Auto-generated method stub
-        return null;
+    public PreparedStatement getPortal(Connection connection,Portal portal, PortalType portalType) throws SQLException {
+        PreparedStatement statement;
+        if (portalType == PortalType.LOCAL) {
+            statement = prepareQuery(connection, getQuery(SQLQuery.GET_PORTAL));
+        } else {
+            statement = prepareQuery(connection, getQuery(SQLQuery.GET_INTER_PORTAL));
+        }
+        statement.setString(1, portal.getName());
+        statement.setString(2, portal.getNetwork().getName());
+        return statement;
     }
 
-    public PreparedStatement generateSetPortalMeta(Portal portal, String meta, PortalType portalType) {
-        // TODO Auto-generated method stub
-        return null;
+    public PreparedStatement generateSetPortalMeta(Connection connection,Portal portal, String meta, PortalType portalType) throws SQLException {
+        PreparedStatement statement;
+        if (portalType == PortalType.LOCAL) {
+            statement = prepareQuery(connection, getQuery(SQLQuery.SET_PORTAL_META));
+        } else {
+            statement = prepareQuery(connection, getQuery(SQLQuery.SET_INTER_PORTAL_META));
+        }
+        statement.setString(1, meta);
+        statement.setString(2, portal.getName());
+        statement.setString(3,portal.getNetwork().getName());
+        return statement;
     }
 
-    public PreparedStatement getPortalPositionMetaData(Portal portal, PortalPosition portalPosition,
-            PortalType portalType) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PreparedStatement generateSetPortalPositionMeta(RealPortal portal, PortalPosition portalPosition,
-            String meta, PortalType portalType) {
-        // TODO Auto-generated method stub
-        return null;
+    public PreparedStatement generateSetPortalPositionMeta(Connection connection,RealPortal portal, PortalPosition portalPosition,
+            String meta, PortalType portalType) throws SQLException {
+        PreparedStatement statement;
+        if (portalType == PortalType.LOCAL) {
+            statement = prepareQuery(connection, getQuery(SQLQuery.SET_PORTAL_POSITION_META));
+        } else {
+            statement = prepareQuery(connection, getQuery(SQLQuery.SET_INTER_PORTAL_POSITION_META));
+        }
+        statement.setString(1, meta);
+        statement.setString(2, portal.getName());
+        statement.setString(3, portal.getNetwork().getName());
+        BlockVector vector = portalPosition.getPositionLocation();
+        statement.setInt(4, vector.getBlockX());
+        statement.setInt(5, vector.getBlockY());
+        statement.setInt(6, -vector.getBlockZ());
+        return statement;
     }
 
 }

@@ -154,9 +154,7 @@ public class DatabaseTester {
     }
 
     private void createPortalPositionTableTest(PortalType type) throws SQLException {
-        System.out.println("################## PING 1 ###############");
         finishStatement(generator.generateCreatePortalPositionTableStatement(connection, type));
-        System.out.println("################## PING 2 ###############");
         finishStatement(generator.addMetaToPortalPositionTableStatement(connection, type));
     }
 
@@ -350,9 +348,10 @@ public class DatabaseTester {
     }
 
     private String getPortalMetaData(Portal portal, PortalType portalType) throws SQLException {
-        PreparedStatement statement = generator.getPortalMetaData(portal,portalType);
+        PreparedStatement statement = generator.getPortal(connection, portal, portalType);
         ResultSet set = statement.executeQuery();
         if(!set.next()) {
+            System.out.println("############# PING ###########");
             return null;
         }
         String data = set.getString("metaData");
@@ -364,13 +363,15 @@ public class DatabaseTester {
         String meta = "TEST";
         Map<String,RealPortal> portals = (portalType == PortalType.LOCAL) ? localPortals : interServerPortals;
         for(Portal portal : portals.values()) {
-            finishStatement( generator.generateSetPortalMeta(portal, meta, portalType));
-            Assertions.assertEquals( getPortalMetaData(portal,portalType), meta);
+            finishStatement( generator.generateSetPortalMeta(connection,portal, meta, portalType));
+            Assertions.assertEquals(meta, getPortalMetaData(portal,portalType));
         }
     }
     
     private String getPortalPositionMeta(Portal portal, PortalPosition portalPosition, PortalType portalType) throws SQLException {
-        PreparedStatement statement = generator.getPortalPositionMetaData(portal,portalPosition,portalType);
+        PreparedStatement statement = generator.generateGetPortalPositionsStatement(connection, portalType);
+        statement.setString(1, portal.getNetwork().getName());
+        statement.setString(2, portal.getName());
         ResultSet set = statement.executeQuery();
         if(!set.next()) {
             return null;
@@ -385,7 +386,7 @@ public class DatabaseTester {
         String meta = "TEST";
         for(RealPortal portal : portals.values()) {
             for(PortalPosition portalPosition : portal.getGate().getPortalPositions() ) {
-                finishStatement( generator.generateSetPortalPositionMeta(portal, portalPosition, meta, portalType));
+                finishStatement( generator.generateSetPortalPositionMeta(connection,portal, portalPosition, meta, portalType));
                 Assertions.assertEquals( getPortalPositionMeta(portal,portalPosition,portalType), meta);
             }
         }
