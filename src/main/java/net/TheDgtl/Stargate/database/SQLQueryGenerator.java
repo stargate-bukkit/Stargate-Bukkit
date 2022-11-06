@@ -93,6 +93,14 @@ public class SQLQueryGenerator {
         }
     }
 
+    public PreparedStatement generateAddMetaToPortalTableStatement(Connection connection, PortalType portalType) throws SQLException {
+        if (portalType == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_PORTAL));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_INTER_PORTAL));
+        }
+    }
+
     /**
      * Gets a prepared statement for creating the portal position type table
      *
@@ -139,6 +147,14 @@ public class SQLQueryGenerator {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_PORTAL_POSITION));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_INTER_PORTAL_POSITION));
+        }
+    }
+
+    public PreparedStatement addMetaToPortalPositionTableStatement(Connection connection, PortalType type) throws SQLException {
+        if (type == PortalType.LOCAL) {
+            return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_PORTAL_POSITION));
+        } else {
+            return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_INTER_PORTAL_POSITION));
         }
     }
 
@@ -519,6 +535,28 @@ public class SQLQueryGenerator {
         query = tableNameConfiguration.replaceKnownTableNames(query);
         logger.logMessage(Level.FINEST, query);
         return connection.prepareStatement(query);
+    }
+
+    public PreparedStatement getPortalMetaData(Portal portal, PortalType portalType) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public PreparedStatement generateSetPortalMeta(Portal portal, String meta, PortalType portalType) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public PreparedStatement getPortalPositionMetaData(Portal portal, PortalPosition portalPosition,
+            PortalType portalType) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public PreparedStatement generateSetPortalPositionMeta(RealPortal portal, PortalPosition portalPosition,
+            String meta, PortalType portalType) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

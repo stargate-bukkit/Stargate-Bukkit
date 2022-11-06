@@ -208,6 +208,31 @@ public class MySQLDatabaseTest {
     }
     
     @Test
+    @Order(7)
+    void setPortalMetaTest() throws SQLException {
+        tester.setPortalMetaDataTest(PortalType.LOCAL);
+    }
+    
+    
+    @Test
+    @Order(7)
+    void setInterPortalMetaTest() throws SQLException {
+        tester.setPortalMetaDataTest(PortalType.INTER_SERVER);
+    }
+    
+    @Test
+    @Order(7)
+    void setPortalPositionMetaTest() throws SQLException {
+        tester.setPortalPositionMetaTest(PortalType.LOCAL);
+    }
+    
+    @Test
+    @Order(7)
+    void setInterPortalPositionMetaTest() throws SQLException {
+        tester.setPortalPositionMetaTest(PortalType.INTER_SERVER);
+    }
+    
+    @Test
     @Order(10)
     void destroyPortalTest() throws SQLException {
         tester.destroyPortalTest();

@@ -105,10 +105,12 @@ public class DatabaseTester {
 
     void addPortalTableTest() throws SQLException {
         finishStatement(generator.generateCreatePortalTableStatement(connection, PortalType.LOCAL));
+        finishStatement(generator.generateAddMetaToPortalTableStatement(connection, PortalType.LOCAL));
     }
 
     void addInterPortalTableTest() throws SQLException {
         finishStatement(generator.generateCreatePortalTableStatement(connection, PortalType.INTER_SERVER));
+        finishStatement(generator.generateAddMetaToPortalTableStatement(connection, PortalType.INTER_SERVER));
     }
 
     void createFlagTableTest() throws SQLException {
@@ -152,7 +154,10 @@ public class DatabaseTester {
     }
 
     private void createPortalPositionTableTest(PortalType type) throws SQLException {
+        System.out.println("################## PING 1 ###############");
         finishStatement(generator.generateCreatePortalPositionTableStatement(connection, type));
+        System.out.println("################## PING 2 ###############");
+        finishStatement(generator.addMetaToPortalPositionTableStatement(connection, type));
     }
 
     void createPortalPositionIndexTest(PortalType type) throws SQLException {
@@ -320,7 +325,7 @@ public class DatabaseTester {
         return portals;
     }
     
-    void addPortalFlags(PortalType type) throws SQLException {
+    void addAndRemovePortalFlags(PortalType type) throws SQLException {
         System.out.println("---------- ADDING AND REMOVING FLAG RELATIONS");
         Map<String,RealPortal> portals = (type == PortalType.LOCAL) ? localPortals : interServerPortals;
         for(Portal portal : portals.values()) {
@@ -344,6 +349,48 @@ public class DatabaseTester {
         }
     }
 
+    private String getPortalMetaData(Portal portal, PortalType portalType) throws SQLException {
+        PreparedStatement statement = generator.getPortalMetaData(portal,portalType);
+        ResultSet set = statement.executeQuery();
+        if(!set.next()) {
+            return null;
+        }
+        String data = set.getString("metaData");
+        statement.close();
+        return data;
+    }
+    
+    void setPortalMetaDataTest(PortalType portalType) throws SQLException {
+        String meta = "TEST";
+        Map<String,RealPortal> portals = (portalType == PortalType.LOCAL) ? localPortals : interServerPortals;
+        for(Portal portal : portals.values()) {
+            finishStatement( generator.generateSetPortalMeta(portal, meta, portalType));
+            Assertions.assertEquals( getPortalMetaData(portal,portalType), meta);
+        }
+    }
+    
+    private String getPortalPositionMeta(Portal portal, PortalPosition portalPosition, PortalType portalType) throws SQLException {
+        PreparedStatement statement = generator.getPortalPositionMetaData(portal,portalPosition,portalType);
+        ResultSet set = statement.executeQuery();
+        if(!set.next()) {
+            return null;
+        }
+        String data = set.getString("metaData");
+        statement.close();
+        return data;
+    }
+    
+    void setPortalPositionMetaTest(PortalType portalType) throws SQLException {
+        Map<String,RealPortal> portals = (portalType == PortalType.LOCAL) ? localPortals : interServerPortals;
+        String meta = "TEST";
+        for(RealPortal portal : portals.values()) {
+            for(PortalPosition portalPosition : portal.getGate().getPortalPositions() ) {
+                finishStatement( generator.generateSetPortalPositionMeta(portal, portalPosition, meta, portalType));
+                Assertions.assertEquals( getPortalPositionMeta(portal,portalPosition,portalType), meta);
+            }
+        }
+    }
+    
     void destroyPortalTest() throws SQLException {
         for (Portal portal : localPortals.values()) {
             destroyPortal(portal, PortalType.LOCAL);

@@ -202,13 +202,37 @@ public class SQLiteDatabaseTest {
     @Test
     @Order(7)
     void addAndRemovePortalFlagRelationTest() throws SQLException {
-        tester.addPortalFlags(PortalType.LOCAL);
+        tester.addAndRemovePortalFlags(PortalType.LOCAL);
     }
     
     @Test
     @Order(7)
     void addAndRemoveInterPortalFlagRelationTest() throws SQLException {
-        tester.addPortalFlags(PortalType.INTER_SERVER);
+        tester.addAndRemovePortalFlags(PortalType.INTER_SERVER);
+    }
+    
+    @Test
+    @Order(7)
+    void setPortalMetaTest() throws SQLException {
+        tester.setPortalMetaDataTest(PortalType.LOCAL);
+    }
+    
+    @Test
+    @Order(7)
+    void setInterPortalMetaTest() throws SQLException {
+        tester.setPortalMetaDataTest(PortalType.INTER_SERVER);
+    }
+    
+    @Test
+    @Order(7)
+    void setPortalPositionMetaTest() throws SQLException {
+        tester.setPortalPositionMetaTest(PortalType.LOCAL);
+    }
+    
+    @Test
+    @Order(7)
+    void setInterPortalPositionMetaTest() throws SQLException {
+        tester.setPortalPositionMetaTest(PortalType.INTER_SERVER);
     }
     
     @Test
