@@ -26,7 +26,7 @@ import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
-import net.TheDgtl.Stargate.util.database.DataBaseHelper;
+import net.TheDgtl.Stargate.util.database.DatabaseHelper;
 import net.TheDgtl.Stargate.util.database.PortalStorageHelper;
 import net.TheDgtl.Stargate.util.portal.PortalCreationHelper;
 import org.bukkit.Bukkit;
@@ -97,7 +97,7 @@ public class DatabaseAPI implements StorageAPI {
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
         this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
-        DataBaseHelper.createTables(database,this.sqlQueryGenerator, useInterServerNetworks);
+        DatabaseHelper.createTables(database,this.sqlQueryGenerator, useInterServerNetworks);
     }
 
     @Override
@@ -160,9 +160,9 @@ public class DatabaseAPI implements StorageAPI {
             conn = database.getConnection();
             conn.setAutoCommit(false);
 
-            DataBaseHelper.runStatement(sqlQueryGenerator.generateRemoveFlagStatement(conn, portalType, portal));
-            DataBaseHelper.runStatement(sqlQueryGenerator.generateRemovePortalPositionsStatement(conn, portalType, portal));
-            DataBaseHelper.runStatement(sqlQueryGenerator.generateRemovePortalStatement(conn, portal, portalType));
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateRemoveFlagsStatement(conn, portalType, portal));
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateRemovePortalPositionsStatement(conn, portalType, portal));
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateRemovePortalStatement(conn, portal, portalType));
 
             conn.commit();
             conn.setAutoCommit(true);
@@ -270,12 +270,7 @@ public class DatabaseAPI implements StorageAPI {
         List<PortalPosition> portalPositions = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
-            int xCoordinate = Integer.parseInt(resultSet.getString("xCoordinate"));
-            int yCoordinate = Integer.parseInt(resultSet.getString("yCoordinate"));
-            int zCoordinate = -Integer.parseInt(resultSet.getString("zCoordinate"));
-            BlockVector positionVector = new BlockVector(xCoordinate, yCoordinate, zCoordinate);
-            PositionType positionType = PositionType.valueOf(resultSet.getString("positionName"));
-            portalPositions.add(new PortalPosition(positionType, positionVector));
+            portalPositions.add(PortalStorageHelper.loadPortalPosition(resultSet));
         }
         statement.close();
         connection.close();
@@ -291,18 +286,8 @@ public class DatabaseAPI implements StorageAPI {
      */
     private void addPortalPositions(PreparedStatement addPositionStatement, RealPortal portal) throws SQLException {
         for (PortalPosition portalPosition : portal.getGate().getPortalPositions()) {
-            addPortalPosition(addPositionStatement, portal, portalPosition);
+            PortalStorageHelper.addPortalPosition(addPositionStatement, portal, portalPosition);
         }
-    }
-    
-    private void addPortalPosition(PreparedStatement addPositionStatement, RealPortal portal, PortalPosition portalPosition) throws SQLException {
-        addPositionStatement.setString(1, portal.getName());
-        addPositionStatement.setString(2, portal.getNetwork().getName());
-        addPositionStatement.setString(3, String.valueOf(portalPosition.getPositionLocation().getBlockX()));
-        addPositionStatement.setString(4, String.valueOf(portalPosition.getPositionLocation().getBlockY()));
-        addPositionStatement.setString(5, String.valueOf(-portalPosition.getPositionLocation().getBlockZ()));
-        addPositionStatement.setString(6, portalPosition.getPositionType().name());
-        addPositionStatement.execute();
     }
 
     /**
@@ -348,7 +333,7 @@ public class DatabaseAPI implements StorageAPI {
         TableNameConfiguration config = new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
         this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
-        DataBaseHelper.createTables(database,this.sqlQueryGenerator,useInterServerNetworks);
+        DatabaseHelper.createTables(database,this.sqlQueryGenerator,useInterServerNetworks);
     }
     
     @Override
@@ -368,7 +353,7 @@ public class DatabaseAPI implements StorageAPI {
     public void startInterServerConnection() {
         try {
             Connection conn = database.getConnection();
-            DataBaseHelper.runStatement(sqlQueryGenerator.generateUpdateServerInfoStatus(conn, Stargate.getServerUUID(),
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateUpdateServerInfoStatus(conn, Stargate.getServerUUID(),
                     Stargate.getServerName()));
             conn.close();
         } catch (SQLException exception) {
@@ -381,7 +366,7 @@ public class DatabaseAPI implements StorageAPI {
         Connection connection = database.getConnection();
         PreparedStatement addStatement = sqlQueryGenerator.generateAddFlagStatement(connection);
         addStatement.setString(1, String.valueOf(flagChar));
-        DataBaseHelper.runStatement(addStatement);
+        DatabaseHelper.runStatement(addStatement);
         connection.close();
     }
     
@@ -415,7 +400,7 @@ public class DatabaseAPI implements StorageAPI {
         if (!knownPositionTypes.contains(portalPositionTypeName)) {
             PreparedStatement addStatement = sqlQueryGenerator.generateAddPortalPositionTypeStatement(connection);
             addStatement.setString(1, portalPositionTypeName);
-            DataBaseHelper.runStatement(addStatement);
+            DatabaseHelper.runStatement(addStatement);
         }
         connection.close();
     }
@@ -424,22 +409,24 @@ public class DatabaseAPI implements StorageAPI {
     public void addPortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement addPositionStatement = sqlQueryGenerator.generateAddPortalPositionStatement(connection, portalType);
-        this.addPortalPosition(addPositionStatement, portal, portalPosition);
+        PortalStorageHelper.addPortalPosition(addPositionStatement, portal, portalPosition);
         addPositionStatement.close();
         connection.close();
     }
 
     @Override
     public void removeFlag(Character flagChar, Portal portal, PortalType portalType) throws SQLException {
-        // TODO Auto-generated method stub
-        
+        Connection connection = database.getConnection();
+        DatabaseHelper.runStatement( sqlQueryGenerator.generateRemoveFlagStatement(connection, portalType, portal, flagChar));
+        connection.close();
     }
 
     @Override
     public void removePortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition)
             throws SQLException {
-        // TODO Auto-generated method stub
-        
+        Connection connection = database.getConnection();
+        DatabaseHelper.runStatement(sqlQueryGenerator.generateRemovePortalPositionStatement(connection, portalType, portal, portalPosition));
+        connection.close();
     }
 
     @Override
@@ -465,5 +452,4 @@ public class DatabaseAPI implements StorageAPI {
         // TODO Auto-generated method stub
         return null;
     }
-    
 }

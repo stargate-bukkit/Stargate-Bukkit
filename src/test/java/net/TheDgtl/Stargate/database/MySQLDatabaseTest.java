@@ -167,6 +167,12 @@ public class MySQLDatabaseTest {
 
     @Test
     @Order(5)
+    void addFlagsTest() throws SQLException {
+        tester.addFlags();
+    }
+    
+    @Test
+    @Order(5)
     void addPortalTest() {
         tester.addPortalTest();
     }
@@ -191,12 +197,24 @@ public class MySQLDatabaseTest {
 
     @Test
     @Order(7)
+    void addAndRemovePortalPositionTest() throws SQLException {
+        tester.addAndRemovePortalPosition(PortalType.LOCAL);
+    }
+    
+    @Test
+    @Order(7)
+    void addAndRemoveInterPortalPositionTest() throws SQLException {
+        tester.addAndRemovePortalPosition(PortalType.INTER_SERVER);
+    }
+    
+    @Test
+    @Order(10)
     void destroyPortalTest() throws SQLException {
         tester.destroyPortalTest();
     }
 
     @Test
-    @Order(7)
+    @Order(10)
     void destroyInterPortalTest() throws SQLException {
         tester.destroyInterPortalTest();
     }

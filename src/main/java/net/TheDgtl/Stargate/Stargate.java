@@ -56,7 +56,7 @@ import net.TheDgtl.Stargate.util.BungeeHelper;
 import net.TheDgtl.Stargate.util.colors.ColorConverter;
 import net.TheDgtl.Stargate.util.colors.ColorNameInterpreter;
 import net.TheDgtl.Stargate.util.colors.ColorProperty;
-import net.TheDgtl.Stargate.util.database.DataBaseHelper;
+import net.TheDgtl.Stargate.util.database.DatabaseHelper;
 import net.TheDgtl.Stargate.util.portal.PortalHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -156,7 +156,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
             load();
             economyManager = new VaultEconomyManager(languageManager);
-            Database database = DataBaseHelper.loadDatabase(this);
+            Database database = DatabaseHelper.loadDatabase(this);
             storageAPI = new DatabaseAPI(database,this);
             registry = new StargateRegistry(storageAPI);
             registry.loadPortals();
@@ -485,7 +485,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         try {
             load();
             loadGateFormats();
-            Database database = DataBaseHelper.loadDatabase(this);
+            Database database = DatabaseHelper.loadDatabase(this);
             storageAPI.load(database,this);
             registry.load();
             economyManager.setupEconomy();

@@ -168,13 +168,25 @@ public enum SQLQuery {
     /**
      * The query for deleting a portal flag relation
      */
-    DELETE_PORTAL_FLAG_RELATION,
+    DELETE_PORTAL_FLAG_RELATIONS,
+
+    
+    //TODO Better naming
+    /**
+     * The query for deleting a inter-portal flag relation
+     */
+    DELETE_INTER_PORTAL_FLAG_RELATIONS,
 
     /**
-     * The query for deleting an inter-portal flag relation
+     * The query for deleting one portal flag relation
+     */
+    DELETE_PORTAL_FLAG_RELATION,
+    
+    /**
+     * The query for deliting one inter-portal flag relation
      */
     DELETE_INTER_PORTAL_FLAG_RELATION,
-
+    
     /**
      * The query for deleting a portal
      */
@@ -193,6 +205,8 @@ public enum SQLQuery {
     /**
      * The query for checking if the inter-portal position index exists
      */
-    SHOW_INDEX_INTER_PORTAL_POSITION,
+    SHOW_INDEX_INTER_PORTAL_POSITION, DELETE_PORTAL_POSITION, DELETE_INTER_PORTAL_POSITION, 
+    
+    
 
 }

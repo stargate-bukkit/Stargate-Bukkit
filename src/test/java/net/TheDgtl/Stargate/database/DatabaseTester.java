@@ -15,8 +15,13 @@ import net.TheDgtl.Stargate.network.Network;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.FakePortalGenerator;
 import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.PortalData;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
+import net.TheDgtl.Stargate.util.database.DatabaseHelper;
+import net.TheDgtl.Stargate.util.database.PortalStorageHelper;
+
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
 
@@ -197,6 +202,66 @@ public class DatabaseTester {
         }
     }
 
+    private List<PortalPosition> fetchPortalPositions(RealPortal portal, PortalType portalType) throws SQLException {
+        PreparedStatement statement = generator.generateGetPortalPositionsStatement(connection, portalType);
+        statement.setString(1, portal.getNetwork().getName());
+        statement.setString(2, portal.getName());
+        ResultSet portalPositionsData = statement.executeQuery();
+        List<PortalPosition> output = new ArrayList<>();
+        while(portalPositionsData.next()) {
+            PortalPosition position = PortalStorageHelper.loadPortalPosition(portalPositionsData);
+            output.add(position);
+        }
+        return output;
+    }
+    
+    void addAndRemovePortalPosition(PortalType type) throws SQLException {
+        Map<String,RealPortal> portals = (type == PortalType.LOCAL) ? localPortals : interServerPortals;
+        
+        for(RealPortal portal : portals.values()) {
+            List<PortalPosition> portalPositions = fetchPortalPositions(portal,type);
+            System.out.println("---- Initial portalPositions ----");
+            for(PortalPosition fetchedPosition : portalPositions ) {
+                System.out.println(String.format("%s", fetchedPosition));
+            }
+            for(PortalPosition position : portalPositions) {
+                DatabaseHelper.runStatement(generator.generateRemovePortalPositionStatement(connection, type, portal, position));
+                List<PortalPosition> updatedPortalPositionList = fetchPortalPositions(portal,type);
+                System.out.println("---- fetched portalPositions ----");
+                for(PortalPosition fetchedPosition : updatedPortalPositionList ) {
+                    System.out.println(String.format("%s, isEqualToRemovedPosition = %b", fetchedPosition, fetchedPosition.equals(position)));
+                }
+                System.out.println(String.format("Removed position: %s", position));
+                Assertions.assertFalse(updatedPortalPositionList.contains(position), "PortalPosition did not get properly removed");
+                Assertions.assertTrue(updatedPortalPositionList.size() < portalPositions.size(), "Nothing got removed");
+                PreparedStatement addPositionStatement = generator.generateAddPortalPositionStatement(connection, type);
+                PortalStorageHelper.addPortalPosition(addPositionStatement, portal, position);
+                addPositionStatement.close();
+                updatedPortalPositionList = fetchPortalPositions(portal,type);
+                Assertions.assertTrue(updatedPortalPositionList.size() == portalPositions.size(), "Nothing got added");
+                Assertions.assertTrue(updatedPortalPositionList.contains(position), "PortalPosition did not get properly added");
+            }
+        }
+    }
+
+    private List<String> getKnownFlags() throws SQLException{
+        PreparedStatement statement = generator.generateGetAllFlagsStatement(connection);
+        ResultSet resultSet = statement.executeQuery();
+        List<String> knownFlags = new ArrayList<>();
+        while(resultSet.next()) {
+            knownFlags.add(resultSet.getString("character"));
+        }
+        return knownFlags;
+    }
+    
+    void addFlags() throws SQLException {
+        int initialLength = getKnownFlags().size();
+        PreparedStatement addStatement = generator.generateAddFlagStatement(connection);
+        addStatement.setString(1, String.valueOf('G'));
+        DatabaseHelper.runStatement(addStatement);
+        Assertions.assertTrue(getKnownFlags().contains("G"), "Flag did not get added properly");
+    }
+    
     void getPortalTest() throws SQLException {
         getPortals(PortalType.LOCAL, localPortals);
     }
@@ -242,6 +307,41 @@ public class DatabaseTester {
             System.out.println();
         }
         Assertions.assertEquals(portals.size(), rows);
+    }
+    
+    private List<PortalData> getKnownPortalData(PortalType type) throws SQLException {
+        PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, type);
+
+        ResultSet set = statement.executeQuery();
+        List<PortalData> portals = new ArrayList<>();
+        while(set.next()) {
+            portals.add(PortalStorageHelper.loadPortalData(set, type));
+        }
+        return portals;
+    }
+    
+    void addPortalFlags(PortalType type) throws SQLException {
+        System.out.println("---------- ADDING AND REMOVING FLAG RELATIONS");
+        Map<String,RealPortal> portals = (type == PortalType.LOCAL) ? localPortals : interServerPortals;
+        for(Portal portal : portals.values()) {
+            PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection, type);
+            addFlagStatement.setString(1, portal.getName());
+            addFlagStatement.setString(2, portal.getNetwork().getName());
+            addFlagStatement.setString(3, String.valueOf('G'));
+            addFlagStatement.execute();
+            // This for loop is just a lazy search algorithm
+            for(PortalData data : getKnownPortalData(type)) {
+                if(data.name.equals(portal.getName()) && data.networkName.equals(portal.getNetwork().getName())) {
+                    Assertions.assertTrue(data.flagString.contains("G"),"No flag was added to the portal " + portal.getName());
+                }
+            }
+            DatabaseHelper.runStatement(generator.generateRemoveFlagStatement(connection, type, portal, 'G'));
+            for(PortalData data : getKnownPortalData(type)) {
+                if(data.name.equals(portal.getName()) && data.networkName.equals(portal.getNetwork().getName())) {
+                    Assertions.assertFalse(data.flagString.contains("G"),"No flag was removed from the portal " + portal.getName());
+                }
+            }
+        }
     }
 
     void destroyPortalTest() throws SQLException {

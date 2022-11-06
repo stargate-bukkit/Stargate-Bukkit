@@ -7,6 +7,8 @@ import net.TheDgtl.Stargate.gate.Gate;
 import net.TheDgtl.Stargate.gate.GateFormat;
 import net.TheDgtl.Stargate.gate.GateFormatHandler;
 import net.TheDgtl.Stargate.network.Network;
+import net.TheDgtl.Stargate.network.PortalType;
+
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
@@ -84,13 +86,11 @@ public class FakePortalGenerator {
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
         }
-        GateFormat format = GateFormatHandler.getFormat("fileName.gate");
-        if (format == null) {
-            throw new IllegalArgumentException("Gate format not found");
-        }
         PortalData portalData = new PortalData();
         portalData.topLeft = world.getBlockAt(0, 0, 0).getLocation();
         portalData.facing = BlockFace.EAST;
+        portalData.gateFileName = "fileName.gate";
+        portalData.portalType = createInterServerPortal ? PortalType.INTER_SERVER : PortalType.LOCAL;
         
         Gate gate = new Gate(portalData, logger);
 

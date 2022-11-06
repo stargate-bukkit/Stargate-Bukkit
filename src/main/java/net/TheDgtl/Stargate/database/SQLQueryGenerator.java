@@ -6,9 +6,11 @@ import net.TheDgtl.Stargate.config.TableNameConfiguration;
 import net.TheDgtl.Stargate.gate.GateAPI;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.Portal;
+import net.TheDgtl.Stargate.network.portal.PortalPosition;
 import net.TheDgtl.Stargate.network.portal.RealPortal;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.util.BlockVector;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -199,6 +201,22 @@ public class SQLQueryGenerator {
         removePositionsStatement.setString(2, portal.getNetwork().getName());
         return removePositionsStatement;
     }
+    
+    public PreparedStatement generateRemovePortalPositionStatement(Connection connection, PortalType portalType, Portal portal, PortalPosition portalPosition) throws SQLException {
+        PreparedStatement removePositionsStatement;
+        if (portalType == PortalType.LOCAL) {
+            removePositionsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_POSITION));
+        } else {
+            removePositionsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_POSITION));
+        }
+        removePositionsStatement.setString(1, portal.getName());
+        removePositionsStatement.setString(2, portal.getNetwork().getName());
+        BlockVector positionLocation = portalPosition.getPositionLocation();
+        removePositionsStatement.setInt(3, positionLocation.getBlockX());
+        removePositionsStatement.setInt(4, positionLocation.getBlockY());
+        removePositionsStatement.setInt(5, -positionLocation.getBlockZ());
+        return removePositionsStatement;
+    }
 
     /**
      * Gets a prepared statement for getting all portal positions for one portal
@@ -319,8 +337,29 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateRemoveFlagStatement(Connection connection,
+    public PreparedStatement generateRemoveFlagsStatement(Connection connection,
                                                          PortalType portalType, Portal portal) throws SQLException {
+        PreparedStatement removeFlagsStatement;
+        if (portalType == PortalType.LOCAL) {
+            removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATIONS));
+        } else {
+            removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATIONS));
+        }
+        removeFlagsStatement.setString(1, portal.getName());
+        removeFlagsStatement.setString(2, portal.getNetwork().getName());
+        return removeFlagsStatement;
+    }
+    
+    /**
+     * Gets a prepared statement for removing the relation between a portal and its flag
+     *
+     * @param connection <p>The database connection to use</p>
+     * @param portalType <p>The portal type to remove the flags from</p>
+     * @return <p>A prepared statement</p>
+     * @throws SQLException <p>If unable to prepare the statement</p>
+     */
+    public PreparedStatement generateRemoveFlagStatement(Connection connection,
+                                                         PortalType portalType, Portal portal, Character flagChar) throws SQLException {
         PreparedStatement removeFlagsStatement;
         if (portalType == PortalType.LOCAL) {
             removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATION));
@@ -329,6 +368,7 @@ public class SQLQueryGenerator {
         }
         removeFlagsStatement.setString(1, portal.getName());
         removeFlagsStatement.setString(2, portal.getNetwork().getName());
+        removeFlagsStatement.setString(3, String.valueOf(flagChar));
         return removeFlagsStatement;
     }
 

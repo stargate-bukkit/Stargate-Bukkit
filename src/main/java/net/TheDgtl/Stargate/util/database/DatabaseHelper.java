@@ -34,7 +34,7 @@ import net.TheDgtl.Stargate.network.portal.PortalFlag;
 import net.TheDgtl.Stargate.network.portal.PositionType;
 import net.TheDgtl.Stargate.network.portal.VirtualPortal;
 
-public class DataBaseHelper {
+public class DatabaseHelper {
     /**
      * Executes and closes the given statement
      *

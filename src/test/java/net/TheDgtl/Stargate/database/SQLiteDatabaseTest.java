@@ -153,6 +153,12 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(5)
+    void addFlagsTest() throws SQLException {
+        tester.addFlags();
+    }
+    
+    @Test
+    @Order(5)
     void updateLastKnownNameTest() throws SQLException {
         tester.updateLastKnownNameTest();
     }
@@ -183,12 +189,36 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(7)
+    void addAndRemovePortalPositionTest() throws SQLException {
+        tester.addAndRemovePortalPosition(PortalType.LOCAL);
+    }
+    
+    @Test
+    @Order(7)
+    void addAndRemoveInterPortalPositionTest() throws SQLException {
+        tester.addAndRemovePortalPosition(PortalType.INTER_SERVER);
+    }
+    
+    @Test
+    @Order(7)
+    void addAndRemovePortalFlagRelationTest() throws SQLException {
+        tester.addPortalFlags(PortalType.LOCAL);
+    }
+    
+    @Test
+    @Order(7)
+    void addAndRemoveInterPortalFlagRelationTest() throws SQLException {
+        tester.addPortalFlags(PortalType.INTER_SERVER);
+    }
+    
+    @Test
+    @Order(10)
     void destroyPortalTest() throws SQLException {
         tester.destroyPortalTest();
     }
 
     @Test
-    @Order(7)
+    @Order(10)
     void destroyInterPortalTest() throws SQLException {
         tester.destroyInterPortalTest();
     }

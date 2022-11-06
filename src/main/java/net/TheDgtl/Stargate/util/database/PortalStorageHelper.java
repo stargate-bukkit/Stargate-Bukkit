@@ -1,5 +1,6 @@
 package net.TheDgtl.Stargate.util.database;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Set;
@@ -10,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
+import org.bukkit.util.BlockVector;
 
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
@@ -17,6 +19,9 @@ import net.TheDgtl.Stargate.config.ConfigurationOption;
 import net.TheDgtl.Stargate.network.PortalType;
 import net.TheDgtl.Stargate.network.portal.PortalData;
 import net.TheDgtl.Stargate.network.portal.PortalFlag;
+import net.TheDgtl.Stargate.network.portal.PortalPosition;
+import net.TheDgtl.Stargate.network.portal.PositionType;
+import net.TheDgtl.Stargate.network.portal.RealPortal;
 import net.TheDgtl.Stargate.util.LegacyDataHandler;
 
 public class PortalStorageHelper {
@@ -55,6 +60,26 @@ public class PortalStorageHelper {
         }
         
         return portalData;
+    }
+    
+    public static PortalPosition loadPortalPosition(ResultSet resultSet) throws NumberFormatException, SQLException {
+        int xCoordinate = Integer.parseInt(resultSet.getString("xCoordinate"));
+        int yCoordinate = Integer.parseInt(resultSet.getString("yCoordinate"));
+        int zCoordinate = -Integer.parseInt(resultSet.getString("zCoordinate"));
+        BlockVector positionVector = new BlockVector(xCoordinate, yCoordinate, zCoordinate);
+        PositionType positionType = PositionType.valueOf(resultSet.getString("positionName"));
+        return new PortalPosition(positionType, positionVector);
+    }
+
+    
+    public static void addPortalPosition(PreparedStatement addPositionStatement, RealPortal portal, PortalPosition portalPosition) throws SQLException {
+        addPositionStatement.setString(1, portal.getName());
+        addPositionStatement.setString(2, portal.getNetwork().getName());
+        addPositionStatement.setString(3, String.valueOf(portalPosition.getPositionLocation().getBlockX()));
+        addPositionStatement.setString(4, String.valueOf(portalPosition.getPositionLocation().getBlockY()));
+        addPositionStatement.setString(5, String.valueOf(-portalPosition.getPositionLocation().getBlockZ()));
+        addPositionStatement.setString(6, portalPosition.getPositionType().name());
+        addPositionStatement.execute();
     }
     
     /**

@@ -39,4 +39,17 @@ public class PortalPosition {
         return this.positionLocation;
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if(other == null || !(other instanceof PortalPosition)) {
+            return false;
+        }
+        PortalPosition otherPortalPosition = (PortalPosition) other;
+        return otherPortalPosition.getPositionLocation().equals(this.getPositionLocation());
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("{x=%d,y=%d,z=%d,%s}", positionLocation.getBlockX(),positionLocation.getBlockY(),positionLocation.getBlockZ(),positionType);
+    }
 }
