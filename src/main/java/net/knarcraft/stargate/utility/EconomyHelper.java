@@ -1,5 +1,6 @@
 package net.knarcraft.stargate.utility;
 
+import net.knarcraft.knarlib.formatting.StringFormatter;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.config.EconomyConfig;
 import net.knarcraft.stargate.portal.Portal;
@@ -78,7 +79,7 @@ public final class EconomyHelper {
      */
     public static void sendObtainMessage(String portalName, Player portalOwner, int earnings) {
         String obtainedMsg = Stargate.getString("ecoObtain");
-        obtainedMsg = replaceVars(obtainedMsg, portalName, earnings);
+        obtainedMsg = replacePlaceholders(obtainedMsg, portalName, earnings);
         Stargate.getMessageSender().sendSuccessMessage(portalOwner, obtainedMsg);
     }
 
@@ -91,7 +92,7 @@ public final class EconomyHelper {
      */
     public static void sendDeductMessage(String portalName, Player player, int cost) {
         String deductMsg = Stargate.getString("ecoDeduct");
-        deductMsg = replaceVars(deductMsg, portalName, cost);
+        deductMsg = replacePlaceholders(deductMsg, portalName, cost);
         Stargate.getMessageSender().sendSuccessMessage(player, deductMsg);
     }
 
@@ -104,7 +105,7 @@ public final class EconomyHelper {
      */
     public static void sendInsufficientFundsMessage(String portalName, Player player, int cost) {
         String inFundMsg = Stargate.getString("ecoInFunds");
-        inFundMsg = replaceVars(inFundMsg, portalName, cost);
+        inFundMsg = replacePlaceholders(inFundMsg, portalName, cost);
         Stargate.getMessageSender().sendErrorMessage(player, inFundMsg);
     }
 
@@ -117,7 +118,7 @@ public final class EconomyHelper {
      */
     public static void sendRefundMessage(String portalName, Player player, int cost) {
         String refundMsg = Stargate.getString("ecoRefund");
-        refundMsg = replaceVars(refundMsg, portalName, -cost);
+        refundMsg = replacePlaceholders(refundMsg, portalName, -cost);
         Stargate.getMessageSender().sendSuccessMessage(player, refundMsg);
     }
 
@@ -239,8 +240,8 @@ public final class EconomyHelper {
      * @param cost       <p>The cost for a given interaction</p>
      * @return <p>The same string with cost and portal variables replaced</p>
      */
-    private static String replaceVars(String message, String portalName, int cost) {
-        return Stargate.replaceVars(message, new String[]{"%cost%", "%portal%"},
+    private static String replacePlaceholders(String message, String portalName, int cost) {
+        return StringFormatter.replacePlaceholders(message, new String[]{"%cost%", "%portal%"},
                 new String[]{Stargate.getEconomyConfig().format(cost), portalName});
     }
 

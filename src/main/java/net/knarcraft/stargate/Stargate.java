@@ -1,5 +1,6 @@
 package net.knarcraft.stargate;
 
+import net.knarcraft.knarlib.KnarLib;
 import net.knarcraft.knarlib.util.UpdateChecker;
 import net.knarcraft.stargate.command.CommandStarGate;
 import net.knarcraft.stargate.command.StarGateTabCompleter;
@@ -300,24 +301,6 @@ public class Stargate extends JavaPlugin {
     }
 
     /**
-     * Replaces a list of variables in a string in the order they are given
-     *
-     * @param input  <p>The input containing the variables</p>
-     * @param search <p>The variables to replace</p>
-     * @param values <p>The replacement values</p>
-     * @return <p>The input string with the search values replaced with the given values</p>
-     */
-    public static String replaceVars(String input, String[] search, String[] values) {
-        if (search.length != values.length) {
-            throw new IllegalArgumentException("The number of search values and replace values do not match.");
-        }
-        for (int i = 0; i < search.length; i++) {
-            input = replaceVars(input, search[i], values[i]);
-        }
-        return input;
-    }
-
-    /**
      * Replaces a variable in a string
      *
      * @param input  <p>The input containing the variables</p>
@@ -357,6 +340,8 @@ public class Stargate extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        KnarLib.setPlugin(this);
+
         PluginDescriptionFile pluginDescriptionFile = this.getDescription();
         pluginManager = getServer().getPluginManager();
         FileConfiguration newConfig = this.getConfig();
