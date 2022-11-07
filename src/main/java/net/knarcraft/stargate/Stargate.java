@@ -1,6 +1,5 @@
 package net.knarcraft.stargate;
 
-import net.knarcraft.knarlib.KnarLib;
 import net.knarcraft.knarlib.util.UpdateChecker;
 import net.knarcraft.stargate.command.CommandStarGate;
 import net.knarcraft.stargate.command.StarGateTabCompleter;
@@ -340,8 +339,6 @@ public class Stargate extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        KnarLib.setPlugin(this);
-
         PluginDescriptionFile pluginDescriptionFile = this.getDescription();
         pluginManager = getServer().getPluginManager();
         FileConfiguration newConfig = this.getConfig();
