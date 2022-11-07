@@ -1,5 +1,7 @@
 package net.knarcraft.stargate.portal;
 
+import net.knarcraft.knarlib.property.ColorConversion;
+import net.knarcraft.knarlib.util.ColorHelper;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.SignData;
 import net.knarcraft.stargate.portal.property.PortalLocation;
@@ -11,8 +13,6 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 
 import java.util.Map;
-
-import static net.knarcraft.stargate.utility.ColorHelper.translateAllColorCodes;
 
 /**
  * The portal sign drawer draws the sing of a given portal
@@ -391,6 +391,16 @@ public class PortalSignDrawer {
         } else {
             return signColor;
         }
+    }
+
+    /**
+     * Translates all normal and RGB color codes in the given input
+     *
+     * @param input <p>The input to translate color codes for</p>
+     * @return <p>The input with color codes converted translated from & to §</p>
+     */
+    private String translateAllColorCodes(String input) {
+        return ColorHelper.translateColorCodes(input, ColorConversion.RGB);
     }
 
 }

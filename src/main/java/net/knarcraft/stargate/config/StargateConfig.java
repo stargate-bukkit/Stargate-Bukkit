@@ -1,5 +1,7 @@
 package net.knarcraft.stargate.config;
 
+import net.knarcraft.knarlib.property.ColorConversion;
+import net.knarcraft.knarlib.util.FileHelper;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.listener.BungeeCordListener;
@@ -8,7 +10,6 @@ import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.portal.property.gate.GateHandler;
 import net.knarcraft.stargate.thread.BlockChangeThread;
-import net.knarcraft.stargate.utility.FileHelper;
 import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -448,7 +449,8 @@ public final class StargateConfig {
         Map<String, String> migrationFields;
         try {
             migrationFields = FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(
-                    FileHelper.getInputStreamForInternalFile("/config-migrations.txt")));
+                            FileHelper.getInputStreamForInternalFile("/config-migrations.txt")), "=",
+                    ColorConversion.NORMAL);
         } catch (IOException e) {
             Stargate.debug("Stargate::migrateConfig", "Unable to load config migration file");
             e.printStackTrace();

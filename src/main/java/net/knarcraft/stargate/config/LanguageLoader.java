@@ -1,7 +1,8 @@
 package net.knarcraft.stargate.config;
 
+import net.knarcraft.knarlib.property.ColorConversion;
+import net.knarcraft.knarlib.util.FileHelper;
 import net.knarcraft.stargate.Stargate;
-import net.knarcraft.stargate.utility.FileHelper;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -136,7 +137,8 @@ public final class LanguageLoader {
             String> currentLanguageValues) throws IOException {
         //Get language values
         BufferedReader bufferedReader = FileHelper.getBufferedReaderFromInputStream(inputStream);
-        Map<String, String> internalLanguageValues = FileHelper.readKeyValuePairs(bufferedReader);
+        Map<String, String> internalLanguageValues = FileHelper.readKeyValuePairs(bufferedReader, "=",
+                ColorConversion.NORMAL);
 
         //If currentLanguageValues is null; the chosen language has not been used before
         if (currentLanguageValues == null) {
@@ -221,7 +223,7 @@ public final class LanguageLoader {
             } else {
                 bufferedReader = FileHelper.getBufferedReaderFromInputStream(inputStream);
             }
-            strings = FileHelper.readKeyValuePairs(bufferedReader);
+            strings = FileHelper.readKeyValuePairs(bufferedReader, "=", ColorConversion.NORMAL);
         } catch (Exception e) {
             if (Stargate.getStargateConfig().isDebuggingEnabled()) {
                 Stargate.getConsoleLogger().info("[Stargate] Unable to load language " + lang);

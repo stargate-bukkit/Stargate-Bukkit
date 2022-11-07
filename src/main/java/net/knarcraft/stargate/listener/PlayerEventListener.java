@@ -1,5 +1,6 @@
 package net.knarcraft.stargate.listener;
 
+import net.knarcraft.knarlib.util.UpdateChecker;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.config.MessageSender;
 import net.knarcraft.stargate.container.BlockLocation;
@@ -13,7 +14,6 @@ import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import net.knarcraft.stargate.utility.TeleportHelper;
 import net.knarcraft.stargate.utility.UUIDMigrationHelper;
-import net.knarcraft.stargate.utility.UpdateChecker;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;

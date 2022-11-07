@@ -1,8 +1,8 @@
 package net.knarcraft.stargate.config;
 
+import net.knarcraft.knarlib.util.ColorHelper;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.portal.PortalSignDrawer;
-import net.knarcraft.stargate.utility.ColorHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;

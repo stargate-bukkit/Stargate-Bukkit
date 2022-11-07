@@ -1,6 +1,6 @@
 package net.knarcraft.stargate.container;
 
-import net.knarcraft.stargate.utility.ColorHelper;
+import net.knarcraft.knarlib.util.ColorHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.block.Sign;

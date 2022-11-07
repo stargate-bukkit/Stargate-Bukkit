@@ -14,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.knarcraft.knarlib.util.TabCompletionHelper.filterMatchingStartsWith;
+
 /**
  * This is the completer for stargates config sub-command (/sg config)
  */
@@ -48,25 +50,8 @@ public class ConfigTabCompleter implements TabCompleter {
             for (ConfigOption option : ConfigOption.values()) {
                 configOptionNames.add(option.getName());
             }
-            return filterMatching(configOptionNames, args[0]);
+            return filterMatchingStartsWith(configOptionNames, args[0]);
         }
-    }
-
-    /**
-     * Find completable strings which match the text typed by the command's sender
-     *
-     * @param values    <p>The values to filter</p>
-     * @param typedText <p>The text the player has started typing</p>
-     * @return <p>The given string values which start with the player's typed text</p>
-     */
-    private List<String> filterMatching(List<String> values, String typedText) {
-        List<String> configValues = new ArrayList<>();
-        for (String value : values) {
-            if (value.toLowerCase().startsWith(typedText.toLowerCase())) {
-                configValues.add(value);
-            }
-        }
-        return configValues;
     }
 
     /**
@@ -80,7 +65,7 @@ public class ConfigTabCompleter implements TabCompleter {
         switch (selectedOption) {
             case LANGUAGE:
                 //Return available languages
-                return filterMatching(languages, typedText);
+                return filterMatchingStartsWith(languages, typedText);
             case GATE_FOLDER:
             case PORTAL_FOLDER:
             case DEFAULT_GATE_NETWORK:
@@ -94,12 +79,12 @@ public class ConfigTabCompleter implements TabCompleter {
             case HIGHLIGHT_SIGN_COLOR:
             case FREE_GATES_COLOR:
                 //Return all colors
-                return filterMatching(chatColors, typedText);
+                return filterMatchingStartsWith(chatColors, typedText);
         }
 
         //If the config value is a boolean, show the two boolean values
         if (selectedOption.getDataType() == OptionDataType.BOOLEAN) {
-            return filterMatching(booleans, typedText);
+            return filterMatchingStartsWith(booleans, typedText);
         }
 
         //If the config value is an integer, display some valid numbers
@@ -145,11 +130,11 @@ public class ConfigTabCompleter implements TabCompleter {
      */
     private List<String> getPerSignColorCompletion(String[] args) {
         if (args.length < 3) {
-            return filterMatching(signTypes, args[1]);
+            return filterMatchingStartsWith(signTypes, args[1]);
         } else if (args.length < 4) {
-            return filterMatching(extendedColors, args[2]);
+            return filterMatchingStartsWith(extendedColors, args[2]);
         } else if (args.length < 5) {
-            return filterMatching(extendedColors, args[3]);
+            return filterMatchingStartsWith(extendedColors, args[3]);
         }
         return new ArrayList<>();
     }
