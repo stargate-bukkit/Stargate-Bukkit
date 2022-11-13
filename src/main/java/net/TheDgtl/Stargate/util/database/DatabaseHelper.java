@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -20,6 +21,7 @@ import org.bukkit.block.BlockFace;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.config.ConfigurationHelper;
 import net.TheDgtl.Stargate.config.ConfigurationOption;
+import net.TheDgtl.Stargate.config.TableNameConfiguration;
 import net.TheDgtl.Stargate.database.Database;
 import net.TheDgtl.Stargate.database.DatabaseDriver;
 import net.TheDgtl.Stargate.database.MySqlDatabase;
@@ -71,6 +73,7 @@ public class DatabaseHelper {
         runStatement(portalRelationStatement);
         PreparedStatement portalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, PortalType.LOCAL);
         runStatement(portalViewStatement);
+        DatabaseHelper.tableRefactor_1_0_0_13(connection, sqlQueryGenerator, useInterServerNetworks);
 
         if (!useInterServerNetworks) {
             connection.close();
@@ -180,6 +183,26 @@ public class DatabaseHelper {
             String databaseName = ConfigurationHelper.getString(ConfigurationOption.DATABASE_NAME);
             File file = new File(stargate.getAbsoluteDataFolder(), databaseName + ".db");
             return new SQLiteDatabase(file);
+        }
+    }
+    
+    public static SQLQueryGenerator getSQLGenerator(Stargate stargate, boolean usingRemoteDatabase) {
+        TableNameConfiguration config = DatabaseHelper.getTableNameConfiguration(usingRemoteDatabase);
+        DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
+        return new SQLQueryGenerator(config, stargate, databaseEnum);
+    }
+    
+    public static TableNameConfiguration getTableNameConfiguration(boolean usingRemoteDatabase) {
+        String PREFIX = usingRemoteDatabase ? ConfigurationHelper.getString(ConfigurationOption.BUNGEE_INSTANCE_NAME)
+                : "";
+        String serverPrefix = usingRemoteDatabase ? Stargate.getServerUUID() : "";
+        return new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
+    }
+    
+    public static void tableRefactor_1_0_0_13(Connection connection, SQLQueryGenerator sqlQueryGenerator, boolean useInterServerNetworks) throws SQLException {
+        DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalTableStatement(connection, PortalType.LOCAL));
+        if(useInterServerNetworks) {
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalTableStatement(connection, PortalType.INTER_SERVER));
         }
     }
 }

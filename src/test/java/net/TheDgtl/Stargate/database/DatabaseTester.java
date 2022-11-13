@@ -23,6 +23,7 @@ import net.TheDgtl.Stargate.util.database.DatabaseHelper;
 import net.TheDgtl.Stargate.util.database.PortalStorageHelper;
 
 import org.bukkit.Material;
+import org.bukkit.util.BlockVector;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.File;
@@ -348,10 +349,9 @@ public class DatabaseTester {
     }
 
     private String getPortalMetaData(Portal portal, PortalType portalType) throws SQLException {
-        PreparedStatement statement = generator.getPortal(connection, portal, portalType);
+        PreparedStatement statement = generator.generateGetPortalStatement(connection, portal, portalType);
         ResultSet set = statement.executeQuery();
         if(!set.next()) {
-            System.out.println("############# PING ###########");
             return null;
         }
         String data = set.getString("metaData");
@@ -363,15 +363,13 @@ public class DatabaseTester {
         String meta = "TEST";
         Map<String,RealPortal> portals = (portalType == PortalType.LOCAL) ? localPortals : interServerPortals;
         for(Portal portal : portals.values()) {
-            finishStatement( generator.generateSetPortalMeta(connection,portal, meta, portalType));
+            finishStatement( generator.generateSetPortalMetaStatement(connection,portal, meta, portalType));
             Assertions.assertEquals(meta, getPortalMetaData(portal,portalType));
         }
     }
     
     private String getPortalPositionMeta(Portal portal, PortalPosition portalPosition, PortalType portalType) throws SQLException {
-        PreparedStatement statement = generator.generateGetPortalPositionsStatement(connection, portalType);
-        statement.setString(1, portal.getNetwork().getName());
-        statement.setString(2, portal.getName());
+        PreparedStatement statement = generator.generateGetPortalPositionStatement(connection,portal, portalPosition,portalType);
         ResultSet set = statement.executeQuery();
         if(!set.next()) {
             return null;

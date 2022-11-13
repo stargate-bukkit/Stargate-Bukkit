@@ -51,16 +51,18 @@ public interface StorageAPI {
      * 
      * @param portal <p> A portal </p>
      * @param data <p> Any data </p>
+     * @throws SQLException 
      */
-    void setPortalMetaData(Portal portal, String data);
+    void setPortalMetaData(Portal portal, String data, PortalType portalType) throws SQLException;
     
     /**
      * Get misc data of a portal
      * 
      * @param portal <p> A portal </p>
      * @return <p> Data </p>
+     * @throws SQLException 
      */
-    String getPortalMetaData(Portal portal);
+    String getPortalMetaData(Portal portal, PortalType portalType) throws SQLException;
     
     /**
      * Set misc data of a portalposition
@@ -69,8 +71,8 @@ public interface StorageAPI {
      * @param portalPosition <p> A portalPosition </p>
      * @param data <p> Any data </p>
      */
-    void setPortalPositionMetaData(Portal portal, PortalPosition portalPosition, String data);
-    
+    void setPortalPositionMetaData(RealPortal portal, PortalPosition portalPosition, String data, PortalType portalType)
+            throws SQLException;
     /**
      * Get misc data of a portalposition
      * 
@@ -78,8 +80,8 @@ public interface StorageAPI {
      * @param portalPosition <p> A portalPosition </p>
      * @return <p> Data </p>
      */
-    String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition);
-    
+    String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition, PortalType portalType) throws SQLException;
+
     /**
      * Creates a new network unassigned to a registry
      *
@@ -147,5 +149,6 @@ public interface StorageAPI {
      * @throws SQLException
      */
     void removePortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws SQLException;
+
 
 }

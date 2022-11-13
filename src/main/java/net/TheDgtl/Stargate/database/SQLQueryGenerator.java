@@ -537,7 +537,7 @@ public class SQLQueryGenerator {
         return connection.prepareStatement(query);
     }
 
-    public PreparedStatement getPortal(Connection connection,Portal portal, PortalType portalType) throws SQLException {
+    public PreparedStatement generateGetPortalStatement(Connection connection,Portal portal, PortalType portalType) throws SQLException {
         PreparedStatement statement;
         if (portalType == PortalType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.GET_PORTAL));
@@ -549,7 +549,7 @@ public class SQLQueryGenerator {
         return statement;
     }
 
-    public PreparedStatement generateSetPortalMeta(Connection connection,Portal portal, String meta, PortalType portalType) throws SQLException {
+    public PreparedStatement generateSetPortalMetaStatement(Connection connection,Portal portal, String meta, PortalType portalType) throws SQLException {
         PreparedStatement statement;
         if (portalType == PortalType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.SET_PORTAL_META));
@@ -577,6 +577,23 @@ public class SQLQueryGenerator {
         statement.setInt(4, vector.getBlockX());
         statement.setInt(5, vector.getBlockY());
         statement.setInt(6, -vector.getBlockZ());
+        return statement;
+    }
+
+    public PreparedStatement generateGetPortalPositionStatement(Connection connection, Portal portal,
+            PortalPosition portalPosition, PortalType portalType) throws SQLException {
+        PreparedStatement statement;
+        if (portalType == PortalType.LOCAL) {
+            statement = prepareQuery(connection, getQuery(SQLQuery.GET_PORTAL_POSITION_META));
+        } else {
+            statement = prepareQuery(connection, getQuery(SQLQuery.GET_INTER_PORTAL_POSITION_META));
+        }
+        statement.setString(1, portal.getName());
+        statement.setString(2, portal.getNetwork().getName());
+        BlockVector vector = portalPosition.getPositionLocation();
+        statement.setInt(3, vector.getBlockX());
+        statement.setInt(4, vector.getBlockY());
+        statement.setInt(5, -vector.getBlockZ());
         return statement;
     }
 

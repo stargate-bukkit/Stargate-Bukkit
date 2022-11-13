@@ -97,7 +97,7 @@ public class DatabaseAPI implements StorageAPI {
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
         this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
-        DatabaseHelper.createTables(database,this.sqlQueryGenerator, useInterServerNetworks);
+        DatabaseHelper.createTables(database,this.sqlQueryGenerator,useInterServerNetworks);
     }
 
     @Override
@@ -327,10 +327,7 @@ public class DatabaseAPI implements StorageAPI {
         this.logger = logger;
         this.database = database;
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
-        String PREFIX = usingRemoteDatabase ? ConfigurationHelper.getString(ConfigurationOption.BUNGEE_INSTANCE_NAME)
-                : "";
-        String serverPrefix = usingRemoteDatabase ? Stargate.getServerUUID() : "";
-        TableNameConfiguration config = new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
+        TableNameConfiguration config = DatabaseHelper.getTableNameConfiguration(usingRemoteDatabase);
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
         this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
         DatabaseHelper.createTables(database,this.sqlQueryGenerator,useInterServerNetworks);
@@ -430,26 +427,44 @@ public class DatabaseAPI implements StorageAPI {
     }
 
     @Override
-    public void setPortalMetaData(Portal portal, String data) {
-        // TODO Auto-generated method stub
-        
+    public void setPortalMetaData(Portal portal, String data, PortalType portalType) throws SQLException {
+        Connection connection = database.getConnection();
+        DatabaseHelper.runStatement( sqlQueryGenerator.generateSetPortalMetaStatement(connection,portal, data, portalType));
+        connection.close();
     }
 
     @Override
-    public String getPortalMetaData(Portal portal) {
-        // TODO Auto-generated method stub
-        return null;
+    public String getPortalMetaData(Portal portal, PortalType portalType) throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement statement = sqlQueryGenerator.generateGetPortalStatement(connection, portal, portalType);
+        ResultSet set = statement.executeQuery();
+        if(!set.next()) {
+            return null;
+        }
+        String data = set.getString("metaData");
+        statement.close();
+        connection.close();
+        return data;
     }
 
     @Override
-    public void setPortalPositionMetaData(Portal portal, PortalPosition portalPosition, String data) {
-        // TODO Auto-generated method stub
-        
+    public void setPortalPositionMetaData(RealPortal portal, PortalPosition portalPosition, String data, PortalType portalType) throws SQLException {
+        Connection connection = database.getConnection();
+        DatabaseHelper.runStatement( sqlQueryGenerator.generateSetPortalPositionMeta(connection, portal, portalPosition, data, portalType) );
+        connection.close();
     }
 
     @Override
-    public String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition) {
-        // TODO Auto-generated method stub
-        return null;
+    public String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition, PortalType portalType) throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionStatement(connection,portal, portalPosition,portalType);
+        ResultSet set = statement.executeQuery();
+        if(!set.next()) {
+            return null;
+        }
+        String data = set.getString("metaData");
+        statement.close();
+        connection.close();
+        return data;
     }
 }
