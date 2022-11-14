@@ -59,12 +59,13 @@ public class DatabaseHelper {
         runStatement(portalRelationStatement);
         PreparedStatement portalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, PortalType.LOCAL);
         runStatement(portalViewStatement);
-        
+
         try {
             // Adds a new column to some tables, if this already has been done it throws an sql error
             // Done separatly as this is part of a refactor
             DatabaseHelper.tableRefactor_1_0_0_13(connection, sqlQueryGenerator, useInterServerNetworks);
-        } catch(SQLException ignored) {}
+        } catch (SQLException ignored) {
+        }
 
         if (!useInterServerNetworks) {
             connection.close();

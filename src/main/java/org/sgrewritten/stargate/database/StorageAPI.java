@@ -47,56 +47,49 @@ public interface StorageAPI {
      * Loads all settings
      *
      * @param stargate <p>An instance of stargate</p>
+     * @throws StargateInitializationException <p>If unable to load all data</p>
      */
+    //TODO: This uses a call to SQLDatabaseAPI. This should not be in this API
     void load(SQLDatabaseAPI database, Stargate stargate) throws StargateInitializationException;
 
     /**
      * Set misc data of a portal
      *
-     * @param portal <p> A portal </p>
-     * @param data   <p> Any data </p>
-     * @throws StorageWriteException 
-     * @throws SQLException
+     * @param portal <p>A portal</p>
+     * @param data   <p>Any data</p>
+     * @throws StorageWriteException <p>If unable to successfully set the new portal data</p>
      */
-    //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
-    // throw an SQL exception if using YML storage
     void setPortalMetaData(Portal portal, String data, PortalType portalType) throws StorageWriteException;
 
     /**
      * Get misc data of a portal
      *
-     * @param portal <p> A portal </p>
-     * @return <p> Data </p>
-     * @throws StorageReadException 
-     * @throws SQLException
+     * @param portal <p>A portal</p>
+     * @return <p>Data</p>
+     * @throws StorageReadException <p>If unable to successfully get the portal data</p>
      */
-    //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
-    // throw an SQL exception if using YML storage
     String getPortalMetaData(Portal portal, PortalType portalType) throws StorageReadException;
 
     /**
-     * Set misc data of a portalposition
+     * Set misc data of a portal position
      *
-     * @param portal         <p> A portal </p>
-     * @param portalPosition <p> A portalPosition </p>
-     * @param data           <p> Any data </p>
-     * @throws StorageWriteException 
+     * @param portal         <p>A portal</p>
+     * @param portalPosition <p>A portalPosition</p>
+     * @param data           <p>Any data</p>
+     * @param portalType     <p>The type of portal to set the data for</p>
+     * @throws StorageWriteException <p>If unable to set the metadata for the portal</p>
      */
-    //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
-    // throw an SQL exception if using YML storage
     void setPortalPositionMetaData(RealPortal portal, PortalPosition portalPosition, String data,
                                    PortalType portalType) throws StorageWriteException;
 
     /**
-     * Get misc data of a portalposition
+     * Get misc data of a portal position
      *
-     * @param portal         <p> A portal </p>
-     * @param portalPosition <p> A portalPosition </p>
-     * @return <p> Data </p>
-     * @throws StorageReadException 
+     * @param portal         <p>A portal</p>
+     * @param portalPosition <p>A portalPosition</p>
+     * @return <p>Data</p>
+     * @throws StorageReadException <p>If unable to successfully read the portal metadata</p>
      */
-    //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
-    // throw an SQL exception if using YML storage
     String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition,
                                      PortalType portalType) throws StorageReadException;
 
@@ -117,25 +110,19 @@ public interface StorageAPI {
     void startInterServerConnection();
 
     /**
-     * Add a new flagtype
+     * Add a new flag type
      *
-     * @param flagChar
-     * @throws StorageWriteException 
-     * @throws SQLException
+     * @param flagChar <p>The character identifying the flag</p>
+     * @throws StorageWriteException <p>If unable to write the flag to storage</p>
      */
-    //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
-    // throw an SQL exception if using YML storage
-    void addFlagType(Character flagChar) throws StorageWriteException;
+    void addFlagType(char flagChar) throws StorageWriteException;
 
     /**
      * Add a new type of portalPosition
      *
-     * @param portalPositionTypeName
-     * @throws StorageWriteException 
-     * @throws SQLException
+     * @param portalPositionTypeName <p>The name of the portal type to add</p>
+     * @throws StorageWriteException <p>If unable to write the portal position type to storage</p>
      */
-    //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
-    // throw an SQL exception if using YML storage
     void addPortalPositionType(String portalPositionTypeName) throws StorageWriteException;
 
     /**
@@ -144,38 +131,30 @@ public interface StorageAPI {
      * @param flagChar   <p> The character representation of that flag </p>
      * @param portal     <p> A portal </p>
      * @param portalType <p>How the portal should be considered by the database </p>
-     * @throws StorageWriteException 
-     * @throws SQLException
+     * @throws StorageWriteException <p>If unable to write the flag change to storage</p>
      */
-    //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
-    // throw an SQL exception if using YML storage
     void addFlag(Character flagChar, Portal portal, PortalType portalType) throws StorageWriteException;
 
     /**
      * Remove a flag to a portal in the database
      *
-     * @param flagChar   <p> The character representation of that flag </p>
-     * @param portal     <p> A portal </p>
-     * @param portalType <p>How the portal should be considered by the database </p>
-     * @throws StorageWriteException 
-     * @throws SQLException
+     * @param flagChar   <p>The character representation of that flag</p>
+     * @param portal     <p>A portal</p>
+     * @param portalType <p>How the portal should be considered by the database</p>
+     * @throws StorageWriteException <p>Uf unable to write the flag change to storage</p>
      */
-    //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
-    // throw an SQL exception if using YML storage
     void removeFlag(Character flagChar, Portal portal, PortalType portalType) throws StorageWriteException;
 
     /**
      * Add a portalPosition to a portal in the database
      *
-     * @param portal         <p> A portal</p>
-     * @param portalType     <p> How the portal should be considered by the database </p>
+     * @param portal         <p>A portal</p>
+     * @param portalType     <p>How the portal should be considered by the database</p>
      * @param portalPosition <p>A portal position</p>
-     * @throws StorageWriteException 
-     * @throws SQLException
+     * @throws StorageWriteException <p>If unable to write the new portal position to storage</p>
      */
-    //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
-    // throw an SQL exception if using YML storage
-    void addPortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws StorageWriteException;
+    void addPortalPosition(RealPortal portal, PortalType portalType,
+                           PortalPosition portalPosition) throws StorageWriteException;
 
     /**
      * Remove a portalPosition to a portal in the database
@@ -183,12 +162,10 @@ public interface StorageAPI {
      * @param portal         <p> A portal</p>
      * @param portalType     <p> How the portal should be considered by the database </p>
      * @param portalPosition <p> A portal position</p>
-     * @throws StorageWriteException 
-     * @throws SQLException
+     * @throws StorageWriteException <p>If unable to write the portal position change to storage</p>
      */
-    //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
-    // throw an SQL exception if using YML storage
-    void removePortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws StorageWriteException;
+    void removePortalPosition(RealPortal portal, PortalType portalType,
+                              PortalPosition portalPosition) throws StorageWriteException;
 
 
 }

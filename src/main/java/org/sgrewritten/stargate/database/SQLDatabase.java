@@ -352,7 +352,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void addFlagType(Character flagChar) throws StorageWriteException{
+    public void addFlagType(char flagChar) throws StorageWriteException {
         Connection connection;
         try {
             connection = database.getConnection();
@@ -386,7 +386,7 @@ public class SQLDatabase implements StorageAPI {
         } catch (SQLException e) {
             throw new StorageWriteException(e);
         }
-        
+
     }
 
     @Override
@@ -409,7 +409,7 @@ public class SQLDatabase implements StorageAPI {
         } catch (SQLException e) {
             throw new StorageWriteException(e);
         }
-        
+
     }
 
     @Override
@@ -424,7 +424,7 @@ public class SQLDatabase implements StorageAPI {
         } catch (SQLException e) {
             throw new StorageWriteException(e);
         }
-        
+
     }
 
     @Override
