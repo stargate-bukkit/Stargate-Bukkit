@@ -1,6 +1,9 @@
 package org.sgrewritten.stargate.network.portal;
 
 import org.bukkit.util.BlockVector;
+import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.exception.database.StorageReadException;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 
 /**
  * A position of a portal's control block
@@ -39,6 +42,28 @@ public class PortalPosition {
         return this.positionLocation;
     }
 
+    /**
+     * 
+     * @param portal <p> The portal which this position belongs to </p>
+     * @return
+     */
+    public String getMetaData(RealPortal portal) {
+        try {
+            return Stargate.getStorageAPIStatic().getPortalPositionMetaData(portal, this, portal.getPortalType());
+        } catch (StorageReadException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public void setMetaData(RealPortal portal, String data) {
+        try {
+            Stargate.getStorageAPIStatic().setPortalPositionMetaData(portal, this, data, portal.getPortalType());
+        } catch (StorageWriteException e) {
+            e.printStackTrace();
+        }
+    }
+    
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof PortalPosition)) {

@@ -4,6 +4,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.PortalType;
 
 import java.util.UUID;
 
@@ -153,5 +154,10 @@ public interface Portal {
      * @return <p>The unique identifier for this network</p>
      */
     String getID();
-
+    
+    void setMetaData(String data);
+    
+    String getMetaData();
+    
+    PortalType getPortalType();
 }

@@ -94,7 +94,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void loadFromStorage(RegistryAPI registry) {
+    public void loadFromStorage(RegistryAPI registry) throws StorageReadException {
         try {
             logger.logMessage(Level.FINER, "Loading portals from base database");
             loadAllPortals(database, PortalType.LOCAL, registry);
@@ -103,12 +103,12 @@ public class SQLDatabase implements StorageAPI {
                 loadAllPortals(database, PortalType.INTER_SERVER, registry);
             }
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            throw new StorageReadException(exception);
         }
     }
 
     @Override
-    public boolean savePortalToStorage(RealPortal portal, PortalType portalType) {
+    public boolean savePortalToStorage(RealPortal portal, PortalType portalType) throws StorageWriteException {
         /* An SQL transaction is used here to make sure partial data is never added to the database. */
         Connection connection = null;
         try {
@@ -138,15 +138,14 @@ public class SQLDatabase implements StorageAPI {
                     connection.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new StorageWriteException(e);
             }
-            exception.printStackTrace();
+            throw new StorageWriteException(exception);
         }
-        return false;
     }
 
     @Override
-    public void removePortalFromStorage(Portal portal, PortalType portalType) {
+    public void removePortalFromStorage(Portal portal, PortalType portalType) throws StorageWriteException {
         /* An SQL transaction is used here to make sure portals are never partially removed from the database. */
         Connection conn = null;
         try {
@@ -167,9 +166,10 @@ public class SQLDatabase implements StorageAPI {
                     conn.setAutoCommit(false);
                     conn.close();
                 } catch (SQLException ex) {
-                    ex.printStackTrace();
+                    throw new StorageWriteException(ex);
                 }
             }
+            throw new StorageWriteException(e);
         }
     }
 
@@ -346,14 +346,14 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void startInterServerConnection() {
+    public void startInterServerConnection() throws StorageWriteException {
         try {
             Connection conn = database.getConnection();
             DatabaseHelper.runStatement(sqlQueryGenerator.generateUpdateServerInfoStatus(conn, Stargate.getServerUUID(),
                     Stargate.getServerName()));
             conn.close();
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            throw new StorageWriteException(exception);
         }
     }
 
