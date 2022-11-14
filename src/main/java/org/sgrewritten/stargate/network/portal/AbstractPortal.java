@@ -25,12 +25,15 @@ import org.sgrewritten.stargate.event.StargateDeactivateEvent;
 import org.sgrewritten.stargate.event.StargateOpenEvent;
 import org.sgrewritten.stargate.event.StargateSignFormatEvent;
 import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.database.StorageReadException;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.manager.PermissionManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.PortalType;
 import org.sgrewritten.stargate.network.portal.formatting.LegacyLineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.LineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.LineFormatter;
@@ -516,5 +519,28 @@ public abstract class AbstractPortal implements RealPortal {
 
         this.activator = null;
         drawControlMechanisms();
+    }
+    
+    @Override
+    public void setMetaData(String data) {
+        try {
+            Stargate.getStorageAPIStatic().setPortalMetaData(this, data, getPortalType());
+        } catch (StorageWriteException e) {
+            e.printStackTrace();
+        }
+    };
+    
+    @Override
+    public String getMetaData() {
+        try {
+            return Stargate.getStorageAPIStatic().getPortalMetaData(this,getPortalType());
+        } catch (StorageReadException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public PortalType getPortalType() {
+        return (flags.contains(PortalFlag.FANCY_INTER_SERVER) ? PortalType.INTER_SERVER : PortalType.LOCAL);
     }
 }
