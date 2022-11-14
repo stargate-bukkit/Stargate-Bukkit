@@ -486,8 +486,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         try {
             load();
             loadGateFormats();
-            SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
-            storageAPI.load(database, this);
+            if (storageAPI instanceof SQLDatabase) {
+                SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
+                ((SQLDatabase) storageAPI).load(database, this);
+            }
             registry.load();
             economyManager.setupEconomy();
         } catch (StargateInitializationException exception) {

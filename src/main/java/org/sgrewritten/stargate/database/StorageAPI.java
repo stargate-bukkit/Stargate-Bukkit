@@ -1,8 +1,6 @@
 package org.sgrewritten.stargate.database;
 
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.NameErrorException;
-import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.network.Network;
@@ -42,15 +40,6 @@ public interface StorageAPI {
      * @param portalType <p>The type of portal to remove</p>
      */
     void removePortalFromStorage(Portal portal, PortalType portalType);
-
-    /**
-     * Loads all settings
-     *
-     * @param stargate <p>An instance of stargate</p>
-     * @throws StargateInitializationException <p>If unable to load all data</p>
-     */
-    //TODO: This uses a call to SQLDatabaseAPI. This should not be in this API
-    void load(SQLDatabaseAPI database, Stargate stargate) throws StargateInitializationException;
 
     /**
      * Set misc data of a portal

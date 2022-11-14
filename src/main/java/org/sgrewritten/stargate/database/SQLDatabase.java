@@ -304,7 +304,13 @@ public class SQLDatabase implements StorageAPI {
         addFlagStatement.execute();
     }
 
-    @Override
+    /**
+     * Loads the database from the given API, and prepares necessary tables
+     *
+     * @param database <p>The database API to get a connection from</p>
+     * @param stargate <p>A reference to the Stargate API</p>
+     * @throws StargateInitializationException <p>If unable to initializes the datbase and tables</p>
+     */
     public void load(SQLDatabaseAPI database, Stargate stargate) throws StargateInitializationException {
         try {
             load(database, ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE),
