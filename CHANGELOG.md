@@ -50,7 +50,7 @@
 
 #### [Version 0.10.8.1] LCLO Fork
 
-- Fixed a compilation error impacting fresh installs.
+- Fixed a compilation error impacting fresh installations.
 
 #### [Version 0.10.8.0] LCLO Fork
 
@@ -225,7 +225,7 @@
 
 #### [Version 0.7.7.5]
 
-- Resolve issue of right clicking introduced in 1.3.1/2
+- Resolve issue of right-clicking introduced in 1.3.1/2
 
 #### [Version 0.7.7.4]
 
@@ -271,7 +271,7 @@
 
 #### [Version 0.7.6.4]
 
-- Move blockBreak to HIGHEST priority, this resolves issues with region protection plugins
+- Move blockBreak to the HIGHEST priority, this resolves issues with region protection plugins
 
 #### [Version 0.7.6.3]
 
@@ -400,7 +400,7 @@
 
 #### [Version 0.7.2]
 
-- Make it so you can still destroy gates in Survival mode
+- Make it, so you can still destroy gates in Survival mode
 
 #### [Version 0.7.1]
 
@@ -572,7 +572,7 @@
 
 #### [Version 0.3.2]
 
-- Updated to latest RB
+- Updated to the latest RB
 - Implemented proper vehicle handling
 - Added iConomy to vehicle handling
 - Can now set cost to go to creator on use
@@ -589,7 +589,7 @@
 #### [Version 0.29]
 
 - Added iConomy support. Currently only works with iConomy 4.4 until Niji fixes 4.5
-- Thanks @Jonbas for the base iConomy implementation
+- Thanks, @Jonbas for the base iConomy implementation
 
 #### [Version 0.28]
 
@@ -693,8 +693,8 @@
 #### [Version 0.08]
 
 - Gates can now consist of any material.
-- You can left or right click the button to open a gate
-- Gates are now initialized on sign placement, not more right clicking!
+- You can left-click or right-click the button to open a gate
+- Gates are now initialized on sign placement, not more right-clicking!
 
 #### [Version 0.07]
 
