@@ -59,7 +59,12 @@ public class DatabaseHelper {
         runStatement(portalRelationStatement);
         PreparedStatement portalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, PortalType.LOCAL);
         runStatement(portalViewStatement);
-        DatabaseHelper.tableRefactor_1_0_0_13(connection, sqlQueryGenerator, useInterServerNetworks);
+        
+        try {
+            // Adds a new column to some tables, if this already has been done it throws an sql error
+            // Done separatly as this is part of a refactor
+            DatabaseHelper.tableRefactor_1_0_0_13(connection, sqlQueryGenerator, useInterServerNetworks);
+        } catch(SQLException ignored) {}
 
         if (!useInterServerNetworks) {
             connection.close();
@@ -187,8 +192,10 @@ public class DatabaseHelper {
 
     public static void tableRefactor_1_0_0_13(Connection connection, SQLQueryGenerator sqlQueryGenerator, boolean useInterServerNetworks) throws SQLException {
         DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalTableStatement(connection, PortalType.LOCAL));
+        DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalPositionTableStatement(connection, PortalType.LOCAL));
         if (useInterServerNetworks) {
             DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalTableStatement(connection, PortalType.INTER_SERVER));
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalPositionTableStatement(connection, PortalType.INTER_SERVER));
         }
     }
 }

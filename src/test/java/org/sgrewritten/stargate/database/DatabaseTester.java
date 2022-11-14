@@ -154,7 +154,7 @@ public class DatabaseTester {
 
     private void createPortalPositionTableTest(PortalType type) throws SQLException {
         finishStatement(generator.generateCreatePortalPositionTableStatement(connection, type));
-        finishStatement(generator.addMetaToPortalPositionTableStatement(connection, type));
+        finishStatement(generator.generateAddMetaToPortalPositionTableStatement(connection, type));
     }
 
     void createPortalPositionIndexTest(PortalType type) throws SQLException {

@@ -150,7 +150,7 @@ public class SQLQueryGenerator {
         }
     }
 
-    public PreparedStatement addMetaToPortalPositionTableStatement(Connection connection, PortalType type) throws SQLException {
+    public PreparedStatement generateAddMetaToPortalPositionTableStatement(Connection connection, PortalType type) throws SQLException {
         if (type == PortalType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_PORTAL_POSITION));
         } else {
