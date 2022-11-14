@@ -352,7 +352,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void addFlagType(Character flagChar){
+    public void addFlagType(Character flagChar) throws StorageWriteException{
         Connection connection;
         try {
             connection = database.getConnection();
@@ -366,7 +366,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void addFlag(Character flagChar, Portal portal, PortalType portalType) {
+    public void addFlag(Character flagChar, Portal portal, PortalType portalType) throws StorageWriteException {
         Connection connection;
         try {
             connection = database.getConnection();
@@ -390,7 +390,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void addPortalPositionType(String portalPositionTypeName) {
+    public void addPortalPositionType(String portalPositionTypeName) throws StorageWriteException {
         Connection connection;
         try {
             connection = database.getConnection();
@@ -413,7 +413,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void addPortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) {
+    public void addPortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws StorageWriteException {
         Connection connection;
         try {
             connection = database.getConnection();
@@ -428,7 +428,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void removeFlag(Character flagChar, Portal portal, PortalType portalType) {
+    public void removeFlag(Character flagChar, Portal portal, PortalType portalType) throws StorageWriteException {
         Connection connection;
         try {
             connection = database.getConnection();

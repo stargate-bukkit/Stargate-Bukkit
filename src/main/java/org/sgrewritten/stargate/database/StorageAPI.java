@@ -55,11 +55,12 @@ public interface StorageAPI {
      *
      * @param portal <p> A portal </p>
      * @param data   <p> Any data </p>
+     * @throws StorageWriteException 
      * @throws SQLException
      */
     //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
     // throw an SQL exception if using YML storage
-    void setPortalMetaData(Portal portal, String data, PortalType portalType);
+    void setPortalMetaData(Portal portal, String data, PortalType portalType) throws StorageWriteException;
 
     /**
      * Get misc data of a portal
@@ -119,21 +120,23 @@ public interface StorageAPI {
      * Add a new flagtype
      *
      * @param flagChar
+     * @throws StorageWriteException 
      * @throws SQLException
      */
     //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
     // throw an SQL exception if using YML storage
-    void addFlagType(Character flagChar);
+    void addFlagType(Character flagChar) throws StorageWriteException;
 
     /**
      * Add a new type of portalPosition
      *
      * @param portalPositionTypeName
+     * @throws StorageWriteException 
      * @throws SQLException
      */
     //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
     // throw an SQL exception if using YML storage
-    void addPortalPositionType(String portalPositionTypeName);
+    void addPortalPositionType(String portalPositionTypeName) throws StorageWriteException;
 
     /**
      * Add a flag to a portal in the database
@@ -141,11 +144,12 @@ public interface StorageAPI {
      * @param flagChar   <p> The character representation of that flag </p>
      * @param portal     <p> A portal </p>
      * @param portalType <p>How the portal should be considered by the database </p>
+     * @throws StorageWriteException 
      * @throws SQLException
      */
     //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
     // throw an SQL exception if using YML storage
-    void addFlag(Character flagChar, Portal portal, PortalType portalType);
+    void addFlag(Character flagChar, Portal portal, PortalType portalType) throws StorageWriteException;
 
     /**
      * Remove a flag to a portal in the database
@@ -153,11 +157,12 @@ public interface StorageAPI {
      * @param flagChar   <p> The character representation of that flag </p>
      * @param portal     <p> A portal </p>
      * @param portalType <p>How the portal should be considered by the database </p>
+     * @throws StorageWriteException 
      * @throws SQLException
      */
     //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
     // throw an SQL exception if using YML storage
-    void removeFlag(Character flagChar, Portal portal, PortalType portalType);
+    void removeFlag(Character flagChar, Portal portal, PortalType portalType) throws StorageWriteException;
 
     /**
      * Add a portalPosition to a portal in the database
@@ -165,11 +170,12 @@ public interface StorageAPI {
      * @param portal         <p> A portal</p>
      * @param portalType     <p> How the portal should be considered by the database </p>
      * @param portalPosition <p>A portal position</p>
+     * @throws StorageWriteException 
      * @throws SQLException
      */
     //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
     // throw an SQL exception if using YML storage
-    void addPortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition);
+    void addPortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws StorageWriteException;
 
     /**
      * Remove a portalPosition to a portal in the database
@@ -177,11 +183,12 @@ public interface StorageAPI {
      * @param portal         <p> A portal</p>
      * @param portalType     <p> How the portal should be considered by the database </p>
      * @param portalPosition <p> A portal position</p>
+     * @throws StorageWriteException 
      * @throws SQLException
      */
     //TODO: A generic storage API should never throw specific exceptions such as SQLException. It makes no sense to 
     // throw an SQL exception if using YML storage
-    void removePortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition);
+    void removePortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws StorageWriteException;
 
 
 }
