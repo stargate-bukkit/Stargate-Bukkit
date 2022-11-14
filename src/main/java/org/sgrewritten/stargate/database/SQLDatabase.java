@@ -9,6 +9,8 @@ import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
+import org.sgrewritten.stargate.exception.database.StorageReadException;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
@@ -350,113 +352,165 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void addFlagType(Character flagChar) throws SQLException {
-        Connection connection = database.getConnection();
-        PreparedStatement addStatement = sqlQueryGenerator.generateAddFlagStatement(connection);
-        addStatement.setString(1, String.valueOf(flagChar));
-        DatabaseHelper.runStatement(addStatement);
-        connection.close();
-    }
-
-    @Override
-    public void addFlag(Character flagChar, Portal portal, PortalType portalType) throws SQLException {
-        Connection connection = database.getConnection();
-        PreparedStatement statement = sqlQueryGenerator.generateGetAllFlagsStatement(connection);
-        ResultSet resultSet = statement.executeQuery();
-        List<String> knownFlags = new ArrayList<>();
-        while (resultSet.next()) {
-            knownFlags.add(resultSet.getString("character"));
-        }
-        if (!knownFlags.contains(String.valueOf(flagChar))) {
-            PreparedStatement addFlagStatement = sqlQueryGenerator.generateAddPortalFlagRelationStatement(connection,
-                    portalType);
-            addFlag(addFlagStatement, portal, flagChar);
-            addFlagStatement.close();
-            connection.close();
-        }
-    }
-
-    @Override
-    public void addPortalPositionType(String portalPositionTypeName) throws SQLException {
-        Connection connection = database.getConnection();
-        PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalPositionTypesStatement(connection);
-        ResultSet resultSet = statement.executeQuery();
-        List<String> knownPositionTypes = new ArrayList<>();
-        while (resultSet.next()) {
-            knownPositionTypes.add(resultSet.getString("positionName"));
-        }
-        if (!knownPositionTypes.contains(portalPositionTypeName)) {
-            PreparedStatement addStatement = sqlQueryGenerator.generateAddPortalPositionTypeStatement(connection);
-            addStatement.setString(1, portalPositionTypeName);
+    public void addFlagType(Character flagChar){
+        Connection connection;
+        try {
+            connection = database.getConnection();
+            PreparedStatement addStatement = sqlQueryGenerator.generateAddFlagStatement(connection);
+            addStatement.setString(1, String.valueOf(flagChar));
             DatabaseHelper.runStatement(addStatement);
+            connection.close();
+        } catch (SQLException e) {
+            throw new StorageWriteException(e);
         }
-        connection.close();
     }
 
     @Override
-    public void addPortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws SQLException {
-        Connection connection = database.getConnection();
-        PreparedStatement addPositionStatement = sqlQueryGenerator.generateAddPortalPositionStatement(connection, portalType);
-        PortalStorageHelper.addPortalPosition(addPositionStatement, portal, portalPosition);
-        addPositionStatement.close();
-        connection.close();
-    }
-
-    @Override
-    public void removeFlag(Character flagChar, Portal portal, PortalType portalType) throws SQLException {
-        Connection connection = database.getConnection();
-        DatabaseHelper.runStatement(sqlQueryGenerator.generateRemoveFlagStatement(connection, portalType, portal, flagChar));
-        connection.close();
-    }
-
-    @Override
-    public void removePortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition)
-            throws SQLException {
-        Connection connection = database.getConnection();
-        DatabaseHelper.runStatement(sqlQueryGenerator.generateRemovePortalPositionStatement(connection, portalType, portal, portalPosition));
-        connection.close();
-    }
-
-    @Override
-    public void setPortalMetaData(Portal portal, String data, PortalType portalType) throws SQLException {
-        Connection connection = database.getConnection();
-        DatabaseHelper.runStatement(sqlQueryGenerator.generateSetPortalMetaStatement(connection, portal, data, portalType));
-        connection.close();
-    }
-
-    @Override
-    public String getPortalMetaData(Portal portal, PortalType portalType) throws SQLException {
-        Connection connection = database.getConnection();
-        PreparedStatement statement = sqlQueryGenerator.generateGetPortalStatement(connection, portal, portalType);
-        ResultSet set = statement.executeQuery();
-        if (!set.next()) {
-            return null;
+    public void addFlag(Character flagChar, Portal portal, PortalType portalType) {
+        Connection connection;
+        try {
+            connection = database.getConnection();
+            PreparedStatement statement = sqlQueryGenerator.generateGetAllFlagsStatement(connection);
+            ResultSet resultSet = statement.executeQuery();
+            List<String> knownFlags = new ArrayList<>();
+            while (resultSet.next()) {
+                knownFlags.add(resultSet.getString("character"));
+            }
+            if (!knownFlags.contains(String.valueOf(flagChar))) {
+                PreparedStatement addFlagStatement = sqlQueryGenerator.generateAddPortalFlagRelationStatement(connection,
+                        portalType);
+                addFlag(addFlagStatement, portal, flagChar);
+                addFlagStatement.close();
+                connection.close();
+            }
+        } catch (SQLException e) {
+            throw new StorageWriteException(e);
         }
-        String data = set.getString("metaData");
-        statement.close();
-        connection.close();
-        return data;
+        
     }
 
     @Override
-    public void setPortalPositionMetaData(RealPortal portal, PortalPosition portalPosition, String data, PortalType portalType) throws SQLException {
-        Connection connection = database.getConnection();
-        DatabaseHelper.runStatement(sqlQueryGenerator.generateSetPortalPositionMeta(connection, portal, portalPosition, data, portalType));
-        connection.close();
-    }
-
-    @Override
-    public String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition, PortalType portalType) throws SQLException {
-        Connection connection = database.getConnection();
-        PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionStatement(connection, portal, portalPosition, portalType);
-        ResultSet set = statement.executeQuery();
-        if (!set.next()) {
-            return null;
+    public void addPortalPositionType(String portalPositionTypeName) {
+        Connection connection;
+        try {
+            connection = database.getConnection();
+            PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalPositionTypesStatement(connection);
+            ResultSet resultSet = statement.executeQuery();
+            List<String> knownPositionTypes = new ArrayList<>();
+            while (resultSet.next()) {
+                knownPositionTypes.add(resultSet.getString("positionName"));
+            }
+            if (!knownPositionTypes.contains(portalPositionTypeName)) {
+                PreparedStatement addStatement = sqlQueryGenerator.generateAddPortalPositionTypeStatement(connection);
+                addStatement.setString(1, portalPositionTypeName);
+                DatabaseHelper.runStatement(addStatement);
+            }
+            connection.close();
+        } catch (SQLException e) {
+            throw new StorageWriteException(e);
         }
-        String data = set.getString("metaData");
-        statement.close();
-        connection.close();
-        return data;
+        
+    }
+
+    @Override
+    public void addPortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) {
+        Connection connection;
+        try {
+            connection = database.getConnection();
+            PreparedStatement addPositionStatement = sqlQueryGenerator.generateAddPortalPositionStatement(connection, portalType);
+            PortalStorageHelper.addPortalPosition(addPositionStatement, portal, portalPosition);
+            addPositionStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            throw new StorageWriteException(e);
+        }
+        
+    }
+
+    @Override
+    public void removeFlag(Character flagChar, Portal portal, PortalType portalType) {
+        Connection connection;
+        try {
+            connection = database.getConnection();
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateRemoveFlagStatement(connection, portalType, portal, flagChar));
+            connection.close();
+        } catch (SQLException e) {
+            throw new StorageWriteException(e);
+        }
+    }
+
+    @Override
+    public void removePortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws StorageWriteException {
+        Connection connection;
+        try {
+            connection = database.getConnection();
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateRemovePortalPositionStatement(connection, portalType, portal, portalPosition));
+            connection.close();
+        } catch (SQLException e) {
+            throw new StorageWriteException(e);
+        }
+    }
+
+    @Override
+    public void setPortalMetaData(Portal portal, String data, PortalType portalType) throws StorageWriteException {
+        Connection connection;
+        try {
+            connection = database.getConnection();
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateSetPortalMetaStatement(connection, portal, data, portalType));
+            connection.close();
+        } catch (SQLException e) {
+            throw new StorageWriteException(e);
+        }
+    }
+
+    @Override
+    public String getPortalMetaData(Portal portal, PortalType portalType) throws StorageReadException {
+        Connection connection;
+        try {
+            connection = database.getConnection();
+            PreparedStatement statement = sqlQueryGenerator.generateGetPortalStatement(connection, portal, portalType);
+            ResultSet set = statement.executeQuery();
+            if (!set.next()) {
+                return null;
+            }
+            String data = set.getString("metaData");
+            statement.close();
+            connection.close();
+            return data;
+        } catch (SQLException e) {
+            throw new StorageReadException(e);
+        }
+    }
+
+    @Override
+    public void setPortalPositionMetaData(RealPortal portal, PortalPosition portalPosition, String data, PortalType portalType) throws StorageWriteException {
+        Connection connection;
+        try {
+            connection = database.getConnection();
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateSetPortalPositionMeta(connection, portal, portalPosition, data, portalType));
+            connection.close();
+        } catch (SQLException e) {
+            throw new StorageWriteException(e);
+        }
+    }
+
+    @Override
+    public String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition, PortalType portalType) throws StorageReadException {
+        Connection connection;
+        try {
+            connection = database.getConnection();
+            PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionStatement(connection, portal, portalPosition, portalType);
+            ResultSet set = statement.executeQuery();
+            if (!set.next()) {
+                return null;
+            }
+            String data = set.getString("metaData");
+            statement.close();
+            connection.close();
+            return data;
+        } catch (SQLException e) {
+            throw new StorageReadException(e);
+        }
     }
 
 }
