@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * An interface representing a database
+ * An interface representing an SQL database
  */
-public interface Database {
+public interface SQLDatabaseAPI {
 
     /**
      * Gets a database connection

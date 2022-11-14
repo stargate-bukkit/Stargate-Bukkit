@@ -47,7 +47,7 @@ public interface StorageAPI {
      *
      * @param stargate <p>An instance of stargate</p>
      */
-    void load(Database database, Stargate stargate) throws StargateInitializationException;
+    void load(SQLDatabaseAPI database, Stargate stargate) throws StargateInitializationException;
 
     /**
      * Set misc data of a portal

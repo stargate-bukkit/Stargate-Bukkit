@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
-import org.sgrewritten.stargate.database.Database;
+import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
@@ -30,7 +30,7 @@ import java.util.Set;
 public class LocalNetwork implements Network {
 
     protected Map<String, Portal> nameToPortalMap;
-    protected Database database;
+    protected SQLDatabaseAPI database;
     protected String name;
     private RegistryAPI registry;
 

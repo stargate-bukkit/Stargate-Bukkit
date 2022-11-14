@@ -18,8 +18,8 @@ import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
-import org.sgrewritten.stargate.database.Database;
-import org.sgrewritten.stargate.database.DatabaseAPI;
+import org.sgrewritten.stargate.database.SQLDatabase;
+import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.database.StorageAPI;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
@@ -46,7 +46,7 @@ public class DataMigratorTest {
     static private File[] configFiles;
     static private StargateLogger logger;
     static private File defaultConfigFile;
-    static private Database sqlDatabase;
+    static private SQLDatabaseAPI sqlDatabase;
     static private final Map<String, DataMigrator> migratorMap = new HashMap<>();
     static private Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> configTestMap;
     private static final File testGatesDir = new File("src/test/resources/gates");
@@ -68,7 +68,7 @@ public class DataMigratorTest {
         defaultConfigFile = new File("src/main/resources", "config.yml");
         sqlDatabaseFile = new File("src/test/resources", "migrate-test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);
-        StorageAPI storageAPI = new DatabaseAPI(sqlDatabase, false, false, logger);
+        StorageAPI storageAPI = new SQLDatabase(sqlDatabase, false, false, logger);
         registry = new StargateRegistry(storageAPI);
 
 

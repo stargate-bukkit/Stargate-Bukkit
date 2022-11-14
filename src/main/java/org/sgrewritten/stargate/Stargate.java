@@ -41,8 +41,8 @@ import org.sgrewritten.stargate.config.ConfigurationAPI;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
-import org.sgrewritten.stargate.database.Database;
-import org.sgrewritten.stargate.database.DatabaseAPI;
+import org.sgrewritten.stargate.database.SQLDatabase;
+import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.database.StorageAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -156,8 +156,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
             load();
             economyManager = new VaultEconomyManager(languageManager);
-            Database database = DatabaseHelper.loadDatabase(this);
-            storageAPI = new DatabaseAPI(database, this);
+            SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
+            storageAPI = new SQLDatabase(database, this);
             registry = new StargateRegistry(storageAPI);
             registry.loadPortals();
 
@@ -408,9 +408,9 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      */
     private void migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException {
         File databaseFile = new File(this.getDataFolder(), "stargate.db");
-        Database database = new SQLiteDatabase(databaseFile);
+        SQLDatabaseAPI database = new SQLiteDatabase(databaseFile);
 
-        StorageAPI storageAPI = new DatabaseAPI(database, false, false, this);
+        StorageAPI storageAPI = new SQLDatabase(database, false, false, this);
         registry = new StargateRegistry(storageAPI);
 
         DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), "config.yml"), this,
@@ -486,7 +486,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         try {
             load();
             loadGateFormats();
-            Database database = DatabaseHelper.loadDatabase(this);
+            SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
             storageAPI.load(database, this);
             registry.load();
             economyManager.setupEconomy();

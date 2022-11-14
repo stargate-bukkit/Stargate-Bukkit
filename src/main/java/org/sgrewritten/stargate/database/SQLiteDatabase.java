@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 /**
  * Represents an SQLite database
  */
-public class SQLiteDatabase implements Database {
+public class SQLiteDatabase implements SQLDatabaseAPI {
 
     private String url;
 

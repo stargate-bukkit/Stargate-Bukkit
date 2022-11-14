@@ -25,7 +25,7 @@ import static org.bukkit.Bukkit.getPluginManager;
  * @author Frostalf
  * @author Thorin
  */
-public class MySqlDatabase implements Database {
+public class MySqlDatabase implements SQLDatabaseAPI {
 
     private final HikariDataSource hikariSource;
     private HikariConfig config;

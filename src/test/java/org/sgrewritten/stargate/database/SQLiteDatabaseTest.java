@@ -21,7 +21,7 @@ public class SQLiteDatabaseTest {
 
     private static DatabaseTester tester;
     private static TableNameConfiguration nameConfig;
-    private static Database database;
+    private static SQLDatabaseAPI database;
 
     @BeforeAll
     public static void setUp() throws SQLException, InvalidStructureException, NameErrorException {

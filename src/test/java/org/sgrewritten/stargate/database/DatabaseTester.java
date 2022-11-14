@@ -68,7 +68,7 @@ public class DatabaseTester {
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      * @throws NameErrorException        <p>If an invalid portal name is encountered</p>
      */
-    public DatabaseTester(Database database, TableNameConfiguration nameConfig, SQLQueryGenerator generator,
+    public DatabaseTester(SQLDatabaseAPI database, TableNameConfiguration nameConfig, SQLQueryGenerator generator,
                           boolean isMySQL) throws SQLException, InvalidStructureException, NameErrorException {
         DatabaseTester.connection = database.getConnection();
         DatabaseTester.generator = generator;
@@ -86,7 +86,7 @@ public class DatabaseTester {
         DatabaseTester.serverUUID = UUID.randomUUID();
         Stargate.setServerUUID(serverUUID);
         StargateLogger logger = new FakeStargate();
-        this.portalDatabaseAPI = new DatabaseAPI(database, false, isMySQL, logger, nameConfig);
+        this.portalDatabaseAPI = new SQLDatabase(database, false, isMySQL, logger, nameConfig);
 
         Network testNetwork = null;
         try {

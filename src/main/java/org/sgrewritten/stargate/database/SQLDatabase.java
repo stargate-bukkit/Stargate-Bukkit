@@ -38,11 +38,11 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * An API for interacting with the portal database
+ * A generic SQL database used for loading and saving portal data
  */
-public class DatabaseAPI implements StorageAPI {
+public class SQLDatabase implements StorageAPI {
 
-    private Database database;
+    private SQLDatabaseAPI database;
     private SQLQueryGenerator sqlQueryGenerator;
     private boolean useInterServerNetworks;
     private StargateLogger logger;
@@ -53,7 +53,7 @@ public class DatabaseAPI implements StorageAPI {
      * @param stargate <p>The Stargate instance to use</p>
      * @throws StargateInitializationException <p>If unable to initialize the database</p>
      */
-    public DatabaseAPI(Database database, Stargate stargate) throws StargateInitializationException {
+    public SQLDatabase(SQLDatabaseAPI database, Stargate stargate) throws StargateInitializationException {
         load(database, stargate);
     }
 
@@ -66,7 +66,7 @@ public class DatabaseAPI implements StorageAPI {
      * @param logger              <p>The Stargate logger to use for logging</p>
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
-    public DatabaseAPI(Database database, boolean usingBungee, boolean usingRemoteDatabase,
+    public SQLDatabase(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase,
                        StargateLogger logger) throws SQLException {
         load(database, usingBungee, usingRemoteDatabase, logger);
     }
@@ -81,7 +81,7 @@ public class DatabaseAPI implements StorageAPI {
      * @param config              <p>The table name configuration to use</p>
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
-    public DatabaseAPI(Database database, boolean usingBungee, boolean usingRemoteDatabase,
+    public SQLDatabase(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase,
                        StargateLogger logger, TableNameConfiguration config) throws SQLException {
         this.logger = logger;
         this.database = database;
@@ -178,7 +178,7 @@ public class DatabaseAPI implements StorageAPI {
      * @param portalType <p>The portal type to load</p>
      * @throws SQLException <p>If an SQL error occurs</p>
      */
-    private void loadAllPortals(Database database, PortalType portalType, RegistryAPI registry) throws SQLException {
+    private void loadAllPortals(SQLDatabaseAPI database, PortalType portalType, RegistryAPI registry) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsStatement(connection, portalType);
 
@@ -303,7 +303,7 @@ public class DatabaseAPI implements StorageAPI {
     }
 
     @Override
-    public void load(Database database, Stargate stargate) throws StargateInitializationException {
+    public void load(SQLDatabaseAPI database, Stargate stargate) throws StargateInitializationException {
         try {
             load(database, ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE),
                     ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE), stargate);
@@ -313,7 +313,7 @@ public class DatabaseAPI implements StorageAPI {
         }
     }
 
-    private void load(Database database, boolean usingBungee, boolean usingRemoteDatabase, StargateLogger logger)
+    private void load(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase, StargateLogger logger)
             throws SQLException {
         this.logger = logger;
         this.database = database;
@@ -458,4 +458,5 @@ public class DatabaseAPI implements StorageAPI {
         connection.close();
         return data;
     }
+
 }

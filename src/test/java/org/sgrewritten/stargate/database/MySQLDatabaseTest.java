@@ -22,7 +22,7 @@ public class MySQLDatabaseTest {
 
     private static DatabaseTester tester;
     private static TableNameConfiguration nameConfig;
-    private static Database database;
+    private static SQLDatabaseAPI database;
 
     @BeforeAll
     public static void setUp() throws SQLException, InvalidStructureException, NameErrorException, StargateInitializationException {
@@ -34,7 +34,7 @@ public class MySQLDatabaseTest {
         String username = "root";
         String password = "root";
 
-        Database database = new MySqlDatabase(driver, address, port, databaseName, username, password, false);
+        SQLDatabaseAPI database = new MySqlDatabase(driver, address, port, databaseName, username, password, false);
         MySQLDatabaseTest.nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DatabaseDriver.MYSQL);
         tester = new DatabaseTester(database, nameConfig, generator, true);

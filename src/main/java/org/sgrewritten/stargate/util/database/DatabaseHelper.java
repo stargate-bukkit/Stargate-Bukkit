@@ -4,9 +4,9 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
-import org.sgrewritten.stargate.database.Database;
 import org.sgrewritten.stargate.database.DatabaseDriver;
 import org.sgrewritten.stargate.database.MySqlDatabase;
+import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLQueryGenerator;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
@@ -34,7 +34,7 @@ public class DatabaseHelper {
         statement.close();
     }
 
-    public static void createTables(Database database, SQLQueryGenerator sqlQueryGenerator, boolean useInterServerNetworks) throws SQLException {
+    public static void createTables(SQLDatabaseAPI database, SQLQueryGenerator sqlQueryGenerator, boolean useInterServerNetworks) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement localPortalsStatement = sqlQueryGenerator.generateCreatePortalTableStatement(connection, PortalType.LOCAL);
         runStatement(localPortalsStatement);
@@ -144,7 +144,7 @@ public class DatabaseHelper {
      * @return <p>The loaded database</p>
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
-    public static Database loadDatabase(Stargate stargate) throws SQLException, StargateInitializationException {
+    public static SQLDatabaseAPI loadDatabase(Stargate stargate) throws SQLException, StargateInitializationException {
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
             if (ConfigurationHelper.getBoolean(ConfigurationOption.SHOW_HIKARI_CONFIG)) {
                 return new MySqlDatabase(stargate);
