@@ -1,5 +1,5 @@
 name: Stargate
-main: net.TheDgtl.Stargate.Stargate
+main: org.sgreqritten.stargate
 version: @version@
 description: Stargate mod for Bukkit
 authors: [ Dinnerbone, Drakia, PseudoKnight, Thorin, Knarvik ]
