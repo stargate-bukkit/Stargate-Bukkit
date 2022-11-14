@@ -10,6 +10,8 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.database.StorageAPI;
 import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.database.StorageReadException;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -48,7 +50,12 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public void loadPortals() {
-        storageAPI.loadFromStorage(this);
+        try {
+            storageAPI.loadFromStorage(this);
+        } catch (StorageReadException e) {
+            e.printStackTrace();
+            return;
+        }
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
             updateAllPortals();
             return true;
@@ -57,12 +64,20 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public void removePortal(Portal portal, PortalType portalType) {
-        storageAPI.removePortalFromStorage(portal, portalType);
+        try {
+            storageAPI.removePortalFromStorage(portal, portalType);
+        } catch (StorageWriteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void savePortal(RealPortal portal, PortalType portalType) {
-        storageAPI.savePortalToStorage(portal, portalType);
+        try {
+            storageAPI.savePortalToStorage(portal, portalType);
+        } catch (StorageWriteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

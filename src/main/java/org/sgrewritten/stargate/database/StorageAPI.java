@@ -24,24 +24,27 @@ public interface StorageAPI {
      * Loads all portals from storage and adds them to the portal registry
      *
      * @param registry <p> The registry to load the portals into </p>
+     * @throws StorageReadException 
      */
-    void loadFromStorage(RegistryAPI registry);
+    void loadFromStorage(RegistryAPI registry) throws StorageReadException;
 
     /**
      * Saves the given portal to storage
      *
      * @param portal     <p>The portal to save</p>
      * @param portalType <p>The type of portal to save</p>
+     * @throws StorageWriteException 
      */
-    boolean savePortalToStorage(RealPortal portal, PortalType portalType);
+    boolean savePortalToStorage(RealPortal portal, PortalType portalType) throws StorageWriteException;
 
     /**
      * Removes a portal and its associated data from storage
      *
      * @param portal     <p>The portal to remove</p>
      * @param portalType <p>The type of portal to remove</p>
+     * @throws StorageWriteException 
      */
-    void removePortalFromStorage(Portal portal, PortalType portalType);
+    void removePortalFromStorage(Portal portal, PortalType portalType) throws StorageWriteException;
 
     /**
      * Loads all settings
@@ -113,8 +116,9 @@ public interface StorageAPI {
 
     /**
      * "Starts" the inter-server connection by setting this server's portals as online
+     * @throws StorageWriteException 
      */
-    void startInterServerConnection();
+    void startInterServerConnection() throws StorageWriteException;
 
     /**
      * Add a new flagtype

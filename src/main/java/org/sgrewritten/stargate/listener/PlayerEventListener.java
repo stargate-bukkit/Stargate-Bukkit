@@ -18,6 +18,7 @@ import org.sgrewritten.stargate.action.ConditionalDelayedAction;
 import org.sgrewritten.stargate.action.ConditionalRepeatedTask;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -198,7 +199,11 @@ public class PlayerEventListener implements Listener {
      */
     private void updateServerName() {
         ConditionalDelayedAction action = new ConditionalDelayedAction(() -> {
-            Stargate.getStorageAPIStatic().startInterServerConnection();
+            try {
+                Stargate.getStorageAPIStatic().startInterServerConnection();
+            } catch (StorageWriteException e) {
+                e.printStackTrace();
+            }
             return true;
         }, Stargate::knowsServerName);
         Stargate.addSynchronousSecAction(action, true);
