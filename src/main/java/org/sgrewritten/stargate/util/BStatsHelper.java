@@ -37,7 +37,7 @@ public final class BStatsHelper {
 
         metrics.addCustomChart(new SimplePie("gateformats", () -> String.valueOf(GateFormatHandler.formatsStored())));
 
-        metrics.addCustomChart(new SingleLineChart("gatesv3", () -> AbstractPortal.portalCount));
+        metrics.addCustomChart(new SingleLineChart("totalPortals", () -> AbstractPortal.portalCount));
 
         // Registers all user-specifiable flags in use on this instance
         registerFlagMetrics(metrics);
