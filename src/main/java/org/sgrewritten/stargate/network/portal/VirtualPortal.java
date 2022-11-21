@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.PortalType;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.util.NameHelper;
@@ -207,5 +208,9 @@ public class VirtualPortal implements Portal {
 
     public String getServer() {
         return server;
+    }
+
+    public PortalType getPortalType() {
+        return (flags.contains(PortalFlag.FANCY_INTER_SERVER) ? PortalType.INTER_SERVER : PortalType.LOCAL);
     }
 }

@@ -362,6 +362,9 @@ public abstract class AbstractPortal implements RealPortal {
             } else {
                 colorDrawer = new LegacyLineColorFormatter();
             }
+            //TODO: The StargateSignFormatEvent should be called each time a sign is formatted. This implementation 
+            // will only update the formatter when run on startup, or if changed with a dye. Instead, this should either
+            // be called every time a color formatting happens, or be replaced with an API method
             StargateSignFormatEvent formatEvent = new StargateSignFormatEvent(this, colorDrawer, color);
             Bukkit.getPluginManager().callEvent(formatEvent);
             this.colorDrawer = formatEvent.getLineFormatter();
@@ -520,7 +523,7 @@ public abstract class AbstractPortal implements RealPortal {
         this.activator = null;
         drawControlMechanisms();
     }
-    
+
     @Override
     public void setMetaData(String data) {
         try {
@@ -528,18 +531,20 @@ public abstract class AbstractPortal implements RealPortal {
         } catch (StorageWriteException e) {
             e.printStackTrace();
         }
-    };
-    
+    }
+
+    ;
+
     @Override
     public String getMetaData() {
         try {
-            return Stargate.getStorageAPIStatic().getPortalMetaData(this,getPortalType());
+            return Stargate.getStorageAPIStatic().getPortalMetaData(this, getPortalType());
         } catch (StorageReadException e) {
             e.printStackTrace();
             return null;
         }
     }
-    
+
     public PortalType getPortalType() {
         return (flags.contains(PortalFlag.FANCY_INTER_SERVER) ? PortalType.INTER_SERVER : PortalType.LOCAL);
     }

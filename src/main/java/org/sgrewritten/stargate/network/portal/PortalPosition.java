@@ -43,7 +43,6 @@ public class PortalPosition {
     }
 
     /**
-     * 
      * @param portal <p> The portal which this position belongs to </p>
      * @return
      */
@@ -55,7 +54,7 @@ public class PortalPosition {
             return null;
         }
     }
-    
+
     public void setMetaData(RealPortal portal, String data) {
         try {
             Stargate.getStorageAPIStatic().setPortalPositionMetaData(portal, this, data, portal.getPortalType());
@@ -63,7 +62,7 @@ public class PortalPosition {
             e.printStackTrace();
         }
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof PortalPosition)) {

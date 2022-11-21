@@ -11,6 +11,7 @@ import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
@@ -193,14 +194,22 @@ public class DatabaseTester {
 
     void addPortalTest() {
         for (RealPortal portal : localPortals.values()) {
-            Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, PortalType.LOCAL));
+            try {
+                Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, PortalType.LOCAL));
+            } catch (StorageWriteException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     void addInterPortalTest() {
         System.out.println("InterServerTableName: " + nameConfig.getInterPortalTableName());
         for (RealPortal portal : interServerPortals.values()) {
-            Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, PortalType.INTER_SERVER));
+            try {
+                Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, PortalType.INTER_SERVER));
+            } catch (StorageWriteException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -443,7 +452,11 @@ public class DatabaseTester {
      * @throws SQLException <p>If a database error occurs</p>
      */
     private void destroyPortal(Portal portal, PortalType portalType) throws SQLException {
-        this.portalDatabaseAPI.removePortalFromStorage(portal, portalType);
+        try {
+            this.portalDatabaseAPI.removePortalFromStorage(portal, portalType);
+        } catch (StorageWriteException e) {
+            throw new RuntimeException(e);
+        }
 
         String flagTable = portalType == PortalType.LOCAL ? nameConfig.getFlagRelationTableName() :
                 nameConfig.getInterFlagRelationTableName();

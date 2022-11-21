@@ -82,5 +82,9 @@ public interface RealPortal extends Portal {
      */
     List<Location> getPortalPosition(PositionType type);
 
+    void setMetaData(String data);
+
+    String getMetaData();
+
 
 }

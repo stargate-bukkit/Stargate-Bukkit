@@ -154,10 +154,6 @@ public interface Portal {
      * @return <p>The unique identifier for this network</p>
      */
     String getID();
-    
-    void setMetaData(String data);
-    
-    String getMetaData();
-    
+
     PortalType getPortalType();
 }
