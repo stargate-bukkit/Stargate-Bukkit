@@ -38,15 +38,15 @@ public class FixedPortal extends AbstractPortal {
     @Override
     public void drawControlMechanisms() {
         String[] lines = new String[4];
-        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
+        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN);
         lines[2] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()) : "";
         Portal destination = getDestination();
         if (destination != null) {
-            lines[1] = super.colorDrawer.formatPortalName(destination, HighlightingStyle.DESTINATION);
+            lines[1] = super.colorDrawer.formatPortalName(destination, HighlightingStyle.LESSER_GREATER_THAN);
         } else {
             lines[1] = super.colorDrawer.formatLine(destinationName);
             lines[3] = super.colorDrawer.formatErrorLine(Stargate.getLanguageManagerStatic().getString(
-                    TranslatableMessage.DISCONNECTED), HighlightingStyle.BUNGEE);
+                    TranslatableMessage.DISCONNECTED), HighlightingStyle.SQUARE_BRACKETS);
         }
         getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }

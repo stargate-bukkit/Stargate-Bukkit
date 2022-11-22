@@ -40,25 +40,25 @@ class NetworkCreationHelperTest {
         String name = "name";
 
         interpretNameTest = new HashMap<>();
-        interpretNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(name), new TwoTuple<>(PortalFlag.PERSONAL_NETWORK, name));
-        interpretNameTest.put(HighlightingStyle.BUNGEE.getHighlightedName(name), new TwoTuple<>(PortalFlag.FANCY_INTER_SERVER, name));
+        interpretNameTest.put(HighlightingStyle.CURLY_BRACKETS.getHighlightedName(name), new TwoTuple<>(PortalFlag.PERSONAL_NETWORK, name));
+        interpretNameTest.put(HighlightingStyle.SQUARE_BRACKETS.getHighlightedName(name), new TwoTuple<>(PortalFlag.FANCY_INTER_SERVER, name));
         interpretNameTest.put(name, new TwoTuple<>(null, name));
-        interpretNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(player.getName()), new TwoTuple<>(null, player.getName()));
+        interpretNameTest.put(HighlightingStyle.CURLY_BRACKETS.getHighlightedName(player.getName()), new TwoTuple<>(null, player.getName()));
         interpretNameTest.put(invalidPlayerName, new TwoTuple<>(null, invalidPlayerName));
         interpretNameTest.put(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK), new TwoTuple<>(null, ""));
 
         insertNameRelatedFlagsTest = new HashMap<>();
-        insertNameRelatedFlagsTest.put(HighlightingStyle.PERSONAL.getHighlightedName(name), PortalFlag.PERSONAL_NETWORK);
-        insertNameRelatedFlagsTest.put(HighlightingStyle.BUNGEE.getHighlightedName(name), PortalFlag.FANCY_INTER_SERVER);
+        insertNameRelatedFlagsTest.put(HighlightingStyle.CURLY_BRACKETS.getHighlightedName(name), PortalFlag.PERSONAL_NETWORK);
+        insertNameRelatedFlagsTest.put(HighlightingStyle.SQUARE_BRACKETS.getHighlightedName(name), PortalFlag.FANCY_INTER_SERVER);
 
         parseNetworkNameTest = new HashMap<>();
-        parseNetworkNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(player.getName()), player.getUniqueId().toString());
-        parseNetworkNameTest.put(HighlightingStyle.PERSONAL.getHighlightedName(invalidPlayerName),
+        parseNetworkNameTest.put(HighlightingStyle.CURLY_BRACKETS.getHighlightedName(player.getName()), player.getUniqueId().toString());
+        parseNetworkNameTest.put(HighlightingStyle.CURLY_BRACKETS.getHighlightedName(invalidPlayerName),
                 Bukkit.getOfflinePlayer(invalidPlayerName).getUniqueId().toString());
-        parseNetworkNameTest.put(HighlightingStyle.BUNGEE.getHighlightedName(name), name);
-        parseNetworkNameTest.put(HighlightingStyle.DESTINATION.getHighlightedName(name), name);
-        parseNetworkNameTest.put(HighlightingStyle.NETWORK.getHighlightedName(name), name);
-        parseNetworkNameTest.put(HighlightingStyle.PORTAL.getHighlightedName(name), name);
+        parseNetworkNameTest.put(HighlightingStyle.SQUARE_BRACKETS.getHighlightedName(name), name);
+        parseNetworkNameTest.put(HighlightingStyle.LESSER_GREATER_THAN.getHighlightedName(name), name);
+        parseNetworkNameTest.put(HighlightingStyle.ROUNDED_BRACKETS.getHighlightedName(name), name);
+        parseNetworkNameTest.put(HighlightingStyle.MINUS_SIGN.getHighlightedName(name), name);
 
     }
 

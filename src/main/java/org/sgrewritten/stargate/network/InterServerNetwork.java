@@ -8,6 +8,7 @@ import org.sgrewritten.stargate.action.ForcibleFunctionAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.property.PluginChannel;
@@ -17,6 +18,7 @@ import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -30,8 +32,8 @@ public class InterServerNetwork extends LocalNetwork {
      * @param networkName <p>The name of the new inter-server network</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public InterServerNetwork(String networkName) throws NameErrorException {
-        super(networkName);
+    public InterServerNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
+        super(networkName,flags);
     }
 
     @Override
@@ -47,7 +49,7 @@ public class InterServerNetwork extends LocalNetwork {
 
     @Override
     public HighlightingStyle getHighlightingStyle() {
-        return HighlightingStyle.BUNGEE;
+        return HighlightingStyle.SQUARE_BRACKETS;
     }
 
     @Override

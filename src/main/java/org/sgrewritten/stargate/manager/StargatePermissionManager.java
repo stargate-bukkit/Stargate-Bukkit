@@ -312,14 +312,14 @@ public class StargatePermissionManager implements PermissionManager {
         boolean hasPermission;
 
         switch (highlight) {
-            case PERSONAL:
+            case CURLY_BRACKETS:
                 if (target.getName().equals(networkName)) {
                     hasPermission = target.hasPermission(NETWORK_CREATE_PERMISSION + ".personal");
                 } else {
                     hasPermission = target.hasPermission(BypassPermission.PRIVATE.getPermissionString());
                 }
                 break;
-            case BUNGEE:
+            case SQUARE_BRACKETS:
                 hasPermission = hasPermission(target, NETWORK_CREATE_PERMISSION + ".type." + PortalFlag.FANCY_INTER_SERVER);
                 break;
             default:

@@ -8,27 +8,27 @@ public enum HighlightingStyle {
     /**
      * The highlighting to use around a portal's name
      */
-    PORTAL("-", "-"),
+    MINUS_SIGN("-", "-"),
 
     /**
      * The highlighting to use around a portal's destination
      */
-    DESTINATION(">", "<"),
+    LESSER_GREATER_THAN(">", "<"),
 
     /**
      * The highlighting to use around a normal network name
      */
-    NETWORK("(", ")"),
+    ROUNDED_BRACKETS("(", ")"),
 
     /**
      * The highlighting used for legacy bungee stargates' server
      */
-    BUNGEE("[", "]"),
+    SQUARE_BRACKETS("[", "]"),
 
     /**
      * The highlighting to use for personal networks
      */
-    PERSONAL("{", "}"),
+    CURLY_BRACKETS("{", "}"),
 
     /**
      * No highlighting at all. Just a workaround, really

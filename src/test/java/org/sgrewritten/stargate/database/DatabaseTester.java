@@ -15,6 +15,7 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.PortalType;
 import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -91,7 +92,7 @@ public class DatabaseTester {
 
         Network testNetwork = null;
         try {
-            testNetwork = new LocalNetwork("test");
+            testNetwork = new LocalNetwork("test",NetworkType.CUSTOM);
         } catch (NameErrorException e) {
             e.printStackTrace();
         }

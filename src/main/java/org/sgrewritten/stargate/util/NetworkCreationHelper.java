@@ -14,6 +14,7 @@ import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +48,7 @@ public final class NetworkCreationHelper {
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(initialNetworkName);
         if (highlight != HighlightingStyle.NOTHING) {
             String unHighlightedName = HighlightingStyle.getNameFromHighlightedText(initialNetworkName);
-            if (highlight == HighlightingStyle.PERSONAL) {
+            if (highlight == HighlightingStyle.CURLY_BRACKETS) {
                 return initialNetworkName;
             }
             UUID possiblePlayer = getPlayerUUID(unHighlightedName);
@@ -60,25 +61,25 @@ public final class NetworkCreationHelper {
 
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
             if (initialNetworkName.trim().isEmpty()) {
-                return HighlightingStyle.PERSONAL.getHighlightedName(player.getName());
+                return HighlightingStyle.CURLY_BRACKETS.getHighlightedName(player.getName());
             }
-            return HighlightingStyle.PERSONAL.getHighlightedName(initialNetworkName);
+            return HighlightingStyle.CURLY_BRACKETS.getHighlightedName(initialNetworkName);
         }
         if (initialNetworkName.trim().isEmpty()) {
             return ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
         }
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
-            return HighlightingStyle.BUNGEE.getHighlightedName(initialNetworkName);
+            return HighlightingStyle.SQUARE_BRACKETS.getHighlightedName(initialNetworkName);
         }
         if (registry.getNetwork(initialNetworkName, false) != null) {
             return initialNetworkName;
         }
         if (registry.getNetwork(getPlayerUUID(initialNetworkName).toString(), false) != null) {
-            return HighlightingStyle.PERSONAL.getHighlightedName(initialNetworkName);
+            return HighlightingStyle.CURLY_BRACKETS.getHighlightedName(initialNetworkName);
         }
 
         if (player.getName().equals(initialNetworkName)) {
-            return HighlightingStyle.PERSONAL.getHighlightedName(initialNetworkName);
+            return HighlightingStyle.CURLY_BRACKETS.getHighlightedName(initialNetworkName);
         }
 
         return initialNetworkName;
@@ -106,10 +107,10 @@ public final class NetworkCreationHelper {
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(networkName);
         List<PortalFlag> flags = new ArrayList<>();
         switch (highlight) {
-            case PERSONAL:
+            case CURLY_BRACKETS:
                 flags.add(PortalFlag.PERSONAL_NETWORK);
                 break;
-            case BUNGEE:
+            case SQUARE_BRACKETS:
                 flags.add(PortalFlag.FANCY_INTER_SERVER);
                 break;
             case NOTHING:
@@ -125,7 +126,7 @@ public final class NetworkCreationHelper {
     public static String parseNetworkNameName(String initialName) throws NameErrorException {
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(initialName);
         String unHighlightedName = HighlightingStyle.getNameFromHighlightedText(initialName);
-        if (highlight == HighlightingStyle.PERSONAL) {
+        if (highlight == HighlightingStyle.CURLY_BRACKETS) {
             try {
                 return getPlayerUUID(unHighlightedName).toString();
             } catch (IllegalArgumentException | NullPointerException e) {
@@ -149,13 +150,13 @@ public final class NetworkCreationHelper {
         if (!permissionManager.canCreateInNetwork(modifiedNetworkName) && style == HighlightingStyle.NOTHING) {
             Stargate.log(Level.CONFIG,
                     String.format(" Player does not have perms to create on current network %s. Checking for private with same network name...", modifiedNetworkName));
-            modifiedNetworkName = HighlightingStyle.PERSONAL.getHighlightedName(modifiedNetworkName);
+            modifiedNetworkName = HighlightingStyle.CURLY_BRACKETS.getHighlightedName(modifiedNetworkName);
         }
 
         if (!permissionManager.canCreateInNetwork(modifiedNetworkName)) {
             Stargate.log(Level.CONFIG,
                     String.format(" Player does not have perms to create on current network %s. Replacing to private network with the players name...", modifiedNetworkName));
-            modifiedNetworkName = HighlightingStyle.PERSONAL.getHighlightedName(player.getName());
+            modifiedNetworkName = HighlightingStyle.CURLY_BRACKETS.getHighlightedName(player.getName());
         }
         if (!initialNetworkName.equals(modifiedNetworkName) && shouldShowFallbackMessage) {
             String plainMessage = Stargate.getLanguageManagerStatic()

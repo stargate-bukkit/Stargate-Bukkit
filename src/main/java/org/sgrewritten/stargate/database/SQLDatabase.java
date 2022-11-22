@@ -15,7 +15,6 @@ import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.PersonalNetwork;
 import org.sgrewritten.stargate.network.PortalType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
@@ -335,13 +334,10 @@ public class SQLDatabase implements StorageAPI {
     @Override
     public Network createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
-            return new InterServerNetwork(networkName);
+            return new InterServerNetwork(networkName,flags);
         }
-        if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            UUID uuid = UUID.fromString(networkName);
-            return new PersonalNetwork(uuid);
-        } else {
-            return new LocalNetwork(networkName);
+        else {
+            return new LocalNetwork(networkName, flags);
         }
     }
 

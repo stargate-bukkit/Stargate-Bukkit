@@ -9,6 +9,7 @@ import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.EnumSet;
@@ -62,7 +63,7 @@ public class BungeePortal extends AbstractPortal {
          * CHEATS! we love cheats. This one helps to save the legacy bungee gate into sql table so that the
          * target server is stored as a replacement to network.
          */
-        fakeNetwork = new LocalNetwork(destinationServer);
+        fakeNetwork = new LocalNetwork(destinationServer, NetworkType.CUSTOM);
         String possibleBungeeString = Stargate.getLanguageManagerStatic().getString(TranslatableMessage.BUNGEE_SIGN_LINE_4);
         bungeeString = (possibleBungeeString == null) ? "[PlaceHolder]" : possibleBungeeString;
     }
@@ -81,9 +82,9 @@ public class BungeePortal extends AbstractPortal {
         Stargate.log(Level.FINEST, "serverDestination = " + serverDestination);
 
         String[] lines = new String[4];
-        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
-        lines[1] = super.colorDrawer.formatPortalName(getDestination(), HighlightingStyle.DESTINATION);
-        lines[2] = super.colorDrawer.formatStringWithHiglighting(serverDestination, HighlightingStyle.BUNGEE);
+        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN);
+        lines[1] = super.colorDrawer.formatPortalName(getDestination(), HighlightingStyle.LESSER_GREATER_THAN);
+        lines[2] = super.colorDrawer.formatStringWithHiglighting(serverDestination, HighlightingStyle.SQUARE_BRACKETS);
         lines[3] = super.colorDrawer.formatLine(bungeeString);
         getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }

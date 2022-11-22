@@ -164,7 +164,7 @@ public class NetworkedPortal extends AbstractPortal {
     @Override
     public void drawControlMechanisms() {
         String[] lines = new String[4];
-        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
+        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN);
         if (!this.isActive) {
             lines[1] = super.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.RIGHT_CLICK));
             lines[2] = super.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.TO_USE));
@@ -210,7 +210,7 @@ public class NetworkedPortal extends AbstractPortal {
      * @param lines            <p>The sign lines to update</p>
      */
     private void drawDestination(int lineIndex, int destination, int destinationIndex, String[] lines) {
-        HighlightingStyle highlightingStyle = (destinationIndex == lineIndex) ? HighlightingStyle.DESTINATION
+        HighlightingStyle highlightingStyle = (destinationIndex == lineIndex) ? HighlightingStyle.LESSER_GREATER_THAN
                 : HighlightingStyle.NOTHING;
         lines[lineIndex + 1] = super.colorDrawer.formatPortalName(destinations.get(destination), highlightingStyle);
     }
