@@ -4,7 +4,7 @@
 
     <groupId>net.knarcraft</groupId>
     <artifactId>Stargate</artifactId>
-    <version>0.9.4.2</version>
+    <version>0.9.4.3-SNAPSHOT</version>
 
     <licenses>
         <license>
