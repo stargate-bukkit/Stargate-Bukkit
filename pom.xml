@@ -20,7 +20,7 @@
 
     <repositories>
         <repository>
-            <id>gitea</id>
+            <id>knarcraft-repo</id>
             <url>https://git.knarcraft.net/api/packages/EpicKnarvik97/maven</url>
         </repository>
         <repository>
@@ -40,6 +40,16 @@
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
+    <distributionManagement>
+        <repository>
+            <id>knarcraft-repo</id>
+            <url>https://git.knarcraft.net/api/packages/EpicKnarvik97/maven</url>
+        </repository>
+        <snapshotRepository>
+            <id>knarcraft-repo</id>
+            <url>https://git.knarcraft.net/api/packages/EpicKnarvik97/maven</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
