@@ -16,10 +16,16 @@ pipeline {
                 sh 'mvn test'
             }
         }
+        stage('Verify') {
+            steps {
+                echo 'Verifying...'
+                sh 'mvn verify -Dmaven.test.skip=true'
+            }
+        }
         stage('Deploy') {
              steps {
                 echo 'Deploying...'
-                sh 'mvn verify -Dmaven.test.skip=true'
+                sh 'mvn deploy -Dmaven.install.skip=true -Dmaven.test.skip=true'
                 archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
             }
         }
