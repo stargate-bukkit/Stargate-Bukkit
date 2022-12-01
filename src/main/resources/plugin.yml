@@ -73,7 +73,13 @@ permissions:
                 description: Can use portals if they are on any custom network.
               #sg.use.network.custom.<NAME> is a sub-node that allows for portals on a specific (specified) custom network to be used.
               sg.use.network.personal:
-                description: Can use portals if they are on one's personal (username) network.
+                children:
+                   sg.use.network.personal.own:
+                      default: true
+                      description: Can use portals if they are on one's personal (username) network.
+                   sg.use.network.personal.other:
+                      default: op
+                      description: Can use portals if they are on anothers personal (username) network.
               sg.use.network.default:
                 description: Can use portals if they are on the default (central) network.
           sg.use.type:
@@ -142,7 +148,13 @@ permissions:
               #sg.create.network.custom.<NAME> is a sub-node that allows for portals to be created on a specific (specified) custom network.
               sg.create.network.personal:
                 default: true
-                description: Can create portals if they are on one's personal (username) network.
+                children:
+                   sg.create.network.personal.own:
+                      default: true
+                      description: Can create portals if they are on one's personal (username) network.
+                   sg.create.network.personal.other:
+                      default: op
+                      description: Can create portals if they are on anothers personal (username) network.
               sg.create.network.default:
                 description: Can create portals if they are on the default (central) network.
           sg.create.type:
@@ -210,8 +222,13 @@ permissions:
             description: Can destroy portals, regardless of network
             children:
               sg.destroy.network.personal:
-                default: true
-                description: Can destroy any portals on your personal network.
+                children:
+                   sg.destroy.network.personal.own:
+                      default: true
+                      description: Can destroy any portals on your personal network
+                   sg.destroy.network.personal.other:
+                      default: op
+                      description: Can destroy any portals on others personal network.
               sg.destroy.network.default:
                 description: Can destroy any portals on the default network. (central)
               sg.destroy.network.custom:
@@ -271,8 +288,8 @@ permissions:
           sg.preset.gatemaker:
             description: A permission set intended to be given to players who will be making basic stargates for personal usage.
             children:
-              sg.create.network.personal: true
-              sg.destroy.network.personal: true
+              sg.create.network.personal.own: true
+              sg.destroy.network.personal.own: true
               sg.create.type.h: true
               sg.create.type.p: true
               sg.destroy.type.h: true
@@ -335,3 +352,5 @@ permissions:
               sg.create: true
               sg.destroy: true
               sg.admin: true
+              sg.create.network.personal.other: true
+              sg.destroy.network.personal.other: true
