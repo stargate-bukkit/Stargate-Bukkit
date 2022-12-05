@@ -139,6 +139,17 @@ public interface RegistryAPI {
      */
     void unRegisterLocation(GateStructureType structureType, BlockLocation blockLocation);
 
+
+    /**
+     * Creates a new network assigned to this registry
+     * 
+     * @param networkName   <p>The name of the new network</p>
+     * @param type          <p>The type of network to create</p>
+     * @param isInterserver <p>Whether to create it as a BungeeCord network</p>
+     * @throws NameErrorException <p>If the given network name is invalid</p>
+     */
+    void createNetwork(String networkName, NetworkType type, boolean isInterserver) throws NameErrorException;
+
     /**
      * Creates a new network assigned to this registry
      *
@@ -146,7 +157,7 @@ public interface RegistryAPI {
      * @param flags       <p>The flags containing the network's enabled options</p>
      * @throws NameErrorException <p>If the given network name is invalid</p>
      */
-    void createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException;
+    void createNetwork(String targetNetwork, Set<PortalFlag> flags) throws NameErrorException;
 
     /**
      * Checks whether the given network name exists

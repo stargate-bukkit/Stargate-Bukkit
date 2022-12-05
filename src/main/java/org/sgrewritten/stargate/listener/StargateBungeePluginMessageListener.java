@@ -30,6 +30,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.network.InterServerNetwork;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.property.PluginChannel;

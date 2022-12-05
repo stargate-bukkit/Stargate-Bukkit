@@ -38,10 +38,12 @@ import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
+import org.sgrewritten.stargate.exception.PermissionException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -166,37 +168,18 @@ public class BlockEventListener implements Listener {
         }
         flags.removeAll(disallowedFlags);
 
-        String finalNetworkName;
         Network selectedNetwork = null;
         try {
             if (flags.contains(PortalFlag.BUNGEE)) {
-                selectedNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), flags);
+                selectedNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), permissionManager, player, flags);
             } else {
-                Stargate.log(Level.FINER, "....Choosing network name....");
-                Stargate.log(Level.FINER, "initial name is " + network);
-                boolean shouldShowFallBackMessage = !network.isEmpty();
-                finalNetworkName = NetworkCreationHelper.interpretNetworkName(network, flags, player, registry);
-                Stargate.log(Level.FINER, "Took format " + finalNetworkName);
-                finalNetworkName = NetworkCreationHelper.getAllowedNetworkName(finalNetworkName, permissionManager, player, shouldShowFallBackMessage);
-                Stargate.log(Level.FINER, "From allowed permissions took " + finalNetworkName);
-                flags.addAll(NetworkCreationHelper.getNameRelatedFlags(finalNetworkName));
-                finalNetworkName = NetworkCreationHelper.parseNetworkNameName(finalNetworkName);
-                Stargate.log(Level.FINER, "Ended up with name " + finalNetworkName);
-                selectedNetwork = NetworkCreationHelper.selectNetwork(finalNetworkName, flags);
+                selectedNetwork = NetworkCreationHelper.selectNetwork(network, permissionManager, player, flags);
+                //NetworkType-flags are incompatible with each other, this makes sure that only the flag of the portals network is in use
+                NetworkType.removeNetworkTypeRelatedFlags(flags);
+                flags.add(selectedNetwork.getType().getRelatedFlag());
             }
         } catch (NameErrorException nameErrorException) {
             errorMessage = nameErrorException.getErrorMessage();
-        }
-
-        //Register the default network and default terminal network flags
-        if (!flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            if (selectedNetwork != null && selectedNetwork.getName().equalsIgnoreCase(ConfigurationHelper.getString(
-                    ConfigurationOption.DEFAULT_NETWORK))) {
-                flags.add(PortalFlag.DEFAULT_NETWORK);
-            } else if (selectedNetwork != null && selectedNetwork.getName().equalsIgnoreCase(
-                    ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME))) {
-                flags.add(PortalFlag.TERMINAL_NETWORK);
-            }
         }
 
         try {

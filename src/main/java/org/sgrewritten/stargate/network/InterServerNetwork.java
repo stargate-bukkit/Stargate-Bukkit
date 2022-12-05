@@ -32,8 +32,8 @@ public class InterServerNetwork extends LocalNetwork {
      * @param networkName <p>The name of the new inter-server network</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public InterServerNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
-        super(networkName,flags);
+    public InterServerNetwork(String networkName, NetworkType type) throws NameErrorException {
+        super(networkName,type);
     }
 
     @Override

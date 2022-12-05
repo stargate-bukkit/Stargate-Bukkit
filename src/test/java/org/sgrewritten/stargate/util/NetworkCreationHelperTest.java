@@ -11,6 +11,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
@@ -40,24 +41,23 @@ class NetworkCreationHelperTest {
         String name = "name";
 
         interpretNameTest = new HashMap<>();
-        interpretNameTest.put(HighlightingStyle.CURLY_BRACKETS.getHighlightedName(name), new TwoTuple<>(PortalFlag.PERSONAL_NETWORK, name));
-        interpretNameTest.put(HighlightingStyle.SQUARE_BRACKETS.getHighlightedName(name), new TwoTuple<>(PortalFlag.FANCY_INTER_SERVER, name));
+        interpretNameTest.put(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(name), new TwoTuple<>(PortalFlag.PERSONAL_NETWORK, name));
         interpretNameTest.put(name, new TwoTuple<>(null, name));
-        interpretNameTest.put(HighlightingStyle.CURLY_BRACKETS.getHighlightedName(player.getName()), new TwoTuple<>(null, player.getName()));
+        interpretNameTest.put(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(player.getName()), new TwoTuple<>(null, player.getName()));
         interpretNameTest.put(invalidPlayerName, new TwoTuple<>(null, invalidPlayerName));
         interpretNameTest.put(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK), new TwoTuple<>(null, ""));
 
         insertNameRelatedFlagsTest = new HashMap<>();
-        insertNameRelatedFlagsTest.put(HighlightingStyle.CURLY_BRACKETS.getHighlightedName(name), PortalFlag.PERSONAL_NETWORK);
-        insertNameRelatedFlagsTest.put(HighlightingStyle.SQUARE_BRACKETS.getHighlightedName(name), PortalFlag.FANCY_INTER_SERVER);
+        insertNameRelatedFlagsTest.put(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(name), PortalFlag.PERSONAL_NETWORK);
+        insertNameRelatedFlagsTest.put(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(name), PortalFlag.FANCY_INTER_SERVER);
 
         parseNetworkNameTest = new HashMap<>();
-        parseNetworkNameTest.put(HighlightingStyle.CURLY_BRACKETS.getHighlightedName(player.getName()), player.getUniqueId().toString());
-        parseNetworkNameTest.put(HighlightingStyle.CURLY_BRACKETS.getHighlightedName(invalidPlayerName),
+        parseNetworkNameTest.put(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(player.getName()), player.getUniqueId().toString());
+        parseNetworkNameTest.put(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(invalidPlayerName),
                 Bukkit.getOfflinePlayer(invalidPlayerName).getUniqueId().toString());
-        parseNetworkNameTest.put(HighlightingStyle.SQUARE_BRACKETS.getHighlightedName(name), name);
+        parseNetworkNameTest.put(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(name), name);
         parseNetworkNameTest.put(HighlightingStyle.LESSER_GREATER_THAN.getHighlightedName(name), name);
-        parseNetworkNameTest.put(HighlightingStyle.ROUNDED_BRACKETS.getHighlightedName(name), name);
+        parseNetworkNameTest.put(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(name), name);
         parseNetworkNameTest.put(HighlightingStyle.MINUS_SIGN.getHighlightedName(name), name);
 
     }

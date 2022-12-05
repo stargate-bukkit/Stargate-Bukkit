@@ -4,6 +4,7 @@ import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.PortalType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -93,7 +94,7 @@ public interface StorageAPI {
      * @return The network that was created
      * @throws NameErrorException <p>If the given network name is invalid</p>
      */
-    Network createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException;
+    Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws NameErrorException;
 
 
     /**

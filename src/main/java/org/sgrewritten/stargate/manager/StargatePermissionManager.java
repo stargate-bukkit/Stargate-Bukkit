@@ -11,6 +11,7 @@ import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RealPortal;
@@ -302,41 +303,37 @@ public class StargatePermissionManager implements PermissionManager {
     }
 
     @Override
-    public boolean canCreateInNetwork(String network) {
+    public boolean canCreateInNetwork(String network, NetworkType type) {
         if (network == null) {
             return false;
         }
-
-        HighlightingStyle highlight = HighlightingStyle.getHighlightType(network);
         String networkName = HighlightingStyle.getNameFromHighlightedText(network);
-        boolean hasPermission;
-
-        switch (highlight) {
-            case CURLY_BRACKETS:
-                if (target.getName().equals(networkName)) {
-                    hasPermission = target.hasPermission(NETWORK_CREATE_PERMISSION + ".personal");
-                } else {
-                    hasPermission = target.hasPermission(BypassPermission.PRIVATE.getPermissionString());
-                }
-                break;
-            case SQUARE_BRACKETS:
-                hasPermission = hasPermission(target, NETWORK_CREATE_PERMISSION + ".type." + PortalFlag.FANCY_INTER_SERVER);
-                break;
-            default:
-                if (networkName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-                    hasPermission = target.hasPermission(NETWORK_CREATE_PERMISSION + ".default");
-                } else if (networkName.equals(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK))) {
-                    //It's not possible to create a non-bungee portal on this network
-                    hasPermission = false;
-                } else {
-                    hasPermission = hasPermission(target, PortalPermissionHelper.generateCustomNetworkPermission(CREATE_PERMISSION, networkName));
-                }
-                break;
-        }
+        boolean hasPermission = hasNetworkCreatePermission(networkName,type);
+        
         if (!hasPermission) {
             denyMessage = languageManager.getErrorMessage(TranslatableMessage.NET_DENY);
         }
         return hasPermission;
+    }
+    
+    private boolean hasNetworkCreatePermission(String networkName, NetworkType type) {
+        if(networkName.equals(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK))) {
+            //It's not possible to create a non-bungee portal on this network
+            return false;
+        }
+        switch(type) {
+        case DEFAULT:
+            return hasPermission(target,NETWORK_CREATE_PERMISSION + ".default");
+        case TERMINAL:
+            return false; //NOT TET IMPLEMENTED
+        case PERSONAL:
+            if(target.getName().equals(networkName) || networkName.strip().isEmpty()) {
+                return hasPermission(target,NETWORK_CREATE_PERMISSION + ".personal.own");
+            }
+            return hasPermission(target,NETWORK_CREATE_PERMISSION + ".personal.other." + networkName);
+        default:
+            return hasPermission(target, PortalPermissionHelper.generateCustomNetworkPermission(CREATE_PERMISSION, networkName));
+        }
     }
 
     @Override

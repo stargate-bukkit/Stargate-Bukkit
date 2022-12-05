@@ -104,7 +104,12 @@ public enum PortalFlag {
     /**
      * A stargate on the terminal network
      */
-    TERMINAL_NETWORK('6', false);
+    TERMINAL_NETWORK('6', false), 
+    
+    /**
+     * A stargate custom network
+     */
+    CUSTOM_NETWORK('7', false);
 
     private final boolean isUserSpecifiable;
     private final char characterRepresentation;

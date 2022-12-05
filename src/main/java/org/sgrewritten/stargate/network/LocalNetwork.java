@@ -34,7 +34,7 @@ import java.util.logging.Level;
  */
 public class LocalNetwork implements Network {
 
-    private static final String DEFAULT_NET_ID = "";
+    private static final String DEFAULT_NET_ID = "<@DEFAULT@>";
     
     protected Map<String, Portal> nameToPortalMap;
     protected SQLDatabaseAPI database;
@@ -252,6 +252,11 @@ public class LocalNetwork implements Network {
     @Override
     public void assignToRegistry(RegistryAPI registry) {
         this.registry = registry;
+    }
+
+    @Override
+    public NetworkType getType() {
+        return networkType;
     }
 
 }

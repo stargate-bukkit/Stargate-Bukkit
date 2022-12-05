@@ -7,6 +7,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -174,7 +175,7 @@ public final class BungeeHelper {
         //Create the legacy network if it doesn't already exist
         try {
             if (network == null) {
-                registry.createNetwork(bungeeNetwork, new HashSet<>());
+                registry.createNetwork(bungeeNetwork, NetworkType.CUSTOM, false);
                 network = registry.getNetwork(bungeeNetwork, false);
             }
         } catch (NameErrorException e) {

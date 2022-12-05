@@ -23,6 +23,7 @@ import org.sgrewritten.stargate.gate.GateFormat;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.FixedPortal;
 import org.sgrewritten.stargate.network.portal.NetworkedPortal;
@@ -72,7 +73,7 @@ public final class PortalCreationHelper {
 
         if (flags.contains(PortalFlag.BUNGEE)) {
             flags.add(PortalFlag.FIXED);
-            Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), new HashSet<>());
+            Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false);
             return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, gate, ownerUUID, logger);
         } else if (flags.contains(PortalFlag.RANDOM)) {
             return new RandomPortal(network, name, flags, gate, ownerUUID, logger);

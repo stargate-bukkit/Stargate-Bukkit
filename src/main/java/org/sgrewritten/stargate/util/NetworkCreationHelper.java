@@ -5,10 +5,15 @@ import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.PermissionException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.manager.PermissionManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
+import org.sgrewritten.stargate.network.CreationAuthority;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
@@ -28,61 +33,6 @@ public final class NetworkCreationHelper {
 
     private NetworkCreationHelper() {
 
-    }
-
-    /**
-     * Interprets a network name and removes any characters with special behavior
-     *
-     * <p>Goes through some scenarios where the initial network name would need to be changed, and returns the
-     * modified network name. Some special characters given in a network name may be interpreted as special flags.</p>
-     *
-     * @param initialNetworkName <p>The initial network name written on the sign</p>
-     * @param flags              <p>All the flags of the portal</p>
-     * @param player             <p>The player that wrote the network name</p>
-     * @param registry           <p>The registry of all portals</p>
-     * @return <p>The interpreted network name</p>
-     */
-    public static String interpretNetworkName(String initialNetworkName, Set<PortalFlag> flags, Player player,
-                                              RegistryAPI registry) {
-
-        HighlightingStyle highlight = HighlightingStyle.getHighlightType(initialNetworkName);
-        if (highlight != HighlightingStyle.NOTHING) {
-            String unHighlightedName = HighlightingStyle.getNameFromHighlightedText(initialNetworkName);
-            if (highlight == HighlightingStyle.CURLY_BRACKETS) {
-                return initialNetworkName;
-            }
-            UUID possiblePlayer = getPlayerUUID(unHighlightedName);
-            if (registry.getNetwork(possiblePlayer.toString(), false) != null) {
-                initialNetworkName = unHighlightedName;
-            } else {
-                return initialNetworkName;
-            }
-        }
-
-        if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            if (initialNetworkName.trim().isEmpty()) {
-                return HighlightingStyle.CURLY_BRACKETS.getHighlightedName(player.getName());
-            }
-            return HighlightingStyle.CURLY_BRACKETS.getHighlightedName(initialNetworkName);
-        }
-        if (initialNetworkName.trim().isEmpty()) {
-            return ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
-        }
-        if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
-            return HighlightingStyle.SQUARE_BRACKETS.getHighlightedName(initialNetworkName);
-        }
-        if (registry.getNetwork(initialNetworkName, false) != null) {
-            return initialNetworkName;
-        }
-        if (registry.getNetwork(getPlayerUUID(initialNetworkName).toString(), false) != null) {
-            return HighlightingStyle.CURLY_BRACKETS.getHighlightedName(initialNetworkName);
-        }
-
-        if (player.getName().equals(initialNetworkName)) {
-            return HighlightingStyle.CURLY_BRACKETS.getHighlightedName(initialNetworkName);
-        }
-
-        return initialNetworkName;
     }
 
     public static Set<String> getBannedNames() {
@@ -106,16 +56,12 @@ public final class NetworkCreationHelper {
     public static List<PortalFlag> getNameRelatedFlags(String networkName) {
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(networkName);
         List<PortalFlag> flags = new ArrayList<>();
-        switch (highlight) {
-            case CURLY_BRACKETS:
-                flags.add(PortalFlag.PERSONAL_NETWORK);
+        
+        for(NetworkType type : NetworkType.values()) {
+            if(type.getHighlightingStyle() == highlight) {
+                flags.add(type.getRelatedFlag());
                 break;
-            case SQUARE_BRACKETS:
-                flags.add(PortalFlag.FANCY_INTER_SERVER);
-                break;
-            case NOTHING:
-            default:
-                break;
+            }
         }
         return flags;
     }
@@ -137,54 +83,86 @@ public final class NetworkCreationHelper {
     }
 
     /**
-     * Changes the input name to a name more likely to be permissible
-     *
-     * @param initialNetworkName <p> The name to change </p>
-     * @param permissionManager  <p> A permission manager for the actor player </p>
-     * @param player             <P> The player that initiated the call </p>
+     * Interprets a networkname and type, then selects it or creates it if it does not already exist
+     * 
+     * @param name              <p> Initial name of the network</p>
+     * @param permissionManager <p> A permission manager of the player</p>
+     * @param player            <p> The player selecting the network</p>
+     * @param flags             <p> flags of a portal this selection or creation comes from</p>
+     * @return <p>The network the portal should be connected to</p>
+     * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public static String getAllowedNetworkName(String initialNetworkName, StargatePermissionManager permissionManager,
-                                               Player player, boolean shouldShowFallbackMessage) {
-        String modifiedNetworkName = initialNetworkName;
-        HighlightingStyle style = HighlightingStyle.getHighlightType(modifiedNetworkName);
-        if (!permissionManager.canCreateInNetwork(modifiedNetworkName) && style == HighlightingStyle.NOTHING) {
-            Stargate.log(Level.CONFIG,
-                    String.format(" Player does not have perms to create on current network %s. Checking for private with same network name...", modifiedNetworkName));
-            modifiedNetworkName = HighlightingStyle.CURLY_BRACKETS.getHighlightedName(modifiedNetworkName);
-        }
+    public static Network selectNetwork(String name, PermissionManager permissionManager, Player player, Set<PortalFlag> flags) throws NameErrorException{
 
-        if (!permissionManager.canCreateInNetwork(modifiedNetworkName)) {
-            Stargate.log(Level.CONFIG,
-                    String.format(" Player does not have perms to create on current network %s. Replacing to private network with the players name...", modifiedNetworkName));
-            modifiedNetworkName = HighlightingStyle.CURLY_BRACKETS.getHighlightedName(player.getName());
+        Stargate.log(Level.FINER, "....Choosing network name....");
+        Stargate.log(Level.FINER, "initial name is " + name);
+        HighlightingStyle highlight = HighlightingStyle.getHighlightType(name);
+        String unHighlightedName = HighlightingStyle.getNameFromHighlightedText(name);
+        
+        CreationAuthority authority;
+        TwoTuple<NetworkType,String> data;
+        
+        if(flags.contains(PortalFlag.TERMINAL_NETWORK)) {
+            authority = CreationAuthority.EXCPLICIT;
+            data = new TwoTuple<>(NetworkType.TERMINAL,unHighlightedName);
         }
-        if (!initialNetworkName.equals(modifiedNetworkName) && shouldShowFallbackMessage) {
-            String plainMessage = Stargate.getLanguageManagerStatic()
-                    .getWarningMessage(TranslatableMessage.GATE_CREATE_FALLBACK);
-            player.sendMessage(TranslatableMessageFormatter.formatNetwork(plainMessage, initialNetworkName));
+        else if(unHighlightedName.trim().isEmpty()) {
+            authority = CreationAuthority.IMPLICIT;
+            data  = getNetworkDataFromEmptyDefinition(player,permissionManager);
         }
-
-        return modifiedNetworkName;
+        else if(NetworkType.styleGivesNetworkType(highlight)) {
+            authority = CreationAuthority.EXCPLICIT;
+            data = new TwoTuple<>(NetworkType.getNetworkTypeFromHighlight(highlight),unHighlightedName);
+        }
+        else {
+            authority = CreationAuthority.IMPLICIT;
+            data = getNetworkDataFromImplicitDefinition(unHighlightedName,player,permissionManager,flags.contains(PortalFlag.FANCY_INTER_SERVER));
+        }
+        String finalNetworkName = data.getSecondValue();
+        NetworkType type = data.getFirstValue();
+        return selectNetwork(finalNetworkName, type, flags.contains(PortalFlag.FANCY_INTER_SERVER));
     }
 
     /**
      * Gets the network with the given name, and creates it if it doesn't already exist
      *
      * @param name  <p>The name of the network to get</p>
-     * @param flags <p>The flags of the portal that should belong to this network</p>
+     * @param type <p>The type of network to get</p>
      * @return <p>The network the portal should be connected to</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
-    public static Network selectNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {
+    public static Network selectNetwork(String name, NetworkType type, boolean isInterserver) throws NameErrorException {
         try {
-            Stargate.getRegistryStatic().createNetwork(name, flags);
+            Stargate.getRegistryStatic().createNetwork(name, type, isInterserver);
         } catch (NameErrorException nameErrorException) {
             TranslatableMessage translatableMessage = nameErrorException.getErrorMessage();
             if (translatableMessage != null) {
                 throw nameErrorException;
             }
         }
-        return Stargate.getRegistryStatic().getNetwork(name, flags.contains(PortalFlag.FANCY_INTER_SERVER));
+        return Stargate.getRegistryStatic().getNetwork(name, isInterserver);
+    }
+
+    private static TwoTuple<NetworkType, String> getNetworkDataFromImplicitDefinition(String name, Player player,
+            PermissionManager permissionManager, boolean isInterserver) {
+        if(name.equals(player.getName()) && permissionManager.canCreateInNetwork(name, NetworkType.PERSONAL)) {
+            return new TwoTuple<>(NetworkType.PERSONAL,name);
+        }
+        if(name.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
+            return new TwoTuple<>(NetworkType.DEFAULT,name);
+        }
+        if(Stargate.getRegistryStatic().getNetwork(name, isInterserver) != null) {
+            return new TwoTuple<>(NetworkType.PERSONAL,name);
+        }
+        return new TwoTuple<>(NetworkType.CUSTOM,name);
+    }
+
+    private static TwoTuple<NetworkType, String> getNetworkDataFromEmptyDefinition(Player player,
+            PermissionManager permissionManager) {
+        if(permissionManager.canCreateInNetwork("", NetworkType.DEFAULT)) {
+            return new TwoTuple<>(NetworkType.DEFAULT, ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK));
+        }
+        return new TwoTuple<>(NetworkType.PERSONAL, player.getName());
     }
 
     /**

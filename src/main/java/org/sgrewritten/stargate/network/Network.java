@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.network;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.Collection;
@@ -109,5 +110,7 @@ public interface Network {
      * @return <p>The unique identifier for this network</p>
      */
     String getId();
+
+    NetworkType getType();
 
 }
