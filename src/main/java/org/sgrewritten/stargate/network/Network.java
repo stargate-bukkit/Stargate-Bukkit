@@ -111,6 +111,20 @@ public interface Network {
      */
     String getId();
 
+    /**
+     * Gets the NetworkType of this network 
+     * @return <p> The NetworkType of this network </p>
+     */
     NetworkType getType();
 
+    /**
+     * Rename the network to a non clashing name
+     */
+    void rename();
+
+    /**
+     * Rename the network to specified name
+     * @throws NameErrorException 
+     */
+    void rename(String name) throws NameErrorException;
 }

@@ -262,4 +262,35 @@ public class LocalNetwork implements Network {
         return networkType;
     }
 
+    @Override
+    public void rename() {
+        String newName = getId();
+        int i = 1;
+        boolean isInterServer = (this instanceof InterServerNetwork);
+        while(registry.networkExists(newName, isInterServer)) {
+            newName = getId() + i;
+            i++;
+        }
+        try {
+            rename(newName);
+        } catch (NameErrorException e) {
+            String annoyinglyOverThoughtName = getId();
+            int n = 1;
+            while(registry.networkExists(annoyinglyOverThoughtName, isInterServer)) {
+                String number = String.valueOf(n);
+                annoyinglyOverThoughtName = getId().substring(0,getId().length()-number.length()) + number;
+            }
+            try {
+                rename(annoyinglyOverThoughtName);
+            } catch (NameErrorException impossible) {
+                Stargate.log(Level.SEVERE, "Could not rename the network, do /sg trace and show the data in an new issue in sgrewritten.org/report");
+            }
+        }
+    }
+
+    @Override
+    public void rename(String name) throws NameErrorException {
+        
+    }
+
 }

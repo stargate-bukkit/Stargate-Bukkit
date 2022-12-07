@@ -6,12 +6,9 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.container.TwoTuple;
-import org.sgrewritten.stargate.exception.PermissionException;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.PermissionManager;
-import org.sgrewritten.stargate.manager.StargatePermissionManager;
-import org.sgrewritten.stargate.network.CreationAuthority;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
@@ -20,7 +17,6 @@ import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -99,24 +95,18 @@ public final class NetworkCreationHelper {
         Stargate.log(Level.FINER, "initial name is '" + name + "'");
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(name);
         String unHighlightedName = HighlightingStyle.getNameFromHighlightedText(name);
-        
-        CreationAuthority authority;
         TwoTuple<NetworkType,String> data;
         
         if(flags.contains(PortalFlag.TERMINAL_NETWORK)) {
-            authority = CreationAuthority.EXCPLICIT;
             data = new TwoTuple<>(NetworkType.TERMINAL,unHighlightedName);
         }
         else if(unHighlightedName.trim().isEmpty()) {
-            authority = CreationAuthority.IMPLICIT;
             data  = getNetworkDataFromEmptyDefinition(player,permissionManager);
         }
         else if(NetworkType.styleGivesNetworkType(highlight)) {
-            authority = CreationAuthority.EXCPLICIT;
             data = getNetworkDataFromExplicitDefinition(highlight,unHighlightedName,registry,flags.contains(PortalFlag.FANCY_INTER_SERVER));  
         }
         else {
-            authority = CreationAuthority.IMPLICIT;
             data = getNetworkDataFromImplicitDefinition(unHighlightedName, player, permissionManager,
                     flags.contains(PortalFlag.FANCY_INTER_SERVER), registry);
         }
@@ -144,7 +134,7 @@ public final class NetworkCreationHelper {
      */
     public static Network selectNetwork(String name, NetworkType type, boolean isInterserver, RegistryAPI registry) throws NameErrorException {
         try {
-            return registry.createNetwork(name, type, isInterserver);
+            return registry.createNetwork(name, type, isInterserver, false);
         } catch (NameErrorException nameErrorException) {
             TranslatableMessage translatableMessage = nameErrorException.getErrorMessage();
             if (translatableMessage != null) {
@@ -183,6 +173,7 @@ public final class NetworkCreationHelper {
                     || (type == NetworkType.TERMINAL && possiblePlayerUUID != null
                             && registry.getNetwork(possiblePlayerUUID.toString(), isInterserver) != null)) {
                 nameToTestFor = name + i;
+                i++;
             }
         }
         return new TwoTuple<>(type, nameToTestFor);

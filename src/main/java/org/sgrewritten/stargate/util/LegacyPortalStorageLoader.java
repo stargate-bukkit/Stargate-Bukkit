@@ -87,7 +87,7 @@ public final class LegacyPortalStorageLoader {
         String[] portalProperties = line.split(":");
         PortalData portalData = PortalStorageHelper.loadPortalData(portalProperties, world);
         try {
-            registry.createNetwork(portalData.networkName, portalData.flags);
+            registry.createNetwork(portalData.networkName, portalData.flags, false);
         } catch (NameErrorException ignored) {
         }
         if (portalData.topLeft == null) {

@@ -175,7 +175,7 @@ public final class BungeeHelper {
         //Create the legacy network if it doesn't already exist
         try {
             if (network == null) {
-                registry.createNetwork(bungeeNetwork, NetworkType.CUSTOM, false);
+                registry.createNetwork(bungeeNetwork, NetworkType.CUSTOM, false, false);
                 network = registry.getNetwork(bungeeNetwork, false);
             }
         } catch (NameErrorException e) {

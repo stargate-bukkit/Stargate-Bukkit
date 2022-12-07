@@ -100,16 +100,17 @@ public enum PortalFlag {
      * A stargate on the default network
      */
     DEFAULT_NETWORK('5', false),
-
-    /**
-     * A stargate on the terminal network
-     */
-    TERMINAL_NETWORK('6', false), 
     
     /**
      * A stargate custom network
      */
-    CUSTOM_NETWORK('7', false);
+    CUSTOM_NETWORK('6', false),
+
+    /**
+     * A stargate on the terminal network
+     * NOT IMPLEMENTED AT THE MOMENT, temporary an internal flag (inaccessible)
+     */
+    TERMINAL_NETWORK('T', false); 
 
     private final boolean isUserSpecifiable;
     private final char characterRepresentation;
