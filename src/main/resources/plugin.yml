@@ -1,5 +1,5 @@
 name: Stargate
-main: org.sgrewritten.stargate.FakeStargate
+main: org.sgrewritten.stargate.Stargate
 version: @version@
 description: Stargate mod for Bukkit
 authors: [ Dinnerbone, Drakia, PseudoKnight, Thorin, Knarvik ]

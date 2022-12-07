@@ -162,7 +162,9 @@ public interface StorageAPI {
     void removePortalPosition(RealPortal portal, PortalType portalType,
                               PortalPosition portalPosition) throws StorageWriteException;
 
-    void updateNetworkName(String newName, Network network, PortalType portalType) throws StorageWriteException;
+    void updateNetworkName(String newName, String networkName, PortalType portalType) throws StorageWriteException;
+
+    void updatePortalName(String newName, String portalName, String networkName, PortalType portalType) throws StorageWriteException;
 
 
 }
