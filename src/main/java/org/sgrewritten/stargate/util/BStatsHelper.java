@@ -43,7 +43,9 @@ public final class BStatsHelper {
 
         metrics.addCustomChart(new SingleLineChart("totalPortals", () -> AbstractPortal.portalCount));
 
-        metrics.addCustomChart(new SimplePie("networksNumber", () -> Stargate.getRegistryStatic().getNetworkMap().size() + Stargate.getRegistryStatic().getBungeeNetworkMap().size()));
+        metrics.addCustomChart(
+                new SimplePie("networksNumber", () -> String.valueOf(Stargate.getRegistryStatic().getNetworkMap().size()
+                        + Stargate.getRegistryStatic().getBungeeNetworkMap().size())));
 
         // Registers the line chart with the number of underwater gates present on the server.
         registerUnderwaterCount(metrics);
@@ -176,8 +178,9 @@ public final class BStatsHelper {
                     largest = count;
                 }
             }
-            return largest;
+            return String.valueOf(largest);
         }));
+    }
     /**
     * Registers metrics for all active addons
     *
