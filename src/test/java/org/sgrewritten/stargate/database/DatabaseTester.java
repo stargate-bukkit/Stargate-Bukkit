@@ -6,6 +6,7 @@ import be.seeseemelk.mockbukkit.WorldMock;
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
 import org.sgrewritten.stargate.FakeStargate;
+import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
@@ -59,6 +60,9 @@ public class DatabaseTester {
     private final Map<String, RealPortal> interServerPortals;
     private final Map<String, RealPortal> localPortals;
     private final StorageAPI portalDatabaseAPI;
+    private static FakePortalGenerator portalGenerator;
+    private static StargateLogger logger;
+    private static WorldMock world;
 
     /**
      * Instantiates a new database tester
@@ -78,7 +82,7 @@ public class DatabaseTester {
         DatabaseTester.nameConfig = nameConfig;
 
         ServerMock server = MockBukkit.mock();
-        WorldMock world = new WorldMock(Material.DIRT, 5);
+        world = new WorldMock(Material.DIRT, 5);
         server.addWorld(world);
 
         int interServerPortalTestLength = 3;
@@ -87,7 +91,7 @@ public class DatabaseTester {
         DatabaseTester.serverName = "aServerName";
         DatabaseTester.serverUUID = UUID.randomUUID();
         Stargate.setServerUUID(serverUUID);
-        StargateLogger logger = new FakeStargate();
+        logger = new FakeStargateLogger();
         this.portalDatabaseAPI = new SQLDatabase(database, false, isMySQL, logger, nameConfig);
 
         Network testNetwork = null;
@@ -97,7 +101,7 @@ public class DatabaseTester {
             e.printStackTrace();
         }
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
-        FakePortalGenerator portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
+        portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
 
         this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength, logger);
         this.localPortals = portalGenerator.generateFakePortals(world, testNetwork, false, localPortalTestLength, logger);
@@ -468,6 +472,27 @@ public class DatabaseTester {
         checkIfHasNot(table, portal.getName(), portal.getNetwork().getName());
     }
 
+    void changeNames(PortalType portalType) throws SQLException, InvalidStructureException, NameErrorException, StorageWriteException {
+        Network testNetwork = null;
+        String initialName = "intialName";
+        String newName = "newName";
+        String table = portalType == PortalType.LOCAL ? nameConfig.getPortalTableName() :
+            nameConfig.getInterPortalTableName();
+        try {
+            testNetwork = new LocalNetwork(initialName,NetworkType.CUSTOM);
+        } catch (NameErrorException e) {
+            e.printStackTrace();
+        }
+        RealPortal portal = portalGenerator.generateFakePortal(world, testNetwork, initialName, portalType == PortalType.INTER_SERVER, logger);
+        this.portalDatabaseAPI.savePortalToStorage(portal, portalType);
+        checkIfHas(table,initialName,initialName);
+        this.portalDatabaseAPI.updateNetworkName(newName, initialName, portalType);
+        this.portalDatabaseAPI.updatePortalName(newName, initialName, initialName, portalType);
+        checkIfHas(table,newName,newName);
+        checkIfHasNot(table,initialName,initialName);
+        
+    }
+    
     /**
      * Tests that information about a server can be updated
      *
@@ -493,6 +518,15 @@ public class DatabaseTester {
         statement.setString(2, network);
         ResultSet set = statement.executeQuery();
         Assertions.assertFalse(set.next());
+    }
+    
+    private void checkIfHas(String table, String name, String network) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table +
+                " WHERE name = ? AND network = ?");
+        statement.setString(1, name);
+        statement.setString(2, network);
+        ResultSet set = statement.executeQuery();
+        Assertions.assertTrue(set.next());
     }
 
     /**

@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.network.PortalType;
 
 import java.sql.Connection;
@@ -232,6 +233,18 @@ public class MySQLDatabaseTest {
         tester.setPortalPositionMetaTest(PortalType.INTER_SERVER);
     }
 
+    @Test
+    @Order(7)
+    void changeNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, NameErrorException {
+        tester.changeNames(PortalType.LOCAL);
+    }
+    
+    @Test
+    @Order(7)
+    void changeInterNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, NameErrorException {
+        tester.changeNames(PortalType.INTER_SERVER);
+    }
+    
     @Test
     @Order(10)
     void destroyPortalTest() throws SQLException {

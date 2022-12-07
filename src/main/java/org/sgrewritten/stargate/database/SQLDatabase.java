@@ -197,9 +197,9 @@ public class SQLDatabase implements StorageAPI {
             if (portalData.flags.contains(PortalFlag.BUNGEE)) {
                 targetNetwork = BungeePortal.getLegacyNetworkName();
             }
-
             try {
-                registry.createNetwork(targetNetwork,portalData.flags);
+                boolean isForced = portalData.flags.contains(PortalFlag.DEFAULT_NETWORK) || portalData.flags.contains(PortalFlag.TERMINAL_NETWORK);
+                registry.createNetwork(targetNetwork,portalData.flags,isForced);
             } catch (NameErrorException ignored) {
             }
             Network network = registry.getNetwork(targetNetwork, isBungee);
@@ -486,9 +486,8 @@ public class SQLDatabase implements StorageAPI {
 
     @Override
     public void setPortalPositionMetaData(RealPortal portal, PortalPosition portalPosition, String data, PortalType portalType) throws StorageWriteException {
-        Connection connection;
         try {
-            connection = database.getConnection();
+            Connection connection = database.getConnection();
             DatabaseHelper.runStatement(sqlQueryGenerator.generateSetPortalPositionMeta(connection, portal, portalPosition, data, portalType));
             connection.close();
         } catch (SQLException e) {
@@ -498,9 +497,8 @@ public class SQLDatabase implements StorageAPI {
 
     @Override
     public String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition, PortalType portalType) throws StorageReadException {
-        Connection connection;
         try {
-            connection = database.getConnection();
+            Connection connection = database.getConnection();
             PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionStatement(connection, portal, portalPosition, portalType);
             ResultSet set = statement.executeQuery();
             if (!set.next()) {
@@ -515,4 +513,27 @@ public class SQLDatabase implements StorageAPI {
         }
     }
 
+    @Override
+    public void updateNetworkName(String newName, String networkName, PortalType portalType) throws StorageWriteException{
+        
+        try {
+            Connection connection = database.getConnection();
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateUpdateNetworkNameStatement(connection,newName,networkName,portalType));
+            connection.close();
+        } catch (SQLException e) {
+            throw new StorageWriteException(e);
+        }
+    }
+    
+    @Override
+    public void updatePortalName(String newName, String portalName, String networkName, PortalType portalType) throws StorageWriteException {
+        try {
+            Connection connection = database.getConnection();
+            DatabaseHelper
+                    .runStatement(sqlQueryGenerator.generateUpdatePortalNameStatement(connection, newName, portalName, networkName, portalType));
+            connection.close();
+        } catch (SQLException e) {
+            throw new StorageWriteException(e);
+        }
+    }
 }

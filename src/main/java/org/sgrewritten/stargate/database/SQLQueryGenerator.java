@@ -7,6 +7,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.gate.GateAPI;
+import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.PortalType;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
@@ -594,6 +595,33 @@ public class SQLQueryGenerator {
         statement.setInt(3, vector.getBlockX());
         statement.setInt(4, vector.getBlockY());
         statement.setInt(5, -vector.getBlockZ());
+        return statement;
+    }
+
+    public PreparedStatement generateUpdateNetworkNameStatement(Connection connection, String newName, String networkName,
+            PortalType portalType) throws SQLException {
+        PreparedStatement statement;
+        if (portalType == PortalType.LOCAL) {
+            statement = prepareQuery(connection, getQuery(SQLQuery.UPDATE_NETWORK_NAME));
+        } else {
+            statement = prepareQuery(connection, getQuery(SQLQuery.UPDATE_INTER_NETWORK_NAME));
+        }
+        statement.setString(1, newName);
+        statement.setString(2, networkName);
+        return statement;
+    }
+
+    public PreparedStatement generateUpdatePortalNameStatement(Connection connection, String newName, String portalName, String networkName,
+            PortalType portalType) throws SQLException {
+        PreparedStatement statement;
+        if (portalType == PortalType.LOCAL) {
+            statement = prepareQuery(connection, getQuery(SQLQuery.UPDATE_PORTAL_NAME));
+        } else {
+            statement = prepareQuery(connection, getQuery(SQLQuery.UPDATE_INTER_PORTAL_NAME));
+        }
+        statement.setString(1, newName);
+        statement.setString(2, portalName);
+        statement.setString(3, networkName);
         return statement;
     }
 
