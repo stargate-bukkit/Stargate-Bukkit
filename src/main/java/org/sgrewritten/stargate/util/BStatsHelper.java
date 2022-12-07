@@ -29,8 +29,12 @@ public final class BStatsHelper {
     /**
      * Registers a metrics with all relevant portal data
      *
-     * @param pluginId <p>The id of the Stargate plugin</p>
-     * @param plugin   <p>A Stargate plugin instance</p>
+     * @param pluginId
+     * <p>
+     * The id of the Stargate plugin</p>
+     * @param plugin
+     * <p>
+     * A Stargate plugin instance</p>
      */
     public static void registerMetrics(int pluginId, JavaPlugin plugin) {
         Metrics metrics = new Metrics(plugin, pluginId);
@@ -38,6 +42,17 @@ public final class BStatsHelper {
         metrics.addCustomChart(new SimplePie("gateformats", () -> String.valueOf(GateFormatHandler.formatsStored())));
 
         metrics.addCustomChart(new SingleLineChart("totalPortals", () -> AbstractPortal.portalCount));
+
+        metrics.addCustomChart(new SimplePie("networksNumber", () -> Stargate.getRegistryStatic().getNetworkMap().size() + Stargate.getRegistryStatic().getBungeeNetworkMap().size()));
+
+        // Registers the line chart with the number of underwater gates present on the server.
+        registerUnderwaterCount(metrics);
+
+        // Registers the pie chart with the number of gates present on the largest network on this server
+        registerNetworkSize(metrics);
+
+        // Registers the all addons active on this instance.
+        registerAddons(metrics);
 
         // Registers all user-specifiable flags in use on this instance
         registerFlagMetrics(metrics);
@@ -52,9 +67,12 @@ public final class BStatsHelper {
     }
 
     /**
-     * Registers metrics for the number of portals on personal networks vs. portals on non-personal networks
+     * Registers metrics for the number of portals on personal networks vs.
+     * portals on non-personal networks
      *
-     * @param metrics <p>The metrics object to register metrics to</p>
+     * @param metrics
+     * <p>
+     * The metrics object to register metrics to</p>
      */
     private static void registerPersonalNetworkMetrics(Metrics metrics) {
         metrics.addCustomChart(new AdvancedPie("networkType", () -> {
@@ -85,9 +103,12 @@ public final class BStatsHelper {
     }
 
     /**
-     * Registers metrics for the number of networked and fixed portals on this instance
+     * Registers metrics for the number of networked and fixed portals on this
+     * instance
      *
-     * @param metrics <p>The metrics object to register metrics to</p>
+     * @param metrics
+     * <p>
+     * The metrics object to register metrics to</p>
      */
     private static void registerNetworkedOrFixedMetrics(Metrics metrics) {
         metrics.addCustomChart(new AdvancedPie("networkedOrFixed", () -> {
@@ -112,7 +133,9 @@ public final class BStatsHelper {
     /**
      * Registers metrics for all flags in use on this instance
      *
-     * @param metrics <p>The metrics object to register metrics to</p>
+     * @param metrics
+     * <p>
+     * The metrics object to register metrics to</p>
      */
     private static void registerFlagMetrics(Metrics metrics) {
         metrics.addCustomChart(new AdvancedPie("flags", () -> {
@@ -130,9 +153,67 @@ public final class BStatsHelper {
     }
 
     /**
+     * Registers metrics for the number of portals in the largest network on
+     * this instance.
+     *
+     * @param metrics
+     * <p>
+     * The metrics object to register metrics to</p>
+     */
+    private static void registerNetworkSize(Metrics metrics) {
+        metrics.addCustomChart(new SimplePie("largestNetwork", () -> {
+            int largest = 0;
+            int count;
+            for (Network localNetwork : Stargate.getRegistryStatic().getNetworkMap().values()) {
+                count = localNetwork.size();
+                if (largest <= count) {
+                    largest = count;
+                }
+            }
+            for (Network bungeeNetwork : Stargate.getRegistryStatic().getBungeeNetworkMap().values()) {
+                count = bungeeNetwork.size();
+                if (largest <= count) {
+                    largest = count;
+                }
+            }
+            return largest;
+        }));
+    /**
+    * Registers metrics for all active addons
+    *
+    * @param metrics
+    * <p>
+    * The metrics object to register metrics to</p>
+    */
+    private static void registerAddons(Metrics metrics) {
+        metrics.addCustomChart(new AdvancedPie("addonsUsed", () -> {
+            Map<String, Integer> addonsList = new HashMap<>();
+            // TODO: not implemented
+            return addonsList;
+        }));
+    }
+
+    /**
+     * Registers metrics for the number of underwater portals on the instance
+     *
+     * @param metrics
+     * <p>
+     * The metrics object to register metrics to</p>
+     */
+    private static void registerUnderwaterCount(Metrics metrics) {
+        metrics.addCustomChart(new SingleLineChart("undewaterCount", () -> {
+            int count = 0;
+            // TODO: not implemented.
+            return count;
+        }));
+    }
+
+    /**
      * Registers metrics for all configuration options
      *
-     * @param metrics <p>The metrics object to register metrics to</p>
+     * @param metrics
+     * <p>
+     * The metrics object to register metrics to</p>
      */
     private static void registerConfigMetrics(Metrics metrics) {
         metrics.addCustomChart(new SimplePie("language", () -> ConfigurationHelper.getString(ConfigurationOption.LANGUAGE)));
