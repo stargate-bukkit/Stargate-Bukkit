@@ -15,8 +15,8 @@ import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.event.StargateCreateEvent;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
+import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.gate.GateFormat;
@@ -24,6 +24,7 @@ import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.FixedPortal;
 import org.sgrewritten.stargate.network.portal.NetworkedPortal;
@@ -73,7 +74,7 @@ public final class PortalCreationHelper {
 
         if (flags.contains(PortalFlag.BUNGEE)) {
             flags.add(PortalFlag.FIXED);
-            Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false);
+            Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, Stargate.getRegistryStatic());
             return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, gate, ownerUUID, logger);
         } else if (flags.contains(PortalFlag.RANDOM)) {
             return new RandomPortal(network, name, flags, gate, ownerUUID, logger);
@@ -114,8 +115,9 @@ public final class PortalCreationHelper {
      * @throws GateConflictException  <p>If the gate's physical structure is in conflict with another</p>
      * @throws NoFormatFoundException <p>If no known format matches the built stargate</p>
      */
-    public static void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation, Set<PortalFlag> flags,
-                                         Player player, int cost, StargatePermissionManager permissionManager, TranslatableMessage errorMessage)
+    public static void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation,
+            Set<PortalFlag> flags, Player player, int cost, StargatePermissionManager permissionManager,
+            TranslatableMessage errorMessage, RegistryAPI registry)
             throws NameErrorException, GateConflictException, NoFormatFoundException {
         if (errorMessage != null) {
             player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(errorMessage));

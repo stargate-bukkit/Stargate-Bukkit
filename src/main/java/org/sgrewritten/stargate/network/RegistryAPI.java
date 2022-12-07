@@ -146,18 +146,20 @@ public interface RegistryAPI {
      * @param networkName   <p>The name of the new network</p>
      * @param type          <p>The type of network to create</p>
      * @param isInterserver <p>Whether to create it as a BungeeCord network</p>
+     * @return <p> The network created </p>
      * @throws NameErrorException <p>If the given network name is invalid</p>
      */
-    void createNetwork(String networkName, NetworkType type, boolean isInterserver) throws NameErrorException;
+    Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws NameErrorException;
 
     /**
      * Creates a new network assigned to this registry
      *
      * @param networkName <p>The name of the new network</p>
      * @param flags       <p>The flags containing the network's enabled options</p>
+     * @return <p> The network created </p>
      * @throws NameErrorException <p>If the given network name is invalid</p>
      */
-    void createNetwork(String targetNetwork, Set<PortalFlag> flags) throws NameErrorException;
+    Network createNetwork(String targetNetwork, Set<PortalFlag> flags) throws NameErrorException;
 
     /**
      * Checks whether the given network name exists

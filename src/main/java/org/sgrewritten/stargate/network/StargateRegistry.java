@@ -81,7 +81,7 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void createNetwork(String networkName, NetworkType type, boolean isInterserver) throws NameErrorException {
+    public Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws NameErrorException {
         networkName = NameHelper.getTrimmedName(networkName);
         if (this.networkExists(networkName, isInterserver)) {
             throw new NameErrorException(null);
@@ -89,11 +89,13 @@ public class StargateRegistry implements RegistryAPI {
         Network network = storageAPI.createNetwork(networkName, type, isInterserver);
         network.assignToRegistry(this);
         getNetworkMap(isInterserver).put(network.getId(), network);
+        Stargate.log(Level.FINEST, String.format("Adding networkid %s to interServer = %b", network.getId(), isInterserver));
+        return network;
     }
     
     @Override
-    public void createNetwork(String targetNetwork, Set<PortalFlag> flags) throws NameErrorException {
-        this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags),flags.contains(PortalFlag.FANCY_INTER_SERVER));
+    public Network createNetwork(String targetNetwork, Set<PortalFlag> flags) throws NameErrorException {
+        return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags),flags.contains(PortalFlag.FANCY_INTER_SERVER));
     }
 
     @Override

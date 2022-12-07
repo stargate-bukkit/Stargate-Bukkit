@@ -3,101 +3,129 @@ package org.sgrewritten.stargate.util;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import org.bukkit.Bukkit;
+
+import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
-import org.sgrewritten.stargate.container.TwoTuple;
+import org.sgrewritten.stargate.FakeStargate;
 import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.manager.PermissionManager;
+import org.sgrewritten.stargate.manager.StargatePermissionManager;
+import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.HashSet;
 
 class NetworkCreationHelperTest {
-
-    private static Map<String, TwoTuple<PortalFlag, String>> interpretNameTest;
-    private static Map<String, PortalFlag> insertNameRelatedFlagsTest;
-    private static Map<String, String> parseNetworkNameTest;
-
     private static PlayerMock player;
     private static RegistryAPI registry;
+    private static PermissionManager permissionManager;
+    private static String[] emptyNames;
+    private static FakeStargate plugin;
+    private static ServerMock server;
+    
+    private static final String CENTRAL = "central";
+    private static final String INVALID_NAME = "invalid";
+    private static final String NAME = "name";
 
     @BeforeAll
     static void setup() {
-        ServerMock server = MockBukkit.mock();
+        server = MockBukkit.mock();
         player = new PlayerMock(server, "playerName");
-        String invalidPlayerName = "invalid";
+        plugin = (FakeStargate) MockBukkit.load(FakeStargate.class);
+        permissionManager = new StargatePermissionManager(player, new FakeLanguageManager());
         server.addPlayer(player);
-        registry = new EmptyRegistry();
+        registry = new FakeRegistry();
+        
+        emptyNames = new String[]{"", " ", "  "};
+    }
+
+    @Test
+    public void emptyDefinitionTest() throws NameErrorException {
+        System.out.println("############### EMPTY TEST #############");
+        Assertions.assertTrue(player.getUniqueId() != null);
+        for(String emptyName : emptyNames) {
+            Network personalNetwork = NetworkCreationHelper.selectNetwork(" ", permissionManager, player, new HashSet<>(), registry);
+            Assertions.assertEquals(NetworkType.PERSONAL, personalNetwork.getType());
+            Assertions.assertEquals(player.getName(), personalNetwork.getName());
+        }
+        player.addAttachment(plugin, "sg.create.network.default", true);
+        for(String emptyName : emptyNames) {
+            Network defaultNetwork = NetworkCreationHelper.selectNetwork(" ", permissionManager, player, new HashSet<>(), registry);
+            Assertions.assertEquals(NetworkType.DEFAULT, defaultNetwork.getType());
+            Assertions.assertEquals(CENTRAL, defaultNetwork.getName());
+        }
+    }
+
+    
+    @Test
+    public void explicitDefinitionTest() throws NameErrorException{
+        System.out.println("############### EXPLICIT TEST #############");
+        Network defaultNetwork = NetworkCreationHelper.selectNetwork(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(CENTRAL), permissionManager, player, new HashSet<>(), registry);
+        Assertions.assertEquals(NetworkType.DEFAULT, defaultNetwork.getType());
+        Assertions.assertEquals(CENTRAL, defaultNetwork.getName());
+
+        /*Assertions.assertThrows(NameErrorException.class, () -> {
+            NetworkCreationHelper.selectNetwork(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(INVALID_NAME), permissionManager, player, new HashSet<>(), registry);
+        });
+        */
+        String highlightedPlayername = NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(player.getName());
+        Network personalNetwork = NetworkCreationHelper.selectNetwork(highlightedPlayername, permissionManager, player, new HashSet<>(), registry);
+        Assertions.assertEquals(NetworkType.PERSONAL, personalNetwork.getType());
+        Assertions.assertEquals(player.getName(), personalNetwork.getName());
+        
+        String customNetworkName = NetworkType.CUSTOM.getHighlightingStyle().getHighlightedName(NAME);
+        Network customNetwork = NetworkCreationHelper.selectNetwork(customNetworkName, permissionManager, player, new HashSet<>(), registry);
+        Assertions.assertEquals(NetworkType.CUSTOM, customNetwork.getType());
+        Assertions.assertEquals(NAME, customNetwork.getName());
+    }
+    
+    @Test
+    public void implicitDefinitionTest() throws NameErrorException{
+        System.out.println("############### IMPLICIT TEST #############");
         String name = "name";
-
-        interpretNameTest = new HashMap<>();
-        interpretNameTest.put(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(name), new TwoTuple<>(PortalFlag.PERSONAL_NETWORK, name));
-        interpretNameTest.put(name, new TwoTuple<>(null, name));
-        interpretNameTest.put(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(player.getName()), new TwoTuple<>(null, player.getName()));
-        interpretNameTest.put(invalidPlayerName, new TwoTuple<>(null, invalidPlayerName));
-        interpretNameTest.put(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK), new TwoTuple<>(null, ""));
-
-        insertNameRelatedFlagsTest = new HashMap<>();
-        insertNameRelatedFlagsTest.put(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(name), PortalFlag.PERSONAL_NETWORK);
-        insertNameRelatedFlagsTest.put(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(name), PortalFlag.FANCY_INTER_SERVER);
-
-        parseNetworkNameTest = new HashMap<>();
-        parseNetworkNameTest.put(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(player.getName()), player.getUniqueId().toString());
-        parseNetworkNameTest.put(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(invalidPlayerName),
-                Bukkit.getOfflinePlayer(invalidPlayerName).getUniqueId().toString());
-        parseNetworkNameTest.put(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(name), name);
-        parseNetworkNameTest.put(HighlightingStyle.LESSER_GREATER_THAN.getHighlightedName(name), name);
-        parseNetworkNameTest.put(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(name), name);
-        parseNetworkNameTest.put(HighlightingStyle.MINUS_SIGN.getHighlightedName(name), name);
-
-    }
-
-    @Test
-    void interpretNameTest() {
-        for (String expectedName : interpretNameTest.keySet()) {
-            TwoTuple<PortalFlag, String> data = interpretNameTest.get(expectedName);
-            Set<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
-            PortalFlag flag = data.getFirstValue();
-            if (flag != null) {
-                flags.add(flag);
+        HighlightingStyle[] values = HighlightingStyle.values();
+        // Affirm default network exist
+        Network defaultNetwork = NetworkCreationHelper.selectNetwork(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(CENTRAL), permissionManager, player, new HashSet<>(), registry);
+        for(int i = 0; i < values.length; i++) {
+            HighlightingStyle style = values[i];
+            if(NetworkType.styleGivesNetworkType(style)) {
+                continue;
             }
-            String resultingName = NetworkCreationHelper.interpretNetworkName(data.getSecondValue(), flags, player, registry);
-            Assertions.assertEquals(expectedName, resultingName);
+            String personalNetworkName = name + i + "p";
+            String explicitPersonalNetworkName = NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(personalNetworkName);
+            String implicitPersonalNetworkName = style.getHighlightedName(personalNetworkName);
+            Player player = server.addPlayer(personalNetworkName);
+            // Create a personal network explicitly, then fetch it implicitly
+            Network explicitPersonalNetwork = NetworkCreationHelper.selectNetwork(explicitPersonalNetworkName, new StargatePermissionManager(player, new FakeLanguageManager()), player, new HashSet<>(), registry);
+            Network implicitPersonalNetwork = NetworkCreationHelper.selectNetwork(implicitPersonalNetworkName, new StargatePermissionManager(player, new FakeLanguageManager()), player, new HashSet<>(), registry);
+            Assertions.assertEquals(explicitPersonalNetwork, implicitPersonalNetwork);
+            Assertions.assertEquals(NetworkType.PERSONAL,implicitPersonalNetwork.getType());
+            Assertions.assertEquals(personalNetworkName, implicitPersonalNetwork.getName());
+            
+            String implicitDefaultNetworkName = style.getHighlightedName(CENTRAL);
+            Network implicitDefaultNetwork = NetworkCreationHelper.selectNetwork(CENTRAL, permissionManager, player, new HashSet<>(), registry);
+            Assertions.assertEquals(defaultNetwork, implicitDefaultNetwork);
+            Assertions.assertEquals(NetworkType.DEFAULT, implicitDefaultNetwork.getType());
+            Assertions.assertEquals(CENTRAL, implicitDefaultNetwork.getName());
+            
+            String customName = name + i + "c";
+            String explicitCustomNetworkName = NetworkType.CUSTOM.getHighlightingStyle().getHighlightedName(customName);
+            String implicitCustomNetworkName = style.getHighlightedName(customName);
+            Network explicitCustomNetwork = NetworkCreationHelper.selectNetwork(explicitCustomNetworkName, permissionManager, player, new HashSet<>(), registry);
+            Network implicitCustomNetwork = NetworkCreationHelper.selectNetwork(implicitCustomNetworkName, permissionManager, player, new HashSet<>(), registry);
+            Assertions.assertEquals(explicitCustomNetwork, implicitCustomNetwork);
+            Assertions.assertEquals(NetworkType.CUSTOM, implicitCustomNetwork.getType());
+            Assertions.assertEquals(customName, implicitCustomNetwork.getName());
+            
+            String customNameV2 = name + i + "c2";
+            String implicitCustomNetworkNameV2 = style.getHighlightedName(customNameV2);
+            Network customNetworkV2 = NetworkCreationHelper.selectNetwork(implicitCustomNetworkNameV2, permissionManager, player, new HashSet<>(), registry);
+            Assertions.assertEquals(NetworkType.CUSTOM, customNetworkV2.getType());
+            Assertions.assertEquals(customNameV2, customNetworkV2.getName());
         }
     }
-
-    @Test
-    void getFlagsTest() {
-        for (String nameToTest : insertNameRelatedFlagsTest.keySet()) {
-            List<PortalFlag> flags = NetworkCreationHelper.getNameRelatedFlags(nameToTest);
-            PortalFlag expectedFlag = insertNameRelatedFlagsTest.get(nameToTest);
-            PortalFlag resultFlag = null;
-            if (flags.size() > 0) {
-                resultFlag = flags.get(0);
-            }
-            Assertions.assertTrue(flags.contains(expectedFlag), String.format("Expected flag %s, got flag %s. ", expectedFlag.toString(), (resultFlag == null) ? "null" : resultFlag.toString()));
-        }
-    }
-
-    @Test
-    void parseNameTest() {
-        for (String nameToTest : parseNetworkNameTest.keySet()) {
-            try {
-                String result = NetworkCreationHelper.parseNetworkNameName(nameToTest);
-                Assertions.assertEquals(parseNetworkNameTest.get(nameToTest), result);
-            } catch (NameErrorException ignored) {
-            }
-        }
-    }
-
 }

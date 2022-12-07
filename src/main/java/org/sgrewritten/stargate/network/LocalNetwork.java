@@ -34,7 +34,7 @@ import java.util.logging.Level;
  */
 public class LocalNetwork implements Network {
 
-    private static final String DEFAULT_NET_ID = "<@DEFAULT@>";
+    public static final String DEFAULT_NET_ID = "<@DEFAULT@>";
     
     protected Map<String, Portal> nameToPortalMap;
     protected SQLDatabaseAPI database;
@@ -59,7 +59,7 @@ public class LocalNetwork implements Network {
         
         switch(type) {
         case DEFAULT:
-            loadAsDefault();
+            loadAsDefault(name);
             break;
         case PERSONAL:
             loadAsPersonalNetwork(name);
@@ -81,16 +81,19 @@ public class LocalNetwork implements Network {
         return NetworkType.CUSTOM;
     }
     
-    private void loadAsDefault() {
-        name = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
+    private void loadAsDefault(String name) throws NameErrorException {
+        this.name = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
+        if(!DEFAULT_NET_ID.equals(name)) {
+            throw new NameErrorException(null);//TODO refactor NameErrorException to multimple errors
+        }
         id = DEFAULT_NET_ID;
     }
     
     private void loadAsCustomNetwork(String networkName) throws NameErrorException {
-        if (name.trim().isEmpty() || (name.length() >= Stargate.getMaxTextLength())) {
+        if (networkName == null || networkName.trim().isEmpty() || (networkName.length() >= Stargate.getMaxTextLength())) {
             throw new NameErrorException(TranslatableMessage.INVALID_NAME);
         }
-        this.name = name.trim();
+        this.name = networkName.trim();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.DISABLE_CUSTOM_COLORED_NAMES)) {
             this.name = ChatColor.stripColor(this.name);
         }
@@ -99,8 +102,8 @@ public class LocalNetwork implements Network {
     }
     
     private void loadAsPersonalNetwork(String uuidString) {
-        Stargate.log(Level.FINER, "Initialized personal network with UUID " + name);
-        String possiblePlayerName = Bukkit.getOfflinePlayer(UUID.fromString(name)).getName();
+        Stargate.log(Level.FINER, "Initialized personal network with UUID " + uuidString);
+        String possiblePlayerName = Bukkit.getOfflinePlayer(UUID.fromString(uuidString)).getName();
         Stargate.log(Level.FINER, "Matching player name: " + possiblePlayerName);
         if (possiblePlayerName != null
                 && (NetworkCreationHelper.getDefaultNamesTaken().contains(possiblePlayerName.toLowerCase())

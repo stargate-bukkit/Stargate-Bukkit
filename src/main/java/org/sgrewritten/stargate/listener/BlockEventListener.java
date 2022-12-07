@@ -171,9 +171,9 @@ public class BlockEventListener implements Listener {
         Network selectedNetwork = null;
         try {
             if (flags.contains(PortalFlag.BUNGEE)) {
-                selectedNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), permissionManager, player, flags);
+                selectedNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), permissionManager, player, flags, registry);
             } else {
-                selectedNetwork = NetworkCreationHelper.selectNetwork(network, permissionManager, player, flags);
+                selectedNetwork = NetworkCreationHelper.selectNetwork(network, permissionManager, player, flags, registry);
                 //NetworkType-flags are incompatible with each other, this makes sure that only the flag of the portals network is in use
                 NetworkType.removeNetworkTypeRelatedFlags(flags);
                 flags.add(selectedNetwork.getType().getRelatedFlag());
@@ -184,7 +184,7 @@ public class BlockEventListener implements Listener {
 
         try {
             PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost,
-                    permissionManager, errorMessage);
+                    permissionManager, errorMessage,registry);
         } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINER, "No Gate format matches");
         } catch (GateConflictException gateConflictException) {
