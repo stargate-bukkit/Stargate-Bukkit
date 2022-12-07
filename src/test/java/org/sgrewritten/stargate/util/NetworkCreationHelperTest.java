@@ -81,6 +81,11 @@ class NetworkCreationHelperTest {
         Network customNetwork = NetworkCreationHelper.selectNetwork(customNetworkName, permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.CUSTOM, customNetwork.getType());
         Assertions.assertEquals(NAME, customNetwork.getName());
+        
+        Network changedNameFromDefault = NetworkCreationHelper.selectNetwork(NetworkType.CUSTOM.getHighlightingStyle().getHighlightedName(CENTRAL), permissionManager, player, new HashSet<>(), registry);
+        Assertions.assertEquals(NetworkType.CUSTOM, changedNameFromDefault.getType());
+        Assertions.assertEquals(CENTRAL + 1, changedNameFromDefault.getName());
+    
     }
     
     @Test
