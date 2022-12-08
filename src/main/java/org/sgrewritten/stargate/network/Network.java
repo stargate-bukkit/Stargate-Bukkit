@@ -118,13 +118,16 @@ public interface Network {
     NetworkType getType();
 
     /**
-     * Rename the network to a non clashing name
+     * Gets how the network is stored
+     * @return <p> The storage type of the portal </p>
      */
-    void rename();
-
+    StorageType getStorageType();
+    
     /**
-     * Rename the network to specified name
-     * @throws NameErrorException 
+     * Change the name of the network
+     * 
+     * Does not save to database
+     * @param newName
      */
-    void rename(String name) throws NameErrorException;
+    void setID(String newName) throws NameErrorException;
 }

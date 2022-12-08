@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.util.NameHelper;
@@ -30,7 +30,7 @@ import java.util.logging.Level;
 public class VirtualPortal implements Portal {
 
     protected final String server;
-    private final String name;
+    private String name;
     private Network network;
     private final Set<PortalFlag> flags;
     private final UUID ownerUUID;
@@ -210,7 +210,12 @@ public class VirtualPortal implements Portal {
         return server;
     }
 
-    public PortalType getPortalType() {
-        return (flags.contains(PortalFlag.FANCY_INTER_SERVER) ? PortalType.INTER_SERVER : PortalType.LOCAL);
+    public StorageType getStorageType() {
+        return (flags.contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
+    }
+
+    @Override
+    public void setName(String newName) {
+        this.name = newName;
     }
 }

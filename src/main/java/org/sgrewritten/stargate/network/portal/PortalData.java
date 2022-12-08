@@ -2,7 +2,7 @@ package org.sgrewritten.stargate.network.portal;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.Set;
 import java.util.UUID;
@@ -24,7 +24,7 @@ public class PortalData {
     public BlockFace facing;
     public String serverUUID;
     public String serverName;
-    public PortalType portalType;
+    public StorageType portalType;
     public Location topLeft;
 
 }

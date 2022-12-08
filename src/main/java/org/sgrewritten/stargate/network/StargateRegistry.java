@@ -63,7 +63,7 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void removePortal(Portal portal, PortalType portalType) {
+    public void removePortal(Portal portal, StorageType portalType) {
         try {
             storageAPI.removePortalFromStorage(portal, portalType);
         } catch (StorageWriteException e) {
@@ -72,7 +72,7 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void savePortal(RealPortal portal, PortalType portalType) {
+    public void savePortal(RealPortal portal, StorageType portalType) {
         try {
             storageAPI.savePortalToStorage(portal, portalType);
         } catch (StorageWriteException e) {
@@ -87,7 +87,7 @@ public class StargateRegistry implements RegistryAPI {
             if(isForced) {
                 if(type == NetworkType.DEFAULT) {
                     Network network = this.getNetwork(networkName, isInterserver);
-                    network.rename();
+                    this.rename(network);
                 }
             }
             throw new NameErrorException(null);
@@ -237,5 +237,52 @@ public class StargateRegistry implements RegistryAPI {
         portalFromStructureTypeMap.clear();
         this.loadPortals();
     }
+    
+    @Override
+    public void rename(Network network, String newName) throws NameErrorException{
+        try {
+            storageAPI.updateNetworkName(newName, newName, network.getStorageType());
+        } catch (StorageWriteException e) {
+            e.printStackTrace();
+        }
+        network.setID(newName);
+        network.updatePortals();
+    }
+    
+    @Override
+    public void rename(Portal portal, String newName) throws NameErrorException{
+        try {
+            storageAPI.updatePortalName(newName, portal.getName(), portal.getNetwork().getId(), portal.getStorageType());
+        } catch (StorageWriteException e) {
+            e.printStackTrace();
+        }
+        portal.setName(newName);
+        portal.getNetwork().updatePortals();
+    }
 
+    @Override
+    public void rename(Network network) {
+        String newName = network.getId();
+        int i = 1;
+        boolean isInterServer = (network instanceof InterServerNetwork);
+        while(networkExists(newName, isInterServer)) {
+            newName = network.getId() + i;
+            i++;
+        }
+        try {
+            rename(network,newName);
+        } catch (NameErrorException e) {
+            String annoyinglyOverThoughtName = network.getId();
+            int n = 1;
+            while(networkExists(annoyinglyOverThoughtName, isInterServer)) {
+                String number = String.valueOf(n);
+                annoyinglyOverThoughtName = network.getId().substring(0,network.getId().length()-number.length()) + number;
+            }
+            try {
+                rename(network,annoyinglyOverThoughtName);
+            } catch (NameErrorException impossible) {
+                Stargate.log(Level.SEVERE, "Could not rename the network, do /sg trace and show the data in an new issue in sgrewritten.org/report");
+            }
+        }
+    }
 }

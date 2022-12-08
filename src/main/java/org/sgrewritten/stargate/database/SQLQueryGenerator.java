@@ -8,7 +8,7 @@ import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.gate.GateAPI;
 import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.network.portal.RealPortal;
@@ -48,8 +48,8 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateGetAllPortalsStatement(Connection connection, PortalType portalType) throws SQLException {
-        if (portalType == PortalType.LOCAL) {
+    public PreparedStatement generateGetAllPortalsStatement(Connection connection, StorageType portalType) throws SQLException {
+        if (portalType == StorageType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.GET_ALL_PORTALS));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.GET_ALL_INTER_PORTALS));
@@ -86,16 +86,16 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreatePortalTableStatement(Connection connection, PortalType portalType) throws SQLException {
-        if (portalType == PortalType.LOCAL) {
+    public PreparedStatement generateCreatePortalTableStatement(Connection connection, StorageType portalType) throws SQLException {
+        if (portalType == StorageType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_PORTAL));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_INTER_PORTAL));
         }
     }
 
-    public PreparedStatement generateAddMetaToPortalTableStatement(Connection connection, PortalType portalType) throws SQLException {
-        if (portalType == PortalType.LOCAL) {
+    public PreparedStatement generateAddMetaToPortalTableStatement(Connection connection, StorageType portalType) throws SQLException {
+        if (portalType == StorageType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_PORTAL));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_INTER_PORTAL));
@@ -143,16 +143,16 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreatePortalPositionTableStatement(Connection connection, PortalType portalType) throws SQLException {
-        if (portalType == PortalType.LOCAL) {
+    public PreparedStatement generateCreatePortalPositionTableStatement(Connection connection, StorageType portalType) throws SQLException {
+        if (portalType == StorageType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_PORTAL_POSITION));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_INTER_PORTAL_POSITION));
         }
     }
 
-    public PreparedStatement generateAddMetaToPortalPositionTableStatement(Connection connection, PortalType type) throws SQLException {
-        if (type == PortalType.LOCAL) {
+    public PreparedStatement generateAddMetaToPortalPositionTableStatement(Connection connection, StorageType type) throws SQLException {
+        if (type == StorageType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_PORTAL_POSITION));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_INTER_PORTAL_POSITION));
@@ -168,14 +168,14 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateCreatePortalPositionIndex(Connection connection, PortalType portalType) throws SQLException {
+    public PreparedStatement generateCreatePortalPositionIndex(Connection connection, StorageType portalType) throws SQLException {
         //Skip for non-SQLite if the index already exists
         if (databaseDriver != DatabaseDriver.SQLITE &&
                 hasRows(generateShowPortalPositionIndexesStatement(connection, portalType))) {
             return null;
         }
 
-        if (portalType == PortalType.LOCAL) {
+        if (portalType == StorageType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_INDEX_PORTAL_POSITION));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_INDEX_INTER_PORTAL_POSITION));
@@ -191,8 +191,8 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateAddPortalPositionStatement(Connection connection, PortalType portalType) throws SQLException {
-        if (portalType == PortalType.LOCAL) {
+    public PreparedStatement generateAddPortalPositionStatement(Connection connection, StorageType portalType) throws SQLException {
+        if (portalType == StorageType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.INSERT_PORTAL_POSITION));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.INSERT_INTER_PORTAL_POSITION));
@@ -207,9 +207,9 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateRemovePortalPositionsStatement(Connection connection, PortalType portalType, Portal portal) throws SQLException {
+    public PreparedStatement generateRemovePortalPositionsStatement(Connection connection, StorageType portalType, Portal portal) throws SQLException {
         PreparedStatement removePositionsStatement;
-        if (portalType == PortalType.LOCAL) {
+        if (portalType == StorageType.LOCAL) {
             removePositionsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_POSITIONS));
         } else {
             removePositionsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_POSITIONS));
@@ -219,9 +219,9 @@ public class SQLQueryGenerator {
         return removePositionsStatement;
     }
 
-    public PreparedStatement generateRemovePortalPositionStatement(Connection connection, PortalType portalType, Portal portal, PortalPosition portalPosition) throws SQLException {
+    public PreparedStatement generateRemovePortalPositionStatement(Connection connection, StorageType portalType, Portal portal, PortalPosition portalPosition) throws SQLException {
         PreparedStatement removePositionsStatement;
-        if (portalType == PortalType.LOCAL) {
+        if (portalType == StorageType.LOCAL) {
             removePositionsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_POSITION));
         } else {
             removePositionsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_POSITION));
@@ -243,8 +243,8 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateGetPortalPositionsStatement(Connection connection, PortalType portalType) throws SQLException {
-        if (portalType == PortalType.LOCAL) {
+    public PreparedStatement generateGetPortalPositionsStatement(Connection connection, StorageType portalType) throws SQLException {
+        if (portalType == StorageType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.GET_PORTAL_POSITIONS));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.GET_INTER_PORTAL_POSITIONS));
@@ -293,8 +293,8 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreateFlagRelationTableStatement(Connection connection,
-                                                                      PortalType portalType) throws SQLException {
-        if (portalType == PortalType.LOCAL) {
+                                                                      StorageType portalType) throws SQLException {
+        if (portalType == StorageType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_PORTAL_FLAG_RELATION));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_INTER_PORTAL_FLAG_RELATION));
@@ -310,8 +310,8 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateCreatePortalViewStatement(Connection connection,
-                                                               PortalType portalType) throws SQLException {
-        if (portalType == PortalType.LOCAL) {
+                                                               StorageType portalType) throws SQLException {
+        if (portalType == StorageType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_VIEW_PORTAL));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_VIEW_INTER_PORTAL));
@@ -338,8 +338,8 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateAddPortalFlagRelationStatement(Connection connection,
-                                                                    PortalType portalType) throws SQLException {
-        if (portalType == PortalType.LOCAL) {
+                                                                    StorageType portalType) throws SQLException {
+        if (portalType == StorageType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.INSERT_PORTAL_FLAG_RELATION));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.INSERT_INTER_PORTAL_FLAG_RELATION));
@@ -355,9 +355,9 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateRemoveFlagsStatement(Connection connection,
-                                                          PortalType portalType, Portal portal) throws SQLException {
+                                                          StorageType portalType, Portal portal) throws SQLException {
         PreparedStatement removeFlagsStatement;
-        if (portalType == PortalType.LOCAL) {
+        if (portalType == StorageType.LOCAL) {
             removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATIONS));
         } else {
             removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATIONS));
@@ -376,9 +376,9 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateRemoveFlagStatement(Connection connection,
-                                                         PortalType portalType, Portal portal, Character flagChar) throws SQLException {
+                                                         StorageType portalType, Portal portal, Character flagChar) throws SQLException {
         PreparedStatement removeFlagsStatement;
-        if (portalType == PortalType.LOCAL) {
+        if (portalType == StorageType.LOCAL) {
             removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATION));
         } else {
             removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATION));
@@ -399,8 +399,8 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateAddPortalStatement(Connection connection, RealPortal portal,
-                                                        PortalType portalType) throws SQLException {
-        boolean isInterServer = (portalType == PortalType.INTER_SERVER);
+                                                        StorageType portalType) throws SQLException {
+        boolean isInterServer = (portalType == StorageType.INTER_SERVER);
         String statementMessage;
         if (isInterServer) {
             statementMessage = getQuery(SQLQuery.INSERT_INTER_PORTAL);
@@ -450,9 +450,9 @@ public class SQLQueryGenerator {
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
     public PreparedStatement generateRemovePortalStatement(Connection connection, Portal portal,
-                                                           PortalType portalType) throws SQLException {
+                                                           StorageType portalType) throws SQLException {
         String statementMessage;
-        if (portalType == PortalType.LOCAL) {
+        if (portalType == StorageType.LOCAL) {
             statementMessage = getQuery(SQLQuery.DELETE_PORTAL);
         } else {
             statementMessage = getQuery(SQLQuery.DELETE_INTER_PORTAL);
@@ -493,8 +493,8 @@ public class SQLQueryGenerator {
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
-    public PreparedStatement generateShowPortalPositionIndexesStatement(Connection connection, PortalType portalType) throws SQLException {
-        if (portalType == PortalType.LOCAL) {
+    public PreparedStatement generateShowPortalPositionIndexesStatement(Connection connection, StorageType portalType) throws SQLException {
+        if (portalType == StorageType.LOCAL) {
             return prepareQuery(connection, getQuery(SQLQuery.SHOW_INDEX_PORTAL_POSITION));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.SHOW_INDEX_INTER_PORTAL_POSITION));
@@ -538,9 +538,9 @@ public class SQLQueryGenerator {
         return connection.prepareStatement(query);
     }
 
-    public PreparedStatement generateGetPortalStatement(Connection connection, Portal portal, PortalType portalType) throws SQLException {
+    public PreparedStatement generateGetPortalStatement(Connection connection, Portal portal, StorageType portalType) throws SQLException {
         PreparedStatement statement;
-        if (portalType == PortalType.LOCAL) {
+        if (portalType == StorageType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.GET_PORTAL));
         } else {
             statement = prepareQuery(connection, getQuery(SQLQuery.GET_INTER_PORTAL));
@@ -550,9 +550,9 @@ public class SQLQueryGenerator {
         return statement;
     }
 
-    public PreparedStatement generateSetPortalMetaStatement(Connection connection, Portal portal, String meta, PortalType portalType) throws SQLException {
+    public PreparedStatement generateSetPortalMetaStatement(Connection connection, Portal portal, String meta, StorageType portalType) throws SQLException {
         PreparedStatement statement;
-        if (portalType == PortalType.LOCAL) {
+        if (portalType == StorageType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.SET_PORTAL_META));
         } else {
             statement = prepareQuery(connection, getQuery(SQLQuery.SET_INTER_PORTAL_META));
@@ -564,9 +564,9 @@ public class SQLQueryGenerator {
     }
 
     public PreparedStatement generateSetPortalPositionMeta(Connection connection, RealPortal portal, PortalPosition portalPosition,
-                                                           String meta, PortalType portalType) throws SQLException {
+                                                           String meta, StorageType portalType) throws SQLException {
         PreparedStatement statement;
-        if (portalType == PortalType.LOCAL) {
+        if (portalType == StorageType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.SET_PORTAL_POSITION_META));
         } else {
             statement = prepareQuery(connection, getQuery(SQLQuery.SET_INTER_PORTAL_POSITION_META));
@@ -582,9 +582,9 @@ public class SQLQueryGenerator {
     }
 
     public PreparedStatement generateGetPortalPositionStatement(Connection connection, Portal portal,
-                                                                PortalPosition portalPosition, PortalType portalType) throws SQLException {
+                                                                PortalPosition portalPosition, StorageType portalType) throws SQLException {
         PreparedStatement statement;
-        if (portalType == PortalType.LOCAL) {
+        if (portalType == StorageType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.GET_PORTAL_POSITION_META));
         } else {
             statement = prepareQuery(connection, getQuery(SQLQuery.GET_INTER_PORTAL_POSITION_META));
@@ -599,9 +599,9 @@ public class SQLQueryGenerator {
     }
 
     public PreparedStatement generateUpdateNetworkNameStatement(Connection connection, String newName, String networkName,
-            PortalType portalType) throws SQLException {
+            StorageType portalType) throws SQLException {
         PreparedStatement statement;
-        if (portalType == PortalType.LOCAL) {
+        if (portalType == StorageType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.UPDATE_NETWORK_NAME));
         } else {
             statement = prepareQuery(connection, getQuery(SQLQuery.UPDATE_INTER_NETWORK_NAME));
@@ -612,9 +612,9 @@ public class SQLQueryGenerator {
     }
 
     public PreparedStatement generateUpdatePortalNameStatement(Connection connection, String newName, String portalName, String networkName,
-            PortalType portalType) throws SQLException {
+            StorageType portalType) throws SQLException {
         PreparedStatement statement;
-        if (portalType == PortalType.LOCAL) {
+        if (portalType == StorageType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.UPDATE_PORTAL_NAME));
         } else {
             statement = prepareQuery(connection, getQuery(SQLQuery.UPDATE_INTER_PORTAL_NAME));

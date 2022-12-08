@@ -13,7 +13,7 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.StorageType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -129,25 +129,25 @@ public class MySQLDatabaseTest {
     @Test
     @Order(3)
     void createPortalPositionIndexTest() throws SQLException {
-        tester.createPortalPositionIndexTest(PortalType.LOCAL);
+        tester.createPortalPositionIndexTest(StorageType.LOCAL);
     }
 
     @Test
     @Order(3)
     void createInterPortalPositionIndexTest() throws SQLException {
-        tester.createPortalPositionIndexTest(PortalType.INTER_SERVER);
+        tester.createPortalPositionIndexTest(StorageType.INTER_SERVER);
     }
 
     @Test
     @Order(4)
     void portalPositionIndexExistsTest() throws SQLException {
-        tester.portalPositionIndexExistsTest(PortalType.LOCAL);
+        tester.portalPositionIndexExistsTest(StorageType.LOCAL);
     }
 
     @Test
     @Order(4)
     void interPortalPositionIndexExistsTest() throws SQLException {
-        tester.portalPositionIndexExistsTest(PortalType.INTER_SERVER);
+        tester.portalPositionIndexExistsTest(StorageType.INTER_SERVER);
     }
 
     @Test
@@ -201,50 +201,50 @@ public class MySQLDatabaseTest {
     @Test
     @Order(7)
     void addAndRemovePortalPositionTest() throws SQLException {
-        tester.addAndRemovePortalPosition(PortalType.LOCAL);
+        tester.addAndRemovePortalPosition(StorageType.LOCAL);
     }
 
     @Test
     @Order(7)
     void addAndRemoveInterPortalPositionTest() throws SQLException {
-        tester.addAndRemovePortalPosition(PortalType.INTER_SERVER);
+        tester.addAndRemovePortalPosition(StorageType.INTER_SERVER);
     }
 
     @Test
     @Order(7)
     void setPortalMetaTest() throws SQLException {
-        tester.setPortalMetaDataTest(PortalType.LOCAL);
+        tester.setPortalMetaDataTest(StorageType.LOCAL);
     }
 
 
     @Test
     @Order(7)
     void setInterPortalMetaTest() throws SQLException {
-        tester.setPortalMetaDataTest(PortalType.INTER_SERVER);
+        tester.setPortalMetaDataTest(StorageType.INTER_SERVER);
     }
 
     @Test
     @Order(7)
     void setPortalPositionMetaTest() throws SQLException {
-        tester.setPortalPositionMetaTest(PortalType.LOCAL);
+        tester.setPortalPositionMetaTest(StorageType.LOCAL);
     }
 
     @Test
     @Order(7)
     void setInterPortalPositionMetaTest() throws SQLException {
-        tester.setPortalPositionMetaTest(PortalType.INTER_SERVER);
+        tester.setPortalPositionMetaTest(StorageType.INTER_SERVER);
     }
 
     @Test
     @Order(7)
     void changeNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, NameErrorException {
-        tester.changeNames(PortalType.LOCAL);
+        tester.changeNames(StorageType.LOCAL);
     }
     
     @Test
     @Order(7)
     void changeInterNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, NameErrorException {
-        tester.changeNames(PortalType.INTER_SERVER);
+        tester.changeNames(StorageType.INTER_SERVER);
     }
     
     @Test

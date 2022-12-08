@@ -8,7 +8,7 @@ import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
@@ -25,7 +25,7 @@ import java.util.logging.Level;
 public class PortalStorageHelper {
 
 
-    public static PortalData loadPortalData(ResultSet resultSet, PortalType portalType) throws SQLException {
+    public static PortalData loadPortalData(ResultSet resultSet, StorageType portalType) throws SQLException {
         PortalData portalData = new PortalData();
         portalData.name = resultSet.getString("name");
         portalData.networkName = resultSet.getString("network");
@@ -49,7 +49,7 @@ public class PortalStorageHelper {
         portalData.facing = getBlockFaceFromOrdinal(Integer.parseInt(resultSet.getString("facing")));
         portalData.portalType = portalType;
         //TODO Check if portalType is necessary to keep track of // there's already flags.contains(PortalFlag.FANCY_INTERSERVER)
-        if (portalType == PortalType.INTER_SERVER) {
+        if (portalType == StorageType.INTER_SERVER) {
             portalData.serverUUID = resultSet.getString("homeServerId");
             Stargate.log(Level.FINEST, "serverUUID = " + portalData.serverUUID);
             if (!portalData.serverUUID.equals(Stargate.getServerUUID())) {

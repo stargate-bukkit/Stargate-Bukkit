@@ -33,7 +33,7 @@ import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.manager.PermissionManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.formatting.LegacyLineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.LineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.LineFormatter;
@@ -68,7 +68,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     protected final int openDelay = 20;
     protected Network network;
-    protected final String name;
+    protected String name;
     protected UUID openFor;
     protected Portal destination = null;
     protected Portal overriddenDestination = null;
@@ -527,7 +527,7 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void setMetaData(String data) {
         try {
-            Stargate.getStorageAPIStatic().setPortalMetaData(this, data, getPortalType());
+            Stargate.getStorageAPIStatic().setPortalMetaData(this, data, getStorageType());
         } catch (StorageWriteException e) {
             e.printStackTrace();
         }
@@ -538,14 +538,20 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public String getMetaData() {
         try {
-            return Stargate.getStorageAPIStatic().getPortalMetaData(this, getPortalType());
+            return Stargate.getStorageAPIStatic().getPortalMetaData(this, getStorageType());
         } catch (StorageReadException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public PortalType getPortalType() {
-        return (flags.contains(PortalFlag.FANCY_INTER_SERVER) ? PortalType.INTER_SERVER : PortalType.LOCAL);
+    @Override
+    public StorageType getStorageType() {
+        return (flags.contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
+    }
+    
+    @Override
+    public void setName(String newName) {
+        this.name = newName;
     }
 }

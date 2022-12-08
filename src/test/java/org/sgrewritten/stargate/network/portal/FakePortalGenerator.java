@@ -8,7 +8,7 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -87,7 +87,7 @@ public class FakePortalGenerator {
         portalData.topLeft = world.getBlockAt(0, 0, 0).getLocation();
         portalData.facing = BlockFace.EAST;
         portalData.gateFileName = "fileName.gate";
-        portalData.portalType = createInterServerPortal ? PortalType.INTER_SERVER : PortalType.LOCAL;
+        portalData.portalType = createInterServerPortal ? StorageType.INTER_SERVER : StorageType.LOCAL;
 
         Gate gate = new Gate(portalData, logger);
 

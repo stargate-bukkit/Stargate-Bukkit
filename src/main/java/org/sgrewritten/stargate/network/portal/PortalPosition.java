@@ -48,7 +48,7 @@ public class PortalPosition {
      */
     public String getMetaData(RealPortal portal) {
         try {
-            return Stargate.getStorageAPIStatic().getPortalPositionMetaData(portal, this, portal.getPortalType());
+            return Stargate.getStorageAPIStatic().getPortalPositionMetaData(portal, this, portal.getStorageType());
         } catch (StorageReadException e) {
             e.printStackTrace();
             return null;
@@ -57,7 +57,7 @@ public class PortalPosition {
 
     public void setMetaData(RealPortal portal, String data) {
         try {
-            Stargate.getStorageAPIStatic().setPortalPositionMetaData(portal, this, data, portal.getPortalType());
+            Stargate.getStorageAPIStatic().setPortalPositionMetaData(portal, this, data, portal.getStorageType());
         } catch (StorageWriteException e) {
             e.printStackTrace();
         }

@@ -33,7 +33,7 @@ public interface RegistryAPI {
      * @param portal     <p>The portal to remove</p>
      * @param portalType <p>The type of portal to be removed</p>
      */
-    void removePortal(Portal portal, PortalType portalType);
+    void removePortal(Portal portal, StorageType portalType);
 
     /**
      * Saves the given portal to the database
@@ -41,7 +41,7 @@ public interface RegistryAPI {
      * @param portal     <p>The portal to save</p>
      * @param portalType <p>The type of portal to save</p>
      */
-    void savePortal(RealPortal portal, PortalType portalType);
+    void savePortal(RealPortal portal, StorageType portalType);
 
 
     /**
@@ -194,4 +194,27 @@ public interface RegistryAPI {
      * @return <p>All non-BungeeCord networks</p>
      */
     HashMap<String, Network> getNetworkMap();
+
+    /**
+     * Rename the network to specified name
+     * @param network   <p> The network to rename </p>
+     * @param newName   <p> The new name of the network </p>
+     * @throws NameErrorException 
+     */
+    void rename(Network network, String newName) throws NameErrorException;
+
+    /**
+     * 
+     * @param portal    <p> The portal to rename</p>
+     * @param newName   <p> The new name of the portal </p>
+     * @throws NameErrorException
+     */
+    void rename(Portal portal, String newName) throws NameErrorException;
+
+
+    /**
+     * Rename the network to a non clashing name
+     * @param network   <p>The network to rename </p>
+     */
+    void rename(Network network);
 }

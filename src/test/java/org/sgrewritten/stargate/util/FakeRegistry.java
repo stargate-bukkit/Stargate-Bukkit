@@ -9,7 +9,7 @@ import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -32,11 +32,11 @@ public class FakeRegistry implements RegistryAPI {
     }
 
     @Override
-    public void removePortal(Portal portal, PortalType portalType) {
+    public void removePortal(Portal portal, StorageType portalType) {
     }
 
     @Override
-    public void savePortal(RealPortal portal, PortalType portalType) {
+    public void savePortal(RealPortal portal, StorageType portalType) {
     }
 
     @Override
@@ -140,6 +140,24 @@ public class FakeRegistry implements RegistryAPI {
     @Override
     public HashMap<String, Network> getNetworkMap() {
         return networkMap;
+    }
+
+    @Override
+    public void rename(Network network, String newName) throws NameErrorException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void rename(Portal portal, String newName) throws NameErrorException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void rename(Network network) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

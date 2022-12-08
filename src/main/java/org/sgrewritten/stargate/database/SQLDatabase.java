@@ -16,7 +16,7 @@ import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -95,10 +95,10 @@ public class SQLDatabase implements StorageAPI {
     public void loadFromStorage(RegistryAPI registry) throws StorageReadException {
         try {
             logger.logMessage(Level.FINER, "Loading portals from base database");
-            loadAllPortals(database, PortalType.LOCAL, registry);
+            loadAllPortals(database, StorageType.LOCAL, registry);
             if (useInterServerNetworks) {
                 logger.logMessage(Level.FINER, "Loading portals from inter-server bungee database");
-                loadAllPortals(database, PortalType.INTER_SERVER, registry);
+                loadAllPortals(database, StorageType.INTER_SERVER, registry);
             }
         } catch (SQLException exception) {
             throw new StorageReadException(exception);
@@ -106,7 +106,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public boolean savePortalToStorage(RealPortal portal, PortalType portalType) throws StorageWriteException {
+    public boolean savePortalToStorage(RealPortal portal, StorageType portalType) throws StorageWriteException {
         /* An SQL transaction is used here to make sure partial data is never added to the database. */
         Connection connection = null;
         try {
@@ -143,7 +143,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void removePortalFromStorage(Portal portal, PortalType portalType) throws StorageWriteException {
+    public void removePortalFromStorage(Portal portal, StorageType portalType) throws StorageWriteException {
         /* An SQL transaction is used here to make sure portals are never partially removed from the database. */
         Connection conn = null;
         try {
@@ -178,7 +178,7 @@ public class SQLDatabase implements StorageAPI {
      * @param portalType <p>The portal type to load</p>
      * @throws SQLException <p>If an SQL error occurs</p>
      */
-    private void loadAllPortals(SQLDatabaseAPI database, PortalType portalType, RegistryAPI registry) throws SQLException {
+    private void loadAllPortals(SQLDatabaseAPI database, StorageType portalType, RegistryAPI registry) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsStatement(connection, portalType);
 
@@ -204,7 +204,7 @@ public class SQLDatabase implements StorageAPI {
             Network network = registry.getNetwork(targetNetwork, isBungee);
 
             //TODO Check if portalType is necessary to keep track of // there's already flags.contains(PortalFlag.FANCY_INTERSERVER)
-            if (portalType == PortalType.INTER_SERVER) {
+            if (portalType == StorageType.INTER_SERVER) {
                 if (!portalData.serverUUID.equals(Stargate.getServerUUID())) {
                     Portal virtualPortal = new VirtualPortal(portalData.serverName, portalData.name, network, portalData.flags, portalData.ownerUUID);
                     try {
@@ -236,7 +236,7 @@ public class SQLDatabase implements StorageAPI {
             } catch (InvalidStructureException e) {
                 Stargate.log(Level.WARNING, String.format(
                         "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
-                        portalData.name, (portalType == PortalType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName,
+                        portalData.name, (portalType == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName,
                         portalData.topLeft));
             } catch (GateConflictException ignored) {
             }
@@ -367,7 +367,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void addFlag(Character flagChar, Portal portal, PortalType portalType) throws StorageWriteException {
+    public void addFlag(Character flagChar, Portal portal, StorageType portalType) throws StorageWriteException {
         Connection connection;
         try {
             connection = database.getConnection();
@@ -414,7 +414,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void addPortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws StorageWriteException {
+    public void addPortalPosition(RealPortal portal, StorageType portalType, PortalPosition portalPosition) throws StorageWriteException {
         Connection connection;
         try {
             connection = database.getConnection();
@@ -429,7 +429,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void removeFlag(Character flagChar, Portal portal, PortalType portalType) throws StorageWriteException {
+    public void removeFlag(Character flagChar, Portal portal, StorageType portalType) throws StorageWriteException {
         Connection connection;
         try {
             connection = database.getConnection();
@@ -441,7 +441,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void removePortalPosition(RealPortal portal, PortalType portalType, PortalPosition portalPosition) throws StorageWriteException {
+    public void removePortalPosition(RealPortal portal, StorageType portalType, PortalPosition portalPosition) throws StorageWriteException {
         Connection connection;
         try {
             connection = database.getConnection();
@@ -453,7 +453,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void setPortalMetaData(Portal portal, String data, PortalType portalType) throws StorageWriteException {
+    public void setPortalMetaData(Portal portal, String data, StorageType portalType) throws StorageWriteException {
         Connection connection;
         try {
             connection = database.getConnection();
@@ -465,7 +465,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public String getPortalMetaData(Portal portal, PortalType portalType) throws StorageReadException {
+    public String getPortalMetaData(Portal portal, StorageType portalType) throws StorageReadException {
         Connection connection;
         try {
             connection = database.getConnection();
@@ -484,7 +484,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void setPortalPositionMetaData(RealPortal portal, PortalPosition portalPosition, String data, PortalType portalType) throws StorageWriteException {
+    public void setPortalPositionMetaData(RealPortal portal, PortalPosition portalPosition, String data, StorageType portalType) throws StorageWriteException {
         try {
             Connection connection = database.getConnection();
             DatabaseHelper.runStatement(sqlQueryGenerator.generateSetPortalPositionMeta(connection, portal, portalPosition, data, portalType));
@@ -495,7 +495,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition, PortalType portalType) throws StorageReadException {
+    public String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition, StorageType portalType) throws StorageReadException {
         try {
             Connection connection = database.getConnection();
             PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionStatement(connection, portal, portalPosition, portalType);
@@ -513,7 +513,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void updateNetworkName(String newName, String networkName, PortalType portalType) throws StorageWriteException{
+    public void updateNetworkName(String newName, String networkName, StorageType portalType) throws StorageWriteException{
         
         try {
             Connection connection = database.getConnection();
@@ -525,7 +525,7 @@ public class SQLDatabase implements StorageAPI {
     }
     
     @Override
-    public void updatePortalName(String newName, String portalName, String networkName, PortalType portalType) throws StorageWriteException {
+    public void updatePortalName(String newName, String portalName, String networkName, StorageType portalType) throws StorageWriteException {
         try {
             Connection connection = database.getConnection();
             DatabaseHelper

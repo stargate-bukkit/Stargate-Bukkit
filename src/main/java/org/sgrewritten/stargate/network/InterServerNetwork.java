@@ -40,7 +40,7 @@ public class InterServerNetwork extends LocalNetwork {
     public void removePortal(Portal portal, boolean removeFromDatabase) {
         super.removePortal(portal, removeFromDatabase);
 
-        Stargate.getRegistryStatic().removePortal(portal, PortalType.INTER_SERVER);
+        Stargate.getRegistryStatic().removePortal(portal, StorageType.INTER_SERVER);
 
         if (removeFromDatabase) {
             updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
@@ -59,7 +59,7 @@ public class InterServerNetwork extends LocalNetwork {
          * that it can be seen on other servers
          */
         Stargate.addSynchronousSecAction(new SupplierAction(() -> {
-            Stargate.getRegistryStatic().savePortal(portal, PortalType.INTER_SERVER);
+            Stargate.getRegistryStatic().savePortal(portal, StorageType.INTER_SERVER);
             return true;
         }), true);
         updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_ADD);
@@ -105,4 +105,9 @@ public class InterServerNetwork extends LocalNetwork {
         }), true);
     }
 
+
+    @Override
+    public StorageType getStorageType() {
+        return StorageType.INTER_SERVER;
+    }
 }

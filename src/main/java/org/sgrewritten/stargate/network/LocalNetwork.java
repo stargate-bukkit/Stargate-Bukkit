@@ -42,7 +42,7 @@ public class LocalNetwork implements Network {
     protected String id;
     private RegistryAPI registry;
 
-    private final NetworkType networkType;
+    private NetworkType networkType;
 
     /**
      * Instantiates a new network
@@ -51,12 +51,15 @@ public class LocalNetwork implements Network {
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
     public LocalNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {
-        this(name, getNetworkTypeFromFlags(flags));
+        this(name, NetworkType.getNetworkTypeFromFlags(flags));
     }
     
     public LocalNetwork(String name, NetworkType type) throws NameErrorException {
+        load(name,type);
+    }
+    
+    private void load(String name, NetworkType type) throws NameErrorException {
         this.networkType = type;
-        
         switch(type) {
         case DEFAULT:
             loadAsDefault(name);
@@ -66,19 +69,9 @@ public class LocalNetwork implements Network {
             break;
         case CUSTOM:
             loadAsCustomNetwork(name);
+        default:
             break;
         }
-        
-    }
-    
-    private static NetworkType getNetworkTypeFromFlags(Set<PortalFlag> flags) {
-        if(flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            return NetworkType.PERSONAL;
-        }
-        if(flags.contains(PortalFlag.DEFAULT_NETWORK)) {
-            return NetworkType.DEFAULT;
-        }
-        return NetworkType.CUSTOM;
     }
     
     private void loadAsDefault(String name) throws NameErrorException {
@@ -138,7 +131,7 @@ public class LocalNetwork implements Network {
         if (!removeFromDatabase) {
             return;
         }
-        Stargate.getRegistryStatic().removePortal(portal, PortalType.LOCAL);
+        Stargate.getRegistryStatic().removePortal(portal, StorageType.LOCAL);
     }
 
     @Override
@@ -234,7 +227,7 @@ public class LocalNetwork implements Network {
      * @param portal <p>The portal to save</p>
      */
     protected void savePortal(RealPortal portal) {
-        registry.savePortal(portal, PortalType.LOCAL);
+        registry.savePortal(portal, StorageType.LOCAL);
     }
 
     /**
@@ -263,34 +256,13 @@ public class LocalNetwork implements Network {
     }
 
     @Override
-    public void rename() {
-        String newName = getId();
-        int i = 1;
-        boolean isInterServer = (this instanceof InterServerNetwork);
-        while(registry.networkExists(newName, isInterServer)) {
-            newName = getId() + i;
-            i++;
-        }
-        try {
-            rename(newName);
-        } catch (NameErrorException e) {
-            String annoyinglyOverThoughtName = getId();
-            int n = 1;
-            while(registry.networkExists(annoyinglyOverThoughtName, isInterServer)) {
-                String number = String.valueOf(n);
-                annoyinglyOverThoughtName = getId().substring(0,getId().length()-number.length()) + number;
-            }
-            try {
-                rename(annoyinglyOverThoughtName);
-            } catch (NameErrorException impossible) {
-                Stargate.log(Level.SEVERE, "Could not rename the network, do /sg trace and show the data in an new issue in sgrewritten.org/report");
-            }
-        }
+    public StorageType getStorageType() {
+        return StorageType.LOCAL;
     }
 
     @Override
-    public void rename(String name) throws NameErrorException {
-        
+    public void setID(String newName) throws NameErrorException {
+        load(newName,this.getType());
     }
 
 }

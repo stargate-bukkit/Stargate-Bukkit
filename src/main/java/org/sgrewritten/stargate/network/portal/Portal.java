@@ -4,7 +4,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.UUID;
 
@@ -155,5 +155,17 @@ public interface Portal {
      */
     String getID();
 
-    PortalType getPortalType();
+    /**
+     * Gets how the portal is stored
+     * @return <p> The storage type of the portal </p>
+     */
+    StorageType getStorageType();
+
+    /**
+     * Change the name of the portal
+     * 
+     * DOES NOT SAVE TO DATABASE
+     * @param newName
+     */
+    void setName(String newName);
 }
