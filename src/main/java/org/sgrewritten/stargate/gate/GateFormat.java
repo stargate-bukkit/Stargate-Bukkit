@@ -37,6 +37,7 @@ public class GateFormat implements GateFormatAPI {
      * @param controlBlocks       <p>The format's control block structure</p>
      * @param name                <p>The name of the new gate format</p>
      * @param isIronDoorBlockable <p>Whether the gate format's iris can be blocked by a single iron door</p>
+     * @param controlMaterials    <b>The materials to use for this gatres control blocks</b>
      * @param height              <p>The height of this gate format</p>
      * @param width               <p>The width of this gate format</p>
      */

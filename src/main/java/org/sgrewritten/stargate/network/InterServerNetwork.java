@@ -30,6 +30,7 @@ public class InterServerNetwork extends LocalNetwork {
      * Instantiates a new inter-server network
      *
      * @param networkName <p>The name of the new inter-server network</p>
+     * @param type <p>The type of inter-server network to initialize</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
     public InterServerNetwork(String networkName, NetworkType type) throws NameErrorException {

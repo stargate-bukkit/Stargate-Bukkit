@@ -29,23 +29,45 @@ public enum NetworkType {
     private HighlightingStyle style;
     private PortalFlag flag;
 
+    /**
+     * The network type as determined by the its given style and flags.
+     * @param style <p>The applicable HighlightingStyle</p>
+     * @param flag  <p>The applicable PortalFlag</p>
+     */
     private NetworkType(HighlightingStyle style, PortalFlag flag) {
         this.style = style;
         this.flag = flag;
     }
     
+    /**
+     * The applicable highlighting style.
+     * @return HighlightingStyle style
+     */
     public HighlightingStyle getHighlightingStyle() {
         return style;
     }
     
+    /**
+     * The applicable flags.
+     * @return PortalFlag flag
+     */
     public PortalFlag getRelatedFlag() {
         return flag;
     }
     
+    /**
+     * Whether or not the style of the gate contains contains sufficient information to determine its network type.
+     * @param style <p>The applicable HighlightingStyle</p>.
+     * @return <p>Whether or not sufficient information was available, represented as a boolean</p>
+     */
     public static boolean styleGivesNetworkType(HighlightingStyle style) {
         return getNetworkTypeFromHighlight(style) != null;
     }
 
+    /**
+     * A method to remove internal flags related to the network's type.
+     * @param flags <p>The applicable PortalFlags</p>.
+     */
     public static void removeNetworkTypeRelatedFlags(Set<PortalFlag> flags) {
         for (NetworkType type : NetworkType.values()) {
             PortalFlag flagToRemove = type.getRelatedFlag();
@@ -56,6 +78,11 @@ public enum NetworkType {
         }
     }
 
+    /**
+     * A method that infers a NetworkType from a provided HighlightingStyle, if sufficient information is available.
+     * @param highlight <p>The applicable HighlightingStyle</p>
+     * @return NetworkType type
+     */
     public static NetworkType getNetworkTypeFromHighlight(HighlightingStyle highlight) {
         for(NetworkType type : NetworkType.values()) {
             if(type.getHighlightingStyle() == highlight) {
@@ -65,6 +92,11 @@ public enum NetworkType {
         return null;
     }
 
+    /**
+     * A method that infers a NetworkType from provided flags.
+     * @param flags <p>A PortalFlag set</p>.
+     * @return NetworkType type
+     */
     public static NetworkType getNetworkTypeFromFlags(Set<PortalFlag> flags) {
         for(NetworkType type: NetworkType.values()) {
             if(flags.contains(type.getRelatedFlag())) {

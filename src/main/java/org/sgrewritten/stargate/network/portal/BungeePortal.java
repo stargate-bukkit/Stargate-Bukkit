@@ -37,7 +37,9 @@ public class BungeePortal extends AbstractPortal {
      * @param destination       <p>The destination of the portal</p>
      * @param destinationServer <p>The destination server to connect to</p>
      * @param flags             <p>The flags enabled for this portal</p>
+     * @param gate              <p>The gate format used by this portal</p>
      * @param ownerUUID         <p>The UUID of this portal's owner</p>
+     * @param logger
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
     public BungeePortal(Network network, String name, String destination, String destinationServer,

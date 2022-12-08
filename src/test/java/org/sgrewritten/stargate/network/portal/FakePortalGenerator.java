@@ -43,6 +43,7 @@ public class FakePortalGenerator {
      * @param portalNetwork            <p>The network of the generated portals</p>
      * @param createInterServerPortals <p>Whether to generate fake inter-server portals</p>
      * @param numberOfPortals          <p>The number of fake portals to generate</p>
+     * @param logger
      * @return <p>A map from the portal's name to the portal's object</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      * @throws NameErrorException        <p>If the generated portal name is invalid</p>
@@ -73,6 +74,7 @@ public class FakePortalGenerator {
      * @param portalNetwork           <p>The network of the generated portal</p>
      * @param name                    <p>The name of the generated portal</p>
      * @param createInterServerPortal <p>Whether to generate a fake inter-server portal</p>
+     * @param logger
      * @return <p>A fake portal</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      * @throws NameErrorException        <p>If the given portal name is invalid</p>

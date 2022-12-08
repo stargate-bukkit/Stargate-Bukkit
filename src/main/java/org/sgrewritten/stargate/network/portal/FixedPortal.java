@@ -25,6 +25,7 @@ public class FixedPortal extends AbstractPortal {
      * @param name            <p>The name of the portal</p>
      * @param destinationName <p>The name of the destination portal</p>
      * @param flags           <p>The flags enabled for the portal</p>
+     * @param gate          <p>The gate format used by this portal</p>
      * @param ownerUUID       <p>The UUID of the portal's owner</p>
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */

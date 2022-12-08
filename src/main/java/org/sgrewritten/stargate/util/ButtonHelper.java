@@ -37,6 +37,7 @@ public final class ButtonHelper {
     /**
      * Gets the button material to use for this gate
      *
+     * @param portalClosedMaterial <p>The iris material used by this gate when closed</p>
      * @return <p>The button material to use for this gate</p>
      */
     public static Material getButtonMaterial(Material portalClosedMaterial) {

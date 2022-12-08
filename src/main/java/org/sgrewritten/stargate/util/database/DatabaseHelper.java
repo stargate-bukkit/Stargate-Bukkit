@@ -149,6 +149,7 @@ public class DatabaseHelper {
      * @param stargate <p>The Stargate instance to use for initialization</p>
      * @return <p>The loaded database</p>
      * @throws SQLException <p>If an SQL exception occurs</p>
+     * @throws org.sgrewritten.stargate.exception.StargateInitializationException
      */
     public static SQLDatabaseAPI loadDatabase(Stargate stargate) throws SQLException, StargateInitializationException {
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {

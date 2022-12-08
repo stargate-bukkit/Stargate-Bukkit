@@ -48,6 +48,7 @@ public class LocalNetwork implements Network {
      * Instantiates a new network
      *
      * @param name <p>The name of the new network</p>
+     * @param flags <p>The flags attached to this network</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
     public LocalNetwork(String name, Set<PortalFlag> flags) throws NameErrorException {

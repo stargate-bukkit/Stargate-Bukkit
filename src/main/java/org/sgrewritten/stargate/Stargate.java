@@ -89,9 +89,8 @@ import java.util.logging.Level;
  * A plugin that allows for instant-teleportation between large distances and across servers.
  * Highly customisable and designed with end-user portal creation in mind!
  * <p><a href="https://git.io/JuWkU">https://git.io/JuWkU</a> |
- * <a href="https://discord.gg/mTaHuK6BVa">https://discord.gg/mTaHuK6BVa</a>
- * Lead Developers:
- * <p>
+ * <a href="https://discord.gg/mTaHuK6BVa">https://discord.gg/mTaHuK6BVa</a></p>
+ * <p>Lead Developers:
  *
  * @author Thorin (2020-Present)
  * @author EpicKnarvik97 (2021-Present)

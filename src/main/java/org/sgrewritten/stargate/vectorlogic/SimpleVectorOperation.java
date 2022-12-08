@@ -35,6 +35,7 @@ public class SimpleVectorOperation implements VectorOperation {
      * given sign face.</p>
      *
      * @param signFace <p>The sign face of a gate's sign</p>
+     * @throws org.sgrewritten.stargate.exception.InvalidStructureException
      */
     public SimpleVectorOperation(BlockFace signFace) throws InvalidStructureException {
         if (irisNormalAxes.isEmpty()) {
