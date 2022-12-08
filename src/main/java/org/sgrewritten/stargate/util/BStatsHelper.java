@@ -4,6 +4,9 @@ import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
 import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
@@ -13,8 +16,11 @@ import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.portal.AbstractPortal;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.network.portal.RealPortal;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -67,7 +73,7 @@ public final class BStatsHelper {
 
         registerConfigMetrics(metrics);
     }
-
+    
     /**
      * Registers metrics for the number of portals on personal networks vs.
      * portals on non-personal networks
@@ -189,9 +195,22 @@ public final class BStatsHelper {
     * The metrics object to register metrics to</p>
     */
     private static void registerAddons(Metrics metrics) {
+        String stargate = "stargate";
         metrics.addCustomChart(new AdvancedPie("addonsUsed", () -> {
             Map<String, Integer> addonsList = new HashMap<>();
-            // TODO: not implemented
+            
+            for(Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+                for(String depend : plugin.getDescription().getDepend()) {
+                    if(depend.toLowerCase().equals(stargate)) {
+                        addonsList.put(plugin.getName(), 1);
+                    }
+                }
+                for(String depend : plugin.getDescription().getSoftDepend()) {
+                    if(depend.toLowerCase().equals(stargate)) {
+                        addonsList.put(plugin.getName(), 1);
+                    }
+                }
+            }
             return addonsList;
         }));
     }
@@ -204,9 +223,21 @@ public final class BStatsHelper {
      * The metrics object to register metrics to</p>
      */
     private static void registerUnderwaterCount(Metrics metrics) {
-        metrics.addCustomChart(new SingleLineChart("undewaterCount", () -> {
+        metrics.addCustomChart(new SingleLineChart("underwaterCount", () -> {
             int count = 0;
-            // TODO: not implemented.
+            Collection<Network> totalNetworkList = Stargate.getRegistryStatic().getNetworkMap().values();
+            totalNetworkList.addAll(Stargate.getRegistryStatic().getBungeeNetworkMap().values());
+            for(Network network : totalNetworkList) {
+                for(Portal portal : network.getAllPortals()) {
+                    if(!(portal instanceof RealPortal)) {
+                        continue;
+                    }
+                    RealPortal realPortal = (RealPortal) portal;
+                    if(realPortal.getGate().getExit().getBlock().getType() == Material.WATER) {
+                        count++;
+                    }
+                }
+            }
             return count;
         }));
     }
