@@ -90,7 +90,7 @@ public interface StorageAPI {
      * Creates a new network unassigned to a registry
      *
      * @param networkName <p>The name of the new network</p>
-     * @param flags       <p>The flag set used to look for network flags</p>
+     * @param type       <p>The type of network to look for.</p>
      * @return The network that was created
      * @throws NameErrorException <p>If the given network name is invalid</p>
      */
