@@ -166,5 +166,7 @@ public interface StorageAPI {
 
     void updatePortalName(String newName, String portalName, String networkName, StorageType portalType) throws StorageWriteException;
 
+    boolean netWorkExists(String netName, StorageType portalType) throws StorageReadException;
+
 
 }

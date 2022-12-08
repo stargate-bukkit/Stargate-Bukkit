@@ -264,25 +264,31 @@ public class StargateRegistry implements RegistryAPI {
     public void rename(Network network) {
         String newName = network.getId();
         int i = 1;
-        boolean isInterServer = (network instanceof InterServerNetwork);
-        while(networkExists(newName, isInterServer)) {
-            newName = network.getId() + i;
-            i++;
-        }
         try {
-            rename(network,newName);
-        } catch (NameErrorException e) {
-            String annoyinglyOverThoughtName = network.getId();
-            int n = 1;
-            while(networkExists(annoyinglyOverThoughtName, isInterServer)) {
-                String number = String.valueOf(n);
-                annoyinglyOverThoughtName = network.getId().substring(0,network.getId().length()-number.length()) + number;
+            boolean isInterServer = (network instanceof InterServerNetwork);
+            while (networkExists(newName, isInterServer) || storageAPI.netWorkExists(newName,network.getStorageType())) {
+                newName = network.getId() + i;
+                i++;
             }
             try {
-                rename(network,annoyinglyOverThoughtName);
-            } catch (NameErrorException impossible) {
-                Stargate.log(Level.SEVERE, "Could not rename the network, do /sg trace and show the data in an new issue in sgrewritten.org/report");
+                rename(network, newName);
+            } catch (NameErrorException e) {
+                String annoyinglyOverThoughtName = network.getId();
+                int n = 1;
+                while (networkExists(annoyinglyOverThoughtName, isInterServer) || storageAPI.netWorkExists(newName,network.getStorageType())) {
+                    String number = String.valueOf(n);
+                    annoyinglyOverThoughtName = network.getId().substring(0, network.getId().length() - number.length())
+                            + number;
+                }
+                try {
+                    rename(network, annoyinglyOverThoughtName);
+                } catch (NameErrorException impossible) {
+                    Stargate.log(Level.SEVERE,
+                            "Could not rename the network, do /sg trace and show the data in an new issue in sgrewritten.org/report");
+                }
             }
+        } catch (StorageReadException e) {
+            e.printStackTrace();
         }
     }
 }

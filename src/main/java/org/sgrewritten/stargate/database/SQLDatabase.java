@@ -25,6 +25,7 @@ import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
+import org.sgrewritten.stargate.util.NetworkCreationHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
@@ -198,12 +199,15 @@ public class SQLDatabase implements StorageAPI {
             }
             try {
                 boolean isForced = portalData.flags.contains(PortalFlag.DEFAULT_NETWORK) || portalData.flags.contains(PortalFlag.TERMINAL_NETWORK);
-                registry.createNetwork(targetNetwork,portalData.flags,isForced);
+                Network network = registry.createNetwork(targetNetwork,portalData.flags,isForced);
+                
+                if(NetworkCreationHelper.getDefaultNamesTaken().contains(network.getId().toLowerCase())) {
+                    registry.rename(network);
+                }
             } catch (NameErrorException ignored) {
             }
             Network network = registry.getNetwork(targetNetwork, isBungee);
 
-            //TODO Check if portalType is necessary to keep track of // there's already flags.contains(PortalFlag.FANCY_INTERSERVER)
             if (portalType == StorageType.INTER_SERVER) {
                 if (!portalData.serverUUID.equals(Stargate.getServerUUID())) {
                     Portal virtualPortal = new VirtualPortal(portalData.serverName, portalData.name, network, portalData.flags, portalData.ownerUUID);
@@ -533,6 +537,17 @@ public class SQLDatabase implements StorageAPI {
             connection.close();
         } catch (SQLException e) {
             throw new StorageWriteException(e);
+        }
+    }
+
+    @Override
+    public boolean netWorkExists(String netName, StorageType portalType) throws StorageReadException{
+        try {
+            Connection connection = database.getConnection();
+            PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsOfNetwork(connection,netName,portalType);
+            return statement.getResultSet().next();
+        } catch (SQLException e) {
+            throw new StorageReadException(e);
         }
     }
 }

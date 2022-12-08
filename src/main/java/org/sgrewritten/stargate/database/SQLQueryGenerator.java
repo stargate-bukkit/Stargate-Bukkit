@@ -625,4 +625,16 @@ public class SQLQueryGenerator {
         return statement;
     }
 
+    public PreparedStatement generateGetAllPortalsOfNetwork(Connection connection, String netName,
+            StorageType portalType) throws SQLException {
+        PreparedStatement statement;
+        if (portalType == StorageType.LOCAL) {
+            statement = prepareQuery(connection, getQuery(SQLQuery.GET_ALL_PORTALS_OF_NETWORK));
+        } else {
+            statement = prepareQuery(connection, getQuery(SQLQuery.GET_ALL_INTER_PORTALS_OF_NETWORK));
+        }
+        statement.setString(1, netName);
+        return statement;
+    }
+
 }

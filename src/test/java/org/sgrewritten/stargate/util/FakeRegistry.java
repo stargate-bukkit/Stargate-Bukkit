@@ -144,20 +144,14 @@ public class FakeRegistry implements RegistryAPI {
 
     @Override
     public void rename(Network network, String newName) throws NameErrorException {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void rename(Portal portal, String newName) throws NameErrorException {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void rename(Network network) {
-        // TODO Auto-generated method stub
-        
     }
 
 }
