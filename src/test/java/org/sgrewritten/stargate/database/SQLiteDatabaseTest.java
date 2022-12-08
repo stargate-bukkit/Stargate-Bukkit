@@ -40,7 +40,7 @@ public class SQLiteDatabaseTest {
         try {
             DatabaseTester.deleteAllTables(nameConfig);
         } finally {
-            database.getConnection().close();
+            DatabaseTester.connection.close();
         }
     }
 

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.sgrewritten.stargate.FakeStargate;
+import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NameErrorException;
@@ -37,7 +37,7 @@ public class MySQLDatabaseTest {
 
         SQLDatabaseAPI database = new MySqlDatabase(driver, address, port, databaseName, username, password, false);
         MySQLDatabaseTest.nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
-        SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DatabaseDriver.MYSQL);
+        SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargateLogger(), DatabaseDriver.MYSQL);
         tester = new DatabaseTester(database, nameConfig, generator, true);
         MySQLDatabaseTest.database = database;
     }
@@ -49,6 +49,8 @@ public class MySQLDatabaseTest {
         try (Connection connection = database.getConnection()) {
             connection.prepareStatement("DROP DATABASE stargate;").execute();
             connection.prepareStatement("CREATE DATABASE stargate;").execute();
+        } finally {
+            DatabaseTester.connection.close();
         }
     }
 

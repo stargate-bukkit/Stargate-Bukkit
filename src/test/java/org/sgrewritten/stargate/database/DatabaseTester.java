@@ -5,7 +5,6 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
-import org.sgrewritten.stargate.FakeStargate;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
@@ -46,8 +45,12 @@ import java.util.UUID;
  */
 public class DatabaseTester {
 
-    private static Connection connection;
+    static Connection connection;
     private static SQLQueryGenerator generator;
+    private static FakePortalGenerator portalGenerator;
+    private static StargateLogger logger;
+    private static WorldMock world;
+    private static SQLDatabaseAPI database;
 
     private static TableNameConfiguration nameConfig;
     private static boolean isMySQL;
@@ -60,9 +63,6 @@ public class DatabaseTester {
     private final Map<String, RealPortal> interServerPortals;
     private final Map<String, RealPortal> localPortals;
     private final StorageAPI portalDatabaseAPI;
-    private static FakePortalGenerator portalGenerator;
-    private static StargateLogger logger;
-    private static WorldMock world;
 
     /**
      * Instantiates a new database tester
@@ -77,6 +77,7 @@ public class DatabaseTester {
     public DatabaseTester(SQLDatabaseAPI database, TableNameConfiguration nameConfig, SQLQueryGenerator generator,
                           boolean isMySQL) throws SQLException, InvalidStructureException, NameErrorException {
         DatabaseTester.connection = database.getConnection();
+        DatabaseTester.database = database;
         DatabaseTester.generator = generator;
         DatabaseTester.isMySQL = isMySQL;
         DatabaseTester.nameConfig = nameConfig;
@@ -109,11 +110,13 @@ public class DatabaseTester {
     }
 
     void addPortalTableTest() throws SQLException {
+        System.out.println("############## CREATE PORTAL TABLE TEST ####################");
         finishStatement(generator.generateCreatePortalTableStatement(connection, PortalType.LOCAL));
         finishStatement(generator.generateAddMetaToPortalTableStatement(connection, PortalType.LOCAL));
     }
 
     void addInterPortalTableTest() throws SQLException {
+        System.out.println("############## CREATE INTER PORTAL TABLE TEST ####################");
         finishStatement(generator.generateCreatePortalTableStatement(connection, PortalType.INTER_SERVER));
         finishStatement(generator.generateAddMetaToPortalTableStatement(connection, PortalType.INTER_SERVER));
     }
@@ -159,6 +162,7 @@ public class DatabaseTester {
     }
 
     private void createPortalPositionTableTest(PortalType type) throws SQLException {
+        System.out.print("############## CREATE PORTAL POSITION TABLE TEST ####################");
         finishStatement(generator.generateCreatePortalPositionTableStatement(connection, type));
         finishStatement(generator.generateAddMetaToPortalPositionTableStatement(connection, type));
     }
@@ -473,23 +477,30 @@ public class DatabaseTester {
     }
 
     void changeNames(PortalType portalType) throws SQLException, InvalidStructureException, NameErrorException, StorageWriteException {
+        //By some reason the database is locked if I don't do this. Don't ask me why // Thorin
+        connection.close();
+        connection = database.getConnection();
+        System.out.println("################### CHANGE NAMES TEST ######################");
         Network testNetwork = null;
         String initialName = "intialName";
+        String initialNetworkName = "intialName";
         String newName = "newName";
+        String newNetName = "newName";
         String table = portalType == PortalType.LOCAL ? nameConfig.getPortalTableName() :
             nameConfig.getInterPortalTableName();
         try {
-            testNetwork = new LocalNetwork(initialName,NetworkType.CUSTOM);
+            testNetwork = new LocalNetwork(initialNetworkName,NetworkType.CUSTOM);
         } catch (NameErrorException e) {
             e.printStackTrace();
         }
         RealPortal portal = portalGenerator.generateFakePortal(world, testNetwork, initialName, portalType == PortalType.INTER_SERVER, logger);
+        System.out.println(portal.getName() + ", " + portal.getNetwork().getId());
         this.portalDatabaseAPI.savePortalToStorage(portal, portalType);
-        checkIfHas(table,initialName,initialName);
-        this.portalDatabaseAPI.updateNetworkName(newName, initialName, portalType);
-        this.portalDatabaseAPI.updatePortalName(newName, initialName, initialName, portalType);
-        checkIfHas(table,newName,newName);
-        checkIfHasNot(table,initialName,initialName);
+        checkIfHas(table,initialName,initialNetworkName);
+        this.portalDatabaseAPI.updateNetworkName(newNetName, initialNetworkName, portalType);
+        this.portalDatabaseAPI.updatePortalName(newName, initialName, newNetName, portalType);
+        checkIfHas(table,newName,newNetName);
+        checkIfHasNot(table,initialName,initialNetworkName);
         
     }
     
@@ -518,6 +529,7 @@ public class DatabaseTester {
         statement.setString(2, network);
         ResultSet set = statement.executeQuery();
         Assertions.assertFalse(set.next());
+        statement.close();
     }
     
     private void checkIfHas(String table, String name, String network) throws SQLException {
@@ -527,6 +539,7 @@ public class DatabaseTester {
         statement.setString(2, network);
         ResultSet set = statement.executeQuery();
         Assertions.assertTrue(set.next());
+        statement.close();
     }
 
     /**
