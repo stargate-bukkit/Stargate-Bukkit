@@ -58,6 +58,8 @@ public class TableNameConfiguration {
      * @param positionTypeTableName        <p>The name of the table storing position types</p>
      * @param portalPositionTableName      <p>The name of the table storing portal positions</p>
      * @param interPortalPositionTableName <p>The name of the table storing inter-server portal positions</p>
+     * @param portalPositionIndexTableName <p>The name of the table indexing the types of portal positions</p>
+     * @param interPortalPositionIndexTableName <p>The name of the table indexing the types of interserver portal positions</p>
      */
     @SuppressWarnings("unused")
     public TableNameConfiguration(String mainPrefix, String serverPrefix, String portalTableName,

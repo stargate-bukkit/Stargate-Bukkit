@@ -38,6 +38,11 @@ public class MySqlDatabase implements SQLDatabaseAPI {
      * @param address  <p>The address of the MySQL server</p>
      * @param port     <p>The port of the MySQL server</p>
      * @param database <p>The database to store Stargate tables in</p>
+     * @param userName <p>The username to use when connecting to the database</p>
+     * @param password <p>The password to use when connecting to the database</p>
+     * @param useSSL   <p>Whether or not to force the use of SSL for the connection</p>
+     * @throws org.sgrewritten.stargate.exception.StargateInitializationException
+     * 
      */
     public MySqlDatabase(DatabaseDriver driver, String address, int port, String database, String userName, String password,
                          boolean useSSL) throws StargateInitializationException {

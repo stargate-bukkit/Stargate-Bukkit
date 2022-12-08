@@ -164,7 +164,7 @@ public class SQLQueryGenerator {
      * the portal position table
      *
      * @param connection <p>The database connection to use</p>
-     * @param portalType @param portalType <p>The type of the portal (used to determine which table to select from)</p>
+     * @param portalType <p>The type of portal to add to the index.</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
@@ -204,6 +204,7 @@ public class SQLQueryGenerator {
      *
      * @param connection <p>The database connection to use</p>
      * @param portalType <p>The type of the portal (used to determine which table to select from)</p>
+     * @param portal <b> The relevent portal.</b>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
@@ -351,6 +352,7 @@ public class SQLQueryGenerator {
      *
      * @param connection <p>The database connection to use</p>
      * @param portalType <p>The portal type to remove the flags from</p>
+     * @param portal <b>The relevent portal</b>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
@@ -372,6 +374,8 @@ public class SQLQueryGenerator {
      *
      * @param connection <p>The database connection to use</p>
      * @param portalType <p>The portal type to remove the flags from</p>
+     * @param portal <b>The relevent portal</b>
+     * @param flagChar <p>A character representing a portal flag</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
