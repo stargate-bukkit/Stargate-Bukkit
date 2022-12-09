@@ -60,6 +60,7 @@ public class Gate implements GateAPI {
      * @param signLocation <p>The location of this gate's sign</p>
      * @param signFace     <p>The direction this gate's sign is facing</p>
      * @param alwaysOn     <p>Whether this gate has been set as always-on</p>
+     * @param logger       <p>A stargate logger object</p>
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */

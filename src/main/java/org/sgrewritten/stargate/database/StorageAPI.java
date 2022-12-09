@@ -32,6 +32,7 @@ public interface StorageAPI {
      *
      * @param portal     <p>The portal to save</p>
      * @param portalType <p>The type of portal to save</p>
+     * @return <p>Whether or not the portal was successfully saved</p>
      * @throws StorageWriteException
      */
     boolean savePortalToStorage(RealPortal portal, StorageType portalType) throws StorageWriteException;
@@ -50,6 +51,7 @@ public interface StorageAPI {
      *
      * @param portal <p>A portal</p>
      * @param data   <p>Any data</p>
+     * @param portalType <p>The portal's expected type</p>
      * @throws StorageWriteException <p>If unable to successfully set the new portal data</p>
      */
     void setPortalMetaData(Portal portal, String data, StorageType portalType) throws StorageWriteException;
@@ -58,6 +60,7 @@ public interface StorageAPI {
      * Get misc data of a portal
      *
      * @param portal <p>A portal</p>
+     * @param portalType <p>The portal's expected type</p>
      * @return <p>Data</p>
      * @throws StorageReadException <p>If unable to successfully get the portal data</p>
      */
@@ -80,6 +83,7 @@ public interface StorageAPI {
      *
      * @param portal         <p>A portal</p>
      * @param portalPosition <p>A portalPosition</p>
+     * @param portalType <p>The portal's expected type</p>
      * @return <p>Data</p>
      * @throws StorageReadException <p>If unable to successfully read the portal metadata</p>
      */
@@ -90,7 +94,8 @@ public interface StorageAPI {
      * Creates a new network unassigned to a registry
      *
      * @param networkName <p>The name of the new network</p>
-     * @param flags       <p>The flag set used to look for network flags</p>
+     * @param type       <p>The type of network to look for.</p>
+     * @param isInterserver <p>Whether or not the network works across servers (I flag)</p>
      * @return The network that was created
      * @throws NameErrorException <p>If the given network name is invalid</p>
      */

@@ -44,7 +44,9 @@ public class NetworkedPortal extends AbstractPortal {
      * @param network   <p>The network the portal belongs to</p>
      * @param name      <p>The name of the portal</p>
      * @param flags     <p>The flags enabled for the portal</p>
+     * @param gate      <p>The gate format used by this portal</p>
      * @param ownerUUID <p>The UUID of the portal's owner</p>
+     * @param logger
      * @throws NameErrorException <p>If the portal name is invalid</p>
      */
     public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID,

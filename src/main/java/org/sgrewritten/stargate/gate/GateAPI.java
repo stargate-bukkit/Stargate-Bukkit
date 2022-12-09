@@ -19,7 +19,8 @@ public interface GateAPI {
     /**
      * Set button and draw sign
      *
-     * @param signLines an array with 4 elements, representing each line of a sign
+     * @param signLines <p>an array with 4 elements, representing each line of a sign</p>
+     * @param drawButton <p>whether or not include a button.</p>
      */
     void drawControlMechanisms(String[] signLines, boolean drawButton);
 

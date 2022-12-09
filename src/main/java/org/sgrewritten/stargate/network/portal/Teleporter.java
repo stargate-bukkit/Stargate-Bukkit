@@ -60,6 +60,7 @@ public class Teleporter {
      * @param entranceFace    <p>The direction the entrance portal is facing</p>
      * @param cost            <p>The cost of teleportation for any players</p>
      * @param teleportMessage <p>The teleportation message to display if the teleportation is successful</p>
+     * @param logger
      */
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
                       int cost, String teleportMessage, StargateLogger logger) {

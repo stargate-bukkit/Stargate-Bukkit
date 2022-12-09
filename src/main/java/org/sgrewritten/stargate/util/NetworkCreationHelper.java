@@ -49,6 +49,7 @@ public final class NetworkCreationHelper {
      * Check the name of a network, and insert the related flags into the flags collection
      *
      * @param networkName <p> The name of the network </p>
+     * @return 
      */
     public static List<PortalFlag> getNameRelatedFlags(String networkName) {
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(networkName);
@@ -70,6 +71,7 @@ public final class NetworkCreationHelper {
      * @param permissionManager <p> A permission manager of the player</p>
      * @param player            <p> The player selecting the network</p>
      * @param flags             <p> flags of a portal this selection or creation comes from</p>
+     * @param registry          <p> Where named network is (or will be) registered</p>
      * @return <p>The network the portal should be connected to</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
@@ -113,6 +115,8 @@ public final class NetworkCreationHelper {
      *
      * @param name  <p>The name of the network to get</p>
      * @param type <p>The type of network to get</p>
+     * @param isInterserver <p>Whether or not the network works (or will work) across instances.
+     * @param registry <p> Where the network is (or will be) registered</p>
      * @return <p>The network the portal should be connected to</p>
      * @throws NameErrorException <p>If the network name is invalid</p>
      */

@@ -79,7 +79,10 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      *  <li>portal added message - add virtual portal from specific network</li>
      *  <li>plugin disable message - remove all virtual portals given in message</li>
      *  <li>portal open message - open selected portal. Too much ?</li>
-     * </ul></p>
+     * </ul>
+     * @param channel The channel being used to send the message.
+     * @param unused A player object.
+     * @param message The message being processed.
      */
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {

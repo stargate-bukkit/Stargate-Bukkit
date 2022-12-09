@@ -51,6 +51,7 @@ public class SQLDatabase implements StorageAPI {
     /**
      * Instantiates a new stargate registry
      *
+     * @param database <p>The database connected to this Stargate instance</p>
      * @param stargate <p>The Stargate instance to use</p>
      * @throws StargateInitializationException <p>If unable to initialize the database</p>
      */

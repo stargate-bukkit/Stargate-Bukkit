@@ -128,6 +128,7 @@ public interface Network {
      * 
      * Does not save to database
      * @param newName
+     * @throws org.sgrewritten.stargate.exception.NameErrorException
      */
     void setID(String newName) throws NameErrorException;
 }

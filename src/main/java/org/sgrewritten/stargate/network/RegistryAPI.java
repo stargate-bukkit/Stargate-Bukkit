@@ -155,7 +155,7 @@ public interface RegistryAPI {
     /**
      * Creates a new network assigned to this registry
      *
-     * @param networkName <p>The name of the new network</p>
+     * @param targetNetwork <p>The this network will attempt creation under</p>
      * @param flags       <p>The flags containing the network's enabled options</p>
      * @param isForced    <p>The authority for the creation </p>
      * @return <p> The network created </p>

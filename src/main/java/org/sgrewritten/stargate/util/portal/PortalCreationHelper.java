@@ -64,6 +64,7 @@ public final class PortalCreationHelper {
      * @param flags        <p>The flags enabled for the portal</p>
      * @param gate         <p>The gate belonging to the portal</p>
      * @param ownerUUID    <p>The UUID of the portal's owner</p>
+     * @param logger
      * @return <p>A new portal</p>
      * @throws NameErrorException <p>If the portal's name is invalid</p>
      */
@@ -92,6 +93,7 @@ public final class PortalCreationHelper {
      * @param network    <p>The network the portal belongs to</p>
      * @param portalData <p>Data of the portal </p>
      * @param gate       <p>The gate belonging to the portal</p>
+     * @param logger
      * @return <p>A new portal</p>
      * @throws NameErrorException <p>If the portal's name is invalid</p>
      */
@@ -111,6 +113,7 @@ public final class PortalCreationHelper {
      * @param cost              <p>The cost of creating the new stargate</p>
      * @param permissionManager <p>The permission manager to use for checking the player's permissions</p>
      * @param errorMessage      <p>The error message to display to the player</p>
+     * @param registry          <p>Where the new stargate will be registered</p>
      * @throws NameErrorException     <p>If the name of the stargate does not follow set rules</p>
      * @throws GateConflictException  <p>If the gate's physical structure is in conflict with another</p>
      * @throws NoFormatFoundException <p>If no known format matches the built stargate</p>
