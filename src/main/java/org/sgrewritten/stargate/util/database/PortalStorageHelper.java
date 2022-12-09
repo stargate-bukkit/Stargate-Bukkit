@@ -72,7 +72,7 @@ public class PortalStorageHelper {
 
     public static void addPortalPosition(PreparedStatement addPositionStatement, RealPortal portal, PortalPosition portalPosition) throws SQLException {
         addPositionStatement.setString(1, portal.getName());
-        addPositionStatement.setString(2, portal.getNetwork().getName());
+        addPositionStatement.setString(2, portal.getNetwork().getId());
         addPositionStatement.setString(3, String.valueOf(portalPosition.getPositionLocation().getBlockX()));
         addPositionStatement.setString(4, String.valueOf(portalPosition.getPositionLocation().getBlockY()));
         addPositionStatement.setString(5, String.valueOf(-portalPosition.getPositionLocation().getBlockZ()));

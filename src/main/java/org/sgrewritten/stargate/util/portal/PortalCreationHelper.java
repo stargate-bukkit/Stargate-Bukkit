@@ -263,7 +263,7 @@ public final class PortalCreationHelper {
      */
     private static UUID getOwnerUUID(Network network, Player player, Set<PortalFlag> flags) {
         if (network != null && flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            return UUID.fromString(network.getName());
+            return UUID.fromString(network.getId());
         } else {
             return player.getUniqueId();
         }

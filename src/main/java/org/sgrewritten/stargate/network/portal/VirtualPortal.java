@@ -185,7 +185,7 @@ public class VirtualPortal implements Portal {
             JsonObject JsonData = new JsonObject();
             JsonData.add(StargateProtocolProperty.PLAYER.toString(), new JsonPrimitive(player.getName()));
             JsonData.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(this.name));
-            JsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(network.getName()));
+            JsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(network.getId()));
             String dataMsg = JsonData.toString();
             dataOutputStream.writeUTF(dataMsg);
             Stargate.log(Level.FINEST, byteArrayOutputStream.toString());

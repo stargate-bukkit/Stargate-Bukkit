@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.FakeStargate;
 import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.manager.PermissionManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
+import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
@@ -48,15 +49,17 @@ class NetworkCreationHelperTest {
         System.out.println("############### EMPTY TEST #############");
         Assertions.assertTrue(player.getUniqueId() != null);
         for(String emptyName : emptyNames) {
-            Network personalNetwork = NetworkCreationHelper.selectNetwork(" ", permissionManager, player, new HashSet<>(), registry);
+            Network personalNetwork = NetworkCreationHelper.selectNetwork(emptyName, permissionManager, player, new HashSet<>(), registry);
             Assertions.assertEquals(NetworkType.PERSONAL, personalNetwork.getType());
             Assertions.assertEquals(player.getName(), personalNetwork.getName());
+            Assertions.assertTrue(registry.networkExists(player.getUniqueId().toString(), false));
         }
         player.addAttachment(plugin, "sg.create.network.default", true);
         for(String emptyName : emptyNames) {
-            Network defaultNetwork = NetworkCreationHelper.selectNetwork(" ", permissionManager, player, new HashSet<>(), registry);
+            Network defaultNetwork = NetworkCreationHelper.selectNetwork(emptyName, permissionManager, player, new HashSet<>(), registry);
             Assertions.assertEquals(NetworkType.DEFAULT, defaultNetwork.getType());
             Assertions.assertEquals(CENTRAL, defaultNetwork.getName());
+            Assertions.assertTrue(registry.networkExists(LocalNetwork.DEFAULT_NET_ID, false));
         }
     }
 

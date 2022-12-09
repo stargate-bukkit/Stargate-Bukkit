@@ -64,22 +64,6 @@ public final class NetworkCreationHelper {
     }
 
     /**
-     * Remove notations from the network name and make it ready for use
-     */
-    public static String parseNetworkNameName(String initialName) throws NameErrorException {
-        HighlightingStyle highlight = HighlightingStyle.getHighlightType(initialName);
-        String unHighlightedName = HighlightingStyle.getNameFromHighlightedText(initialName);
-        if (highlight == HighlightingStyle.CURLY_BRACKETS) {
-            try {
-                return getPlayerUUID(unHighlightedName).toString();
-            } catch (IllegalArgumentException | NullPointerException e) {
-                throw new NameErrorException(TranslatableMessage.INVALID_NAME);
-            }
-        }
-        return unHighlightedName;
-    }
-
-    /**
      * Interprets a networkname and type, then selects it or creates it if it does not already exist
      * 
      * @param name              <p> Initial name of the network</p>
@@ -94,10 +78,10 @@ public final class NetworkCreationHelper {
         Stargate.log(Level.FINER, "....Choosing network name....");
         Stargate.log(Level.FINER, "initial name is '" + name + "'");
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(name);
-        String unHighlightedName = HighlightingStyle.getNameFromHighlightedText(name);
+        String unHighlightedName = NameHelper.getTrimmedName(HighlightingStyle.getNameFromHighlightedText(name));
         TwoTuple<NetworkType,String> data;
         
-        if(flags.contains(PortalFlag.TERMINAL_NETWORK)) {
+        if(flags.contains(NetworkType.TERMINAL.getRelatedFlag())) {
             data = new TwoTuple<>(NetworkType.TERMINAL,unHighlightedName);
         }
         else if(unHighlightedName.trim().isEmpty()) {
@@ -133,8 +117,9 @@ public final class NetworkCreationHelper {
      * @throws NameErrorException <p>If the network name is invalid</p>
      */
     public static Network selectNetwork(String name, NetworkType type, boolean isInterserver, RegistryAPI registry) throws NameErrorException {
+        name = NameHelper.getTrimmedName(name);
         try {
-            return registry.createNetwork(name, type, isInterserver, false);
+            registry.createNetwork(name, type, isInterserver, false);
         } catch (NameErrorException nameErrorException) {
             TranslatableMessage translatableMessage = nameErrorException.getErrorMessage();
             if (translatableMessage != null) {

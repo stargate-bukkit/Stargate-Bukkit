@@ -215,7 +215,7 @@ public class SQLQueryGenerator {
             removePositionsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_POSITIONS));
         }
         removePositionsStatement.setString(1, portal.getName());
-        removePositionsStatement.setString(2, portal.getNetwork().getName());
+        removePositionsStatement.setString(2, portal.getNetwork().getId());
         return removePositionsStatement;
     }
 
@@ -227,7 +227,7 @@ public class SQLQueryGenerator {
             removePositionsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_POSITION));
         }
         removePositionsStatement.setString(1, portal.getName());
-        removePositionsStatement.setString(2, portal.getNetwork().getName());
+        removePositionsStatement.setString(2, portal.getNetwork().getId());
         BlockVector positionLocation = portalPosition.getPositionLocation();
         removePositionsStatement.setInt(3, positionLocation.getBlockX());
         removePositionsStatement.setInt(4, positionLocation.getBlockY());
@@ -363,7 +363,7 @@ public class SQLQueryGenerator {
             removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATIONS));
         }
         removeFlagsStatement.setString(1, portal.getName());
-        removeFlagsStatement.setString(2, portal.getNetwork().getName());
+        removeFlagsStatement.setString(2, portal.getNetwork().getId());
         return removeFlagsStatement;
     }
 
@@ -411,7 +411,7 @@ public class SQLQueryGenerator {
 
         PreparedStatement statement = connection.prepareStatement(statementMessage);
 
-        statement.setString(1, portal.getNetwork().getName());
+        statement.setString(1, portal.getNetwork().getId());
         statement.setString(2, portal.getName());
         String destinationName = portal.getDestinationName();
         if (destinationName == null) {
@@ -461,7 +461,7 @@ public class SQLQueryGenerator {
 
         PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, portal.getName());
-        statement.setString(2, portal.getNetwork().getName());
+        statement.setString(2, portal.getNetwork().getId());
         logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
         return statement;
     }
@@ -546,7 +546,7 @@ public class SQLQueryGenerator {
             statement = prepareQuery(connection, getQuery(SQLQuery.GET_INTER_PORTAL));
         }
         statement.setString(1, portal.getName());
-        statement.setString(2, portal.getNetwork().getName());
+        statement.setString(2, portal.getNetwork().getId());
         return statement;
     }
 
@@ -559,7 +559,7 @@ public class SQLQueryGenerator {
         }
         statement.setString(1, meta);
         statement.setString(2, portal.getName());
-        statement.setString(3, portal.getNetwork().getName());
+        statement.setString(3, portal.getNetwork().getId());
         return statement;
     }
 
@@ -573,7 +573,7 @@ public class SQLQueryGenerator {
         }
         statement.setString(1, meta);
         statement.setString(2, portal.getName());
-        statement.setString(3, portal.getNetwork().getName());
+        statement.setString(3, portal.getNetwork().getId());
         BlockVector vector = portalPosition.getPositionLocation();
         statement.setInt(4, vector.getBlockX());
         statement.setInt(5, vector.getBlockY());
@@ -590,7 +590,7 @@ public class SQLQueryGenerator {
             statement = prepareQuery(connection, getQuery(SQLQuery.GET_INTER_PORTAL_POSITION_META));
         }
         statement.setString(1, portal.getName());
-        statement.setString(2, portal.getNetwork().getName());
+        statement.setString(2, portal.getNetwork().getId());
         BlockVector vector = portalPosition.getPositionLocation();
         statement.setInt(3, vector.getBlockX());
         statement.setInt(4, vector.getBlockY());

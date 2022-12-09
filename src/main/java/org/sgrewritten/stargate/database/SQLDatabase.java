@@ -301,7 +301,7 @@ public class SQLDatabase implements StorageAPI {
     private void addFlag(PreparedStatement addFlagStatement, Portal portal, Character flagCharacter) throws SQLException {
         Stargate.log(Level.FINER, "Adding flag " + flagCharacter + " to portal: " + portal);
         addFlagStatement.setString(1, portal.getName());
-        addFlagStatement.setString(2, portal.getNetwork().getName());
+        addFlagStatement.setString(2, portal.getNetwork().getId());
         addFlagStatement.setString(3, String.valueOf(flagCharacter));
         addFlagStatement.execute();
     }

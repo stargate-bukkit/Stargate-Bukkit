@@ -72,11 +72,13 @@ public class LocalNetwork implements Network {
         default:
             break;
         }
+        nameToPortalMap = new HashMap<>();
     }
     
     private void loadAsDefault(String name) throws NameErrorException {
         this.name = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
         if(!DEFAULT_NET_ID.equals(name)) {
+            Stargate.log(Level.FINEST, "Blocked an illegal attempt of creating a default network");
             throw new NameErrorException(null);//TODO refactor NameErrorException to multimple errors
         }
         id = DEFAULT_NET_ID;
@@ -90,7 +92,6 @@ public class LocalNetwork implements Network {
         if (ConfigurationHelper.getBoolean(ConfigurationOption.DISABLE_CUSTOM_COLORED_NAMES)) {
             this.name = ChatColor.stripColor(this.name);
         }
-        nameToPortalMap = new HashMap<>();
         id = NameHelper.getNormalizedName(this.name);
     }
     

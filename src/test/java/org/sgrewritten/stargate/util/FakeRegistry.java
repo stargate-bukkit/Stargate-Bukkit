@@ -92,14 +92,21 @@ public class FakeRegistry implements RegistryAPI {
     }
 
     @Override
-    public Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced) throws NameErrorException {
+    public Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced)
+            throws NameErrorException {
         networkName = NameHelper.getTrimmedName(networkName);
         if (this.networkExists(networkName, isInterserver)) {
+            if (isForced && type == NetworkType.DEFAULT) {
+                Network network = this.getNetwork(networkName, isInterserver);
+                if(network.getType() != type) {
+                    this.rename(network);
+                }
+            }
             throw new NameErrorException(null);
         }
-        Network network = isInterserver ? new InterServerNetwork(networkName,type) : new LocalNetwork(networkName, type); 
-        Stargate.log(Level.FINEST, String.format("Adding networkid %s to interServer = %b", network.getId(), isInterserver));
+        Network network = isInterserver ? new InterServerNetwork(networkName,type) : new LocalNetwork(networkName, type);
         getNetworkMap(isInterserver).put(network.getId(), network);
+        Stargate.log(Level.FINEST, String.format("Adding networkid %s to interServer = %b", network.getId(), isInterserver));
         return network;
     }
     
