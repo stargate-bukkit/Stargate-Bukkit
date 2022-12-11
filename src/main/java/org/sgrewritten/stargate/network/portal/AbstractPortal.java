@@ -29,6 +29,7 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
@@ -85,6 +86,7 @@ public abstract class AbstractPortal implements RealPortal {
     protected long activatedTime;
     protected UUID activator;
     protected boolean isDestroyed = false;
+    protected LanguageManager languageManager;
     private static final int ACTIVE_DELAY = 15;
 
     /**
@@ -96,7 +98,7 @@ public abstract class AbstractPortal implements RealPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameLengthException <p>If the portal name is invalid</p>
      */
-    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
+    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger, LanguageManager languageManager)
             throws NameLengthException {
         this.ownerUUID = ownerUUID;
         this.network = network;
@@ -104,7 +106,8 @@ public abstract class AbstractPortal implements RealPortal {
         this.flags = flags;
         this.gate = gate;
         this.logger = logger;
-
+        this.languageManager = languageManager;
+        
         name = NameHelper.getTrimmedName(name);
         if (name.isEmpty() || (name.length() >= Stargate.getMaxTextLength())) {
             throw new NameLengthException("Invalid length of name '" + name + "' , namelength must be above 0 and under " + Stargate.getMaxTextLength());
@@ -250,7 +253,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         Teleporter teleporter = new Teleporter(this, origin, portalFacing, entranceFace, useCost,
-                Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.TELEPORT), logger);
+                Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.TELEPORT), logger,languageManager);
 
         teleporter.teleport(target);
     }
@@ -260,7 +263,7 @@ public abstract class AbstractPortal implements RealPortal {
         Portal destination = getCurrentDestination();
         if (destination == null) {
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED), logger);
+                    0, Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED), logger,languageManager);
             teleporter.teleport(target);
             return;
         }
@@ -270,7 +273,7 @@ public abstract class AbstractPortal implements RealPortal {
         if (accessEvent.getDeny()) {
             logger.logMessage(Level.CONFIG, " Access event was canceled by an external plugin");
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, accessEvent.getDenyReason(), logger);
+                    0, accessEvent.getDenyReason(), logger,languageManager);
             teleporter.teleport(target);
             return;
         }
@@ -319,7 +322,7 @@ public abstract class AbstractPortal implements RealPortal {
             player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.INVALID));
             return;
         }
-        StargatePermissionManager permissionManager = new StargatePermissionManager(player);
+        StargatePermissionManager permissionManager = new StargatePermissionManager(player,languageManager);
         StargateOpenEvent stargateOpenEvent = new StargateOpenEvent(player, this, false);
         Bukkit.getPluginManager().callEvent(stargateOpenEvent);
         if (!permissionManager.hasOpenPermissions(this, destination)) {
@@ -455,7 +458,7 @@ public abstract class AbstractPortal implements RealPortal {
             this.drawControlMechanisms();
             return;
         }
-        PermissionManager permissionManager = new StargatePermissionManager(event.getPlayer());
+        PermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(),languageManager);
         StargateAccessEvent accessEvent = new StargateAccessEvent(event.getPlayer(), this, !permissionManager.hasAccessPermission(this),
                 permissionManager.getDenyMessage());
         Bukkit.getPluginManager().callEvent(accessEvent);

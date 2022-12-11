@@ -19,6 +19,7 @@ import org.sgrewritten.stargate.action.ConditionalRepeatedTask;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -41,6 +42,11 @@ public class PlayerEventListener implements Listener {
 
     private static long eventTime;
     private static PlayerInteractEvent previousEvent;
+    private LanguageManager languageManager;
+    
+    public PlayerEventListener(LanguageManager languageManager){
+        this.languageManager = languageManager;
+    }
 
     /**
      * Listens for and handles any relevant interaction events such as sign or button interaction
@@ -111,7 +117,7 @@ public class PlayerEventListener implements Listener {
             return false;
         }
 
-        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer());
+        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(),languageManager);
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         if (!hasPermission) {
             event.getPlayer().sendMessage(permissionManager.getDenyMessage());

@@ -7,6 +7,7 @@ import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.LocalNetwork;
@@ -48,8 +49,8 @@ public class BungeePortal extends AbstractPortal {
      * @throws NameLengthException 
      */
     public BungeePortal(Network network, String name, String destination, String destinationServer,
-                        Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger) throws InvalidNameException, BungeeNameException, NameLengthException {
-        super(network, name, flags, gate, ownerUUID, logger);
+                        Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger, LanguageManager languageManager) throws InvalidNameException, BungeeNameException, NameLengthException {
+        super(network, name, flags, gate, ownerUUID, logger,languageManager);
 
         
         destination = NameHelper.getTrimmedName(destination);

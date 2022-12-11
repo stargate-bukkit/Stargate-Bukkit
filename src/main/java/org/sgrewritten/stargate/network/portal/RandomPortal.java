@@ -5,6 +5,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.Network;
@@ -34,9 +35,9 @@ public class RandomPortal extends AbstractPortal {
      * @throws InvalidNameException <p>If the portal name is invalid</p>
      * @throws NameLengthException 
      */
-    public RandomPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
+    public RandomPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger, LanguageManager languageManager)
             throws InvalidNameException, NameLengthException {
-        super(network, name, flags, gate, ownerUUID, logger);
+        super(network, name, flags, gate, ownerUUID, logger,languageManager);
     }
 
     @Override

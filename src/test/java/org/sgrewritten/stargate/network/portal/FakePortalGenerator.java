@@ -10,6 +10,7 @@ import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.util.FakeLanguageManager;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -100,7 +101,7 @@ public class FakePortalGenerator {
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);
         //To avoid using the Portal#open method on constructor, which uses an unimplemented function in MockBukkit (block-states)
         flags.remove(PortalFlag.ALWAYS_ON);
-        return new FixedPortal(portalNetwork, name, "", flags, gate, UUID.randomUUID(), logger);
+        return new FixedPortal(portalNetwork, name, "", flags, gate, UUID.randomUUID(), logger, new FakeLanguageManager());
     }
 
     /**

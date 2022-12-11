@@ -21,6 +21,7 @@ import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.gate.GateFormat;
@@ -76,20 +77,20 @@ public final class PortalCreationHelper {
      */
     public static RealPortal createPortal(Network network, String name, String destination, String targetServer,
                                           Set<PortalFlag> flags, Gate gate, UUID ownerUUID,
-                                          StargateLogger logger) throws InvalidNameException, NameLengthException, BungeeNameException {
+                                          StargateLogger logger, LanguageManager languageManager) throws InvalidNameException, NameLengthException, BungeeNameException {
         name = NameHelper.getTrimmedName(name);
 
         if (flags.contains(PortalFlag.BUNGEE)) {
             flags.add(PortalFlag.FIXED);
             Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, Stargate.getRegistryStatic());
-            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, gate, ownerUUID, logger);
+            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, gate, ownerUUID, logger,languageManager);
         } else if (flags.contains(PortalFlag.RANDOM)) {
-            return new RandomPortal(network, name, flags, gate, ownerUUID, logger);
+            return new RandomPortal(network, name, flags, gate, ownerUUID, logger,languageManager);
         } else if (flags.contains(PortalFlag.NETWORKED)) {
-            return new NetworkedPortal(network, name, flags, gate, ownerUUID, logger);
+            return new NetworkedPortal(network, name, flags, gate, ownerUUID, logger,languageManager);
         } else {
             flags.add(PortalFlag.FIXED);
-            return new FixedPortal(network, name, destination, flags, gate, ownerUUID, logger);
+            return new FixedPortal(network, name, destination, flags, gate, ownerUUID, logger,languageManager);
         }
     }
 
@@ -105,9 +106,9 @@ public final class PortalCreationHelper {
      * @throws BungeeNameException 
      * @throws NameLengthException 
      */
-    public static RealPortal createPortal(Network network, PortalData portalData, Gate gate, StargateLogger logger)
+    public static RealPortal createPortal(Network network, PortalData portalData, Gate gate, StargateLogger logger, LanguageManager languageManager)
             throws InvalidNameException, NameLengthException, BungeeNameException {
-        return createPortal(network, portalData.name, portalData.destination, portalData.networkName, portalData.flags, gate, portalData.ownerUUID, logger);
+        return createPortal(network, portalData.name, portalData.destination, portalData.networkName, portalData.flags, gate, portalData.ownerUUID, logger,languageManager);
     }
 
     /**
@@ -129,7 +130,7 @@ public final class PortalCreationHelper {
      */
     public static void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation,
             Set<PortalFlag> flags, Player player, int cost, StargatePermissionManager permissionManager,
-            TranslatableMessage errorMessage, RegistryAPI registry)
+            TranslatableMessage errorMessage, RegistryAPI registry,LanguageManager languageManager)
             throws GateConflictException, NoFormatFoundException, TranslatableException, InvalidNameException {
         if (errorMessage != null) {
             player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(errorMessage));
@@ -138,7 +139,7 @@ public final class PortalCreationHelper {
 
         UUID ownerUUID = getOwnerUUID(selectedNetwork, player, flags);
         Gate gate = createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON), Stargate.getInstance());
-        RealPortal portal = createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance());
+        RealPortal portal = createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance(),languageManager);
 
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, !hasPermission,
@@ -214,8 +215,8 @@ public final class PortalCreationHelper {
      * @throws NameLengthException 
      */
     private static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Gate gate,
-                                                   UUID ownerUUID, StargateLogger logger) throws InvalidNameException, NameLengthException, BungeeNameException {
-        return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID, logger);
+                                                   UUID ownerUUID, StargateLogger logger, LanguageManager languageManager) throws InvalidNameException, NameLengthException, BungeeNameException {
+        return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID, logger,languageManager);
     }
 
     /**

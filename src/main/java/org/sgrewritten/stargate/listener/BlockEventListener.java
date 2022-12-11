@@ -40,6 +40,7 @@ import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.PermissionException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
@@ -66,14 +67,16 @@ import java.util.logging.Level;
 public class BlockEventListener implements Listener {
 
     private final RegistryAPI registry;
+    private LanguageManager languageManager;
 
     /**
      * Instantiates a new block event listener
      *
      * @param registry <p>The registry to use for looking up portals</p>
      */
-    public BlockEventListener(RegistryAPI registry) {
+    public BlockEventListener(RegistryAPI registry, LanguageManager languageManager) {
         this.registry = registry;
+        this.languageManager = languageManager;
     }
 
     /**
@@ -90,14 +93,14 @@ public class BlockEventListener implements Listener {
         RealPortal portal = registry.getPortal(location, GateStructureType.FRAME);
         if (portal != null) {
             Runnable destroyAction = () -> {
-                String msg = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.DESTROY);
+                String msg = languageManager.getErrorMessage(TranslatableMessage.DESTROY);
                 event.getPlayer().sendMessage(msg);
 
                 portal.destroy();
                 Stargate.log(Level.FINE, "Broke portal " + portal.getName());
             };
 
-            boolean shouldCancel = PortalDestructionHelper.destroyPortalIfHasPermissionAndCanPay(event.getPlayer(), portal, destroyAction);
+            boolean shouldCancel = PortalDestructionHelper.destroyPortalIfHasPermissionAndCanPay(event.getPlayer(), portal, destroyAction, languageManager);
             if (shouldCancel) {
                 event.setCancelled(true);
             }
@@ -154,7 +157,7 @@ public class BlockEventListener implements Listener {
         //Prevent the player from explicitly setting any internal flags
         flags.removeIf(PortalFlag::isInternalFlag);
 
-        StargatePermissionManager permissionManager = new StargatePermissionManager(player);
+        StargatePermissionManager permissionManager = new StargatePermissionManager(player,languageManager);
         TranslatableMessage errorMessage = null;
 
         if (lines[1].trim().isEmpty()) {
@@ -187,7 +190,7 @@ public class BlockEventListener implements Listener {
 
         try {
             PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost,
-                    permissionManager, errorMessage,registry);
+                    permissionManager, errorMessage,registry,languageManager);
         } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINER, "No Gate format matches");
         } catch (GateConflictException gateConflictException) {

@@ -6,6 +6,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.event.StargateDestroyEvent;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -30,9 +31,9 @@ public final class PortalDestructionHelper {
      * @param destroyAction <p>The action to run if the destruction is performed</p>
      * @return <p>True if the destruction has been cancelled</p>
      */
-    public static boolean destroyPortalIfHasPermissionAndCanPay(Player player, Portal portal, Runnable destroyAction) {
+    public static boolean destroyPortalIfHasPermissionAndCanPay(Player player, Portal portal, Runnable destroyAction, LanguageManager languageManager) {
         int cost = ConfigurationHelper.getInteger(ConfigurationOption.DESTROY_COST);
-        StargatePermissionManager permissionManager = new StargatePermissionManager(player);
+        StargatePermissionManager permissionManager = new StargatePermissionManager(player,languageManager);
 
         boolean hasPermission = permissionManager.hasDestroyPermissions((RealPortal) portal);
         StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, player, !hasPermission,

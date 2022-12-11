@@ -1,8 +1,11 @@
 package org.sgrewritten.stargate.util;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -14,6 +17,7 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
+import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RealPortal;
@@ -28,7 +32,18 @@ public class FakeRegistry implements RegistryAPI {
 
     private HashMap<String, Network> bungeeNetworkMap = new HashMap<>();
     private HashMap<String, Network> networkMap = new HashMap<>();
-
+    RealPortal fakePortal;
+    
+    public FakeRegistry() {
+        
+    }
+    
+    public FakeRegistry(World world) throws NameLengthException, InvalidStructureException, InvalidNameException {
+        FakePortalGenerator generator = new FakePortalGenerator("local", "inter");
+        fakePortal = generator.generateFakePortal(world, new LocalNetwork("test", NetworkType.CUSTOM), "test", false,
+                new FakeStargateLogger());
+    }
+    
     @Override
     public void loadPortals() {
     }
@@ -51,37 +66,37 @@ public class FakeRegistry implements RegistryAPI {
 
     @Override
     public RealPortal getPortal(BlockLocation blockLocation, GateStructureType structureType) {
-        return null;
+        return fakePortal;
     }
 
     @Override
     public RealPortal getPortal(BlockLocation blockLocation, GateStructureType[] structureTypes) {
-        return null;
+        return fakePortal;
     }
 
     @Override
     public RealPortal getPortal(Location location, GateStructureType structureType) {
-        return null;
+        return fakePortal;
     }
 
     @Override
     public RealPortal getPortal(Location location, GateStructureType[] structureTypes) {
-        return null;
+        return fakePortal;
     }
 
     @Override
     public RealPortal getPortal(Location location) {
-        return null;
+        return fakePortal;
     }
 
     @Override
     public boolean isPartOfPortal(List<Block> blocks) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isNextToPortal(Location location, GateStructureType structureType) {
-        return false;
+        return true;
     }
 
     @Override

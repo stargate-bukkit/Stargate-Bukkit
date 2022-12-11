@@ -156,7 +156,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             load();
             economyManager = new VaultEconomyManager(languageManager);
             SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
-            storageAPI = new SQLDatabase(database, this);
+            storageAPI = new SQLDatabase(database, this, this.getLanguageManager());
             registry = new StargateRegistry(storageAPI);
             registry.loadPortals();
 
@@ -373,9 +373,9 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * Registers all necessary listeners for this plugin
      */
     private void registerListeners() {
-        pluginManager.registerEvents(new BlockEventListener(getRegistry()), this);
+        pluginManager.registerEvents(new BlockEventListener(getRegistry(),this.getLanguageManager()), this);
         pluginManager.registerEvents(new MoveEventListener(), this);
-        pluginManager.registerEvents(new PlayerEventListener(), this);
+        pluginManager.registerEvents(new PlayerEventListener(this.getLanguageManager()), this);
         pluginManager.registerEvents(new PluginEventListener(), this);
         if (NonLegacyMethod.PLAYER_ADVANCEMENT_CRITERION_EVENT.isImplemented()) {
             pluginManager.registerEvents(new PlayerAdvancementListener(), this);
@@ -409,11 +409,11 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         File databaseFile = new File(this.getDataFolder(), "stargate.db");
         SQLDatabaseAPI database = new SQLiteDatabase(databaseFile);
 
-        StorageAPI storageAPI = new SQLDatabase(database, false, false, this);
+        StorageAPI storageAPI = new SQLDatabase(database, false, false, this, this.getLanguageManager());
         registry = new StargateRegistry(storageAPI);
 
         DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), "config.yml"), this,
-                Bukkit.getServer(), registry);
+                Bukkit.getServer(), registry, this.getLanguageManager());
 
         if (dataMigrator.isMigrationNecessary()) {
             Map<String, Object> updatedConfig = dataMigrator.getUpdatedConfig();
@@ -487,7 +487,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             loadGateFormats();
             if (storageAPI instanceof SQLDatabase) {
                 SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
-                ((SQLDatabase) storageAPI).load(database, this);
+                ((SQLDatabase) storageAPI).load(database, this, this.getLanguageManager());
             }
             registry.load();
             economyManager.setupEconomy();
@@ -638,7 +638,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     @Override
     public PermissionManager getPermissionManager(Entity entity) {
-        return new StargatePermissionManager(entity);
+        return new StargatePermissionManager(entity, this.getLanguageManager());
     }
 
     @Override

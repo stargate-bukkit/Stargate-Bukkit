@@ -51,11 +51,8 @@ public class StargatePermissionManager implements PermissionManager {
      * Instantiates a new permission manager
      *
      * @param target <p>The entity to check permissions for</p>
+     * @param languageManager <p>The manager that deals with the message</p>
      */
-    public StargatePermissionManager(Entity target) {
-        this(target, Stargate.getLanguageManagerStatic());
-    }
-
     public StargatePermissionManager(Entity target, LanguageManager languageManager) {
         this.target = target;
         canProcessMetaData = setupMetadataProvider();

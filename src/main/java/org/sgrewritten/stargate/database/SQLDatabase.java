@@ -15,6 +15,7 @@ import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
@@ -51,6 +52,7 @@ public class SQLDatabase implements StorageAPI {
     private SQLQueryGenerator sqlQueryGenerator;
     private boolean useInterServerNetworks;
     private StargateLogger logger;
+    private LanguageManager languageManager;
 
     /**
      * Instantiates a new stargate registry
@@ -59,8 +61,8 @@ public class SQLDatabase implements StorageAPI {
      * @param stargate <p>The Stargate instance to use</p>
      * @throws StargateInitializationException <p>If unable to initialize the database</p>
      */
-    public SQLDatabase(SQLDatabaseAPI database, Stargate stargate) throws StargateInitializationException {
-        load(database, stargate);
+    public SQLDatabase(SQLDatabaseAPI database, Stargate stargate, LanguageManager languageManager) throws StargateInitializationException {
+        load(database, stargate, languageManager);
     }
 
     /**
@@ -73,8 +75,8 @@ public class SQLDatabase implements StorageAPI {
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
     public SQLDatabase(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase,
-                       StargateLogger logger) throws SQLException {
-        load(database, usingBungee, usingRemoteDatabase, logger);
+                       StargateLogger logger, LanguageManager languageManager) throws SQLException {
+        load(database, usingBungee, usingRemoteDatabase, logger,languageManager);
     }
 
     /**
@@ -241,7 +243,7 @@ public class SQLDatabase implements StorageAPI {
                     throw new InvalidStructureException();
                 }
                 gate.addPortalPositions(portalPositions);
-                Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, logger);
+                Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, logger,languageManager);
                 network.addPortal(portal, false);
                 Stargate.log(Level.FINEST, "Added as normal portal");
             } catch (InvalidNameException | TranslatableException e) {
@@ -322,20 +324,21 @@ public class SQLDatabase implements StorageAPI {
      * @param stargate <p>A reference to the Stargate API</p>
      * @throws StargateInitializationException <p>If unable to initializes the datbase and tables</p>
      */
-    public void load(SQLDatabaseAPI database, Stargate stargate) throws StargateInitializationException {
+    public void load(SQLDatabaseAPI database, Stargate stargate, LanguageManager languageManager) throws StargateInitializationException {
         try {
             load(database, ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE),
-                    ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE), stargate);
+                    ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE), stargate,languageManager);
         } catch (SQLException exception) {
             logger.logMessage(Level.SEVERE, exception.getMessage());
             throw new StargateInitializationException(exception.getMessage());
         }
     }
 
-    private void load(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase, StargateLogger logger)
+    private void load(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase, StargateLogger logger,LanguageManager languageManager)
             throws SQLException {
         this.logger = logger;
         this.database = database;
+        this.languageManager = languageManager;
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
         TableNameConfiguration config = DatabaseHelper.getTableNameConfiguration(usingRemoteDatabase);
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;

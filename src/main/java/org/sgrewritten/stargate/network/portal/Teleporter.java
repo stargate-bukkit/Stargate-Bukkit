@@ -18,6 +18,7 @@ import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.event.StargatePortalEvent;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
@@ -50,6 +51,7 @@ public class Teleporter {
     private final Set<Entity> teleportedEntities = new HashSet<>();
     private final StargateLogger logger;
     private List<LivingEntity> nearbyLeashed;
+    private LanguageManager languageManager;
 
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
@@ -63,7 +65,7 @@ public class Teleporter {
      * @param logger
      */
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
-                      int cost, String teleportMessage, StargateLogger logger) {
+                      int cost, String teleportMessage, StargateLogger logger, LanguageManager languageManager) {
         // Center the destination in the destination block
         this.exit = destination.getExit().clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
@@ -73,6 +75,7 @@ public class Teleporter {
         this.cost = cost;
         this.teleportMessage = teleportMessage;
         this.logger = logger;
+        this.languageManager = languageManager;
     }
 
     /**
@@ -93,7 +96,7 @@ public class Teleporter {
         List<Player> playersToRefund = new ArrayList<>();
 
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
-            StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity);
+            StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity,languageManager);
             if (!hasPermission(anyEntity, permissionManager)) {
                 teleportMessage = permissionManager.getDenyMessage();
                 return false;

@@ -10,6 +10,7 @@ import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.StargateRegistry;
@@ -50,7 +51,7 @@ public final class LegacyPortalStorageLoader {
      * @throws TranslatableException 
      */
     public static List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server,
-                                                      StargateRegistry registry, StargateLogger logger, String defaultNetworkName)
+                                                      StargateRegistry registry, StargateLogger logger, String defaultNetworkName,LanguageManager languageManager)
             throws IOException, InvalidStructureException, InvalidNameException, TranslatableException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
@@ -67,7 +68,7 @@ public final class LegacyPortalStorageLoader {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
-                portals.add(readPortal(line, server.getWorld(worldName), registry, logger, defaultNetworkName));
+                portals.add(readPortal(line, server.getWorld(worldName), registry, logger, defaultNetworkName,languageManager));
 
                 line = reader.readLine();
             }
@@ -88,7 +89,7 @@ public final class LegacyPortalStorageLoader {
      * @throws InvalidNameException        <p>If the name of the portal is invalid</p>
      * @throws TranslatableException 
      */
-    private static Portal readPortal(String line, World world, StargateRegistry registry, StargateLogger logger, String defaultNetworkName)
+    private static Portal readPortal(String line, World world, StargateRegistry registry, StargateLogger logger, String defaultNetworkName, LanguageManager languageManager)
             throws InvalidStructureException, InvalidNameException, TranslatableException {
         String[] portalProperties = line.split(":");
         PortalData portalData = PortalStorageHelper.loadPortalData(portalProperties, world, defaultNetworkName);
@@ -115,7 +116,7 @@ public final class LegacyPortalStorageLoader {
             gate.addPortalPosition(buttonLocation, PositionType.BUTTON);
         }
 
-        Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, logger);
+        Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, logger,languageManager);
 
         // Add the portal to its network and store it to the database
         logger.logMessage(Level.FINE, String.format("Saving portal %s in network %s from old storage... ",

@@ -8,6 +8,7 @@ import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.util.FileHelper;
@@ -31,6 +32,7 @@ public class DataMigration_1_0_0 extends DataMigration {
     private final StargateRegistry registry;
     private Map<String, Object> oldConfig;
     private final StargateLogger logger;
+    private LanguageManager languageManager;
 
     /**
      * Instantiates a new Ret-Com 1.0.0
@@ -39,13 +41,14 @@ public class DataMigration_1_0_0 extends DataMigration {
      * @param registry <p>The stargate registry to register loaded portals to</p>
      * @param logger   <p>The logger to use for logging any messages</p>
      */
-    public DataMigration_1_0_0(Server server, StargateRegistry registry, StargateLogger logger) {
+    public DataMigration_1_0_0(Server server, StargateRegistry registry, StargateLogger logger, LanguageManager languageManager) {
         if (CONFIG_CONVERSIONS == null) {
             loadConfigConversions();
         }
         this.server = server;
         this.registry = registry;
         this.logger = logger;
+        this.languageManager = languageManager;
     }
 
     @Override
@@ -85,7 +88,7 @@ public class DataMigration_1_0_0 extends DataMigration {
             String defaultName = (String) oldConfig.get(LegacyDataHandler
                     .findConfigKey(new String[] { "gates.defaultGateNetwork", "default-gate-network" }, oldConfig));
 
-            migratePortals(portalFolderName, defaultName);
+            migratePortals(portalFolderName, defaultName,languageManager);
             moveFilesToDebugDirectory(portalFolderName);
         } catch (IOException | InvalidStructureException | InvalidNameException | TranslatableException e) {
             e.printStackTrace();
@@ -128,8 +131,8 @@ public class DataMigration_1_0_0 extends DataMigration {
      * @throws IOException               <p>If unable to load previous portals</p>
      * @throws TranslatableException 
      */
-    private void migratePortals(String portalFolder, String defaultNetworkName) throws InvalidStructureException, InvalidNameException, IOException, TranslatableException {
-        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, registry, logger, defaultNetworkName);
+    private void migratePortals(String portalFolder, String defaultNetworkName, LanguageManager languageManager) throws InvalidStructureException, InvalidNameException, IOException, TranslatableException {
+        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, registry, logger, defaultNetworkName,languageManager);
         if (portals == null) {
             logger.logMessage(Level.WARNING, "No portals migrated!");
         } else {
