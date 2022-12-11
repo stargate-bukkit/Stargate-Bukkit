@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.network.InterServerNetwork;
@@ -94,7 +95,7 @@ public class FakeRegistry implements RegistryAPI {
 
     @Override
     public Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced)
-            throws InvalidNameException, NameLengthException {
+            throws InvalidNameException, NameLengthException, NameConflictException {
         networkName = NameHelper.getTrimmedName(networkName);
         if (this.networkExists(networkName, isInterserver)) {
             if (isForced && type == NetworkType.DEFAULT) {
@@ -103,7 +104,7 @@ public class FakeRegistry implements RegistryAPI {
                     this.rename(network);
                 }
             }
-            throw new InvalidNameException(null);
+            throw new NameConflictException("There already exists a network of name '" + networkName + "'");
         }
         Network network = isInterserver ? new InterServerNetwork(networkName,type) : new LocalNetwork(networkName, type);
         getNetworkMap(isInterserver).put(network.getId(), network);
@@ -112,7 +113,7 @@ public class FakeRegistry implements RegistryAPI {
     }
     
     @Override
-    public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException {
+    public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException {
         return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags),flags.contains(PortalFlag.FANCY_INTER_SERVER),isForced);
     }
 

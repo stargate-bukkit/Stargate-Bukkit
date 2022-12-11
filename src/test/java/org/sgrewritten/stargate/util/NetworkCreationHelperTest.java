@@ -5,6 +5,7 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 
 import org.bukkit.entity.Player;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,11 @@ class NetworkCreationHelperTest {
         registry = new FakeRegistry();
         
         emptyNames = new String[]{"", " ", "  "};
+    }
+    
+    @AfterAll
+    static void teardown() {
+        MockBukkit.unmock();
     }
 
     @Test

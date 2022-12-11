@@ -23,7 +23,7 @@ public class StargateConfigurationTest {
                 new File(configFolder, "testConfig.yml")
                 //,new File("src/main/resources","config.yml")
         };
-        logger = new FakeStargate();
+        logger = new FakeStargateLogger();
     }
 
     @AfterAll
