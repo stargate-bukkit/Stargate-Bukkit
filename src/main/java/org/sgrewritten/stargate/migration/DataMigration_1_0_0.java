@@ -78,22 +78,27 @@ public class DataMigration_1_0_0 extends DataMigration {
 
     @Override
     public void run() {
-        String portalFolderValue = null;
         try {
-            String[] possiblePortalFolderConfigKeys = {"portal-folder", "folders.portalFolder"};
-            for (String portalFolderKey : possiblePortalFolderConfigKeys) {
-                portalFolderValue = (String) oldConfig.get(portalFolderKey);
-                if (portalFolderValue != null) {
-                    migratePortals(portalFolderValue);
-                    break;
-                }
-            }
-            if (portalFolderValue != null) {
-                moveFilesToDebugDirectory(portalFolderValue);
-            }
+            String portalFolderName =(String) oldConfig.get( findConfigKey(new String[]{"portal-folder", "folders.portalFolder"}));
+            String defaultName = (String) oldConfig.get(findConfigKey(new String[]{"gates.defaultGateNetwork", "default-gate-network"}));
+            
+            migratePortals(portalFolderName, defaultName);
+            moveFilesToDebugDirectory(portalFolderName);
         } catch (IOException | InvalidStructureException | InvalidNameException | TranslatableException e) {
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            Stargate.log(Level.SEVERE, "Invalid config: Could not get necessary config values to load portals from storage");
+            e.printStackTrace();
         }
+    }
+    
+    private String findConfigKey(String[] possibleKeys) {
+        for(String possibleKey : possibleKeys) {
+            if (oldConfig.get(possibleKey) != null) {
+                return possibleKey;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -129,8 +134,8 @@ public class DataMigration_1_0_0 extends DataMigration {
      * @throws IOException               <p>If unable to load previous portals</p>
      * @throws TranslatableException 
      */
-    private void migratePortals(String portalFolder) throws InvalidStructureException, InvalidNameException, IOException, TranslatableException {
-        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, registry, logger);
+    private void migratePortals(String portalFolder, String defaultNetworkName) throws InvalidStructureException, InvalidNameException, IOException, TranslatableException {
+        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, registry, logger, defaultNetworkName);
         if (portals == null) {
             logger.logMessage(Level.WARNING, "No portals migrated!");
         } else {

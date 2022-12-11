@@ -87,11 +87,10 @@ public class PortalStorageHelper {
      * @param world            <p>The world to load portal data for</p>
      * @return <p>The loaded portal data</p>
      */
-    public static PortalData loadPortalData(String[] portalProperties, World world) {
+    public static PortalData loadPortalData(String[] portalProperties, World world, String defaultNetworkName) {
         PortalData portalData = new PortalData();
         portalData.name = portalProperties[0];
-        portalData.networkName = (portalProperties.length > 9) ? portalProperties[9] : ConfigurationHelper.getString(
-                ConfigurationOption.DEFAULT_NETWORK);
+        portalData.networkName = (portalProperties.length > 9) ? portalProperties[9] : defaultNetworkName;
 
         Stargate.log(Level.FINEST, String.format("-----------------Loading portal %s in network %s--------------" +
                 "--------", portalData.name, portalData.networkName));
@@ -113,6 +112,14 @@ public class PortalStorageHelper {
         portalData.flags = LegacyDataHandler.parseFlags(portalProperties);
         if (portalData.destination == null || portalData.destination.trim().isEmpty()) {
             portalData.flags.add(PortalFlag.NETWORKED);
+        }
+        if(portalProperties.length <= 9 || portalData.name.equals(defaultNetworkName)) {
+            portalData.flags.add(PortalFlag.DEFAULT_NETWORK);
+        } else if (!ownerString.isEmpty()
+                && Bukkit.getOfflinePlayer(UUID.fromString(ownerString)).getName().equals(portalData.name)) {
+            portalData.flags.add(PortalFlag.PERSONAL_NETWORK);
+        } else {
+            portalData.flags.add(PortalFlag.CUSTOM_NETWORK);
         }
         return portalData;
     }

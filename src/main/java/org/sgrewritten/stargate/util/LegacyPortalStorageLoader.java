@@ -50,7 +50,7 @@ public final class LegacyPortalStorageLoader {
      * @throws TranslatableException 
      */
     public static List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server,
-                                                      StargateRegistry registry, StargateLogger logger)
+                                                      StargateRegistry registry, StargateLogger logger, String defaultNetworkName)
             throws IOException, InvalidStructureException, InvalidNameException, TranslatableException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
@@ -67,7 +67,7 @@ public final class LegacyPortalStorageLoader {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
-                portals.add(readPortal(line, server.getWorld(worldName), registry, logger));
+                portals.add(readPortal(line, server.getWorld(worldName), registry, logger, defaultNetworkName));
 
                 line = reader.readLine();
             }
@@ -88,10 +88,10 @@ public final class LegacyPortalStorageLoader {
      * @throws InvalidNameException        <p>If the name of the portal is invalid</p>
      * @throws TranslatableException 
      */
-    private static Portal readPortal(String line, World world, StargateRegistry registry, StargateLogger logger)
+    private static Portal readPortal(String line, World world, StargateRegistry registry, StargateLogger logger, String defaultNetworkName)
             throws InvalidStructureException, InvalidNameException, TranslatableException {
         String[] portalProperties = line.split(":");
-        PortalData portalData = PortalStorageHelper.loadPortalData(portalProperties, world);
+        PortalData portalData = PortalStorageHelper.loadPortalData(portalProperties, world, defaultNetworkName);
         try {
             registry.createNetwork(portalData.networkName, portalData.flags, false);
         } catch (InvalidNameException | NameLengthException | NameConflictException ignored) {
