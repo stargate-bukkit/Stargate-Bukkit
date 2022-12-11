@@ -128,10 +128,7 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public Network getNetwork(String name, boolean isBungee) {
-        String cleanName = name.trim().toLowerCase();
-        if (ConfigurationHelper.getBoolean(ConfigurationOption.DISABLE_CUSTOM_COLORED_NAMES)) {
-            cleanName = ChatColor.stripColor(cleanName);
-        }
+        String cleanName = NameHelper.getNormalizedName(NameHelper.getTrimmedName(name));
         return getNetworkMap(isBungee).get(cleanName);
     }
 
