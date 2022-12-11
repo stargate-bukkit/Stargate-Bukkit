@@ -497,7 +497,7 @@ public class DatabaseTester {
         System.out.println("################### CHANGE NAMES TEST ######################");
         Network testNetwork = null;
         String initialName = "intialName";
-        String initialNetworkName = "intialName";
+        String initialNetworkName = "intialname";
         String newName = "newName";
         String newNetName = "newName";
         String table = portalType == StorageType.LOCAL ? nameConfig.getPortalTableName() :
