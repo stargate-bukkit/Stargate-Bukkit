@@ -5,6 +5,7 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import com.google.common.io.Files;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.sgrewritten.stargate.FakeStargate;
+import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.ConfigurationOption;
@@ -26,6 +27,8 @@ import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.util.FileHelper;
+import org.sgrewritten.stargate.util.LegacyDataHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,7 +67,7 @@ public class DataMigratorTest {
             configFiles[i++] = new File(configFolder, key);
         }
 
-        logger = new FakeStargate();
+        logger = new FakeStargateLogger();
         defaultConfigFile = new File("src/main/resources", "config.yml");
         sqlDatabaseFile = new File("src/test/resources", "migrate-test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);
@@ -122,10 +125,10 @@ public class DataMigratorTest {
     }
 
     @AfterAll
-    public static void tearDown() throws IOException, SQLException {
+    public static void tearDown() throws IOException, SQLException, InvalidConfigurationException, InterruptedException {
         MockBukkit.unmock();
         sqlDatabase.getConnection().close();
-
+        
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
             if (!oldConfigFile.exists()) {
@@ -137,11 +140,25 @@ public class DataMigratorTest {
             if (!oldConfigFile.renameTo(configFile)) {
                 throw new IOException("Unable to rename backup config file to config file");
             }
+            FileConfiguration fileConfig = new YamlConfiguration();
+            fileConfig.load(configFile);
         }
+        Map<String,String> fileMovements = new HashMap<>();
+        fileMovements.put("plugins/Stargate/debug/legacy_portals/epicknarvik.db", "src/test/resources/oldsaves/epicknarvik/epicknarvik.db");
+        fileMovements.put("plugins/Stargate/debug/legacy_portals/lclo.db", "src/test/resources/oldsaves/lclo/lclo.db");
+        fileMovements.put("plugins\\Stargate\\debug\\legacy_portals\\pseudoknigth.db", "src\\test\\resources\\oldsaves\\pseudoknight\\pseudoknigth.db");
+        
+        for(String fileToMoveName : fileMovements.keySet()) {
+            File fileToMove = new File(fileToMoveName);
+            File destination = new File(fileMovements.get(fileToMoveName));
+            System.out.println(destination.getAbsolutePath());
+            destination.getParentFile().mkdirs();
+            fileToMove.renameTo(destination);
+        }
+        
         if (sqlDatabaseFile.exists() && !sqlDatabaseFile.delete()) {
             throw new IOException("Unable to remove database file");
         }
-
     }
 
     @Test
