@@ -2,7 +2,8 @@ package org.sgrewritten.stargate.network.portal;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.StorageType;
 
@@ -90,9 +91,10 @@ public interface Portal {
      * Changes the network this portal belongs to
      *
      * @param targetNetwork <p>The new network this portal should belong to</p>
-     * @throws NameErrorException <p>If the given network name is invalid</p>
+     * @throws InvalidNameException <p>If the given network name is invalid</p>
+     * @throws NameConflictException 
      */
-    void setNetwork(Network targetNetwork) throws NameErrorException;
+    void setNetwork(Network targetNetwork) throws NameConflictException;
 
     /**
      * Changes the player this portal belongs to

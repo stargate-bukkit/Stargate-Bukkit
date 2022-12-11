@@ -7,10 +7,14 @@ import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
+import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
+import org.sgrewritten.stargate.exception.name.BungeeNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
@@ -205,7 +209,9 @@ public class SQLDatabase implements StorageAPI {
                 if(NetworkCreationHelper.getDefaultNamesTaken().contains(network.getId().toLowerCase())) {
                     registry.rename(network);
                 }
-            } catch (NameErrorException ignored) {
+            } catch(NameConflictException ignored) {
+            } catch (InvalidNameException | TranslatableException e) {
+                e.printStackTrace();
             }
             Network network = registry.getNetwork(targetNetwork, isBungee);
 
@@ -214,7 +220,9 @@ public class SQLDatabase implements StorageAPI {
                     Portal virtualPortal = new VirtualPortal(portalData.serverName, portalData.name, network, portalData.flags, portalData.ownerUUID);
                     try {
                         network.addPortal(virtualPortal, false);
-                    } catch (NameErrorException ignored) {
+                    } catch (NameConflictException ignored) {
+                    } catch (InvalidNameException e) {
+                        e.printStackTrace();
                     }
                     Stargate.log(Level.FINEST, "Added as virtual portal");
                     continue;
@@ -236,7 +244,7 @@ public class SQLDatabase implements StorageAPI {
                 Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, logger);
                 network.addPortal(portal, false);
                 Stargate.log(Level.FINEST, "Added as normal portal");
-            } catch (NameErrorException e) {
+            } catch (InvalidNameException | TranslatableException e) {
                 e.printStackTrace();
             } catch (InvalidStructureException e) {
                 Stargate.log(Level.WARNING, String.format(
@@ -336,7 +344,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws NameErrorException {
+    public Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws InvalidNameException, NameLengthException {
         if (isInterserver) {
             return new InterServerNetwork(networkName,type);
         }

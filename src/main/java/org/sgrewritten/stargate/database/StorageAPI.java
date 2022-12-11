@@ -1,8 +1,9 @@
 package org.sgrewritten.stargate.database;
 
-import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
@@ -97,9 +98,10 @@ public interface StorageAPI {
      * @param type       <p>The type of network to look for.</p>
      * @param isInterserver <p>Whether or not the network works across servers (I flag)</p>
      * @return The network that was created
-     * @throws NameErrorException <p>If the given network name is invalid</p>
+     * @throws InvalidNameException <p>If the given network name is invalid</p>
+     * @throws NameLengthException 
      */
-    Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws NameErrorException;
+    Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws InvalidNameException, NameLengthException;
 
 
     /**

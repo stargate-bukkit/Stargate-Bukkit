@@ -1,7 +1,9 @@
 package org.sgrewritten.stargate.network;
 
 import org.bukkit.entity.Player;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
@@ -43,9 +45,9 @@ public interface Network {
      *
      * @param portal         <p>The portal to add</p>
      * @param saveToDatabase <p>Whether to also save the portal to the database, only instances of RealPortal can be saved</p>
-     * @throws NameErrorException if portal a portal with that name already exist in the network
+     * @throws NameConflictException <p> if portal a portal with that name already exist in the network </p>
      */
-    void addPortal(Portal portal, boolean saveToDatabase) throws NameErrorException;
+    void addPortal(Portal portal, boolean saveToDatabase) throws InvalidNameException, NameConflictException;
 
     /**
      * Checks whether there is already a portal in this network with the given name
@@ -128,7 +130,8 @@ public interface Network {
      * 
      * Does not save to database
      * @param newName
-     * @throws org.sgrewritten.stargate.exception.NameErrorException
+     * @throws InvalidNameException
+     * @throws NameLengthException 
      */
-    void setID(String newName) throws NameErrorException;
+    void setID(String newName) throws InvalidNameException, NameLengthException;
 }

@@ -10,7 +10,8 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.event.StargateAccessEvent;
 import org.sgrewritten.stargate.event.StargateActivateEvent;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
@@ -47,10 +48,11 @@ public class NetworkedPortal extends AbstractPortal {
      * @param gate      <p>The gate format used by this portal</p>
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @param logger
-     * @throws NameErrorException <p>If the portal name is invalid</p>
+     * @throws InvalidNameException <p>If the portal name is invalid</p>
+     * @throws NameLengthException 
      */
     public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID,
-                           StargateLogger logger) throws NameErrorException {
+                           StargateLogger logger) throws InvalidNameException, NameLengthException {
         super(network, name, flags, gate, ownerUUID, logger);
     }
 

@@ -24,9 +24,11 @@ import org.sgrewritten.stargate.event.StargateCloseEvent;
 import org.sgrewritten.stargate.event.StargateDeactivateEvent;
 import org.sgrewritten.stargate.event.StargateOpenEvent;
 import org.sgrewritten.stargate.event.StargateSignFormatEvent;
-import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
@@ -92,10 +94,10 @@ public abstract class AbstractPortal implements RealPortal {
      * @param name      <p>The name of the portal</p>
      * @param flags     <p>The flags enabled for the portal</p>
      * @param ownerUUID <p>The UUID of the portal's owner</p>
-     * @throws NameErrorException <p>If the portal name is invalid</p>
+     * @throws NameLengthException <p>If the portal name is invalid</p>
      */
     AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
-            throws NameErrorException {
+            throws NameLengthException {
         this.ownerUUID = ownerUUID;
         this.network = network;
         this.name = name;
@@ -103,8 +105,9 @@ public abstract class AbstractPortal implements RealPortal {
         this.gate = gate;
         this.logger = logger;
 
-        if (name.trim().isEmpty() || (name.length() >= Stargate.getMaxTextLength())) {
-            throw new NameErrorException(TranslatableMessage.INVALID_NAME);
+        name = NameHelper.getTrimmedName(name);
+        if (name.isEmpty() || (name.length() >= Stargate.getMaxTextLength())) {
+            throw new NameLengthException("Invalid length of name '" + name + "' , namelength must be above 0 and under " + Stargate.getMaxTextLength());
         }
 
         colorDrawer = new NoLineColorFormatter();
@@ -207,9 +210,9 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public void setNetwork(Network targetNetwork) throws NameErrorException {
+    public void setNetwork(Network targetNetwork) throws NameConflictException {
         if (targetNetwork.getPortal(this.name) != null) {
-            throw new NameErrorException(null);
+            throw new NameConflictException(String.format("Portal of name %s already exists in network %s" , this.name, targetNetwork.getId()));
         }
         this.network = targetNetwork;
         //TODO: update network in database

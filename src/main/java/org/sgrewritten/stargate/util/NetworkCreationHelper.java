@@ -6,7 +6,10 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.container.TwoTuple;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.PermissionManager;
 import org.sgrewritten.stargate.network.LocalNetwork;
@@ -73,9 +76,10 @@ public final class NetworkCreationHelper {
      * @param flags             <p> flags of a portal this selection or creation comes from</p>
      * @param registry          <p> Where named network is (or will be) registered</p>
      * @return <p>The network the portal should be connected to</p>
-     * @throws NameErrorException <p>If the network name is invalid</p>
+     * @throws TranslatableException 
+     * @throws InvalidNameException 
      */
-    public static Network selectNetwork(String name, PermissionManager permissionManager, Player player, Set<PortalFlag> flags, RegistryAPI registry) throws NameErrorException{
+    public static Network selectNetwork(String name, PermissionManager permissionManager, Player player, Set<PortalFlag> flags, RegistryAPI registry) throws TranslatableException, InvalidNameException{
 
         Stargate.log(Level.FINER, "....Choosing network name....");
         Stargate.log(Level.FINER, "initial name is '" + name + "'");
@@ -118,17 +122,14 @@ public final class NetworkCreationHelper {
      * @param isInterserver <p>Whether or not the network works (or will work) across instances.
      * @param registry <p> Where the network is (or will be) registered</p>
      * @return <p>The network the portal should be connected to</p>
-     * @throws NameErrorException <p>If the network name is invalid</p>
+     * @throws InvalidNameException <p>If the network name is invalid</p>
+     * @throws NameLengthException 
      */
-    public static Network selectNetwork(String name, NetworkType type, boolean isInterserver, RegistryAPI registry) throws NameErrorException {
+    public static Network selectNetwork(String name, NetworkType type, boolean isInterserver, RegistryAPI registry) throws InvalidNameException, NameLengthException {
         name = NameHelper.getTrimmedName(name);
         try {
             registry.createNetwork(name, type, isInterserver, false);
-        } catch (NameErrorException nameErrorException) {
-            TranslatableMessage translatableMessage = nameErrorException.getErrorMessage();
-            if (translatableMessage != null) {
-                throw nameErrorException;
-            }
+        } catch (NameConflictException e) {
         }
         return registry.getNetwork(name, isInterserver);
     }
@@ -152,7 +153,7 @@ public final class NetworkCreationHelper {
         return new TwoTuple<>(NetworkType.CUSTOM,name);
     }
     
-    private static TwoTuple<NetworkType,String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight,String name, RegistryAPI registry, boolean isInterserver) throws NameErrorException{
+    private static TwoTuple<NetworkType,String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight,String name, RegistryAPI registry, boolean isInterserver) throws InvalidNameException{
         String nameToTestFor = name;
         NetworkType type = NetworkType.getNetworkTypeFromHighlight(highlight);
         if (type == NetworkType.CUSTOM || type == NetworkType.TERMINAL) {

@@ -3,7 +3,8 @@ package org.sgrewritten.stargate.network.portal;
 import org.bukkit.entity.Entity;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.Network;
@@ -30,10 +31,11 @@ public class RandomPortal extends AbstractPortal {
      * @param gate      <p>The gate format used by this portal</p>
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @param logger
-     * @throws NameErrorException <p>If the portal name is invalid</p>
+     * @throws InvalidNameException <p>If the portal name is invalid</p>
+     * @throws NameLengthException 
      */
     public RandomPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
-            throws NameErrorException {
+            throws InvalidNameException, NameLengthException {
         super(network, name, flags, gate, ownerUUID, logger);
     }
 

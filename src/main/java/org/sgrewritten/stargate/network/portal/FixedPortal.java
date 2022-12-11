@@ -2,7 +2,8 @@ package org.sgrewritten.stargate.network.portal;
 
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.Network;
@@ -27,10 +28,11 @@ public class FixedPortal extends AbstractPortal {
      * @param flags           <p>The flags enabled for the portal</p>
      * @param gate          <p>The gate format used by this portal</p>
      * @param ownerUUID       <p>The UUID of the portal's owner</p>
-     * @throws NameErrorException <p>If the portal name is invalid</p>
+     * @throws InvalidNameException <p>If the portal name is invalid</p>
+     * @throws NameLengthException 
      */
     public FixedPortal(Network network, String name, String destinationName, Set<PortalFlag> flags, Gate gate,
-                       UUID ownerUUID, StargateLogger logger) throws NameErrorException {
+                       UUID ownerUUID, StargateLogger logger) throws InvalidNameException, NameLengthException {
         super(network, name, flags, gate, ownerUUID, logger);
         this.destinationName = destinationName;
         this.destination = network.getPortal(destinationName);

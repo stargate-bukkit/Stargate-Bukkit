@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.FakeStargate;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.manager.PermissionManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.LocalNetwork;
@@ -45,7 +46,7 @@ class NetworkCreationHelperTest {
     }
 
     @Test
-    public void emptyDefinitionTest() throws NameErrorException {
+    public void emptyDefinitionTest() throws InvalidNameException, TranslatableException {
         System.out.println("############### EMPTY TEST #############");
         Assertions.assertTrue(player.getUniqueId() != null);
         for(String emptyName : emptyNames) {
@@ -65,7 +66,7 @@ class NetworkCreationHelperTest {
 
     
     @Test
-    public void explicitDefinitionTest() throws NameErrorException{
+    public void explicitDefinitionTest() throws InvalidNameException, TranslatableException{
         System.out.println("############### EXPLICIT TEST #############");
         Network defaultNetwork = NetworkCreationHelper.selectNetwork(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(CENTRAL), permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.DEFAULT, defaultNetwork.getType());
@@ -92,7 +93,7 @@ class NetworkCreationHelperTest {
     }
     
     @Test
-    public void implicitDefinitionTest() throws NameErrorException{
+    public void implicitDefinitionTest() throws InvalidNameException, TranslatableException{
         System.out.println("############### IMPLICIT TEST #############");
         String name = "name";
         HighlightingStyle[] values = HighlightingStyle.values();

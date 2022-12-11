@@ -4,7 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
@@ -178,7 +180,7 @@ public final class BungeeHelper {
                 registry.createNetwork(bungeeNetwork, NetworkType.CUSTOM, false, false);
                 network = registry.getNetwork(bungeeNetwork, false);
             }
-        } catch (NameErrorException e) {
+        } catch (InvalidNameException | NameLengthException | NameConflictException e) {
             //Ignored as the null check will take care of this
         }
         if (network == null) {

@@ -5,7 +5,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.StorageType;
@@ -46,11 +47,12 @@ public class FakePortalGenerator {
      * @param logger
      * @return <p>A map from the portal's name to the portal's object</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
-     * @throws NameErrorException        <p>If the generated portal name is invalid</p>
+     * @throws InvalidNameException        <p>If the generated portal name is invalid</p>
+     * @throws NameLengthException 
      */
     public Map<String, RealPortal> generateFakePortals(World world, Network portalNetwork,
                                                        boolean createInterServerPortals, int numberOfPortals,
-                                                       StargateLogger logger) throws InvalidStructureException, NameErrorException {
+                                                       StargateLogger logger) throws InvalidStructureException, InvalidNameException, NameLengthException {
         Map<String, RealPortal> output = new HashMap<>();
         String baseName;
         if (createInterServerPortals) {
@@ -77,10 +79,11 @@ public class FakePortalGenerator {
      * @param logger
      * @return <p>A fake portal</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
-     * @throws NameErrorException        <p>If the given portal name is invalid</p>
+     * @throws InvalidNameException        <p>If the given portal name is invalid</p>
+     * @throws NameLengthException 
      */
     public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal,
-                                         StargateLogger logger) throws InvalidStructureException, NameErrorException {
+                                         StargateLogger logger) throws InvalidStructureException, InvalidNameException, NameLengthException {
         Set<PortalFlag> flags = generateRandomFlags();
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);

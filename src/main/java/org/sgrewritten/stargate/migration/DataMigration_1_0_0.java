@@ -6,7 +6,8 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.util.FileHelper;
@@ -90,7 +91,7 @@ public class DataMigration_1_0_0 extends DataMigration {
             if (portalFolderValue != null) {
                 moveFilesToDebugDirectory(portalFolderValue);
             }
-        } catch (IOException | InvalidStructureException | NameErrorException e) {
+        } catch (IOException | InvalidStructureException | InvalidNameException | TranslatableException e) {
             e.printStackTrace();
         }
     }
@@ -124,10 +125,11 @@ public class DataMigration_1_0_0 extends DataMigration {
      *
      * @param portalFolder <p>The portal folder to load portals from</p>
      * @throws InvalidStructureException <p>If the old portal has an invalid structure</p>
-     * @throws NameErrorException        <p>If the old portal has an invalid name</p>
+     * @throws InvalidNameException        <p>If the old portal has an invalid name</p>
      * @throws IOException               <p>If unable to load previous portals</p>
+     * @throws TranslatableException 
      */
-    private void migratePortals(String portalFolder) throws InvalidStructureException, NameErrorException, IOException {
+    private void migratePortals(String portalFolder) throws InvalidStructureException, InvalidNameException, IOException, TranslatableException {
         List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, registry, logger);
         if (portals == null) {
             logger.logMessage(Level.WARNING, "No portals migrated!");

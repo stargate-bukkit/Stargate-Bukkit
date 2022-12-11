@@ -5,7 +5,11 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.name.BungeeNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.StargateRegistry;
@@ -42,11 +46,12 @@ public final class LegacyPortalStorageLoader {
      * @return <p>The list of loaded and saved portals</p>
      * @throws IOException               <p>If unable to read one or more .db files</p>
      * @throws InvalidStructureException <p>If an encountered portal's structure is invalid</p>
-     * @throws NameErrorException        <p>If the name of a portal is invalid</p>
+     * @throws InvalidNameException        <p>If the name of a portal is invalid</p>
+     * @throws TranslatableException 
      */
     public static List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server,
                                                       StargateRegistry registry, StargateLogger logger)
-            throws IOException, InvalidStructureException, NameErrorException {
+            throws IOException, InvalidStructureException, InvalidNameException, TranslatableException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".db")) : new File[0];
@@ -80,15 +85,16 @@ public final class LegacyPortalStorageLoader {
      * @param logger   <p>The logger used for logging</p>
      * @return <p>The loaded portal</p>
      * @throws InvalidStructureException <p>If the portal's structure is invalid</p>
-     * @throws NameErrorException        <p>If the name of the portal is invalid</p>
+     * @throws InvalidNameException        <p>If the name of the portal is invalid</p>
+     * @throws TranslatableException 
      */
     private static Portal readPortal(String line, World world, StargateRegistry registry, StargateLogger logger)
-            throws InvalidStructureException, NameErrorException {
+            throws InvalidStructureException, InvalidNameException, TranslatableException {
         String[] portalProperties = line.split(":");
         PortalData portalData = PortalStorageHelper.loadPortalData(portalProperties, world);
         try {
             registry.createNetwork(portalData.networkName, portalData.flags, false);
-        } catch (NameErrorException ignored) {
+        } catch (InvalidNameException | NameLengthException | NameConflictException ignored) {
         }
         if (portalData.topLeft == null) {
             throw new InvalidStructureException();

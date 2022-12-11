@@ -2,7 +2,9 @@ package org.sgrewritten.stargate.network;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -148,9 +150,11 @@ public interface RegistryAPI {
      * @param isInterserver <p>Whether to create it as a BungeeCord network</p>
      * @param isForced      <p>The authority for the creation </p>
      * @return <p> The network created </p>
-     * @throws NameErrorException <p>If the given network name is invalid</p>
+     * @throws InvalidNameException <p>If the given network name is invalid</p>
+     * @throws NameLengthException 
+     * @throws NameConflictException 
      */
-    Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced) throws NameErrorException;
+    Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException;
 
     /**
      * Creates a new network assigned to this registry
@@ -159,9 +163,11 @@ public interface RegistryAPI {
      * @param flags       <p>The flags containing the network's enabled options</p>
      * @param isForced    <p>The authority for the creation </p>
      * @return <p> The network created </p>
-     * @throws NameErrorException <p>If the given network name is invalid</p>
+     * @throws InvalidNameException <p>If the given network name is invalid</p>
+     * @throws NameLengthException 
+     * @throws NameConflictException 
      */
-    Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws NameErrorException;
+    Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException;
     
     /**
      * Checks whether the given network name exists
@@ -199,17 +205,18 @@ public interface RegistryAPI {
      * Rename the network to specified name
      * @param network   <p> The network to rename </p>
      * @param newName   <p> The new name of the network </p>
-     * @throws NameErrorException 
+     * @throws InvalidNameException 
+     * @throws NameLengthException 
      */
-    void rename(Network network, String newName) throws NameErrorException;
+    void rename(Network network, String newName) throws InvalidNameException, NameLengthException;
 
     /**
      * 
      * @param portal    <p> The portal to rename</p>
      * @param newName   <p> The new name of the portal </p>
-     * @throws NameErrorException
+     * @throws InvalidNameException
      */
-    void rename(Portal portal, String newName) throws NameErrorException;
+    void rename(Portal portal, String newName) throws InvalidNameException;
 
 
     /**

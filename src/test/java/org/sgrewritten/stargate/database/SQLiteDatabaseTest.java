@@ -10,8 +10,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.StorageType;
 
 import java.io.File;
@@ -25,7 +26,7 @@ public class SQLiteDatabaseTest {
     private static SQLDatabaseAPI database;
 
     @BeforeAll
-    public static void setUp() throws SQLException, InvalidStructureException, NameErrorException {
+    public static void setUp() throws SQLException, InvalidStructureException, InvalidNameException, NameLengthException {
         System.out.println("Setting up test data");
 
         database = new SQLiteDatabase(new File("src/test/resources", "test.db"));
@@ -238,13 +239,13 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(7)
-    void changeNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, NameErrorException {
+    void changeNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException {
         tester.changeNames(StorageType.LOCAL);
     }
     
     @Test
     @Order(7)
-    void changeInterNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, NameErrorException {
+    void changeInterNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException {
         tester.changeNames(StorageType.INTER_SERVER);
     }
     

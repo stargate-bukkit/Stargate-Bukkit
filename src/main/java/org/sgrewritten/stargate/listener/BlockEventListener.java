@@ -36,9 +36,10 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.GateConflictException;
-import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.PermissionException;
+import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
@@ -178,8 +179,10 @@ public class BlockEventListener implements Listener {
                 NetworkType.removeNetworkTypeRelatedFlags(flags);
                 flags.add(selectedNetwork.getType().getRelatedFlag());
             }
-        } catch (NameErrorException nameErrorException) {
-            errorMessage = nameErrorException.getErrorMessage();
+        } catch (TranslatableException e) {
+            errorMessage = e.getTranslatableMessage();
+        } catch (InvalidNameException e) {
+            e.printStackTrace();
         }
 
         try {
@@ -189,8 +192,10 @@ public class BlockEventListener implements Listener {
             Stargate.log(Level.FINER, "No Gate format matches");
         } catch (GateConflictException gateConflictException) {
             player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.GATE_CONFLICT));
-        } catch (NameErrorException nameErrorException) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(nameErrorException.getErrorMessage()));
+        } catch (TranslatableException e) {
+            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(e.getTranslatableMessage()));
+        } catch (InvalidNameException e) {
+            e.printStackTrace();
         }
     }
 

@@ -6,7 +6,8 @@ import org.bukkit.Bukkit;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.ForcibleFunctionAction;
 import org.sgrewritten.stargate.action.SupplierAction;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RealPortal;
@@ -31,9 +32,10 @@ public class InterServerNetwork extends LocalNetwork {
      *
      * @param networkName <p>The name of the new inter-server network</p>
      * @param type <p>The type of inter-server network to initialize</p>
-     * @throws NameErrorException <p>If the network name is invalid</p>
+     * @throws InvalidNameException <p>If the network name is invalid</p>
+     * @throws NameLengthException 
      */
-    public InterServerNetwork(String networkName, NetworkType type) throws NameErrorException {
+    public InterServerNetwork(String networkName, NetworkType type) throws InvalidNameException, NameLengthException {
         super(networkName,type);
     }
 

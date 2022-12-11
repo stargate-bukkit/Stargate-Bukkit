@@ -3,7 +3,8 @@ package org.sgrewritten.stargate.util;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
@@ -93,7 +94,7 @@ public class FakeRegistry implements RegistryAPI {
 
     @Override
     public Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced)
-            throws NameErrorException {
+            throws InvalidNameException, NameLengthException {
         networkName = NameHelper.getTrimmedName(networkName);
         if (this.networkExists(networkName, isInterserver)) {
             if (isForced && type == NetworkType.DEFAULT) {
@@ -102,7 +103,7 @@ public class FakeRegistry implements RegistryAPI {
                     this.rename(network);
                 }
             }
-            throw new NameErrorException(null);
+            throw new InvalidNameException(null);
         }
         Network network = isInterserver ? new InterServerNetwork(networkName,type) : new LocalNetwork(networkName, type);
         getNetworkMap(isInterserver).put(network.getId(), network);
@@ -111,7 +112,7 @@ public class FakeRegistry implements RegistryAPI {
     }
     
     @Override
-    public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws NameErrorException {
+    public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException {
         return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags),flags.contains(PortalFlag.FANCY_INTER_SERVER),isForced);
     }
 
@@ -150,11 +151,11 @@ public class FakeRegistry implements RegistryAPI {
     }
 
     @Override
-    public void rename(Network network, String newName) throws NameErrorException {
+    public void rename(Network network, String newName) throws InvalidNameException {
     }
 
     @Override
-    public void rename(Portal portal, String newName) throws NameErrorException {
+    public void rename(Portal portal, String newName) throws InvalidNameException {
     }
 
     @Override

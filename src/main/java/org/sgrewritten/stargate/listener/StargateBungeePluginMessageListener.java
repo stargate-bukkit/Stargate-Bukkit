@@ -28,7 +28,9 @@ import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
@@ -152,7 +154,8 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
         try {
             stargateAPI.getRegistry().createNetwork(network, flags, false);
-        } catch (NameErrorException ignored) {
+        } catch (InvalidNameException | NameLengthException | NameConflictException  e) {
+            e.printStackTrace();
         }
         try {
             InterServerNetwork targetNetwork = (InterServerNetwork) stargateAPI.getRegistry().getNetwork(network, true);
@@ -168,7 +171,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     break;
             }
             targetNetwork.updatePortals();
-        } catch (NameErrorException ignored) {
+        } catch (NameConflictException ignored) {
         }
     }
 
