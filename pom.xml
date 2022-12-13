@@ -11,6 +11,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spigot-version>1.17</spigot-version>
+		<sonar.organization>stargate-rewritten</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <repositories>
