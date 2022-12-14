@@ -31,6 +31,7 @@ import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
@@ -60,6 +61,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
     private final StargateAPI stargateAPI;
     private final StargateLogger stargateLogger;
     private RegistryAPI registry;
+    private LanguageManager languageManager;
 
     /**
      * Instantiates a new stargate bungee plugin message listener
@@ -67,10 +69,11 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      * @param stargateAPI    <p>Something implementing the Stargate API</p>
      * @param stargateLogger <p>Something implementing the Stargate logger</p>
      */
-    public StargateBungeePluginMessageListener(StargateAPI stargateAPI, StargateLogger stargateLogger, RegistryAPI registry) {
+    public StargateBungeePluginMessageListener(StargateAPI stargateAPI, StargateLogger stargateLogger, RegistryAPI registry, LanguageManager languageManager) {
         this.stargateAPI = stargateAPI;
         this.stargateLogger = stargateLogger;
         this.registry = registry;
+        this.languageManager = languageManager;
     }
 
     /**
@@ -121,7 +124,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     break;
                 case PLAYER_TELEPORT:
                     stargateLogger.logMessage(Level.FINEST, "trying to read player join json msg");
-                    BungeeHelper.playerConnect(in.readUTF(),registry);
+                    BungeeHelper.playerConnect(in.readUTF(),registry,languageManager);
                     break;
                 case LEGACY_BUNGEE:
                     BungeeHelper.legacyPlayerConnect(in.readUTF());

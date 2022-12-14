@@ -251,7 +251,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         Teleporter teleporter = new Teleporter(this, origin, portalFacing, entranceFace, useCost,
-                Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.TELEPORT),languageManager);
+                languageManager.getMessage(TranslatableMessage.TELEPORT),languageManager);
 
         teleporter.teleport(target);
     }
@@ -261,7 +261,7 @@ public abstract class AbstractPortal implements RealPortal {
         Portal destination = getCurrentDestination();
         if (destination == null) {
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED),languageManager);
+                    0, languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED),languageManager);
             teleporter.teleport(target);
             return;
         }
@@ -317,7 +317,7 @@ public abstract class AbstractPortal implements RealPortal {
 
         Portal destination = getDestination();
         if (destination == null) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.INVALID));
+            player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.INVALID));
             return;
         }
         StargatePermissionManager permissionManager = new StargatePermissionManager(player,languageManager);
@@ -460,9 +460,9 @@ public abstract class AbstractPortal implements RealPortal {
             return;
         }
         String[] signText = {
-                this.colorDrawer.formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.PREFIX).trim()),
+                this.colorDrawer.formatLine(languageManager.getString(TranslatableMessage.PREFIX).trim()),
                 this.colorDrawer
-                        .formatLine(Stargate.getLanguageManagerStatic().getString(TranslatableMessage.GATE_OWNED_BY)),
+                        .formatLine(languageManager.getString(TranslatableMessage.GATE_OWNED_BY)),
                 this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName()),
                 this.colorDrawer.formatLine(getAllFlagsString().replaceAll("[0-9]", ""))};
 

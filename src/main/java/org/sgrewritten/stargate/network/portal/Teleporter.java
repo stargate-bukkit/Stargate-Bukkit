@@ -104,7 +104,7 @@ public class Teleporter {
                 if (Stargate.getEconomyManager().chargePlayer((Player) anyEntity, origin, this.cost)) {
                     playersToRefund.add((Player) anyEntity);
                 } else {
-                    teleportMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS);
+                    teleportMessage = languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
                     return false;
                 }
             }
@@ -142,7 +142,7 @@ public class Teleporter {
         //Cancel teleportation if outside world-border
         World world = exit.getWorld();
         if (world != null && !world.getWorldBorder().isInside(exit)) {
-            String worldBorderInterfereMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.OUTSIDE_WORLDBORDER);
+            String worldBorderInterfereMessage = languageManager.getErrorMessage(TranslatableMessage.OUTSIDE_WORLDBORDER);
             entitiesToTeleport.forEach((entity) -> entity.sendMessage(worldBorderInterfereMessage));
             return;
         }

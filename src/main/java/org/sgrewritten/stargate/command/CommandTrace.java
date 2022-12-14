@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.property.CommandPermission;
 import org.sgrewritten.stargate.util.FileHelper;
@@ -26,10 +27,17 @@ import java.util.logging.Level;
 
 public class CommandTrace implements CommandExecutor {
 
+    private LanguageManager languageManager;
+
+
+    public CommandTrace(LanguageManager languageManager) {
+        this.languageManager = languageManager;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!sender.hasPermission(CommandPermission.TRACE.getPermissionNode())) {
-            sender.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.DENY));
+            sender.sendMessage(languageManager.getErrorMessage(TranslatableMessage.DENY));
             return true;
         }
         File directory = new File(Stargate.getInstance().getDataFolder(), "debug");

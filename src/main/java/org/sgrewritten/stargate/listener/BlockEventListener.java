@@ -167,7 +167,7 @@ public class BlockEventListener implements Listener {
         Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
 
         if (disallowedFlags.size() > 0) {
-            String unformattedMessage = Stargate.getLanguageManagerStatic().getWarningMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
+            String unformattedMessage = languageManager.getWarningMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
             player.sendMessage(TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
         }
         flags.removeAll(disallowedFlags);
@@ -194,9 +194,9 @@ public class BlockEventListener implements Listener {
         } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINER, "No Gate format matches");
         } catch (GateConflictException gateConflictException) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.GATE_CONFLICT));
+            player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
         } catch (TranslatableException e) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(e.getTranslatableMessage()));
+            player.sendMessage(languageManager.getErrorMessage(e.getTranslatableMessage()));
         } catch (InvalidNameException e) {
             e.printStackTrace();
         }

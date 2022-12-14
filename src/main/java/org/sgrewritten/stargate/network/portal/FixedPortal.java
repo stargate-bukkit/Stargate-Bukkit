@@ -49,7 +49,7 @@ public class FixedPortal extends AbstractPortal {
             lines[1] = super.colorDrawer.formatPortalName(destination, HighlightingStyle.LESSER_GREATER_THAN);
         } else {
             lines[1] = super.colorDrawer.formatLine(destinationName);
-            lines[3] = super.colorDrawer.formatErrorLine(Stargate.getLanguageManagerStatic().getString(
+            lines[3] = super.colorDrawer.formatErrorLine(super.languageManager.getString(
                     TranslatableMessage.DISCONNECTED), HighlightingStyle.SQUARE_BRACKETS);
         }
         getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));

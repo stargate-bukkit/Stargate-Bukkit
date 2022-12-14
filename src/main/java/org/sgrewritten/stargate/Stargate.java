@@ -510,7 +510,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
             messenger.registerOutgoingPluginChannel(this, PluginChannel.BUNGEE.getChannel());
             messenger.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(),
-                    new StargateBungeePluginMessageListener(this, this,getRegistry()));
+                    new StargateBungeePluginMessageListener(this, this,getRegistry(), getLanguageManager()));
         }
     }
 
@@ -599,7 +599,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private void registerCommands() {
         PluginCommand stargateCommand = this.getCommand("stargate");
         if (stargateCommand != null) {
-            stargateCommand.setExecutor(new CommandStargate());
+            stargateCommand.setExecutor(new CommandStargate(getLanguageManager()));
             stargateCommand.setTabCompleter(new StargateTabCompleter());
         }
     }
@@ -611,10 +611,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     @SuppressWarnings("unused")
     public static ConfigurationAPI getConfigAPIStatic() {
         return instance;
-    }
-
-    public static LanguageManager getLanguageManagerStatic() {
-        return instance.languageManager;
     }
 
     @Override

@@ -26,6 +26,7 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
+import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.util.FakeLanguageManager;
@@ -95,8 +96,8 @@ class BlockEventListenerTest {
     public void portalCreationDestuctionTest() {
         player.setOp(true);
         blockEventListener.onSignChange(new SignChangeEvent(signBlock,player,new String[] {"test", "", "", ""}));
-        
+        Assertions.assertNotNull(registry.getNetwork(LocalNetwork.DEFAULT_NET_ID, false).getPortal("test"));
         blockEventListener.onBlockBreak(new BlockBreakEvent(new Location(world, 0, 0, 0).getBlock(),player));
-        
+        Assertions.assertNull(registry.getNetwork(LocalNetwork.DEFAULT_NET_ID, false).getPortal("test"));
     }
 }

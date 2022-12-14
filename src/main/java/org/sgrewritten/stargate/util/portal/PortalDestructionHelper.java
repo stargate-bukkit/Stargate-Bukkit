@@ -44,7 +44,7 @@ public final class PortalDestructionHelper {
         if (stargateDestroyEvent.getDeny()) {
             if (stargateDestroyEvent.getDenyReason() == null) {
                 player.sendMessage(
-                        Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
+                        languageManager.getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
             } else if (!stargateDestroyEvent.getDenyReason().isEmpty()) {
                 player.sendMessage(stargateDestroyEvent.getDenyReason());
             }
@@ -58,7 +58,7 @@ public final class PortalDestructionHelper {
          */
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_DESTROY)
                 && !Stargate.getEconomyManager().chargePlayer(player, null, stargateDestroyEvent.getCost())) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS));
+            player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return true;
         }
         destroyAction.run();
