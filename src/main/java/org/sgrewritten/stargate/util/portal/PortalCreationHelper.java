@@ -77,20 +77,20 @@ public final class PortalCreationHelper {
      */
     public static RealPortal createPortal(Network network, String name, String destination, String targetServer,
                                           Set<PortalFlag> flags, Gate gate, UUID ownerUUID,
-                                          StargateLogger logger, LanguageManager languageManager) throws InvalidNameException, NameLengthException, BungeeNameException {
+                                          LanguageManager languageManager, RegistryAPI registry) throws InvalidNameException, NameLengthException, BungeeNameException {
         name = NameHelper.getTrimmedName(name);
 
         if (flags.contains(PortalFlag.BUNGEE)) {
             flags.add(PortalFlag.FIXED);
-            Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, Stargate.getRegistryStatic());
-            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, gate, ownerUUID, logger,languageManager);
+            Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, registry);
+            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, gate, ownerUUID,languageManager);
         } else if (flags.contains(PortalFlag.RANDOM)) {
-            return new RandomPortal(network, name, flags, gate, ownerUUID, logger,languageManager);
+            return new RandomPortal(network, name, flags, gate, ownerUUID,languageManager);
         } else if (flags.contains(PortalFlag.NETWORKED)) {
-            return new NetworkedPortal(network, name, flags, gate, ownerUUID, logger,languageManager);
+            return new NetworkedPortal(network, name, flags, gate, ownerUUID,languageManager);
         } else {
             flags.add(PortalFlag.FIXED);
-            return new FixedPortal(network, name, destination, flags, gate, ownerUUID, logger,languageManager);
+            return new FixedPortal(network, name, destination, flags, gate, ownerUUID,languageManager);
         }
     }
 
@@ -106,9 +106,9 @@ public final class PortalCreationHelper {
      * @throws BungeeNameException 
      * @throws NameLengthException 
      */
-    public static RealPortal createPortal(Network network, PortalData portalData, Gate gate, StargateLogger logger, LanguageManager languageManager)
+    public static RealPortal createPortal(Network network, PortalData portalData, Gate gate,LanguageManager languageManager, RegistryAPI registry)
             throws InvalidNameException, NameLengthException, BungeeNameException {
-        return createPortal(network, portalData.name, portalData.destination, portalData.networkName, portalData.flags, gate, portalData.ownerUUID, logger,languageManager);
+        return createPortal(network, portalData.name, portalData.destination, portalData.networkName, portalData.flags, gate, portalData.ownerUUID,languageManager,registry);
     }
 
     /**
@@ -138,8 +138,8 @@ public final class PortalCreationHelper {
         }
 
         UUID ownerUUID = getOwnerUUID(selectedNetwork, player, flags);
-        Gate gate = createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON), Stargate.getInstance());
-        RealPortal portal = createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance(),languageManager);
+        Gate gate = createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON),registry);
+        RealPortal portal = createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID ,languageManager,registry);
 
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, !hasPermission,
@@ -215,8 +215,8 @@ public final class PortalCreationHelper {
      * @throws NameLengthException 
      */
     private static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Gate gate,
-                                                   UUID ownerUUID, StargateLogger logger, LanguageManager languageManager) throws InvalidNameException, NameLengthException, BungeeNameException {
-        return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID, logger,languageManager);
+                                                   UUID ownerUUID, LanguageManager languageManager,RegistryAPI registry) throws InvalidNameException, NameLengthException, BungeeNameException {
+        return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID,languageManager,registry);
     }
 
     /**
@@ -229,7 +229,7 @@ public final class PortalCreationHelper {
      * @throws NoFormatFoundException <p>If no gate format is found that matches the physical gate</p>
      * @throws GateConflictException  <p>If a registered gate conflicts with the new gate</p>
      */
-    private static Gate createGate(Block sign, boolean alwaysOn, StargateLogger logger) throws NoFormatFoundException, GateConflictException {
+    private static Gate createGate(Block sign, boolean alwaysOn,RegistryAPI registry) throws NoFormatFoundException, GateConflictException {
         if (!(Tag.WALL_SIGNS.isTagged(sign.getType()))) {
             throw new NoFormatFoundException();
         }
@@ -237,7 +237,7 @@ public final class PortalCreationHelper {
         Directional signDirection = (Directional) sign.getBlockData();
         Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
         List<GateFormat> gateFormats = GateFormatHandler.getPossibleGateFormatsFromControlBlockMaterial(behind.getType());
-        return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), alwaysOn, logger);
+        return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), alwaysOn, registry);
     }
 
     /**
@@ -252,13 +252,13 @@ public final class PortalCreationHelper {
      * @throws GateConflictException  <p>If the found gate conflicts with another gate</p>
      */
     private static Gate findMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing,
-                                         boolean alwaysOn, StargateLogger logger)
+                                         boolean alwaysOn, RegistryAPI registry)
             throws NoFormatFoundException, GateConflictException {
         Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
         for (GateFormat gateFormat : gateFormats) {
-            logger.logMessage(Level.FINE, "--------- " + gateFormat.getFileName() + " ---------");
+            Stargate.log(Level.FINE, "--------- " + gateFormat.getFileName() + " ---------");
             try {
-                return new Gate(gateFormat, signLocation, signFacing, alwaysOn, logger);
+                return new Gate(gateFormat, signLocation, signFacing, alwaysOn,registry);
             } catch (InvalidStructureException ignored) {
             }
         }

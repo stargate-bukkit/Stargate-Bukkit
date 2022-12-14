@@ -33,6 +33,7 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.property.PluginChannel;
@@ -58,6 +59,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
     private final StargateAPI stargateAPI;
     private final StargateLogger stargateLogger;
+    private RegistryAPI registry;
 
     /**
      * Instantiates a new stargate bungee plugin message listener
@@ -65,9 +67,10 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      * @param stargateAPI    <p>Something implementing the Stargate API</p>
      * @param stargateLogger <p>Something implementing the Stargate logger</p>
      */
-    public StargateBungeePluginMessageListener(StargateAPI stargateAPI, StargateLogger stargateLogger) {
+    public StargateBungeePluginMessageListener(StargateAPI stargateAPI, StargateLogger stargateLogger, RegistryAPI registry) {
         this.stargateAPI = stargateAPI;
         this.stargateLogger = stargateLogger;
+        this.registry = registry;
     }
 
     /**
@@ -118,7 +121,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     break;
                 case PLAYER_TELEPORT:
                     stargateLogger.logMessage(Level.FINEST, "trying to read player join json msg");
-                    BungeeHelper.playerConnect(in.readUTF());
+                    BungeeHelper.playerConnect(in.readUTF(),registry);
                     break;
                 case LEGACY_BUNGEE:
                     BungeeHelper.legacyPlayerConnect(in.readUTF());

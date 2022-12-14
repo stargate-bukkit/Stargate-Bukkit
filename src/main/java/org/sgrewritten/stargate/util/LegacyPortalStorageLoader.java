@@ -104,7 +104,7 @@ public final class LegacyPortalStorageLoader {
         Network network = registry.getNetwork(portalData.networkName,
                 portalData.flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
-        Gate gate = new Gate(portalData, logger);
+        Gate gate = new Gate(portalData);
         Location signLocation = LegacyDataHandler.loadLocation(world, portalProperties[1]);
         Location buttonLocation = LegacyDataHandler.loadLocation(world, portalProperties[2]);
         if (signLocation != null) {
@@ -116,7 +116,7 @@ public final class LegacyPortalStorageLoader {
             gate.addPortalPosition(buttonLocation, PositionType.BUTTON);
         }
 
-        Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, logger,languageManager);
+        Portal portal = PortalCreationHelper.createPortal(network, portalData, gate,languageManager,registry);
 
         // Add the portal to its network and store it to the database
         logger.logMessage(Level.FINE, String.format("Saving portal %s in network %s from old storage... ",

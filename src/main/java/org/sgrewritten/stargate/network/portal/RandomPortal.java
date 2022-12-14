@@ -35,9 +35,9 @@ public class RandomPortal extends AbstractPortal {
      * @throws InvalidNameException <p>If the portal name is invalid</p>
      * @throws NameLengthException 
      */
-    public RandomPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger, LanguageManager languageManager)
+    public RandomPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager)
             throws InvalidNameException, NameLengthException {
-        super(network, name, flags, gate, ownerUUID, logger,languageManager);
+        super(network, name, flags, gate, ownerUUID,languageManager);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class RandomPortal extends AbstractPortal {
         }
         int randomNumber = randomizer.nextInt(destinations.length);
         String destination = destinations[randomNumber];
-        super.logger.logMessage(Level.FINEST, String.format("Chose random destination %s, calculated from integer %d", destination, randomNumber));
+        Stargate.log(Level.FINEST, String.format("Chose random destination %s, calculated from integer %d", destination, randomNumber));
         return network.getPortal(destination);
     }
 

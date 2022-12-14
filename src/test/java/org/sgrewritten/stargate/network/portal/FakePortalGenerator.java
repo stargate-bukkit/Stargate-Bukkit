@@ -64,7 +64,7 @@ public class FakePortalGenerator {
 
         for (int portalNumber = 0; portalNumber < numberOfPortals; portalNumber++) {
             String name = baseName + portalNumber;
-            RealPortal portal = generateFakePortal(world, portalNetwork, name, createInterServerPortals, logger);
+            RealPortal portal = generateFakePortal(world, portalNetwork, name, createInterServerPortals);
             output.put(portal.getName(), portal);
         }
         return output;
@@ -83,8 +83,8 @@ public class FakePortalGenerator {
      * @throws InvalidNameException        <p>If the given portal name is invalid</p>
      * @throws NameLengthException 
      */
-    public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal,
-                                         StargateLogger logger) throws InvalidStructureException, InvalidNameException, NameLengthException {
+    public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal)
+            throws InvalidStructureException, InvalidNameException, NameLengthException {
         Set<PortalFlag> flags = generateRandomFlags();
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
@@ -95,13 +95,13 @@ public class FakePortalGenerator {
         portalData.gateFileName = "fileName.gate";
         portalData.portalType = createInterServerPortal ? StorageType.INTER_SERVER : StorageType.LOCAL;
 
-        Gate gate = new Gate(portalData, logger);
+        Gate gate = new Gate(portalData);
 
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON);
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);
         //To avoid using the Portal#open method on constructor, which uses an unimplemented function in MockBukkit (block-states)
         flags.remove(PortalFlag.ALWAYS_ON);
-        return new FixedPortal(portalNetwork, name, "", flags, gate, UUID.randomUUID(), logger, new FakeLanguageManager());
+        return new FixedPortal(portalNetwork, name, "", flags, gate, UUID.randomUUID(), new FakeLanguageManager());
     }
 
     /**

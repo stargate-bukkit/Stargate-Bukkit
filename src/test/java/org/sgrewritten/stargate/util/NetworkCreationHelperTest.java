@@ -18,6 +18,7 @@ import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
+import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.HashSet;
@@ -41,7 +42,7 @@ class NetworkCreationHelperTest {
         plugin = (FakeStargate) MockBukkit.load(FakeStargate.class);
         permissionManager = new StargatePermissionManager(player, new FakeLanguageManager());
         server.addPlayer(player);
-        registry = new FakeRegistry();
+        registry = new StargateRegistry(new FakeStorage());
         
         emptyNames = new String[]{"", " ", "  "};
     }

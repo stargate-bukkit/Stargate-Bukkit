@@ -81,7 +81,6 @@ public abstract class AbstractPortal implements RealPortal {
     private UUID ownerUUID;
     private final Gate gate;
     private final Set<PortalFlag> flags;
-    protected final StargateLogger logger;
 
     protected long activatedTime;
     protected UUID activator;
@@ -98,14 +97,13 @@ public abstract class AbstractPortal implements RealPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameLengthException <p>If the portal name is invalid</p>
      */
-    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger, LanguageManager languageManager)
+    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager)
             throws NameLengthException {
         this.ownerUUID = ownerUUID;
         this.network = network;
         this.name = name;
         this.flags = flags;
         this.gate = gate;
-        this.logger = logger;
         this.languageManager = languageManager;
         
         name = NameHelper.getTrimmedName(name);
@@ -185,11 +183,11 @@ public abstract class AbstractPortal implements RealPortal {
         StargateCloseEvent closeEvent = new StargateCloseEvent(this, forceClose);
         Bukkit.getPluginManager().callEvent(closeEvent);
         if (closeEvent.isCancelled()) {
-            logger.logMessage(Level.FINE, "Closing event for portal " + getName() + " in network " + getNetwork().getName() + " was canceled");
+            Stargate.log(Level.FINE, "Closing event for portal " + getName() + " in network " + getNetwork().getName() + " was canceled");
             return;
         }
 
-        logger.logMessage(Level.FINE, "Closing the portal");
+        Stargate.log(Level.FINE, "Closing the portal");
         getGate().close();
         drawControlMechanisms();
         openFor = null;
@@ -197,7 +195,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public boolean isOpenFor(Entity target) {
-        logger.logMessage(Level.FINE, String.format("isOpenForUUID = %s", (openFor == null) ? "null" : openFor.toString()));
+        Stargate.log(Level.FINE, String.format("isOpenForUUID = %s", (openFor == null) ? "null" : openFor.toString()));
         return ((openFor == null) || (target.getUniqueId() == openFor));
     }
 
@@ -253,7 +251,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         Teleporter teleporter = new Teleporter(this, origin, portalFacing, entranceFace, useCost,
-                Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.TELEPORT), logger,languageManager);
+                Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.TELEPORT),languageManager);
 
         teleporter.teleport(target);
     }
@@ -263,7 +261,7 @@ public abstract class AbstractPortal implements RealPortal {
         Portal destination = getCurrentDestination();
         if (destination == null) {
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED), logger,languageManager);
+                    0, Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED),languageManager);
             teleporter.teleport(target);
             return;
         }
@@ -271,9 +269,9 @@ public abstract class AbstractPortal implements RealPortal {
         StargateAccessEvent accessEvent = new StargateAccessEvent(target, this, false, null);
         Bukkit.getPluginManager().callEvent(accessEvent);
         if (accessEvent.getDeny()) {
-            logger.logMessage(Level.CONFIG, " Access event was canceled by an external plugin");
+            Stargate.log(Level.CONFIG, " Access event was canceled by an external plugin");
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, accessEvent.getDenyReason(), logger,languageManager);
+                    0, accessEvent.getDenyReason(),languageManager);
             teleporter.teleport(target);
             return;
         }
@@ -353,7 +351,7 @@ public abstract class AbstractPortal implements RealPortal {
 
         for (Location location : this.getPortalPosition(PositionType.SIGN)) {
             if (!(location.getBlock().getState() instanceof Sign)) {
-                logger.logMessage(Level.WARNING, String.format("Could not find a sign for portal %s in network %s \n"
+                Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s \n"
                                 + "This is most likely caused from a bug // please contact developers (use ''sg about'' for github repo)",
                         this.name, this.network.getName()));
                 continue;
@@ -394,12 +392,7 @@ public abstract class AbstractPortal implements RealPortal {
         String[] lines = new String[]{name, "", "", ""};
         getGate().drawControlMechanisms(lines, false);
 
-        for (GateStructureType formatType : GateStructureType.values()) {
-            for (BlockLocation loc : this.getGate().getLocations(formatType)) {
-                Stargate.log(Level.FINEST, "Unregistering type: " + formatType + " location, at: " + loc);
-                Stargate.getRegistryStatic().unRegisterLocation(formatType, loc);
-            }
-        }
+        
         this.isDestroyed = true;
 
         Supplier<Boolean> destroyAction = () -> {

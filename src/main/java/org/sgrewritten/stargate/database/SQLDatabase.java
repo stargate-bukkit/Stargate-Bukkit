@@ -237,13 +237,13 @@ public class SQLDatabase implements StorageAPI {
 
             try {
                 List<PortalPosition> portalPositions = getPortalPositions(portalData);
-                Gate gate = new Gate(portalData, logger);
+                Gate gate = new Gate(portalData);
                 if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
                         && !gate.isValid(portalData.flags.contains(PortalFlag.ALWAYS_ON))) {
                     throw new InvalidStructureException();
                 }
                 gate.addPortalPositions(portalPositions);
-                Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, logger,languageManager);
+                Portal portal = PortalCreationHelper.createPortal(network, portalData, gate,languageManager,registry);
                 network.addPortal(portal, false);
                 Stargate.log(Level.FINEST, "Added as normal portal");
             } catch (InvalidNameException | TranslatableException e) {

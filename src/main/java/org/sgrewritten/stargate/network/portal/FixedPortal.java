@@ -33,8 +33,8 @@ public class FixedPortal extends AbstractPortal {
      * @throws NameLengthException 
      */
     public FixedPortal(Network network, String name, String destinationName, Set<PortalFlag> flags, Gate gate,
-                       UUID ownerUUID, StargateLogger logger, LanguageManager languageManager) throws InvalidNameException, NameLengthException {
-        super(network, name, flags, gate, ownerUUID, logger,languageManager);
+                       UUID ownerUUID, LanguageManager languageManager) throws InvalidNameException, NameLengthException {
+        super(network, name, flags, gate, ownerUUID,languageManager);
         this.destinationName = destinationName;
         this.destination = network.getPortal(destinationName);
     }

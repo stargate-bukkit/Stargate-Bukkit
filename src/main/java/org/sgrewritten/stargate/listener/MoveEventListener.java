@@ -17,6 +17,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.portal.TeleportedEntityRelationDFS;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
@@ -34,7 +35,13 @@ public class MoveEventListener implements Listener {
 
     private static final PlayerTeleportEvent.TeleportCause[] causesToCheck = {PlayerTeleportEvent.TeleportCause.END_GATEWAY,
             PlayerTeleportEvent.TeleportCause.END_PORTAL, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL};
+    private RegistryAPI registry;
 
+    
+    public MoveEventListener(RegistryAPI registry) {
+        this.registry = registry;
+    }
+    
     /**
      * Listens for and cancels any default vehicle portal events caused by stargates
      *
@@ -46,7 +53,7 @@ public class MoveEventListener implements Listener {
         if (NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
             return;
         }
-        if (Stargate.getRegistryStatic().isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
+        if (registry.isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
             event.setCancelled(true);
         }
     }
@@ -74,8 +81,8 @@ public class MoveEventListener implements Listener {
             if (cause != causeToCheck) {
                 continue;
             }
-            if (Stargate.getRegistryStatic().isNextToPortal(event.getFrom(), GateStructureType.IRIS)
-                    || Stargate.getRegistryStatic().getPortal(event.getFrom(), GateStructureType.IRIS) != null) {
+            if (registry.isNextToPortal(event.getFrom(), GateStructureType.IRIS)
+                    || registry.getPortal(event.getFrom(), GateStructureType.IRIS) != null) {
                 event.setCancelled(true);
                 return;
             }
@@ -129,7 +136,7 @@ public class MoveEventListener implements Listener {
         }
 
         if (portal == null) {
-            portal = Stargate.getRegistryStatic().getPortal(toLocation, GateStructureType.IRIS);
+            portal = registry.getPortal(toLocation, GateStructureType.IRIS);
         }
         if (portal == null || !portal.isOpen()) {
             return;
@@ -174,7 +181,7 @@ public class MoveEventListener implements Listener {
         Vector velocity = toLocation.toVector().subtract(fromLocation.toVector());
         List<Location> relevantLocations = getRelevantAdjacentLocations(toLocation, velocity);
         for (Location headingTo : relevantLocations) {
-            RealPortal possiblePortal = Stargate.getRegistryStatic().getPortal(headingTo, GateStructureType.IRIS);
+            RealPortal possiblePortal = registry.getPortal(headingTo, GateStructureType.IRIS);
             if (possiblePortal != null &&
                     possiblePortal.getGate().getFormat().getIrisMaterial(true) == Material.END_PORTAL) {
                 Stargate.log(Level.FINEST, "Found adjacent END_PORTAL Stargate");

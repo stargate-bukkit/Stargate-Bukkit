@@ -8,12 +8,19 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.network.RegistryAPI;
 
 /**
  * A listener specifically for the Paper-only EntityInsideBlockEvent event
  */
 public class EntityInsideBlockEventListener implements Listener {
 
+    private RegistryAPI registry;
+
+    public EntityInsideBlockEventListener(RegistryAPI registry) {
+        this.registry = registry;
+    }
+    
     /**
      * Listens for the entity inside block event and cancels it if it's caused by a player entering a Stargate
      *
@@ -27,7 +34,7 @@ public class EntityInsideBlockEventListener implements Listener {
         Block block = event.getBlock();
         //Block any results of entering a default portal block
         if ((block.getType() == Material.END_PORTAL || block.getType() == Material.NETHER_PORTAL) &&
-                Stargate.getRegistryStatic().getPortal(block.getLocation(), GateStructureType.IRIS) != null) {
+                registry.getPortal(block.getLocation(), GateStructureType.IRIS) != null) {
             event.setCancelled(true);
         }
     }

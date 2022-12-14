@@ -49,7 +49,6 @@ public class Teleporter {
     boolean hasPermission;
     private String teleportMessage;
     private final Set<Entity> teleportedEntities = new HashSet<>();
-    private final StargateLogger logger;
     private List<LivingEntity> nearbyLeashed;
     private LanguageManager languageManager;
 
@@ -65,7 +64,7 @@ public class Teleporter {
      * @param logger
      */
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
-                      int cost, String teleportMessage, StargateLogger logger, LanguageManager languageManager) {
+                      int cost, String teleportMessage, LanguageManager languageManager) {
         // Center the destination in the destination block
         this.exit = destination.getExit().clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
@@ -74,7 +73,6 @@ public class Teleporter {
         this.rotation = VectorUtils.calculateAngleDifference(entranceFace, destinationFace);
         this.cost = cost;
         this.teleportMessage = teleportMessage;
-        this.logger = logger;
         this.languageManager = languageManager;
     }
 
@@ -163,7 +161,7 @@ public class Teleporter {
     private void refundPlayers(List<Player> playersToRefund) {
         for (Player player : playersToRefund) {
             if (!Stargate.getEconomyManager().refundPlayer(player, this.origin, this.cost)) {
-                logger.logMessage(Level.WARNING, "Unable to refund player " + player + " " + this.cost);
+                Stargate.log(Level.WARNING, "Unable to refund player " + player + " " + this.cost);
             }
         }
     }
@@ -228,9 +226,9 @@ public class Teleporter {
             exit.getChunk().load();
         }
 
-        logger.logMessage(Level.FINEST, "Trying to teleport surrounding leashed entities");
+        Stargate.log(Level.FINEST, "Trying to teleport surrounding leashed entities");
         teleportNearbyLeashedEntities(target, exit, rotation);
-        logger.logMessage(Level.FINEST, "Teleporting entity " + target + " to exit location " + exit);
+        Stargate.log(Level.FINEST, "Teleporting entity " + target + " to exit location " + exit);
         teleport(target, exit, rotation);
     }
 
@@ -310,7 +308,7 @@ public class Teleporter {
                 msg = String.format(msg, origin.getName(), origin.getNetwork().getName());
             }
 
-            logger.logMessage(Level.FINE, msg);
+            Stargate.log(Level.FINE, msg);
         }
 
         if (target instanceof PoweredMinecart) {
@@ -335,13 +333,13 @@ public class Teleporter {
         poweredMinecart.setVelocity(new Vector());
 
         //Teleport the powered minecart
-        logger.logMessage(Level.FINEST, "Teleporting Powered Minecart to " + exit);
+        Stargate.log(Level.FINEST, "Teleporting Powered Minecart to " + exit);
         teleport(poweredMinecart, exit);
         poweredMinecart.setFuel(fuel);
 
         Stargate.addSynchronousTickAction(new DelayedAction(1, () -> {
             //Re-apply fuel and velocity
-            logger.logMessage(Level.FINEST, "Setting new velocity " + targetVelocity);
+            Stargate.log(Level.FINEST, "Setting new velocity " + targetVelocity);
             poweredMinecart.setVelocity(targetVelocity);
 
             //Use the paper-only methods for setting the powered minecart's actual push
@@ -349,11 +347,11 @@ public class Teleporter {
                 Vector direction = destinationFace.getDirection();
                 double pushX = -direction.getBlockX();
                 double pushZ = -direction.getBlockZ();
-                logger.logMessage(Level.FINEST, "Setting push: X = " + pushX + " Z = " + pushZ);
+                Stargate.log(Level.FINEST, "Setting push: X = " + pushX + " Z = " + pushZ);
                 NonLegacyMethod.PUSH_X.invoke(poweredMinecart, pushX);
                 NonLegacyMethod.PUSH_Z.invoke(poweredMinecart, pushZ);
             } else {
-                logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
+                Stargate.log(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
                         " use Paper 1.18.2+ for this feature.", location));
             }
             return true;
@@ -370,7 +368,7 @@ public class Teleporter {
         target.teleport(exitPoint);
         boatsTeleporting.remove(target);
         if (origin != null && !origin.hasFlag(PortalFlag.SILENT)) {
-            logger.logMessage(Level.FINE, "Sending player teleport message" + teleportMessage);
+            Stargate.log(Level.FINE, "Sending player teleport message" + teleportMessage);
             target.sendMessage(teleportMessage);
         }
     }

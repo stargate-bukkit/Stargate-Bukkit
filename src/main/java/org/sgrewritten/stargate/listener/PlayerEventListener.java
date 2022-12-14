@@ -22,6 +22,7 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
+import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.PluginChannel;
@@ -43,9 +44,11 @@ public class PlayerEventListener implements Listener {
     private static long eventTime;
     private static PlayerInteractEvent previousEvent;
     private LanguageManager languageManager;
+    private RegistryAPI registry;
     
-    public PlayerEventListener(LanguageManager languageManager){
+    public PlayerEventListener(LanguageManager languageManager, RegistryAPI registry){
         this.languageManager = languageManager;
+        this.registry = registry;
     }
 
     /**
@@ -65,7 +68,7 @@ public class PlayerEventListener implements Listener {
         }
 
         // TODO material optimisation?
-        RealPortal portal = Stargate.getRegistryStatic().getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
+        RealPortal portal = registry.getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
         if (portal == null) {
             return;
         }

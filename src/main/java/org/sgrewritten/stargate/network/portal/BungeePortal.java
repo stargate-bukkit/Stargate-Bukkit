@@ -49,8 +49,8 @@ public class BungeePortal extends AbstractPortal {
      * @throws NameLengthException 
      */
     public BungeePortal(Network network, String name, String destination, String destinationServer,
-                        Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger, LanguageManager languageManager) throws InvalidNameException, BungeeNameException, NameLengthException {
-        super(network, name, flags, gate, ownerUUID, logger,languageManager);
+                        Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager) throws InvalidNameException, BungeeNameException, NameLengthException {
+        super(network, name, flags, gate, ownerUUID,languageManager);
 
         
         destination = NameHelper.getTrimmedName(destination);

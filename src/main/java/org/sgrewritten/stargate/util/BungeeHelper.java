@@ -195,7 +195,7 @@ public final class BungeeHelper {
      *
      * @param message <p>The player teleport message to parse and handle</p>
      */
-    public static void playerConnect(String message) {
+    public static void playerConnect(String message, RegistryAPI registry) {
         JsonParser parser = new JsonParser();
         Stargate.log(Level.FINEST, message);
 
@@ -207,12 +207,12 @@ public final class BungeeHelper {
         Player player = Stargate.getInstance().getServer().getPlayer(playerName);
         if (player == null) {
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
-            BungeeHelper.addToQueue(Stargate.getRegistryStatic(), playerName, portalName, networkName, true);
+            BungeeHelper.addToQueue(registry, playerName, portalName, networkName, true);
             return;
         }
 
         Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
-        Network network = Stargate.getRegistryStatic().getNetwork(networkName, true);
+        Network network = registry.getNetwork(networkName, true);
         if (network == null) {
             player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.BUNGEE_INVALID_NETWORK));
             return;

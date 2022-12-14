@@ -72,6 +72,16 @@ public class StargateRegistry implements RegistryAPI {
         } catch (StorageWriteException e) {
             e.printStackTrace();
         }
+
+        if (portal instanceof RealPortal) {
+            RealPortal realPortal = (RealPortal) portal;
+            for (GateStructureType formatType : GateStructureType.values()) {
+                for (BlockLocation loc : realPortal.getGate().getLocations(formatType)) {
+                    Stargate.log(Level.FINEST, "Unregistering type: " + formatType + " location, at: " + loc);
+                    this.unRegisterLocation(formatType, loc);
+                }
+            }
+        }
     }
 
     @Override

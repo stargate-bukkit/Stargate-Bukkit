@@ -13,6 +13,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.AbstractPortal;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
@@ -42,7 +43,7 @@ public final class BStatsHelper {
      * <p>
      * A Stargate plugin instance</p>
      */
-    public static void registerMetrics(int pluginId, JavaPlugin plugin) {
+    public static void registerMetrics(int pluginId, JavaPlugin plugin,RegistryAPI registry) {
         Metrics metrics = new Metrics(plugin, pluginId);
 
         metrics.addCustomChart(new SimplePie("gateformats", () -> String.valueOf(GateFormatHandler.formatsStored())));
@@ -50,14 +51,14 @@ public final class BStatsHelper {
         metrics.addCustomChart(new SingleLineChart("totalPortals", () -> AbstractPortal.portalCount));
 
         metrics.addCustomChart(
-                new SimplePie("networksNumber", () -> String.valueOf(Stargate.getRegistryStatic().getNetworkMap().size()
-                        + Stargate.getRegistryStatic().getBungeeNetworkMap().size())));
+                new SimplePie("networksNumber", () -> String.valueOf(registry.getNetworkMap().size()
+                        + registry.getBungeeNetworkMap().size())));
 
         // Registers the line chart with the number of underwater gates present on the server.
-        registerUnderwaterCount(metrics);
+        registerUnderwaterCount(metrics,registry);
 
         // Registers the pie chart with the number of gates present on the largest network on this server
-        registerNetworkSize(metrics);
+        registerNetworkSize(metrics,registry);
 
         // Registers the all addons active on this instance.
         registerAddons(metrics);
@@ -168,17 +169,17 @@ public final class BStatsHelper {
      * <p>
      * The metrics object to register metrics to</p>
      */
-    private static void registerNetworkSize(Metrics metrics) {
+    private static void registerNetworkSize(Metrics metrics, RegistryAPI registry) {
         metrics.addCustomChart(new SimplePie("largestNetwork", () -> {
             int largest = 0;
             int count;
-            for (Network localNetwork : Stargate.getRegistryStatic().getNetworkMap().values()) {
+            for (Network localNetwork : registry.getNetworkMap().values()) {
                 count = localNetwork.size();
                 if (largest <= count) {
                     largest = count;
                 }
             }
-            for (Network bungeeNetwork : Stargate.getRegistryStatic().getBungeeNetworkMap().values()) {
+            for (Network bungeeNetwork : registry.getBungeeNetworkMap().values()) {
                 count = bungeeNetwork.size();
                 if (largest <= count) {
                     largest = count;
@@ -222,11 +223,11 @@ public final class BStatsHelper {
      * <p>
      * The metrics object to register metrics to</p>
      */
-    private static void registerUnderwaterCount(Metrics metrics) {
+    private static void registerUnderwaterCount(Metrics metrics, RegistryAPI registry) {
         metrics.addCustomChart(new SingleLineChart("underwaterCount", () -> {
             int count = 0;
-            Collection<Network> totalNetworkList = Stargate.getRegistryStatic().getNetworkMap().values();
-            totalNetworkList.addAll(Stargate.getRegistryStatic().getBungeeNetworkMap().values());
+            Collection<Network> totalNetworkList = registry.getNetworkMap().values();
+            totalNetworkList.addAll(registry.getBungeeNetworkMap().values());
             for(Network network : totalNetworkList) {
                 for(Portal portal : network.getAllPortals()) {
                     if(!(portal instanceof RealPortal)) {

@@ -42,7 +42,7 @@ public class LocalNetwork implements Network {
     protected SQLDatabaseAPI database;
     protected String name;
     protected String id;
-    private RegistryAPI registry;
+    protected RegistryAPI registry;
 
     private NetworkType networkType;
 
@@ -136,7 +136,7 @@ public class LocalNetwork implements Network {
         if (!removeFromDatabase) {
             return;
         }
-        Stargate.getRegistryStatic().removePortal(portal, StorageType.LOCAL);
+        registry.removePortal(portal, StorageType.LOCAL);
     }
 
     @Override

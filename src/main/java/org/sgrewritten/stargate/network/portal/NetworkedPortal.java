@@ -53,8 +53,8 @@ public class NetworkedPortal extends AbstractPortal {
      * @throws NameLengthException 
      */
     public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID,
-                           StargateLogger logger, LanguageManager languageManager) throws InvalidNameException, NameLengthException {
-        super(network, name, flags, gate, ownerUUID, logger,languageManager);
+                           LanguageManager languageManager) throws InvalidNameException, NameLengthException {
+        super(network, name, flags, gate, ownerUUID,languageManager);
     }
 
     @Override

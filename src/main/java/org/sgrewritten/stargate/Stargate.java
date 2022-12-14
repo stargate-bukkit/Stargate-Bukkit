@@ -169,7 +169,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
             //Register bStats metrics
             int pluginId = 13629;
-            BStatsHelper.registerMetrics(pluginId, this);
+            BStatsHelper.registerMetrics(pluginId, this, getRegistry());
             servicesManager = this.getServer().getServicesManager();
             servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
         } catch (StargateInitializationException exception) {
@@ -374,14 +374,14 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      */
     private void registerListeners() {
         pluginManager.registerEvents(new BlockEventListener(getRegistry(),this.getLanguageManager()), this);
-        pluginManager.registerEvents(new MoveEventListener(), this);
-        pluginManager.registerEvents(new PlayerEventListener(this.getLanguageManager()), this);
+        pluginManager.registerEvents(new MoveEventListener(getRegistry()), this);
+        pluginManager.registerEvents(new PlayerEventListener(this.getLanguageManager(),getRegistry()), this);
         pluginManager.registerEvents(new PluginEventListener(), this);
         if (NonLegacyMethod.PLAYER_ADVANCEMENT_CRITERION_EVENT.isImplemented()) {
-            pluginManager.registerEvents(new PlayerAdvancementListener(), this);
+            pluginManager.registerEvents(new PlayerAdvancementListener(getRegistry()), this);
         }
         if (NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
-            pluginManager.registerEvents(new EntityInsideBlockEventListener(), this);
+            pluginManager.registerEvents(new EntityInsideBlockEventListener(getRegistry()), this);
         }
     }
 
@@ -510,7 +510,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
             messenger.registerOutgoingPluginChannel(this, PluginChannel.BUNGEE.getChannel());
             messenger.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(),
-                    new StargateBungeePluginMessageListener(this, this));
+                    new StargateBungeePluginMessageListener(this, this,getRegistry()));
         }
     }
 
@@ -602,10 +602,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             stargateCommand.setExecutor(new CommandStargate());
             stargateCommand.setTabCompleter(new StargateTabCompleter());
         }
-    }
-
-    public static RegistryAPI getRegistryStatic() {
-        return instance.registry;
     }
 
     public static StorageAPI getStorageAPIStatic() {
