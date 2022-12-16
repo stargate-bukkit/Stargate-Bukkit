@@ -164,6 +164,7 @@ public class Gate implements GateAPI {
                 continue;
             }
             Material buttonMaterial = ButtonHelper.getButtonMaterial(getFormat().getIrisMaterial(false));
+            Stargate.log(Level.FINEST, "buttonMaterial: " + buttonMaterial);
             Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
             buttonData.setFacing(facing);
 
