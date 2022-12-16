@@ -236,7 +236,7 @@ public class StargatePermissionManager implements PermissionManager {
                 return languageManager.getErrorMessage(TranslatableMessage.GATE_DENY);
             }
             if (permissionNode.contains("type")) {
-                PortalFlag flag = PortalFlag.valueOf(permissionNode.split(".type.")[1]);
+                PortalFlag flag = PortalFlag.valueOf(permissionNode.split(".type.")[1].charAt(0));
                 if (flag == PortalFlag.BUNGEE || flag == PortalFlag.FANCY_INTER_SERVER) {
                     return languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DENY);
                 }
