@@ -126,11 +126,11 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>net.TheDgtl.Stargate.util.bstats</shadedPattern>
+                            <shadedPattern>org.sgrewritten.stargate.util.bstats</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.cryptomorin.xseries.XMaterial</pattern>
-                            <shadedPattern>net.TheDgtl.Stargate.util.XMaterial</shadedPattern>
+                            <shadedPattern>org.sgrewritten.stargate.util.XMaterial</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
