@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.network.portal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.awt.Desktop.Action;
 import java.io.File;
 import java.util.Objects;
 
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.FakeStargateLogger;
+import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -21,8 +23,10 @@ import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateRegistry;
+import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.util.FakeLanguageManager;
 import org.sgrewritten.stargate.util.FakeStorage;
+import org.sgrewritten.stargate.action.SimpleAction;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
@@ -43,6 +47,7 @@ class TeleporterTest {
     private static Teleporter teleporter;
     private static FakePortalGenerator fakePortalGenerator;
     private static StargateRegistry registry;
+    private static SynchronousPopulator populator;
     private static final File testGatesDir = new File("src/test/resources/gates");
     
     @BeforeAll
@@ -58,10 +63,14 @@ class TeleporterTest {
         
         vehicle = world.spawnEntity(new Location(world,0,0,0), EntityType.HORSE);
         vehicle.addPassenger(player);
-        Network network = new LocalNetwork("custom",NetworkType.CUSTOM);
+        Network network = new LocalNetwork("custom", NetworkType.CUSTOM);
         RealPortal origin = fakePortalGenerator.generateFakePortal(world, network, "origin", false);
         RealPortal destination = fakePortalGenerator.generateFakePortal(world, network, "destination", false);
-        teleporter = new Teleporter(destination, origin, destination.getGate().getFacing(), origin.getGate().getFacing(), 0, "empty", new FakeLanguageManager());
+        populator = new SynchronousPopulator();
+        teleporter = new Teleporter(destination, origin, destination.getGate().getFacing(),
+                origin.getGate().getFacing(), 0, "empty", new FakeLanguageManager(), new FakeEconomyManager(),
+                (action) -> populator.addAction(action));
+
     }
     
     @AfterAll
@@ -71,6 +80,9 @@ class TeleporterTest {
 
     @Test
     public void teleport() {
-        teleporter.teleport(player);
+        teleporter.teleport(vehicle);
+        while(!populator.hasCompletedAllTasks()) {
+            populator.run();
+        }
     }
 }

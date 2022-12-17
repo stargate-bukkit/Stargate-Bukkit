@@ -116,4 +116,8 @@ public class SynchronousPopulator implements Runnable {
         }
     }
 
+    public boolean hasCompletedAllTasks() {
+        return populatorQueue.isEmpty() && bungeePopulatorQueue.isEmpty() && addList.isEmpty() && bungeeAddList.isEmpty();
+    }
+
 }
