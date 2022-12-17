@@ -12,7 +12,7 @@ import java.util.logging.Level;
 /**
  * Cycles through a queue of actions everytime the {@link SynchronousPopulator#run()} function is triggered.
  *
- * <p>If used with the {@link org.bukkit.scheduler.BukkitScheduler#scheduleSyncRepeatingTask()} function, you can use
+ * <p>If used with the {@link org.bukkit.scheduler.BukkitScheduler#scheduleSyncRepeatingTask(JavaPlugin,Runnable,long,long)} function, you can use
  * this as a handy way to do synchronous tasks (tasks that happens during a specific tick).
  * Warning: Running this once, even by running forceDoAllTasks does not guarantee all tasks to finish.</p>
  *
@@ -114,6 +114,10 @@ public class SynchronousPopulator implements Runnable {
                 iterator.remove();
             }
         }
+    }
+
+    public boolean hasCompletedAllTasks() {
+        return populatorQueue.isEmpty() && bungeePopulatorQueue.isEmpty() && addList.isEmpty() && bungeeAddList.isEmpty();
     }
 
 }

@@ -1,7 +1,5 @@
 package org.sgrewritten.stargate.network.portal;
 
-import org.sgrewritten.stargate.exception.NoFlagFoundException;
-
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -100,11 +98,17 @@ public enum PortalFlag {
      * A stargate on the default network
      */
     DEFAULT_NETWORK('5', false),
+    
+    /**
+     * A stargate custom network
+     */
+    CUSTOM_NETWORK('6', false),
 
     /**
      * A stargate on the terminal network
+     * NOT IMPLEMENTED AT THE MOMENT, temporary an internal flag (inaccessible)
      */
-    TERMINAL_NETWORK('6', false);
+    TERMINAL_NETWORK('T', false); 
 
     private final boolean isUserSpecifiable;
     private final char characterRepresentation;
@@ -154,7 +158,7 @@ public enum PortalFlag {
         for (char character : charArray) {
             try {
                 foundFlags.add(PortalFlag.valueOf(character));
-            } catch (NoFlagFoundException ignored) {
+            } catch (IllegalArgumentException ignored) {
             }
         }
         return foundFlags;
@@ -165,9 +169,9 @@ public enum PortalFlag {
      *
      * @param label <p>A character representing a portal flag</p>
      * @return <p>The portal flag represented by the character</p>
-     * @throws NoFlagFoundException <p>If unable to find a matching flag</p>
+     * @throws IllegalArgumentException <p>If unable to find a matching flag</p>
      */
-    public static PortalFlag valueOf(char label) throws NoFlagFoundException {
+    public static PortalFlag valueOf(char label) throws IllegalArgumentException {
         if (map.isEmpty()) {
             for (PortalFlag flag : values()) {
                 map.put(flag.characterRepresentation, flag);
@@ -178,7 +182,7 @@ public enum PortalFlag {
         if (flag != null) {
             return flag;
         } else {
-            throw new NoFlagFoundException();
+            throw new IllegalArgumentException();
         }
     }
 

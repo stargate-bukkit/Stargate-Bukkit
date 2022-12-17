@@ -8,7 +8,7 @@ import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
@@ -25,7 +25,7 @@ import java.util.logging.Level;
 public class PortalStorageHelper {
 
 
-    public static PortalData loadPortalData(ResultSet resultSet, PortalType portalType) throws SQLException {
+    public static PortalData loadPortalData(ResultSet resultSet, StorageType portalType) throws SQLException {
         PortalData portalData = new PortalData();
         portalData.name = resultSet.getString("name");
         portalData.networkName = resultSet.getString("network");
@@ -49,7 +49,7 @@ public class PortalStorageHelper {
         portalData.facing = getBlockFaceFromOrdinal(Integer.parseInt(resultSet.getString("facing")));
         portalData.portalType = portalType;
         //TODO Check if portalType is necessary to keep track of // there's already flags.contains(PortalFlag.FANCY_INTERSERVER)
-        if (portalType == PortalType.INTER_SERVER) {
+        if (portalType == StorageType.INTER_SERVER) {
             portalData.serverUUID = resultSet.getString("homeServerId");
             Stargate.log(Level.FINEST, "serverUUID = " + portalData.serverUUID);
             if (!portalData.serverUUID.equals(Stargate.getServerUUID())) {
@@ -72,7 +72,7 @@ public class PortalStorageHelper {
 
     public static void addPortalPosition(PreparedStatement addPositionStatement, RealPortal portal, PortalPosition portalPosition) throws SQLException {
         addPositionStatement.setString(1, portal.getName());
-        addPositionStatement.setString(2, portal.getNetwork().getName());
+        addPositionStatement.setString(2, portal.getNetwork().getId());
         addPositionStatement.setString(3, String.valueOf(portalPosition.getPositionLocation().getBlockX()));
         addPositionStatement.setString(4, String.valueOf(portalPosition.getPositionLocation().getBlockY()));
         addPositionStatement.setString(5, String.valueOf(-portalPosition.getPositionLocation().getBlockZ()));
@@ -87,11 +87,10 @@ public class PortalStorageHelper {
      * @param world            <p>The world to load portal data for</p>
      * @return <p>The loaded portal data</p>
      */
-    public static PortalData loadPortalData(String[] portalProperties, World world) {
+    public static PortalData loadPortalData(String[] portalProperties, World world, String defaultNetworkName) {
         PortalData portalData = new PortalData();
         portalData.name = portalProperties[0];
-        portalData.networkName = (portalProperties.length > 9) ? portalProperties[9] : ConfigurationHelper.getString(
-                ConfigurationOption.DEFAULT_NETWORK);
+        portalData.networkName = (portalProperties.length > 9) ? portalProperties[9] : defaultNetworkName;
 
         Stargate.log(Level.FINEST, String.format("-----------------Loading portal %s in network %s--------------" +
                 "--------", portalData.name, portalData.networkName));
@@ -113,6 +112,14 @@ public class PortalStorageHelper {
         portalData.flags = LegacyDataHandler.parseFlags(portalProperties);
         if (portalData.destination == null || portalData.destination.trim().isEmpty()) {
             portalData.flags.add(PortalFlag.NETWORKED);
+        }
+        if(portalProperties.length <= 9 || portalData.name.equals(defaultNetworkName)) {
+            portalData.flags.add(PortalFlag.DEFAULT_NETWORK);
+        } else if (!ownerString.isEmpty()
+                && Bukkit.getOfflinePlayer(portalData.ownerUUID).getName().equals(portalData.name)) {
+            portalData.flags.add(PortalFlag.PERSONAL_NETWORK);
+        } else {
+            portalData.flags.add(PortalFlag.CUSTOM_NETWORK);
         }
         return portalData;
     }

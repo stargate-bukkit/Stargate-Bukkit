@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.manager;
 
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RealPortal;
@@ -64,10 +65,11 @@ public interface PermissionManager {
     /**
      * Checks whether the entity is allowed to create stargates in the given network
      *
-     * @param network <p>The formatted name of the network to check</p>
+     * @param network    <p>The name of the network to check</p>
+     * @param type       <p> The type if the network to check</p>
      * @return <p>True if the entity is allowed to create stargates</p>
      */
-    boolean canCreateInNetwork(String network);
+    boolean canCreateInNetwork(String network, NetworkType type);
 
     /**
      * Gets the deny-message to display if a previous permission check returned false

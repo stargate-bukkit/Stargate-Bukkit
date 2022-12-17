@@ -15,14 +15,21 @@ import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.event.StargateCreateEvent;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
+import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.name.BungeeNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.gate.GateFormat;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.FixedPortal;
 import org.sgrewritten.stargate.network.portal.NetworkedPortal;
@@ -62,25 +69,28 @@ public final class PortalCreationHelper {
      * @param flags        <p>The flags enabled for the portal</p>
      * @param gate         <p>The gate belonging to the portal</p>
      * @param ownerUUID    <p>The UUID of the portal's owner</p>
+     * @param logger
      * @return <p>A new portal</p>
-     * @throws NameErrorException <p>If the portal's name is invalid</p>
+     * @throws InvalidNameException <p>If the portal's name is invalid</p>
+     * @throws NameLengthException 
+     * @throws BungeeNameException 
      */
     public static RealPortal createPortal(Network network, String name, String destination, String targetServer,
                                           Set<PortalFlag> flags, Gate gate, UUID ownerUUID,
-                                          StargateLogger logger) throws NameErrorException {
+                                          LanguageManager languageManager, RegistryAPI registry) throws InvalidNameException, NameLengthException, BungeeNameException {
         name = NameHelper.getTrimmedName(name);
 
         if (flags.contains(PortalFlag.BUNGEE)) {
             flags.add(PortalFlag.FIXED);
-            Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), new HashSet<>());
-            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, gate, ownerUUID, logger);
+            Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, registry);
+            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, gate, ownerUUID,languageManager);
         } else if (flags.contains(PortalFlag.RANDOM)) {
-            return new RandomPortal(network, name, flags, gate, ownerUUID, logger);
+            return new RandomPortal(network, name, flags, gate, ownerUUID,languageManager);
         } else if (flags.contains(PortalFlag.NETWORKED)) {
-            return new NetworkedPortal(network, name, flags, gate, ownerUUID, logger);
+            return new NetworkedPortal(network, name, flags, gate, ownerUUID,languageManager);
         } else {
             flags.add(PortalFlag.FIXED);
-            return new FixedPortal(network, name, destination, flags, gate, ownerUUID, logger);
+            return new FixedPortal(network, name, destination, flags, gate, ownerUUID,languageManager);
         }
     }
 
@@ -90,12 +100,15 @@ public final class PortalCreationHelper {
      * @param network    <p>The network the portal belongs to</p>
      * @param portalData <p>Data of the portal </p>
      * @param gate       <p>The gate belonging to the portal</p>
+     * @param logger
      * @return <p>A new portal</p>
-     * @throws NameErrorException <p>If the portal's name is invalid</p>
+     * @throws InvalidNameException <p>If the portal's name is invalid</p>
+     * @throws BungeeNameException 
+     * @throws NameLengthException 
      */
-    public static RealPortal createPortal(Network network, PortalData portalData, Gate gate, StargateLogger logger)
-            throws NameErrorException {
-        return createPortal(network, portalData.name, portalData.destination, portalData.networkName, portalData.flags, gate, portalData.ownerUUID, logger);
+    public static RealPortal createPortal(Network network, PortalData portalData, Gate gate,LanguageManager languageManager, RegistryAPI registry)
+            throws InvalidNameException, NameLengthException, BungeeNameException {
+        return createPortal(network, portalData.name, portalData.destination, portalData.networkName, portalData.flags, gate, portalData.ownerUUID,languageManager,registry);
     }
 
     /**
@@ -109,21 +122,24 @@ public final class PortalCreationHelper {
      * @param cost              <p>The cost of creating the new stargate</p>
      * @param permissionManager <p>The permission manager to use for checking the player's permissions</p>
      * @param errorMessage      <p>The error message to display to the player</p>
-     * @throws NameErrorException     <p>If the name of the stargate does not follow set rules</p>
+     * @param registry          <p>Where the new stargate will be registered</p>
+     * @throws InvalidNameException     <p>If the name of the stargate does not follow set rules</p>
      * @throws GateConflictException  <p>If the gate's physical structure is in conflict with another</p>
      * @throws NoFormatFoundException <p>If no known format matches the built stargate</p>
+     * @throws TranslatableException 
      */
-    public static void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation, Set<PortalFlag> flags,
-                                         Player player, int cost, StargatePermissionManager permissionManager, TranslatableMessage errorMessage)
-            throws NameErrorException, GateConflictException, NoFormatFoundException {
+    public static void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation,
+            Set<PortalFlag> flags, Player player, int cost, StargatePermissionManager permissionManager,
+            TranslatableMessage errorMessage, RegistryAPI registry,LanguageManager languageManager)
+            throws GateConflictException, NoFormatFoundException, TranslatableException, InvalidNameException {
         if (errorMessage != null) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(errorMessage));
+            player.sendMessage(languageManager.getErrorMessage(errorMessage));
             return;
         }
 
         UUID ownerUUID = getOwnerUUID(selectedNetwork, player, flags);
-        Gate gate = createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON), Stargate.getInstance());
-        RealPortal portal = createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, Stargate.getInstance());
+        Gate gate = createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON),registry);
+        RealPortal portal = createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID ,languageManager,registry);
 
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, !hasPermission,
@@ -135,7 +151,7 @@ public final class PortalCreationHelper {
         if (stargateCreateEvent.getDeny()) {
             Stargate.log(Level.CONFIG, " Event was denied due to lack of permission or an add-on");
             if (stargateCreateEvent.getDenyReason() == null) {
-                player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
+                player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
             } else if (!stargateCreateEvent.getDenyReason().isEmpty()) {
                 player.sendMessage(stargateCreateEvent.getDenyReason());
             }
@@ -143,30 +159,30 @@ public final class PortalCreationHelper {
         }
 
         if (selectedNetwork.isPortalNameTaken(portal.getName())) {
-            throw new NameErrorException(TranslatableMessage.ALREADY_EXIST);
+            throw new NameConflictException(String.format("portal %s in network %s already exists", portal.getName(), selectedNetwork.getId()));
         }
 
         //Display an error if trying to create portals across servers while the feature is disabled
         if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
                 && !ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
+            player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DISABLED));
             return;
         }
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER) && !ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.INTER_SERVER_DISABLED));
+            player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.INTER_SERVER_DISABLED));
             return;
         }
 
         //Charge the player as necessary for the portal creation
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_CREATE) &&
                 !Stargate.getEconomyManager().chargePlayer(player, null, stargateCreateEvent.getCost())) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS));
+            player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return;
         }
 
         //Warn the player if their portal is interfering with spawn protection
         if (SpawnDetectionHelper.isInterferingWithSpawnProtection(gate, signLocation.getLocation())) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getWarningMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
+            player.sendMessage(languageManager.getWarningMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
 
         //Save the portal and inform the user
@@ -178,9 +194,9 @@ public final class PortalCreationHelper {
         selectedNetwork.updatePortals();
         Stargate.log(Level.FINE, "A Gate format matches");
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.CREATE_PERSONAL));
+            player.sendMessage(languageManager.getMessage(TranslatableMessage.CREATE_PERSONAL));
         } else {
-            String unformattedMessage = Stargate.getLanguageManagerStatic().getMessage(TranslatableMessage.CREATE);
+            String unformattedMessage = languageManager.getMessage(TranslatableMessage.CREATE);
             player.sendMessage(TranslatableMessageFormatter.formatNetwork(unformattedMessage, selectedNetwork.getName()));
         }
     }
@@ -194,11 +210,13 @@ public final class PortalCreationHelper {
      * @param gate      <p>The gate belonging to the portal</p>
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @return <p>A new portal</p>
-     * @throws NameErrorException <p>If the portal's name is invalid</p>
+     * @throws InvalidNameException <p>If the portal's name is invalid</p>
+     * @throws BungeeNameException 
+     * @throws NameLengthException 
      */
     private static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Gate gate,
-                                                   UUID ownerUUID, StargateLogger logger) throws NameErrorException {
-        return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID, logger);
+                                                   UUID ownerUUID, LanguageManager languageManager,RegistryAPI registry) throws InvalidNameException, NameLengthException, BungeeNameException {
+        return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID,languageManager,registry);
     }
 
     /**
@@ -211,7 +229,7 @@ public final class PortalCreationHelper {
      * @throws NoFormatFoundException <p>If no gate format is found that matches the physical gate</p>
      * @throws GateConflictException  <p>If a registered gate conflicts with the new gate</p>
      */
-    private static Gate createGate(Block sign, boolean alwaysOn, StargateLogger logger) throws NoFormatFoundException, GateConflictException {
+    private static Gate createGate(Block sign, boolean alwaysOn,RegistryAPI registry) throws NoFormatFoundException, GateConflictException {
         if (!(Tag.WALL_SIGNS.isTagged(sign.getType()))) {
             throw new NoFormatFoundException();
         }
@@ -219,7 +237,7 @@ public final class PortalCreationHelper {
         Directional signDirection = (Directional) sign.getBlockData();
         Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
         List<GateFormat> gateFormats = GateFormatHandler.getPossibleGateFormatsFromControlBlockMaterial(behind.getType());
-        return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), alwaysOn, logger);
+        return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), alwaysOn, registry);
     }
 
     /**
@@ -234,13 +252,13 @@ public final class PortalCreationHelper {
      * @throws GateConflictException  <p>If the found gate conflicts with another gate</p>
      */
     private static Gate findMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing,
-                                         boolean alwaysOn, StargateLogger logger)
+                                         boolean alwaysOn, RegistryAPI registry)
             throws NoFormatFoundException, GateConflictException {
         Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
         for (GateFormat gateFormat : gateFormats) {
-            logger.logMessage(Level.FINE, "--------- " + gateFormat.getFileName() + " ---------");
+            Stargate.log(Level.FINE, "--------- " + gateFormat.getFileName() + " ---------");
             try {
-                return new Gate(gateFormat, signLocation, signFacing, alwaysOn, logger);
+                return new Gate(gateFormat, signLocation, signFacing, alwaysOn,registry);
             } catch (InvalidStructureException ignored) {
             }
         }
@@ -260,7 +278,7 @@ public final class PortalCreationHelper {
      */
     private static UUID getOwnerUUID(Network network, Player player, Set<PortalFlag> flags) {
         if (network != null && flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            return UUID.fromString(network.getName());
+            return UUID.fromString(network.getId());
         } else {
             return player.getUniqueId();
         }

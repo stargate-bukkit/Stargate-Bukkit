@@ -48,9 +48,9 @@ public class Gate implements GateAPI {
     private Location topLeft;
     private final List<PortalPosition> portalPositions = new ArrayList<>();
     private final BlockFace facing;
-    private final StargateLogger logger;
     private boolean isOpen = false;
     private boolean flipped;
+    private RegistryAPI registry;
 
 
     /**
@@ -60,15 +60,16 @@ public class Gate implements GateAPI {
      * @param signLocation <p>The location of this gate's sign</p>
      * @param signFace     <p>The direction this gate's sign is facing</p>
      * @param alwaysOn     <p>Whether this gate has been set as always-on</p>
+     * @param logger       <p>A stargate logger object</p>
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
-    public Gate(GateFormat format, Location signLocation, BlockFace signFace, boolean alwaysOn, StargateLogger logger)
+    public Gate(GateFormat format, Location signLocation, BlockFace signFace, boolean alwaysOn, RegistryAPI registry)
             throws InvalidStructureException, GateConflictException {
         this.format = format;
-        this.logger = logger;
+        this.registry = registry;
         facing = signFace;
-        converter = new MatrixVectorOperation(signFace, Stargate.getInstance());
+        converter = new MatrixVectorOperation(signFace);
 
         //Allow mirroring for non-symmetrical gates
         if (matchesFormat(signLocation, alwaysOn)) {
@@ -90,17 +91,16 @@ public class Gate implements GateAPI {
      * @param logger     <p> A logger </p>
      * @throws InvalidStructureException <p>If the facing is invalid or if no format could be found</p>
      */
-    public Gate(PortalData portalData, StargateLogger logger) throws InvalidStructureException {
-        this.logger = logger;
+    public Gate(PortalData portalData) throws InvalidStructureException {
 
         GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);
         if (format == null) {
-            logger.logMessage(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
+            Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
                     "log for more information", portalData.gateFileName));
             throw new InvalidStructureException("Could not find a matching gateformat");
         }
         this.topLeft = portalData.topLeft;
-        this.converter = new MatrixVectorOperation(portalData.facing, logger);
+        this.converter = new MatrixVectorOperation(portalData.facing);
         this.converter.setFlipZAxis(portalData.flipZ);
         this.format = format;
         this.facing = portalData.facing;
@@ -164,6 +164,7 @@ public class Gate implements GateAPI {
                 continue;
             }
             Material buttonMaterial = ButtonHelper.getButtonMaterial(getFormat().getIrisMaterial(false));
+            Stargate.log(Level.FINEST, "buttonMaterial: " + buttonMaterial);
             Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
             buttonData.setFacing(facing);
 
@@ -317,7 +318,7 @@ public class Gate implements GateAPI {
      */
     public boolean isValid(boolean alwaysOn) throws GateConflictException {
         if (getFormat().matches(converter, topLeft)) {
-            if (hasGateFrameConflict()) {
+            if (hasGateFrameConflict(registry)) {
                 throw new GateConflictException();
             }
 
@@ -404,11 +405,10 @@ public class Gate implements GateAPI {
      *
      * @return <p>True if there is a conflict</p>
      */
-    private boolean hasGateFrameConflict() {
-        RegistryAPI registryAPI = Stargate.getRegistryStatic();
+    private boolean hasGateFrameConflict(RegistryAPI registry) {
         List<BlockLocation> frameLocations = this.getLocations(GateStructureType.FRAME);
         for (BlockLocation blockLocation : frameLocations) {
-            if (registryAPI.getPortal(blockLocation, GateStructureType.values()) != null) {
+            if (registry.getPortal(blockLocation, GateStructureType.values()) != null) {
                 return true;
             }
         }
@@ -421,12 +421,11 @@ public class Gate implements GateAPI {
      * @return <p>True if there is a conflict</p>
      */
     private boolean hasGateControlConflict() {
-        RegistryAPI registryAPI = Stargate.getRegistryStatic();
         //TODO: If we allow add-ons to add new controls after creation, this should be expanded to all control blocks
         List<PortalPosition> portalPositions = this.getPortalPositions();
         for (PortalPosition portalPosition : portalPositions) {
             BlockLocation positionLocation = new BlockLocation(getLocation(portalPosition.getPositionLocation()));
-            if (registryAPI.getPortal(positionLocation, GateStructureType.CONTROL_BLOCK) != null) {
+            if (registry.getPortal(positionLocation, GateStructureType.CONTROL_BLOCK) != null) {
                 return true;
             }
         }
@@ -452,7 +451,7 @@ public class Gate implements GateAPI {
     @Override
     public void addPortalPosition(Location location, PositionType type) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
-        logger.logMessage(Level.FINEST, String.format("Adding portal position %s with relative position %s", type.toString(), relativeBlockVector));
+        Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position %s", type.toString(), relativeBlockVector));
         this.addPortalPosition(relativeBlockVector, type);
     }
 

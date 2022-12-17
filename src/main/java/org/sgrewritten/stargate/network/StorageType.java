@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.network;
 /**
  * Represents the different portal types considered in the database
  */
-public enum PortalType {
+public enum StorageType {
 
     /**
      * Local portals are the portals on this server

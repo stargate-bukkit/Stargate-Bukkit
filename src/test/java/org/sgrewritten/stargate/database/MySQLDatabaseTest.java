@@ -7,12 +7,14 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.sgrewritten.stargate.FakeStargate;
+import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.network.StorageType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -25,7 +27,7 @@ public class MySQLDatabaseTest {
     private static SQLDatabaseAPI database;
 
     @BeforeAll
-    public static void setUp() throws SQLException, InvalidStructureException, NameErrorException, StargateInitializationException {
+    public static void setUp() throws SQLException, InvalidStructureException, InvalidNameException, StargateInitializationException, NameLengthException {
         System.out.println("Setting up test data");
         DatabaseDriver driver = DatabaseDriver.MYSQL;
         String address = "LOCALHOST";
@@ -36,7 +38,7 @@ public class MySQLDatabaseTest {
 
         SQLDatabaseAPI database = new MySqlDatabase(driver, address, port, databaseName, username, password, false);
         MySQLDatabaseTest.nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
-        SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargate(), DatabaseDriver.MYSQL);
+        SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargateLogger(), DatabaseDriver.MYSQL);
         tester = new DatabaseTester(database, nameConfig, generator, true);
         MySQLDatabaseTest.database = database;
     }
@@ -48,6 +50,8 @@ public class MySQLDatabaseTest {
         try (Connection connection = database.getConnection()) {
             connection.prepareStatement("DROP DATABASE stargate;").execute();
             connection.prepareStatement("CREATE DATABASE stargate;").execute();
+        } finally {
+            DatabaseTester.connection.close();
         }
     }
 
@@ -126,25 +130,25 @@ public class MySQLDatabaseTest {
     @Test
     @Order(3)
     void createPortalPositionIndexTest() throws SQLException {
-        tester.createPortalPositionIndexTest(PortalType.LOCAL);
+        tester.createPortalPositionIndexTest(StorageType.LOCAL);
     }
 
     @Test
     @Order(3)
     void createInterPortalPositionIndexTest() throws SQLException {
-        tester.createPortalPositionIndexTest(PortalType.INTER_SERVER);
+        tester.createPortalPositionIndexTest(StorageType.INTER_SERVER);
     }
 
     @Test
     @Order(4)
     void portalPositionIndexExistsTest() throws SQLException {
-        tester.portalPositionIndexExistsTest(PortalType.LOCAL);
+        tester.portalPositionIndexExistsTest(StorageType.LOCAL);
     }
 
     @Test
     @Order(4)
     void interPortalPositionIndexExistsTest() throws SQLException {
-        tester.portalPositionIndexExistsTest(PortalType.INTER_SERVER);
+        tester.portalPositionIndexExistsTest(StorageType.INTER_SERVER);
     }
 
     @Test
@@ -198,40 +202,52 @@ public class MySQLDatabaseTest {
     @Test
     @Order(7)
     void addAndRemovePortalPositionTest() throws SQLException {
-        tester.addAndRemovePortalPosition(PortalType.LOCAL);
+        tester.addAndRemovePortalPosition(StorageType.LOCAL);
     }
 
     @Test
     @Order(7)
     void addAndRemoveInterPortalPositionTest() throws SQLException {
-        tester.addAndRemovePortalPosition(PortalType.INTER_SERVER);
+        tester.addAndRemovePortalPosition(StorageType.INTER_SERVER);
     }
 
     @Test
     @Order(7)
     void setPortalMetaTest() throws SQLException {
-        tester.setPortalMetaDataTest(PortalType.LOCAL);
+        tester.setPortalMetaDataTest(StorageType.LOCAL);
     }
 
 
     @Test
     @Order(7)
     void setInterPortalMetaTest() throws SQLException {
-        tester.setPortalMetaDataTest(PortalType.INTER_SERVER);
+        tester.setPortalMetaDataTest(StorageType.INTER_SERVER);
     }
 
     @Test
     @Order(7)
     void setPortalPositionMetaTest() throws SQLException {
-        tester.setPortalPositionMetaTest(PortalType.LOCAL);
+        tester.setPortalPositionMetaTest(StorageType.LOCAL);
     }
 
     @Test
     @Order(7)
     void setInterPortalPositionMetaTest() throws SQLException {
-        tester.setPortalPositionMetaTest(PortalType.INTER_SERVER);
+        tester.setPortalPositionMetaTest(StorageType.INTER_SERVER);
     }
 
+    @Test
+    @Order(7)
+    void changeNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException {
+        tester.changeNames(StorageType.LOCAL);
+    }
+    
+    @Test
+    @Order(7)
+    void changeInterNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException {
+        tester.changeNames(StorageType.INTER_SERVER);
+    }
+    
     @Test
     @Order(10)
     void destroyPortalTest() throws SQLException {

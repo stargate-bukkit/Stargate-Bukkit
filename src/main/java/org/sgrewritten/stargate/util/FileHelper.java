@@ -40,6 +40,7 @@ public final class FileHelper {
      * Gets a buffered writer for writing to the given file
      *
      * @param file <p>The file to write to</p>
+     * @param appendToFile <p>Whether the writer should append to the file</p>
      * @return <p>A buffered writer for writing to the given file</p>
      * @throws FileNotFoundException <p>If the given file does not exist</p>
      */

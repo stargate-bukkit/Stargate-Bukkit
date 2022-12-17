@@ -6,8 +6,10 @@ import org.bukkit.Bukkit;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.ForcibleFunctionAction;
 import org.sgrewritten.stargate.action.SupplierAction;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.property.PluginChannel;
@@ -17,6 +19,7 @@ import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -28,17 +31,19 @@ public class InterServerNetwork extends LocalNetwork {
      * Instantiates a new inter-server network
      *
      * @param networkName <p>The name of the new inter-server network</p>
-     * @throws NameErrorException <p>If the network name is invalid</p>
+     * @param type <p>The type of inter-server network to initialize</p>
+     * @throws InvalidNameException <p>If the network name is invalid</p>
+     * @throws NameLengthException 
      */
-    public InterServerNetwork(String networkName) throws NameErrorException {
-        super(networkName);
+    public InterServerNetwork(String networkName, NetworkType type) throws InvalidNameException, NameLengthException {
+        super(networkName,type);
     }
 
     @Override
     public void removePortal(Portal portal, boolean removeFromDatabase) {
         super.removePortal(portal, removeFromDatabase);
 
-        Stargate.getRegistryStatic().removePortal(portal, PortalType.INTER_SERVER);
+        super.registry.removePortal(portal, StorageType.INTER_SERVER);
 
         if (removeFromDatabase) {
             updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_REMOVE);
@@ -47,7 +52,7 @@ public class InterServerNetwork extends LocalNetwork {
 
     @Override
     public HighlightingStyle getHighlightingStyle() {
-        return HighlightingStyle.BUNGEE;
+        return HighlightingStyle.SQUARE_BRACKETS;
     }
 
     @Override
@@ -57,7 +62,7 @@ public class InterServerNetwork extends LocalNetwork {
          * that it can be seen on other servers
          */
         Stargate.addSynchronousSecAction(new SupplierAction(() -> {
-            Stargate.getRegistryStatic().savePortal(portal, PortalType.INTER_SERVER);
+            super.registry.savePortal(portal, StorageType.INTER_SERVER);
             return true;
         }), true);
         updateInterServerNetwork(portal, StargateProtocolRequestType.PORTAL_ADD);
@@ -84,7 +89,7 @@ public class InterServerNetwork extends LocalNetwork {
                     dataOutputStream.writeUTF(PluginChannel.NETWORK_CHANGED.getChannel());
                     JsonObject jsonData = new JsonObject();
                     jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(requestType.toString()));
-                    jsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getName()));
+                    jsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getId()));
                     jsonData.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(portal.getName()));
                     jsonData.add(StargateProtocolProperty.SERVER.toString(), new JsonPrimitive(Stargate.getServerName()));
                     jsonData.add(StargateProtocolProperty.PORTAL_FLAG.toString(), new JsonPrimitive(portal.getAllFlagsString()));
@@ -103,4 +108,9 @@ public class InterServerNetwork extends LocalNetwork {
         }), true);
     }
 
+
+    @Override
+    public StorageType getStorageType() {
+        return StorageType.INTER_SERVER;
+    }
 }

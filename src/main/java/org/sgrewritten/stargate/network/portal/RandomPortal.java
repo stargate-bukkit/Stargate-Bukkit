@@ -3,7 +3,9 @@ package org.sgrewritten.stargate.network.portal;
 import org.bukkit.entity.Entity;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.Network;
@@ -27,20 +29,23 @@ public class RandomPortal extends AbstractPortal {
      * @param network   <p>The network the portal belongs to</p>
      * @param name      <p>The name of the portal</p>
      * @param flags     <p>The flags enabled for the portal</p>
+     * @param gate      <p>The gate format used by this portal</p>
      * @param ownerUUID <p>The UUID of the portal's owner</p>
-     * @throws NameErrorException <p>If the portal name is invalid</p>
+     * @param logger
+     * @throws InvalidNameException <p>If the portal name is invalid</p>
+     * @throws NameLengthException 
      */
-    public RandomPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, StargateLogger logger)
-            throws NameErrorException {
-        super(network, name, flags, gate, ownerUUID, logger);
+    public RandomPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager)
+            throws InvalidNameException, NameLengthException {
+        super(network, name, flags, gate, ownerUUID,languageManager);
     }
 
     @Override
     public void drawControlMechanisms() {
         String[] lines = new String[4];
-        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.PORTAL);
-        lines[1] = super.colorDrawer.formatLine(HighlightingStyle.DESTINATION.getHighlightedName(
-                Stargate.getLanguageManagerStatic().getString(TranslatableMessage.RANDOM)));
+        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN);
+        lines[1] = super.colorDrawer.formatLine(HighlightingStyle.LESSER_GREATER_THAN.getHighlightedName(
+                super.languageManager.getString(TranslatableMessage.RANDOM)));
         lines[2] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()) : "";
         lines[3] = "";
         getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
@@ -55,7 +60,7 @@ public class RandomPortal extends AbstractPortal {
         }
         int randomNumber = randomizer.nextInt(destinations.length);
         String destination = destinations[randomNumber];
-        super.logger.logMessage(Level.FINEST, String.format("Chose random destination %s, calculated from integer %d", destination, randomNumber));
+        Stargate.log(Level.FINEST, String.format("Chose random destination %s, calculated from integer %d", destination, randomNumber));
         return network.getPortal(destination);
     }
 

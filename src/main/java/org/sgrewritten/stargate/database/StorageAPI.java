@@ -1,10 +1,12 @@
 package org.sgrewritten.stargate.database;
 
-import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
@@ -31,9 +33,10 @@ public interface StorageAPI {
      *
      * @param portal     <p>The portal to save</p>
      * @param portalType <p>The type of portal to save</p>
+     * @return <p>Whether or not the portal was successfully saved</p>
      * @throws StorageWriteException
      */
-    boolean savePortalToStorage(RealPortal portal, PortalType portalType) throws StorageWriteException;
+    boolean savePortalToStorage(RealPortal portal, StorageType portalType) throws StorageWriteException;
 
     /**
      * Removes a portal and its associated data from storage
@@ -42,25 +45,27 @@ public interface StorageAPI {
      * @param portalType <p>The type of portal to remove</p>
      * @throws StorageWriteException
      */
-    void removePortalFromStorage(Portal portal, PortalType portalType) throws StorageWriteException;
+    void removePortalFromStorage(Portal portal, StorageType portalType) throws StorageWriteException;
 
     /**
      * Set misc data of a portal
      *
      * @param portal <p>A portal</p>
      * @param data   <p>Any data</p>
+     * @param portalType <p>The portal's expected type</p>
      * @throws StorageWriteException <p>If unable to successfully set the new portal data</p>
      */
-    void setPortalMetaData(Portal portal, String data, PortalType portalType) throws StorageWriteException;
+    void setPortalMetaData(Portal portal, String data, StorageType portalType) throws StorageWriteException;
 
     /**
      * Get misc data of a portal
      *
      * @param portal <p>A portal</p>
+     * @param portalType <p>The portal's expected type</p>
      * @return <p>Data</p>
      * @throws StorageReadException <p>If unable to successfully get the portal data</p>
      */
-    String getPortalMetaData(Portal portal, PortalType portalType) throws StorageReadException;
+    String getPortalMetaData(Portal portal, StorageType portalType) throws StorageReadException;
 
     /**
      * Set misc data of a portal position
@@ -72,28 +77,31 @@ public interface StorageAPI {
      * @throws StorageWriteException <p>If unable to set the metadata for the portal</p>
      */
     void setPortalPositionMetaData(RealPortal portal, PortalPosition portalPosition, String data,
-                                   PortalType portalType) throws StorageWriteException;
+                                   StorageType portalType) throws StorageWriteException;
 
     /**
      * Get misc data of a portal position
      *
      * @param portal         <p>A portal</p>
      * @param portalPosition <p>A portalPosition</p>
+     * @param portalType <p>The portal's expected type</p>
      * @return <p>Data</p>
      * @throws StorageReadException <p>If unable to successfully read the portal metadata</p>
      */
     String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition,
-                                     PortalType portalType) throws StorageReadException;
+                                     StorageType portalType) throws StorageReadException;
 
     /**
      * Creates a new network unassigned to a registry
      *
      * @param networkName <p>The name of the new network</p>
-     * @param flags       <p>The flag set used to look for network flags</p>
+     * @param type       <p>The type of network to look for.</p>
+     * @param isInterserver <p>Whether or not the network works across servers (I flag)</p>
      * @return The network that was created
-     * @throws NameErrorException <p>If the given network name is invalid</p>
+     * @throws InvalidNameException <p>If the given network name is invalid</p>
+     * @throws NameLengthException 
      */
-    Network createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException;
+    Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws InvalidNameException, NameLengthException;
 
 
     /**
@@ -127,7 +135,7 @@ public interface StorageAPI {
      * @param portalType <p>How the portal should be considered by the database </p>
      * @throws StorageWriteException <p>If unable to write the flag change to storage</p>
      */
-    void addFlag(Character flagChar, Portal portal, PortalType portalType) throws StorageWriteException;
+    void addFlag(Character flagChar, Portal portal, StorageType portalType) throws StorageWriteException;
 
     /**
      * Remove a flag to a portal in the database
@@ -137,7 +145,7 @@ public interface StorageAPI {
      * @param portalType <p>How the portal should be considered by the database</p>
      * @throws StorageWriteException <p>Uf unable to write the flag change to storage</p>
      */
-    void removeFlag(Character flagChar, Portal portal, PortalType portalType) throws StorageWriteException;
+    void removeFlag(Character flagChar, Portal portal, StorageType portalType) throws StorageWriteException;
 
     /**
      * Add a portalPosition to a portal in the database
@@ -147,7 +155,7 @@ public interface StorageAPI {
      * @param portalPosition <p>A portal position</p>
      * @throws StorageWriteException <p>If unable to write the new portal position to storage</p>
      */
-    void addPortalPosition(RealPortal portal, PortalType portalType,
+    void addPortalPosition(RealPortal portal, StorageType portalType,
                            PortalPosition portalPosition) throws StorageWriteException;
 
     /**
@@ -158,8 +166,14 @@ public interface StorageAPI {
      * @param portalPosition <p> A portal position</p>
      * @throws StorageWriteException <p>If unable to write the portal position change to storage</p>
      */
-    void removePortalPosition(RealPortal portal, PortalType portalType,
+    void removePortalPosition(RealPortal portal, StorageType portalType,
                               PortalPosition portalPosition) throws StorageWriteException;
+
+    void updateNetworkName(String newName, String networkName, StorageType portalType) throws StorageWriteException;
+
+    void updatePortalName(String newName, String portalName, String networkName, StorageType portalType) throws StorageWriteException;
+
+    boolean netWorkExists(String netName, StorageType portalType) throws StorageReadException;
 
 
 }

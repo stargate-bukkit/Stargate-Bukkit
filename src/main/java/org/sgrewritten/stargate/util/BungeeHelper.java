@@ -4,9 +4,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -174,10 +178,10 @@ public final class BungeeHelper {
         //Create the legacy network if it doesn't already exist
         try {
             if (network == null) {
-                registry.createNetwork(bungeeNetwork, new HashSet<>());
+                registry.createNetwork(bungeeNetwork, NetworkType.CUSTOM, false, false);
                 network = registry.getNetwork(bungeeNetwork, false);
             }
-        } catch (NameErrorException e) {
+        } catch (InvalidNameException | NameLengthException | NameConflictException e) {
             //Ignored as the null check will take care of this
         }
         if (network == null) {
@@ -192,7 +196,7 @@ public final class BungeeHelper {
      *
      * @param message <p>The player teleport message to parse and handle</p>
      */
-    public static void playerConnect(String message) {
+    public static void playerConnect(String message, RegistryAPI registry, LanguageManager languageManager) {
         JsonParser parser = new JsonParser();
         Stargate.log(Level.FINEST, message);
 
@@ -204,19 +208,19 @@ public final class BungeeHelper {
         Player player = Stargate.getInstance().getServer().getPlayer(playerName);
         if (player == null) {
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
-            BungeeHelper.addToQueue(Stargate.getRegistryStatic(), playerName, portalName, networkName, true);
+            BungeeHelper.addToQueue(registry, playerName, portalName, networkName, true);
             return;
         }
 
         Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
-        Network network = Stargate.getRegistryStatic().getNetwork(networkName, true);
+        Network network = registry.getNetwork(networkName, true);
         if (network == null) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.BUNGEE_INVALID_NETWORK));
+            player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_NETWORK));
             return;
         }
         Portal destinationPortal = network.getPortal(portalName);
         if (destinationPortal == null) {
-            player.sendMessage(Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.BUNGEE_INVALID_GATE));
+            player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_GATE));
             return;
         }
         destinationPortal.teleportHere(player, null);

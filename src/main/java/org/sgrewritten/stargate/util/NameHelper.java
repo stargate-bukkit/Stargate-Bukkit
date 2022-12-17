@@ -20,6 +20,9 @@ public final class NameHelper {
      * @return <p>The trimmed name</p>
      */
     public static String getTrimmedName(String name) {
+        if(name == null) {
+            return null;
+        }
         name = name.replaceAll("\\s\\s+", " ");
         return name.trim();
     }

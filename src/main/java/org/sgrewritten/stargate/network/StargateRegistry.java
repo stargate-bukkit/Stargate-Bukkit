@@ -9,9 +9,12 @@ import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.database.StorageAPI;
-import org.sgrewritten.stargate.exception.NameErrorException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -63,16 +66,26 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void removePortal(Portal portal, PortalType portalType) {
+    public void removePortal(Portal portal, StorageType portalType) {
         try {
             storageAPI.removePortalFromStorage(portal, portalType);
         } catch (StorageWriteException e) {
             e.printStackTrace();
         }
+
+        if (portal instanceof RealPortal) {
+            RealPortal realPortal = (RealPortal) portal;
+            for (GateStructureType formatType : GateStructureType.values()) {
+                for (BlockLocation loc : realPortal.getGate().getLocations(formatType)) {
+                    Stargate.log(Level.FINEST, "Unregistering type: " + formatType + " location, at: " + loc);
+                    this.unRegisterLocation(formatType, loc);
+                }
+            }
+        }
     }
 
     @Override
-    public void savePortal(RealPortal portal, PortalType portalType) {
+    public void savePortal(RealPortal portal, StorageType portalType) {
         try {
             storageAPI.savePortalToStorage(portal, portalType);
         } catch (StorageWriteException e) {
@@ -81,14 +94,28 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void createNetwork(String networkName, Set<PortalFlag> flags) throws NameErrorException {
-        networkName = NameHelper.getTrimmedName(networkName);
-        if (this.networkExists(networkName, flags.contains(PortalFlag.FANCY_INTER_SERVER))) {
-            throw new NameErrorException(null);
+    public Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced)
+            throws InvalidNameException, NameLengthException, NameConflictException {
+        if (this.networkExists(networkName, isInterserver)) {
+            if (isForced && type == NetworkType.DEFAULT) {
+                Network network = this.getNetwork(networkName, isInterserver);
+                if(network.getType() != type) {
+                    this.rename(network);
+                }
+            }
+            throw new NameConflictException("network of id '" + networkName + "' already exists");
         }
-        Network network = storageAPI.createNetwork(networkName, flags);
+        Network network = storageAPI.createNetwork(networkName, type, isInterserver);
         network.assignToRegistry(this);
-        getNetworkMap(flags.contains(PortalFlag.FANCY_INTER_SERVER)).put(network.getId(), network);
+        getNetworkMap(isInterserver).put(network.getId(), network);
+        Stargate.log(
+                Level.FINEST, String.format("Adding networkid %s to interServer = %b", network.getId(), isInterserver));
+        return network;
+    }
+    
+    @Override
+    public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException {
+        return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags),flags.contains(PortalFlag.FANCY_INTER_SERVER),isForced);
     }
 
     @Override
@@ -111,10 +138,7 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public Network getNetwork(String name, boolean isBungee) {
-        String cleanName = name.trim().toLowerCase();
-        if (ConfigurationHelper.getBoolean(ConfigurationOption.DISABLE_CUSTOM_COLORED_NAMES)) {
-            cleanName = ChatColor.stripColor(cleanName);
-        }
+        String cleanName = NameHelper.getNormalizedName(NameHelper.getTrimmedName(name));
         return getNetworkMap(isBungee).get(cleanName);
     }
 
@@ -224,5 +248,58 @@ public class StargateRegistry implements RegistryAPI {
         portalFromStructureTypeMap.clear();
         this.loadPortals();
     }
+    
+    @Override
+    public void rename(Network network, String newName) throws InvalidNameException, NameLengthException{
+        try {
+            storageAPI.updateNetworkName(newName, newName, network.getStorageType());
+        } catch (StorageWriteException e) {
+            e.printStackTrace();
+        }
+        network.setID(newName);
+        network.updatePortals();
+    }
+    
+    @Override
+    public void rename(Portal portal, String newName) throws InvalidNameException{
+        try {
+            storageAPI.updatePortalName(newName, portal.getName(), portal.getNetwork().getId(), portal.getStorageType());
+        } catch (StorageWriteException e) {
+            e.printStackTrace();
+        }
+        portal.setName(newName);
+        portal.getNetwork().updatePortals();
+    }
 
+    @Override
+    public void rename(Network network) {
+        String newName = network.getId();
+        int i = 1;
+        try {
+            boolean isInterServer = (network instanceof InterServerNetwork);
+            while (networkExists(newName, isInterServer) || storageAPI.netWorkExists(newName,network.getStorageType())) {
+                newName = network.getId() + i;
+                i++;
+            }
+            try {
+                rename(network, newName);
+            } catch (InvalidNameException | NameLengthException e) {
+                String annoyinglyOverThoughtName = network.getId();
+                int n = 1;
+                while (networkExists(annoyinglyOverThoughtName, isInterServer) || storageAPI.netWorkExists(newName,network.getStorageType())) {
+                    String number = String.valueOf(n);
+                    annoyinglyOverThoughtName = network.getId().substring(0, network.getId().length() - number.length())
+                            + number;
+                }
+                try {
+                    rename(network, annoyinglyOverThoughtName);
+                } catch (InvalidNameException | NameLengthException impossible) {
+                    Stargate.log(Level.SEVERE,
+                            "Could not rename the network, do /sg trace and show the data in an new issue in sgrewritten.org/report");
+                }
+            }
+        } catch (StorageReadException e) {
+            e.printStackTrace();
+        }
+    }
 }

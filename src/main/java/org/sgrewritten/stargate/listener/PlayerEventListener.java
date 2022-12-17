@@ -19,8 +19,10 @@ import org.sgrewritten.stargate.action.ConditionalRepeatedTask;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
+import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.PluginChannel;
@@ -41,6 +43,13 @@ public class PlayerEventListener implements Listener {
 
     private static long eventTime;
     private static PlayerInteractEvent previousEvent;
+    private LanguageManager languageManager;
+    private RegistryAPI registry;
+    
+    public PlayerEventListener(LanguageManager languageManager, RegistryAPI registry){
+        this.languageManager = languageManager;
+        this.registry = registry;
+    }
 
     /**
      * Listens for and handles any relevant interaction events such as sign or button interaction
@@ -59,7 +68,7 @@ public class PlayerEventListener implements Listener {
         }
 
         // TODO material optimisation?
-        RealPortal portal = Stargate.getRegistryStatic().getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
+        RealPortal portal = registry.getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
         if (portal == null) {
             return;
         }
@@ -111,7 +120,7 @@ public class PlayerEventListener implements Listener {
             return false;
         }
 
-        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer());
+        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(),languageManager);
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         if (!hasPermission) {
             event.getPlayer().sendMessage(permissionManager.getDenyMessage());

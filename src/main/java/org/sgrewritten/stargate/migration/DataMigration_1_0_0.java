@@ -6,10 +6,13 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.util.FileHelper;
+import org.sgrewritten.stargate.util.LegacyDataHandler;
 import org.sgrewritten.stargate.util.LegacyPortalStorageLoader;
 
 import java.io.File;
@@ -29,6 +32,7 @@ public class DataMigration_1_0_0 extends DataMigration {
     private final StargateRegistry registry;
     private Map<String, Object> oldConfig;
     private final StargateLogger logger;
+    private LanguageManager languageManager;
 
     /**
      * Instantiates a new Ret-Com 1.0.0
@@ -37,13 +41,14 @@ public class DataMigration_1_0_0 extends DataMigration {
      * @param registry <p>The stargate registry to register loaded portals to</p>
      * @param logger   <p>The logger to use for logging any messages</p>
      */
-    public DataMigration_1_0_0(Server server, StargateRegistry registry, StargateLogger logger) {
+    public DataMigration_1_0_0(Server server, StargateRegistry registry, StargateLogger logger, LanguageManager languageManager) {
         if (CONFIG_CONVERSIONS == null) {
             loadConfigConversions();
         }
         this.server = server;
         this.registry = registry;
         this.logger = logger;
+        this.languageManager = languageManager;
     }
 
     @Override
@@ -77,20 +82,18 @@ public class DataMigration_1_0_0 extends DataMigration {
 
     @Override
     public void run() {
-        String portalFolderValue = null;
         try {
-            String[] possiblePortalFolderConfigKeys = {"portal-folder", "folders.portalFolder"};
-            for (String portalFolderKey : possiblePortalFolderConfigKeys) {
-                portalFolderValue = (String) oldConfig.get(portalFolderKey);
-                if (portalFolderValue != null) {
-                    migratePortals(portalFolderValue);
-                    break;
-                }
-            }
-            if (portalFolderValue != null) {
-                moveFilesToDebugDirectory(portalFolderValue);
-            }
-        } catch (IOException | InvalidStructureException | NameErrorException e) {
+            String portalFolderName = (String) oldConfig.get(LegacyDataHandler
+                    .findConfigKey(new String[] { "portal-folder", "folders.portalFolder" }, oldConfig));
+            String defaultName = (String) oldConfig.get(LegacyDataHandler
+                    .findConfigKey(new String[] { "gates.defaultGateNetwork", "default-gate-network" }, oldConfig));
+
+            migratePortals(portalFolderName, defaultName,languageManager);
+            moveFilesToDebugDirectory(portalFolderName);
+        } catch (IOException | InvalidStructureException | InvalidNameException | TranslatableException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            Stargate.log(Level.SEVERE, "Invalid config: Could not get necessary config values to load portals from storage");
             e.printStackTrace();
         }
     }
@@ -124,11 +127,12 @@ public class DataMigration_1_0_0 extends DataMigration {
      *
      * @param portalFolder <p>The portal folder to load portals from</p>
      * @throws InvalidStructureException <p>If the old portal has an invalid structure</p>
-     * @throws NameErrorException        <p>If the old portal has an invalid name</p>
+     * @throws InvalidNameException        <p>If the old portal has an invalid name</p>
      * @throws IOException               <p>If unable to load previous portals</p>
+     * @throws TranslatableException 
      */
-    private void migratePortals(String portalFolder) throws InvalidStructureException, NameErrorException, IOException {
-        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, registry, logger);
+    private void migratePortals(String portalFolder, String defaultNetworkName, LanguageManager languageManager) throws InvalidStructureException, InvalidNameException, IOException, TranslatableException {
+        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, registry, logger, defaultNetworkName,languageManager);
         if (portals == null) {
             logger.logMessage(Level.WARNING, "No portals migrated!");
         } else {
@@ -152,14 +156,15 @@ public class DataMigration_1_0_0 extends DataMigration {
         filesToMove.put(portalFolder, "plugins/Stargate/debug/legacy_portals");
 
         for (String directoryString : filesToMove.keySet()) {
-            moveLegacyPortals(directoryString, filesToMove);
+            moveLegacyData(directoryString, filesToMove);
         }
 
-        File gateDirectory = new File(Stargate.getInstance().getDataFolder(), Stargate.getInstance().getGateFolder());
+        Stargate instance = Stargate.getInstance();
+        File gateDirectory = new File((instance != null) ? instance.getDataFolder() : new File(""), (instance != null) ? instance.getGateFolder() : "");
         if (!gateDirectory.exists()) {
             return;
         }
-        File debugGateDirectory = new File(Stargate.getInstance().getDataFolder(), "debug/invalidGates");
+        File debugGateDirectory = new File((instance != null) ? instance.getGateFolder() : "", "debug/invalidGates");
         if (!debugGateDirectory.exists() && !debugGateDirectory.mkdirs()) {
             logger.logMessage(Level.WARNING, "Unable to create the directory for invalid gates");
             return;
@@ -186,7 +191,7 @@ public class DataMigration_1_0_0 extends DataMigration {
      * @param directoryString <p>The directory to move in this operation</p>
      * @param filesToMove     <p>All the files that need to be moved</p>
      */
-    private void moveLegacyPortals(String directoryString, Map<String, String> filesToMove) {
+    private void moveLegacyData(String directoryString, Map<String, String> filesToMove) {
         Stargate.log(Level.FINE, String.format("Moving files in directory %s to %s", directoryString,
                 filesToMove.get(directoryString)));
         File directory = new File(directoryString);

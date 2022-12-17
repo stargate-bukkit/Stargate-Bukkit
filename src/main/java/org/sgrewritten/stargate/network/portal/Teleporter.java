@@ -12,15 +12,18 @@ import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.action.DelayedAction;
+import org.sgrewritten.stargate.action.SimpleAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.event.StargatePortalEvent;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
+import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.util.portal.TeleportationHelper;
 import org.sgrewritten.stargate.vectorlogic.VectorUtils;
 
@@ -28,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
@@ -48,8 +52,10 @@ public class Teleporter {
     boolean hasPermission;
     private String teleportMessage;
     private final Set<Entity> teleportedEntities = new HashSet<>();
-    private final StargateLogger logger;
     private List<LivingEntity> nearbyLeashed;
+    private LanguageManager languageManager;
+    private StargateEconomyAPI economyManager;
+    private Consumer<SimpleAction> registerAction;
 
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
@@ -60,9 +66,17 @@ public class Teleporter {
      * @param entranceFace    <p>The direction the entrance portal is facing</p>
      * @param cost            <p>The cost of teleportation for any players</p>
      * @param teleportMessage <p>The teleportation message to display if the teleportation is successful</p>
+     * @param logger
      */
-    public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace, BlockFace entranceFace,
-                      int cost, String teleportMessage, StargateLogger logger) {
+    public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,
+            BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager) {
+        this(destination, origin, destinationFace, entranceFace, cost, teleportMessage, languageManager,
+                Stargate.getEconomyManager(), ((action) -> Stargate.addSynchronousTickAction(action)));
+    }
+
+    public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,
+            BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager,
+            StargateEconomyAPI economyManager, Consumer<SimpleAction> registerAction) {
         // Center the destination in the destination block
         this.exit = destination.getExit().clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
@@ -71,7 +85,9 @@ public class Teleporter {
         this.rotation = VectorUtils.calculateAngleDifference(entranceFace, destinationFace);
         this.cost = cost;
         this.teleportMessage = teleportMessage;
-        this.logger = logger;
+        this.languageManager = languageManager;
+        this.economyManager = economyManager;
+        this.registerAction = registerAction;
     }
 
     /**
@@ -92,17 +108,17 @@ public class Teleporter {
         List<Player> playersToRefund = new ArrayList<>();
 
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
-            StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity);
+            StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity,languageManager);
             if (!hasPermission(anyEntity, permissionManager)) {
                 teleportMessage = permissionManager.getDenyMessage();
                 return false;
             }
 
             if (anyEntity instanceof Player) {
-                if (Stargate.getEconomyManager().chargePlayer((Player) anyEntity, origin, this.cost)) {
+                if (economyManager.chargePlayer((Player) anyEntity, origin, this.cost)) {
                     playersToRefund.add((Player) anyEntity);
                 } else {
-                    teleportMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.LACKING_FUNDS);
+                    teleportMessage = languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
                     return false;
                 }
             }
@@ -140,12 +156,12 @@ public class Teleporter {
         //Cancel teleportation if outside world-border
         World world = exit.getWorld();
         if (world != null && !world.getWorldBorder().isInside(exit)) {
-            String worldBorderInterfereMessage = Stargate.getLanguageManagerStatic().getErrorMessage(TranslatableMessage.OUTSIDE_WORLDBORDER);
+            String worldBorderInterfereMessage = languageManager.getErrorMessage(TranslatableMessage.OUTSIDE_WORLDBORDER);
             entitiesToTeleport.forEach((entity) -> entity.sendMessage(worldBorderInterfereMessage));
             return;
         }
 
-        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
+        registerAction.accept(new SupplierAction(() -> {
             betterTeleport(baseEntity, exit, rotation);
             return true;
         }));
@@ -159,7 +175,7 @@ public class Teleporter {
     private void refundPlayers(List<Player> playersToRefund) {
         for (Player player : playersToRefund) {
             if (!Stargate.getEconomyManager().refundPlayer(player, this.origin, this.cost)) {
-                logger.logMessage(Level.WARNING, "Unable to refund player " + player + " " + this.cost);
+                Stargate.log(Level.WARNING, "Unable to refund player " + player + " " + this.cost);
             }
         }
     }
@@ -224,9 +240,9 @@ public class Teleporter {
             exit.getChunk().load();
         }
 
-        logger.logMessage(Level.FINEST, "Trying to teleport surrounding leashed entities");
+        Stargate.log(Level.FINEST, "Trying to teleport surrounding leashed entities");
         teleportNearbyLeashedEntities(target, exit, rotation);
-        logger.logMessage(Level.FINEST, "Teleporting entity " + target + " to exit location " + exit);
+        Stargate.log(Level.FINEST, "Teleporting entity " + target + " to exit location " + exit);
         teleport(target, exit, rotation);
     }
 
@@ -246,10 +262,10 @@ public class Teleporter {
 
             if (passenger instanceof Player) {
                 // Delay action by one tick to avoid client issues
-                Stargate.addSynchronousTickAction(new DelayedAction(1, action));
+                registerAction.accept(new DelayedAction(1, action));
                 continue;
             }
-            Stargate.addSynchronousTickAction(new SupplierAction(action));
+            registerAction.accept(new SupplierAction(action));
         }
     }
 
@@ -277,7 +293,7 @@ public class Teleporter {
                     entity.setLeashHolder(holder);
                     return true;
                 };
-                Stargate.addSynchronousTickAction(new SupplierAction(action));
+                registerAction.accept(new SupplierAction(action));
             }
         }
     }
@@ -306,7 +322,7 @@ public class Teleporter {
                 msg = String.format(msg, origin.getName(), origin.getNetwork().getName());
             }
 
-            logger.logMessage(Level.FINE, msg);
+            Stargate.log(Level.FINE, msg);
         }
 
         if (target instanceof PoweredMinecart) {
@@ -331,13 +347,13 @@ public class Teleporter {
         poweredMinecart.setVelocity(new Vector());
 
         //Teleport the powered minecart
-        logger.logMessage(Level.FINEST, "Teleporting Powered Minecart to " + exit);
+        Stargate.log(Level.FINEST, "Teleporting Powered Minecart to " + exit);
         teleport(poweredMinecart, exit);
         poweredMinecart.setFuel(fuel);
 
-        Stargate.addSynchronousTickAction(new DelayedAction(1, () -> {
+        registerAction.accept(new DelayedAction(1, () -> {
             //Re-apply fuel and velocity
-            logger.logMessage(Level.FINEST, "Setting new velocity " + targetVelocity);
+            Stargate.log(Level.FINEST, "Setting new velocity " + targetVelocity);
             poweredMinecart.setVelocity(targetVelocity);
 
             //Use the paper-only methods for setting the powered minecart's actual push
@@ -345,11 +361,11 @@ public class Teleporter {
                 Vector direction = destinationFace.getDirection();
                 double pushX = -direction.getBlockX();
                 double pushZ = -direction.getBlockZ();
-                logger.logMessage(Level.FINEST, "Setting push: X = " + pushX + " Z = " + pushZ);
+                Stargate.log(Level.FINEST, "Setting push: X = " + pushX + " Z = " + pushZ);
                 NonLegacyMethod.PUSH_X.invoke(poweredMinecart, pushX);
                 NonLegacyMethod.PUSH_Z.invoke(poweredMinecart, pushZ);
             } else {
-                logger.logMessage(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
+                Stargate.log(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
                         " use Paper 1.18.2+ for this feature.", location));
             }
             return true;
@@ -366,7 +382,7 @@ public class Teleporter {
         target.teleport(exitPoint);
         boatsTeleporting.remove(target);
         if (origin != null && !origin.hasFlag(PortalFlag.SILENT)) {
-            logger.logMessage(Level.FINE, "Sending player teleport message" + teleportMessage);
+            Stargate.log(Level.FINE, "Sending player teleport message" + teleportMessage);
             target.sendMessage(teleportMessage);
         }
     }

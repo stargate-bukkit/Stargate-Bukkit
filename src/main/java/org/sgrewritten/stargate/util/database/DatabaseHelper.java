@@ -10,7 +10,7 @@ import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLQueryGenerator;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.PositionType;
 
@@ -36,7 +36,7 @@ public class DatabaseHelper {
 
     public static void createTables(SQLDatabaseAPI database, SQLQueryGenerator sqlQueryGenerator, boolean useInterServerNetworks) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement localPortalsStatement = sqlQueryGenerator.generateCreatePortalTableStatement(connection, PortalType.LOCAL);
+        PreparedStatement localPortalsStatement = sqlQueryGenerator.generateCreatePortalTableStatement(connection, StorageType.LOCAL);
         runStatement(localPortalsStatement);
         PreparedStatement flagStatement = sqlQueryGenerator.generateCreateFlagTableStatement(connection);
         runStatement(flagStatement);
@@ -46,18 +46,18 @@ public class DatabaseHelper {
         runStatement(portalPositionTypesStatement);
         addMissingPositionTypes(connection, sqlQueryGenerator);
 
-        PreparedStatement portalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, PortalType.LOCAL);
+        PreparedStatement portalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, StorageType.LOCAL);
         runStatement(portalPositionsStatement);
-        PreparedStatement portalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, PortalType.LOCAL);
+        PreparedStatement portalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, StorageType.LOCAL);
         if (portalPositionIndex != null) {
             runStatement(portalPositionIndex);
         }
 
         PreparedStatement lastKnownNameStatement = sqlQueryGenerator.generateCreateLastKnownNameTableStatement(connection);
         runStatement(lastKnownNameStatement);
-        PreparedStatement portalRelationStatement = sqlQueryGenerator.generateCreateFlagRelationTableStatement(connection, PortalType.LOCAL);
+        PreparedStatement portalRelationStatement = sqlQueryGenerator.generateCreateFlagRelationTableStatement(connection, StorageType.LOCAL);
         runStatement(portalRelationStatement);
-        PreparedStatement portalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, PortalType.LOCAL);
+        PreparedStatement portalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, StorageType.LOCAL);
         runStatement(portalViewStatement);
 
         try {
@@ -74,15 +74,15 @@ public class DatabaseHelper {
 
         PreparedStatement serverInfoStatement = sqlQueryGenerator.generateCreateServerInfoTableStatement(connection);
         runStatement(serverInfoStatement);
-        PreparedStatement interServerPortalsStatement = sqlQueryGenerator.generateCreatePortalTableStatement(connection, PortalType.INTER_SERVER);
+        PreparedStatement interServerPortalsStatement = sqlQueryGenerator.generateCreatePortalTableStatement(connection, StorageType.INTER_SERVER);
         runStatement(interServerPortalsStatement);
-        PreparedStatement interServerRelationStatement = sqlQueryGenerator.generateCreateFlagRelationTableStatement(connection, PortalType.INTER_SERVER);
+        PreparedStatement interServerRelationStatement = sqlQueryGenerator.generateCreateFlagRelationTableStatement(connection, StorageType.INTER_SERVER);
         runStatement(interServerRelationStatement);
-        PreparedStatement interPortalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, PortalType.INTER_SERVER);
+        PreparedStatement interPortalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, StorageType.INTER_SERVER);
         runStatement(interPortalViewStatement);
-        PreparedStatement interPortalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, PortalType.INTER_SERVER);
+        PreparedStatement interPortalPositionsStatement = sqlQueryGenerator.generateCreatePortalPositionTableStatement(connection, StorageType.INTER_SERVER);
         runStatement(interPortalPositionsStatement);
-        PreparedStatement interPortalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, PortalType.INTER_SERVER);
+        PreparedStatement interPortalPositionIndex = sqlQueryGenerator.generateCreatePortalPositionIndex(connection, StorageType.INTER_SERVER);
         if (interPortalPositionIndex != null) {
             runStatement(interPortalPositionIndex);
         }
@@ -149,6 +149,7 @@ public class DatabaseHelper {
      * @param stargate <p>The Stargate instance to use for initialization</p>
      * @return <p>The loaded database</p>
      * @throws SQLException <p>If an SQL exception occurs</p>
+     * @throws org.sgrewritten.stargate.exception.StargateInitializationException
      */
     public static SQLDatabaseAPI loadDatabase(Stargate stargate) throws SQLException, StargateInitializationException {
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
@@ -192,11 +193,11 @@ public class DatabaseHelper {
     }
 
     public static void tableRefactor_1_0_0_13(Connection connection, SQLQueryGenerator sqlQueryGenerator, boolean useInterServerNetworks) throws SQLException {
-        DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalTableStatement(connection, PortalType.LOCAL));
-        DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalPositionTableStatement(connection, PortalType.LOCAL));
+        DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalTableStatement(connection, StorageType.LOCAL));
+        DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalPositionTableStatement(connection, StorageType.LOCAL));
         if (useInterServerNetworks) {
-            DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalTableStatement(connection, PortalType.INTER_SERVER));
-            DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalPositionTableStatement(connection, PortalType.INTER_SERVER));
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalTableStatement(connection, StorageType.INTER_SERVER));
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalPositionTableStatement(connection, StorageType.INTER_SERVER));
         }
     }
 }

@@ -28,8 +28,13 @@ import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.network.InterServerNetwork;
+import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.property.PluginChannel;
@@ -55,6 +60,8 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
 
     private final StargateAPI stargateAPI;
     private final StargateLogger stargateLogger;
+    private RegistryAPI registry;
+    private LanguageManager languageManager;
 
     /**
      * Instantiates a new stargate bungee plugin message listener
@@ -62,9 +69,11 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      * @param stargateAPI    <p>Something implementing the Stargate API</p>
      * @param stargateLogger <p>Something implementing the Stargate logger</p>
      */
-    public StargateBungeePluginMessageListener(StargateAPI stargateAPI, StargateLogger stargateLogger) {
+    public StargateBungeePluginMessageListener(StargateAPI stargateAPI, StargateLogger stargateLogger, RegistryAPI registry, LanguageManager languageManager) {
         this.stargateAPI = stargateAPI;
         this.stargateLogger = stargateLogger;
+        this.registry = registry;
+        this.languageManager = languageManager;
     }
 
     /**
@@ -78,7 +87,10 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      *  <li>portal added message - add virtual portal from specific network</li>
      *  <li>plugin disable message - remove all virtual portals given in message</li>
      *  <li>portal open message - open selected portal. Too much ?</li>
-     * </ul></p>
+     * </ul>
+     * @param channel The channel being used to send the message.
+     * @param unused A player object.
+     * @param message The message being processed.
      */
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {
@@ -112,7 +124,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     break;
                 case PLAYER_TELEPORT:
                     stargateLogger.logMessage(Level.FINEST, "trying to read player join json msg");
-                    BungeeHelper.playerConnect(in.readUTF());
+                    BungeeHelper.playerConnect(in.readUTF(),registry,languageManager);
                     break;
                 case LEGACY_BUNGEE:
                     BungeeHelper.legacyPlayerConnect(in.readUTF());
@@ -147,8 +159,9 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
         UUID ownerUUID = UUID.fromString(json.get(StargateProtocolProperty.OWNER.toString()).getAsString());
 
         try {
-            stargateAPI.getRegistry().createNetwork(network, flags);
-        } catch (NameErrorException ignored) {
+            stargateAPI.getRegistry().createNetwork(network, flags, false);
+        } catch (InvalidNameException | NameLengthException | NameConflictException  e) {
+            e.printStackTrace();
         }
         try {
             InterServerNetwork targetNetwork = (InterServerNetwork) stargateAPI.getRegistry().getNetwork(network, true);
@@ -164,7 +177,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     break;
             }
             targetNetwork.updatePortals();
-        } catch (NameErrorException ignored) {
+        } catch (NameConflictException ignored) {
         }
     }
 

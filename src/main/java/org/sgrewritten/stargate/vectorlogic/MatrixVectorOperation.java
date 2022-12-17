@@ -5,6 +5,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 
@@ -34,7 +35,7 @@ public class MatrixVectorOperation implements VectorOperation {
      * @param logger   <p>The logger to use for logging debug messages</p>
      * @throws InvalidStructureException <p>If given a sign face which is not one of EAST, SOUTH, WEST or NORTH</p>
      */
-    public MatrixVectorOperation(BlockFace signFace, StargateLogger logger) throws InvalidStructureException {
+    public MatrixVectorOperation(BlockFace signFace) throws InvalidStructureException {
         double rotation;
 
         switch (signFace) {
@@ -61,7 +62,7 @@ public class MatrixVectorOperation implements VectorOperation {
         this.facing = signFace;
         matrixRotation = new MatrixYRotation(rotation);
         matrixInverseRotation = matrixRotation.getInverse();
-        logger.logMessage(Level.FINER, "Chose a format rotation of " + rotation + " radians");
+        Stargate.log(Level.FINER, "Chose a format rotation of " + rotation + " radians");
     }
 
     @Override

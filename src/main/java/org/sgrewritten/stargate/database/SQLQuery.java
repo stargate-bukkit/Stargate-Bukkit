@@ -207,26 +207,61 @@ public enum SQLQuery {
      */
     SHOW_INDEX_INTER_PORTAL_POSITION, DELETE_PORTAL_POSITION, DELETE_INTER_PORTAL_POSITION, ADD_META_TO_TABLE_PORTAL, ADD_META_TO_TABLE_INTER_PORTAL, ADD_META_TO_TABLE_PORTAL_POSITION, ADD_META_TO_TABLE_INTER_PORTAL_POSITION,
 
-
+    /**
+     * The query for getting data of one portal
+     */
     GET_PORTAL,
 
+    /**
+     * The query for getting data of one inteserver portal
+     */
     GET_INTER_PORTAL,
 
+    /**
+     * The query for setting the metadata of a portal 
+     */
     SET_PORTAL_META,
 
+    /**
+     * The query for setting the metadata of a interserver portal 
+     */
     SET_INTER_PORTAL_META,
 
+    /**
+     * The query for getting data of one portal position
+     */
     GET_PORTAL_POSITION,
 
+    /**
+     * The query for getting data of one interserver portal position
+     */
     GET_INTER_PORTAL_POSITION,
 
+    /**
+     * The query for setting the meta for a portal position
+     */
     SET_PORTAL_POSITION_META,
 
+    /**
+     * The query for setting the meta for a inter portal position
+     */
     SET_INTER_PORTAL_POSITION_META,
-
+    
     GET_PORTAL_POSITION_META,
 
     GET_INTER_PORTAL_POSITION_META,
+    
+    UPDATE_NETWORK_NAME,
+    
+    UPDATE_INTER_NETWORK_NAME,
+    
+    UPDATE_PORTAL_NAME,
+    
+    UPDATE_INTER_PORTAL_NAME,
+    
+    GET_ALL_PORTALS_OF_NETWORK,
+    
+    GET_ALL_INTER_PORTALS_OF_NETWORK,
 
 
 }

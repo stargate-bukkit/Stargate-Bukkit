@@ -5,10 +5,12 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.NameErrorException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.PortalType;
+import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.util.FakeLanguageManager;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -43,13 +45,15 @@ public class FakePortalGenerator {
      * @param portalNetwork            <p>The network of the generated portals</p>
      * @param createInterServerPortals <p>Whether to generate fake inter-server portals</p>
      * @param numberOfPortals          <p>The number of fake portals to generate</p>
+     * @param logger
      * @return <p>A map from the portal's name to the portal's object</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
-     * @throws NameErrorException        <p>If the generated portal name is invalid</p>
+     * @throws InvalidNameException        <p>If the generated portal name is invalid</p>
+     * @throws NameLengthException 
      */
     public Map<String, RealPortal> generateFakePortals(World world, Network portalNetwork,
                                                        boolean createInterServerPortals, int numberOfPortals,
-                                                       StargateLogger logger) throws InvalidStructureException, NameErrorException {
+                                                       StargateLogger logger) throws InvalidStructureException, InvalidNameException, NameLengthException {
         Map<String, RealPortal> output = new HashMap<>();
         String baseName;
         if (createInterServerPortals) {
@@ -60,7 +64,7 @@ public class FakePortalGenerator {
 
         for (int portalNumber = 0; portalNumber < numberOfPortals; portalNumber++) {
             String name = baseName + portalNumber;
-            RealPortal portal = generateFakePortal(world, portalNetwork, name, createInterServerPortals, logger);
+            RealPortal portal = generateFakePortal(world, portalNetwork, name, createInterServerPortals);
             output.put(portal.getName(), portal);
         }
         return output;
@@ -73,12 +77,14 @@ public class FakePortalGenerator {
      * @param portalNetwork           <p>The network of the generated portal</p>
      * @param name                    <p>The name of the generated portal</p>
      * @param createInterServerPortal <p>Whether to generate a fake inter-server portal</p>
+     * @param logger
      * @return <p>A fake portal</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
-     * @throws NameErrorException        <p>If the given portal name is invalid</p>
+     * @throws InvalidNameException        <p>If the given portal name is invalid</p>
+     * @throws NameLengthException 
      */
-    public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal,
-                                         StargateLogger logger) throws InvalidStructureException, NameErrorException {
+    public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal)
+            throws InvalidStructureException, InvalidNameException, NameLengthException {
         Set<PortalFlag> flags = generateRandomFlags();
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
@@ -87,15 +93,15 @@ public class FakePortalGenerator {
         portalData.topLeft = world.getBlockAt(0, 0, 0).getLocation();
         portalData.facing = BlockFace.EAST;
         portalData.gateFileName = "fileName.gate";
-        portalData.portalType = createInterServerPortal ? PortalType.INTER_SERVER : PortalType.LOCAL;
+        portalData.portalType = createInterServerPortal ? StorageType.INTER_SERVER : StorageType.LOCAL;
 
-        Gate gate = new Gate(portalData, logger);
+        Gate gate = new Gate(portalData);
 
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON);
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);
         //To avoid using the Portal#open method on constructor, which uses an unimplemented function in MockBukkit (block-states)
         flags.remove(PortalFlag.ALWAYS_ON);
-        return new FixedPortal(portalNetwork, name, "", flags, gate, UUID.randomUUID(), logger);
+        return new FixedPortal(portalNetwork, name, "", flags, gate, UUID.randomUUID(), new FakeLanguageManager());
     }
 
     /**
