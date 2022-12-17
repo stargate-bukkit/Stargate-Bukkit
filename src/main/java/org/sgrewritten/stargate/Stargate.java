@@ -26,10 +26,12 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
@@ -134,6 +136,15 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private static final FileConfiguration staticConfig = new StargateYamlConfiguration();
 
+    public Stargate() {
+        
+    }
+    
+    protected Stargate(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file)
+    {
+        super(loader, description, dataFolder, file);
+    }
+    
     @Override
     public void onEnable() {
         try {
@@ -563,7 +574,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         }
         System.out.println(message);
     }
-
+    
     /**
      * Gets an instance of this plugin
      *
