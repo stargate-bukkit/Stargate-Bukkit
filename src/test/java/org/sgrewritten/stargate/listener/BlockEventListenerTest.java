@@ -53,10 +53,6 @@ class BlockEventListenerTest {
     private static PlayerMock player;
     private static WorldMock world;
     private static BlockEventListener blockEventListener;
-    private static Block signBlock;
-    private static Location bottomLeft;
-    private static Location insidePortal;
-    private static @NotNull Block irisBlock;
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
     private static final String PLAYER_NAME = "player";
     private static final String CUSTOM_NETNAME = "custom";
@@ -75,13 +71,9 @@ class BlockEventListenerTest {
         Stargate.setServerUUID(UUID.randomUUID());
         blockEventListener = new BlockEventListener(registry, new FakeLanguageManager());
         
-        bottomLeft = new Location(world, 0, 1, 0);
-        insidePortal = new Location(world, 0, 2, 0);
-        signBlock = PortalBlockGenerator.generatePortal(bottomLeft);
-        irisBlock = new Location(world, 0, 2, 1).getBlock();
-        Stargate.log(Level.FINEST, signBlock.getBlockData().getAsString());
-        Assertions.assertInstanceOf(WallSign.class,BlockDataMock.mock(Material.ACACIA_WALL_SIGN), " Too old mockbukkit version, requires at least v1.19:1.139.0");
-        
+        Assertions.assertInstanceOf(WallSign.class,BlockDataMock.mock(Material.ACACIA_WALL_SIGN), " Too old mockbukkit version, requires at least v1.19:1.141.0");
+
+        player.setOp(true);
     }
     
     @AfterAll
@@ -91,7 +83,12 @@ class BlockEventListenerTest {
     
     @Test
     public void portalCreationDestuctionTest() {
-        player.setOp(true);
+        Location bottomLeft = new Location(world, 0, 1, 0);
+        Location insidePortal = new Location(world, 0, 2, 0);
+        Block signBlock = PortalBlockGenerator.generatePortal(bottomLeft);
+        Block irisBlock = new Location(world, 0, 2, 0).getBlock();
+        
+        
         String[] netNames = { "", CUSTOM_NETNAME, player.getName() };
         for (String netName : netNames) {
             blockEventListener
@@ -112,13 +109,11 @@ class BlockEventListenerTest {
             }
             
 
-            Network network = registry.getNetwork(netId, false);
-            Stargate.log(Level.FINEST, registry.getNetworkMap().keySet().toString());
             ((Directional) signBlock.getBlockData()).setFacing(BlockFace.SOUTH); //TODO Why does this need to be done?
+            Network network = registry.getNetwork(netId, false);
             Assertions.assertNotNull(network.getPortal("test"));
             Assertions.assertNotNull(registry.getPortal(insidePortal));
             blockEventListener.onBlockBreak(new BlockBreakEvent(insidePortal.getBlock(), player));
-            insidePortal.getBlock().setType(Material.OBSIDIAN);
             Assertions.assertNull(network.getPortal("test"));
             Assertions.assertNull(registry.getPortal(insidePortal));
         }
@@ -127,9 +122,42 @@ class BlockEventListenerTest {
     @SuppressWarnings("deprecation")
     @Test
     public void portalInvalidBlockPlaceTest() {
+        Location bottomLeft = new Location(world, 0, 7, 0);
+        Location insidePortal = new Location(world, 0, 9, 0);
+        Block signBlock = PortalBlockGenerator.generatePortal(bottomLeft);
+        Block irisBlock = new Location(world, 1, 9, 0).getBlock();
+        
+        
+        ((Directional) signBlock.getBlockData()).setFacing(BlockFace.SOUTH);
         blockEventListener
                 .onSignChange(new SignChangeEvent(signBlock, player, new String[] { "test", "", CUSTOM_NETNAME, "" }));
-        blockEventListener.onBlockPlace(new BlockPlaceEvent(irisBlock, irisBlock.getState(), irisBlock,
-                Bukkit.getItemFactory().createItemStack("minecraft:oak_logs"), player, false));
+        
+        BlockPlaceEvent event = new BlockPlaceEvent(irisBlock, irisBlock.getState(), irisBlock,
+               new ItemStack(Material.ANDESITE), player, false);
+        blockEventListener.onBlockPlace(event);
+        blockEventListener.onBlockBreak(new BlockBreakEvent(insidePortal.getBlock(), player));
+        Assertions.assertTrue(event.isCancelled());
+    }
+    
+    @Test
+    public void cancelBlockBreakTest() {
+
+        Location bottomLeft = new Location(world, 0, 14, 0);
+        Location insidePortal = new Location(world, 0, 16, 0);
+        Block signBlock = PortalBlockGenerator.generatePortal(bottomLeft);
+        Block irisBlock = new Location(world, 1, 16, 0).getBlock();
+        blockEventListener
+        .onSignChange(new SignChangeEvent(signBlock, player, new String[] { "test", "", CUSTOM_NETNAME, "" }));
+        
+        BlockBreakEvent controlBreakEvent = new BlockBreakEvent(signBlock, player);
+        blockEventListener.onBlockBreak(controlBreakEvent);
+        Assertions.assertTrue(controlBreakEvent.isCancelled());
+
+        BlockBreakEvent irisBreakEvent = new BlockBreakEvent(irisBlock, player);
+        blockEventListener.onBlockBreak(irisBreakEvent);
+        Assertions.assertTrue(irisBreakEvent.isCancelled());
+        
     }
 }
+
+
