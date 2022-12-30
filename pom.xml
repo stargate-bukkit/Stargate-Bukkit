@@ -34,7 +34,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.19.2-R0.1-SNAPSHOT</version>
+            <version>1.19.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -80,12 +80,6 @@
             <scope>test</scope>
         </dependency>
 		<dependency>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-surefire-plugin</artifactId>
-			<version>3.0.0-M7</version>
-			<type>maven-plugin</type>
-		</dependency>
-		<dependency>
     		<groupId>org.junit.jupiter</groupId>
     		<artifactId>junit-jupiter</artifactId>
     		<version>5.9.1</version>
@@ -100,7 +94,7 @@
         <dependency>
             <groupId>com.github.seeseemelk</groupId>
             <artifactId>MockBukkit-v1.19</artifactId>
-            <version>2.139.0</version>
+            <version>2.143.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -200,6 +194,11 @@
 			        </execution>
 			    </executions>
 		    </plugin>
+			<plugin>
+	          	<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M7</version>
+	        </plugin>
         </plugins>
         <resources>
             <resource>
