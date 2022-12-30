@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.util.portal;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
@@ -31,11 +32,11 @@ public class TeleportationHelper {
      * @return <p>A possible spawn location, or null if no viable location could be found</p>
      */
     public static Location findViableSpawnLocation(Entity entity, RealPortal destinationPortal) {
-        Vector forward = destinationPortal.getGate().getFacing().getDirection();
-        Vector left = forward.rotateAroundY(Math.PI / 2);
-        Vector right = forward.rotateAroundY(-Math.PI / 2);
-        Vector up = new Vector(0, 1, 0);
-        Vector down = new Vector(0, -1, 0);
+        BlockVector forward = destinationPortal.getExitFacing().getDirection().toBlockVector();
+        BlockVector left = forward.clone().rotateAroundY(Math.PI / 2).toBlockVector();
+        BlockVector right = forward.clone().rotateAroundY(-Math.PI / 2).toBlockVector();
+        BlockVector up = new BlockVector(0, 1, 0);
+        BlockVector down = new BlockVector(0, -1, 0);
 
         List<Location> irisLocations = new ArrayList<>();
         //Add locations of all iris blocks in the Stargate
@@ -79,13 +80,16 @@ public class TeleportationHelper {
      * @param portalCenter    <p>The center of the portal the cone is extending from (used for sorting by distance)</p>
      * @return <p>The locations part of the next cone layer</p>
      */
-    private static List<Location> getDirectionalConeLayer(List<Location> locations, Vector outwards, Vector left,
-                                                          Vector right, Vector up, Vector down, int recursionNumber,
-                                                          Location portalCenter) {
+    protected static List<Location> getDirectionalConeLayer(List<Location> locations, BlockVector outwards,
+            BlockVector left, BlockVector right, BlockVector up, BlockVector down, int recursionNumber,
+            Location portalCenter) {
         Set<Location> relativeLocations = new HashSet<>();
         for (Location location : locations) {
-            /* Store relative locations in a new hashset to make sure the upwards and downwards variations are only 
-            created for the three relative locations just generated */
+            /*
+             * Store relative locations in a new hashset to make sure the upwards and
+             * downwards variations are only created for the three relative locations just
+             * generated
+             */
             Set<Location> newRelativeLocations = new HashSet<>();
             //Add the three relevant relative locations
             newRelativeLocations.add(location.clone().add(outwards));
@@ -119,7 +123,7 @@ public class TeleportationHelper {
      * @param center <p>The entity's coordinates</p>
      * @return <p>True if the entity can be safely teleported to the given location</p>
      */
-    private static boolean isViableSpawnLocation(int width, int height, Location center) {
+    protected static boolean isViableSpawnLocation(int width, int height, Location center) {
         Location corner = center.clone().subtract(width / 2.0, 0, width / 2.0);
 
         //If a single solid block is found, the entity would be crushed to death
@@ -131,7 +135,7 @@ public class TeleportationHelper {
 
         //As long as the entity as a single floor block to spawn on, it won't fall down
         for (Location floorLocation : getFloorLocations(width, corner)) {
-            if (floorLocation.getBlock().getType().isBlock()) {
+            if (floorLocation.getBlock().getType().isSolid()) {
                 return true;
             }
         }
@@ -146,11 +150,11 @@ public class TeleportationHelper {
      * @param corner <p>A corner of the entities hit-box where y, x, z coordinates are the lowest</p>
      * @return <p>A list of the locations occupied by the entity</p>
      */
-    private static List<Location> getOccupiedLocations(int width, int height, Location corner) {
+    protected static List<Location> getOccupiedLocations(int width, int height, Location corner) {
         List<Location> occupiedLocations = new ArrayList<>();
-        for (int ix = 0; ix <= width; ix++) {
-            for (int iy = 0; iy <= height; iy++) {
-                for (int iz = 0; iz <= width; iz++) {
+        for (int ix = 0; ix < width; ix++) {
+            for (int iy = 0; iy < height; iy++) {
+                for (int iz = 0; iz < width; iz++) {
                     occupiedLocations.add(corner.clone().add(new BlockVector(ix, iy, iz)));
                 }
             }
@@ -165,7 +169,7 @@ public class TeleportationHelper {
      * @param corner <p>A corner of the entities hit-box where y, x, z coordinates are the lowest</p>
      * @return <p>A list of the locations occupied by the entity</p>
      */
-    private static List<Location> getFloorLocations(int width, Location corner) {
+    protected static List<Location> getFloorLocations(int width, Location corner) {
         List<Location> floorLocations = new ArrayList<>();
         for (int ix = 0; ix < width; ix++) {
             for (int iz = 0; iz < width; iz++) {

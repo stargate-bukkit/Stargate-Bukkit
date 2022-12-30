@@ -553,4 +553,8 @@ public abstract class AbstractPortal implements RealPortal {
     public void setName(String newName) {
         this.name = newName;
     }
+    
+    public BlockFace getExitFacing() {
+        return flags.contains(PortalFlag.BACKWARDS) ? getGate().getFacing() : getGate().getFacing().getOppositeFace();
+    }
 }
