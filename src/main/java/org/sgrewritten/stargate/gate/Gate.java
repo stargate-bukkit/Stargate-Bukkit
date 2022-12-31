@@ -34,6 +34,7 @@ import org.sgrewritten.stargate.vectorlogic.VectorOperation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 
 /**
@@ -43,14 +44,14 @@ import java.util.logging.Level;
  */
 public class Gate implements GateAPI {
 
-    private final GateFormat format;
+    private final @NotNull GateFormat format;
     private final VectorOperation converter;
     private Location topLeft;
     private final List<PortalPosition> portalPositions = new ArrayList<>();
     private final BlockFace facing;
     private boolean isOpen = false;
     private boolean flipped;
-    private RegistryAPI registry;
+    private final @NotNull RegistryAPI registry;
 
 
     /**
@@ -64,8 +65,11 @@ public class Gate implements GateAPI {
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
-    public Gate(GateFormat format, Location signLocation, BlockFace signFace, boolean alwaysOn, RegistryAPI registry)
+    public Gate(@NotNull GateFormat format, @NotNull Location signLocation, BlockFace signFace, boolean alwaysOn, @NotNull RegistryAPI registry)
             throws InvalidStructureException, GateConflictException {
+        Objects.requireNonNull(format);
+        Objects.requireNonNull(signLocation);
+        Objects.requireNonNull(registry);
         this.format = format;
         this.registry = registry;
         facing = signFace;
@@ -81,7 +85,7 @@ public class Gate implements GateAPI {
             return;
         }
 
-        throw new InvalidStructureException("Format does not match with signlocatino in world");
+        throw new InvalidStructureException("Format does not match with signlocation in world");
     }
 
     /**
@@ -91,8 +95,8 @@ public class Gate implements GateAPI {
      * @param logger     <p> A logger </p>
      * @throws InvalidStructureException <p>If the facing is invalid or if no format could be found</p>
      */
-    public Gate(PortalData portalData) throws InvalidStructureException {
-
+    public Gate(PortalData portalData,@NotNull RegistryAPI registry) throws InvalidStructureException {
+        Objects.requireNonNull(registry);
         GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);
         if (format == null) {
             Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
@@ -105,6 +109,7 @@ public class Gate implements GateAPI {
         this.format = format;
         this.facing = portalData.facing;
         this.flipped = portalData.flipZ;
+        this.registry = registry;
     }
 
     @Override

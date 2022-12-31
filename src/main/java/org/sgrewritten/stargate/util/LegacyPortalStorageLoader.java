@@ -104,7 +104,7 @@ public final class LegacyPortalStorageLoader {
         Network network = registry.getNetwork(portalData.networkName,
                 portalData.flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
-        Gate gate = new Gate(portalData);
+        Gate gate = new Gate(portalData,registry);
         Location signLocation = LegacyDataHandler.loadLocation(world, portalProperties[1]);
         Location buttonLocation = LegacyDataHandler.loadLocation(world, portalProperties[2]);
         if (signLocation != null) {

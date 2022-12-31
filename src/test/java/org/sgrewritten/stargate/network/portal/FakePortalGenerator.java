@@ -10,8 +10,12 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.StargateRegistry;
+import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.util.FakeLanguageManager;
+import org.sgrewritten.stargate.util.FakeStorage;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -87,7 +91,6 @@ public class FakePortalGenerator {
      * @param portalNetwork           <p>The network of the generated portal</p>
      * @param name                    <p>The name of the generated portal</p>
      * @param createInterServerPortal <p>Whether to generate a fake inter-server portal</p>
-     * @param logger
      * @return <p>A fake portal</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      * @throws InvalidNameException        <p>If the given portal name is invalid</p>
@@ -98,9 +101,10 @@ public class FakePortalGenerator {
         Set<PortalFlag> flags = generateRandomFlags();
         //To avoid using the Portal#open method on constructor, which uses an unimplemented function in MockBukkit (block-states)
         flags.remove(PortalFlag.ALWAYS_ON);
-        Location topLeft = new Location(world,0,0,0);
-        
-        return generateFakePortal(topLeft,portalNetwork,name,createInterServerPortal,flags);
+        Location topLeft = new Location(world,0,10,0);
+        NetworkType.removeNetworkTypeRelatedFlags(flags);
+        flags.add(portalNetwork.getType().getRelatedFlag());
+        return generateFakePortal(topLeft,portalNetwork,name,createInterServerPortal,flags,new StargateRegistry(new FakeStorage()));
     }
 
     /**
@@ -134,7 +138,7 @@ public class FakePortalGenerator {
      * @throws InvalidNameException         <p>If the given portal name is invalid</p>
      */
     public RealPortal generateFakePortal(Location topLeft, Network network, String name,
-            boolean createInterServerPortal, Set<PortalFlag> flags)
+            boolean createInterServerPortal, Set<PortalFlag> flags, RegistryAPI registry )
             throws InvalidStructureException, NameLengthException, InvalidNameException {
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
@@ -142,10 +146,10 @@ public class FakePortalGenerator {
         PortalData portalData = new PortalData();
         portalData.topLeft = topLeft;
         portalData.facing = BlockFace.EAST;
-        portalData.gateFileName = "fileName.gate";
+        portalData.gateFileName = "nether.gate";
         portalData.portalType = createInterServerPortal ? StorageType.INTER_SERVER : StorageType.LOCAL;
 
-        Gate gate = new Gate(portalData);
+        Gate gate = new Gate(portalData,registry);
 
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON);
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);

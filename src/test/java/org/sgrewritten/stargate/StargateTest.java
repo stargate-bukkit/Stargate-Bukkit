@@ -3,6 +3,8 @@ package org.sgrewritten.stargate;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Level;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
@@ -11,18 +13,37 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.network.portal.RealPortal;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.WorldMock;
 
 class StargateTest {
 
-    private static @NotNull Stargate plugin;
+    private static Stargate plugin;
+    private static Network network;
+    private static ServerMock server;
+    private static WorldMock world;
+    private static RealPortal portal;
 
     @BeforeAll
-    public static void setup() {
-        MockBukkit.mock();
+    public static void setup() throws NameLengthException, NameConflictException, InvalidNameException, InvalidStructureException {
+        server = MockBukkit.mock();
+        world = server.addSimpleWorld("world");
         System.setProperty("bstats.relocatecheck", "false");
         plugin = MockBukkit.load(Stargate.class);
+        network = plugin.getRegistry().createNetwork("network", NetworkType.CUSTOM,false, false);
+        portal = new FakePortalGenerator().generateFakePortal(world, network, "name", false);
+        network.addPortal(portal, true);
     }
     
     @AfterAll
@@ -77,5 +98,15 @@ class StargateTest {
         Assertions.assertEquals(2, plugin.getConfigurationOptionValue(ConfigurationOption.UPKEEP_COST));
     }
     
+    @Test
+    public void reload() {
+        Stargate.log(Level.FINEST, "reloading");
+        plugin.reload();
+        Assertions.assertTrue(plugin.isEnabled());
+    }
     
+    @Test
+    public void reloadConfig() {
+        Assertions.assertDoesNotThrow(() -> plugin.reloadConfig());
+    }
 }

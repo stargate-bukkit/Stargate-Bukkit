@@ -104,9 +104,6 @@ handleLeashedCreatures: true
 # 
 # This checks that the expected gates are both present and using a valid layout.
 # Designed to catch .gate file modifications, world changes, and terrain regeneration.
-# 
-# …««»»…  If you set this to true, you should ensure protectEntrance (below) is set to true!
-# “NOTE”  Otherwise, disallowed players, block updates, and snowmen can invalidate your portals!
 checkPortalValidity: true
 
 # Can StarGates be broken via an explosion?
