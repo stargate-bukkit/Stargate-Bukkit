@@ -16,14 +16,30 @@ import java.util.Set;
 import java.util.logging.Level;
 
 public class BlockEventHelper {
+    
     /**
      * Does event handling for any event that changes one block
      *
      * @param event    <p> The event to possibly cancel </p>
      * @param type     <p> The type of event </p>
      * @param location <p> The location of the block </p>
+     * @param registry <p> The registry in use </p>
      */
     public static void onAnyBlockChangeEvent(Cancellable event, BlockEventType type, Location location, RegistryAPI registry) {
+        onAnyBlockChangeEvent(event,type,location,registry,()->{});
+    }
+    
+    
+    /**
+     * Does event handling for any event that changes one block
+     *
+     * @param event    <p> The event to possibly cancel </p>
+     * @param type     <p> The type of event </p>
+     * @param location <p> The location of the block </p>
+     * @param registry <p> The registry in use </p>
+     * @param destroyAction <p> What to do if the portal was destroyed </p>
+     */
+    public static void onAnyBlockChangeEvent(Cancellable event, BlockEventType type, Location location, RegistryAPI registry, Runnable destroyAction) {
         Portal portal = registry.getPortal(location);
         if (portal == null) {
             return;

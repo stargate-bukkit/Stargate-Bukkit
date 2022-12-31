@@ -109,10 +109,6 @@ handleLeashedCreatures: true
 # “NOTE”  Otherwise, disallowed players, block updates, and snowmen can invalidate your portals!
 checkPortalValidity: true
 
-# SG protects gate 𝑓𝑟𝑎𝑚𝑒 materials; should it also protect gate 𝑎𝑝𝑒𝑟𝑡𝑢𝑟𝑒 (open/closed) materials?
-# ex. in nether.gate, should nether_portal be protected?
-protectEntrance: true
-
 # Can StarGates be broken via an explosion?
 #  [tnt, creepers, etc.]
 destroyOnExplosion: false

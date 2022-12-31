@@ -110,7 +110,14 @@ public class BlockEventListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (registry.getPortal(location, GateStructureType.IRIS) != null && ConfigurationHelper.getBoolean(ConfigurationOption.PROTECT_ENTRANCE)) {
+        RealPortal portalFromIris = registry.getPortal(location,GateStructureType.IRIS);
+        if(portalFromIris != null) {
+            if(BlockEventType.BLOCK_BREAK.canDestroyPortal()) {
+                String msg = languageManager.getErrorMessage(TranslatableMessage.DESTROY);
+                event.getPlayer().sendMessage(msg);
+                portalFromIris.destroy();
+                return;
+            }
             event.setCancelled(true);
         }
     }
@@ -122,19 +129,8 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        Portal portal = registry.getPortal(event.getBlock().getLocation());
-        if (portal == null) {
-            return;
-        }
-        if (registry.getPortal(event.getBlock().getLocation(), GateStructureType.IRIS) != null) {
-            if (ConfigurationHelper.getBoolean(ConfigurationOption.PROTECT_ENTRANCE)) {
-                event.setCancelled(true);
-            }
-            return;
-        }
-        if (!BlockEventType.BLOCK_PLACE.canDestroyPortal()) {
-            event.setCancelled(true);
-        }
+        String msg = languageManager.getErrorMessage(TranslatableMessage.DESTROY);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PLACE, event.getBlock().getLocation(), registry, () -> event.getPlayer().sendMessage(msg));
     }
 
     /**
@@ -268,14 +264,6 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockFormEvent(BlockFormEvent event) {
-        Location location = event.getBlock().getLocation();
-        Portal portalFromIris = registry.getPortal(location, GateStructureType.IRIS);
-        if (portalFromIris != null) {
-            if (ConfigurationHelper.getBoolean(ConfigurationOption.PROTECT_ENTRANCE)) {
-                event.setCancelled(true);
-            }
-            return;
-        }
         BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_FORM, event.getBlock().getLocation(),registry);
     }
 
