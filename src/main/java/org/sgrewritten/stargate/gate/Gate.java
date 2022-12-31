@@ -32,6 +32,8 @@ import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.vectorlogic.MatrixVectorOperation;
 import org.sgrewritten.stargate.vectorlogic.VectorOperation;
 
+import com.google.common.base.Preconditions;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -67,11 +69,9 @@ public class Gate implements GateAPI {
      */
     public Gate(@NotNull GateFormat format, @NotNull Location signLocation, BlockFace signFace, boolean alwaysOn, @NotNull RegistryAPI registry)
             throws InvalidStructureException, GateConflictException {
-        Objects.requireNonNull(format);
         Objects.requireNonNull(signLocation);
-        Objects.requireNonNull(registry);
-        this.format = format;
-        this.registry = registry;
+        this.format = Objects.requireNonNull(format);
+        this.registry = Objects.requireNonNull(registry);
         facing = signFace;
         converter = new MatrixVectorOperation(signFace);
 
@@ -96,7 +96,6 @@ public class Gate implements GateAPI {
      * @throws InvalidStructureException <p>If the facing is invalid or if no format could be found</p>
      */
     public Gate(PortalData portalData,@NotNull RegistryAPI registry) throws InvalidStructureException {
-        Objects.requireNonNull(registry);
         GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);
         if (format == null) {
             Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
@@ -109,7 +108,7 @@ public class Gate implements GateAPI {
         this.format = format;
         this.facing = portalData.facing;
         this.flipped = portalData.flipZ;
-        this.registry = registry;
+        this.registry = Preconditions.checkNotNull(registry);
     }
 
     @Override

@@ -186,5 +186,4 @@ public final class NetworkCreationHelper {
     private static UUID getPlayerUUID(String playerName) {
         return Bukkit.getOfflinePlayer(playerName).getUniqueId();
     }
-
 }

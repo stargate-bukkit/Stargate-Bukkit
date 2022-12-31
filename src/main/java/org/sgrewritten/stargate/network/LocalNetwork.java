@@ -22,11 +22,14 @@ import org.sgrewritten.stargate.property.BypassPermission;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 
+import com.google.common.base.Preconditions;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -63,7 +66,8 @@ public class LocalNetwork implements Network {
     }
     
     private void load(String name, NetworkType type) throws InvalidNameException, NameLengthException {
-        this.networkType = type;
+        Objects.requireNonNull(name);
+        this.networkType = Objects.requireNonNull(type);
         switch(type) {
         case DEFAULT:
             loadAsDefault(name);
@@ -106,7 +110,7 @@ public class LocalNetwork implements Network {
         if (possiblePlayerName != null
                 && (NetworkCreationHelper.getDefaultNamesTaken().contains(possiblePlayerName.toLowerCase())
                 || NetworkCreationHelper.getBannedNames().contains(possiblePlayerName.toLowerCase()))) {
-            possiblePlayerName = name.split("-")[0];
+            possiblePlayerName = uuidString.split("-")[0];
         }
         name = possiblePlayerName;
         id = uuidString;

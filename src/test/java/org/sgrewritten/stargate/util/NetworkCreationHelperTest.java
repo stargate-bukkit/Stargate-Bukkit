@@ -9,6 +9,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sgrewritten.stargate.FakeStargate;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -34,14 +36,16 @@ class NetworkCreationHelperTest {
     private static final String CENTRAL = "central";
     private static final String INVALID_NAME = "invalid";
     private static final String NAME = "name";
+    private static final String PLAYER_NAME = "playerName";
 
     @BeforeAll
     static void setup() {
         server = MockBukkit.mock();
-        player = new PlayerMock(server, "playerName");
+        player = new PlayerMock(server, PLAYER_NAME);
         plugin = (FakeStargate) MockBukkit.load(FakeStargate.class);
         permissionManager = new StargatePermissionManager(player, new FakeLanguageManager());
         server.addPlayer(player);
+        server.addPlayer("central");
         registry = new StargateRegistry(new FakeStorage());
         
         emptyNames = new String[]{"", " ", "  "};
@@ -73,21 +77,30 @@ class NetworkCreationHelperTest {
 
     
     @Test
-    public void explicitDefinitionTest() throws InvalidNameException, TranslatableException{
+    public void explicitDefinitionTest_Default() throws InvalidNameException, TranslatableException{
         System.out.println("############### EXPLICIT TEST #############");
         Network defaultNetwork = NetworkCreationHelper.selectNetwork(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(CENTRAL), permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.DEFAULT, defaultNetwork.getType());
         Assertions.assertEquals(CENTRAL, defaultNetwork.getName());
-
-        /*Assertions.assertThrows(NameErrorException.class, () -> {
-            NetworkCreationHelper.selectNetwork(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(INVALID_NAME), permissionManager, player, new HashSet<>(), registry);
-        });
-        */
-        String highlightedPlayername = NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(player.getName());
+    }
+    
+    @ParameterizedTest
+    @ValueSource(strings = {PLAYER_NAME,CENTRAL})
+    public void explicitDefinitionTest_Personal(String name) throws InvalidNameException, TranslatableException{
+        String highlightedPlayername = NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(name);
         Network personalNetwork = NetworkCreationHelper.selectNetwork(highlightedPlayername, permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.PERSONAL, personalNetwork.getType());
-        Assertions.assertEquals(player.getName(), personalNetwork.getName());
-        
+        if(name.equals(CENTRAL)) {
+            // Name should not be "central", as it conflicts with the default network name
+            Assertions.assertNotEquals(CENTRAL, personalNetwork.getName());
+            Assertions.assertNotNull(personalNetwork.getName());
+        } else {
+            Assertions.assertEquals(name, personalNetwork.getName());
+        }
+    }
+    
+    @Test
+    public void explicitDefinitionTest_Custom() throws InvalidNameException, TranslatableException{
         String customNetworkName = NetworkType.CUSTOM.getHighlightingStyle().getHighlightedName(NAME);
         Network customNetwork = NetworkCreationHelper.selectNetwork(customNetworkName, permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.CUSTOM, customNetwork.getType());
@@ -96,7 +109,6 @@ class NetworkCreationHelperTest {
         Network changedNameFromDefault = NetworkCreationHelper.selectNetwork(NetworkType.CUSTOM.getHighlightingStyle().getHighlightedName(CENTRAL), permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.CUSTOM, changedNameFromDefault.getType());
         Assertions.assertEquals(CENTRAL + 1, changedNameFromDefault.getName());
-    
     }
     
     @Test
