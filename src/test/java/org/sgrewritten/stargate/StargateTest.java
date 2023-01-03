@@ -8,8 +8,10 @@ import java.util.logging.Level;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationOption;
@@ -26,18 +28,21 @@ import org.sgrewritten.stargate.network.portal.RealPortal;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
+import be.seeseemelk.mockbukkit.scheduler.BukkitSchedulerMock;
 
 class StargateTest {
 
-    private static Stargate plugin;
-    private static Network network;
-    private static ServerMock server;
-    private static WorldMock world;
-    private static RealPortal portal;
+    private Stargate plugin;
+    private Network network;
+    private ServerMock server;
+    private WorldMock world;
+    private RealPortal portal;
+    private BukkitSchedulerMock scheduler;
 
-    @BeforeAll
-    public static void setup() throws NameLengthException, NameConflictException, InvalidNameException, InvalidStructureException {
+    @BeforeEach
+    public void setup() throws NameLengthException, NameConflictException, InvalidNameException, InvalidStructureException {
         server = MockBukkit.mock();
+        scheduler = server.getScheduler();
         world = server.addSimpleWorld("world");
         System.setProperty("bstats.relocatecheck", "false");
         plugin = MockBukkit.load(Stargate.class);
@@ -46,8 +51,8 @@ class StargateTest {
         network.addPortal(portal, true);
     }
     
-    @AfterAll
-    public static void tearDown() {
+    @AfterEach
+    public void tearDown() {
         MockBukkit.unmock();
     }
     
@@ -83,6 +88,7 @@ class StargateTest {
         Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousSecAction(new SupplierAction(() -> {
             return true;
         })));
+        scheduler.performOneTick();
     }
     
     @Test
@@ -90,6 +96,7 @@ class StargateTest {
         Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousSecAction(new SupplierAction(() -> {
             return true;
         }),true));
+        scheduler.performOneTick();
     }
     
     @Test
@@ -101,6 +108,19 @@ class StargateTest {
     @Test
     public void reload() {
         Stargate.log(Level.FINEST, "reloading");
+        plugin.reload();
+        Assertions.assertTrue(plugin.isEnabled());
+    }
+    
+    @Test
+    public void reload_Interserver() {
+        plugin.setConfigurationOptionValue(ConfigurationOption.USING_BUNGEE, true);
+        plugin.setConfigurationOptionValue(ConfigurationOption.USING_REMOTE_DATABASE, true);
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_ADDRESS, "localhost");
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_PASSWORD, "root");
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_PORT, 3306);
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_USE_SSL, false);
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_DATABASE, "stargate");
         plugin.reload();
         Assertions.assertTrue(plugin.isEnabled());
     }
