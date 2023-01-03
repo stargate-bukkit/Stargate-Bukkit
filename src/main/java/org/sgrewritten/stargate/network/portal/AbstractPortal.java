@@ -19,6 +19,9 @@ import org.sgrewritten.stargate.action.DelayedAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.economy.EconomyAPI;
+import org.sgrewritten.stargate.economy.EconomyManager;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.event.StargateAccessEvent;
 import org.sgrewritten.stargate.event.StargateCloseEvent;
 import org.sgrewritten.stargate.event.StargateDeactivateEvent;
@@ -49,6 +52,7 @@ import org.sgrewritten.stargate.util.portal.PortalHelper;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -86,6 +90,7 @@ public abstract class AbstractPortal implements RealPortal {
     protected UUID activator;
     protected boolean isDestroyed = false;
     protected LanguageManager languageManager;
+    private StargateEconomyAPI economyManager;
     private static final int ACTIVE_DELAY = 15;
 
     /**
@@ -97,14 +102,15 @@ public abstract class AbstractPortal implements RealPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameLengthException <p>If the portal name is invalid</p>
      */
-    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager)
+    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyManager)
             throws NameLengthException {
-        this.ownerUUID = ownerUUID;
-        this.network = network;
-        this.name = name;
-        this.flags = flags;
-        this.gate = gate;
-        this.languageManager = languageManager;
+        this.ownerUUID = Objects.requireNonNull(ownerUUID);
+        this.network = Objects.requireNonNull(network);
+        this.name = Objects.requireNonNull(name);
+        this.flags = Objects.requireNonNull(flags);
+        this.gate = Objects.requireNonNull(gate);
+        this.languageManager = Objects.requireNonNull(languageManager);
+        this.economyManager = Objects.requireNonNull(economyManager);
         
         name = NameHelper.getTrimmedName(name);
         if (name.isEmpty() || (name.length() >= Stargate.getMaxTextLength())) {
@@ -251,7 +257,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         Teleporter teleporter = new Teleporter(this, origin, portalFacing, entranceFace, useCost,
-                languageManager.getMessage(TranslatableMessage.TELEPORT),languageManager);
+                languageManager.getMessage(TranslatableMessage.TELEPORT),languageManager,economyManager);
 
         teleporter.teleport(target);
     }
@@ -261,7 +267,7 @@ public abstract class AbstractPortal implements RealPortal {
         Portal destination = getCurrentDestination();
         if (destination == null) {
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED),languageManager);
+                    0, languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED),languageManager,economyManager);
             teleporter.teleport(target);
             return;
         }
@@ -271,7 +277,7 @@ public abstract class AbstractPortal implements RealPortal {
         if (accessEvent.getDeny()) {
             Stargate.log(Level.CONFIG, " Access event was canceled by an external plugin");
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, accessEvent.getDenyReason(),languageManager);
+                    0, accessEvent.getDenyReason(),languageManager,economyManager);
             teleporter.teleport(target);
             return;
         }

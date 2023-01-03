@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.event.StargateCreateEvent;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
@@ -77,20 +78,20 @@ public final class PortalCreationHelper {
      */
     public static RealPortal createPortal(Network network, String name, String destination, String targetServer,
                                           Set<PortalFlag> flags, Gate gate, UUID ownerUUID,
-                                          LanguageManager languageManager, RegistryAPI registry) throws InvalidNameException, NameLengthException, BungeeNameException {
+                                          LanguageManager languageManager, RegistryAPI registry,StargateEconomyAPI economyAPI) throws InvalidNameException, NameLengthException, BungeeNameException {
         name = NameHelper.getTrimmedName(name);
 
         if (flags.contains(PortalFlag.BUNGEE)) {
             flags.add(PortalFlag.FIXED);
             Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, registry);
-            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, gate, ownerUUID,languageManager);
+            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, gate, ownerUUID,languageManager,economyAPI);
         } else if (flags.contains(PortalFlag.RANDOM)) {
-            return new RandomPortal(network, name, flags, gate, ownerUUID,languageManager);
+            return new RandomPortal(network, name, flags, gate, ownerUUID,languageManager,economyAPI);
         } else if (flags.contains(PortalFlag.NETWORKED)) {
-            return new NetworkedPortal(network, name, flags, gate, ownerUUID,languageManager);
+            return new NetworkedPortal(network, name, flags, gate, ownerUUID,languageManager,economyAPI);
         } else {
             flags.add(PortalFlag.FIXED);
-            return new FixedPortal(network, name, destination, flags, gate, ownerUUID,languageManager);
+            return new FixedPortal(network, name, destination, flags, gate, ownerUUID,languageManager,economyAPI);
         }
     }
 
@@ -106,9 +107,9 @@ public final class PortalCreationHelper {
      * @throws BungeeNameException 
      * @throws NameLengthException 
      */
-    public static RealPortal createPortal(Network network, PortalData portalData, Gate gate,LanguageManager languageManager, RegistryAPI registry)
+    public static RealPortal createPortal(Network network, PortalData portalData, Gate gate,LanguageManager languageManager, RegistryAPI registry,StargateEconomyAPI economyAPI)
             throws InvalidNameException, NameLengthException, BungeeNameException {
-        return createPortal(network, portalData.name, portalData.destination, portalData.networkName, portalData.flags, gate, portalData.ownerUUID,languageManager,registry);
+        return createPortal(network, portalData.name, portalData.destination, portalData.networkName, portalData.flags, gate, portalData.ownerUUID,languageManager,registry,economyAPI);
     }
 
     /**
@@ -130,7 +131,7 @@ public final class PortalCreationHelper {
      */
     public static void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation,
             Set<PortalFlag> flags, Player player, int cost, StargatePermissionManager permissionManager,
-            TranslatableMessage errorMessage, RegistryAPI registry,LanguageManager languageManager)
+            TranslatableMessage errorMessage, RegistryAPI registry,LanguageManager languageManager,StargateEconomyAPI economyAPI)
             throws GateConflictException, NoFormatFoundException, TranslatableException, InvalidNameException {
         if (errorMessage != null) {
             player.sendMessage(languageManager.getErrorMessage(errorMessage));
@@ -139,7 +140,7 @@ public final class PortalCreationHelper {
 
         UUID ownerUUID = getOwnerUUID(selectedNetwork, player, flags);
         Gate gate = createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON),registry);
-        RealPortal portal = createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID ,languageManager,registry);
+        RealPortal portal = createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID ,languageManager,registry,economyAPI);
 
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, !hasPermission,
@@ -175,7 +176,7 @@ public final class PortalCreationHelper {
 
         //Charge the player as necessary for the portal creation
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_CREATE) &&
-                !Stargate.getEconomyManager().chargePlayer(player, null, stargateCreateEvent.getCost())) {
+                !economyAPI.chargePlayer(player, null, stargateCreateEvent.getCost())) {
             player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return;
         }
@@ -215,8 +216,8 @@ public final class PortalCreationHelper {
      * @throws NameLengthException 
      */
     private static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Gate gate,
-                                                   UUID ownerUUID, LanguageManager languageManager,RegistryAPI registry) throws InvalidNameException, NameLengthException, BungeeNameException {
-        return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID,languageManager,registry);
+                                                   UUID ownerUUID, LanguageManager languageManager,RegistryAPI registry,StargateEconomyAPI economyAPI) throws InvalidNameException, NameLengthException, BungeeNameException {
+        return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID,languageManager,registry,economyAPI);
     }
 
     /**

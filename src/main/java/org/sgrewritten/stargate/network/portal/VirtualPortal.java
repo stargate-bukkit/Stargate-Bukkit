@@ -10,6 +10,7 @@ import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
+import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 
 import java.io.ByteArrayOutputStream;
@@ -182,11 +183,7 @@ public class VirtualPortal implements Portal {
             dataOutputStream.writeUTF(PluginChannel.FORWARD.getChannel());
             dataOutputStream.writeUTF(server);
             dataOutputStream.writeUTF(PluginChannel.PLAYER_TELEPORT.getChannel());
-            JsonObject JsonData = new JsonObject();
-            JsonData.add(StargateProtocolProperty.PLAYER.toString(), new JsonPrimitive(player.getName()));
-            JsonData.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(this.name));
-            JsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(network.getId()));
-            String dataMsg = JsonData.toString();
+            String dataMsg = BungeeHelper.generateTeleportJsonMessage(player.getName(),this);
             dataOutputStream.writeUTF(dataMsg);
             Stargate.log(Level.FINEST, byteArrayOutputStream.toString());
             player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());

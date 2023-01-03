@@ -7,8 +7,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.economy.EconomyManager;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 
+import java.util.Objects;
 import java.util.logging.Level;
 
 /**
@@ -16,6 +20,12 @@ import java.util.logging.Level;
  */
 public class PluginEventListener implements Listener {
 
+    private @NotNull StargateEconomyAPI economyManager;
+
+    public PluginEventListener(@NotNull StargateEconomyAPI economyManager) {
+        this.economyManager = Objects.requireNonNull(economyManager);
+    }
+    
     /**
      * Listens for any valid economy plugins being loaded and sets up economy if necessary
      *
@@ -24,7 +34,7 @@ public class PluginEventListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPluginEnable(PluginEnableEvent event) {
         if (isValidEconomyPlugin(event.getPlugin())) {
-            Stargate.getEconomyManager().setupEconomy();
+            economyManager.setupEconomy();
         }
     }
 

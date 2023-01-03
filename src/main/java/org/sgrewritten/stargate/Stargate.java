@@ -61,7 +61,9 @@ import org.sgrewritten.stargate.listener.PlayerAdvancementListener;
 import org.sgrewritten.stargate.listener.PlayerEventListener;
 import org.sgrewritten.stargate.listener.PluginEventListener;
 import org.sgrewritten.stargate.listener.StargateBungeePluginMessageListener;
+import org.sgrewritten.stargate.manager.BungeeManager;
 import org.sgrewritten.stargate.manager.PermissionManager;
+import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.migration.DataMigrator;
 import org.sgrewritten.stargate.network.RegistryAPI;
@@ -86,6 +88,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A plugin that allows for instant-teleportation between large distances and across servers.
@@ -104,7 +107,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private static Stargate instance;
 
-    private Level lowestMessageLevel = Level.INFO;//setting before config loads
+    private static Level lowestMessageLevel = Level.INFO;//setting before config loads
 
     private final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
     private final String GATE_FOLDER = "gates";
@@ -113,10 +116,11 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private StorageAPI storageAPI;
     private LanguageManager languageManager;
+    private BungeeManager bungeeManager;
     private static final int CURRENT_CONFIG_VERSION = 6;
     private static final SynchronousPopulator synchronousTickPopulator = new SynchronousPopulator();
     private static final SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
-    private static final int MAX_TEXT_LENGTH = 40;
+    private static final int MAX_TEXT_LENGTH = 13;
 
     private static StargateEconomyAPI economyManager;
     private static ServicesManager servicesManager;
@@ -147,6 +151,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     
     @Override
     public void onEnable() {
+        this.getLogger().setLevel(lowestMessageLevel);
         try {
             instance = this;
             if (!new File(this.getDataFolder(), "config.yml").exists()) {
@@ -154,8 +159,13 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             }
 
             loadGateFormats();
+            fetchServerId();
             String LANGUAGE_FOLDER = "lang";
             languageManager = new StargateLanguageManager(this, new File(DATA_FOLDER, LANGUAGE_FOLDER));
+            SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
+            storageAPI = new SQLDatabase(database, this, this.getLanguageManager());
+            registry = new StargateRegistry(storageAPI);
+            bungeeManager = new StargateBungeeManager(this.getRegistry(),this.getLanguageManager());
             if (ConfigurationHelper.getInteger(ConfigurationOption.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
                 try {
                     this.migrateConfigurationAndData();
@@ -166,10 +176,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
             load();
             economyManager = new VaultEconomyManager(languageManager);
-            SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
-            storageAPI = new SQLDatabase(database, this, this.getLanguageManager());
-            registry = new StargateRegistry(storageAPI);
-            registry.loadPortals();
+            registry.loadPortals(getEconomyManager());
 
             pluginManager = getServer().getPluginManager();
             registerListeners();
@@ -196,7 +203,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      *
      * @return <p>The economy manager used for this plugin</p>
      */
-    public static StargateEconomyAPI getEconomyManager() {
+    public StargateEconomyAPI getEconomyManager() {
         return economyManager;
     }
 
@@ -384,10 +391,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * Registers all necessary listeners for this plugin
      */
     private void registerListeners() {
-        pluginManager.registerEvents(new BlockEventListener(getRegistry(),this.getLanguageManager()), this);
+        pluginManager.registerEvents(new BlockEventListener(getRegistry(),this.getLanguageManager(),getEconomyManager()), this);
         pluginManager.registerEvents(new MoveEventListener(getRegistry()), this);
-        pluginManager.registerEvents(new PlayerEventListener(this.getLanguageManager(),getRegistry()), this);
-        pluginManager.registerEvents(new PluginEventListener(), this);
+        pluginManager.registerEvents(new PlayerEventListener(this.getLanguageManager(),getRegistry(),this.getBungeeManager()), this);
+        pluginManager.registerEvents(new PluginEventListener(getEconomyManager()), this);
         if (NonLegacyMethod.PLAYER_ADVANCEMENT_CRITERION_EVENT.isImplemented()) {
             pluginManager.registerEvents(new PlayerAdvancementListener(getRegistry()), this);
         }
@@ -421,10 +428,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         SQLDatabaseAPI database = new SQLiteDatabase(databaseFile);
 
         StorageAPI storageAPI = new SQLDatabase(database, false, false, this, this.getLanguageManager());
-        registry = new StargateRegistry(storageAPI);
+        RegistryAPI registry = new StargateRegistry(storageAPI);
 
         DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), "config.yml"), this,
-                Bukkit.getServer(), registry, this.getLanguageManager());
+                Bukkit.getServer(), registry, this.getLanguageManager(),this.getEconomyManager());
 
         if (dataMigrator.isMigrationNecessary()) {
             Map<String, Object> updatedConfig = dataMigrator.getUpdatedConfig();
@@ -500,7 +507,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
                 SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
                 ((SQLDatabase) storageAPI).load(database, this, this.getLanguageManager());
             }
-            registry.load();
+            registry.load(this.getEconomyManager());
             economyManager.setupEconomy();
         } catch (StargateInitializationException exception) {
             getServer().getPluginManager().disablePlugin(this);
@@ -514,14 +521,13 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         loadColors();
 
         languageManager.setLanguage(ConfigurationHelper.getString(ConfigurationOption.LANGUAGE));
-        fetchServerId();
         loadConfigLevel();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             Messenger messenger = Bukkit.getMessenger();
 
             messenger.registerOutgoingPluginChannel(this, PluginChannel.BUNGEE.getChannel());
             messenger.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(),
-                    new StargateBungeePluginMessageListener(this, this,getRegistry(), getLanguageManager()));
+                    new StargateBungeePluginMessageListener(getBungeeManager(),this));
         }
     }
 
@@ -541,6 +547,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         } else {
             lowestMessageLevel = Level.parse(debugLevelString);
         }
+        this.getLogger().setLevel(lowestMessageLevel);
     }
 
     @Override
@@ -572,7 +579,9 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             instance.logMessage(priorityLevel, message);
             return;
         }
-        System.out.println(message);
+        
+        Logger.getGlobal().setLevel(lowestMessageLevel);
+        Logger.getGlobal().log(priorityLevel,message);
     }
     
     /**
@@ -586,14 +595,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     @Override
     public void logMessage(Level priorityLevel, String message) {
-        if (priorityLevel.intValue() < this.lowestMessageLevel.intValue()) {
-            return;
-        }
-        if (priorityLevel.intValue() < Level.INFO.intValue()) {
-            this.getLogger().log(Level.INFO, message);
-        } else {
-            this.getLogger().log(priorityLevel, message);
-        }
+        this.getLogger().log(priorityLevel,message);
     }
 
     public static FileConfiguration getFileConfiguration() {
@@ -647,6 +649,11 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     @Override
     public ConfigurationAPI getConfigurationAPI() {
         return this;
+    }
+
+    @Override
+    public BungeeManager getBungeeManager() {
+        return this.bungeeManager;
     }
 
 }

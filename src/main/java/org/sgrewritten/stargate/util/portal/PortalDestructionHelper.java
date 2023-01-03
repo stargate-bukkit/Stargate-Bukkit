@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.event.StargateDestroyEvent;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
@@ -31,7 +32,7 @@ public final class PortalDestructionHelper {
      * @param destroyAction <p>The action to run if the destruction is performed</p>
      * @return <p>True if the destruction has been cancelled</p>
      */
-    public static boolean destroyPortalIfHasPermissionAndCanPay(Player player, Portal portal, Runnable destroyAction, LanguageManager languageManager) {
+    public static boolean destroyPortalIfHasPermissionAndCanPay(Player player, Portal portal, Runnable destroyAction, LanguageManager languageManager, StargateEconomyAPI economyManager) {
         int cost = ConfigurationHelper.getInteger(ConfigurationOption.DESTROY_COST);
         StargatePermissionManager permissionManager = new StargatePermissionManager(player,languageManager);
 
@@ -57,7 +58,7 @@ public final class PortalDestructionHelper {
          * permission, do not collect money
          */
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_DESTROY)
-                && !Stargate.getEconomyManager().chargePlayer(player, null, stargateDestroyEvent.getCost())) {
+                && !economyManager.chargePlayer(player, null, stargateDestroyEvent.getCost())) {
             player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return true;
         }

@@ -7,22 +7,22 @@ public class FakeLanguageManager implements LanguageManager{
 
     @Override
     public String getErrorMessage(TranslatableMessage translatableMessage) {
-        return "";
+        return "[ERROR] " + translatableMessage;
     }
 
     @Override
     public String getWarningMessage(TranslatableMessage translatableMessage) {
-        return "";
+        return "[WARNING]" + translatableMessage;
     }
 
     @Override
     public String getMessage(TranslatableMessage translatableMessage) {
-        return "";
+        return "[INFO]" + translatableMessage;
     }
 
     @Override
     public String getString(TranslatableMessage translatableMessage) {
-        return "";
+        return translatableMessage.toString();
     }
 
     @Override

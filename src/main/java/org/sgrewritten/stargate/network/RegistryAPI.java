@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.network;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
@@ -27,7 +28,7 @@ public interface RegistryAPI {
     /**
      * Loads all portals from storage
      */
-    void loadPortals();
+    void loadPortals(StargateEconomyAPI economyManager);
 
     /**
      * Removes the given portal from storage

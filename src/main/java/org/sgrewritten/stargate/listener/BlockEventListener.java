@@ -32,9 +32,11 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.world.PortalCreateEvent;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.PermissionException;
@@ -58,6 +60,7 @@ import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 import org.sgrewritten.stargate.util.portal.PortalDestructionHelper;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -66,17 +69,19 @@ import java.util.logging.Level;
  */
 public class BlockEventListener implements Listener {
 
-    private final RegistryAPI registry;
-    private LanguageManager languageManager;
+    private final @NotNull RegistryAPI registry;
+    private @NotNull LanguageManager languageManager;
+    private @NotNull StargateEconomyAPI economyManager;
 
     /**
      * Instantiates a new block event listener
      *
      * @param registry <p>The registry to use for looking up portals</p>
      */
-    public BlockEventListener(RegistryAPI registry, LanguageManager languageManager) {
-        this.registry = registry;
-        this.languageManager = languageManager;
+    public BlockEventListener(@NotNull RegistryAPI registry,@NotNull LanguageManager languageManager,@NotNull StargateEconomyAPI economyManager) {
+        this.registry = Objects.requireNonNull(registry);
+        this.languageManager = Objects.requireNonNull(languageManager);
+        this.economyManager = Objects.requireNonNull(economyManager);
     }
 
     /**
@@ -100,7 +105,7 @@ public class BlockEventListener implements Listener {
                 Stargate.log(Level.FINE, "Broke portal " + portal.getName());
             };
 
-            boolean shouldCancel = PortalDestructionHelper.destroyPortalIfHasPermissionAndCanPay(event.getPlayer(), portal, destroyAction, languageManager);
+            boolean shouldCancel = PortalDestructionHelper.destroyPortalIfHasPermissionAndCanPay(event.getPlayer(), portal, destroyAction, languageManager,economyManager);
             if (shouldCancel) {
                 event.setCancelled(true);
             }
@@ -186,7 +191,7 @@ public class BlockEventListener implements Listener {
 
         try {
             PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost,
-                    permissionManager, errorMessage,registry,languageManager);
+                    permissionManager, errorMessage,registry,languageManager,economyManager);
         } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINER, "No Gate format matches");
         } catch (GateConflictException gateConflictException) {

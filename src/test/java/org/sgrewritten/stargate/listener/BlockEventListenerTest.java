@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.FakeStargate;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -69,7 +70,7 @@ class BlockEventListenerTest {
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
         registry = new StargateRegistry(new FakeStorage());
         Stargate.setServerUUID(UUID.randomUUID());
-        blockEventListener = new BlockEventListener(registry, new FakeLanguageManager());
+        blockEventListener = new BlockEventListener(registry, new FakeLanguageManager(),new FakeEconomyManager());
         
         Assertions.assertInstanceOf(WallSign.class,BlockDataMock.mock(Material.ACACIA_WALL_SIGN), " Too old mockbukkit version, requires at least v1.19:1.141.0");
 

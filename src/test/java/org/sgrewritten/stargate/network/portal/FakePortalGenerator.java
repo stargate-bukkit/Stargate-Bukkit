@@ -5,6 +5,7 @@ import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -153,6 +154,6 @@ public class FakePortalGenerator {
 
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON);
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);
-        return new FixedPortal(network, name, "", flags, gate, UUID.randomUUID(), new FakeLanguageManager());
+        return new FixedPortal(network, name, "", flags, gate, UUID.randomUUID(), new FakeLanguageManager(),new FakeEconomyManager());
     }
 }

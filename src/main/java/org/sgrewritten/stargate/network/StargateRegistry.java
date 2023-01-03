@@ -9,6 +9,7 @@ import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.database.StorageAPI;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
@@ -52,9 +53,9 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void loadPortals() {
+    public void loadPortals(StargateEconomyAPI economyManager) {
         try {
-            storageAPI.loadFromStorage(this);
+            storageAPI.loadFromStorage(this,economyManager);
         } catch (StorageReadException e) {
             e.printStackTrace();
             return;
@@ -242,11 +243,11 @@ public class StargateRegistry implements RegistryAPI {
         return networkMap;
     }
 
-    public void load() {
+    public void load(StargateEconomyAPI economyManager) {
         networkMap.clear();
         bungeeNetworkMap.clear();
         portalFromStructureTypeMap.clear();
-        this.loadPortals();
+        this.loadPortals(economyManager);
     }
     
     @Override

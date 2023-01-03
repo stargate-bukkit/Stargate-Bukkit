@@ -53,7 +53,7 @@ class StargateTest {
     
     @Test
     public void getEconomyManager() {
-        Assertions.assertNotNull(Stargate.getEconomyManager());
+        Assertions.assertNotNull(plugin.getEconomyManager());
     }
     
     @Test

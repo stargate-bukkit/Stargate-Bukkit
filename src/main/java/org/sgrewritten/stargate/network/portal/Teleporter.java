@@ -17,6 +17,7 @@ import org.sgrewritten.stargate.action.SimpleAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.economy.EconomyAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.event.StargatePortalEvent;
 import org.sgrewritten.stargate.formatting.LanguageManager;
@@ -30,6 +31,7 @@ import org.sgrewritten.stargate.vectorlogic.VectorUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -69,9 +71,9 @@ public class Teleporter {
      * @param logger
      */
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,
-            BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager) {
+            BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager,StargateEconomyAPI economyManager) {
         this(destination, origin, destinationFace, entranceFace, cost, teleportMessage, languageManager,
-                Stargate.getEconomyManager(), ((action) -> Stargate.addSynchronousTickAction(action)));
+                economyManager, ((action) -> Stargate.addSynchronousTickAction(action)));
     }
 
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,
@@ -85,9 +87,9 @@ public class Teleporter {
         this.rotation = VectorUtils.calculateAngleDifference(entranceFace, destinationFace);
         this.cost = cost;
         this.teleportMessage = teleportMessage;
-        this.languageManager = languageManager;
-        this.economyManager = economyManager;
-        this.registerAction = registerAction;
+        this.languageManager = Objects.requireNonNull(languageManager);
+        this.economyManager = Objects.requireNonNull(economyManager);
+        this.registerAction = Objects.requireNonNull(registerAction);
     }
 
     /**
@@ -174,7 +176,7 @@ public class Teleporter {
      */
     private void refundPlayers(List<Player> playersToRefund) {
         for (Player player : playersToRefund) {
-            if (!Stargate.getEconomyManager().refundPlayer(player, this.origin, this.cost)) {
+            if (!economyManager.refundPlayer(player, this.origin, this.cost)) {
                 Stargate.log(Level.WARNING, "Unable to refund player " + player + " " + this.cost);
             }
         }

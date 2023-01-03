@@ -17,36 +17,20 @@
  */
 package org.sgrewritten.stargate.listener;
 
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
-import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.formatting.LanguageManager;
-import org.sgrewritten.stargate.network.InterServerNetwork;
-import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.RegistryAPI;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
-import org.sgrewritten.stargate.network.portal.VirtualPortal;
+import org.sgrewritten.stargate.manager.BungeeManager;
 import org.sgrewritten.stargate.property.PluginChannel;
-import org.sgrewritten.stargate.property.StargateProtocolProperty;
-import org.sgrewritten.stargate.property.StargateProtocolRequestType;
-import org.sgrewritten.stargate.util.BungeeHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.Set;
-import java.util.UUID;
+import java.util.Objects;
 import java.util.logging.Level;
 
 /**
@@ -58,10 +42,8 @@ import java.util.logging.Level;
  */
 public class StargateBungeePluginMessageListener implements PluginMessageListener {
 
-    private final StargateAPI stargateAPI;
     private final StargateLogger stargateLogger;
-    private RegistryAPI registry;
-    private LanguageManager languageManager;
+    private final BungeeManager bungeeManager;
 
     /**
      * Instantiates a new stargate bungee plugin message listener
@@ -69,11 +51,9 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      * @param stargateAPI    <p>Something implementing the Stargate API</p>
      * @param stargateLogger <p>Something implementing the Stargate logger</p>
      */
-    public StargateBungeePluginMessageListener(StargateAPI stargateAPI, StargateLogger stargateLogger, RegistryAPI registry, LanguageManager languageManager) {
-        this.stargateAPI = stargateAPI;
-        this.stargateLogger = stargateLogger;
-        this.registry = registry;
-        this.languageManager = languageManager;
+    public StargateBungeePluginMessageListener(BungeeManager bungeeManager,StargateLogger stargateLogger) {
+        this.stargateLogger = Objects.requireNonNull(stargateLogger);
+        this.bungeeManager = Objects.requireNonNull(bungeeManager);
     }
 
     /**
@@ -120,14 +100,14 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                 case PLUGIN_DISABLE:
                     break;
                 case NETWORK_CHANGED:
-                    updateNetwork(in.readUTF());
+                    bungeeManager.updateNetwork(in.readUTF());
                     break;
                 case PLAYER_TELEPORT:
                     stargateLogger.logMessage(Level.FINEST, "trying to read player join json msg");
-                    BungeeHelper.playerConnect(in.readUTF(),registry,languageManager);
+                    bungeeManager.playerConnect(in.readUTF());
                     break;
                 case LEGACY_BUNGEE:
-                    BungeeHelper.legacyPlayerConnect(in.readUTF());
+                    bungeeManager.legacyPlayerConnect(in.readUTF());
                     break;
                 default:
                     stargateLogger.logMessage(Level.FINEST, "Received unknown message with a sub-channel: " + subChannel);
@@ -138,48 +118,5 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             ex.printStackTrace();
         }
     }
-
-    /**
-     * Updates a network according to a "network changed" message
-     *
-     * @param message <p>The network change message to parse and handle</p>
-     */
-    private void updateNetwork(String message) {
-        JsonParser parser = new JsonParser();
-        stargateLogger.logMessage(Level.FINEST, message);
-        JsonObject json = (JsonObject) parser.parse(message);
-
-        String requestTypeString = json.get(StargateProtocolProperty.REQUEST_TYPE.toString()).getAsString();
-        StargateProtocolRequestType requestType = StargateProtocolRequestType.valueOf(requestTypeString);
-
-        String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
-        String network = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
-        String server = json.get(StargateProtocolProperty.SERVER.toString()).getAsString();
-        Set<PortalFlag> flags = PortalFlag.parseFlags(json.get(StargateProtocolProperty.PORTAL_FLAG.toString()).getAsString());
-        UUID ownerUUID = UUID.fromString(json.get(StargateProtocolProperty.OWNER.toString()).getAsString());
-
-        try {
-            stargateAPI.getRegistry().createNetwork(network, flags, false);
-        } catch (InvalidNameException | NameLengthException | NameConflictException  e) {
-            e.printStackTrace();
-        }
-        try {
-            InterServerNetwork targetNetwork = (InterServerNetwork) stargateAPI.getRegistry().getNetwork(network, true);
-            VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
-            switch (requestType) {
-                case PORTAL_ADD:
-                    targetNetwork.addPortal(portal, false);
-                    stargateLogger.logMessage(Level.FINE, String.format("Adding virtual portal %s in inter-server network %s", portalName, network));
-                    break;
-                case PORTAL_REMOVE:
-                    stargateLogger.logMessage(Level.FINE, String.format("Removing virtual portal %s in inter-server network %s", portalName, network));
-                    targetNetwork.removePortal(portal, false);
-                    break;
-            }
-            targetNetwork.updatePortals();
-        } catch (NameConflictException ignored) {
-        }
-    }
-
 }
 
