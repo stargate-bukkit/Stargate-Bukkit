@@ -56,6 +56,10 @@ ecoDeduct=Avdrog %cost%.
 ecoObtain=Erhöll %cost% från StarGate %portal%!
 ecoInsolvent=Inte tillräckligt med pengar.
 
+#Terminology
+
+#Temporary
+
 #Admin
 adminReload=Konfigurationen laddades om!
 adminInfo=Kör version %version%. Ändringslogg: https://git.io/JD4Qo

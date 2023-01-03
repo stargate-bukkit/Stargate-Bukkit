@@ -56,6 +56,20 @@ ecoDeduct=Deducted %cost%.
 ecoObtain=Obtained %cost% from StarGate %portal%!
 ecoInsolvent=Insufficient funds!
 
+#Terminology
+gate=Gate
+network=Network
+interserver=Interserver
+default=Default
+terminal=Terminal
+personal=Personal
+
+#Temporary
+unimplementedInterserver=Interserver gates are still in active development and have only partially been implemented.
+unimplementedIConflict=The %interserverNetName% network has been temporarily separated from the %netName% network, but will soon be merged.
+unimplementedIGeneral=The %interserverNetName% network will be migrated to the %netName% network in the near future.
+unimplementedFlag=The %flags% flags have not yet been implemented.
+
 #Admin
 adminReload=Configuration reloaded!
 adminInfo=Running version %version%. Changelog: https://git.io/JD4Qo

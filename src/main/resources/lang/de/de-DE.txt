@@ -50,6 +50,10 @@ ecoDeduct=%cost% abgezogen .
 ecoObtain=%cost% von StarGate %portal% erhalten!
 ecoInsolvent=Unzureichende Mittel
 
+#Terminology
+
+#Temporary
+
 #Admin
 adminReload=Konfiguration wurde neu geladen!
 adminInfo=Version %version%wird ausgeführt. Changelog: https://git.io/JD4Q

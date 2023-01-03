@@ -51,6 +51,10 @@ ecoDeduct=花费了 %cost%.
 ecoObtain=从星门 %portal% 赚取了 %cost%!
 ecoInsolvent=存款不足!
 
+#Terminology
+
+#Temporary
+
 #Admin
 adminReload=配置文件已重载!
 adminInfo=正在运行版本 %version%. 更新记录: https://git.io/JD4Qo

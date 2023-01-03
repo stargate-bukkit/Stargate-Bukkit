@@ -51,6 +51,10 @@ ecoDeduct=Odečteno %cost%.
 ecoObtain=Získáno %cost% od Hvězdné brány %portal%.!
 ecoInsolvent=Nedostatek prostředků!
 
+#Terminology
+
+#Temporary
+
 #Admin
 adminReload=Konfigurace obnovena!
 adminInfo=Spuštěná verze %version%. Seznam změn : https://git.io/JD4Qo
