@@ -55,6 +55,10 @@ ecoDeduct=%cost% vart trekt frå din konto.
 ecoObtain=%cost% vart tilført din konto frå Stjerne-port %portal%!
 ecoInsolvent=Manglande midlar!
 
+#Terminology
+
+#Temporary
+
 #Admin
 adminReload=Konfigurasjonen vart lasta inn på nytt!
 adminInfo=Køyrer versjon %version%. Endringslogg: https://git.io/JD4Qo

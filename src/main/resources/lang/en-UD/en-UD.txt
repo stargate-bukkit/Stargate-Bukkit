@@ -56,6 +56,20 @@ ecoDeduct=˙%cost% pǝʇɔnpǝp
 ecoObtain=¡%portal% ǝʇɐפɹɐʇS ɯoɹɟ %cost% pǝuᴉɐʇqO
 ecoInsolvent=¡spunℲ ʇuǝᴉɔᴉɟɟnsuI
 
+#Terminology
+gate=ǝʇɐƃ
+network=ʞɹoʍʇǝu
+interserver=ɹǝʌɹǝsɹǝʇuı
+default=ʇןnɐɟǝᗡ
+terminal=lɐuıɯɹǝʇ
+personal=lɐuosɹǝd
+
+#Temporary
+unimplementedInterserver=˙pǝʇuǝɯǝldɯı uǝǝq ʎllɐıʇɹɐd ʎluo ǝʌɐɥ puɐ ʇuǝɯdolǝʌǝp ǝʌıʇɔɐ uı llıʇs ǝɹɐ sǝʇɐƃ ɹǝʌɹǝsɹǝʇuı
+unimplementedIConflict=˙pǝƃɹǝɯ ǝq uoos llıʍ ʇnq 'ʞɹoʍʇǝu %netName% ǝɥʇ ɯoɹɟ pǝʇɐɹɐdǝs ʎlıɹɐɹodɯǝʇ uǝǝq sɐɥ ʞɹoʍʇǝu %interserverNetName% ǝɥʇ
+unimplementedIGeneral=˙ǝɹnʇnɟ ɹɐǝu ǝɥʇ uı ʞɹoʍʇǝu %netName%ǝɥʇ oʇ pǝʇɐɹƃıɯ ǝq llıʍ ʞɹoʍʇǝu %interserverNetName% ǝɥʇ
+unimplementedFlag=˙pǝʇuǝɯǝldɯı uǝǝq ʇǝʎ ʇou ǝʌɐɥ sƃɐlɟ %flags% ǝɥʇ
+
 #Admin
 adminReload=¡pǝpɐolǝɹ uoᴉʇɐɹnƃᴉɟuoƆ
 adminInfo=https://git.io/JD4Qo :ƃolǝƃuɐɥƆ ˙%version% uoᴉsɹǝʌ ƃuᴉuunɹ

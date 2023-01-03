@@ -33,5 +33,9 @@ faultFlag=yar'nt able to raise the %flags% flags; yer port been made with em mis
 
 # Economy
 
+#Terminology
+
+#Temporary
+
 #Admin
 translatedBy=KittyClaus and Captain Crunch

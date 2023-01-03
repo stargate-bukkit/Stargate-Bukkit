@@ -56,6 +56,20 @@ ecoDeduct=I TOOK %cost%.
 ecoObtain=U GOT %cost% FRUM %portal%!
 ecoInsolvent=U BROKE!
 
+#Terminology
+gate=GATE
+network=NETWORK
+interserver=INTERSERVER
+default=DEFAULT
+terminal=TERMINAL
+personal=UR NETWORK
+
+#Temporary
+unimplementedInterserver=INTERSERVR GATEZ R STILL IN ACTIV DEVELOPMENT AN HAS ONLY PARTIALLY BEEN IMPLEMENTD.
+unimplementedIConflict=TEH %interserverNetName% NETWORK HAS BEEN TEMPORARILY SEPARATD FRUM TEH %netName% NETWORK, BUT WILL SOON BE MERGD.
+unimplementedIGeneral=TEH %interserverNetName% NETWORK WILL BE MIGRATD 2 TEH %netName% NETWORK IN DA NEAR FUCHUR.
+unimplementedFlag=TEH %flags% FLAGS HAS NOT YET BEEN IMPLEMENTD.
+
 #Admin
 adminReload=CONFIGURASHUN RELOADD!
 adminInfo=U HAV SG %version%. CHANGELOG: https://git.io/JD4Qo
