@@ -151,7 +151,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     
     @Override
     public void onEnable() {
-        this.getLogger().setLevel(lowestMessageLevel);
         try {
             instance = this;
             if (!new File(this.getDataFolder(), "config.yml").exists()) {
@@ -548,7 +547,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         } else {
             lowestMessageLevel = Level.parse(debugLevelString);
         }
-        this.getLogger().setLevel(lowestMessageLevel);
     }
 
     @Override
@@ -594,7 +592,14 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     @Override
     public void logMessage(Level priorityLevel, String message) {
-        this.getLogger().log(priorityLevel,message);
+        if (priorityLevel.intValue() < this.lowestMessageLevel.intValue()) {
+            return;
+        }
+        if (priorityLevel.intValue() < Level.INFO.intValue()) {
+            this.getLogger().log(Level.INFO, message);
+        } else {
+            this.getLogger().log(priorityLevel, message);
+        }
     }
 
     public static FileConfiguration getFileConfiguration() {
