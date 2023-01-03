@@ -103,6 +103,8 @@ class StargateTest {
     public void setGetConfigurationOptionValue() {
         plugin.setConfigurationOptionValue(ConfigurationOption.UPKEEP_COST,2);
         Assertions.assertEquals(2, plugin.getConfigurationOptionValue(ConfigurationOption.UPKEEP_COST));
+        plugin.reload();
+        Assertions.assertEquals(2, plugin.getConfigurationOptionValue(ConfigurationOption.UPKEEP_COST));
     }
     
     @Test
