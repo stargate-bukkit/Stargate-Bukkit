@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.FakeStargateLogger;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -17,6 +18,7 @@ import org.sgrewritten.stargate.network.StorageType;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SQLiteDatabaseTest {
@@ -27,8 +29,7 @@ public class SQLiteDatabaseTest {
 
     @BeforeAll
     public static void setUp() throws SQLException, InvalidStructureException, InvalidNameException, NameLengthException {
-        System.out.println("Setting up test data");
-
+        Stargate.log(Level.FINE,"Setting up test data");
         database = new SQLiteDatabase(new File("src/test/resources", "test.db"));
         nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargateLogger(), DatabaseDriver.SQLITE);

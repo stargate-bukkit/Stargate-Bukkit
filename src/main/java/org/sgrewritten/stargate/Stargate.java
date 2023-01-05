@@ -107,7 +107,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private static Stargate instance;
 
-    private Level lowestMessageLevel = Level.INFO;//setting before config loads
+    private static Level lowestMessageLevel = Level.INFO;//setting before config loads
 
     private final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
     private final String GATE_FOLDER = "gates";
@@ -574,11 +574,18 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     }
 
     public static void log(Level priorityLevel, String message) {
+        if (priorityLevel.intValue() < Stargate.lowestMessageLevel.intValue()) {
+            return;
+        }
         if (instance != null) {
             instance.logMessage(priorityLevel, message);
             return;
         }
-        Logger.getGlobal().log(priorityLevel,message);
+        System.out.println("[" + priorityLevel + "]: " + message);
+    }
+    
+    public static void setLogLevel(Level priorityLevel) {
+        Stargate.lowestMessageLevel = priorityLevel;
     }
     
     /**
@@ -592,7 +599,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     @Override
     public void logMessage(Level priorityLevel, String message) {
-        if (priorityLevel.intValue() < this.lowestMessageLevel.intValue()) {
+        if (priorityLevel.intValue() < Stargate.lowestMessageLevel.intValue()) {
             return;
         }
         if (priorityLevel.intValue() < Level.INFO.intValue()) {

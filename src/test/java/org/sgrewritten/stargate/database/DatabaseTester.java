@@ -123,7 +123,7 @@ public class DatabaseTester {
     }
 
     void addInterPortalTableTest() throws SQLException {
-        System.out.println("############## CREATE INTER PORTAL TABLE TEST ####################");
+        Stargate.log(Level.FINEST,"############## CREATE INTER PORTAL TABLE TEST ####################");
         finishStatement(generator.generateCreatePortalTableStatement(connection, StorageType.INTER_SERVER));
         try {
             finishStatement(generator.generateAddMetaToPortalTableStatement(connection, StorageType.INTER_SERVER));
@@ -173,7 +173,7 @@ public class DatabaseTester {
     }
 
     private void createPortalPositionTableTest(StorageType type) throws SQLException {
-        System.out.print("############## CREATE PORTAL POSITION TABLE TEST ####################");
+        Stargate.log(Level.FINEST,"############## CREATE PORTAL POSITION TABLE TEST ####################");
         finishStatement(generator.generateCreatePortalPositionTableStatement(connection, type));
         try {
             finishStatement(generator.generateAddMetaToPortalPositionTableStatement(connection, type));
@@ -208,10 +208,11 @@ public class DatabaseTester {
         while (set.next()) {
             Stargate.log(Level.FINER, "Flag ");
             rows++;
+            String msg = "";
             for (int i = 0; i < metaData.getColumnCount(); i++) {
-                Stargate.log(Level.FINER,metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
+                msg = msg + metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ";
             }
-            Stargate.log(Level.FINER,"\n");
+            Stargate.log(Level.FINER,msg);
         }
         Assertions.assertTrue(rows > 0);
     }
@@ -494,7 +495,7 @@ public class DatabaseTester {
         //By some reason the database is locked if I don't do this. Don't ask me why // Thorin
         connection.close();
         connection = database.getConnection();
-        System.out.println("################### CHANGE NAMES TEST ######################");
+        Stargate.log(Level.FINER,"################### CHANGE NAMES TEST ######################");
         Network testNetwork = null;
         String initialName = "intialName";
         String initialNetworkName = "intialname";
@@ -508,7 +509,7 @@ public class DatabaseTester {
             e.printStackTrace();
         }
         RealPortal portal = portalGenerator.generateFakePortal(world, testNetwork, initialName, portalType == StorageType.INTER_SERVER);
-        System.out.println(portal.getName() + ", " + portal.getNetwork().getId());
+        Stargate.log(Level.FINER,portal.getName() + ", " + portal.getNetwork().getId());
         this.portalDatabaseAPI.savePortalToStorage(portal, portalType);
         checkIfHas(table,initialName,initialNetworkName);
         this.portalDatabaseAPI.updateNetworkName(newNetName, initialNetworkName, portalType);
@@ -570,11 +571,12 @@ public class DatabaseTester {
         ResultSet infoResult = tableInfoStatement.executeQuery();
         ResultSetMetaData infoMetaData = infoResult.getMetaData();
         while (infoResult.next()) {
+            String msg = "";
             for (int i = 1; i < infoMetaData.getColumnCount() - 1; i++) {
-                System.out.print(
-                        infoMetaData.getColumnName(i) + " = " + infoResult.getObject(i) + ", ");
+                msg = msg +
+                        infoMetaData.getColumnName(i) + " = " + infoResult.getObject(i) + ", ";
             }
-            System.out.println();
+            Stargate.log(Level.FINEST, msg);
         }
     }
 

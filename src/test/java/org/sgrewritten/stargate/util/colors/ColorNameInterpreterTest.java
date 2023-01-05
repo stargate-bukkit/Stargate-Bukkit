@@ -2,11 +2,13 @@ package org.sgrewritten.stargate.util.colors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.util.FileHelper;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class ColorNameInterpreterTest {
 
@@ -18,7 +20,7 @@ public class ColorNameInterpreterTest {
         for (String key : conversionTests.keySet()) {
             String testString = conversionTests.get(key);
             short expectedValue = Short.parseShort(key);
-            System.out.println("testing for testString: " + testString);
+            Stargate.log(Level.FINER,"testing for testString: " + testString);
             short value = ColorConverter.getHue(ColorNameInterpreter.getColor(testString));
             Assertions.assertEquals(expectedValue, value);
         }

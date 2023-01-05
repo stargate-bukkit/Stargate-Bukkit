@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.FakeStargateLogger;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
@@ -18,6 +19,8 @@ import org.sgrewritten.stargate.network.StorageType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MySQLDatabaseTest {
@@ -28,7 +31,7 @@ public class MySQLDatabaseTest {
 
     @BeforeAll
     public static void setUp() throws SQLException, InvalidStructureException, InvalidNameException, StargateInitializationException, NameLengthException {
-        System.out.println("Setting up test data");
+        Stargate.log(Level.FINE,"Setting up test data");
         DatabaseDriver driver = DatabaseDriver.MYSQL;
         String address = "LOCALHOST";
         int port = 3306;

@@ -21,7 +21,7 @@ public class FakeStargate extends JavaPlugin implements StargateLogger {
     
     @Override
     public void logMessage(Level priorityLevel, String message) {
-        System.out.println(message);
+        Stargate.log(priorityLevel, message);
     }
 
 }

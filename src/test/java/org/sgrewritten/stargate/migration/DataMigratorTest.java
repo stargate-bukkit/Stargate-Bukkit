@@ -153,7 +153,7 @@ public class DataMigratorTest {
         for(String fileToMoveName : fileMovements.keySet()) {
             File fileToMove = new File(fileToMoveName);
             File destination = new File(fileMovements.get(fileToMoveName));
-            System.out.println(destination.getAbsolutePath());
+            Stargate.log(Level.FINER,destination.getAbsolutePath());
             destination.getParentFile().mkdirs();
             fileToMove.renameTo(destination);
         }
