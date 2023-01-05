@@ -107,7 +107,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private static Stargate instance;
 
-    private static Level lowestMessageLevel = Level.INFO;//setting before config loads
+    private static Level logLevel = Level.INFO;//setting before config loads
 
     private final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
     private final String GATE_FOLDER = "gates";
@@ -543,9 +543,9 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
         String debugLevelString = ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL);
         if (debugLevelString == null) {
-            lowestMessageLevel = Level.INFO;
+            logLevel = Level.INFO;
         } else {
-            lowestMessageLevel = Level.parse(debugLevelString);
+            logLevel = Level.parse(debugLevelString);
         }
     }
 
@@ -574,7 +574,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     }
 
     public static void log(Level priorityLevel, String message) {
-        if (priorityLevel.intValue() < Stargate.lowestMessageLevel.intValue()) {
+        if (priorityLevel.intValue() < Stargate.logLevel.intValue()) {
             return;
         }
         if (instance != null) {
@@ -585,7 +585,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     }
     
     public static void setLogLevel(Level priorityLevel) {
-        Stargate.lowestMessageLevel = priorityLevel;
+        Stargate.logLevel = priorityLevel;
     }
     
     /**
@@ -599,7 +599,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     @Override
     public void logMessage(Level priorityLevel, String message) {
-        if (priorityLevel.intValue() < Stargate.lowestMessageLevel.intValue()) {
+        if (priorityLevel.intValue() < Stargate.logLevel.intValue()) {
             return;
         }
         if (priorityLevel.intValue() < Level.INFO.intValue()) {

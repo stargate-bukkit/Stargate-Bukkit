@@ -234,10 +234,11 @@ public class DataMigratorTest {
         int count = 0;
         while (set.next()) {
             count++;
+            String msg = "";
             for (int i = 1; i <= meta.getColumnCount(); i++) {
-                System.out.print(meta.getColumnLabel(i) + ":" + set.getObject(i) + ",");
+                msg = msg + meta.getColumnLabel(i) + ":" + set.getObject(i) + ",";
             }
-            System.out.println();
+            Stargate.log(Level.FINE, msg);
         }
         conn.close();
         Assertions.assertTrue(count > 0, "There was no portals loaded from old database");
@@ -249,7 +250,7 @@ public class DataMigratorTest {
         for (String key : configTestMap.keySet()) {
             Map<String, String> testMap = configTestMap.get(key).getSecondValue();
 
-            System.out.printf("--------- Checking portal loaded from %s configuration%n", key);
+            Stargate.log(Level.FINE,String.format("--------- Checking portal loaded from %s configuration%n", key));
             for (String portalName : testMap.keySet()) {
                 String netName = testMap.get(portalName);
                 Network net = registry.getNetwork(netName, false);
