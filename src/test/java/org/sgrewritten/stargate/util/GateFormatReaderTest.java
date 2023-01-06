@@ -38,13 +38,19 @@ class GateFormatReaderTest {
     void parseMaterialTest_Material() throws ParsingErrorException{
         Set<Material> materials = GateFormatReader.parseMaterial("OAK_PLANKS","");
         Assertions.assertTrue(materials.contains(Material.OAK_PLANKS));
+        Assertions.assertEquals(1,materials.size());
     }
     
     @Test
-    void parseMaterialTest_InvalidMaterial() throws ParsingErrorException{
-        Set<Material> materials = GateFormatReader.parseMaterial("ACACIA_BOAT","");
-        Assertions.assertFalse(materials.contains(Material.OAK_PLANKS));
+    void parseMaterialTest_InvalidMaterial2() throws ParsingErrorException{
+        Assertions.assertThrows(ParsingErrorException.class, () -> GateFormatReader.parseMaterial("ACACIA_BOAT",""));
     }
+    
+    @Test
+    void parseMaterialTest_InvalidTag() throws ParsingErrorException{
+        Assertions.assertThrows(ParsingErrorException.class, () -> GateFormatReader.parseMaterial("#invalid",""));
+    }
+
 
     @Test
     void parseMaterialTest_Tag() throws ParsingErrorException{
@@ -70,4 +76,6 @@ class GateFormatReaderTest {
                 new TwoTuple<>(Material.BRAIN_CORAL_WALL_FAN,Material.BRAIN_CORAL_FAN)
                 );
     }
+    
+    
 }

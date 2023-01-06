@@ -101,8 +101,9 @@ public final class GateFormatReader {
             if(materialEdgecases.containsKey(id)) {
                 foundIDs.add(materialEdgecases.get(id));
             }
-            
-            foundIDs.add(id);
+            if(id.isBlock()) {
+                foundIDs.add(id);
+            }
         }
         if (foundIDs.size() == 0) {
             throw new ParsingErrorException("Invalid field''" + materialString +
