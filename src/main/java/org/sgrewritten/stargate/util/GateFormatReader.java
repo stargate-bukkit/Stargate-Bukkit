@@ -9,7 +9,9 @@ import org.sgrewritten.stargate.exception.ParsingErrorException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,10 @@ public final class GateFormatReader {
             Material.CAVE_AIR,
             Material.VOID_AIR,
     };
+    private static final Map<Material,Material> materialEdgecases = loadMaterialEdgecases();
+    static {
+        
+    }
 
     private GateFormatReader() {
 
@@ -92,6 +98,10 @@ public final class GateFormatReader {
                     throw new ParsingErrorException("Invalid material ''" + stringId + "''");
                 }
             }
+            if(materialEdgecases.containsKey(id)) {
+                foundIDs.add(materialEdgecases.get(id));
+            }
+            
             foundIDs.add(id);
         }
         if (foundIDs.size() == 0) {
@@ -111,7 +121,7 @@ public final class GateFormatReader {
      * @return <p>The column count/width of the loaded gate</p>
      * @throws ParsingErrorException <p>If the gate file cannot be parsed</p>
      */
-    private static int readGateFileContents(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
+    protected static int readGateFileContents(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
                                             List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
         String line;
         boolean designing = false;
@@ -157,7 +167,7 @@ public final class GateFormatReader {
      * @param design     <p>The two-dimensional list to store the loaded design to</p>
      * @return <p>The new max columns value of the design</p>
      */
-    private static int readGateDesignLine(String line, int maxColumns, List<List<Character>> design) {
+    protected static int readGateDesignLine(String line, int maxColumns, List<List<Character>> design) {
         List<Character> row = new ArrayList<>();
 
         //Update the max columns number if this line has more columns
@@ -183,7 +193,7 @@ public final class GateFormatReader {
      * @param config               <p>The config value map to store to</p>
      * @throws ParsingErrorException <p>If an invalid material is encountered</p>
      */
-    private static void readGateConfigValue(String line, Map<Character, Set<Material>> characterMaterialMap,
+    protected static void readGateConfigValue(String line, Map<Character, Set<Material>> characterMaterialMap,
                                             Map<String, String> config) throws ParsingErrorException {
         String[] split = line.split("=");
         String key = split[0].trim();
@@ -207,7 +217,7 @@ public final class GateFormatReader {
      * @param stringId <p>The legacy material name to parse</p>
      * @return <p>The resulting material, or null if no such legacy material exists</p>
      */
-    private static Material parseMaterialFromLegacyName(String stringId) {
+    protected static Material parseMaterialFromLegacyName(String stringId) {
         return Material.getMaterial(XMaterial.matchXMaterial(stringId).toString());
     }
 
@@ -218,7 +228,7 @@ public final class GateFormatReader {
      * @param line     <p>The line currently parsed</p>
      * @throws ParsingErrorException <p>If unable to parse the tag</p>
      */
-    private static Set<Material> parseMaterialTag(String stringId, String line) throws ParsingErrorException {
+    protected static Set<Material> parseMaterialTag(String stringId, String line) throws ParsingErrorException {
         Set<Material> foundIDs = EnumSet.noneOf(Material.class);
         String tagString = stringId.replace(TAG_IDENTIFIER, "");
         Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS,
@@ -234,4 +244,22 @@ public final class GateFormatReader {
         return foundIDs;
     }
 
+    private static Map<Material,Material> loadMaterialEdgecases(){
+        Map<Material,Material> materialEdgecases = new EnumMap<>(Material.class);
+        Map<String,String> temp = new HashMap<>();
+        FileHelper.readInternalFileToMap("/util/materialEdgecases.properties", temp);
+        for(Material material : Material.values()) {
+            for(String edgecase : temp.keySet()) {
+                String type = material.toString().replaceAll(edgecase, "");
+                if(type.equals(material.toString())) {
+                    continue;
+                }
+                String replacement = temp.get(edgecase).replaceAll("\\*", type);
+                materialEdgecases.put(material, Material.valueOf(replacement));
+                materialEdgecases.put(Material.valueOf(replacement), material);
+            }
+        }
+        return materialEdgecases;
+    }
+    
 }
