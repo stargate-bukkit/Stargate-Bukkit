@@ -134,8 +134,9 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        String msg = languageManager.getErrorMessage(TranslatableMessage.DESTROY);
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PLACE, event.getBlock().getLocation(), registry, () -> event.getPlayer().sendMessage(msg));
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PLACE, event.getBlock().getLocation(),
+                registry,
+                () -> event.getPlayer().sendMessage(languageManager.getErrorMessage(TranslatableMessage.DESTROY)));
     }
 
     /**
