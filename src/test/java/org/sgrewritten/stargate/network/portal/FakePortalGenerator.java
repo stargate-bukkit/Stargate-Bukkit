@@ -27,6 +27,7 @@ import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -170,5 +171,11 @@ public class FakePortalGenerator {
         RealPortal portal =  PortalCreationHelper.createPortal(network, name, "", "", flags, gate, UUID.randomUUID(), new FakeLanguageManager() , registry, new FakeEconomyManager());
         network.addPortal(portal, false);
         return portal;
+    }
+
+    public RealPortal generateFakePortal(Block signBlock, String networkName, HashSet<PortalFlag> flags, String name,
+            StargateRegistry registry) throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException {
+        Network network = registry.createNetwork(networkName, NetworkType.CUSTOM, false, false);
+        return generateFakePortal(signBlock, network, flags, name, registry);
     }
 }
