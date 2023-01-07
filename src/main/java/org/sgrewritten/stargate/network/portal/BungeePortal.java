@@ -69,7 +69,7 @@ public class BungeePortal extends AbstractPortal {
          * Note that this is only used locally inside this portal
          * and can not be found (should not) in any network anywhere.
          */
-        targetPortal = new LegacyVirtualPortal(this, destinationServer, destination, network,
+        targetPortal = new LegacyVirtualPortal(destinationServer, destination, network,
                 EnumSet.noneOf(PortalFlag.class), ownerUUID);
         this.serverDestination = destinationServer;
         /*

@@ -1,8 +1,11 @@
 package org.sgrewritten.stargate.manager;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
+import org.bukkit.Location;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,8 +23,10 @@ import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateRegistry;
+import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
 import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import org.sgrewritten.stargate.util.BungeeHelper;
@@ -42,6 +47,7 @@ class StargateBungeeManagerTest {
     private WorldMock world;
     private StargateBungeeManager bungeeManager;
     private RealPortal realPortal;
+    private RealPortal bungeePortal;
     private static final File testGatesDir = new File("src/test/resources/gates");
 
     private static final String SERVER = "server";
@@ -55,16 +61,25 @@ class StargateBungeeManagerTest {
     @BeforeEach
     void setUp() throws NameLengthException, InvalidStructureException, InvalidNameException, NameConflictException {
         server = MockBukkit.mock();
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger())));
+        GateFormatHandler.setFormats(
+                Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger())));
         Stargate.setServerName(SERVER);
         registry = new StargateRegistry(new FakeStorage());
         world = server.addSimpleWorld("world");
-        Network network2 = registry.createNetwork(NETWORK2,NetworkType.CUSTOM,true,false);
+        Network network2 = registry.createNetwork(NETWORK2, NetworkType.CUSTOM, true, false);
         realPortal = new FakePortalGenerator().generateFakePortal(world, network2, REGISTERED_PORTAL, true);
-        network2.addPortal(realPortal,false);
-        bungeeManager = new StargateBungeeManager(registry,new FakeLanguageManager());
+        network2.addPortal(realPortal, false);
+        
+        Network bungeeNetwork = registry.createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false,
+                false);
+        Set<PortalFlag> bungeePortalFlags = new HashSet<>();
+        bungeePortal = new FakePortalGenerator().generateFakePortal(new Location(world, 0, 10, 0), bungeeNetwork,
+                NETWORK, false, bungeePortalFlags, registry);
+        bungeeNetwork.addPortal(bungeePortal, false);
+        
+        bungeeManager = new StargateBungeeManager(registry, new FakeLanguageManager());
     }
-    
+
     @AfterEach
     void tearDown() {
         MockBukkit.unmock();
@@ -101,5 +116,19 @@ class StargateBungeeManagerTest {
         Assertions.assertEquals(realPortal.getNetwork().getId(), pulledPortal.getNetwork().getId());
     }
     
+    @Test
+    void legacyPlayerConnect_Online() throws NameLengthException, NameConflictException, InvalidNameException, InvalidStructureException {
+        PlayerMock player = server.addPlayer(PLAYER);
+        
+        bungeeManager.legacyPlayerConnect(BungeeHelper.generateLegacyTeleportMessage(PLAYER, bungeePortal));
+        Component componentMessage = player.nextComponentMessage();
+        Assertions.assertFalse(componentMessage != null &&componentMessage.toString().contains("[ERROR]"),"A error message was sent to the player '" + componentMessage +"'");
+    }
     
+    @Test
+    void legacyPlayerConnect_Offline() throws NameLengthException, NameConflictException, InvalidNameException, InvalidStructureException {
+        bungeeManager.legacyPlayerConnect(BungeeHelper.generateLegacyTeleportMessage(PLAYER, bungeePortal));
+        Portal pulledPortal = bungeeManager.pullFromQueue(PLAYER);
+        Assertions.assertEquals(bungeePortal,pulledPortal);
+    }
 }

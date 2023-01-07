@@ -122,4 +122,8 @@ public final class BungeeHelper {
         JsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getId()));
         return JsonData.toString();
     }
+    
+    public static String generateLegacyTeleportMessage(String player, Portal portal) {
+        return player + "#@#" + portal.getName();
+    }
 }

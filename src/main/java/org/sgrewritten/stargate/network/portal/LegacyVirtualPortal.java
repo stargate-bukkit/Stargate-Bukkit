@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.property.PluginChannel;
+import org.sgrewritten.stargate.util.BungeeHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -19,8 +20,6 @@ import java.util.logging.Level;
  */
 class LegacyVirtualPortal extends VirtualPortal {
 
-    private final BungeePortal bungeePortal;
-
     /**
      * Instantiates a new legacy virtual portal
      *
@@ -31,10 +30,9 @@ class LegacyVirtualPortal extends VirtualPortal {
      * @param flags        <p>The flags enabled for this virtual portal</p>
      * @param ownerUUID    <p>The UUID of this virtual portal's owner</p>
      */
-    public LegacyVirtualPortal(BungeePortal bungeePortal, String server, String name, Network network,
+    public LegacyVirtualPortal(String server, String name, Network network,
                                Set<PortalFlag> flags, UUID ownerUUID) {
         super(server, name, network, flags, ownerUUID);
-        this.bungeePortal = bungeePortal;
     }
 
     @Override
@@ -50,7 +48,7 @@ class LegacyVirtualPortal extends VirtualPortal {
             msgData.writeUTF(PluginChannel.FORWARD.getChannel());
             msgData.writeUTF(server);
             msgData.writeUTF(PluginChannel.LEGACY_BUNGEE.getChannel());
-            String msg = player.getName() + "#@#" + bungeePortal.destination.getName();
+            String msg = BungeeHelper.generateLegacyTeleportMessage(player.getName(), this);
             msgData.writeUTF(msg);
             Stargate.log(Level.FINEST, bao.toString());
             player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), bao.toByteArray());

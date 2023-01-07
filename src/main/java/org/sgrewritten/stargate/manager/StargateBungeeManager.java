@@ -113,7 +113,6 @@ public class StargateBungeeManager implements BungeeManager{
     
     @Override
     public void legacyPlayerConnect(String message) {
-        RegistryAPI registry = Stargate.getInstance().getRegistry();
         String bungeeNetworkName = BungeePortal.getLegacyNetworkName();
 
         String[] parts = message.split("#@#");
@@ -124,7 +123,7 @@ public class StargateBungeeManager implements BungeeManager{
         Stargate.log(Level.FINER, "destination=" + destination + ",player=" + playerName);
 
         // Check if the player is online, if so, teleport, otherwise, queue
-        Player player = Stargate.getInstance().getServer().getPlayer(playerName);
+        Player player = Bukkit.getServer().getPlayer(playerName);
         if (player == null) {
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
 
