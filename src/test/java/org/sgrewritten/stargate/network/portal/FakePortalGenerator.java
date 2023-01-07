@@ -2,12 +2,18 @@ package org.sgrewritten.stargate.network.portal;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
+import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
+import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.NoFormatFoundException;
+import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.Network;
@@ -17,6 +23,7 @@ import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.util.FakeLanguageManager;
 import org.sgrewritten.stargate.util.FakeStorage;
+import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -155,5 +162,13 @@ public class FakePortalGenerator {
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON);
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);
         return new FixedPortal(network, name, "", flags, gate, UUID.randomUUID(), new FakeLanguageManager(),new FakeEconomyManager());
+    }
+
+    public RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,RegistryAPI registry) throws NameLengthException, BungeeNameException, InvalidNameException, NoFormatFoundException, GateConflictException, NameConflictException {
+        Gate gate = PortalCreationHelper.createGate(signBlock, false, registry);
+        flags.add(network.getType().getRelatedFlag());
+        RealPortal portal =  PortalCreationHelper.createPortal(network, name, "", "", flags, gate, UUID.randomUUID(), new FakeLanguageManager() , registry, new FakeEconomyManager());
+        network.addPortal(portal, false);
+        return portal;
     }
 }

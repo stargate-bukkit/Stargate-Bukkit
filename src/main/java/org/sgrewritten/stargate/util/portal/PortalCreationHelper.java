@@ -230,7 +230,7 @@ public final class PortalCreationHelper {
      * @throws NoFormatFoundException <p>If no gate format is found that matches the physical gate</p>
      * @throws GateConflictException  <p>If a registered gate conflicts with the new gate</p>
      */
-    private static Gate createGate(Block sign, boolean alwaysOn,RegistryAPI registry) throws NoFormatFoundException, GateConflictException {
+    public static Gate createGate(Block sign, boolean alwaysOn,RegistryAPI registry) throws NoFormatFoundException, GateConflictException {
         if (!(Tag.WALL_SIGNS.isTagged(sign.getType()))) {
             throw new NoFormatFoundException();
         }

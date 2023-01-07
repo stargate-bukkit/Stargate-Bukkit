@@ -180,8 +180,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             pluginManager = getServer().getPluginManager();
             registerListeners();
             BukkitScheduler scheduler = getServer().getScheduler();
-            scheduler.scheduleSyncRepeatingTask(this, synchronousTickPopulator, 0L, 1L);
-            scheduler.scheduleSyncRepeatingTask(this, syncSecPopulator, 0L, 20L);
+            scheduler.runTaskTimer(this, synchronousTickPopulator, 0L, 1L);
+            scheduler.runTaskTimer(this, syncSecPopulator, 0L, 20L);
             registerCommands();
 
             //Register bStats metrics
@@ -584,6 +584,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         System.out.println("[" + priorityLevel + "]: " + message);
     }
     
+    /**
+     * Change the log level of Stargate. Does not save new level to the config
+     * @param priorityLevel <p> The new priority level to set </p>
+     */
     public static void setLogLevel(Level priorityLevel) {
         Stargate.logLevel = priorityLevel;
     }

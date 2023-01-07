@@ -2,10 +2,14 @@ package org.sgrewritten.stargate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -15,13 +19,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.NoFormatFoundException;
+import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 
@@ -40,14 +49,18 @@ class StargateTest {
     private BukkitSchedulerMock scheduler;
 
     @BeforeEach
-    public void setup() throws NameLengthException, NameConflictException, InvalidNameException, InvalidStructureException {
+    public void setup() throws NameLengthException, NameConflictException, InvalidNameException, InvalidStructureException, BungeeNameException, NoFormatFoundException, GateConflictException {
         server = MockBukkit.mock();
         scheduler = server.getScheduler();
         world = server.addSimpleWorld("world");
         System.setProperty("bstats.relocatecheck", "false");
         plugin = MockBukkit.load(Stargate.class);
+        
+        Block signBlock = PortalBlockGenerator.generatePortal(new Location(world,0,10,0));
+        
         network = plugin.getRegistry().createNetwork("network", NetworkType.CUSTOM,false, false);
-        portal = new FakePortalGenerator().generateFakePortal(world, network, "name", false);
+        
+        portal = new FakePortalGenerator().generateFakePortal(signBlock,network,new HashSet<>(),"name",plugin.getRegistry());
         network.addPortal(portal, true);
     }
     
