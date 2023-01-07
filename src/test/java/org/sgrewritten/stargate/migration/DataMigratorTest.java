@@ -61,6 +61,7 @@ public class DataMigratorTest {
 
     @BeforeAll
     public static void setUp() throws IOException, InvalidConfigurationException, SQLException {
+        Stargate.setLogLevel(Level.WARNING);
         String configFolder = "src/test/resources/configurations";
         configTestMap = getSettingTestMaps();
         configFiles = new File[configTestMap.size()];
@@ -161,6 +162,7 @@ public class DataMigratorTest {
         if (sqlDatabaseFile.exists() && !sqlDatabaseFile.delete()) {
             throw new IOException("Unable to remove database file");
         }
+        Stargate.setLogLevel(Level.INFO);
     }
 
     @Test
@@ -204,7 +206,7 @@ public class DataMigratorTest {
     @Order(2)
     public void doOtherRefactorCheck() {
         for (String key : migratorMap.keySet()) {
-            System.out.printf("####### Performing misc. refactoring based on the config-file %s%n", key);
+            Stargate.log(Level.FINE,String.format("####### Performing misc. refactoring based on the config-file %s%n", key));
             DataMigrator dataMigrator = migratorMap.get(key);
             dataMigrator.run();
         }
