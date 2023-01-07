@@ -113,7 +113,7 @@ public abstract class AbstractPortal implements RealPortal {
         this.economyManager = Objects.requireNonNull(economyManager);
         
         name = NameHelper.getTrimmedName(name);
-        if (name.isEmpty() || (name.length() >= Stargate.getMaxTextLength())) {
+        if (!NameHelper.isValidName(name)) {
             throw new NameLengthException("Invalid length of name '" + name + "' , namelength must be above 0 and under " + Stargate.getMaxTextLength());
         }
 

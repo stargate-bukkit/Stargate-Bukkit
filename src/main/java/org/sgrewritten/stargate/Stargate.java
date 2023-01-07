@@ -271,8 +271,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     /**
      * Gets the max text length which will fit on a sign
      *
-     * <p>The string length of a name consisting of only 'i'. This will fill a sign (including {@literal <>})
-     * Note that this is a terribly relaxed restriction, mainly done to prevent any from arising in an SQL database.</p>
+     * <p>The string length of a name consisting of only 'i'. This will fill a sign (including {@literal <>})</p>
      *
      * @return <p>The max text length which will fit on a sign</p>
      */
@@ -509,6 +508,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             registry.load(this.getEconomyManager());
             economyManager.setupEconomy();
         } catch (StargateInitializationException exception) {
+            Stargate.log(Level.SEVERE,exception.getMessage());
             getServer().getPluginManager().disablePlugin(this);
         } catch (SQLException e) {
             getServer().getPluginManager().disablePlugin(this);
@@ -516,10 +516,13 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         }
     }
 
-    private void load() {
+    private void load() throws StargateInitializationException {
         loadColors();
         fetchServerId();
-
+        String defaultNetwork = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
+        if(defaultNetwork.length() >= Stargate.MAX_TEXT_LENGTH) {
+            throw new StargateInitializationException("Invalid configuration name '" + defaultNetwork + "' name too long");
+        }
         languageManager.setLanguage(ConfigurationHelper.getString(ConfigurationOption.LANGUAGE));
         loadConfigLevel();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {

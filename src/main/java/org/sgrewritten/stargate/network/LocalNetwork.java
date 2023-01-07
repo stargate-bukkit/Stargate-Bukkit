@@ -93,7 +93,7 @@ public class LocalNetwork implements Network {
     
     private void loadAsCustomNetwork(String networkName) throws NameLengthException {
         networkName = NameHelper.getTrimmedName(networkName);
-        if (networkName == null || networkName.isEmpty() || (networkName.length() >= Stargate.getMaxTextLength())) {
+        if (!NameHelper.isValidName(networkName)) {
             throw new NameLengthException("Name '" + networkName + "' is to short or to long, expected length over 0 and under " + Stargate.getMaxTextLength());
         }
         this.name = networkName.trim();

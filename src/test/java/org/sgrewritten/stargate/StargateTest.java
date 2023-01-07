@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
@@ -127,6 +128,20 @@ class StargateTest {
     }
     
     @Test
+    public void reload_StupidDefaultnetworkNameUUID() {
+        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, UUID.randomUUID().toString());
+        plugin.reload();
+        Assertions.assertFalse(plugin.isEnabled());
+    }
+    
+    @Test
+    public void reload_StupidDefaultnetworkNameTooLong() {
+        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "thisNameIsWayTooLong");
+        plugin.reload();
+        Assertions.assertFalse(plugin.isEnabled());
+    }
+    
+    @Test
     public void reload_Interserver() {
         plugin.setConfigurationOptionValue(ConfigurationOption.USING_BUNGEE, true);
         plugin.setConfigurationOptionValue(ConfigurationOption.USING_REMOTE_DATABASE, true);
@@ -143,4 +158,6 @@ class StargateTest {
     public void reloadConfig() {
         Assertions.assertDoesNotThrow(() -> plugin.reloadConfig());
     }
+    
+    
 }

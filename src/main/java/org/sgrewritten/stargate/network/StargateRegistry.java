@@ -21,6 +21,7 @@ import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.vectorlogic.VectorUtils;
 
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -252,6 +254,9 @@ public class StargateRegistry implements RegistryAPI {
     
     @Override
     public void rename(Network network, String newName) throws InvalidNameException, NameLengthException{
+        if(ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(newName))) {
+            throw new InvalidNameException("Can not rename the network to an UUID.");
+        }
         try {
             storageAPI.updateNetworkName(newName, newName, network.getStorageType());
         } catch (StorageWriteException e) {
@@ -273,7 +278,10 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void rename(Network network) {
+    public void rename(Network network) throws InvalidNameException {
+        if(ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(network.getId()))) {
+            throw new InvalidNameException("Can not rename the network as it's name is an UUID.");
+        }
         String newName = network.getId();
         int i = 1;
         try {

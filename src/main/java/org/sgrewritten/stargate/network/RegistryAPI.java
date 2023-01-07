@@ -223,6 +223,7 @@ public interface RegistryAPI {
     /**
      * Rename the network to a non clashing name
      * @param network   <p>The network to rename </p>
+     * @throws InvalidNameException <p> If the name is a uuid </p>
      */
-    void rename(Network network);
+    void rename(Network network) throws InvalidNameException;
 }
