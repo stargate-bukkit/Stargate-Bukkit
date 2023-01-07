@@ -61,7 +61,6 @@ class StargateTest {
         network = plugin.getRegistry().createNetwork("network", NetworkType.CUSTOM,false, false);
         
         portal = new FakePortalGenerator().generateFakePortal(signBlock,network,new HashSet<>(),"name",plugin.getRegistry());
-        network.addPortal(portal, true);
     }
     
     @AfterEach
