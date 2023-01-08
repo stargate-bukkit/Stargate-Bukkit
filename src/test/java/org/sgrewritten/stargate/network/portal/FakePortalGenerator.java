@@ -168,8 +168,11 @@ public class FakePortalGenerator {
     public RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,RegistryAPI registry) throws NameLengthException, BungeeNameException, InvalidNameException, NoFormatFoundException, GateConflictException, NameConflictException {
         Gate gate = PortalCreationHelper.createGate(signBlock, false, registry);
         flags.add(network.getType().getRelatedFlag());
-        RealPortal portal =  PortalCreationHelper.createPortal(network, name, "", "", flags, gate, UUID.randomUUID(), new FakeLanguageManager() , registry, new FakeEconomyManager());
-        network.addPortal(portal, false);
+        
+        
+        
+        RealPortal portal =  PortalCreationHelper.createPortal(network, name, "destination", "server", flags, gate, UUID.randomUUID(), new FakeLanguageManager() , registry, new FakeEconomyManager());
+        network.addPortal(portal, true);
         return portal;
     }
 
