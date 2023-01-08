@@ -154,13 +154,7 @@ class StargateTest {
     
     @Test
     public void reload_Interserver() {
-        plugin.setConfigurationOptionValue(ConfigurationOption.USING_BUNGEE, true);
-        plugin.setConfigurationOptionValue(ConfigurationOption.USING_REMOTE_DATABASE, true);
-        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_ADDRESS, "localhost");
-        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_PASSWORD, "root");
-        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_PORT, 3306);
-        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_USE_SSL, false);
-        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_DATABASE, "stargate");
+        setInterserverEnabled();
         plugin.reload();
         Assertions.assertTrue(plugin.isEnabled());
     }
@@ -180,6 +174,13 @@ class StargateTest {
     
     @Test
     public void restart_Interserver() {
+        setInterserverEnabled();
+        server.getPluginManager().disablePlugin(plugin);
+        server.getPluginManager().enablePlugin(plugin);
+        Assertions.assertTrue(plugin.isEnabled());
+    }
+    
+    private void setInterserverEnabled() {
         plugin.setConfigurationOptionValue(ConfigurationOption.USING_BUNGEE, true);
         plugin.setConfigurationOptionValue(ConfigurationOption.USING_REMOTE_DATABASE, true);
         plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_ADDRESS, "localhost");
@@ -187,8 +188,5 @@ class StargateTest {
         plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_PORT, 3306);
         plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_USE_SSL, false);
         plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_DATABASE, "stargate");
-        server.getPluginManager().disablePlugin(plugin);
-        server.getPluginManager().enablePlugin(plugin);
-        Assertions.assertTrue(plugin.isEnabled());
     }
 }
