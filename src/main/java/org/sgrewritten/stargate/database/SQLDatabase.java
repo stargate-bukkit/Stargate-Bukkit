@@ -198,13 +198,12 @@ public class SQLDatabase implements StorageAPI {
                 continue;
             }
             boolean isBungee = portalData.flags.contains(PortalFlag.FANCY_INTER_SERVER);
-            Stargate.log(Level.FINEST,
-                    "Trying to add portal " + portalData.name + ", on network " + portalData.networkName + ",isInterServer = " + isBungee);
-
             String targetNetwork = portalData.networkName;
             if (portalData.flags.contains(PortalFlag.BUNGEE)) {
                 targetNetwork = BungeePortal.getLegacyNetworkName();
             }
+            Stargate.log(Level.FINEST,
+                    "Trying to add portal " + portalData.name + ", on network " + targetNetwork + ",isInterServer = " + isBungee);
             try {
                 boolean isForced = portalData.flags.contains(PortalFlag.DEFAULT_NETWORK) || portalData.flags.contains(PortalFlag.TERMINAL_NETWORK);
                 Network network = registry.createNetwork(targetNetwork,portalData.flags,isForced);

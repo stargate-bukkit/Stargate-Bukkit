@@ -181,15 +181,15 @@ public class BlockEventListener implements Listener {
             } else {
                 selectedNetwork = NetworkCreationHelper.selectNetwork(network, permissionManager, player, flags, registry);
                 //NetworkType-flags are incompatible with each other, this makes sure that only the flag of the portals network is in use
-                NetworkType.removeNetworkTypeRelatedFlags(flags);
-                flags.add(selectedNetwork.getType().getRelatedFlag());
+                
             }
         } catch (TranslatableException e) {
             errorMessage = e.getTranslatableMessage();
         } catch (InvalidNameException e) {
             e.printStackTrace();
         }
-
+        NetworkType.removeNetworkTypeRelatedFlags(flags);
+        flags.add(selectedNetwork.getType().getRelatedFlag());
         try {
             PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost,
                     permissionManager, errorMessage,registry,languageManager,economyManager);
