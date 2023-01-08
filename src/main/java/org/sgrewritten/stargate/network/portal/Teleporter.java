@@ -261,13 +261,7 @@ public class Teleporter {
                 target.addPassenger(passenger);
                 return true;
             };
-
-            if (passenger instanceof Player) {
-                // Delay action by one tick to avoid client issues
-                registerAction.accept(new DelayedAction(1, action));
-                continue;
-            }
-            registerAction.accept(new SupplierAction(action));
+            registerAction.accept(new DelayedAction(1,action));
         }
     }
 
