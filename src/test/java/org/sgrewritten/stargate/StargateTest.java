@@ -30,6 +30,7 @@ import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
@@ -48,6 +49,11 @@ class StargateTest {
     private WorldMock world;
     private RealPortal portal;
     private BukkitSchedulerMock scheduler;
+    private RealPortal bungeePortal;
+    private Network bungeeNetwork;
+    
+    private static String PORTAL1 = "name1";
+    private static String PORTAL2 = "name2";
 
     @BeforeEach
     public void setup() throws NameLengthException, NameConflictException, InvalidNameException, InvalidStructureException, BungeeNameException, NoFormatFoundException, GateConflictException {
@@ -57,11 +63,16 @@ class StargateTest {
         System.setProperty("bstats.relocatecheck", "false");
         plugin = MockBukkit.load(Stargate.class);
         
-        Block signBlock = PortalBlockGenerator.generatePortal(new Location(world,0,10,0));
+        Block signBlock1 = PortalBlockGenerator.generatePortal(new Location(world,0,10,0));
+        Block signBlock2 = PortalBlockGenerator.generatePortal(new Location(world,0,20,0));
         
         network = plugin.getRegistry().createNetwork("network", NetworkType.CUSTOM,false, false);
         
-        portal = new FakePortalGenerator().generateFakePortal(signBlock,network,new HashSet<>(),"name",plugin.getRegistry());
+        portal = new FakePortalGenerator().generateFakePortal(signBlock1,network,new HashSet<>(),PORTAL1,plugin.getRegistry());
+        Set<PortalFlag> flags = new HashSet<>();
+        flags.add(PortalFlag.BUNGEE);
+        bungeeNetwork = plugin.getRegistry().createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, false);
+        bungeePortal = new FakePortalGenerator().generateFakePortal(signBlock2,bungeeNetwork,flags,PORTAL2,plugin.getRegistry());
     }
     
     @AfterEach
@@ -159,5 +170,25 @@ class StargateTest {
         Assertions.assertDoesNotThrow(() -> plugin.reloadConfig());
     }
     
+    @Test
+    public void restart() {
+        server.getPluginManager().disablePlugin(plugin);
+        server.getPluginManager().enablePlugin(plugin);
+        Assertions.assertTrue(plugin.isEnabled());
+        Assertions.assertNotNull(plugin.getRegistry().getNetwork(BungeePortal.getLegacyNetworkName(), false).getPortal(PORTAL2));
+    }
     
+    @Test
+    public void restart_Interserver() {
+        plugin.setConfigurationOptionValue(ConfigurationOption.USING_BUNGEE, true);
+        plugin.setConfigurationOptionValue(ConfigurationOption.USING_REMOTE_DATABASE, true);
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_ADDRESS, "localhost");
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_PASSWORD, "root");
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_PORT, 3306);
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_USE_SSL, false);
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_DATABASE, "stargate");
+        server.getPluginManager().disablePlugin(plugin);
+        server.getPluginManager().enablePlugin(plugin);
+        Assertions.assertTrue(plugin.isEnabled());
+    }
 }
