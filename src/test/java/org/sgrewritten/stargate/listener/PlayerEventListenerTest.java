@@ -26,6 +26,7 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
+import org.sgrewritten.stargate.manager.FakeBlockLogger;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
@@ -57,7 +58,7 @@ class PlayerEventListenerTest {
         player = server.addPlayer();
         registry = new StargateRegistry(new FakeStorage());
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
-        listener = new PlayerEventListener(new FakeLanguageManager(),registry, new StargateBungeeManager(registry,new FakeLanguageManager()));
+        listener = new PlayerEventListener(new FakeLanguageManager(),registry, new StargateBungeeManager(registry,new FakeLanguageManager()),new FakeBlockLogger());
         signBlock = PortalBlockGenerator.generatePortal(new Location(world,0,10,0));
         portal = new FakePortalGenerator().generateFakePortal(signBlock, "network", new HashSet<>(), "name", registry);
     }

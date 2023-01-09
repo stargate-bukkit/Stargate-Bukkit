@@ -61,7 +61,9 @@ import org.sgrewritten.stargate.listener.PlayerAdvancementListener;
 import org.sgrewritten.stargate.listener.PlayerEventListener;
 import org.sgrewritten.stargate.listener.PluginEventListener;
 import org.sgrewritten.stargate.listener.StargateBungeePluginMessageListener;
+import org.sgrewritten.stargate.manager.BlockLoggingManager;
 import org.sgrewritten.stargate.manager.BungeeManager;
+import org.sgrewritten.stargate.manager.CoreProtectManager;
 import org.sgrewritten.stargate.manager.PermissionManager;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
@@ -129,7 +131,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private static UUID serverUUID;
 
-    private static org.bukkit.ChatColor legacySignColor;
+   private static org.bukkit.ChatColor legacySignColor;
 
     private static short defaultSignColorHue = 0;
     private static Map<Material, DyeColor> defaultSignDyeColors;
@@ -137,6 +139,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private FileConfiguration config;
 
     private StargateRegistry registry;
+
+    private BlockLoggingManager blockLogger;
 
     private static final FileConfiguration staticConfig = new StargateYamlConfiguration();
 
@@ -166,9 +170,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             storageAPI = new SQLDatabase(database, this, this.getLanguageManager());
             registry = new StargateRegistry(storageAPI);
             bungeeManager = new StargateBungeeManager(this.getRegistry(),this.getLanguageManager());
+            blockLogger = new CoreProtectManager();
             if (ConfigurationHelper.getInteger(ConfigurationOption.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
                 try {
-                    this.migrateConfigurationAndData();
+                  this.migrateConfigurationAndData();
                 } catch (IOException | InvalidConfigurationException | SQLException e) {
                     e.printStackTrace();
                 }
@@ -391,7 +396,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private void registerListeners() {
         pluginManager.registerEvents(new BlockEventListener(getRegistry(),this.getLanguageManager(),getEconomyManager()), this);
         pluginManager.registerEvents(new MoveEventListener(getRegistry()), this);
-        pluginManager.registerEvents(new PlayerEventListener(this.getLanguageManager(),getRegistry(),this.getBungeeManager()), this);
+        pluginManager.registerEvents(new PlayerEventListener(this.getLanguageManager(),getRegistry(),this.getBungeeManager(),this.getBlockLoggerManager()), this);
         pluginManager.registerEvents(new PluginEventListener(getEconomyManager()), this);
         if (NonLegacyMethod.PLAYER_ADVANCEMENT_CRITERION_EVENT.isImplemented()) {
             pluginManager.registerEvents(new PlayerAdvancementListener(getRegistry()), this);
@@ -519,6 +524,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private void load() throws StargateInitializationException {
         loadColors();
         fetchServerId();
+        blockLogger.setUpLogging();
         String defaultNetwork = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
         if(defaultNetwork.length() >= Stargate.MAX_TEXT_LENGTH) {
             throw new StargateInitializationException("Invalid configuration name '" + defaultNetwork + "' name too long");
@@ -672,6 +678,13 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     @Override
     public BungeeManager getBungeeManager() {
         return this.bungeeManager;
+    }
+    
+    /**
+     * @return <p> the blocklogger used for dealing with external block logging plugin compatability </p>
+     */
+    public BlockLoggingManager getBlockLoggerManager() {
+        return this.blockLogger;
     }
 
 }

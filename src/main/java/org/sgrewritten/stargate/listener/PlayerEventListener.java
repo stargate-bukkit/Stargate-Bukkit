@@ -23,12 +23,12 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.manager.BungeeManager;
+import org.sgrewritten.stargate.manager.BlockLoggingManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.PluginChannel;
-import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.util.colors.ColorConverter;
 
@@ -50,7 +50,7 @@ public class PlayerEventListener implements Listener {
     private @NotNull BungeeManager bungeeManager;
     private @NotNull RegistryAPI registry;
     
-    public PlayerEventListener(@NotNull LanguageManager languageManager,@NotNull RegistryAPI registry,@NotNull BungeeManager bungeeManager){
+    public PlayerEventListener(@NotNull LanguageManager languageManager,@NotNull RegistryAPI registry,@NotNull BungeeManager bungeeManager, BlockLoggingManager loggingCompatability){
         this.languageManager = Objects.requireNonNull(languageManager);
         this.bungeeManager = Objects.requireNonNull(bungeeManager);
         this.registry = Objects.requireNonNull(registry);
