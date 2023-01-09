@@ -115,11 +115,11 @@ public final class TranslatableMessageFormatter {
     }
 
     /**
-     * Format the 
-     * @param interserver
-     * @param local
-     * @param languageManager
-     * @return
+     * Format the {@link TranslatableMessage#UNIMPLEMENTED_CONFLICT}
+     * @param interserver <p> The interserver network at conflict </p>
+     * @param local <p> The local network at conflict (none if null) </p>
+     * @param languageManager   <p> A languageManager </p>
+     * @return <p> A formated {@link TranslatableMessage#UNIMPLEMENTED_CONFLICT} message
      */
     public static String formatUnimplementedConflictMessage(Network interserver, @Nullable Network local, LanguageManager languageManager) {
         String initialMessage = languageManager.getWarningMessage(TranslatableMessage.UNIMPLEMENTED_CONFLICT);
