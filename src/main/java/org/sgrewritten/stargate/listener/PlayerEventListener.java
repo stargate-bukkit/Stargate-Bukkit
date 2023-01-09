@@ -49,11 +49,13 @@ public class PlayerEventListener implements Listener {
     private @NotNull LanguageManager languageManager;
     private @NotNull BungeeManager bungeeManager;
     private @NotNull RegistryAPI registry;
+    private @NotNull BlockLoggingManager loggingCompatability;
     
-    public PlayerEventListener(@NotNull LanguageManager languageManager,@NotNull RegistryAPI registry,@NotNull BungeeManager bungeeManager, BlockLoggingManager loggingCompatability){
+    public PlayerEventListener(@NotNull LanguageManager languageManager,@NotNull RegistryAPI registry,@NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatability){
         this.languageManager = Objects.requireNonNull(languageManager);
         this.bungeeManager = Objects.requireNonNull(bungeeManager);
         this.registry = Objects.requireNonNull(registry);
+        this.loggingCompatability = Objects.requireNonNull(loggingCompatability);
     }
 
     /**
@@ -98,6 +100,7 @@ public class PlayerEventListener implements Listener {
                 event.setUseInteractedBlock(Event.Result.ALLOW);
                 return;
             }
+            loggingCompatability.logPlayerInteractEvent(event);
             event.setUseInteractedBlock(Event.Result.DENY);
             if (portal.isOpenFor(player)) {
                 Stargate.log(Level.FINEST, "Player name=" + player.getName());
@@ -107,6 +110,7 @@ public class PlayerEventListener implements Listener {
         }
         if (ButtonHelper.isButton(blockMaterial)) {
             portal.onButtonClick(event);
+            loggingCompatability.logPlayerInteractEvent(event);
             event.setUseInteractedBlock(Event.Result.DENY);
         }
 
