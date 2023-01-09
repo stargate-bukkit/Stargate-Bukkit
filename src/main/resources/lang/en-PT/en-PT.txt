@@ -66,7 +66,6 @@ personal=Yer own
 
 #Temporary
 unimplementedInterserver=The crew be workin' on ye ship still, ya blimey toad rat
-unimplementedIConflict=The %interserverNetName% ship crashed into %netName% owned by the brits, neveralas yer crew be workin' to recapture it!!
 unimplementedFlag=The %flags% flags can't been hoisted
 
 #Admin

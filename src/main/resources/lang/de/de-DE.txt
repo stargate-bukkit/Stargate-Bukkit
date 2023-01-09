@@ -66,7 +66,7 @@ personal=Persönlich
 
 #Temporary
 unimplementedInterserver=Interserver-Tore befinden sich noch in aktiver Entwicklung und sind nur teilweise implementiert.
-unimplementedIConflict=Das %interserverNetName% Netzwerk wurde vorübergehend vom %netName% Netzwerk getrennt, wird aber bald zusammengefügt
+unimplementedIConflict=Das %name% %type1% Netzwerk wurde vorübergehend vom %name% %type2% Netzwerk getrennt, wird aber bald zusammengefügt
 unimplementedFlag=Die %flags% Flags sind noch nicht implementiert.
 
 #Admin

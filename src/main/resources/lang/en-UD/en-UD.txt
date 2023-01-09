@@ -67,7 +67,7 @@ custom=ɯoʇsnɔ
 
 #Temporary
 unimplementedInterserver=˙pǝʇuǝɯǝldɯı uǝǝq ʎllɐıʇɹɐd ʎluo ǝʌɐɥ puɐ ʇuǝɯdolǝʌǝp ǝʌıʇɔɐ uı llıʇs ǝɹɐ sǝʇɐƃ ɹǝʌɹǝsɹǝʇuı
-unimplementedIConflict=˙pǝƃɹǝɯ ǝq uoos llıʍ ʇnq 'ʞɹoʍʇǝu %netName% ǝɥʇ ɯoɹɟ pǝʇɐɹɐdǝs ʎlıɹɐɹodɯǝʇ uǝǝq sɐɥ ʞɹoʍʇǝu %interserverNetName% ǝɥʇ
+unimplementedIConflict=˙pǝƃɹǝɯ ǝq uoos llıʍ ʇnq 'ʞɹoʍʇǝu %type2% %name% ǝɥʇ ɯoɹɟ pǝʇɐɹɐdǝs ʎlıɹɐɹodɯǝʇ uǝǝq sɐɥ ʞɹoʍʇǝu %type1% %name% ǝɥʇ
 unimplementedFlag=˙pǝʇuǝɯǝldɯı uǝǝq ʇǝʎ ʇou ǝʌɐɥ sƃɐlɟ %flags% ǝɥʇ
 
 #Admin

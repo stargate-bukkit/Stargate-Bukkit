@@ -66,7 +66,7 @@ personal=Persoonlijk
 
 #Temporary
 unimplementedInterserver=Interserver poorten zijn nog in ontwikkeling en zijn nog maar gedeeltelijk geïmplementeerd.
-unimplementedIConflict=Het %interserverNetName% netwerk is tijdelijk gescheiden van het %netName% netwerk, maar zal binnenkort worden samengevoegd.
+unimplementedIConflict=Het %name% %type1% netwerk is tijdelijk gescheiden van het %name% %type2% netwerk, maar zal binnenkort worden samengevoegd.
 unimplementedFlag=De %flags% markeringen zijn nog niet geïmplementeerd.
 
 #Admin
