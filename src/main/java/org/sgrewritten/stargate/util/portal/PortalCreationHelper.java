@@ -142,6 +142,7 @@ public final class PortalCreationHelper {
         Gate gate = createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON),registry);
         RealPortal portal = createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID ,languageManager,registry,economyAPI);
 
+        
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, !hasPermission,
                 permissionManager.getDenyMessage(), cost);
@@ -185,6 +186,11 @@ public final class PortalCreationHelper {
         if (SpawnDetectionHelper.isInterferingWithSpawnProtection(gate, signLocation.getLocation())) {
             player.sendMessage(languageManager.getWarningMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
+        
+        if(flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
+            Network inflictingNetwork = NetworkCreationHelper.getInterserverLocalConflict(selectedNetwork, registry);
+            player.sendMessage(TranslatableMessageFormatter.formatUnimplementedConflictMessage(selectedNetwork, inflictingNetwork, languageManager));
+        }
 
         //Save the portal and inform the user
         selectedNetwork.addPortal(portal, true);
@@ -193,12 +199,16 @@ public final class PortalCreationHelper {
         sign.setColor(Stargate.getDefaultSignDyeColor(signLocation.getType()));
         sign.update();
         selectedNetwork.updatePortals();
-        Stargate.log(Level.FINE, "A Gate format matches");
+        Stargate.log(Level.FINE, "Successfully created a new portal");
+        String msg;
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            player.sendMessage(languageManager.getMessage(TranslatableMessage.CREATE_PERSONAL));
+            msg = languageManager.getMessage(TranslatableMessage.CREATE_PERSONAL);
         } else {
             String unformattedMessage = languageManager.getMessage(TranslatableMessage.CREATE);
-            player.sendMessage(TranslatableMessageFormatter.formatNetwork(unformattedMessage, selectedNetwork.getName()));
+            msg = TranslatableMessageFormatter.formatNetwork(unformattedMessage, selectedNetwork.getName());
+        }
+        if(flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
+            msg = msg + languageManager.getMessage(TranslatableMessage.UNIMPLEMENTED_INTERSERVER);
         }
     }
 

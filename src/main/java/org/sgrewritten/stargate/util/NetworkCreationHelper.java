@@ -189,18 +189,18 @@ public final class NetworkCreationHelper {
         return Bukkit.getOfflinePlayer(playerName).getUniqueId();
     }
 
-    public static boolean isInterserverLocalConflict(Network network, RegistryAPI registry) {
+    public static Network getInterserverLocalConflict(Network network, RegistryAPI registry) {
         String[] idsToCompare = { network.getName() , getPlayerUUID(network.getName()).toString()};
 
         for (String idToCompare : idsToCompare) {
             if (network.getStorageType() == StorageType.LOCAL) {
                 if (registry.getBungeeNetworkMap().containsKey(idToCompare)) {
-                    return true;
+                    return registry.getBungeeNetworkMap().get(idToCompare);
                 }
             } else if (registry.getNetworkMap().containsKey(idToCompare)) {
-                return true;
+                return registry.getNetworkMap().get(idToCompare);
             }
         }
-        return false;
+        return null;
     }
 }

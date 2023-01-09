@@ -184,17 +184,17 @@ class NetworkCreationHelperTest {
         Network local1 = registry.createNetwork(network1id, type, false, false);
         Network inter1 = registry.createNetwork(network1id, type, true, false);
         
-        Assertions.assertTrue(NetworkCreationHelper.isInterserverLocalConflict(inter1,registry));
-        Assertions.assertTrue(NetworkCreationHelper.isInterserverLocalConflict(local1,registry));
+        Assertions.assertNotNull(NetworkCreationHelper.getInterserverLocalConflict(inter1,registry));
+        Assertions.assertNotNull(NetworkCreationHelper.getInterserverLocalConflict(local1,registry));
         
         Network inter2 = registry.createNetwork(network2id, type, true, false);
 
-        Assertions.assertFalse(NetworkCreationHelper.isInterserverLocalConflict(inter2,registry));
+        Assertions.assertNull(NetworkCreationHelper.getInterserverLocalConflict(inter2,registry));
         // Assert there will be a conflict when a network of different type is being created
         Network local2 = registry.createNetwork(invertedNetwork2id, type == NetworkType.PERSONAL ? NetworkType.CUSTOM : NetworkType.PERSONAL,
                 false, false);
-        Assertions.assertTrue(NetworkCreationHelper.isInterserverLocalConflict(inter2,registry));
-        Assertions.assertTrue(NetworkCreationHelper.isInterserverLocalConflict(local2,registry));
+        Assertions.assertNotNull(NetworkCreationHelper.getInterserverLocalConflict(inter2,registry));
+        Assertions.assertNotNull(NetworkCreationHelper.getInterserverLocalConflict(local2,registry));
         
     }
 }
