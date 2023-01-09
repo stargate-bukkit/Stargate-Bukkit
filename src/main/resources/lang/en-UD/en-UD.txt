@@ -63,11 +63,11 @@ interserver=ɹǝʌɹǝsɹǝʇuı
 default=ʇןnɐɟǝᗡ
 terminal=lɐuıɯɹǝʇ
 personal=lɐuosɹǝd
+custom=ɯoʇsnɔ
 
 #Temporary
 unimplementedInterserver=˙pǝʇuǝɯǝldɯı uǝǝq ʎllɐıʇɹɐd ʎluo ǝʌɐɥ puɐ ʇuǝɯdolǝʌǝp ǝʌıʇɔɐ uı llıʇs ǝɹɐ sǝʇɐƃ ɹǝʌɹǝsɹǝʇuı
 unimplementedIConflict=˙pǝƃɹǝɯ ǝq uoos llıʍ ʇnq 'ʞɹoʍʇǝu %netName% ǝɥʇ ɯoɹɟ pǝʇɐɹɐdǝs ʎlıɹɐɹodɯǝʇ uǝǝq sɐɥ ʞɹoʍʇǝu %interserverNetName% ǝɥʇ
-unimplementedIGeneral=˙ǝɹnʇnɟ ɹɐǝu ǝɥʇ uı ʞɹoʍʇǝu %netName%ǝɥʇ oʇ pǝʇɐɹƃıɯ ǝq llıʍ ʞɹoʍʇǝu %interserverNetName% ǝɥʇ
 unimplementedFlag=˙pǝʇuǝɯǝldɯı uǝǝq ʇǝʎ ʇou ǝʌɐɥ sƃɐlɟ %flags% ǝɥʇ
 
 #Admin

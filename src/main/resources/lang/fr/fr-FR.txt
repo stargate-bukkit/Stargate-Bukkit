@@ -67,7 +67,6 @@ personal=Personnel
 #Temporary
 unimplementedInterserver=Les portails inter-serveurs sont encore en cours de développement et n'ont été que partiellement implémentées.
 unimplementedIConflict=Le réseau %interserverNetName% a été temporairement séparé du réseau %netName% mais sera bientôt fusionné.
-unimplementedIGeneral=Le réseau %interserverNetName% sera migré vers le réseau %netName% dans un avenir proche.
 unimplementedFlag=Les option %flags% n'ont pas encore été implémentés.
 
 #Admin
