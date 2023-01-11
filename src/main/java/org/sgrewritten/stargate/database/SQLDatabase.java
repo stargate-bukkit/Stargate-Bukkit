@@ -557,7 +557,8 @@ public class SQLDatabase implements StorageAPI {
         try {
             Connection connection = database.getConnection();
             PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsOfNetwork(connection,netName,portalType);
-            return statement.getResultSet().next();
+            ResultSet resultSet = statement.getResultSet();
+            return (resultSet != null) && resultSet.next();
         } catch (SQLException e) {
             throw new StorageReadException(e);
         }
