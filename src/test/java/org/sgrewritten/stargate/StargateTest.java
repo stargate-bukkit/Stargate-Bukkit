@@ -105,6 +105,7 @@ class StargateTest {
         Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousTickAction(new SupplierAction(() -> {
             return true;
         })));
+        scheduler.performOneTick();
     }
     
     @Test
