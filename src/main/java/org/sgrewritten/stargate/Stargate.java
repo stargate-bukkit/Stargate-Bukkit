@@ -567,8 +567,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
          * Replacement for legacy, which used:
          * methodPortal.closeAllGates(this); Portal.clearGates(); managedWorlds.clear();
          */
-        synchronousTickPopulator.forceDoAllTasks();
-        syncSecPopulator.forceDoAllTasks();
+        synchronousTickPopulator.clear();
+        syncSecPopulator.clear();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             Messenger messenger = Bukkit.getMessenger();
             messenger.unregisterOutgoingPluginChannel(this);
