@@ -77,6 +77,8 @@ class StargateTest {
     
     @AfterEach
     public void tearDown() {
+        portal.destroy();
+        bungeePortal.destroy();
         MockBukkit.unmock();
     }
     
@@ -168,6 +170,7 @@ class StargateTest {
     @Test
     public void restart() {
         server.getPluginManager().disablePlugin(plugin);
+        Assertions.assertNull(Stargate.getInstance());
         server.getPluginManager().enablePlugin(plugin);
         Assertions.assertTrue(plugin.isEnabled());
         Assertions.assertNotNull(plugin.getRegistry().getNetwork(BungeePortal.getLegacyNetworkName(), false).getPortal(PORTAL2));
@@ -177,6 +180,7 @@ class StargateTest {
     public void restart_Interserver() {
         setInterserverEnabled();
         server.getPluginManager().disablePlugin(plugin);
+        Assertions.assertNull(Stargate.getInstance());
         server.getPluginManager().enablePlugin(plugin);
         Assertions.assertTrue(plugin.isEnabled());
     }

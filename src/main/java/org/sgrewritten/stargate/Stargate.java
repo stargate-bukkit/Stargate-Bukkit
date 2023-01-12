@@ -576,6 +576,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         }
         getServer().getScheduler().cancelTasks(this);
 
+        instance = null;
         if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             return;
         }
