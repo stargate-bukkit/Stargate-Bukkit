@@ -149,7 +149,7 @@ public class DataMigratorTest {
         Map<String,String> fileMovements = new HashMap<>();
         fileMovements.put("plugins/Stargate/debug/legacy_portals/epicknarvik.db", "src/test/resources/oldsaves/epicknarvik/epicknarvik.db");
         fileMovements.put("plugins/Stargate/debug/legacy_portals/lclo.db", "src/test/resources/oldsaves/lclo/lclo.db");
-        fileMovements.put("plugins\\Stargate\\debug\\legacy_portals\\pseudoknigth.db", "src\\test\\resources\\oldsaves\\pseudoknight\\pseudoknigth.db");
+        fileMovements.put("plugins/Stargate/debug/legacy_portals/pseudoknigth.db", "src/test/resources/oldsaves/pseudoknight/pseudoknigth.db");
         
         for(String fileToMoveName : fileMovements.keySet()) {
             File fileToMove = new File(fileToMoveName);
