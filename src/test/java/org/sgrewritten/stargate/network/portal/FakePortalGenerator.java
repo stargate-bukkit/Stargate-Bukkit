@@ -165,7 +165,7 @@ public class FakePortalGenerator {
         return new FixedPortal(network, name, "", flags, gate, UUID.randomUUID(), new FakeLanguageManager(),new FakeEconomyManager());
     }
 
-    public RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,RegistryAPI registry) throws NameLengthException, BungeeNameException, InvalidNameException, NoFormatFoundException, GateConflictException, NameConflictException {
+    public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,RegistryAPI registry) throws NameLengthException, BungeeNameException, InvalidNameException, NoFormatFoundException, GateConflictException, NameConflictException {
         Gate gate = PortalCreationHelper.createGate(signBlock, false, registry);
         flags.add(network.getType().getRelatedFlag());
         
@@ -176,7 +176,7 @@ public class FakePortalGenerator {
         return portal;
     }
 
-    public RealPortal generateFakePortal(Block signBlock, String networkName, HashSet<PortalFlag> flags, String name,
+    public static RealPortal generateFakePortal(Block signBlock, String networkName, HashSet<PortalFlag> flags, String name,
             StargateRegistry registry) throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException {
         Network network = registry.createNetwork(networkName, NetworkType.CUSTOM, false, false);
         return generateFakePortal(signBlock, network, flags, name, registry);
