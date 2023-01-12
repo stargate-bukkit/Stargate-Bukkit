@@ -61,7 +61,7 @@ public class DataMigratorTest {
 
     @BeforeAll
     public static void setUp() throws IOException, InvalidConfigurationException, SQLException {
-        Stargate.setLogLevel(Level.FINER);
+        Stargate.setLogLevel(Level.WARNING);
         String configFolder = "src/test/resources/configurations";
         configTestMap = getSettingTestMaps();
         configFiles = new File[configTestMap.size()];

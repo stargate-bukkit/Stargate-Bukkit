@@ -133,13 +133,14 @@ public final class PortalCreationHelper {
             Set<PortalFlag> flags, Player player, int cost, StargatePermissionManager permissionManager,
             TranslatableMessage errorMessage, RegistryAPI registry,LanguageManager languageManager,StargateEconomyAPI economyAPI)
             throws GateConflictException, NoFormatFoundException, TranslatableException, InvalidNameException {
+        
+
+        Gate gate = createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON),registry);
         if (errorMessage != null) {
             player.sendMessage(languageManager.getErrorMessage(errorMessage));
             return;
         }
-
         UUID ownerUUID = getOwnerUUID(selectedNetwork, player, flags);
-        Gate gate = createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON),registry);
         RealPortal portal = createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID ,languageManager,registry,economyAPI);
 
         
