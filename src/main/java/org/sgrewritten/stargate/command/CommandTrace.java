@@ -22,25 +22,26 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 
 public class CommandTrace implements CommandExecutor {
 
-    private LanguageManager languageManager;
+    private Stargate stargate;
 
 
-    public CommandTrace(LanguageManager languageManager) {
-        this.languageManager = languageManager;
+    public CommandTrace(@NotNull Stargate stargate) {
+        this.stargate = Objects.requireNonNull(stargate);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!sender.hasPermission(CommandPermission.TRACE.getPermissionNode())) {
-            sender.sendMessage(languageManager.getErrorMessage(TranslatableMessage.DENY));
+            sender.sendMessage(stargate.getLanguageManager().getErrorMessage(TranslatableMessage.DENY));
             return true;
         }
-        File directory = new File(Stargate.getInstance().getDataFolder(), "debug");
+        File directory = new File(stargate.getDataFolder(), "debug");
         if (!directory.exists() && !directory.mkdir()) {
             sender.sendMessage(ChatColor.RED + "Unable to create the debug directory. Make sure permissions for " +
                     "the Stargate folder are correct. Cannot continue.");
