@@ -14,6 +14,8 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.sgrewritten.stargate.Stargate;
+
 /**
  * Utility class for helping with file reading and writing
  */
@@ -97,7 +99,7 @@ public final class FileHelper {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 

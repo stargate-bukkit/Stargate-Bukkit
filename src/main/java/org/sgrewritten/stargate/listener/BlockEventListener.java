@@ -188,7 +188,7 @@ public class BlockEventListener implements Listener {
         } catch (TranslatableException e) {
             errorMessage = e.getTranslatableMessage();
         } catch (InvalidNameException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
         try {
             PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost,
@@ -200,7 +200,7 @@ public class BlockEventListener implements Listener {
         } catch (TranslatableException e) {
             player.sendMessage(languageManager.getErrorMessage(e.getTranslatableMessage()));
         } catch (InvalidNameException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 

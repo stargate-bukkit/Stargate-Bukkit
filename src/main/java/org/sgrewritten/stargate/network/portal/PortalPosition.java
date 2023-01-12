@@ -50,7 +50,7 @@ public class PortalPosition {
         try {
             return Stargate.getStorageAPIStatic().getPortalPositionMetaData(portal, this, portal.getStorageType());
         } catch (StorageReadException e) {
-            e.printStackTrace();
+            Stargate.log(e);
             return null;
         }
     }
@@ -59,7 +59,7 @@ public class PortalPosition {
         try {
             Stargate.getStorageAPIStatic().setPortalPositionMetaData(portal, this, data, portal.getStorageType());
         } catch (StorageWriteException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 

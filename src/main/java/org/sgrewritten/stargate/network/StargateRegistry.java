@@ -59,7 +59,7 @@ public class StargateRegistry implements RegistryAPI {
         try {
             storageAPI.loadFromStorage(this,economyManager);
         } catch (StorageReadException e) {
-            e.printStackTrace();
+            Stargate.log(e);
             return;
         }
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
@@ -73,7 +73,7 @@ public class StargateRegistry implements RegistryAPI {
         try {
             storageAPI.removePortalFromStorage(portal, portalType);
         } catch (StorageWriteException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
 
         if (portal instanceof RealPortal) {
@@ -92,7 +92,7 @@ public class StargateRegistry implements RegistryAPI {
         try {
             storageAPI.savePortalToStorage(portal, portalType);
         } catch (StorageWriteException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 
@@ -260,7 +260,7 @@ public class StargateRegistry implements RegistryAPI {
         try {
             storageAPI.updateNetworkName(newName, newName, network.getStorageType());
         } catch (StorageWriteException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
         network.setID(newName);
         network.updatePortals();
@@ -271,7 +271,7 @@ public class StargateRegistry implements RegistryAPI {
         try {
             storageAPI.updatePortalName(newName, portal.getName(), portal.getNetwork().getId(), portal.getStorageType());
         } catch (StorageWriteException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
         portal.setName(newName);
         portal.getNetwork().updatePortals();
@@ -308,7 +308,7 @@ public class StargateRegistry implements RegistryAPI {
                 }
             }
         } catch (StorageReadException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 }

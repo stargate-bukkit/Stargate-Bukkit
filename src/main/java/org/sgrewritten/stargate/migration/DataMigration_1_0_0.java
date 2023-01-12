@@ -95,10 +95,10 @@ public class DataMigration_1_0_0 extends DataMigration {
             migratePortals(portalFolderName, defaultName,languageManager,economyManager);
             moveFilesToDebugDirectory(portalFolderName);
         } catch (IOException | InvalidStructureException | InvalidNameException | TranslatableException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         } catch (NullPointerException e) {
             Stargate.log(Level.SEVERE, "Invalid config: Could not get necessary config values to load portals from storage");
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 
@@ -184,7 +184,7 @@ public class DataMigration_1_0_0 extends DataMigration {
             try {
                 Files.copy(gateFile, new File(debugGateDirectory, gateFile.getName()));
             } catch (IOException e) {
-                e.printStackTrace();
+                Stargate.log(e);
             }
         }
     }

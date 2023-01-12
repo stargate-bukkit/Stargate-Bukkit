@@ -60,7 +60,7 @@ public class StargateBungeeManager implements BungeeManager{
         } catch ( NameConflictException ignored) {
             
         } catch (InvalidNameException | NameLengthException  e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
         try {
             InterServerNetwork targetNetwork = (InterServerNetwork) registry.getNetwork(network, true);

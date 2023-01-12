@@ -367,7 +367,7 @@ public class StargateLanguageManager implements LanguageManager {
             }
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 

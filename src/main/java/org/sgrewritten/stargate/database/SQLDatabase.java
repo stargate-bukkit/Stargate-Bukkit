@@ -213,7 +213,7 @@ public class SQLDatabase implements StorageAPI {
                 }
             } catch(NameConflictException ignored) {
             } catch (InvalidNameException | TranslatableException e) {
-                e.printStackTrace();
+                Stargate.log(e);
             }
             Network network = registry.getNetwork(targetNetwork, isBungee);
 
@@ -224,7 +224,7 @@ public class SQLDatabase implements StorageAPI {
                         network.addPortal(virtualPortal, false);
                     } catch (NameConflictException ignored) {
                     } catch (InvalidNameException e) {
-                        e.printStackTrace();
+                        Stargate.log(e);
                     }
                     Stargate.log(Level.FINEST, "Added as virtual portal");
                     continue;
@@ -247,7 +247,7 @@ public class SQLDatabase implements StorageAPI {
                 network.addPortal(portal, false);
                 Stargate.log(Level.FINEST, "Added as normal portal");
             } catch (InvalidNameException | TranslatableException e) {
-                e.printStackTrace();
+                Stargate.log(e);
             } catch (InvalidStructureException e) {
                 Stargate.log(Level.WARNING, String.format(
                         "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",

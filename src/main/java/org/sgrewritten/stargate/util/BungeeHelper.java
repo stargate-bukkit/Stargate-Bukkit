@@ -53,7 +53,7 @@ public final class BungeeHelper {
             try {
                 Files.setAttribute(path.toPath(), "dos:hidden", true);
             } catch (IOException e) {
-                e.printStackTrace();
+                Stargate.log(e);
             }
         }
         File file = new File(path, "serverUUID.txt");
@@ -66,7 +66,7 @@ public final class BungeeHelper {
                 writer.write(UUID.randomUUID().toString());
                 writer.close();
             } catch (IOException e1) {
-                e1.printStackTrace();
+                Stargate.log(e1);
             }
         }
         try {
@@ -74,7 +74,7 @@ public final class BungeeHelper {
             Stargate.setServerUUID(UUID.fromString(reader.readLine()));
             reader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
     

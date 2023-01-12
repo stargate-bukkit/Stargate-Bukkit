@@ -66,7 +66,7 @@ public class VirtualPortal implements Portal {
             sendTeleportMessage(plugin, player);
             sendConnectMessage(plugin, player);
         } catch (IOException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 

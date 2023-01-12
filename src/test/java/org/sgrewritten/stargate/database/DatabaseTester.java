@@ -103,7 +103,7 @@ public class DatabaseTester {
         try {
             testNetwork = new LocalNetwork("test",NetworkType.CUSTOM);
         } catch (InvalidNameException | NameLengthException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
         portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
@@ -506,7 +506,7 @@ public class DatabaseTester {
         try {
             testNetwork = new LocalNetwork(initialNetworkName,NetworkType.CUSTOM);
         } catch (InvalidNameException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
         RealPortal portal = portalGenerator.generateFakePortal(world, testNetwork, initialName, portalType == StorageType.INTER_SERVER);
         Stargate.log(Level.FINER,portal.getName() + ", " + portal.getNetwork().getId());

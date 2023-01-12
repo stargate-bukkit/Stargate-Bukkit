@@ -63,7 +63,7 @@ public class CommandTrace implements CommandExecutor {
             writer.write(getGates());
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Stargate.log(e);
             return true;
         }
         sender.sendMessage(String.format("Instance data saved to location '%s'", file.getAbsolutePath()));
@@ -88,7 +88,7 @@ public class CommandTrace implements CommandExecutor {
                     stringBuilder.append(lines.next()).append("\n");
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                Stargate.log(e);
             }
         }
         return stringBuilder.toString();

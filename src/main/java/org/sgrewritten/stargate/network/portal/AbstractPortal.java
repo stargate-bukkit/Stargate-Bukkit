@@ -534,7 +534,7 @@ public abstract class AbstractPortal implements RealPortal {
         try {
             Stargate.getStorageAPIStatic().setPortalMetaData(this, data, getStorageType());
         } catch (StorageWriteException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 
@@ -545,7 +545,7 @@ public abstract class AbstractPortal implements RealPortal {
         try {
             return Stargate.getStorageAPIStatic().getPortalMetaData(this, getStorageType());
         } catch (StorageReadException e) {
-            e.printStackTrace();
+            Stargate.log(e);
             return null;
         }
     }

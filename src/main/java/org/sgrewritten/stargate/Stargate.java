@@ -175,7 +175,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
                 try {
                   this.migrateConfigurationAndData();
                 } catch (IOException | InvalidConfigurationException | SQLException e) {
-                    e.printStackTrace();
+                    Stargate.log(e);
                 }
             }
 
@@ -198,7 +198,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             getServer().getPluginManager().disablePlugin(this);
         } catch (SQLException e) {
             getServer().getPluginManager().disablePlugin(this);
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 
@@ -460,7 +460,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         try {
             config.load(new File(this.getDataFolder(), "config.yml"));
         } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 
@@ -469,7 +469,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         try {
             config.save(new File(this.getDataFolder(), "config.yml"));
         } catch (IOException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 
@@ -517,7 +517,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             getServer().getPluginManager().disablePlugin(this);
         } catch (SQLException e) {
             getServer().getPluginManager().disablePlugin(this);
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 
@@ -581,6 +581,25 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             return;
         }
         servicesManager.unregisterAll(this);
+    }
+    
+    public static void log(Throwable throwable) {
+        if(throwable == null) {
+            return;
+        }
+        Stargate.log(Level.WARNING, throwable.getClass().getName() + (throwable.getMessage() == null ? "" : " : " + throwable.getMessage()));
+        Stargate.logError(throwable);
+        while(throwable.getCause() != null) {
+            throwable = throwable.getCause();
+            Stargate.log(Level.WARNING,"Caused by: " + throwable.getClass().getName() + (throwable.getMessage() == null ? "" : " : " + throwable.getMessage()));
+            logError(throwable);
+        }
+    }
+    
+    private static void logError(Throwable throwable) {
+        for(StackTraceElement element : throwable.getStackTrace()) {
+            Stargate.log(Level.WARNING, "\t at " + element.toString());
+        }
     }
 
     public static void log(Level priorityLevel, String message) {

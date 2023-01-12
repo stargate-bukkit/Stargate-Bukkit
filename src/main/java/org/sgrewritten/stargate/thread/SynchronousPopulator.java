@@ -121,7 +121,7 @@ public class SynchronousPopulator implements Runnable {
                     iterator.remove();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Stargate.log(e);
                 iterator.remove();
             }
         }

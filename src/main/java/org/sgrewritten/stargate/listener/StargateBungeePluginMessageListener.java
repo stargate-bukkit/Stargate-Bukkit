@@ -113,9 +113,9 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     stargateLogger.logMessage(Level.FINEST, "Received unknown message with a sub-channel: " + subChannel);
                     break;
             }
-        } catch (IOException ex) {
+        } catch (IOException e) {
             stargateLogger.logMessage(Level.WARNING, "[Stargate] Error receiving BungeeCord message");
-            ex.printStackTrace();
+            Stargate.log(e);
         }
     }
 }

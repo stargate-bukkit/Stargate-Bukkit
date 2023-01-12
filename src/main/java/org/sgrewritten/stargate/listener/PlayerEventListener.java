@@ -199,7 +199,7 @@ public class PlayerEventListener implements Listener {
                         byteArrayOutputStream.toByteArray());
                 return true;
             } catch (IOException e) {
-                e.printStackTrace();
+                Stargate.log(e);
                 return false;
             }
         });
@@ -220,7 +220,7 @@ public class PlayerEventListener implements Listener {
             try {
                 Stargate.getStorageAPIStatic().startInterServerConnection();
             } catch (StorageWriteException e) {
-                e.printStackTrace();
+                Stargate.log(e);
             }
             return true;
         }, Stargate::knowsServerName);

@@ -52,9 +52,9 @@ class LegacyVirtualPortal extends VirtualPortal {
             msgData.writeUTF(msg);
             Stargate.log(Level.FINEST, bao.toString());
             player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), bao.toByteArray());
-        } catch (IOException ex) {
+        } catch (IOException e) {
             Stargate.log(Level.WARNING, "[Stargate] Error sending BungeeCord teleport packet");
-            ex.printStackTrace();
+            Stargate.log(e);
             return;
         }
 
@@ -64,9 +64,9 @@ class LegacyVirtualPortal extends VirtualPortal {
             msgData.writeUTF(PluginChannel.PLAYER_CONNECT.getChannel());
             msgData.writeUTF(server);
             player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), bao.toByteArray());
-        } catch (IOException ex) {
+        } catch (IOException e) {
             Stargate.log(Level.WARNING, "[Stargate] Error sending BungeeCord connect packet");
-            ex.printStackTrace();
+            Stargate.log(e);
         }
 
     }

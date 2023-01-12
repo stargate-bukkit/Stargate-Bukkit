@@ -92,9 +92,9 @@ public class InterServerNetwork extends LocalNetwork {
                     Stargate.log(Level.FINER, String.format("Sending bungee message:\n%s", jsonMessage));
                     dataOutputStream.writeUTF(jsonMessage);
                     Bukkit.getServer().sendPluginMessage(stargate, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
-                } catch (IOException ex) {
+                } catch (IOException e) {
                     Stargate.log(Level.WARNING, "[Stargate] Error sending BungeeCord connect packet");
-                    ex.printStackTrace();
+                    Stargate.log(e);
                 }
                 return true;
             }
