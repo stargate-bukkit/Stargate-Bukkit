@@ -132,7 +132,7 @@ class NetworkedPortalTest {
     void deactivate() {
         portal.activate(player);
         portal.deactivate();
-        Assertions.assertNotEquals(player,portal.activator);
+        Assertions.assertNotEquals(player.getUniqueId(),portal.activator);
     }
     
     @Test
