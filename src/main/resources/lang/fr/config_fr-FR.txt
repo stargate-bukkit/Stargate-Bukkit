@@ -1,0 +1,114 @@
+# Headers
+headerVersion=Version : %version%
+headerDocumentation=Documentation: %link%
+headerReports=Rapports de bug : %link%
+headerPreferences=Préférences Générales
+headerBehaviour=Comportement des portails
+headerEconomy=Économie
+headerAesthetic=Réglages esthétiques
+headerTechnical=Technique
+subheaderCompat=Compatibilité
+subheaderLogging=Logging
+subheaderDebug=Debug
+descriptionCompatibility=Ces paramètres sont fournis pour améliorer les interactions SG avec d'autres plugins.
+descriptionLogging=Quelle quantité d'informations doit être envoyée à la console ?     
+descriptionDebug=Ces paramètres sont fournis pour aider les développeurs à diagnostiquer les problèmes avec ce plugin. 
+tagNote=NOTE
+
+# General Preferences
+languageL1=Quelle langue utilisera stargate lors de la communication avec vos utilisateurs ?
+languageL2=Valeurs supportées : %values%
+languageL4=Si le SG n'est pas encore disponible dans votre langue, veuillez envisager de devenir un traducteur:
+bungee.UsingBungeeL1=Êtes-vous connecté à un proxy compatible avec bungee ?
+bungee.usingBungeeL2=Mettez ceci à vrai si vous avez l'intention de construire des portes avec l'option 'u'.
+bungee.useRemoteDatabaseL1=Par défaut, StarGate utilise une base de données locale SQLite pour stocker ses données.
+bungee.useRemoteDatabaseL3=Si vous utilisez un grand serveur, nous vous recommandons d'utiliser une base de données distante.
+bungee.useRemoteDatabaseL4=Notez qu'une telle base de données est requise si vous avez l'intention de construire des portes avec l'option 'i'.
+bungee.remoteDatabaseSettings.L1=Ne s'applique que si useRemoteDatabase est vrai.
+bungee.remoteDatabaseSettings.driverL1=Quel pilote stargate devrait utiliser pour se connecter à votre base de données ?
+bungee.remoteDatabaseSettings.driverL2=Actuellement, ce sont les valeurs prises en charge: %values%
+bungee.remoteDatabaseSettings.addressL1=Où peut trouver votre base de données ?
+bungee.remoteDatabaseSettings.useSSLL1=Est-ce que stargate doit utiliser SSL lors de la connexion à votre base de données ?
+bungee.remoteDatabaseSettings.databaseL1=Le nom de la base de données StarGate sera utilisé pour stocker ses données. Il devrait déjà exister.
+bungee.remoteDatabaseSettings.databaseL2=Si vous utilisez Bungee, cela devrait être partagé entre toutes les instances de StarGate.
+bungee.remoteDatabaseSettings.usernameL1=Identifiants à utiliser pour la connexion :
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL1=Devrions-nous générer un fichier de configuration de base de données ('hikari.properties') dans votre dossier stargate ?
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL2=Cela ignorera tous les paramètres de la base de données distante ci-dessus en faveur du nouveau fichier !
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL4=Cela vous permet d'utiliser des fonctionnalités avancées de RDMS telles que lespool limits et les cache sizes, etc.
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL5=Une liste des paramètres disponibles peut être trouvée à ce lien: %link%.
+defaultGateNetworkL1=Quel réseau sera utilisé quand aucun n'a été spécifié ? (Longueur maximale de 12 caractères)
+defaultGateNetworkL3=Notez que cela s'applique principalement aux utilisateurs ayant le nœud "stargate.create.network".
+defaultGateNetworkL4=Généralement, ce nœud est donné au personnel (nous recommandons "stargate.create.personal" pour les utilisateurs).
+defaultTerminalNetworkL1=Quel réseau StarGate réservera pour les portails terminaux ('T') ?
+defaultTerminalNetworkL3=Généralement, cette fonctionnalité est utilisée pour faire un groupe de portails à l'apparition appelés « Terminal ».
+defaultTerminalNetworkL4=En utilisant ce réseau, les joueurs peuvent payer pour connecter leurs villes/bases/boutiques/etc. au terminal.
+defaultTerminalNetworkL6=Pas encore implémenté!
+defaultTerminalNetworkL7=Le support du terminal est prévu pour %version%!
+
+# Gate Behaviour
+networkLimitL1=Quel est le nombre maximum de portails qu'un seul réseau peut contenir ? (-1 pour illimité)
+handleVehiclesL1=Les véhicules et leurs passagers pourront-ils se déplacer à travers les portails StarGate ?
+handleVehiclesL2=minecarts, bateaux et mobs en selle = véhicules | joueurs & mobs = passagers
+handleLeashedCreaturesL1=Si un joueur se téléporte lorsqu'il est attaché avec une laisse a une entité, SG doit-il également téléporter l'entité?
+CheckPortalValidityL1=Le serveur va-t-il re-vérifier tous les portails existants au démarrage ?
+CheckPortalValidityL3=Cela vérifie que les portes attendues sont toutes deux présentes et utilisent une disposition valide.
+CheckPortalValidityL4=Conçu pour capturer les modifications du fichiers ".gate", les changements de monde et la régénération du terrain.
+destroyOnExplosionL1=Les StarGates peuvent-ils être cassés par une explosion ?
+destroyOnExplosionL2=[tnt, creepers, etc.]
+gateExitSpeedMultiplierL1=À quelle vitesse les joueurs devraient-ils être envoyés hors des portails?
+gateExitSpeedMultiplierL2=En quittant un portail, les joueurs conservent leur vitesse de déplacement originale, multipliée par cette valeur.
+
+# Economy
+useEconomyL1=StarGate interagira-t-il avec l'économie de votre serveur ?
+useEconomyL3=Pour ces fonctionnalités, StarGate dépend du plugin Vault.
+taxAccountL1=Votre serveur a-t-il un compte de taxe (économie fermée)?
+taxAccountL2=Dans l'affirmative, veuillez indiquer le nom de votre compte d'impôt (les fonds recueillis lui seront envoyés).
+taxAccountL3=Sinon, laissez cette section vide (l'argent collecté sera supprimé).
+TaxAccountL5=Notez que l'argent usageCost est exclu de ce système lorsque gateOwnerRevenue est vrai.
+creationCostL1=Combien sera-t-il déduit des comptes des joueurs lors de la création d'un nouveau portail?
+destructionCostL1=Combien sera-t-il déduit des comptes des joueurs lors de la destruction d'un portail existant?
+usageCostL1=Combien sera-t-il déduit des comptes des joueurs lors de l'utilisation d'une stargate pour se téléporter ?
+usageCostL2=Cela ne s'applique pas aux stargates avec l'option "f".
+gateOwnerRevenueL1=Les frais perçus pour le « coût d'utilisation » seront-ils payés à qui que ce soit qui a créé (possède) le stargate?
+gateOnwerRevenueL2=Si faux, les fonds recueillis seront supprimés (ou envoyés au compte de taxe).
+chargeFreeDestinationL1=« creationCost » sera-t-il toujours facturé si la destination de la nouvelle porte est une porte avec l'option « f » ?
+chargeFreeDestinationL2=Notez que cela s'applique uniquement aux portails fixes.
+
+# Aesthetic Tweaks
+signFormattingL1=Ces paramètres sont utilisés pour personnaliser les couleurs et les styles utilisés par SG lors de la mise en forme des panneau.
+signFormattingL2=Pour des options de style plus avancées, veuillez utiliser https://sgrewritten.org/extraColours
+signFormatting.color.L1=La couleur de texte par défaut sur tous les panneau de stargate (décalages de luminosité basés sur le matériau du panneau)
+signFormatting.color.L2=Une liste de couleurs valides peut être trouvée sur https://sgrewritten.org/colourTypes
+signFormatting.pointerBehaviourL1=SG met en évidence les destinations sélectionnées par les joueurs avec un symbole pointeur au fur et à mesure que les utilisateurs défilent.
+signFormatting.pointerBehaviourL2=Comment SG devrait-il styliser son symbole de pointeur ? (https://sgrewritten.org/pointerStyles)
+signFormatting.pointerBehaviourL3=Options :
+signFormatting.pointerBehaviourL4=1 : Aucun style (le pointeur sera la même couleur par défaut utilisée par le texte du panneau).
+signFormatting.pointerBehaviourL5=2: Par destination (le pointeur va se colorer selon la destination sélectionnée)
+signFormatting.pointerBehaviourL6=3 : Accentué (la luminosité du pointeur se contraste avec la couleur par défaut du panneau)
+
+#Technical
+portalFileL1=Lorsque useRemoteDatabase est faux, Stargate stocke toutes les données de son portail dans un flatfile.
+portalFileL2=Quel devrait être le nom de ce flatfile ?
+customRemoteDatabasePrefixL1=Par défaut, SG préfacera ses tables de base de données distantes avec `SG_`.
+customRemoteDatabasePrefixL2=Si cela entre en conflit avec un autre plugin, vous pouvez changer ce préfixe ici.
+loggingLevelL1=Valeurs possibles:
+loggingLevelL2=Déconseillé
+loggingLevelL3=Cacher tout. N'imprimer sur la console que si le plugin plante fatalement
+loggingLevelL4=Recommandé pour des implémentations de production grandes et bien testées
+loggingLevelL5=Masquer le comportement normal. Imprimer uniquement les problèmes potentiels.
+loggingLevelL6=Recommandé pour la plupart des implémentations de production
+loggingLevelL7=Imprimer le comportement normal. Imprime les événements du portail (utilisation, création, destruction, etc.)
+loggingLevelL8=Utile pour configurer les instances de préproduction
+loggingLevelL9=Imprimer les vérifications de permission. Imprime les vérifications effectuées pour déterminer si les joueurs peuvent effectuer une action.
+loggingLevelL10=Recommandé pour le dépannage de base
+loggingLevelL11=Imprimer les infos de débogage limitées. Imprime les événements généraux du plugin (chargement, désactivation, connexions, etc.).
+loggingLevelL12=Recommandé pour certains développeurs d'extensions.
+loggingLevelL13=Imprimer la plupart des informations de débogage. Imprime les messages détaillant la logique et le comportement du plugin.
+LoggingLevelL14=Utilisé uniquement par l'équipe de développement de StarGate
+LoggingLevelL15=Imprimer tout. Imprime littéralement tout, y compris de nombreuses 𝑠𝑡𝑎𝑐𝑘 𝑡𝑟𝑎𝑐𝑒𝑠.
+configVersionL1=Une valeur interne utilisée par le plugin pour déterminer l'ancienneté de votre configuration.
+configVersionL2=Je vous en prie, ne changez pas cela.
+
+
+#Admin
+translatedBy=Damiendier

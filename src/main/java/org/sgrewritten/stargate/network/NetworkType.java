@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.network;
 
 import java.util.Set;
 
+import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
@@ -9,34 +10,36 @@ public enum NetworkType {
     /**
      * A network that is directly linked to players
      */
-    PERSONAL(HighlightingStyle.CURLY_BRACKETS, PortalFlag.PERSONAL_NETWORK),
+    PERSONAL(HighlightingStyle.CURLY_BRACKETS, PortalFlag.PERSONAL_NETWORK, TranslatableMessage.PERSONAL_NETWORK),
     
     /**
      * The default network
      */
-    DEFAULT(HighlightingStyle.SQUARE_BRACKETS, PortalFlag.DEFAULT_NETWORK),
+    DEFAULT(HighlightingStyle.SQUARE_BRACKETS, PortalFlag.DEFAULT_NETWORK, TranslatableMessage.DEFAULT_NETWORK),
     
     /**
      * A customised network
      */
-    CUSTOM(HighlightingStyle.ROUNDED_BRACKETS, PortalFlag.CUSTOM_NETWORK), 
+    CUSTOM(HighlightingStyle.ROUNDED_BRACKETS, PortalFlag.CUSTOM_NETWORK, TranslatableMessage.CUSTOM_NETWORK), 
     
     /**
      * A terminal network
      */
-    TERMINAL(HighlightingStyle.DOUBLE_GREATER_LESSER_THAN, PortalFlag.TERMINAL_NETWORK);
+    TERMINAL(HighlightingStyle.DOUBLE_GREATER_LESSER_THAN, PortalFlag.TERMINAL_NETWORK, TranslatableMessage.TERMINAL_NETWORK);
 
     private HighlightingStyle style;
     private PortalFlag flag;
+    private TranslatableMessage terminology;
 
     /**
      * The network type as determined by the its given style and flags.
      * @param style <p>The applicable HighlightingStyle</p>
      * @param flag  <p>The applicable PortalFlag</p>
      */
-    private NetworkType(HighlightingStyle style, PortalFlag flag) {
+    private NetworkType(HighlightingStyle style, PortalFlag flag, TranslatableMessage terminology) {
         this.style = style;
         this.flag = flag;
+        this.terminology = terminology;
     }
     
     /**
@@ -53,6 +56,14 @@ public enum NetworkType {
      */
     public PortalFlag getRelatedFlag() {
         return flag;
+    }
+    
+    /**
+     * 
+     * @return <p> The localized word for this network type </p>
+     */
+    public TranslatableMessage getTerminology() {
+        return terminology;
     }
     
     /**

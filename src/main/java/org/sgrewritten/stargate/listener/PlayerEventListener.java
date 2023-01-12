@@ -13,6 +13,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.ConditionalDelayedAction;
 import org.sgrewritten.stargate.action.ConditionalRepeatedTask;
@@ -21,18 +22,20 @@ import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.manager.BungeeManager;
+import org.sgrewritten.stargate.manager.BlockLoggingManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.PluginChannel;
-import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.util.colors.ColorConverter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
@@ -43,12 +46,16 @@ public class PlayerEventListener implements Listener {
 
     private static long eventTime;
     private static PlayerInteractEvent previousEvent;
-    private LanguageManager languageManager;
-    private RegistryAPI registry;
+    private @NotNull LanguageManager languageManager;
+    private @NotNull BungeeManager bungeeManager;
+    private @NotNull RegistryAPI registry;
+    private @NotNull BlockLoggingManager loggingCompatability;
     
-    public PlayerEventListener(LanguageManager languageManager, RegistryAPI registry){
-        this.languageManager = languageManager;
-        this.registry = registry;
+    public PlayerEventListener(@NotNull LanguageManager languageManager,@NotNull RegistryAPI registry,@NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatability){
+        this.languageManager = Objects.requireNonNull(languageManager);
+        this.bungeeManager = Objects.requireNonNull(bungeeManager);
+        this.registry = Objects.requireNonNull(registry);
+        this.loggingCompatability = Objects.requireNonNull(loggingCompatability);
     }
 
     /**
@@ -93,6 +100,7 @@ public class PlayerEventListener implements Listener {
                 event.setUseInteractedBlock(Event.Result.ALLOW);
                 return;
             }
+            loggingCompatability.logPlayerInteractEvent(event);
             event.setUseInteractedBlock(Event.Result.DENY);
             if (portal.isOpenFor(player)) {
                 Stargate.log(Level.FINEST, "Player name=" + player.getName());
@@ -102,6 +110,7 @@ public class PlayerEventListener implements Listener {
         }
         if (ButtonHelper.isButton(blockMaterial)) {
             portal.onButtonClick(event);
+            loggingCompatability.logPlayerInteractEvent(event);
             event.setUseInteractedBlock(Event.Result.DENY);
         }
 
@@ -158,7 +167,7 @@ public class PlayerEventListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        Portal destination = BungeeHelper.pullFromQueue(player.getName());
+        Portal destination = bungeeManager.pullFromQueue(player.getName());
 
         if (destination != null) {
             destination.teleportHere(player, null);
@@ -190,7 +199,7 @@ public class PlayerEventListener implements Listener {
                         byteArrayOutputStream.toByteArray());
                 return true;
             } catch (IOException e) {
-                e.printStackTrace();
+                Stargate.log(e);
                 return false;
             }
         });
@@ -211,7 +220,7 @@ public class PlayerEventListener implements Listener {
             try {
                 Stargate.getStorageAPIStatic().startInterServerConnection();
             } catch (StorageWriteException e) {
-                e.printStackTrace();
+                Stargate.log(e);
             }
             return true;
         }, Stargate::knowsServerName);

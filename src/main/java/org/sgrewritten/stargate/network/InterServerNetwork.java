@@ -15,6 +15,7 @@ import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
+import org.sgrewritten.stargate.util.BungeeHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -87,19 +88,13 @@ public class InterServerNetwork extends LocalNetwork {
                     dataOutputStream.writeUTF(PluginChannel.FORWARD.getChannel());
                     dataOutputStream.writeUTF("ALL");
                     dataOutputStream.writeUTF(PluginChannel.NETWORK_CHANGED.getChannel());
-                    JsonObject jsonData = new JsonObject();
-                    jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(requestType.toString()));
-                    jsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getId()));
-                    jsonData.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(portal.getName()));
-                    jsonData.add(StargateProtocolProperty.SERVER.toString(), new JsonPrimitive(Stargate.getServerName()));
-                    jsonData.add(StargateProtocolProperty.PORTAL_FLAG.toString(), new JsonPrimitive(portal.getAllFlagsString()));
-                    jsonData.add(StargateProtocolProperty.OWNER.toString(), new JsonPrimitive(portal.getOwnerUUID().toString()));
-                    Stargate.log(Level.FINER, String.format("Sending bungee message:\n%s", jsonData));
-                    dataOutputStream.writeUTF(jsonData.toString());
+                    String jsonMessage = BungeeHelper.generateJsonMessage(portal,requestType);
+                    Stargate.log(Level.FINER, String.format("Sending bungee message:\n%s", jsonMessage));
+                    dataOutputStream.writeUTF(jsonMessage);
                     Bukkit.getServer().sendPluginMessage(stargate, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
-                } catch (IOException ex) {
+                } catch (IOException e) {
                     Stargate.log(Level.WARNING, "[Stargate] Error sending BungeeCord connect packet");
-                    ex.printStackTrace();
+                    Stargate.log(e);
                 }
                 return true;
             }

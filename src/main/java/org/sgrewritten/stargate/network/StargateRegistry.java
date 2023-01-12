@@ -9,6 +9,7 @@ import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.database.StorageAPI;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
@@ -20,6 +21,7 @@ import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.vectorlogic.VectorUtils;
 
@@ -28,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -52,11 +55,11 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void loadPortals() {
+    public void loadPortals(StargateEconomyAPI economyManager) {
         try {
-            storageAPI.loadFromStorage(this);
+            storageAPI.loadFromStorage(this,economyManager);
         } catch (StorageReadException e) {
-            e.printStackTrace();
+            Stargate.log(e);
             return;
         }
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
@@ -70,7 +73,7 @@ public class StargateRegistry implements RegistryAPI {
         try {
             storageAPI.removePortalFromStorage(portal, portalType);
         } catch (StorageWriteException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
 
         if (portal instanceof RealPortal) {
@@ -89,7 +92,7 @@ public class StargateRegistry implements RegistryAPI {
         try {
             storageAPI.savePortalToStorage(portal, portalType);
         } catch (StorageWriteException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 
@@ -242,19 +245,22 @@ public class StargateRegistry implements RegistryAPI {
         return networkMap;
     }
 
-    public void load() {
+    public void load(StargateEconomyAPI economyManager) {
         networkMap.clear();
         bungeeNetworkMap.clear();
         portalFromStructureTypeMap.clear();
-        this.loadPortals();
+        this.loadPortals(economyManager);
     }
     
     @Override
     public void rename(Network network, String newName) throws InvalidNameException, NameLengthException{
+        if(ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(newName))) {
+            throw new InvalidNameException("Can not rename the network to an UUID.");
+        }
         try {
             storageAPI.updateNetworkName(newName, newName, network.getStorageType());
         } catch (StorageWriteException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
         network.setID(newName);
         network.updatePortals();
@@ -265,14 +271,17 @@ public class StargateRegistry implements RegistryAPI {
         try {
             storageAPI.updatePortalName(newName, portal.getName(), portal.getNetwork().getId(), portal.getStorageType());
         } catch (StorageWriteException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
         portal.setName(newName);
         portal.getNetwork().updatePortals();
     }
 
     @Override
-    public void rename(Network network) {
+    public void rename(Network network) throws InvalidNameException {
+        if(ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(network.getId()))) {
+            throw new InvalidNameException("Can not rename the network as it's name is an UUID.");
+        }
         String newName = network.getId();
         int i = 1;
         try {
@@ -299,7 +308,7 @@ public class StargateRegistry implements RegistryAPI {
                 }
             }
         } catch (StorageReadException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 }

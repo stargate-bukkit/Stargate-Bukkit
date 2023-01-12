@@ -20,6 +20,7 @@ import java.util.logging.Level;
  */
 public class SynchronousPopulator implements Runnable {
 
+    private static final int MAX_FORCE_COUNTER = 20;
     private final List<SimpleAction> populatorQueue = new ArrayList<>();
     private final List<SimpleAction> bungeePopulatorQueue = new ArrayList<>();
     private final List<SimpleAction> addList = new ArrayList<>();
@@ -64,10 +65,20 @@ public class SynchronousPopulator implements Runnable {
     }
 
     /**
-     * Force all populator tasks to be performed
+     * Force all populator tasks to be performed and clear the tasks unable to be performed
      */
-    public void forceDoAllTasks() {
-        cycleQueues(true);
+    public void clear() {
+        populatorQueue.addAll(addList);
+        addList.clear();
+        bungeePopulatorQueue.addAll(bungeeAddList);
+        bungeeAddList.clear();
+        int counter = 0;
+        while(!hasCompletedAllTasks() && counter < MAX_FORCE_COUNTER ) {
+            cycleQueues(true);
+            counter++;
+        }
+        populatorQueue.clear();
+        bungeePopulatorQueue.clear();
     }
 
     /**
@@ -110,7 +121,7 @@ public class SynchronousPopulator implements Runnable {
                     iterator.remove();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Stargate.log(e);
                 iterator.remove();
             }
         }

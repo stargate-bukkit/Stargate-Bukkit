@@ -211,8 +211,27 @@ public enum TranslatableMessage {
     /**
      * The message to send if the player is teleporting past the worldborder
      */
-    OUTSIDE_WORLDBORDER("tpPastBorder");
-
+    OUTSIDE_WORLDBORDER("tpPastBorder"), 
+    
+    UNIMPLEMENTED_CONFLICT("unimplementedIConflict"), 
+    
+    UNIMPLEMENTED_INTERSERVER("unimplementedInterserver"),
+    
+    
+    // TERMINOLOGY
+    GATE("gate"),
+    
+    NETWORK("network"),
+    
+    FANCY_INTER_SERVER("interserver"),
+    
+    DEFAULT_NETWORK("default"),
+    
+    TERMINAL_NETWORK("terminal"),
+    
+    PERSONAL_NETWORK("personal"),
+    
+    CUSTOM_NETWORK("custom");
 
     /*
      * Available additional strings:

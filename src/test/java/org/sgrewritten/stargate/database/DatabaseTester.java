@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.logging.Level;
 
 /**
  * Test class for shared database tests to prevent duplication
@@ -102,7 +103,7 @@ public class DatabaseTester {
         try {
             testNetwork = new LocalNetwork("test",NetworkType.CUSTOM);
         } catch (InvalidNameException | NameLengthException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
         portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
@@ -122,7 +123,7 @@ public class DatabaseTester {
     }
 
     void addInterPortalTableTest() throws SQLException {
-        System.out.println("############## CREATE INTER PORTAL TABLE TEST ####################");
+        Stargate.log(Level.FINEST,"############## CREATE INTER PORTAL TABLE TEST ####################");
         finishStatement(generator.generateCreatePortalTableStatement(connection, StorageType.INTER_SERVER));
         try {
             finishStatement(generator.generateAddMetaToPortalTableStatement(connection, StorageType.INTER_SERVER));
@@ -172,7 +173,7 @@ public class DatabaseTester {
     }
 
     private void createPortalPositionTableTest(StorageType type) throws SQLException {
-        System.out.print("############## CREATE PORTAL POSITION TABLE TEST ####################");
+        Stargate.log(Level.FINEST,"############## CREATE PORTAL POSITION TABLE TEST ####################");
         finishStatement(generator.generateCreatePortalPositionTableStatement(connection, type));
         try {
             finishStatement(generator.generateAddMetaToPortalPositionTableStatement(connection, type));
@@ -205,12 +206,13 @@ public class DatabaseTester {
 
         int rows = 0;
         while (set.next()) {
-            System.out.print("Flag ");
+            Stargate.log(Level.FINER, "Flag ");
             rows++;
+            String msg = "";
             for (int i = 0; i < metaData.getColumnCount(); i++) {
-                System.out.print(metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
+                msg = msg + metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ";
             }
-            System.out.println();
+            Stargate.log(Level.FINER,msg);
         }
         Assertions.assertTrue(rows > 0);
     }
@@ -226,7 +228,7 @@ public class DatabaseTester {
     }
 
     void addInterPortalTest() {
-        System.out.println("InterServerTableName: " + nameConfig.getInterPortalTableName());
+        Stargate.log(Level.FINER,"InterServerTableName: " + nameConfig.getInterPortalTableName());
         for (RealPortal portal : interServerPortals.values()) {
             try {
                 Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, StorageType.INTER_SERVER));
@@ -254,18 +256,18 @@ public class DatabaseTester {
 
         for (RealPortal portal : portals.values()) {
             List<PortalPosition> portalPositions = fetchPortalPositions(portal, type);
-            System.out.println("---- Initial portalPositions ----");
+            Stargate.log(Level.FINER,"---- Initial portalPositions ----");
             for (PortalPosition fetchedPosition : portalPositions) {
-                System.out.printf("%s%n", fetchedPosition);
+                Stargate.log(Level.FINER,String.format("%s%n", fetchedPosition));
             }
             for (PortalPosition position : portalPositions) {
                 DatabaseHelper.runStatement(generator.generateRemovePortalPositionStatement(connection, type, portal, position));
                 List<PortalPosition> updatedPortalPositionList = fetchPortalPositions(portal, type);
-                System.out.println("---- fetched portalPositions ----");
+                Stargate.log(Level.FINER,"---- fetched portalPositions ----");
                 for (PortalPosition fetchedPosition : updatedPortalPositionList) {
-                    System.out.printf("%s, isEqualToRemovedPosition = %b%n", fetchedPosition, fetchedPosition.equals(position));
+                    Stargate.log(Level.FINER, String.format("%s, isEqualToRemovedPosition = %b%n", fetchedPosition, fetchedPosition.equals(position)));
                 }
-                System.out.printf("Removed position: %s%n", position);
+                Stargate.log(Level.FINER, String.format("Removed position: %s%n", position));
                 Assertions.assertFalse(updatedPortalPositionList.contains(position), "PortalPosition did not get properly removed");
                 Assertions.assertTrue(updatedPortalPositionList.size() < portalPositions.size(), "Nothing got removed");
                 PreparedStatement addPositionStatement = generator.generateAddPortalPositionStatement(connection, type);
@@ -325,7 +327,7 @@ public class DatabaseTester {
         while (set.next()) {
             rows++;
             for (int i = 0; i < metaData.getColumnCount(); i++) {
-                System.out.print(metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
+                Stargate.log(Level.FINER,metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
 
                 String portalName = set.getString("name");
                 Portal targetPortal = portals.get(portalName);
@@ -338,7 +340,7 @@ public class DatabaseTester {
                     Assertions.assertEquals(set.getString("serverName"), serverName);
                 }
             }
-            System.out.println();
+            Stargate.log(Level.FINER,"\n");
         }
         Assertions.assertEquals(portals.size(), rows);
     }
@@ -355,7 +357,6 @@ public class DatabaseTester {
     }
 
     void addAndRemovePortalFlags(StorageType type) throws SQLException {
-        System.out.println("---------- ADDING AND REMOVING FLAG RELATIONS");
         Map<String, RealPortal> portals = (type == StorageType.LOCAL) ? localPortals : interServerPortals;
         for (Portal portal : portals.values()) {
             PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection, type);
@@ -494,7 +495,7 @@ public class DatabaseTester {
         //By some reason the database is locked if I don't do this. Don't ask me why // Thorin
         connection.close();
         connection = database.getConnection();
-        System.out.println("################### CHANGE NAMES TEST ######################");
+        Stargate.log(Level.FINER,"################### CHANGE NAMES TEST ######################");
         Network testNetwork = null;
         String initialName = "intialName";
         String initialNetworkName = "intialname";
@@ -505,10 +506,10 @@ public class DatabaseTester {
         try {
             testNetwork = new LocalNetwork(initialNetworkName,NetworkType.CUSTOM);
         } catch (InvalidNameException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         }
         RealPortal portal = portalGenerator.generateFakePortal(world, testNetwork, initialName, portalType == StorageType.INTER_SERVER);
-        System.out.println(portal.getName() + ", " + portal.getNetwork().getId());
+        Stargate.log(Level.FINER,portal.getName() + ", " + portal.getNetwork().getId());
         this.portalDatabaseAPI.savePortalToStorage(portal, portalType);
         checkIfHas(table,initialName,initialNetworkName);
         this.portalDatabaseAPI.updateNetworkName(newNetName, initialNetworkName, portalType);
@@ -563,18 +564,19 @@ public class DatabaseTester {
      * @throws SQLException <p>If unable to get information about the table</p>
      */
     private static void printTableInfo(String tableName) throws SQLException {
-        System.out.println("Getting table info for: " + tableName);
+        Stargate.log(Level.FINER,"Getting table info for: " + tableName);
         String statementMsg = String.format(!isMySQL ? "pragma table_info('%s');" : "DESCRIBE %s", tableName);
 
         PreparedStatement tableInfoStatement = connection.prepareStatement(statementMsg);
         ResultSet infoResult = tableInfoStatement.executeQuery();
         ResultSetMetaData infoMetaData = infoResult.getMetaData();
         while (infoResult.next()) {
+            String msg = "";
             for (int i = 1; i < infoMetaData.getColumnCount() - 1; i++) {
-                System.out.print(
-                        infoMetaData.getColumnName(i) + " = " + infoResult.getObject(i) + ", ");
+                msg = msg +
+                        infoMetaData.getColumnName(i) + " = " + infoResult.getObject(i) + ", ";
             }
-            System.out.println();
+            Stargate.log(Level.FINEST, msg);
         }
     }
 
@@ -585,7 +587,7 @@ public class DatabaseTester {
      * @throws SQLException <p>If unable to delete one of the tables</p>
      */
     static void deleteAllTables(TableNameConfiguration nameConfig) throws SQLException {
-        System.out.println("Running database cleanup...");
+        Stargate.log(Level.FINER,"Running database cleanup...");
         List<String> tablesToRemove = new ArrayList<>();
         tablesToRemove.add(nameConfig.getServerInfoTableName());
         tablesToRemove.add(nameConfig.getPortalPositionTableName());
@@ -606,7 +608,7 @@ public class DatabaseTester {
                 finishStatement(connection.prepareStatement("DROP TABLE IF EXISTS " + table));
             }
         }
-        System.out.println("Finished database cleanup");
+        Stargate.log(Level.FINER,"Finished database cleanup");
     }
 
     /**

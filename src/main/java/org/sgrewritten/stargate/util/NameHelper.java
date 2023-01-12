@@ -1,6 +1,8 @@
 package org.sgrewritten.stargate.util;
 
 import net.md_5.bungee.api.ChatColor;
+
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 
@@ -42,6 +44,15 @@ public final class NameHelper {
             normalizedName = ChatColor.stripColor(normalizedName);
         }
         return normalizedName;
+    }
+    
+    /**
+     * Checks the length of the name
+     * @param name <p> The name to be checked </p>
+     * @return <p> If the name has a valid length </p>
+     */
+    public static boolean isValidName(String name) {
+        return name != null && !name.isEmpty() && name.length() < Stargate.getMaxTextLength();
     }
 
 }

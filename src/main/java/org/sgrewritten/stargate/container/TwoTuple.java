@@ -40,5 +40,10 @@ public class TwoTuple<K, T> {
     public T getSecondValue() {
         return value2;
     }
+    
+    @Override
+    public String toString() {
+        return "TwoTuple(" + value1.toString() + "," + value2.toString() + ")";
+    }
 
 }

@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.network;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
@@ -27,7 +28,7 @@ public interface RegistryAPI {
     /**
      * Loads all portals from storage
      */
-    void loadPortals();
+    void loadPortals(StargateEconomyAPI economyManager);
 
     /**
      * Removes the given portal from storage
@@ -222,6 +223,7 @@ public interface RegistryAPI {
     /**
      * Rename the network to a non clashing name
      * @param network   <p>The network to rename </p>
+     * @throws InvalidNameException <p> If the name is a uuid </p>
      */
-    void rename(Network network);
+    void rename(Network network) throws InvalidNameException;
 }

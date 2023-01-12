@@ -104,14 +104,7 @@ handleLeashedCreatures: true
 # 
 # This checks that the expected gates are both present and using a valid layout.
 # Designed to catch .gate file modifications, world changes, and terrain regeneration.
-# 
-# …««»»…  If you set this to true, you should ensure protectEntrance (below) is set to true!
-# “NOTE”  Otherwise, disallowed players, block updates, and snowmen can invalidate your portals!
 checkPortalValidity: true
-
-# SG protects gate 𝑓𝑟𝑎𝑚𝑒 materials; should it also protect gate 𝑎𝑝𝑒𝑟𝑡𝑢𝑟𝑒 (open/closed) materials?
-# ex. in nether.gate, should nether_portal be protected?
-protectEntrance: true
 
 # Can StarGates be broken via an explosion?
 #  [tnt, creepers, etc.]

@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.network.portal;
 
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.formatting.LanguageManager;
@@ -33,8 +34,8 @@ public class FixedPortal extends AbstractPortal {
      * @throws NameLengthException 
      */
     public FixedPortal(Network network, String name, String destinationName, Set<PortalFlag> flags, Gate gate,
-                       UUID ownerUUID, LanguageManager languageManager) throws InvalidNameException, NameLengthException {
-        super(network, name, flags, gate, ownerUUID,languageManager);
+                       UUID ownerUUID, LanguageManager languageManager,StargateEconomyAPI economyAPI) throws InvalidNameException, NameLengthException {
+        super(network, name, flags, gate, ownerUUID,languageManager,economyAPI);
         this.destinationName = destinationName;
         this.destination = network.getPortal(destinationName);
     }

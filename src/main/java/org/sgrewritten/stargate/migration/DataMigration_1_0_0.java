@@ -5,10 +5,12 @@ import org.bukkit.Server;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.container.TwoTuple;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.formatting.LanguageManager;
+import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.util.FileHelper;
@@ -29,10 +31,11 @@ public class DataMigration_1_0_0 extends DataMigration {
 
     private static HashMap<String, String> CONFIG_CONVERSIONS;
     private final Server server;
-    private final StargateRegistry registry;
+    private final RegistryAPI registry;
     private Map<String, Object> oldConfig;
     private final StargateLogger logger;
     private LanguageManager languageManager;
+    private StargateEconomyAPI economyManager;
 
     /**
      * Instantiates a new Ret-Com 1.0.0
@@ -41,7 +44,7 @@ public class DataMigration_1_0_0 extends DataMigration {
      * @param registry <p>The stargate registry to register loaded portals to</p>
      * @param logger   <p>The logger to use for logging any messages</p>
      */
-    public DataMigration_1_0_0(Server server, StargateRegistry registry, StargateLogger logger, LanguageManager languageManager) {
+    public DataMigration_1_0_0(Server server, RegistryAPI registry, StargateLogger logger, LanguageManager languageManager, StargateEconomyAPI economyManager) {
         if (CONFIG_CONVERSIONS == null) {
             loadConfigConversions();
         }
@@ -49,6 +52,7 @@ public class DataMigration_1_0_0 extends DataMigration {
         this.registry = registry;
         this.logger = logger;
         this.languageManager = languageManager;
+        this.economyManager = economyManager;
     }
 
     @Override
@@ -88,13 +92,13 @@ public class DataMigration_1_0_0 extends DataMigration {
             String defaultName = (String) oldConfig.get(LegacyDataHandler
                     .findConfigKey(new String[] { "gates.defaultGateNetwork", "default-gate-network" }, oldConfig));
 
-            migratePortals(portalFolderName, defaultName,languageManager);
+            migratePortals(portalFolderName, defaultName,languageManager,economyManager);
             moveFilesToDebugDirectory(portalFolderName);
         } catch (IOException | InvalidStructureException | InvalidNameException | TranslatableException e) {
-            e.printStackTrace();
+            Stargate.log(e);
         } catch (NullPointerException e) {
             Stargate.log(Level.SEVERE, "Invalid config: Could not get necessary config values to load portals from storage");
-            e.printStackTrace();
+            Stargate.log(e);
         }
     }
 
@@ -131,8 +135,8 @@ public class DataMigration_1_0_0 extends DataMigration {
      * @throws IOException               <p>If unable to load previous portals</p>
      * @throws TranslatableException 
      */
-    private void migratePortals(String portalFolder, String defaultNetworkName, LanguageManager languageManager) throws InvalidStructureException, InvalidNameException, IOException, TranslatableException {
-        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, registry, logger, defaultNetworkName,languageManager);
+    private void migratePortals(String portalFolder, String defaultNetworkName, LanguageManager languageManager, StargateEconomyAPI economyManager) throws InvalidStructureException, InvalidNameException, IOException, TranslatableException {
+        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, registry, logger, defaultNetworkName,languageManager,economyManager);
         if (portals == null) {
             logger.logMessage(Level.WARNING, "No portals migrated!");
         } else {
@@ -180,7 +184,7 @@ public class DataMigration_1_0_0 extends DataMigration {
             try {
                 Files.copy(gateFile, new File(debugGateDirectory, gateFile.getName()));
             } catch (IOException e) {
-                e.printStackTrace();
+                Stargate.log(e);
             }
         }
     }

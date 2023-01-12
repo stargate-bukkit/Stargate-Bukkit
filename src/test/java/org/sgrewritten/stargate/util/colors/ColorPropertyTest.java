@@ -1,8 +1,11 @@
 package org.sgrewritten.stargate.util.colors;
 
+import java.util.logging.Level;
+
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.sgrewritten.stargate.Stargate;
 
 class ColorPropertyTest {
 
@@ -19,7 +22,7 @@ class ColorPropertyTest {
                 Material.WARPED_WALL_SIGN
         };
         for (Material materialToCheckFor : materialsToCheckFor) {
-            System.out.print(materialToCheckFor);
+            Stargate.log(Level.FINEST, materialToCheckFor.toString());
             Assertions.assertNotNull(ColorProperty.getColorFromHue(materialToCheckFor, (short) 0, false));
             Assertions.assertNotNull(ColorProperty.getColorFromHue(materialToCheckFor, (short) 0, true));
         }

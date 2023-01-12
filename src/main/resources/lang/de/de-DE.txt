@@ -8,6 +8,7 @@ signNonFixedL3=um Tor zu benutzen
 signRandom=Willkürlich
 signDisconnected=Verbindung getrennt
 signTerminalL2=Zu verkaufen
+signPortalOwner=Im Besitz von
 
 # Gate Actions
 gateDestroy=Tor zerstört
@@ -15,6 +16,7 @@ gateCreateSpecified=Tor erstellt im %network% Netzwerk!
 gateCreatePersonal=Erstelle Tor im persönlichen Netzwerk.
 gateTerminalSold=Portal %gateName% in %terminalName% für %cost% gekauft.
 gateTerminalSale=Aufgelistetes Portal %gateName% zum Verkauf in %terminalName% für %cost%.
+gateCreateFallback=Ihr Tor im Netzwerk %network% konnte nicht erstellt werden. Probieren Sie stattdessen Ihr persönliches Netzwerk!
 
 # Gate Construction Problems
 faultNetwork=Du hast kein Zugang zu dieses Netzwerk!
@@ -25,6 +27,8 @@ faultFull=Dieses Netzwerk ist voll !
 faultWorldDeny=Du hast keinen Zugrand auf die Welt %world%!
 faultConflict=Dieses Tor steht im Widerspruch zu einem bestehenden Tor.
 faultFlag=Dir fehlt den zugang zu den %flags% markierungen; dein Portal wurde ohne diese markierungen erstehlt!
+faultControls=Das Design dieses Tores hat zu wenige Kontrollblöcke, um die ausgewählten Flaggen zu berücksichtigen!
+faultAddon=Ein Zusatzgerät hat Sie daran gehindert, das zu tun!
 
 # Bungee Problems
 bungeePerms=Du hast keine Berechtigung, Bungee-Tore zu erstellen!
@@ -40,6 +44,8 @@ bungeeTargetOffline=Der Proxy ist momentan nicht verfügbar; Bungee-Portale sind
 tpSuccess=Teleportiert!
 tpDestInvalid=Ungültiger Ziel!
 tpEmptyNet=Zielliste ist leer!
+tpOccupied=Ein anderer Spieler nutzt gerade dieses Portal; versuche es in wenigen Augenblicken nochmal!
+tpPastBorder=Ziel ist außerhalb einer Weltgrenze!
 
 # Access
 conflictPerms=Zugang verweigert!
@@ -49,6 +55,19 @@ conflictSpawn=Spawn-Chunks stören dieses Portal!
 ecoDeduct=%cost% abgezogen .
 ecoObtain=%cost% von StarGate %portal% erhalten!
 ecoInsolvent=Unzureichende Mittel
+
+#Terminology
+gate=Tor
+network=Netzwerk
+interserver=Interserver
+default=Standard
+terminal=Terminal
+personal=Persönlich
+
+#Temporary
+unimplementedInterserver=Interserver-Tore befinden sich noch in aktiver Entwicklung und sind nur teilweise implementiert.
+unimplementedIConflict=Das %name% %type1% Netzwerk wurde vorübergehend vom %name% %type2% Netzwerk getrennt, wird aber bald zusammengefügt
+unimplementedFlag=Die %flags% Flags sind noch nicht implementiert.
 
 #Admin
 adminReload=Konfiguration wurde neu geladen!

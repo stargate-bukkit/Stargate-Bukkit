@@ -203,12 +203,6 @@ public enum ConfigurationOption {
             OptionDataType.BOOLEAN, false),
 
     /**
-     * Protect the entrance of a portal from entity based events
-     */
-    PROTECT_ENTRANCE("protectEntrance", "Protect the entrance of a portal from entity based events", true,
-            OptionDataType.BOOLEAN, false),
-
-    /**
      * Remember the last destination a networked portal was connected to
      */
     REMEMBER_LAST_DESTINATION("rememberLastDestination",

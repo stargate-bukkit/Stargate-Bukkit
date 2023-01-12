@@ -8,6 +8,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.event.StargateAccessEvent;
 import org.sgrewritten.stargate.event.StargateActivateEvent;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -53,8 +54,8 @@ public class NetworkedPortal extends AbstractPortal {
      * @throws NameLengthException 
      */
     public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID,
-                           LanguageManager languageManager) throws InvalidNameException, NameLengthException {
-        super(network, name, flags, gate, ownerUUID,languageManager);
+                           LanguageManager languageManager,StargateEconomyAPI economyAPI) throws InvalidNameException, NameLengthException {
+        super(network, name, flags, gate, ownerUUID,languageManager,economyAPI);
     }
 
     @Override

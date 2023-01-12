@@ -16,6 +16,7 @@ import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
@@ -24,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BooleanSupplier;
 import java.util.logging.Level;
 
 /**
@@ -187,4 +189,18 @@ public final class NetworkCreationHelper {
         return Bukkit.getOfflinePlayer(playerName).getUniqueId();
     }
 
+    public static Network getInterserverLocalConflict(Network network, RegistryAPI registry) {
+        String[] idsToCompare = { network.getName() , getPlayerUUID(network.getName()).toString()};
+
+        for (String idToCompare : idsToCompare) {
+            if (network.getStorageType() == StorageType.LOCAL) {
+                if (registry.getBungeeNetworkMap().containsKey(idToCompare)) {
+                    return registry.getBungeeNetworkMap().get(idToCompare);
+                }
+            } else if (registry.getNetworkMap().containsKey(idToCompare)) {
+                return registry.getNetworkMap().get(idToCompare);
+            }
+        }
+        return null;
+    }
 }

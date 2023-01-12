@@ -23,6 +23,7 @@ import org.sgrewritten.stargate.database.SQLDatabase;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.database.StorageAPI;
+import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.StargateRegistry;
@@ -60,6 +61,7 @@ public class DataMigratorTest {
 
     @BeforeAll
     public static void setUp() throws IOException, InvalidConfigurationException, SQLException {
+        Stargate.setLogLevel(Level.WARNING);
         String configFolder = "src/test/resources/configurations";
         configTestMap = getSettingTestMaps();
         configFiles = new File[configTestMap.size()];
@@ -147,12 +149,12 @@ public class DataMigratorTest {
         Map<String,String> fileMovements = new HashMap<>();
         fileMovements.put("plugins/Stargate/debug/legacy_portals/epicknarvik.db", "src/test/resources/oldsaves/epicknarvik/epicknarvik.db");
         fileMovements.put("plugins/Stargate/debug/legacy_portals/lclo.db", "src/test/resources/oldsaves/lclo/lclo.db");
-        fileMovements.put("plugins\\Stargate\\debug\\legacy_portals\\pseudoknigth.db", "src\\test\\resources\\oldsaves\\pseudoknight\\pseudoknigth.db");
+        fileMovements.put("plugins/Stargate/debug/legacy_portals/pseudoknigth.db", "src/test/resources/oldsaves/pseudoknight/pseudoknigth.db");
         
         for(String fileToMoveName : fileMovements.keySet()) {
             File fileToMove = new File(fileToMoveName);
             File destination = new File(fileMovements.get(fileToMoveName));
-            System.out.println(destination.getAbsolutePath());
+            Stargate.log(Level.FINER,destination.getAbsolutePath());
             destination.getParentFile().mkdirs();
             fileToMove.renameTo(destination);
         }
@@ -160,6 +162,7 @@ public class DataMigratorTest {
         if (sqlDatabaseFile.exists() && !sqlDatabaseFile.delete()) {
             throw new IOException("Unable to remove database file");
         }
+        Stargate.setLogLevel(Level.INFO);
     }
 
     @Test
@@ -170,7 +173,7 @@ public class DataMigratorTest {
             if (oldConfigFile.exists() && !oldConfigFile.delete()) {
                 throw new IOException("Unable to delete old config file");
             }
-            DataMigrator dataMigrator = new DataMigrator(configFile, logger, server, registry, new FakeLanguageManager());
+            DataMigrator dataMigrator = new DataMigrator(configFile, logger, server, registry, new FakeLanguageManager(), new FakeEconomyManager());
             if (!configFile.renameTo(oldConfigFile)) {
                 throw new IOException("Unable to rename existing config for backup");
             }
@@ -203,7 +206,7 @@ public class DataMigratorTest {
     @Order(2)
     public void doOtherRefactorCheck() {
         for (String key : migratorMap.keySet()) {
-            System.out.printf("####### Performing misc. refactoring based on the config-file %s%n", key);
+            Stargate.log(Level.FINE,String.format("####### Performing misc. refactoring based on the config-file %s%n", key));
             DataMigrator dataMigrator = migratorMap.get(key);
             dataMigrator.run();
         }
@@ -233,10 +236,11 @@ public class DataMigratorTest {
         int count = 0;
         while (set.next()) {
             count++;
+            String msg = "";
             for (int i = 1; i <= meta.getColumnCount(); i++) {
-                System.out.print(meta.getColumnLabel(i) + ":" + set.getObject(i) + ",");
+                msg = msg + meta.getColumnLabel(i) + ":" + set.getObject(i) + ",";
             }
-            System.out.println();
+            Stargate.log(Level.FINE, msg);
         }
         conn.close();
         Assertions.assertTrue(count > 0, "There was no portals loaded from old database");
@@ -248,7 +252,7 @@ public class DataMigratorTest {
         for (String key : configTestMap.keySet()) {
             Map<String, String> testMap = configTestMap.get(key).getSecondValue();
 
-            System.out.printf("--------- Checking portal loaded from %s configuration%n", key);
+            Stargate.log(Level.FINE,String.format("--------- Checking portal loaded from %s configuration%n", key));
             for (String portalName : testMap.keySet()) {
                 String netName = testMap.get(portalName);
                 Network net = registry.getNetwork(netName, false);

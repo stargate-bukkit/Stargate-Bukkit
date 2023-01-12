@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.FakeStargateLogger;
@@ -31,7 +32,9 @@ import org.sgrewritten.stargate.action.SimpleAction;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
+import be.seeseemelk.mockbukkit.entity.HorseMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import be.seeseemelk.mockbukkit.entity.PoweredMinecartMock;
 
 class TeleporterTest {
 
@@ -43,11 +46,12 @@ class TeleporterTest {
     static WorldMock world;
     private static Location destination;
     private @NotNull
-    static Entity vehicle;
+    static HorseMock horse;
     private static Teleporter teleporter;
     private static FakePortalGenerator fakePortalGenerator;
     private static StargateRegistry registry;
     private static SynchronousPopulator populator;
+    private static PoweredMinecartMock furnaceMinecart;
     private static final File testGatesDir = new File("src/test/resources/gates");
     
     @BeforeAll
@@ -61,8 +65,8 @@ class TeleporterTest {
         registry = new StargateRegistry(new FakeStorage());
         
         
-        vehicle = world.spawnEntity(new Location(world,0,0,0), EntityType.HORSE);
-        vehicle.addPassenger(player);
+        horse = (HorseMock) world.spawnEntity(new Location(world,0,0,0), EntityType.HORSE);
+        horse.addPassenger(player);
         Network network = new LocalNetwork("custom", NetworkType.CUSTOM);
         RealPortal origin = fakePortalGenerator.generateFakePortal(world, network, "origin", false);
         RealPortal destination = fakePortalGenerator.generateFakePortal(world, network, "destination", false);
@@ -70,6 +74,7 @@ class TeleporterTest {
         teleporter = new Teleporter(destination, origin, destination.getGate().getFacing(),
                 origin.getGate().getFacing(), 0, "empty", new FakeLanguageManager(), new FakeEconomyManager(),
                 (action) -> populator.addAction(action));
+        furnaceMinecart = (PoweredMinecartMock) world.spawnEntity(new Location(world,0,0,0), EntityType.MINECART_FURNACE);
 
     }
     
@@ -80,9 +85,19 @@ class TeleporterTest {
 
     @Test
     public void teleport() {
-        teleporter.teleport(vehicle);
+        teleporter.teleport(horse);
         while(!populator.hasCompletedAllTasks()) {
             populator.run();
         }
+        Assertions.assertTrue(horse.hasTeleported());
+    }
+    
+    @Test
+    public void teleport_FurnaceMinecart() {
+        teleporter.teleport(furnaceMinecart);
+        while(!populator.hasCompletedAllTasks()) {
+            populator.run();
+        }
+        Assertions.assertTrue(furnaceMinecart.hasTeleported());
     }
 }

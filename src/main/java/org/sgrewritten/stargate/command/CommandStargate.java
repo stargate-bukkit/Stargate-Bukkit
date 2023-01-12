@@ -34,7 +34,7 @@ public class CommandStargate implements CommandExecutor {
                 case "reload":
                     return new CommandReload(languageManager).onCommand(commandSender, command, s, args);
                 case "trace":
-                    return new CommandTrace(languageManager).onCommand(commandSender, command, s, args);
+                    return new CommandTrace(Stargate.getInstance()).onCommand(commandSender, command, s, args);
                 case "version":
                     break;
                 default:

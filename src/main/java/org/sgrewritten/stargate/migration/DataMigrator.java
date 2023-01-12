@@ -6,7 +6,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.formatting.LanguageManager;
+import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StargateRegistry;
 
 import java.io.File;
@@ -35,10 +37,10 @@ public class DataMigrator {
      * @throws InvalidConfigurationException <p>If unable to load the given configuration file</p>
      */
     public DataMigrator(File configurationFile, StargateLogger logger, Server server,
-                        StargateRegistry registry,LanguageManager languageManager) throws IOException, InvalidConfigurationException {
+                        RegistryAPI registry,LanguageManager languageManager, StargateEconomyAPI economyManager) throws IOException, InvalidConfigurationException {
         //WARNING: Migrators must be defined from oldest to newest to prevent partial migration
         MIGRATIONS = new DataMigration[]{
-                new DataMigration_1_0_0(server, registry, logger,languageManager),
+                new DataMigration_1_0_0(server, registry, logger,languageManager,economyManager),
                 new DataMigration_1_0_12()
         };
 

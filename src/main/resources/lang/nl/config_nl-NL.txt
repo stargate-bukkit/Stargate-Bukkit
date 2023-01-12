@@ -1,0 +1,114 @@
+# Headers
+headerVersion=Versie: %version%
+headerDocumentation=Documentatie: %link%
+headerReports=Foutrapportages: %link%
+headerPreferences=Algemene voorkeuren
+headerBehaviour=Poort gedrag
+headerEconomy=Economie
+headerAesthetic=Aesthetische aanpassingen
+headerTechnical=Technisch
+subheaderCompat=Compatibiliteit
+subheaderLogging=Logboekregistratie
+subheaderDebug=Fout opsporen
+descriptionCompatibility=Deze instellingen worden verstrekt om SG interacties met andere plugins te verbeteren.
+descriptionLogging=Hoeveel informatie moet stargate naar de console verzenden?     
+descriptionDebug=Deze instellingen worden verstrekt om ontwikkelaars te helpen problemen met deze plugin te diagnosticeren. 
+tagNote=Opmerking
+
+# General Preferences
+languageL1=Welke taal zal stargate gebruiken om met uw gebruikers te communiceren?
+languageL2=Ondersteunde waardes: %values%
+languageL4=Als SG nog niet beschikbaar is in jouw taal, overweeg dan om een vertaler te worden:
+bungee.UsingBungeeL1=Ben je verbonden met een bungee compatibele proxie?
+bungee.usingBungeeL2=Zet dit op waar als je poorten wilt gaan bouwen met de 'u'-vlag.
+bungee.useRemoteDatabaseL1=Als standaard gebruikt StarGate een lokale SQLite database om de gegevens op te slaan.
+bungee.useRemoteDatabaseL3=Als u een grote server draait, raden wij u aan een externe database te gebruiken.
+bungee.useRemoteDatabaseL4=Houd er rekening mee dat een dergelijke databank nodig is als je poorten met de vlag 'i' wilt bouwen.
+bungee.remoteDatabaseSettings.L1=Alleen toepasbaar als useRemoteDatabase waar is.
+bungee.remoteDatabaseSettings.driverL1=Welk stuurprogramma moet stargate gebruiken om verbinding te maken met uw database?
+bungee.remoteDatabaseSettings.driverL2=Deze worden momenteel ondersteund: %values%
+bungee.remoteDatabaseSettings.addressL1=Waar kan stargate je database vinden?
+bungee.remoteDatabaseSettings.useSSLL1=Moet stargate SSL gebruiken bij het verbinden met je database?
+bungee.remoteDatabaseSettings.databaseL1=De naam van de database die StarGate zal gaan gebruiken om de gegevens in op te slaan. Moet al bestaan.
+bungee.remoteDatabaseSettings.databaseL2=Als u Bungee gebruikt, moet dit worden gedeeld over alle StarGate instanties.
+bungee.remoteDatabaseSettings.usernameL1=Inloggegevens om te gebruiken voor de verbinding:
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL1=Moeten we een database configuratie bestand ('hikari.properties') genereren in je stargate map?
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL2=Dit zal alle remoteDatabaseInstellingen hierboven negeren ten gunste van het nieuwe bestand.
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL4=Hiermee kun je gebruik maken van geavanceerde RDMS functies, zoals pool limieten, cache groottes, enz.
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL5=Een lijst met beschikbare instellingen kan worden gevonden op deze link: %link%.
+defaultGateNetworkL1=Welk netwerk zal worden gebruikt wanneer er geen is opgegeven? (Maximale lengte 12 tekens)
+defaultGateNetworkL3=Houd er rekening mee dat dit primair van toepassing is op gebruikers met de stargate.create.network knoop
+defaultGateNetworkL4=Over het algemeen wordt deze knoop aan medewerkers gegeven (wij raden stargate.create.personal voor gebruikers aan).
+defaultTerminalNetworkL1=Welk netwerk zal StarGate reserveren voor terminal ('T') portalen?
+defaultTerminalNetworkL3=In het algemeen wordt deze functie gebruikt om een groep portalen in de spawn bekend te maken als een 'Terminal'.
+defaultTerminalNetworkL4=Met behulp van dit netwerk kunnen spelers tegen betaling hun steden/basissen/winkels/etc. met de terminal verbinden.
+defaultTerminalNetworkL6=Nog niet geïmplementeerd.
+defaultTerminalNetworkL7=Terminalondersteuning is gepland voor %version%!
+
+# Gate Behaviour
+networkLimitL1=Wat is het maximale aantal poorten dat een enkel netwerk mag bevatten? (-1 voor onbeperkt)
+handleVehiclesL1=Zullen voertuigen en hun passagiers via de StarGate portalen kunnen reizen?
+handleVehiclesL2=Mijnkarretjes, boten, & gezadelde mobs = voertuigen | spelers & mobs = passagiers
+handleLeashedCreaturesL1=Als een speler teleporteert terwijl hij aan een entiteit is gekoppeld via een leiband, moet SG de entiteit dan ook teleporteren?
+CheckPortalValidityL1=Zal de server alle bestaande portalen opnieuw verifiëren bij het opstarten?
+CheckPortalValidityL3=Dit controleert of de verwachte poorten zowel aanwezig zijn als een geldige lay-out gebruiken.
+CheckPortalValidityL4=Ontworpen om .gate bestandswijzigingen, veranderingen in de wereld en terrein regeneratie op te merken
+destroyOnExplosionL1=Kunnen StarGates gebroken worden door een explosie?
+destroyOnExplosionL2=[tnt, creepers, enz.]
+gateExitSpeedMultiplierL1=Met welke snelheid moeten spelers uit de portalen worden gestuurd?
+gateExitSpeedMultiplierL2=Bij het verlaten van een poort, behouden spelers hun oorspronkelijke bewegingssnelheid, vermenigvuldigd met deze waarde.
+
+# Economy
+useEconomyL1=Zal StarGate interactie hebben met de economie van uw server?
+useEconomyL3=Voor deze functies is StarGate afhankelijk van de Vault plugin.
+taxAccountL1=Heeft jouw server een belastingrekening (gesloten economie)?
+taxAccountL2=Als dit het geval is, geef dan de naam van je belastingrekening op (het geïnde geld wordt er naartoe gestuurd).
+taxAccountL3=Zo niet, laat deze sectie leeg (het geïnde geld wordt verwijderd).
+TaxAccountL5=Let op dat usageCost geld is uitgesloten van dit systeem wanneer gateOwnerRevenue waar is.
+creationCostL1=Hoeveel wordt er afgetrokken van de accounts van spelers, bij het maken van een nieuwe poort?
+destructionCostL1=Hoeveel zal van de rekeningen van de spelers worden afgetrokken bij het vernietigen van een bestaande poort?
+usageCostL1=Hoeveel zal worden afgetrokken van spelers rekening wanneer zij een stargate gebruiken om te teleporteren?
+usageCostL2=Dit geldt niet voor stargates met de 'f'-vlag.
+gateOwnerRevenueL1=Zullen vergoedingen die worden geïnd voor 'usecost' worden betaald aan degene die de toepasselijke stargate heeft gemaakt (eigenaar is)?
+gateOnwerRevenueL2=Indien onjuist, wordt het verzamelde bedrag verwijderd (of verstuurd naar de belasting rekening).
+chargeFreeDestinationL1=Zal er nog steeds ‘creationCost’ in rekening worden gebracht als de bestemming van de nieuwe poort een poort is met de ‘f’-vlag?
+chargeFreeDestinationL2=Let op dat dit alleen voor vaste poorten geldt.
+
+# Aesthetic Tweaks
+signFormattingL1=Deze instellingen worden gebruikt voor het aanpassen van de kleuren en stijlen die gebruikt worden door SG bij het formatteren van borden.
+signFormattingL2=Gebruik https://sgrewritten.org/extraColours voor meer geavanceerde stijlopties
+signFormatting.color.L1=De standaard tekstkleur op alle stargate borden (helderheid kan veranderen op basis van bordmateriaal)
+signFormatting.color.L2=Een lijst met geldige kleuren kan worden gevonden op https://sgrewritten.org/colourTypes
+signFormatting.pointerBehaviourL1=SG markeert de geselecteerde bestemming van een speler met een pointer symbool als gebruikers scrollen.
+signFormatting.pointerBehaviourL2=Hoe moet SG zijn pointer symbool stijlen? (https://sgrewritten.org/pointerStyles)
+signFormatting.pointerBehaviourL3=Opties:
+signFormatting.pointerBehaviourL4=1: Geen opmaak (de aanwijzer zal dezelfde standaardkleur hebben die gebruikt wordt voor de tekst van het bord).
+signFormatting.pointerBehaviourL5=2: Bestemmingstype (de aanwijzer zal kleurcode gebaseerd op de geselecteerde bestemming gebruiken)
+signFormatting.pointerBehaviourL6=3: Geaccentueerd (aanwijzer helderheid zal verschuiven naar contrast met de standaardkleur van het bord)
+
+#Technical
+portalFileL1=Wanneer useRemoteDatabase onwaar is, slaat Stargate al zijn poortgegevens op in een flatfile.
+portalFileL2=Hoe moet dit flatfile genoemd worden?
+customRemoteDatabasePrefixL1=Standaard zal SG zijn externe databasetabellen voorafgaan met `SG_`.
+customRemoteDatabasePrefixL2=Als dit conflicteert met een andere plugin, kunt je dat voorvoegsel hier wijzigen.
+loggingLevelL1=Mogelijke waarden:
+loggingLevelL2=Niet aanbevolen
+loggingLevelL3=Verberg alles. Stuur alleen naar de console als de plugin fataal crasht
+loggingLevelL4=Aanbevolen voor grote en goed geteste productie-implementaties
+loggingLevelL5=Verberg normaal gedrag. Toon alleen mogelijke problemen.
+loggingLevelL6=Aanbevolen voor de meeste productie implementaties
+loggingLevelL7=Print normaal gedrag. Print poort evenementen (gebruik, creatie, destructie, etc.)
+loggingLevelL8=Handig voor het configureren van preproductie-instanties
+loggingLevelL9=Print machtiging controles. Print controles die gemaakt zijn om vast te stellen of spelers een actie kunnen uitvoeren
+loggingLevelL10=Aanbevolen voor eenvoudige probleemoplossing
+loggingLevelL11=Beperkte foutopsporingsinformatie afdrukken. Print algemene gebeurtenissen van een plugin (laden, uitschakelen, verbindingen, etc.)
+loggingLevelL12=Aanbevolen voor sommige add-on-ontwikkelaars.
+loggingLevelL13=Print de meeste foutmelding-info. Print gedetailleerde berichten die de logica en het gedrag van de plugin beschrijven.
+LoggingLevelL14=Wordt alleen gebruikt door StarGate's kern ontwikkelingsteam
+LoggingLevelL15=Alles afdrukken. Print letterlijk alles, inclusief vele stapelsporen
+configVersionL1=Een interne waarde die gebruikt wordt door de plugin om te bepalen hoe oud je configuratie is.
+configVersionL2=Wijzig dit alstublieft niet.
+
+
+#Admin
+translatedBy=Matriarch!

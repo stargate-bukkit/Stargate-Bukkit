@@ -6,12 +6,20 @@ import be.seeseemelk.mockbukkit.entity.PlayerMock;
 
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sgrewritten.stargate.FakeStargate;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.manager.PermissionManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.LocalNetwork;
@@ -22,39 +30,44 @@ import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class NetworkCreationHelperTest {
-    private static PlayerMock player;
-    private static RegistryAPI registry;
-    private static PermissionManager permissionManager;
-    private static String[] emptyNames;
-    private static FakeStargate plugin;
-    private static ServerMock server;
+    private PlayerMock player;
+    private RegistryAPI registry;
+    private PermissionManager permissionManager;
+    private String[] emptyNames;
+    private FakeStargate plugin;
+    private ServerMock server;
     
     private static final String CENTRAL = "central";
+    private static final String NETWORK1 = "network1";
+    private static final String NETWORK2 = "network2";
     private static final String INVALID_NAME = "invalid";
     private static final String NAME = "name";
+    private static final String PLAYER_NAME = "playerName";
 
-    @BeforeAll
-    static void setup() {
+    @BeforeEach
+    void setup() {
         server = MockBukkit.mock();
-        player = new PlayerMock(server, "playerName");
+        player = new PlayerMock(server, PLAYER_NAME);
         plugin = (FakeStargate) MockBukkit.load(FakeStargate.class);
         permissionManager = new StargatePermissionManager(player, new FakeLanguageManager());
         server.addPlayer(player);
+        server.addPlayer("central");
         registry = new StargateRegistry(new FakeStorage());
-        
         emptyNames = new String[]{"", " ", "  "};
     }
     
-    @AfterAll
-    static void teardown() {
+    @AfterEach
+    void teardown() {
         MockBukkit.unmock();
     }
 
     @Test
-    public void emptyDefinitionTest() throws InvalidNameException, TranslatableException {
-        System.out.println("############### EMPTY TEST #############");
+    void emptyDefinitionTest() throws InvalidNameException, TranslatableException {
+        Stargate.log(Level.FINE,"############### EMPTY TEST #############");
         Assertions.assertTrue(player.getUniqueId() != null);
         for(String emptyName : emptyNames) {
             Network personalNetwork = NetworkCreationHelper.selectNetwork(emptyName, permissionManager, player, new HashSet<>(), registry);
@@ -73,21 +86,30 @@ class NetworkCreationHelperTest {
 
     
     @Test
-    public void explicitDefinitionTest() throws InvalidNameException, TranslatableException{
-        System.out.println("############### EXPLICIT TEST #############");
+    void explicitDefinitionTest_Default() throws InvalidNameException, TranslatableException{
+        Stargate.log(Level.FINE,"############### EXPLICIT TEST #############");
         Network defaultNetwork = NetworkCreationHelper.selectNetwork(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(CENTRAL), permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.DEFAULT, defaultNetwork.getType());
         Assertions.assertEquals(CENTRAL, defaultNetwork.getName());
-
-        /*Assertions.assertThrows(NameErrorException.class, () -> {
-            NetworkCreationHelper.selectNetwork(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(INVALID_NAME), permissionManager, player, new HashSet<>(), registry);
-        });
-        */
-        String highlightedPlayername = NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(player.getName());
+    }
+    
+    @ParameterizedTest
+    @ValueSource(strings = {PLAYER_NAME,CENTRAL})
+    void explicitDefinitionTest_Personal(String name) throws InvalidNameException, TranslatableException{
+        String highlightedPlayername = NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(name);
         Network personalNetwork = NetworkCreationHelper.selectNetwork(highlightedPlayername, permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.PERSONAL, personalNetwork.getType());
-        Assertions.assertEquals(player.getName(), personalNetwork.getName());
-        
+        if(name.equals(CENTRAL)) {
+            // Name should not be "central", as it conflicts with the default network name
+            Assertions.assertNotEquals(CENTRAL, personalNetwork.getName());
+            Assertions.assertNotNull(personalNetwork.getName());
+        } else {
+            Assertions.assertEquals(name, personalNetwork.getName());
+        }
+    }
+    
+    @Test
+    void explicitDefinitionTest_Custom() throws InvalidNameException, TranslatableException{
         String customNetworkName = NetworkType.CUSTOM.getHighlightingStyle().getHighlightedName(NAME);
         Network customNetwork = NetworkCreationHelper.selectNetwork(customNetworkName, permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.CUSTOM, customNetwork.getType());
@@ -96,12 +118,11 @@ class NetworkCreationHelperTest {
         Network changedNameFromDefault = NetworkCreationHelper.selectNetwork(NetworkType.CUSTOM.getHighlightingStyle().getHighlightedName(CENTRAL), permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.CUSTOM, changedNameFromDefault.getType());
         Assertions.assertEquals(CENTRAL + 1, changedNameFromDefault.getName());
-    
     }
     
     @Test
-    public void implicitDefinitionTest() throws InvalidNameException, TranslatableException{
-        System.out.println("############### IMPLICIT TEST #############");
+    void implicitDefinitionTest() throws InvalidNameException, TranslatableException{
+        Stargate.log(Level.FINE,"############### IMPLICIT TEST #############");
         String name = "name";
         HighlightingStyle[] values = HighlightingStyle.values();
         // Affirm default network exist
@@ -143,5 +164,37 @@ class NetworkCreationHelperTest {
             Assertions.assertEquals(NetworkType.CUSTOM, customNetworkV2.getType());
             Assertions.assertEquals(customNameV2, customNetworkV2.getName());
         }
+    }
+    
+    @ParameterizedTest
+    @EnumSource(value = NetworkType.class, names = {"CUSTOM", "PERSONAL"})
+    void isInterserverToLocalConflictTest(NetworkType type) throws NameLengthException, NameConflictException, InvalidNameException {
+        
+        String network1id = NETWORK1;
+        String network2id = NETWORK2;
+        String invertedNetwork2id;
+        if(type == NetworkType.PERSONAL) {
+            network1id = server.addPlayer(NETWORK1).getUniqueId().toString();
+            network2id = server.addPlayer(NETWORK2).getUniqueId().toString();
+            invertedNetwork2id = NETWORK2;
+        } else {
+            server.addPlayer(NETWORK2).getUniqueId().toString();
+            invertedNetwork2id = server.getPlayer(NETWORK2).getUniqueId().toString();
+        }
+        Network local1 = registry.createNetwork(network1id, type, false, false);
+        Network inter1 = registry.createNetwork(network1id, type, true, false);
+        
+        Assertions.assertNotNull(NetworkCreationHelper.getInterserverLocalConflict(inter1,registry));
+        Assertions.assertNotNull(NetworkCreationHelper.getInterserverLocalConflict(local1,registry));
+        
+        Network inter2 = registry.createNetwork(network2id, type, true, false);
+
+        Assertions.assertNull(NetworkCreationHelper.getInterserverLocalConflict(inter2,registry));
+        // Assert there will be a conflict when a network of different type is being created
+        Network local2 = registry.createNetwork(invertedNetwork2id, type == NetworkType.PERSONAL ? NetworkType.CUSTOM : NetworkType.PERSONAL,
+                false, false);
+        Assertions.assertNotNull(NetworkCreationHelper.getInterserverLocalConflict(inter2,registry));
+        Assertions.assertNotNull(NetworkCreationHelper.getInterserverLocalConflict(local2,registry));
+        
     }
 }

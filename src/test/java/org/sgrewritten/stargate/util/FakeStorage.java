@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.util;
 
 import org.sgrewritten.stargate.database.StorageAPI;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -18,7 +19,7 @@ import org.sgrewritten.stargate.network.portal.RealPortal;
 public class FakeStorage implements StorageAPI{
 
     @Override
-    public void loadFromStorage(RegistryAPI registry) throws StorageReadException {
+    public void loadFromStorage(RegistryAPI registry, StargateEconomyAPI economyManager) throws StorageReadException {
         // TODO Auto-generated method stub
         
     }
