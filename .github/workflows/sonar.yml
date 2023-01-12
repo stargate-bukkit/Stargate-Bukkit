@@ -36,7 +36,7 @@ jobs:
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=stargate-rewritten_Stargate-Bukkit
     services:
       mysql:
-        image: mysql:8.0
+        image: mysql:5.7.22
         env:
           MYSQL_DATABASE: stargate
           MYSQL_ROOT_PASSWORD: root
