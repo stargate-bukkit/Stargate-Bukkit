@@ -40,7 +40,7 @@ jobs:
         env:
           MYSQL_DATABASE: stargate
           MYSQL_ROOT_PASSWORD: root
-          sql-mode: ""
+          sql-mode: STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
