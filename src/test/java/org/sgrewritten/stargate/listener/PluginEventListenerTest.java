@@ -2,6 +2,8 @@ package org.sgrewritten.stargate.listener;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.logging.Level;
+
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.jetbrains.annotations.NotNull;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.manager.FakeBlockLogger;
 
@@ -27,6 +30,7 @@ class PluginEventListenerTest {
 
     @BeforeEach
     void setUp() {
+        Stargate.setLogLevel(Level.SEVERE);
         server = MockBukkit.mock();
         economy = MockBukkit.createMockPlugin("Vault");
         blockLogger = MockBukkit.createMockPlugin("CoreProtect");
@@ -38,6 +42,7 @@ class PluginEventListenerTest {
     @AfterEach
     void tearDown() {
         MockBukkit.unmock();
+        Stargate.setLogLevel(Level.INFO);
     }
     
     @Test
