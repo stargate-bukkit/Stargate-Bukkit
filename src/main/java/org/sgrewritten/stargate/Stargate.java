@@ -90,7 +90,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A plugin that allows for instant-teleportation between large distances and across servers.
@@ -120,8 +119,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private LanguageManager languageManager;
     private BungeeManager bungeeManager;
     private static final int CURRENT_CONFIG_VERSION = 6;
-    private static final SynchronousPopulator synchronousTickPopulator = new SynchronousPopulator();
-    private static final SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
+    private SynchronousPopulator synchronousTickPopulator = new SynchronousPopulator();
+    private SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
     private static final int MAX_TEXT_LENGTH = 13;
 
     private static StargateEconomyAPI economyManager;
@@ -247,7 +246,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * @param action <p>The action to add</p>
      */
     public static void addSynchronousTickAction(SimpleAction action) {
-        synchronousTickPopulator.addAction(action);
+        if(getInstance()==null) {
+            return;
+        }
+        getInstance().synchronousTickPopulator.addAction(action);
     }
 
     /**
@@ -258,7 +260,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * @param action <p>The action to add</p>
      */
     public static void addSynchronousSecAction(SimpleAction action) {
-        syncSecPopulator.addAction(action, false);
+        if(getInstance()==null) {
+            return;
+        }
+        getInstance().syncSecPopulator.addAction(action, false);
     }
 
     /**
@@ -270,7 +275,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * @param isBungee <p>Whether the action relies on the server name being known and should be put in the bungee queue</p>
      */
     public static void addSynchronousSecAction(SimpleAction action, boolean isBungee) {
-        syncSecPopulator.addAction(action, isBungee);
+        if(getInstance()==null) {
+            return;
+        }
+        getInstance().syncSecPopulator.addAction(action, isBungee);
     }
 
     /**
