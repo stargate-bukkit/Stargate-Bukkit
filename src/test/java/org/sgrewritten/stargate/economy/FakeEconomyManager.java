@@ -5,9 +5,11 @@ import org.sgrewritten.stargate.network.portal.Portal;
 
 public class FakeEconomyManager implements StargateEconomyAPI {
 
+    boolean triggeredSetup;
+    
     @Override
     public void setupEconomy() {
-
+        this.triggeredSetup = true;
     }
 
     @Override
@@ -20,6 +22,9 @@ public class FakeEconomyManager implements StargateEconomyAPI {
         return true;
     }
     
-    
+    public boolean hasTriggeredSetupEconomy() {
+        return this.triggeredSetup;
+        
+    }
     
 }
