@@ -176,7 +176,7 @@ public class FakePortalGenerator {
         return portal;
     }
 
-    public static RealPortal generateFakePortal(Block signBlock, String networkName, HashSet<PortalFlag> flags, String name,
+    public static RealPortal generateFakePortal(Block signBlock, String networkName, Set<PortalFlag> flags, String name,
             StargateRegistry registry) throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException {
         Network network = registry.createNetwork(networkName, NetworkType.CUSTOM, false, false);
         return generateFakePortal(signBlock, network, flags, name, registry);
