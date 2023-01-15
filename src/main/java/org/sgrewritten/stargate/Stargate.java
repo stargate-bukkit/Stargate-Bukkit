@@ -455,7 +455,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         RegistryAPI registry = new StargateRegistry(storageAPI);
 
         DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), "config.yml"), this,
-                Bukkit.getServer(), registry, this.getLanguageManager(),this.getEconomyManager());
+                this.getServer(), registry, this.getLanguageManager(),this.getEconomyManager(),this.getStoredPropertiesAPI());
 
         if (dataMigrator.isMigrationNecessary()) {
             Map<String, Object> updatedConfig = dataMigrator.getUpdatedConfig();
@@ -677,8 +677,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private void registerCommands() {
         PluginCommand stargateCommand = this.getCommand("stargate");
         if (stargateCommand != null) {
-            stargateCommand.setExecutor(new CommandStargate(getLanguageManager()));
-            stargateCommand.setTabCompleter(new StargateTabCompleter());
+            stargateCommand.setExecutor(new CommandStargate(this));
+            stargateCommand.setTabCompleter(new StargateTabCompleter(this.getStoredPropertiesAPI()));
         }
     }
 

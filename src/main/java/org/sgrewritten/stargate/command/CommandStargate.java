@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.property.CommandPermission;
@@ -19,9 +20,11 @@ import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
 public class CommandStargate implements CommandExecutor {
 
     private LanguageManager languageManager;
+    private @NotNull Stargate stargate;
 
-    public CommandStargate(LanguageManager languageManager) {
-        this.languageManager = languageManager;
+    public CommandStargate(@NotNull Stargate stargate) {
+        this.languageManager = stargate.getLanguageManager();
+        this.stargate = stargate;
     }
     
     @Override
@@ -34,9 +37,13 @@ public class CommandStargate implements CommandExecutor {
                 case "reload":
                     return new CommandReload(languageManager).onCommand(commandSender, command, s, args);
                 case "trace":
-                    return new CommandTrace(Stargate.getInstance()).onCommand(commandSender, command, s, args);
+                    return new CommandTrace(stargate).onCommand(commandSender, command, s, args);
                 case "version":
                     break;
+                case "parityconfirm":
+                    return new CommandParity(stargate.getStoredPropertiesAPI(),stargate.getDataFolder(),true).onCommand(commandSender, command, s, args);
+                case "parityreject":
+                    return new CommandParity(stargate.getStoredPropertiesAPI(),stargate.getDataFolder(),false).onCommand(commandSender, command, s, args);
                 default:
                     return false;
             }

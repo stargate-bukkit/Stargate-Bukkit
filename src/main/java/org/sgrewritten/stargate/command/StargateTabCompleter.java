@@ -2,18 +2,28 @@ package org.sgrewritten.stargate.command;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
+import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.property.CommandPermission;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This is the tab completer for the /stargate (/sg) command
  */
 public class StargateTabCompleter implements TabCompleter {
+    
+    private @NotNull StoredPropertiesAPI properties;
+
+    public StargateTabCompleter(@NotNull StoredPropertiesAPI properties){
+        this.properties = Objects.requireNonNull(properties);
+    }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command,
@@ -51,6 +61,10 @@ public class StargateTabCompleter implements TabCompleter {
         }
         if (commandSender.hasPermission(CommandPermission.VERSION.getPermissionNode())) {
             commands.add("version");
+        }
+        if (commandSender instanceof ConsoleCommandSender && "true".equals(properties.getProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE))) {
+            commands.add("parityconfirm");
+            commands.add("parityreject");
         }
         return commands;
     }

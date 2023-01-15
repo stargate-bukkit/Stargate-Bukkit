@@ -2,9 +2,12 @@ package org.sgrewritten.stargate.migration;
 
 import com.google.common.io.Files;
 import org.bukkit.Server;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.container.TwoTuple;
+import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
+import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
@@ -22,6 +25,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 
 /**
@@ -36,6 +40,7 @@ public class DataMigration_1_0_0 extends DataMigration {
     private final StargateLogger logger;
     private LanguageManager languageManager;
     private StargateEconomyAPI economyManager;
+    private @NotNull StoredPropertiesAPI properties;
 
     /**
      * Instantiates a new Ret-Com 1.0.0
@@ -44,15 +49,18 @@ public class DataMigration_1_0_0 extends DataMigration {
      * @param registry <p>The stargate registry to register loaded portals to</p>
      * @param logger   <p>The logger to use for logging any messages</p>
      */
-    public DataMigration_1_0_0(Server server, RegistryAPI registry, StargateLogger logger, LanguageManager languageManager, StargateEconomyAPI economyManager) {
+    public DataMigration_1_0_0(@NotNull Server server, @NotNull RegistryAPI registry, @NotNull StargateLogger logger,
+            @NotNull LanguageManager languageManager, @NotNull StargateEconomyAPI economyManager,
+            @NotNull StoredPropertiesAPI properties) {
         if (CONFIG_CONVERSIONS == null) {
             loadConfigConversions();
         }
-        this.server = server;
-        this.registry = registry;
-        this.logger = logger;
-        this.languageManager = languageManager;
-        this.economyManager = economyManager;
+        this.server = Objects.requireNonNull(server);
+        this.registry = Objects.requireNonNull(registry);
+        this.logger = Objects.requireNonNull(logger);
+        this.languageManager = Objects.requireNonNull(languageManager);
+        this.economyManager = Objects.requireNonNull(economyManager);
+        this.properties = Objects.requireNonNull(properties);
     }
 
     @Override
@@ -70,14 +78,18 @@ public class DataMigration_1_0_0 extends DataMigration {
             }
         }
 
-
+        
+        if(oldConfig.get("debugging.permissionDebug") != null) {
+            properties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, true);
+        }
+        
+        String[] permDebug = {"permdebug","debugging.permdebug","debugging.permissionDebug"};
         Level logLevel = Level.INFO;
-        if ((oldConfig.get("permdebug") != null && (boolean) oldConfig.get("permdebug")) ||
-                (oldConfig.get("debugging.permdebug") != null) && (boolean) oldConfig.get("debugging.permdebug")) {
+        if (LegacyDataHandler.findConfigKey(permDebug, oldConfig).equals("true")) {
             logLevel = Level.CONFIG;
         }
-        if ((oldConfig.get("debug") != null && (boolean) oldConfig.get("debug")) ||
-                (oldConfig.get("debugging.debug") != null && (boolean) oldConfig.get("debugging.debug"))) {
+        String[] debug = {"debug","debugging.debug"};
+        if (LegacyDataHandler.findConfigKey(debug, oldConfig).equals("true")) {
             logLevel = Level.FINE;
         }
         newConfig.put("loggingLevel", logLevel.toString());
@@ -91,13 +103,13 @@ public class DataMigration_1_0_0 extends DataMigration {
                     .findConfigKey(new String[] { "portal-folder", "folders.portalFolder" }, oldConfig));
             String defaultName = (String) oldConfig.get(LegacyDataHandler
                     .findConfigKey(new String[] { "gates.defaultGateNetwork", "default-gate-network" }, oldConfig));
-
-            migratePortals(portalFolderName, defaultName,languageManager,economyManager);
+            migratePortals(portalFolderName, defaultName, languageManager, economyManager);
             moveFilesToDebugDirectory(portalFolderName);
         } catch (IOException | InvalidStructureException | InvalidNameException | TranslatableException e) {
             Stargate.log(e);
         } catch (NullPointerException e) {
-            Stargate.log(Level.SEVERE, "Invalid config: Could not get necessary config values to load portals from storage");
+            Stargate.log(Level.SEVERE,
+                    "Invalid config: Could not get necessary config values to load portals from storage");
             Stargate.log(e);
         }
     }

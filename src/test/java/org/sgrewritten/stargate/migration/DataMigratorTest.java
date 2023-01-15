@@ -13,6 +13,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
@@ -23,6 +25,10 @@ import org.sgrewritten.stargate.database.SQLDatabase;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.database.StorageAPI;
+import org.sgrewritten.stargate.database.property.FakePropertiesDatabase;
+import org.sgrewritten.stargate.database.property.PropertiesDatabase;
+import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
+import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.Network;
@@ -43,6 +49,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DataMigratorTest {
@@ -53,6 +60,7 @@ public class DataMigratorTest {
     static private File defaultConfigFile;
     static private SQLDatabaseAPI sqlDatabase;
     static private final Map<String, DataMigrator> migratorMap = new HashMap<>();
+    static private final Map<String, StoredPropertiesAPI> propertiesMap = new HashMap<>();
     static private Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> configTestMap;
     private static final File testGatesDir = new File("src/test/resources/gates");
 
@@ -173,7 +181,8 @@ public class DataMigratorTest {
             if (oldConfigFile.exists() && !oldConfigFile.delete()) {
                 throw new IOException("Unable to delete old config file");
             }
-            DataMigrator dataMigrator = new DataMigrator(configFile, logger, server, registry, new FakeLanguageManager(), new FakeEconomyManager());
+            FakePropertiesDatabase properties = new FakePropertiesDatabase();
+            DataMigrator dataMigrator = new DataMigrator(configFile, logger, server, registry, new FakeLanguageManager(), new FakeEconomyManager(),properties);
             if (!configFile.renameTo(oldConfigFile)) {
                 throw new IOException("Unable to rename existing config for backup");
             }
@@ -189,6 +198,7 @@ public class DataMigratorTest {
 
             dataMigrator.updateFileConfiguration(fileConfig, config);
             migratorMap.put(configFile.getName(), dataMigrator);
+            propertiesMap.put(configFile.getName(), properties);
             fileConfig.load(configFile);
 
             for (ConfigurationOption option : ConfigurationOption.values()) {
@@ -197,19 +207,19 @@ public class DataMigratorTest {
                 }
                 Assertions.assertTrue(fileConfig.getKeys(true).contains(option.getConfigNode()), String.format("The option %s is missing in the configuration", option.getConfigNode()));
             }
-
+            
             logger.logMessage(Level.FINEST, "End config for file '" + configFile.getName() + "': \n" + fileConfig.saveToString());
         }
     }
 
-    @Test
+    @ParameterizedTest
+    @MethodSource("getTestedConfigNames")
     @Order(2)
-    public void doOtherRefactorCheck() {
-        for (String key : migratorMap.keySet()) {
-            Stargate.log(Level.FINE,String.format("####### Performing misc. refactoring based on the config-file %s%n", key));
-            DataMigrator dataMigrator = migratorMap.get(key);
-            dataMigrator.run();
-        }
+    public void doOtherRefactorCheck(String key) {
+        Stargate.log(Level.FINE,
+                String.format("####### Performing misc. refactoring based on the config-file %s%n", key));
+        DataMigrator dataMigrator = migratorMap.get(key);
+        dataMigrator.run();
     }
 
     @Test
@@ -246,22 +256,36 @@ public class DataMigratorTest {
         Assertions.assertTrue(count > 0, "There was no portals loaded from old database");
     }
 
-    @Test
+    @ParameterizedTest
+    @MethodSource("getTestedConfigNames")
     @Order(3)
-    public void portalLoadCheck() {
-        for (String key : configTestMap.keySet()) {
-            Map<String, String> testMap = configTestMap.get(key).getSecondValue();
+    public void portalLoadCheck(String key) {
+        Map<String, String> testMap = configTestMap.get(key).getSecondValue();
 
-            Stargate.log(Level.FINE,String.format("--------- Checking portal loaded from %s configuration%n", key));
-            for (String portalName : testMap.keySet()) {
-                String netName = testMap.get(portalName);
-                Network net = registry.getNetwork(netName, false);
-                Assertions.assertNotNull(net, String.format("Network %s for portal %s was null", netName, portalName));
-                Portal portal = net.getPortal(portalName);
-                Assertions.assertNotNull(portal, String.format("Portal %s in network %s was null", portalName, netName));
-            }
-
+        Stargate.log(Level.FINE, String.format("--------- Checking portal loaded from %s configuration%n", key));
+        for (String portalName : testMap.keySet()) {
+            String netName = testMap.get(portalName);
+            Network net = registry.getNetwork(netName, false);
+            Assertions.assertNotNull(net, String.format("Network %s for portal %s was null", netName, portalName));
+            Portal portal = net.getPortal(portalName);
+            Assertions.assertNotNull(portal, String.format("Portal %s in network %s was null", portalName, netName));
         }
+    }
+    
+    @ParameterizedTest
+    @MethodSource("getTestedConfigNames")
+    @Order(3)
+    public void knarvikNagPropertySet(String key) {
+        StoredPropertiesAPI properties = propertiesMap.get(key);
+        if (key.contains("config-epicknarvik.yml")) {
+            Assertions.assertEquals("true", properties.getProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE));
+        } else {
+            Assertions.assertNull(properties.getProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE));
+        }
+    }
+    
+    private static Stream<String> getTestedConfigNames(){
+        return configTestMap.keySet().stream();
     }
 
 }
