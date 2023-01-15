@@ -47,6 +47,8 @@ import org.sgrewritten.stargate.database.SQLDatabase;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.database.StorageAPI;
+import org.sgrewritten.stargate.database.property.PropertiesDatabase;
+import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.economy.VaultEconomyManager;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
@@ -75,6 +77,7 @@ import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.util.BStatsHelper;
 import org.sgrewritten.stargate.util.BungeeHelper;
+import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.colors.ColorConverter;
 import org.sgrewritten.stargate.util.colors.ColorNameInterpreter;
 import org.sgrewritten.stargate.util.colors.ColorProperty;
@@ -82,6 +85,7 @@ import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -112,6 +116,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
     private final String GATE_FOLDER = "gates";
+    private static final String INTERNAL_FOLDER = ".internal";
+    private static final String INTERNAL_PROPERTIES_FILE = "stargate.properties";
 
     private PluginManager pluginManager;
 
@@ -140,6 +146,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private StargateRegistry registry;
 
     private BlockLoggingManager blockLogger;
+
+    private PropertiesDatabase storedProperties;
 
     private static final FileConfiguration staticConfig = new StargateYamlConfiguration();
 
@@ -170,6 +178,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             registry = new StargateRegistry(storageAPI);
             bungeeManager = new StargateBungeeManager(this.getRegistry(),this.getLanguageManager());
             blockLogger = new CoreProtectManager();
+            storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(DATA_FOLDER, INTERNAL_FOLDER, INTERNAL_PROPERTIES_FILE));
             if (ConfigurationHelper.getInteger(ConfigurationOption.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
                 try {
                   this.migrateConfigurationAndData();
@@ -193,11 +202,15 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             BStatsHelper.registerMetrics(pluginId, this, getRegistry());
             servicesManager = this.getServer().getServicesManager();
             servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
-        } catch (StargateInitializationException exception) {
+        } catch (StargateInitializationException e) {
+            Stargate.log(e);
             getServer().getPluginManager().disablePlugin(this);
         } catch (SQLException e) {
-            getServer().getPluginManager().disablePlugin(this);
             Stargate.log(e);
+            getServer().getPluginManager().disablePlugin(this);
+        }catch (IOException e) {
+            Stargate.log(e);
+            getServer().getPluginManager().disablePlugin(this);
         }
     }
 
@@ -709,10 +722,17 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     }
     
     /**
-     * @return <p> the blocklogger used for dealing with external block logging plugin compatability </p>
+     * @return <p> The blocklogger used for dealing with external block logging plugin compatability </p>
      */
     public BlockLoggingManager getBlockLoggerManager() {
         return this.blockLogger;
     }
 
+    /**
+     * 
+     * @return <p> The database dealing with internally stored properties </p>
+     */
+    public StoredPropertiesAPI getStoredPropertiesAPI() {
+        return this.storedProperties;
+    }
 }

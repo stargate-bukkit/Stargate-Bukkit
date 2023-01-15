@@ -183,6 +183,7 @@ class StargateTest {
         Assertions.assertNull(Stargate.getInstance());
         server.getPluginManager().enablePlugin(plugin);
         Assertions.assertTrue(plugin.isEnabled());
+        Assertions.assertNotNull(Stargate.getServerUUID());
     }
     
     private void setInterserverEnabled() {

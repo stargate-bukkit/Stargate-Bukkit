@@ -153,5 +153,31 @@ public final class FileHelper {
         }
         return string;
     }
+    
+    /**
+     * Creates a hidden file if it does not already exist
+     * @param dataFolder <p> The stargate datafolder </p>
+     * @param internalFolder    <p> The hidden datafolder </p>
+     * @param fileName  <p> The name of the file to be created </p>
+     * @return  <p> The location of the file created </p>
+     * @throws IOException 
+     */
+    public static File createHiddenFileIfNotExists(String dataFolder, String internalFolder, String fileName) throws IOException {
+        File path = new File(dataFolder, internalFolder);
+        if (!path.exists() && path.mkdir()) {
+            try {
+                Files.setAttribute(path.toPath(), "dos:hidden", true);
+            } catch (IOException e) {
+                Stargate.log(e);
+            }
+        }
+        File hiddenFile = new File(path, fileName);
+        if(!hiddenFile.exists()) {
+            if (!hiddenFile.createNewFile()) {
+                throw new FileNotFoundException(fileName + " was not found and could not be created");
+            }
+        }
+        return hiddenFile;
+    }
 
 }
