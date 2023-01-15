@@ -14,4 +14,11 @@ public interface StoredPropertiesAPI {
      * @param value <p> The value to set the property to </p>
      */
     void setProperty(StoredProperty property, String value);
+    
+    /**
+     * Set a property from a stored properties file
+     * @param property <p> The property to set the value on </p>
+     * @param value <p> The value to set the property to </p>
+     */
+    void setProperty(StoredProperty property, Object value);
 }

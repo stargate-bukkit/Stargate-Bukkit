@@ -40,4 +40,9 @@ public class PropertiesDatabase implements StoredPropertiesAPI {
         }
     }
 
+    @Override
+    public void setProperty(StoredProperty property, Object value) {
+        setProperty(property, value.toString());
+    }
+
 }

@@ -42,4 +42,10 @@ class PropertiesDatabaseTest {
         propertiesDatabase.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, "true");
         Assertions.assertEquals("true", new PropertiesDatabase(fileLocation).getProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE));
     }
+    
+    @Test
+    void setProperty_Boolean() {
+        propertiesDatabase.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, true);
+        Assertions.assertEquals("true", propertiesDatabase.getProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE));
+    }
 }
