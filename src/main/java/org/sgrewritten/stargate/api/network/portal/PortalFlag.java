@@ -15,6 +15,10 @@ import org.jetbrains.annotations.NotNull;
  * Represents a portal flag which defines an enabled behavior for a stargate
  */
 public class PortalFlag {
+    
+    private final static Map<Character, PortalFlag> charMap = new HashMap<>();
+    private final static Map<String, PortalFlag> nameMap = new HashMap<>();
+    private final static List<PortalFlag> list = new ArrayList<>();
 
     /**
      * A random stargate which teleports to a random destination in its network
@@ -123,10 +127,6 @@ public class PortalFlag {
     private final boolean isUserSpecifiable;
     private final char characterRepresentation;
     private final @NotNull String name;
-    
-    private final static Map<Character, PortalFlag> charMap = new HashMap<>();
-    private final static Map<String, PortalFlag> nameMap = new HashMap<>();
-    private final static List<PortalFlag> list = new ArrayList<>();
 
     /**
      * Instantiates a new portal flag
@@ -249,7 +249,6 @@ public class PortalFlag {
             throw new IllegalArgumentException("No flag has been assigned the name '" + name + "'");
         }
     }
-    
     public static List<PortalFlag> values(){
         return list;
     }

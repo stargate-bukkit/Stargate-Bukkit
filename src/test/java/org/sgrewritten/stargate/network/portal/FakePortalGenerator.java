@@ -31,6 +31,7 @@ import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -125,13 +126,13 @@ public class FakePortalGenerator {
      * @return <p>A random set of portal flags</p>
      */
     private Set<PortalFlag> generateRandomFlags() {
-        PortalFlag[] possibleFlags = PortalFlag.values();
+        List<PortalFlag> possibleFlags = PortalFlag.values();
         Random random = new Random();
-        int flagsToGenerate = random.nextInt(possibleFlags.length);
-        Set<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
+        int flagsToGenerate = random.nextInt(possibleFlags.size());
+        Set<PortalFlag> flags = new HashSet<>();
 
         for (int i = 0; i < flagsToGenerate; i++) {
-            flags.add(possibleFlags[random.nextInt(possibleFlags.length)]);
+            flags.add(possibleFlags.get( random.nextInt(possibleFlags.size())));
         }
         return flags;
     }
