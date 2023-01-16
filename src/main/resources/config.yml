@@ -188,9 +188,18 @@ rememberLastDestination: false
 # Where should this flatfile be named?
 portalFile: stargate
 
+# Currently, on startup, a folder is checked for gate layouts stored as ‘.gate’ files.
+# Where is that folder?
+# 
+# This option is provided as a patch to allow data to be imported from some older forks.
+gateFolder: gates
+
 # By default, SG will preface its remote database tables with `SG_`.
 # If this conflicts with another plugin, you can change that prefix here.
 customRemoteDatabasePrefix: SG_
+
+
+
 
 # |                                          [ Logging ]                                         | #
 # |__                   How much information should stargate send to console?                  __| #

@@ -262,6 +262,7 @@ public class StargateRegistry implements RegistryAPI {
         } catch (StorageWriteException e) {
             Stargate.log(e);
         }
+        Stargate.log(Level.INFO,String.format("Renaming network %s to %s", network.getName(),newName));
         network.setID(newName);
         network.updatePortals();
     }

@@ -8,6 +8,7 @@ import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
@@ -90,7 +91,7 @@ public class PortalStorageHelper {
     public static PortalData loadPortalData(String[] portalProperties, World world, String defaultNetworkName) {
         PortalData portalData = new PortalData();
         portalData.name = portalProperties[0];
-        portalData.networkName = (portalProperties.length > 9) ? portalProperties[9] : defaultNetworkName;
+        portalData.networkName = (portalProperties.length > 9) ? portalProperties[9] : LocalNetwork.DEFAULT_NET_ID;
 
         Stargate.log(Level.FINEST, String.format("-----------------Loading portal %s in network %s--------------" +
                 "--------", portalData.name, portalData.networkName));
@@ -113,8 +114,9 @@ public class PortalStorageHelper {
         if (portalData.destination == null || portalData.destination.trim().isEmpty()) {
             portalData.flags.add(PortalFlag.NETWORKED);
         }
-        if(portalProperties.length <= 9 || portalData.name.equals(defaultNetworkName)) {
+        if(portalProperties.length <= 9 || portalData.networkName.toLowerCase().equals(defaultNetworkName.toLowerCase())) {
             portalData.flags.add(PortalFlag.DEFAULT_NETWORK);
+            portalData.networkName = LocalNetwork.DEFAULT_NET_ID;
         } else if (!ownerString.isEmpty()
                 && Bukkit.getOfflinePlayer(portalData.ownerUUID).getName().equals(portalData.name)) {
             portalData.flags.add(PortalFlag.PERSONAL_NETWORK);

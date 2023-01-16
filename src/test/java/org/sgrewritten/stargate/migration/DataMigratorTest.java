@@ -31,6 +31,7 @@ import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
+import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -103,9 +104,9 @@ public class DataMigratorTest {
         knarvikConfigChecks.put("defaultGateNetwork", "knarvik");
         knarvikConfigChecks.put("handleVehicles", false);
         Map<String, String> knarvikPortalChecks = new HashMap<>();
-        knarvikPortalChecks.put("knarvik1", "knarvik");
-        knarvikPortalChecks.put("knarvik2", "knarvik");
-        knarvikPortalChecks.put("knarvik3", "knarvik");
+        knarvikPortalChecks.put("knarvik1", LocalNetwork.DEFAULT_NET_ID);
+        knarvikPortalChecks.put("knarvik2", LocalNetwork.DEFAULT_NET_ID);
+        knarvikPortalChecks.put("knarvik3", LocalNetwork.DEFAULT_NET_ID);
         TwoTuple<Map<String, Object>, Map<String, String>> knarvikChecks = new TwoTuple<>(knarvikConfigChecks,
                 knarvikPortalChecks);
         output.put("config-epicknarvik.yml", knarvikChecks);
@@ -258,10 +259,9 @@ public class DataMigratorTest {
 
     @ParameterizedTest
     @MethodSource("getTestedConfigNames")
-    @Order(3)
+    @Order(2)
     public void portalLoadCheck(String key) {
         Map<String, String> testMap = configTestMap.get(key).getSecondValue();
-
         Stargate.log(Level.FINE, String.format("--------- Checking portal loaded from %s configuration%n", key));
         for (String portalName : testMap.keySet()) {
             String netName = testMap.get(portalName);

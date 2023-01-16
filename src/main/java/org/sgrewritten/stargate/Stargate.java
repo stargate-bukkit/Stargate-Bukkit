@@ -86,7 +86,10 @@ import org.sgrewritten.stargate.util.portal.PortalHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -115,7 +118,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private static Level logLevel = Level.INFO;//setting before config loads
 
     private final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
-    private final String GATE_FOLDER = "gates";
+    private String gateFolder;
+    private static final String INTERNAL_GATE_FOLDER = "gates";
     private static final String INTERNAL_FOLDER = ".internal";
     private static final String INTERNAL_PROPERTIES_FILE = "stargate.properties";
 
@@ -168,7 +172,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
                 super.saveDefaultConfig();
             }
 
-            loadGateFormats();
             fetchServerId();
             String LANGUAGE_FOLDER = "lang";
             languageManager = new StargateLanguageManager(this, new File(DATA_FOLDER, LANGUAGE_FOLDER));
@@ -187,6 +190,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
                 }
             }
 
+            loadGateFormats();
             load();
             registry.loadPortals(getEconomyManager());
 
@@ -247,7 +251,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * @return <p>The gate folder</p>
      */
     public String getGateFolder() {
-        return GATE_FOLDER;
+        return gateFolder;
     }
 
     /**
@@ -429,13 +433,20 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     /**
      * Saves all the default gate designs to the gate folder
+     * @throws IOException 
      */
-    private void saveDefaultGates() {
+    private void saveDefaultGates() throws IOException {
         //TODO is there a way to check all files in a resource-folder? Possible solution seems unnecessarily complex
         String[] gateList = {"nether.gate", "water.gate", "wool.gate", "end.gate"};
+        File directory = new File(gateFolder);
+        if(!directory.exists() && !directory.mkdirs()) {
+            Stargate.log(Level.SEVERE, "Could not make gates directory");
+        }
         for (String gateName : gateList) {
-            if (!(new File(DATA_FOLDER + "/" + GATE_FOLDER + "/" + gateName).exists())) {
-                this.saveResource(GATE_FOLDER + "/" + gateName, false);
+            File fileToWrite = new File(directory, gateName);
+            if (!fileToWrite.exists()) {
+                InputStream stream = this.getResource(INTERNAL_GATE_FOLDER + "/" + gateName);
+                stream.transferTo(new FileOutputStream(fileToWrite));
             }
         }
     }
@@ -463,6 +474,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             this.reloadConfig();
             dataMigrator.updateFileConfiguration(getConfig(), updatedConfig);
             this.reloadConfig();
+            this.loadGateFormats();
             dataMigrator.run();
         }
     }
@@ -494,9 +506,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         }
     }
 
-    private void loadGateFormats() {
+    private void loadGateFormats() throws IOException {
+        this.gateFolder = ConfigurationHelper.getString(ConfigurationOption.GATE_FOLDER);
         saveDefaultGates();
-        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(new File(DATA_FOLDER, GATE_FOLDER), this);
+        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(new File(gateFolder), this);
         if (gateFormats == null) {
             log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
             GateFormatHandler.setFormats(new ArrayList<>());
@@ -533,12 +546,15 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             }
             registry.load(this.getEconomyManager());
             economyManager.setupEconomy();
-        } catch (StargateInitializationException exception) {
-            Stargate.log(Level.SEVERE,exception.getMessage());
+        } catch (StargateInitializationException e) {
+            Stargate.log(e);
             getServer().getPluginManager().disablePlugin(this);
         } catch (SQLException e) {
-            getServer().getPluginManager().disablePlugin(this);
             Stargate.log(e);
+            getServer().getPluginManager().disablePlugin(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+            getServer().getPluginManager().disablePlugin(this);
         }
     }
 

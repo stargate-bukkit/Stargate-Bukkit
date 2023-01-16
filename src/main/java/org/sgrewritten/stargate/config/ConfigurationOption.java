@@ -242,8 +242,13 @@ public enum ConfigurationOption {
     /**
      * Allows for specific events to destroy portals
      */
-    SPECIFIC_PROTECTION_OVERRIDE("specificProtectionOverrides", "Allows for specific events to destroy portals", null, OptionDataType.STRING_LIST, true);
+    SPECIFIC_PROTECTION_OVERRIDE("specificProtectionOverrides", "Allows for specific events to destroy portals", null, OptionDataType.STRING_LIST, true),
 
+    /**
+     * The folder to load gate files from
+     */
+    GATE_FOLDER("gateFolder","The folder to load gate files from","/plugins/Stargate/gates", OptionDataType.STRING, true);
+    
     private final String configNode;
     private final String description;
     private final Object defaultValue;

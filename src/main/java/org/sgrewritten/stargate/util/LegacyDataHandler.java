@@ -45,7 +45,8 @@ public class LegacyDataHandler {
      * @return <p>The corresponding block face</p>
      */
     public static BlockFace getFacing(double rotation) {
-        return getFacing(-(int) Math.round(Math.cos(rotation)), -(int) Math.round(Math.sin(rotation)));
+        double radians = Math.toRadians(rotation);
+        return getFacing(-(int) Math.round(Math.cos(radians)), -(int) Math.round(Math.sin(radians)));
     }
 
     /**
@@ -56,7 +57,6 @@ public class LegacyDataHandler {
      * @param ownerString <p>The owner string to get a UUID from</p>
      * @return <p>A UUID</p>
      */
-    @SuppressWarnings("deprecation")
     public static UUID getPlayerUUID(String ownerString) {
         if (ownerString.length() > 16) {
             return UUID.fromString(ownerString);
