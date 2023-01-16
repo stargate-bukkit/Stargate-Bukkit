@@ -268,7 +268,7 @@ public class StargateRegistry implements RegistryAPI {
             }
         });
 
-        Stargate.log(Level.INFO, String.format("Renaming network %s to %s", network.getName(), newName));
+        Stargate.log(Level.FINE, String.format("Renaming network %s to %s", network.getName(), newName));
         network.setID(newName);
         network.updatePortals();
     }

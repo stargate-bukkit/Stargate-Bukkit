@@ -438,7 +438,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private void saveDefaultGates() throws IOException {
         //TODO is there a way to check all files in a resource-folder? Possible solution seems unnecessarily complex
         String[] gateList = {"nether.gate", "water.gate", "wool.gate", "end.gate"};
-        File directory = new File(gateFolder);
+        File directory = new File(this.getDataFolder(),this.getGateFolder());
         if(!directory.exists() && !directory.mkdirs()) {
             Stargate.log(Level.SEVERE, "Could not make gates directory");
         }
@@ -509,7 +509,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private void loadGateFormats() throws IOException {
         this.gateFolder = ConfigurationHelper.getString(ConfigurationOption.GATE_FOLDER);
         saveDefaultGates();
-        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(new File(gateFolder), this);
+        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(new File(this.getDataFolder(),this.getGateFolder()), this);
         if (gateFormats == null) {
             log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
             GateFormatHandler.setFormats(new ArrayList<>());

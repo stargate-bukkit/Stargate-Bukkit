@@ -130,6 +130,11 @@ public class DataMigration_1_0_0 extends DataMigration {
                 oldPair.getFirstValue().equals("economy.freeGatesColored")) {
             return new TwoTuple<>(newKey, 2);
         }
+        
+        if(newKey.equals("gateFolder")) {
+            return new TwoTuple<>(newKey, oldPair.getSecondValue().toString().replaceAll("^plugins/Stargate/", ""));
+        }
+        
 
         return new TwoTuple<>(newKey, oldPair.getSecondValue());
     }
