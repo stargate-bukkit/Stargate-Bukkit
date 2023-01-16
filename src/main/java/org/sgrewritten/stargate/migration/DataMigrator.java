@@ -4,8 +4,10 @@ import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.network.RegistryAPI;
@@ -36,11 +38,14 @@ public class DataMigrator {
      * @throws IOException                   <p>If unable to read or write to a file</p>
      * @throws InvalidConfigurationException <p>If unable to load the given configuration file</p>
      */
-    public DataMigrator(File configurationFile, StargateLogger logger, Server server,
-                        RegistryAPI registry,LanguageManager languageManager, StargateEconomyAPI economyManager) throws IOException, InvalidConfigurationException {
-        //WARNING: Migrators must be defined from oldest to newest to prevent partial migration
+    public DataMigrator(@NotNull File configurationFile, @NotNull StargateLogger logger, @NotNull Server server,
+            @NotNull RegistryAPI registry, @NotNull LanguageManager languageManager,
+            @NotNull StargateEconomyAPI economyManager, @NotNull StoredPropertiesAPI properties)
+            throws IOException, InvalidConfigurationException {
+        // WARNING: Migrators must be defined from oldest to newest to prevent partial
+        // migration
         MIGRATIONS = new DataMigration[]{
-                new DataMigration_1_0_0(server, registry, logger,languageManager,economyManager),
+                new DataMigration_1_0_0(server, registry, logger,languageManager,economyManager,properties),
                 new DataMigration_1_0_12()
         };
 

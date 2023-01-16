@@ -129,9 +129,9 @@ public class MoveEventListener implements Listener {
         // Check if entity moved one block (its only possible to have entered a portal
         // if that's the case)
         if (toLocation == null
-                || portal == null && fromLocation.getBlockX() == toLocation.getBlockX() &&
+                || (portal == null && fromLocation.getBlockX() == toLocation.getBlockX() &&
                 fromLocation.getBlockY() == toLocation.getBlockY() &&
-                fromLocation.getBlockZ() == toLocation.getBlockZ()) {
+                fromLocation.getBlockZ() == toLocation.getBlockZ())) {
             return;
         }
 
