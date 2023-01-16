@@ -8,6 +8,8 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -95,7 +97,7 @@ public class LegacyDataHandler {
             loadFlagIndices();
         }
 
-        Set<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
+        Set<PortalFlag> flags = new HashSet<>();
         for (PortalFlag flag : LEGACY_FLAG_INDICES.keySet()) {
             int position = LEGACY_FLAG_INDICES.get(flag);
             if (splitLine.length > position && splitLine[position].equalsIgnoreCase("true")) {
@@ -110,7 +112,7 @@ public class LegacyDataHandler {
      * Loads the map containing all known legacy flag indices
      */
     private static void loadFlagIndices() {
-        LEGACY_FLAG_INDICES = new EnumMap<>(PortalFlag.class);
+        LEGACY_FLAG_INDICES = new HashMap<>();
         LEGACY_FLAG_INDICES.put(PortalFlag.HIDDEN, 11);
         LEGACY_FLAG_INDICES.put(PortalFlag.ALWAYS_ON, 12);
         LEGACY_FLAG_INDICES.put(PortalFlag.PRIVATE, 13);

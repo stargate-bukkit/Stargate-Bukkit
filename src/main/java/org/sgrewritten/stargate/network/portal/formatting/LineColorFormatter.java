@@ -16,6 +16,7 @@ import org.sgrewritten.stargate.util.colors.ColorConverter;
 import org.sgrewritten.stargate.util.colors.ColorProperty;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -143,7 +144,7 @@ public class LineColorFormatter implements LineFormatter {
      * @return <p> A map of all the flagcolors </p>
      */
     private Map<PortalFlag, ChatColor> compileFlagColors() {
-        Map<PortalFlag, ChatColor> flagColors = new EnumMap<>(PortalFlag.class);
+        Map<PortalFlag, ChatColor> flagColors = new HashMap<>();
         for (PortalFlag key : ColorProperty.getFlagColorHues().keySet()) {
             flagColors.put(key, ColorProperty.getColorFromHue(this.signMaterial, ColorProperty.getFlagColorHues().get(key), false));
         }

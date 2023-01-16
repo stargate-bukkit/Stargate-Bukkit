@@ -20,6 +20,7 @@ import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.util.NameHelper;
 
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -72,7 +73,7 @@ public class BungeePortal extends AbstractPortal {
          * and can not be found (should not) in any network anywhere.
          */
         targetPortal = new LegacyVirtualPortal(destinationServer, destination, network,
-                EnumSet.noneOf(PortalFlag.class), ownerUUID);
+                new HashSet<>(), ownerUUID);
         this.serverDestination = destinationServer;
         /*
          * CHEATS! we love cheats. This one helps to save the legacy bungee gate into sql table so that the

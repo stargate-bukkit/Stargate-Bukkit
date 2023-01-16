@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.action.DelayedAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
@@ -26,7 +25,6 @@ import org.sgrewritten.stargate.api.event.StargateOpenEvent;
 import org.sgrewritten.stargate.api.event.StargateSignFormatEvent;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.api.manager.PermissionManager;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.StorageType;
@@ -36,13 +34,10 @@ import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.economy.EconomyAPI;
-import org.sgrewritten.stargate.economy.EconomyManager;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
@@ -55,7 +50,7 @@ import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -76,7 +71,7 @@ public abstract class AbstractPortal implements RealPortal {
     /**
      * Used for bStats metrics, this is every flag that has been used by all portals
      */
-    public static final Set<PortalFlag> allUsedFlags = EnumSet.noneOf(PortalFlag.class);
+    public static final Set<PortalFlag> allUsedFlags = new HashSet<>();
 
     protected final int openDelay = 20;
     protected Network network;

@@ -22,6 +22,7 @@ import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
 import org.sgrewritten.stargate.util.portal.PortalPermissionHelper;
 
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -63,7 +64,7 @@ public class StargatePermissionManager implements PermissionManager {
 
     @Override
     public Set<PortalFlag> returnDisallowedFlags(Set<PortalFlag> flags) {
-        Set<PortalFlag> disallowed = EnumSet.noneOf(PortalFlag.class);
+        Set<PortalFlag> disallowed = new HashSet<>();
         for (PortalFlag flag : flags) {
             if (flag.isInternalFlag()) {
                 continue;

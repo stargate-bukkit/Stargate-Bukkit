@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ColorProperty {
-    private static final Map<PortalFlag, Short> flagColorHues = new EnumMap<>(PortalFlag.class);
+    private static final Map<PortalFlag, Short> flagColorHues = new HashMap<>();
     private static final Map<Material, TwoTuple<Short, Short>> signSaturationMap = new EnumMap<>(Material.class);
     private static final Map<Material, TwoTuple<Short, Short>> signBrightnessMap = new EnumMap<>(Material.class);
 
