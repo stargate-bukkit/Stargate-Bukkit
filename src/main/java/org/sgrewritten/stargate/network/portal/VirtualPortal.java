@@ -218,4 +218,10 @@ public class VirtualPortal implements Portal {
     public void setName(String newName) {
         this.name = newName;
     }
+
+    @Override
+    public Portal getCurrentDestination() {
+        //TODO: Not implemented
+        return null;
+    }
 }

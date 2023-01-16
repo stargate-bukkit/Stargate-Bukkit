@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.api.network.portal;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.StorageType;
@@ -63,7 +64,7 @@ public interface Portal {
      *
      * @param player <p>The player to open this portal for</p>
      */
-    void open(Player player);
+    void open(@Nullable Player player);
 
     /**
      * Gets the name of this portal
@@ -78,7 +79,7 @@ public interface Portal {
      * @param destination <p>The destination this portal should temporarily connect ot</p>
      */
     @SuppressWarnings("unused")
-    void overrideDestination(Portal destination);
+    void overrideDestination(@Nullable Portal destination);
 
     /**
      * Gets the network this portal belongs to
@@ -141,6 +142,13 @@ public interface Portal {
      */
     Portal getDestination();
 
+    /**
+     * Gets this portal's current destination, considers the override destination
+     *
+     * @return <p>This portal's current destination</p>
+     */
+    Portal getCurrentDestination();
+    
     /**
      * Gets the destination name as originally specified on this portal's creation sign
      *

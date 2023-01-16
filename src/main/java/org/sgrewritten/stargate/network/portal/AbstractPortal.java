@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.action.DelayedAction;
@@ -168,7 +169,7 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public void open(Player actor) {
+    public void open(@Nullable Player actor) {
         getGate().open();
         if (actor != null) {
             this.openFor = actor.getUniqueId();
@@ -211,7 +212,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     @SuppressWarnings("unused")
-    public void overrideDestination(Portal destination) {
+    public void overrideDestination(@Nullable Portal destination) {
         this.overriddenDestination = destination;
     }
 
@@ -426,6 +427,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public String getDestinationName() {
+        Portal destination = getCurrentDestination();
         if (destination == null) {
             return null;
         } else {
@@ -433,12 +435,8 @@ public abstract class AbstractPortal implements RealPortal {
         }
     }
 
-    /**
-     * Gets this portal's current destination
-     *
-     * @return <p>This portal's current destination</p>
-     */
-    private Portal getCurrentDestination() {
+    @Override
+    public Portal getCurrentDestination() {
         if (overriddenDestination == null) {
             return destination;
         } else {
