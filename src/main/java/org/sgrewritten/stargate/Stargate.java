@@ -553,7 +553,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             Stargate.log(e);
             getServer().getPluginManager().disablePlugin(this);
         } catch (IOException e) {
-            e.printStackTrace();
+            Stargate.log(e);
             getServer().getPluginManager().disablePlugin(this);
         }
     }
