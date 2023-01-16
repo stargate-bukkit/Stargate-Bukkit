@@ -21,13 +21,14 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.LocalNetwork;
-import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.util.FakeLanguageManager;
 import org.sgrewritten.stargate.util.FakeStorage;
 import org.sgrewritten.stargate.action.SimpleAction;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.NetworkType;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;

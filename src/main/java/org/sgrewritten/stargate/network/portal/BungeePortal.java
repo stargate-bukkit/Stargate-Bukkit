@@ -2,19 +2,21 @@ package org.sgrewritten.stargate.network.portal;
 
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.NetworkType;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.formatting.LanguageManager;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.LocalNetwork;
-import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.util.NameHelper;
 
 import java.util.EnumSet;

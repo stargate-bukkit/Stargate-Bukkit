@@ -2,7 +2,8 @@ package org.sgrewritten.stargate.network.portal;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
-import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.api.network.StorageType;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 
 import java.util.Set;
 import java.util.UUID;

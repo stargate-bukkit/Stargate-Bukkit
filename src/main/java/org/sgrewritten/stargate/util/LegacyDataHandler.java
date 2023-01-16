@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 
 import java.util.EnumMap;
 import java.util.EnumSet;

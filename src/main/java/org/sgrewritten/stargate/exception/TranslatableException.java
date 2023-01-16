@@ -1,6 +1,6 @@
 package org.sgrewritten.stargate.exception;
 
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 
 public abstract class TranslatableException extends Exception {
 

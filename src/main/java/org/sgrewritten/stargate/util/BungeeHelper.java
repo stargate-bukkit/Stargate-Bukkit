@@ -6,16 +6,16 @@ import com.google.gson.JsonPrimitive;
 
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.NetworkType;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.formatting.LanguageManager;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
-import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 

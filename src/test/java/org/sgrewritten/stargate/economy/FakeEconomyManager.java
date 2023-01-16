@@ -1,7 +1,7 @@
 package org.sgrewritten.stargate.economy;
 
 import org.bukkit.OfflinePlayer;
-import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 
 public class FakeEconomyManager implements StargateEconomyAPI {
 

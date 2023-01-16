@@ -7,10 +7,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.formatting.LanguageManager;
-import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StargateRegistry;
 
 import java.io.File;

@@ -1,6 +1,12 @@
 package org.sgrewritten.stargate.util;
 
-import org.sgrewritten.stargate.database.StorageAPI;
+import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.NetworkType;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.StorageType;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -8,13 +14,7 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
-import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.RegistryAPI;
-import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
-import org.sgrewritten.stargate.network.portal.RealPortal;
 
 public class FakeStorage implements StorageAPI{
 

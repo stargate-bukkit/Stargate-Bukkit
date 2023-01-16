@@ -1,7 +1,7 @@
 package org.sgrewritten.stargate.economy;
 
 import org.bukkit.OfflinePlayer;
-import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 
 /**
  * An API describing the economy methods required by Stargate

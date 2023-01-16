@@ -1,10 +1,10 @@
 package org.sgrewritten.stargate.util;
 
-import org.sgrewritten.stargate.formatting.LanguageManager;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.NetworkType;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 
 import java.util.ArrayList;
 import java.util.List;
