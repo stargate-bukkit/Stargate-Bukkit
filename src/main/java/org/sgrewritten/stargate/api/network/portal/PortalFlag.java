@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class PortalFlag {
     
+    // Has to be at the top, as this needs run before everything else
     private final static Map<Character, PortalFlag> charMap = new HashMap<>();
     private final static Map<String, PortalFlag> nameMap = new HashMap<>();
     private final static List<PortalFlag> list = new ArrayList<>();
@@ -129,7 +130,7 @@ public class PortalFlag {
     private final @NotNull String name;
 
     /**
-     * Instantiates a new portal flag
+     * Instantiates a new portal flag 
      *
      * @param characterRepresentation <p>The character used to identify this portal flag in flag strings</p>
      * @param isUserSpecifiable       <p>Whether a user can specify whether this flag is enabled for a portal</p>

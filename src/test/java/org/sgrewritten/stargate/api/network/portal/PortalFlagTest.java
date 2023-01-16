@@ -18,11 +18,13 @@ class PortalFlagTest {
     
     @Test
     void creation() {
-        PortalFlag flag = new PortalFlag('o', "NAME", true);
+        PortalFlag flag = new PortalFlag('O', "NAME", true);
         PortalFlag.registerFlag(flag);
-        Assertions.assertDoesNotThrow(() -> PortalFlag.valueOf('o'));
+        Assertions.assertDoesNotThrow(() -> PortalFlag.valueOf('O'));
         Assertions.assertDoesNotThrow(() -> PortalFlag.valueOf("NAME"));
         Assertions.assertFalse(flag.isInternalFlag());
+        Assertions.assertEquals(flag.toString(),"NAME");
+        Assertions.assertEquals(flag.getCharacterRepresentation(),'O');
     }
     
     @Test
