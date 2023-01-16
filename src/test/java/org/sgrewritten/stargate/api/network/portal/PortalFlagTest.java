@@ -24,11 +24,13 @@ class PortalFlagTest {
         Assertions.assertDoesNotThrow(() -> PortalFlag.valueOf("NAME"));
     }
     
+    @Test
     void creation_CharacterConflict() {
         PortalFlag flag = new PortalFlag('1',"A_NAME",false);
         Assertions.assertThrows(IllegalArgumentException.class, () -> PortalFlag.registerFlag(flag));
     }
     
+    @Test
     void creation_NAmeConflict() {
         PortalFlag flag = new PortalFlag('z',"ALWAYS_ON",false);
         Assertions.assertThrows(IllegalArgumentException.class, () -> PortalFlag.registerFlag(flag));
