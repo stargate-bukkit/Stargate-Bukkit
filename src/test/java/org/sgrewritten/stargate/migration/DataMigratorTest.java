@@ -2,6 +2,8 @@ package org.sgrewritten.stargate.migration;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.entity.PlayerMock;
+
 import com.google.common.io.Files;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -49,6 +51,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
@@ -92,6 +95,7 @@ public class DataMigratorTest {
         server.addSimpleWorld("epicknarvik");
         server.addSimpleWorld("lclo");
         server.addSimpleWorld("pseudoknigth");
+        server.addPlayer(new PlayerMock(server,"Thorinwasher",UUID.fromString("d2b440c3-edde-4443-899e-6825c31d0919")));
         Stargate.getFileConfiguration().load(defaultConfigFile);
 
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
@@ -124,7 +128,7 @@ public class DataMigratorTest {
         Map<String, Object> lcloConfigChecks = new HashMap<>();
         lcloConfigChecks.put("defaultGateNetwork", "lclco");
         Map<String, String> lcloPortalChecks = new HashMap<>();
-        lcloPortalChecks.put("lclo1", "lclo");
+        lcloPortalChecks.put("lclo1", "d2b440c3-edde-4443-899e-6825c31d0919");
         lcloPortalChecks.put("lclo2", "lclo");
         TwoTuple<Map<String, Object>, Map<String, String>> lcloChecks = new TwoTuple<>(lcloConfigChecks,
                 lcloPortalChecks);

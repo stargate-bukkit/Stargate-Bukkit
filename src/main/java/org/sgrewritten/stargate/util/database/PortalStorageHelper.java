@@ -118,8 +118,9 @@ public class PortalStorageHelper {
             portalData.flags.add(PortalFlag.DEFAULT_NETWORK);
             portalData.networkName = LocalNetwork.DEFAULT_NET_ID;
         } else if (!ownerString.isEmpty()
-                && Bukkit.getOfflinePlayer(portalData.ownerUUID).getName().equals(portalData.name)) {
+                && Bukkit.getOfflinePlayer(portalData.ownerUUID).getName().equals(portalData.networkName)) {
             portalData.flags.add(PortalFlag.PERSONAL_NETWORK);
+            portalData.networkName = portalData.ownerUUID.toString();
         } else {
             portalData.flags.add(PortalFlag.CUSTOM_NETWORK);
         }
