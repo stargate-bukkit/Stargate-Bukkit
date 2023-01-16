@@ -1,6 +1,8 @@
 package org.sgrewritten.stargate.network;
 
 import net.md_5.bungee.api.ChatColor;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
@@ -254,14 +256,19 @@ public class StargateRegistry implements RegistryAPI {
     
     @Override
     public void rename(Network network, String newName) throws InvalidNameException, NameLengthException{
-        if(ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(newName))) {
+        if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(newName))) {
             throw new InvalidNameException("Can not rename the network to an UUID.");
         }
-        try {
-            storageAPI.updateNetworkName(newName, newName, network.getStorageType());
-        } catch (StorageWriteException e) {
-            Stargate.log(e);
-        }
+
+        Bukkit.getScheduler().runTaskAsynchronously(Stargate.getInstance(), () -> {
+            try {
+                storageAPI.updateNetworkName(newName, newName, network.getStorageType());
+            } catch (StorageWriteException e) {
+                Stargate.log(e);
+            }
+        });
+
+        Stargate.log(Level.FINE, String.format("Renaming network %s to %s", network.getName(), newName));
         network.setID(newName);
         network.updatePortals();
     }

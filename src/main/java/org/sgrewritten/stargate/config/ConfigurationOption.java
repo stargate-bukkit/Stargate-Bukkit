@@ -1,5 +1,7 @@
 package org.sgrewritten.stargate.config;
 
+import org.sgrewritten.stargate.Stargate;
+
 /**
  * An enum containing all available settings/configuration options
  *
@@ -113,7 +115,7 @@ public enum ConfigurationOption {
      * The version of the configuration. Use for updating the config file
      */
     CONFIG_VERSION("configVersion", "The version of the configuration. Use for updating the config file",
-            1, OptionDataType.INTEGER, false),
+            Stargate.getCurrentConfigVersion(), OptionDataType.INTEGER, false),
 
     /**
      * The name of the .db file if using SQLite
@@ -242,8 +244,13 @@ public enum ConfigurationOption {
     /**
      * Allows for specific events to destroy portals
      */
-    SPECIFIC_PROTECTION_OVERRIDE("specificProtectionOverrides", "Allows for specific events to destroy portals", null, OptionDataType.STRING_LIST, true);
+    SPECIFIC_PROTECTION_OVERRIDE("specificProtectionOverrides", "Allows for specific events to destroy portals", null, OptionDataType.STRING_LIST, true),
 
+    /**
+     * The folder to load gate files from
+     */
+    GATE_FOLDER("gateFolder","The folder to load gate files from","gates", OptionDataType.STRING, false);
+    
     private final String configNode;
     private final String description;
     private final Object defaultValue;

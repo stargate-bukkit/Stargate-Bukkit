@@ -4,10 +4,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class FakeBlockLogger implements BlockLoggingManager{
 
+    private boolean setUpIsTriggered;
+
     @Override
     public void setUpLogging() {
-        // TODO Auto-generated method stub
-        
+        setUpIsTriggered = true;
     }
 
     @Override
@@ -16,4 +17,7 @@ public class FakeBlockLogger implements BlockLoggingManager{
         
     }
 
+    public boolean hasTriggeredSetup() {
+        return this.setUpIsTriggered;
+    }
 }

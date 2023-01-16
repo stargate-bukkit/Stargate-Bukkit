@@ -68,11 +68,11 @@ class StargateTest {
         
         network = plugin.getRegistry().createNetwork("network", NetworkType.CUSTOM,false, false);
         
-        portal = new FakePortalGenerator().generateFakePortal(signBlock1,network,new HashSet<>(),PORTAL1,plugin.getRegistry());
+        portal = FakePortalGenerator.generateFakePortal(signBlock1,network,new HashSet<>(),PORTAL1,plugin.getRegistry());
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.BUNGEE);
         bungeeNetwork = plugin.getRegistry().createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, false);
-        bungeePortal = new FakePortalGenerator().generateFakePortal(signBlock2,bungeeNetwork,flags,PORTAL2,plugin.getRegistry());
+        bungeePortal = FakePortalGenerator.generateFakePortal(signBlock2,bungeeNetwork,flags,PORTAL2,plugin.getRegistry());
     }
     
     @AfterEach
@@ -143,15 +143,19 @@ class StargateTest {
     
     @Test
     public void reload_StupidDefaultnetworkNameUUID() {
+        Stargate.setLogLevel(Level.OFF);
         plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, UUID.randomUUID().toString());
         plugin.reload();
+        Stargate.setLogLevel(Level.INFO);
         Assertions.assertFalse(plugin.isEnabled());
     }
     
     @Test
     public void reload_StupidDefaultnetworkNameTooLong() {
+        Stargate.setLogLevel(Level.OFF);
         plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "thisNameIsWayTooLong");
         plugin.reload();
+        Stargate.setLogLevel(Level.INFO);
         Assertions.assertFalse(plugin.isEnabled());
     }
     
@@ -183,6 +187,7 @@ class StargateTest {
         Assertions.assertNull(Stargate.getInstance());
         server.getPluginManager().enablePlugin(plugin);
         Assertions.assertTrue(plugin.isEnabled());
+        Assertions.assertNotNull(Stargate.getServerUUID());
     }
     
     private void setInterserverEnabled() {

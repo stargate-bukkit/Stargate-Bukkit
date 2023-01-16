@@ -70,7 +70,7 @@ public final class LegacyPortalStorageLoader {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
-                portals.add(readPortal(line, server.getWorld(worldName), registry, logger, defaultNetworkName,languageManager,economyManager));
+                portals.add(readPortal(line, server.getWorld(worldName), registry, logger, defaultNetworkName, languageManager,economyManager));
 
                 line = reader.readLine();
             }

@@ -10,6 +10,10 @@ import net.coreprotect.CoreProtectAPI;
 public class CoreProtectManager implements BlockLoggingManager{
     
     private CoreProtectAPI coreProtect;
+    
+    public CoreProtectManager() {
+        this.setUpLogging();
+    }
 
     @Override
     public void logPlayerInteractEvent(PlayerInteractEvent event) {
