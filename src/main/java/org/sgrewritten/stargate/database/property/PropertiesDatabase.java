@@ -49,8 +49,10 @@ public class PropertiesDatabase implements StoredPropertiesAPI {
             Stargate.log(e);
         } finally {
             try {
-                outputStream.close();
-            } catch (IOException | NullPointerException e) {
+                if(outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (IOException e) {
                 Stargate.log(e);
             }
         }
