@@ -22,6 +22,7 @@ class PortalFlagTest {
         PortalFlag.registerFlag(flag);
         Assertions.assertDoesNotThrow(() -> PortalFlag.valueOf('o'));
         Assertions.assertDoesNotThrow(() -> PortalFlag.valueOf("NAME"));
+        Assertions.assertFalse(flag.isInternalFlag());
     }
     
     @Test
@@ -31,7 +32,7 @@ class PortalFlagTest {
     }
     
     @Test
-    void creation_NAmeConflict() {
+    void creation_NameConflict() {
         PortalFlag flag = new PortalFlag('z',"ALWAYS_ON",false);
         Assertions.assertThrows(IllegalArgumentException.class, () -> PortalFlag.registerFlag(flag));
     }
