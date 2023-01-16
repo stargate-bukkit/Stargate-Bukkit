@@ -5,8 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
@@ -18,11 +21,16 @@ public class PropertiesDatabase implements StoredPropertiesAPI {
 
     public PropertiesDatabase(@NotNull File fileLocation) throws FileNotFoundException, IOException {
         this.fileLocation = Objects.requireNonNull(fileLocation);
-        if(!fileLocation.exists()) {
-            fileLocation.createNewFile();
+        if(!fileLocation.exists() && !fileLocation.createNewFile()) {
+            Stargate.log(Level.WARNING,"Could not create file '" + fileLocation + "'");
         }
         handle = new Properties();
-        handle.load(new FileInputStream(fileLocation));
+        InputStream inputStream = new FileInputStream(fileLocation);
+        try {
+            handle.load(inputStream);
+        } finally {
+            inputStream.close();
+        }
     }
     
     @Override
@@ -33,10 +41,18 @@ public class PropertiesDatabase implements StoredPropertiesAPI {
     @Override
     public void setProperty(@NotNull StoredProperty property, String value) {
         handle.setProperty(property.getKey(), value);
+        OutputStream outputStream = null;
         try {
-            handle.store(new FileOutputStream(fileLocation), null);
+            outputStream = new FileOutputStream(fileLocation);
+            handle.store(outputStream, null);
         } catch (IOException e) {
             Stargate.log(e);
+        } finally {
+            try {
+                outputStream.close();
+            } catch (IOException | NullPointerException e) {
+                Stargate.log(e);
+            }
         }
     }
 

@@ -9,11 +9,20 @@ import java.net.URL;
 
 public class WebHelper {
     public static void downloadFile(String link, File file) throws IOException {
-        URL url = new URL(link);
-        InputStream is = url.openStream();
-        OutputStream os = new FileOutputStream(file);
-        is.transferTo(os);
-        is.close();
-        os.close();
+        InputStream is = null;
+        OutputStream os = null;
+        try {
+            URL url = new URL(link);
+            is = url.openStream();
+            os = new FileOutputStream(file);
+            is.transferTo(os);
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+            if (os != null) {
+                os.close();
+            }
+        }
     }
 }
