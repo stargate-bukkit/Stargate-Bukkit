@@ -6,6 +6,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.gate.control.MechanismType;
 
 import java.util.List;
 
@@ -81,7 +82,7 @@ public interface RealPortal extends Portal {
      * @param type <p> The type of portalPosition </p>
      * @return <p>The location of this portal's signs</p>
      */
-    List<Location> getPortalPosition(PositionType type);
+    List<Location> getPortalPosition(MechanismType type);
 
     /**
      * Set meta data for this portal

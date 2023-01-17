@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.api.database;
 
+import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
@@ -12,7 +13,6 @@ import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
 
 import java.util.Set;
 
@@ -78,7 +78,7 @@ public interface StorageAPI {
      * @param portalType     <p>The type of portal to set the data for</p>
      * @throws StorageWriteException <p>If unable to set the metadata for the portal</p>
      */
-    void setPortalPositionMetaData(RealPortal portal, PortalPosition portalPosition, String data,
+    void setPortalPositionMetaData(RealPortal portal, GatePosition portalPosition, String data,
                                    StorageType portalType) throws StorageWriteException;
 
     /**
@@ -90,7 +90,7 @@ public interface StorageAPI {
      * @return <p>Data</p>
      * @throws StorageReadException <p>If unable to successfully read the portal metadata</p>
      */
-    String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition,
+    String getPortalPositionMetaData(Portal portal, GatePosition portalPosition,
                                      StorageType portalType) throws StorageReadException;
 
     /**
@@ -158,7 +158,7 @@ public interface StorageAPI {
      * @throws StorageWriteException <p>If unable to write the new portal position to storage</p>
      */
     void addPortalPosition(RealPortal portal, StorageType portalType,
-                           PortalPosition portalPosition) throws StorageWriteException;
+                           GatePosition portalPosition) throws StorageWriteException;
 
     /**
      * Remove a portalPosition to a portal in the database
@@ -169,7 +169,7 @@ public interface StorageAPI {
      * @throws StorageWriteException <p>If unable to write the portal position change to storage</p>
      */
     void removePortalPosition(RealPortal portal, StorageType portalType,
-                              PortalPosition portalPosition) throws StorageWriteException;
+                              GatePosition portalPosition) throws StorageWriteException;
 
     void updateNetworkName(String newName, String networkName, StorageType portalType) throws StorageWriteException;
 

@@ -4,10 +4,11 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.sgrewritten.stargate.api.gate.control.ControlMechanism;
+import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public interface GateAPI {
      *
      * @return <p>A copy of this gate's portal positions</p>
      */
-    List<PortalPosition> getPortalPositions();
+    List<GatePosition> getPortalPositions();
 
     /**
      * Gets all locations of this gate containing the given structure type
@@ -111,8 +112,22 @@ public interface GateAPI {
      * Add a position specific for this Gate
      *
      * @param location <p> The location of the position </p>
-     * @param type     <p> The type of position </p>
      */
-    void addPortalPosition(Location location, PositionType type);
+    void addPortalPosition(Location location);
+    
+    /**
+     * Set a portal control mechanism. Note that a portal can only have one type of each control mechanism at the same time.
+     * 
+     * @param mechanism <p> The mechanism to set </p>
+     * @param type <p> The function of the mechanism </p>
+     */
+    void setPortalControlMechanism(@NotNull ControlMechanism mechanism);
+
+    /**
+     * Get a portal control mechanism.
+     * @param type <p> The type of control to get </p>
+     * @return <p> A ControlMechanism or null if none has been set </p>
+     */
+    @Nullable ControlMechanism getPortalControlMechanism(@NotNull MechanismType type);
 
 }

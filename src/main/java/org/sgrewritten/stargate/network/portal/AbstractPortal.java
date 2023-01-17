@@ -25,12 +25,12 @@ import org.sgrewritten.stargate.api.event.StargateOpenEvent;
 import org.sgrewritten.stargate.api.event.StargateSignFormatEvent;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.manager.PermissionManager;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.StorageType;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
@@ -134,7 +134,7 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public List<Location> getPortalPosition(PositionType type) {
+    public List<Location> getPortalPosition(MechanismType type) {
         List<Location> positions = new ArrayList<>();
         gate.getPortalPositions().stream().filter((position) -> position.getPositionType() == type).forEach(
                 (position) -> positions.add(gate.getLocation(position.getPositionLocation())));
@@ -355,7 +355,7 @@ public abstract class AbstractPortal implements RealPortal {
             return;
         }
 
-        for (Location location : this.getPortalPosition(PositionType.SIGN)) {
+        for (Location location : this.getPortalPosition(MechanismType.SIGN)) {
             if (!(location.getBlock().getState() instanceof Sign)) {
                 Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s \n"
                                 + "This is most likely caused from a bug // please contact developers (use ''sg about'' for github repo)",

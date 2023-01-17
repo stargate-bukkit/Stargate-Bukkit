@@ -5,11 +5,11 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
@@ -111,11 +111,11 @@ public final class LegacyPortalStorageLoader {
         Location buttonLocation = LegacyDataHandler.loadLocation(world, portalProperties[2]);
         if (signLocation != null) {
             logger.logMessage(Level.FINEST, "signLocation=" + signLocation);
-            gate.addPortalPosition(signLocation, PositionType.SIGN);
+            gate.addPortalPosition(signLocation, MechanismType.SIGN);
         }
         if (buttonLocation != null && !portalData.flags.contains(PortalFlag.ALWAYS_ON)) {
             logger.logMessage(Level.FINEST, "buttonLocation=" + buttonLocation);
-            gate.addPortalPosition(buttonLocation, PositionType.BUTTON);
+            gate.addPortalPosition(buttonLocation, MechanismType.BUTTON);
         }
 
         Portal portal = PortalCreationHelper.createPortal(network, portalData, gate,languageManager,registry,economyManager);

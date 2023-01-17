@@ -5,6 +5,7 @@ import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
@@ -30,7 +31,6 @@ import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.PortalData;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
@@ -237,7 +237,7 @@ public class SQLDatabase implements StorageAPI {
             }
 
             try {
-                List<PortalPosition> portalPositions = getPortalPositions(portalData);
+                List<GatePosition> portalPositions = getPortalPositions(portalData);
                 Gate gate = new Gate(portalData,registry);
                 if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
                         && !gate.isValid(portalData.flags.contains(PortalFlag.ALWAYS_ON))) {
@@ -268,13 +268,13 @@ public class SQLDatabase implements StorageAPI {
      * @return <p>The portal positions belonging to the portal</p>
      * @throws SQLException <p>If the SQL query fails to successfully execute</p>
      */
-    private List<PortalPosition> getPortalPositions(PortalData portalData) throws SQLException {
+    private List<GatePosition> getPortalPositions(PortalData portalData) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionsStatement(connection, portalData.portalType);
         statement.setString(1, portalData.networkName);
         statement.setString(2, portalData.name);
 
-        List<PortalPosition> portalPositions = new ArrayList<>();
+        List<GatePosition> portalPositions = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
             portalPositions.add(PortalStorageHelper.loadPortalPosition(resultSet));
@@ -292,7 +292,7 @@ public class SQLDatabase implements StorageAPI {
      * @throws SQLException <p>If unable to add the portal positions</p>
      */
     private void addPortalPositions(PreparedStatement addPositionStatement, RealPortal portal) throws SQLException {
-        for (PortalPosition portalPosition : portal.getGate().getPortalPositions()) {
+        for (GatePosition portalPosition : portal.getGate().getPortalPositions()) {
             PortalStorageHelper.addPortalPosition(addPositionStatement, portal, portalPosition);
         }
     }
@@ -431,7 +431,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void addPortalPosition(RealPortal portal, StorageType portalType, PortalPosition portalPosition) throws StorageWriteException {
+    public void addPortalPosition(RealPortal portal, StorageType portalType, GatePosition portalPosition) throws StorageWriteException {
         Connection connection;
         try {
             connection = database.getConnection();
@@ -458,7 +458,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void removePortalPosition(RealPortal portal, StorageType portalType, PortalPosition portalPosition) throws StorageWriteException {
+    public void removePortalPosition(RealPortal portal, StorageType portalType, GatePosition portalPosition) throws StorageWriteException {
         Connection connection;
         try {
             connection = database.getConnection();
@@ -501,7 +501,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void setPortalPositionMetaData(RealPortal portal, PortalPosition portalPosition, String data, StorageType portalType) throws StorageWriteException {
+    public void setPortalPositionMetaData(RealPortal portal, GatePosition portalPosition, String data, StorageType portalType) throws StorageWriteException {
         try {
             Connection connection = database.getConnection();
             DatabaseHelper.runStatement(sqlQueryGenerator.generateSetPortalPositionMeta(connection, portal, portalPosition, data, portalType));
@@ -512,7 +512,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition, StorageType portalType) throws StorageReadException {
+    public String getPortalPositionMetaData(Portal portal, GatePosition portalPosition, StorageType portalType) throws StorageReadException {
         try {
             Connection connection = database.getConnection();
             PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionStatement(connection, portal, portalPosition, portalType);

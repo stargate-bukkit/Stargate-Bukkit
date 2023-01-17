@@ -21,14 +21,16 @@ import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.gate.GatePosition;
+import org.sgrewritten.stargate.api.gate.control.ControlMechanism;
+import org.sgrewritten.stargate.api.gate.control.GateTextDisplayHandler;
+import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.portal.PortalData;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.vectorlogic.MatrixVectorOperation;
 import org.sgrewritten.stargate.vectorlogic.VectorOperation;
@@ -36,7 +38,9 @@ import org.sgrewritten.stargate.vectorlogic.VectorOperation;
 import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
 
@@ -50,7 +54,8 @@ public class Gate implements GateAPI {
     private final @NotNull GateFormat format;
     private final VectorOperation converter;
     private Location topLeft;
-    private final List<PortalPosition> portalPositions = new ArrayList<>();
+    private final List<GatePosition> portalPositions = new ArrayList<>();
+    private final Map<MechanismType, ControlMechanism> controlMechanisms = new HashMap<>();
     private final BlockFace facing;
     private boolean isOpen = false;
     private boolean flipped;
@@ -125,7 +130,7 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public List<PortalPosition> getPortalPositions() {
+    public List<GatePosition> getPortalPositions() {
         return new ArrayList<>(this.portalPositions);
     }
 
@@ -135,8 +140,13 @@ public class Gate implements GateAPI {
      * @param signLines <p>The lines to draw on the sign</p>
      */
     private void drawSigns(String[] signLines) {
-        for (PortalPosition portalPosition : portalPositions) {
-            if (portalPosition.getPositionType() != PositionType.SIGN) {
+        GateTextDisplayHandler drawer = (GateTextDisplayHandler) controlMechanisms.get(MechanismType.SIGN);
+        drawer.displayText(signLines);
+        
+        
+        
+        for (GatePosition portalPosition : portalPositions) {
+            if (portalPosition.getPositionType() != MechanismType.SIGN) {
                 continue;
             }
             Location signLocation = getLocation(portalPosition.getPositionLocation());
@@ -158,8 +168,8 @@ public class Gate implements GateAPI {
      * Draws this gate's button
      */
     private void drawButtons() {
-        for (PortalPosition portalPosition : portalPositions) {
-            if (portalPosition.getPositionType() != PositionType.BUTTON) {
+        for (GatePosition portalPosition : portalPositions) {
+            if (portalPosition.getPositionType() != MechanismType.BUTTON) {
                 continue;
             }
 
@@ -183,7 +193,7 @@ public class Gate implements GateAPI {
 
         if (structureType == GateStructureType.CONTROL_BLOCK) {
             //Only give the locations of control-blocks in use
-            for (PortalPosition position : portalPositions) {
+            for (GatePosition position : portalPositions) {
                 output.add(new BlockLocation(getLocation(position.getPositionLocation())));
             }
         } else {
@@ -353,8 +363,8 @@ public class Gate implements GateAPI {
             return;
         }
         //Return if a button has already been registered
-        for (PortalPosition portalPosition : portalPositions) {
-            if (portalPosition.getPositionType() == PositionType.BUTTON) {
+        for (GatePosition portalPosition : portalPositions) {
+            if (portalPosition.getPositionType() == MechanismType.BUTTON) {
                 return;
             }
         }
@@ -364,7 +374,7 @@ public class Gate implements GateAPI {
             if (registeredControls.contains(buttonVector)) {
                 continue;
             }
-            portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector));
+            portalPositions.add(new GatePosition(MechanismType.BUTTON, buttonVector));
             break;
         }
 
@@ -386,9 +396,9 @@ public class Gate implements GateAPI {
             }
 
             if (Tag.WALL_SIGNS.isTagged(material)) {
-                portalPositions.add(new PortalPosition(PositionType.SIGN, blockVector));
+                portalPositions.add(new GatePosition(MechanismType.SIGN, blockVector));
             } else if (!alwaysOn && ButtonHelper.isButton(material)) {
-                portalPositions.add(new PortalPosition(PositionType.BUTTON, blockVector));
+                portalPositions.add(new GatePosition(MechanismType.BUTTON, blockVector));
             }
             foundVectors.add(blockVector);
         }
@@ -427,8 +437,8 @@ public class Gate implements GateAPI {
      */
     private boolean hasGateControlConflict() {
         //TODO: If we allow add-ons to add new controls after creation, this should be expanded to all control blocks
-        List<PortalPosition> portalPositions = this.getPortalPositions();
-        for (PortalPosition portalPosition : portalPositions) {
+        List<GatePosition> portalPositions = this.getPortalPositions();
+        for (GatePosition portalPosition : portalPositions) {
             BlockLocation positionLocation = new BlockLocation(getLocation(portalPosition.getPositionLocation()));
             if (registry.getPortal(positionLocation, GateStructureType.CONTROL_BLOCK) != null) {
                 return true;
@@ -454,20 +464,19 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public void addPortalPosition(Location location, PositionType type) {
+    public void addPortalPosition(Location location) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
-        Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position %s", type.toString(), relativeBlockVector));
-        this.addPortalPosition(relativeBlockVector, type);
+        Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position", relativeBlockVector));
+        this.addPortalPosition(relativeBlockVector);
     }
 
     /**
      * Add a position specific for this Gate
      *
      * @param relativeBlockVector <p> The relative position in format space</p>
-     * @param type                <p> The type of position </p>
      */
-    public void addPortalPosition(BlockVector relativeBlockVector, PositionType type) {
-        PortalPosition pos = new PortalPosition(type, relativeBlockVector);
+    public void addPortalPosition(BlockVector relativeBlockVector) {
+        GatePosition pos = new GatePosition(relativeBlockVector);
         this.portalPositions.add(pos);
     }
 
@@ -476,7 +485,17 @@ public class Gate implements GateAPI {
      *
      * @param portalPositions <p> A list of portalPositions </p>
      */
-    public void addPortalPositions(List<PortalPosition> portalPositions) {
+    public void addPortalPositions(List<GatePosition> portalPositions) {
         this.portalPositions.addAll(portalPositions);
+    }
+
+    @Override
+    public void setPortalControlMechanism(@NotNull ControlMechanism mechanism) {
+        controlMechanisms.put(mechanism.getType(), mechanism);
+    }
+    
+    @Override
+    public ControlMechanism getPortalControlMechanism(@NotNull MechanismType type) {
+        return controlMechanisms.get(type);
     }
 }

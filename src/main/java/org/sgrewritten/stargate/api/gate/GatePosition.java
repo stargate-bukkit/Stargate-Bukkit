@@ -1,8 +1,10 @@
-package org.sgrewritten.stargate.network.portal;
+package org.sgrewritten.stargate.api.gate;
 
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.BlockVector;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
+import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -10,10 +12,9 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 /**
  * A position of a portal's control block
  */
-public class PortalPosition {
+public abstract class GatePosition {
 
-    private final PositionType positionType;
-    private final BlockVector positionLocation;
+    protected final BlockVector positionLocation;
 
     /**
      * Instantiates a new portal position
@@ -21,18 +22,8 @@ public class PortalPosition {
      * @param positionType     <p>The type of this portal position</p>
      * @param positionLocation <p>The location of this portal position</p>
      */
-    public PortalPosition(PositionType positionType, BlockVector positionLocation) {
-        this.positionType = positionType;
+    public GatePosition(@NotNull BlockVector positionLocation) {
         this.positionLocation = positionLocation;
-    }
-
-    /**
-     * Gets this portal position's type
-     *
-     * @return <p>This portal position's type</p>
-     */
-    public PositionType getPositionType() {
-        return this.positionType;
     }
 
     /**
@@ -67,15 +58,17 @@ public class PortalPosition {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof PortalPosition)) {
+        if (!(other instanceof GatePosition)) {
             return false;
         }
-        PortalPosition otherPortalPosition = (PortalPosition) other;
+        GatePosition otherPortalPosition = (GatePosition) other;
         return otherPortalPosition.getPositionLocation().equals(this.getPositionLocation());
     }
 
     @Override
     public String toString() {
-        return String.format("{x=%d,y=%d,z=%d,%s}", positionLocation.getBlockX(), positionLocation.getBlockY(), positionLocation.getBlockZ(), positionType);
+        return String.format("PortalPosition{x=%d,y=%d,z=%d}", positionLocation.getBlockX(), positionLocation.getBlockY(), positionLocation.getBlockZ());
     }
+    
+    public abstract void onBlockClick(PlayerInteractEvent event);
 }

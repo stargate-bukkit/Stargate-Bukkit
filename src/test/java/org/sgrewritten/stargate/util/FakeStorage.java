@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.util;
 
 import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
@@ -14,7 +15,6 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
 
 public class FakeStorage implements StorageAPI{
 
@@ -49,14 +49,14 @@ public class FakeStorage implements StorageAPI{
     }
 
     @Override
-    public void setPortalPositionMetaData(RealPortal portal, PortalPosition portalPosition, String data,
+    public void setPortalPositionMetaData(RealPortal portal, GatePosition portalPosition, String data,
             StorageType portalType) throws StorageWriteException {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition, StorageType portalType)
+    public String getPortalPositionMetaData(Portal portal, GatePosition portalPosition, StorageType portalType)
             throws StorageReadException {
         // TODO Auto-generated method stub
         return null;
@@ -104,14 +104,14 @@ public class FakeStorage implements StorageAPI{
     }
 
     @Override
-    public void addPortalPosition(RealPortal portal, StorageType portalType, PortalPosition portalPosition)
+    public void addPortalPosition(RealPortal portal, StorageType portalType, GatePosition portalPosition)
             throws StorageWriteException {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void removePortalPosition(RealPortal portal, StorageType portalType, PortalPosition portalPosition)
+    public void removePortalPosition(RealPortal portal, StorageType portalType, GatePosition portalPosition)
             throws StorageWriteException {
         // TODO Auto-generated method stub
         

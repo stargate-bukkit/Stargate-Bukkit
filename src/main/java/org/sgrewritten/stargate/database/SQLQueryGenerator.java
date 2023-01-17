@@ -6,12 +6,12 @@ import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.StorageType;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -220,7 +220,7 @@ public class SQLQueryGenerator {
         return removePositionsStatement;
     }
 
-    public PreparedStatement generateRemovePortalPositionStatement(Connection connection, StorageType portalType, Portal portal, PortalPosition portalPosition) throws SQLException {
+    public PreparedStatement generateRemovePortalPositionStatement(Connection connection, StorageType portalType, Portal portal, GatePosition portalPosition) throws SQLException {
         PreparedStatement removePositionsStatement;
         if (portalType == StorageType.LOCAL) {
             removePositionsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_POSITION));
@@ -567,7 +567,7 @@ public class SQLQueryGenerator {
         return statement;
     }
 
-    public PreparedStatement generateSetPortalPositionMeta(Connection connection, RealPortal portal, PortalPosition portalPosition,
+    public PreparedStatement generateSetPortalPositionMeta(Connection connection, RealPortal portal, GatePosition portalPosition,
                                                            String meta, StorageType portalType) throws SQLException {
         PreparedStatement statement;
         if (portalType == StorageType.LOCAL) {
@@ -586,7 +586,7 @@ public class SQLQueryGenerator {
     }
 
     public PreparedStatement generateGetPortalPositionStatement(Connection connection, Portal portal,
-                                                                PortalPosition portalPosition, StorageType portalType) throws SQLException {
+                                                                GatePosition portalPosition, StorageType portalType) throws SQLException {
         PreparedStatement statement;
         if (portalType == StorageType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.GET_PORTAL_POSITION_META));

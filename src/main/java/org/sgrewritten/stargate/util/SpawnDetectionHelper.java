@@ -4,9 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
+import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.gate.GateFormat;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public final class SpawnDetectionHelper {
         //Check if any portal positions are intersecting with the spawn area
         //TODO: Might want to change this to test all control blocks if we allow add-ons to add new controls after 
         // creation
-        for (PortalPosition position : gate.getPortalPositions()) {
+        for (GatePosition position : gate.getPortalPositions()) {
             if (areIntersecting(gate.getLocation(position.getPositionLocation()), spawnMinLocation, spawnMaxLocation)) {
                 return true;
             }

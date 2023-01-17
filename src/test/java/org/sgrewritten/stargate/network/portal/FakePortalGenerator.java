@@ -7,12 +7,12 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.StorageType;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.GateConflictException;
@@ -164,8 +164,8 @@ public class FakePortalGenerator {
 
         Gate gate = new Gate(portalData,registry);
 
-        gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON);
-        gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);
+        gate.addPortalPosition(new BlockVector(1, -2, 0), MechanismType.BUTTON);
+        gate.addPortalPosition(new BlockVector(1, -2, -3), MechanismType.SIGN);
         return new FixedPortal(network, name, "", flags, gate, UUID.randomUUID(), new FakeLanguageManager(),new FakeEconomyManager());
     }
 

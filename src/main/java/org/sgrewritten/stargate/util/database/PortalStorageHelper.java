@@ -7,14 +7,14 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.gate.GatePosition;
+import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.network.StorageType;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.portal.PortalData;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.util.LegacyDataHandler;
 
 import java.sql.PreparedStatement;
@@ -61,17 +61,17 @@ public class PortalStorageHelper {
         return portalData;
     }
 
-    public static PortalPosition loadPortalPosition(ResultSet resultSet) throws NumberFormatException, SQLException {
+    public static GatePosition loadPortalPosition(ResultSet resultSet) throws NumberFormatException, SQLException {
         int xCoordinate = Integer.parseInt(resultSet.getString("xCoordinate"));
         int yCoordinate = Integer.parseInt(resultSet.getString("yCoordinate"));
         int zCoordinate = -Integer.parseInt(resultSet.getString("zCoordinate"));
         BlockVector positionVector = new BlockVector(xCoordinate, yCoordinate, zCoordinate);
-        PositionType positionType = PositionType.valueOf(resultSet.getString("positionName"));
-        return new PortalPosition(positionType, positionVector);
+        MechanismType positionType = MechanismType.valueOf(resultSet.getString("positionName"));
+        return new GatePosition(positionType, positionVector);
     }
 
 
-    public static void addPortalPosition(PreparedStatement addPositionStatement, RealPortal portal, PortalPosition portalPosition) throws SQLException {
+    public static void addPortalPosition(PreparedStatement addPositionStatement, RealPortal portal, GatePosition portalPosition) throws SQLException {
         addPositionStatement.setString(1, portal.getName());
         addPositionStatement.setString(2, portal.getNetwork().getId());
         addPositionStatement.setString(3, String.valueOf(portalPosition.getPositionLocation().getBlockX()));

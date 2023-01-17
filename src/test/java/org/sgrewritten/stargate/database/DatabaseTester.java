@@ -9,6 +9,7 @@ import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkType;
 import org.sgrewritten.stargate.api.network.StorageType;
@@ -24,7 +25,6 @@ import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
 import org.sgrewritten.stargate.network.portal.PortalData;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
 
@@ -239,14 +239,14 @@ public class DatabaseTester {
         }
     }
 
-    private List<PortalPosition> fetchPortalPositions(RealPortal portal, StorageType portalType) throws SQLException {
+    private List<GatePosition> fetchPortalPositions(RealPortal portal, StorageType portalType) throws SQLException {
         PreparedStatement statement = generator.generateGetPortalPositionsStatement(connection, portalType);
         statement.setString(1, portal.getNetwork().getName());
         statement.setString(2, portal.getName());
         ResultSet portalPositionsData = statement.executeQuery();
-        List<PortalPosition> output = new ArrayList<>();
+        List<GatePosition> output = new ArrayList<>();
         while (portalPositionsData.next()) {
-            PortalPosition position = PortalStorageHelper.loadPortalPosition(portalPositionsData);
+            GatePosition position = PortalStorageHelper.loadPortalPosition(portalPositionsData);
             output.add(position);
         }
         return output;
@@ -256,16 +256,16 @@ public class DatabaseTester {
         Map<String, RealPortal> portals = (type == StorageType.LOCAL) ? localPortals : interServerPortals;
 
         for (RealPortal portal : portals.values()) {
-            List<PortalPosition> portalPositions = fetchPortalPositions(portal, type);
+            List<GatePosition> portalPositions = fetchPortalPositions(portal, type);
             Stargate.log(Level.FINER,"---- Initial portalPositions ----");
-            for (PortalPosition fetchedPosition : portalPositions) {
+            for (GatePosition fetchedPosition : portalPositions) {
                 Stargate.log(Level.FINER,String.format("%s%n", fetchedPosition));
             }
-            for (PortalPosition position : portalPositions) {
+            for (GatePosition position : portalPositions) {
                 DatabaseHelper.runStatement(generator.generateRemovePortalPositionStatement(connection, type, portal, position));
-                List<PortalPosition> updatedPortalPositionList = fetchPortalPositions(portal, type);
+                List<GatePosition> updatedPortalPositionList = fetchPortalPositions(portal, type);
                 Stargate.log(Level.FINER,"---- fetched portalPositions ----");
-                for (PortalPosition fetchedPosition : updatedPortalPositionList) {
+                for (GatePosition fetchedPosition : updatedPortalPositionList) {
                     Stargate.log(Level.FINER, String.format("%s, isEqualToRemovedPosition = %b%n", fetchedPosition, fetchedPosition.equals(position)));
                 }
                 Stargate.log(Level.FINER, String.format("Removed position: %s%n", position));
@@ -400,7 +400,7 @@ public class DatabaseTester {
         }
     }
 
-    private String getPortalPositionMeta(Portal portal, PortalPosition portalPosition, StorageType portalType) throws SQLException {
+    private String getPortalPositionMeta(Portal portal, GatePosition portalPosition, StorageType portalType) throws SQLException {
         PreparedStatement statement = generator.generateGetPortalPositionStatement(connection, portal, portalPosition, portalType);
         ResultSet set = statement.executeQuery();
         if (!set.next()) {
@@ -415,7 +415,7 @@ public class DatabaseTester {
         Map<String, RealPortal> portals = (portalType == StorageType.LOCAL) ? localPortals : interServerPortals;
         String meta = "TEST";
         for (RealPortal portal : portals.values()) {
-            for (PortalPosition portalPosition : portal.getGate().getPortalPositions()) {
+            for (GatePosition portalPosition : portal.getGate().getPortalPositions()) {
                 finishStatement(generator.generateSetPortalPositionMeta(connection, portal, portalPosition, meta, portalType));
                 Assertions.assertEquals(getPortalPositionMeta(portal, portalPosition, portalType), meta);
             }

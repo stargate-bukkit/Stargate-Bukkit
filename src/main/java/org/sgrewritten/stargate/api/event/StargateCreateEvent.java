@@ -20,7 +20,7 @@ public class StargateCreateEvent extends DeniableStargateEvent {
     /**
      * Instantiates a new stargate creation event
      *
-     * @param player     <p>Thg player creating the stargate</p>
+     * @param player     <p>The player creating the stargate</p>
      * @param portal     <p>The created portal</p>
      * @param lines      <p>The lines of the sign creating the star gate</p>
      * @param deny       <p>Whether to deny the creation of the new gate</p>
