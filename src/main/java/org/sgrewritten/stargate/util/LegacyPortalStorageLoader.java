@@ -25,7 +25,14 @@ import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -64,8 +71,11 @@ public final class LegacyPortalStorageLoader {
 
         for (File file : files) {
             String worldName = file.getName().replaceAll("\\.db$", "");
+            
             BufferedReader reader = FileHelper.getBufferedReader(file);
+            // Fix encoding issue / can't convert properly from ansi to utf8
             String line = reader.readLine();
+            // Convert to utf-8 if ansi is used
             while (line != null) {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;

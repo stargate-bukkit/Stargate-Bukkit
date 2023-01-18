@@ -108,7 +108,7 @@ public class DataMigratorTest {
         knarvikConfigChecks.put("defaultGateNetwork", "knarvik");
         knarvikConfigChecks.put("handleVehicles", false);
         Map<String, String> knarvikPortalChecks = new HashMap<>();
-        knarvikPortalChecks.put("knarvik1", LocalNetwork.DEFAULT_NET_ID);
+        knarvikPortalChecks.put("§6knarvik1", LocalNetwork.DEFAULT_NET_ID);
         knarvikPortalChecks.put("knarvik2", LocalNetwork.DEFAULT_NET_ID);
         knarvikPortalChecks.put("knarvik3", LocalNetwork.DEFAULT_NET_ID);
         TwoTuple<Map<String, Object>, Map<String, String>> knarvikChecks = new TwoTuple<>(knarvikConfigChecks,
@@ -128,7 +128,7 @@ public class DataMigratorTest {
         Map<String, Object> lcloConfigChecks = new HashMap<>();
         lcloConfigChecks.put("defaultGateNetwork", "lclco");
         Map<String, String> lcloPortalChecks = new HashMap<>();
-        lcloPortalChecks.put("lclo1", "d2b440c3-edde-4443-899e-6825c31d0919");
+        lcloPortalChecks.put("§6lclo1", "d2b440c3-edde-4443-899e-6825c31d0919");
         lcloPortalChecks.put("lclo2", "lclo");
         TwoTuple<Map<String, Object>, Map<String, String>> lcloChecks = new TwoTuple<>(lcloConfigChecks,
                 lcloPortalChecks);

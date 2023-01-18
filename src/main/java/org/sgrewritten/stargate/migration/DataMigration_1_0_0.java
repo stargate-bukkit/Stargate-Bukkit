@@ -103,7 +103,6 @@ public class DataMigration_1_0_0 extends DataMigration {
                     .findConfigKey(new String[] { "portal-folder", "folders.portalFolder" }, oldConfig));
             String defaultName = (String) oldConfig.get(LegacyDataHandler
                     .findConfigKey(new String[] { "gates.defaultGateNetwork", "default-gate-network" }, oldConfig));
-            Stargate.log(Level.INFO,"defaultName:" + defaultName);
             migratePortals(portalFolderName, defaultName, languageManager, economyManager);
             moveFilesToDebugDirectory(portalFolderName);
         } catch (IOException | InvalidStructureException | InvalidNameException | TranslatableException e) {
