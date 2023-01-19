@@ -49,6 +49,7 @@ import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.database.StorageAPI;
 import org.sgrewritten.stargate.database.property.PropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
+import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.economy.VaultEconomyManager;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
@@ -468,6 +469,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), "config.yml"), this,
                 this.getServer(), registry, this.getLanguageManager(),this.getEconomyManager(),this.getStoredPropertiesAPI());
 
+        if(ConfigurationHelper.getInteger(ConfigurationOption.CONFIG_VERSION) == 5) {
+            this.getStoredPropertiesAPI().setProperty(StoredProperty.INCOMPATIBLE_DATABASE_ALPHA_1_0_0_4, true);
+        }
+        
         if (dataMigrator.isMigrationNecessary()) {
             Map<String, Object> updatedConfig = dataMigrator.getUpdatedConfig();
             this.saveResource("config.yml", true);

@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.sgrewritten.stargate.FakeStargate;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -168,7 +169,7 @@ class NetworkCreationHelperTest {
     
     @ParameterizedTest
     @EnumSource(value = NetworkType.class, names = {"CUSTOM", "PERSONAL"})
-    void isInterserverToLocalConflictTest(NetworkType type) throws NameLengthException, NameConflictException, InvalidNameException {
+    void isInterserverToLocalConflictTest(NetworkType type) throws NameLengthException, NameConflictException, InvalidNameException, StorageWriteException {
         
         String network1id = NETWORK1;
         String network2id = NETWORK2;

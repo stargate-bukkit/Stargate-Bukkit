@@ -11,6 +11,7 @@ import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
@@ -177,7 +178,7 @@ public class FakePortalGenerator {
     }
 
     public static RealPortal generateFakePortal(Block signBlock, String networkName, Set<PortalFlag> flags, String name,
-            StargateRegistry registry) throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException {
+            StargateRegistry registry) throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException, StorageWriteException {
         Network network = registry.createNetwork(networkName, NetworkType.CUSTOM, false, false);
         return generateFakePortal(signBlock, network, flags, name, registry);
     }

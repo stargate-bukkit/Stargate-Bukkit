@@ -3,10 +3,12 @@ package org.sgrewritten.stargate.util;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -108,6 +110,8 @@ public final class LegacyPortalStorageLoader {
         try {
             registry.createNetwork(portalData.networkName, portalData.flags, false);
         } catch (InvalidNameException | NameLengthException | NameConflictException ignored) {
+        } catch (StorageWriteException e) {
+            Stargate.log(e);
         }
         if (portalData.topLeft == null) {
             throw new InvalidStructureException();

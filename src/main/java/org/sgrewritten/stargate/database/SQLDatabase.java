@@ -101,7 +101,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void loadFromStorage(RegistryAPI registry, StargateEconomyAPI economyManager) throws StorageReadException {
+    public void loadFromStorage(RegistryAPI registry, StargateEconomyAPI economyManager) throws StorageReadException, StorageWriteException {
         try {
             logger.logMessage(Level.FINER, "Loading portals from base database");
             loadAllPortals(database, StorageType.LOCAL, registry,economyManager);
@@ -186,8 +186,9 @@ public class SQLDatabase implements StorageAPI {
      * @param database   <p>The database to load from</p>
      * @param portalType <p>The portal type to load</p>
      * @throws SQLException <p>If an SQL error occurs</p>
+     * @throws StorageWriteException 
      */
-    private void loadAllPortals(SQLDatabaseAPI database, StorageType portalType, RegistryAPI registry, StargateEconomyAPI economyManager) throws SQLException {
+    private void loadAllPortals(SQLDatabaseAPI database, StorageType portalType, RegistryAPI registry, StargateEconomyAPI economyManager) throws SQLException, StorageWriteException {
         Connection connection = database.getConnection();
         PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsStatement(connection, portalType);
 

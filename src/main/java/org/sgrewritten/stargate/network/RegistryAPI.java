@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
@@ -154,8 +155,9 @@ public interface RegistryAPI {
      * @throws InvalidNameException <p>If the given network name is invalid</p>
      * @throws NameLengthException 
      * @throws NameConflictException 
+     * @throws StorageWriteException 
      */
-    Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException;
+    Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, StorageWriteException;
 
     /**
      * Creates a new network assigned to this registry
@@ -167,8 +169,9 @@ public interface RegistryAPI {
      * @throws InvalidNameException <p>If the given network name is invalid</p>
      * @throws NameLengthException 
      * @throws NameConflictException 
+     * @throws StorageWriteException 
      */
-    Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException;
+    Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, StorageWriteException;
     
     /**
      * Checks whether the given network name exists
@@ -208,22 +211,25 @@ public interface RegistryAPI {
      * @param newName   <p> The new name of the network </p>
      * @throws InvalidNameException 
      * @throws NameLengthException 
+     * @throws StorageWriteException 
      */
-    void rename(Network network, String newName) throws InvalidNameException, NameLengthException;
+    void rename(Network network, String newName) throws InvalidNameException, NameLengthException, StorageWriteException;
 
     /**
      * 
      * @param portal    <p> The portal to rename</p>
      * @param newName   <p> The new name of the portal </p>
      * @throws InvalidNameException
+     * @throws StorageWriteException 
      */
-    void rename(Portal portal, String newName) throws InvalidNameException;
+    void rename(Portal portal, String newName) throws InvalidNameException, StorageWriteException;
 
 
     /**
      * Rename the network to a non clashing name
      * @param network   <p>The network to rename </p>
      * @throws InvalidNameException <p> If the name is a uuid </p>
+     * @throws StorageWriteException 
      */
-    void rename(Network network) throws InvalidNameException;
+    void rename(Network network) throws InvalidNameException, StorageWriteException;
 }

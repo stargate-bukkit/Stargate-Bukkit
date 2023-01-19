@@ -27,8 +27,9 @@ public interface StorageAPI {
      * @param registry <p> The registry to load the portals into </p>
      * @param economyManager <p> The handle all economical transactions from the portal will be based of</p>
      * @throws StorageReadException
+     * @throws StorageWriteException 
      */
-    void loadFromStorage(RegistryAPI registry,StargateEconomyAPI economyManager) throws StorageReadException;
+    void loadFromStorage(RegistryAPI registry,StargateEconomyAPI economyManager) throws StorageReadException, StorageWriteException;
 
     /**
      * Saves the given portal to storage

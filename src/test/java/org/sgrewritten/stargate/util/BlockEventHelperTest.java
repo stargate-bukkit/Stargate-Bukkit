@@ -21,6 +21,7 @@ import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
@@ -56,7 +57,7 @@ class BlockEventHelperTest {
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
 
     @BeforeAll
-    static void setUp() throws NameLengthException, BungeeNameException, InvalidNameException, NoFormatFoundException, GateConflictException, NameConflictException {
+    static void setUp() throws NameLengthException, BungeeNameException, InvalidNameException, NoFormatFoundException, GateConflictException, NameConflictException, StorageWriteException {
         server = MockBukkit.mock();
         player = server.addPlayer();
         world = server.addSimpleWorld("world");

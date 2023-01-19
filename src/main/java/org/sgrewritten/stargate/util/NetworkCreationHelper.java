@@ -7,6 +7,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -132,6 +133,8 @@ public final class NetworkCreationHelper {
         try {
             registry.createNetwork(name, type, isInterserver, false);
         } catch (NameConflictException e) {
+        } catch (StorageWriteException e) {
+            Stargate.log(e);
         }
         return registry.getNetwork(name, isInterserver);
     }
