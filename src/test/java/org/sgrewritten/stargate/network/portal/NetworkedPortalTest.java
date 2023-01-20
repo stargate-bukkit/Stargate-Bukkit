@@ -21,7 +21,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
-import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
@@ -52,7 +51,7 @@ class NetworkedPortalTest {
     private Network network;
 
     @BeforeEach
-    void setUp() throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException, StorageWriteException {
+    void setUp() throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException {
         server = MockBukkit.mock();
         plugin = MockBukkit.createMockPlugin();
         GateTestHelper.setUpGates();

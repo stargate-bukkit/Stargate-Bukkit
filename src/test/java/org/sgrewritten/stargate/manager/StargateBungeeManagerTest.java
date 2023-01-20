@@ -15,7 +15,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -60,7 +59,7 @@ class StargateBungeeManagerTest {
     private static final String REGISTERED_PORTAL = "rPortal";
         
     @BeforeEach
-    void setUp() throws NameLengthException, InvalidStructureException, InvalidNameException, NameConflictException, StorageWriteException {
+    void setUp() throws NameLengthException, InvalidStructureException, InvalidNameException, NameConflictException {
         server = MockBukkit.mock();
         GateFormatHandler.setFormats(
                 Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger())));

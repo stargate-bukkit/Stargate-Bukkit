@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -62,8 +61,6 @@ public class StargateBungeeManager implements BungeeManager{
             
         } catch (InvalidNameException | NameLengthException  e) {
             Stargate.log(e);
-        } catch (StorageWriteException e) {
-            e.printStackTrace();
         }
         try {
             InterServerNetwork targetNetwork = (InterServerNetwork) registry.getNetwork(network, true);

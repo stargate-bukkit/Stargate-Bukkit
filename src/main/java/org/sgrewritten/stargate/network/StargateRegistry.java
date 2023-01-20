@@ -11,8 +11,6 @@ import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.database.StorageAPI;
-import org.sgrewritten.stargate.database.property.StoredProperty;
-import org.sgrewritten.stargate.database.property.StoredPropertyHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -29,8 +27,6 @@ import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.vectorlogic.VectorUtils;
 
-import java.io.InterruptedIOException;
-import java.io.WriteAbortedException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -66,11 +62,6 @@ public class StargateRegistry implements RegistryAPI {
             storageAPI.loadFromStorage(this,economyManager);
         } catch (StorageReadException e) {
             Stargate.log(e);
-            return;
-        } catch (StorageWriteException e) {
-            Stargate.log(e);
-            Stargate.log(Level.SEVERE, "Please contact us in our discord server 'sgrewritten.org/discord'");
-            Bukkit.getPluginManager().disablePlugin(Stargate.getInstance());
             return;
         }
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
@@ -109,7 +100,7 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced)
-            throws InvalidNameException, NameLengthException, NameConflictException, StorageWriteException {
+            throws InvalidNameException, NameLengthException, NameConflictException {
         if (this.networkExists(networkName, isInterserver)) {
             if (isForced && type == NetworkType.DEFAULT) {
                 Network network = this.getNetwork(networkName, isInterserver);
@@ -128,7 +119,7 @@ public class StargateRegistry implements RegistryAPI {
     }
     
     @Override
-    public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, StorageWriteException {
+    public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException {
         return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags),flags.contains(PortalFlag.FANCY_INTER_SERVER),isForced);
     }
 
@@ -264,10 +255,7 @@ public class StargateRegistry implements RegistryAPI {
     }
     
     @Override
-    public void rename(Network network, String newName) throws InvalidNameException, NameLengthException, StorageWriteException{
-        if("true".equals(StoredPropertyHelper.getStoredProperty(StoredProperty.INCOMPATIBLE_DATABASE_ALPHA_1_0_0_4))) {
-            throw new StorageWriteException(new InterruptedIOException( "The current database is incompatible with renaming networks"));
-        }
+    public void rename(Network network, String newName) throws InvalidNameException, NameLengthException{
         if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(newName))) {
             throw new InvalidNameException("Can not rename the network to an UUID.");
         }
@@ -286,10 +274,7 @@ public class StargateRegistry implements RegistryAPI {
     }
     
     @Override
-    public void rename(Portal portal, String newName) throws InvalidNameException, StorageWriteException{
-        if("true".equals(StoredPropertyHelper.getStoredProperty(StoredProperty.INCOMPATIBLE_DATABASE_ALPHA_1_0_0_4))) {
-            throw new StorageWriteException(new InterruptedIOException( "The current database is incompatible with renaming portals"));
-        }
+    public void rename(Portal portal, String newName) throws InvalidNameException{
         try {
             storageAPI.updatePortalName(newName, portal.getName(), portal.getNetwork().getId(), portal.getStorageType());
         } catch (StorageWriteException e) {
@@ -300,7 +285,7 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void rename(Network network) throws InvalidNameException, StorageWriteException {
+    public void rename(Network network) throws InvalidNameException {
         if(ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(network.getId()))) {
             throw new InvalidNameException("Can not rename the network as it's name is an UUID.");
         }
