@@ -6,12 +6,15 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.util.SQLTestHelper;
@@ -33,8 +36,7 @@ class SQLDatabaseMigratorTest {
         
         
         database = new SQLiteDatabase(sqlDatabaseFile);
-        nameConfiguration = new TableNameConfiguration("","Inter");
-        
+        nameConfiguration = new TableNameConfiguration("","");
         databaseMigrator = new SQLDatabaseMigrator(database, nameConfiguration, new File("/migration/database/alpha-1_0_0_14"),true);
     }
     
@@ -46,7 +48,7 @@ class SQLDatabaseMigratorTest {
 
     // CHECK IF THE UPDATE ON CASCADE OPTION IS THERE, BY LOOKING AT THE BEHAVIOR
     @Test
-    void rename_PortalPosition() throws SQLException {
+    void rename_PortalPosition() throws SQLException, IOException {
         databaseMigrator.run();
         renamePortal(nameConfiguration.getPortalTableName(), "network", "network1", "portal", "portal1");
         try (Connection connection = database.getConnection()) {
@@ -57,7 +59,7 @@ class SQLDatabaseMigratorTest {
     }
     
     @Test
-    void rename_InterPortalPosition() throws SQLException {
+    void rename_InterPortalPosition() throws SQLException, IOException {
         databaseMigrator.run();
         renamePortal(nameConfiguration.getInterPortalTableName(), "network", "network1", "portal", "portal1");
         try (Connection connection = database.getConnection()) {
@@ -69,7 +71,7 @@ class SQLDatabaseMigratorTest {
     }
     
     @Test
-    void rename_PortalFlag() throws SQLException {
+    void rename_PortalFlag() throws SQLException, IOException {
         databaseMigrator.run();
         renamePortal(nameConfiguration.getPortalTableName(), "network", "network1", "portal", "portal1");
         try (Connection connection = database.getConnection()) {
@@ -79,7 +81,7 @@ class SQLDatabaseMigratorTest {
     }
     
     @Test
-    void rename_InterPortalFlag() throws SQLException {
+    void rename_InterPortalFlag() throws SQLException, IOException {
         databaseMigrator.run();
         renamePortal(nameConfiguration.getInterPortalTableName(), "network", "network1", "portal", "portal1");
         try (Connection connection = database.getConnection()) {

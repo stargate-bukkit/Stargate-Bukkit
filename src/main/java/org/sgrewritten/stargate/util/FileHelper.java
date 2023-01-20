@@ -125,6 +125,17 @@ public final class FileHelper {
             Stargate.log(e);
         }
     }
+    
+    public static String readStreamToString(InputStream stream) throws IOException {
+        BufferedReader reader = FileHelper.getBufferedReaderFromInputStream(stream);
+        String line = reader.readLine();
+        String lines = "";
+        while(line != null) {
+            lines = lines + line + "\n";
+            line = reader.readLine();
+        }
+        return lines;
+    }
 
     /**
      * Reads key/value pairs from an input stream

@@ -26,7 +26,9 @@ public class SQLiteDatabase implements SQLDatabaseAPI {
 
     @Override
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(this.url);
+        Connection connection = DriverManager.getConnection(this.url);
+        connection.prepareStatement("PRAGMA foreign_keys = ON;").execute();
+        return connection;
     }
 
     /**
