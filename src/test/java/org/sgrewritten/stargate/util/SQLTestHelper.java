@@ -43,8 +43,14 @@ public class SQLTestHelper {
      * @throws SQLException <p>If unable to get data from the database</p>
      */
     public static void checkIfHasNot(String table, String name, String network, Connection connection) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table +
-                " WHERE name = ? AND network = ?");
+        PreparedStatement statement;
+        if(table.contains("PortalPosition")) {
+            statement = connection.prepareStatement("SELECT * FROM " + table +
+                    " WHERE portalName = ? AND networkName = ?");
+        } else {
+            statement = connection.prepareStatement("SELECT * FROM " + table +
+                    " WHERE name = ? AND network = ?");
+        }
         statement.setString(1, name);
         statement.setString(2, network);
         ResultSet set = statement.executeQuery();
@@ -53,8 +59,14 @@ public class SQLTestHelper {
     }
     
     public static void checkIfHas(String table, String name, String network, Connection connection) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table +
-                " WHERE name = ? AND network = ?");
+        PreparedStatement statement;
+        if(table.contains("PortalPosition$")) {
+            statement = connection.prepareStatement("SELECT * FROM " + table +
+                    " WHERE portalName = ? AND networkName = ?");
+        } else {
+            statement = connection.prepareStatement("SELECT * FROM " + table +
+                    " WHERE name = ? AND network = ?");
+        }
         statement.setString(1, name);
         statement.setString(2, network);
         ResultSet set = statement.executeQuery();

@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.util.SQLTestHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 
@@ -45,46 +44,52 @@ class SQLDatabaseMigratorTest {
         Assertions.assertTrue(oldSqlDatabaseFile.renameTo(sqlDatabaseFile));
     }
 
+    // CHECK IF THE UPDATE ON CASCADE OPTION IS THERE, BY LOOKING AT THE BEHAVIOR
     @Test
     void rename_PortalPosition() throws SQLException {
         databaseMigrator.run();
-        renamePortal(nameConfiguration.getPortalTableName(),"network","network1","portal","portal1");
-        Connection connection = database.getConnection();
-        SQLTestHelper.checkIfHasNot(nameConfiguration.getPortalPositionTableName(), "portal", "network", connection);
-        SQLTestHelper.checkIfHas(nameConfiguration.getPortalPositionTableName(), "portal1", "network1", connection);
-        connection.close();
+        renamePortal(nameConfiguration.getPortalTableName(), "network", "network1", "portal", "portal1");
+        try (Connection connection = database.getConnection()) {
+            SQLTestHelper.checkIfHasNot(nameConfiguration.getPortalPositionTableName(), "portal", "network",
+                    connection);
+            SQLTestHelper.checkIfHas(nameConfiguration.getPortalPositionTableName(), "portal1", "network1", connection);
+        }
     }
     
     @Test
     void rename_InterPortalPosition() throws SQLException {
         databaseMigrator.run();
-        renamePortal(nameConfiguration.getInterPortalTableName(),"network","network1","portal","portal1");
-        Connection connection = database.getConnection();
-        SQLTestHelper.checkIfHasNot(nameConfiguration.getInterPortalPositionTableName(), "portal", "network", connection);
-        SQLTestHelper.checkIfHas(nameConfiguration.getInterPortalPositionTableName(), "portal1", "network1", connection);
-        connection.close();
+        renamePortal(nameConfiguration.getInterPortalTableName(), "network", "network1", "portal", "portal1");
+        try (Connection connection = database.getConnection()) {
+            SQLTestHelper.checkIfHasNot(nameConfiguration.getInterPortalPositionTableName(), "portal", "network",
+                    connection);
+            SQLTestHelper.checkIfHas(nameConfiguration.getInterPortalPositionTableName(), "portal1", "network1",
+                    connection);
+        }
     }
     
     @Test
     void rename_PortalFlag() throws SQLException {
         databaseMigrator.run();
-        renamePortal(nameConfiguration.getPortalTableName(),"network","network1","portal","portal1");
-        Connection connection = database.getConnection();
-        SQLTestHelper.checkIfHasNot(nameConfiguration.getFlagRelationTableName(), "portal", "network", connection);
-        SQLTestHelper.checkIfHas(nameConfiguration.getFlagRelationTableName(), "portal1", "network1", connection);
-        connection.close();
+        renamePortal(nameConfiguration.getPortalTableName(), "network", "network1", "portal", "portal1");
+        try (Connection connection = database.getConnection()) {
+            SQLTestHelper.checkIfHasNot(nameConfiguration.getFlagRelationTableName(), "portal", "network", connection);
+            SQLTestHelper.checkIfHas(nameConfiguration.getFlagRelationTableName(), "portal1", "network1", connection);
+        }
     }
     
     @Test
     void rename_InterPortalFlag() throws SQLException {
         databaseMigrator.run();
-        renamePortal(nameConfiguration.getInterPortalTableName(),"network","network1","portal","portal1");
-        Connection connection = database.getConnection();
-        SQLTestHelper.checkIfHasNot(nameConfiguration.getInterFlagRelationTableName(), "portal", "network", connection);
-        SQLTestHelper.checkIfHas(nameConfiguration.getInterFlagRelationTableName(), "portal1", "network1", connection);
-        connection.close();
+        renamePortal(nameConfiguration.getInterPortalTableName(), "network", "network1", "portal", "portal1");
+        try (Connection connection = database.getConnection()) {
+            SQLTestHelper.checkIfHasNot(nameConfiguration.getInterFlagRelationTableName(), "portal", "network",
+                    connection);
+            SQLTestHelper.checkIfHas(nameConfiguration.getInterFlagRelationTableName(), "portal1", "network1",
+                    connection);
+        }
     }
-    
+
     void renamePortal(String table, String oldNetwork, String newNetwork, String oldPortal, String newPortal) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement statement = connection.prepareStatement("UPDATE " + table + " SET network = ?,name = ? WHERE network = ? AND name = ?;");
