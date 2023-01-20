@@ -1,0 +1,1 @@
+ALTER TABLE {PortalPosition}1 RENAME TO {PortalPosition};
