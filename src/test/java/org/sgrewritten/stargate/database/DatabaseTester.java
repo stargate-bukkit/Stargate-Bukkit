@@ -24,6 +24,7 @@ import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.util.SQLTestHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
 
@@ -197,7 +198,7 @@ public class DatabaseTester {
     }
 
     void getFlagsTest() throws SQLException {
-        printTableInfo("SG_Test_Flag");
+        SQLTestHelper.printTableInfo(Level.FINER, "SG_Test_Flag", connection, isMySQL);
 
         PreparedStatement statement = generator.generateGetAllFlagsStatement(connection);
 
@@ -317,7 +318,7 @@ public class DatabaseTester {
 
         String tableName = portalType == StorageType.LOCAL ? nameConfig.getPortalViewName() :
                 nameConfig.getInterPortalTableName();
-        printTableInfo(tableName);
+        SQLTestHelper.printTableInfo(Level.FINER, tableName, connection, isMySQL);
         PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, portalType);
 
         ResultSet set = statement.executeQuery();
@@ -484,11 +485,11 @@ public class DatabaseTester {
 
         String flagTable = portalType == StorageType.LOCAL ? nameConfig.getFlagRelationTableName() :
                 nameConfig.getInterFlagRelationTableName();
-        checkIfHasNot(flagTable, portal.getName(), portal.getNetwork().getName());
+        SQLTestHelper.checkIfHasNot(flagTable, portal.getName(), portal.getNetwork().getName(),connection);
 
         String table = portalType == StorageType.LOCAL ? nameConfig.getPortalTableName() :
                 nameConfig.getInterPortalTableName();
-        checkIfHasNot(table, portal.getName(), portal.getNetwork().getName());
+        SQLTestHelper.checkIfHasNot(table, portal.getName(), portal.getNetwork().getName(),connection);
     }
 
     void changeNames(StorageType portalType) throws SQLException, InvalidStructureException, InvalidNameException, StorageWriteException, NameLengthException {
@@ -511,11 +512,11 @@ public class DatabaseTester {
         RealPortal portal = portalGenerator.generateFakePortal(world, testNetwork, initialName, portalType == StorageType.INTER_SERVER);
         Stargate.log(Level.FINER,portal.getName() + ", " + portal.getNetwork().getId());
         this.portalDatabaseAPI.savePortalToStorage(portal, portalType);
-        checkIfHas(table,initialName,initialNetworkName);
+        SQLTestHelper.checkIfHas(table,initialName,initialNetworkName,connection);
         this.portalDatabaseAPI.updateNetworkName(newNetName, initialNetworkName, portalType);
         this.portalDatabaseAPI.updatePortalName(newName, initialName, newNetName, portalType);
-        checkIfHas(table,newName,newNetName);
-        checkIfHasNot(table,initialName,initialNetworkName);
+        SQLTestHelper.checkIfHas(table,newName,newNetName,connection);
+        SQLTestHelper.checkIfHasNot(table,initialName,initialNetworkName,connection);
         
     }
     
@@ -528,58 +529,6 @@ public class DatabaseTester {
         PreparedStatement statement = generator.generateUpdateServerInfoStatus(connection, serverUUID.toString(), serverName);
         finishStatement(statement);
     }
-
-    /**
-     * Checks if a table, where each element is identified by a name and a network does not contain an element
-     *
-     * @param table   <p>The name of the table to check</p>
-     * @param name    <p>The name of the element to check for</p>
-     * @param network <p>The network of the element to check for</p>
-     * @throws SQLException <p>If unable to get data from the database</p>
-     */
-    private void checkIfHasNot(String table, String name, String network) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table +
-                " WHERE name = ? AND network = ?");
-        statement.setString(1, name);
-        statement.setString(2, network);
-        ResultSet set = statement.executeQuery();
-        Assertions.assertFalse(set.next());
-        statement.close();
-    }
-    
-    private void checkIfHas(String table, String name, String network) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table +
-                " WHERE name = ? AND network = ?");
-        statement.setString(1, name);
-        statement.setString(2, network);
-        ResultSet set = statement.executeQuery();
-        Assertions.assertTrue(set.next());
-        statement.close();
-    }
-
-    /**
-     * Prints info about a table for debugging
-     *
-     * @param tableName <p>The table to get information about</p>
-     * @throws SQLException <p>If unable to get information about the table</p>
-     */
-    private static void printTableInfo(String tableName) throws SQLException {
-        Stargate.log(Level.FINER,"Getting table info for: " + tableName);
-        String statementMsg = String.format(!isMySQL ? "pragma table_info('%s');" : "DESCRIBE %s", tableName);
-
-        PreparedStatement tableInfoStatement = connection.prepareStatement(statementMsg);
-        ResultSet infoResult = tableInfoStatement.executeQuery();
-        ResultSetMetaData infoMetaData = infoResult.getMetaData();
-        while (infoResult.next()) {
-            String msg = "";
-            for (int i = 1; i < infoMetaData.getColumnCount() - 1; i++) {
-                msg = msg +
-                        infoMetaData.getColumnName(i) + " = " + infoResult.getObject(i) + ", ";
-            }
-            Stargate.log(Level.FINEST, msg);
-        }
-    }
-
     /**
      * Deletes all table names used for testing
      *
