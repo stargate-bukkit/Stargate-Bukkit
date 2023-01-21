@@ -57,7 +57,6 @@ public class SQLDatabaseMigrator {
             }
 
             String queryString = nameConfiguration.replaceKnownTableNames(FileHelper.readStreamToString(stream));
-            Stargate.log(Level.WARNING,queryString);
             DatabaseHelper.runStatement(connection.prepareStatement(queryString));
             count++;
         }

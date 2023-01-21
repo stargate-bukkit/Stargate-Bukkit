@@ -144,7 +144,6 @@ public class DataMigratorTest {
     @AfterAll
     public static void tearDown() throws IOException, SQLException, InvalidConfigurationException, InterruptedException {
         MockBukkit.unmock();
-        sqlDatabase.getConnection().close();
         
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
