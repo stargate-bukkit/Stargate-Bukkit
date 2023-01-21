@@ -1,0 +1,1 @@
+ALTER TABLE {InterPortalPosition} ADD metaData TEXT;

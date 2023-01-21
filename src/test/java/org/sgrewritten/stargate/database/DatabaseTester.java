@@ -116,21 +116,11 @@ public class DatabaseTester {
 
     void addPortalTableTest() throws SQLException {
         finishStatement(generator.generateCreatePortalTableStatement(connection, StorageType.LOCAL));
-        try {
-            finishStatement(generator.generateAddMetaToPortalTableStatement(connection, StorageType.LOCAL));
-        } catch(SQLException e) {
-            
-        }
     }
 
     void addInterPortalTableTest() throws SQLException {
         Stargate.log(Level.FINEST,"############## CREATE INTER PORTAL TABLE TEST ####################");
         finishStatement(generator.generateCreatePortalTableStatement(connection, StorageType.INTER_SERVER));
-        try {
-            finishStatement(generator.generateAddMetaToPortalTableStatement(connection, StorageType.INTER_SERVER));
-        } catch(SQLException e) {
-            
-        }
     }
 
     void createFlagTableTest() throws SQLException {
@@ -176,11 +166,6 @@ public class DatabaseTester {
     private void createPortalPositionTableTest(StorageType type) throws SQLException {
         Stargate.log(Level.FINEST,"############## CREATE PORTAL POSITION TABLE TEST ####################");
         finishStatement(generator.generateCreatePortalPositionTableStatement(connection, type));
-        try {
-            finishStatement(generator.generateAddMetaToPortalPositionTableStatement(connection, type));
-        } catch(SQLException e) {
-            
-        }
     }
 
     void createPortalPositionIndexTest(StorageType type) throws SQLException {

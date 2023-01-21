@@ -19,29 +19,35 @@ import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 
 public class SQLDatabaseMigrator {
-    private Connection connection;
     private @NotNull TableNameConfiguration nameConfiguration;
     private @NotNull File sqlFilesPath;
     private boolean interServerEnabled;
+    private @NotNull SQLDatabaseAPI database;
 
     public SQLDatabaseMigrator(@NotNull SQLDatabaseAPI database, @NotNull TableNameConfiguration nameConfiguration,@NotNull File sqlFilesPath,boolean interServerEnabled) throws SQLException {
-        this.connection = database.getConnection();
-        assert !this.connection.isClosed() : "Connection was closed";
         this.nameConfiguration = Objects.requireNonNull(nameConfiguration);
         this.sqlFilesPath = Objects.requireNonNull(sqlFilesPath);
         this.interServerEnabled = interServerEnabled;
+        this.database = Objects.requireNonNull(database);
         
     }
     
     public void run() throws SQLException, IOException {
-        run(StorageType.LOCAL);
-        if(interServerEnabled) {
-            run(StorageType.INTER_SERVER);
+        Connection connection = null;
+        try {
+            connection = database.getConnection();
+            run(StorageType.LOCAL,connection);
+            if (interServerEnabled) {
+                run(StorageType.INTER_SERVER,connection);
+            }
+        } finally {
+            if(connection != null) {
+                connection.close();
+            }
         }
-        connection.close();
     }
     
-    private void run(StorageType type) throws SQLException, IOException {
+    private void run(StorageType type, Connection connection) throws SQLException, IOException {
         File path = new File(sqlFilesPath, type.toString().toLowerCase());
         int count = 0;
         while (true) {
@@ -51,6 +57,7 @@ public class SQLDatabaseMigrator {
             }
 
             String queryString = nameConfiguration.replaceKnownTableNames(FileHelper.readStreamToString(stream));
+            Stargate.log(Level.WARNING,queryString);
             DatabaseHelper.runStatement(connection.prepareStatement(queryString));
             count++;
         }

@@ -40,6 +40,7 @@ import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.util.FakeLanguageManager;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.LegacyDataHandler;
+import org.sgrewritten.stargate.util.SQLTestHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -220,10 +221,13 @@ public class DataMigratorTest {
     @ParameterizedTest
     @MethodSource("getTestedConfigNames")
     @Order(2)
-    public void doOtherRefactorCheck(String key) {
+    public void doOtherRefactorCheck(String key) throws SQLException {
         Stargate.log(Level.FINE,
                 String.format("####### Performing misc. refactoring based on the config-file %s%n", key));
         DataMigrator dataMigrator = migratorMap.get(key);
+        Connection connection = sqlDatabase.getConnection();
+        SQLTestHelper.printTableInfo(Level.WARNING, "PortalPosition", connection, false);
+        connection.close();
         dataMigrator.run(sqlDatabase);
     }
 
