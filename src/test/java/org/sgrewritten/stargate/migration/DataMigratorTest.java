@@ -225,7 +225,6 @@ public class DataMigratorTest {
                 String.format("####### Performing misc. refactoring based on the config-file %s%n", key));
         DataMigrator dataMigrator = migratorMap.get(key);
         Connection connection = sqlDatabase.getConnection();
-        SQLTestHelper.printTableInfo(Level.WARNING, "PortalPosition", connection, false);
         connection.close();
         dataMigrator.run(sqlDatabase);
     }

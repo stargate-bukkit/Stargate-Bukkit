@@ -38,4 +38,4 @@ DROP TABLE {InterPortalFlagRelation};
 
 ALTER TABLE {InterPortalFlagRelation}1 RENAME TO {InterPortalFlagRelation};
 
-CREATE_VIEW_INTER_PORTAL
+CREATE_VIEW_INTER_PORTAL;

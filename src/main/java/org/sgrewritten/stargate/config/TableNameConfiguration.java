@@ -2,6 +2,9 @@ package org.sgrewritten.stargate.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+
+import org.sgrewritten.stargate.Stargate;
 
 /**
  * A config for keeping track of the names of all database tables in use

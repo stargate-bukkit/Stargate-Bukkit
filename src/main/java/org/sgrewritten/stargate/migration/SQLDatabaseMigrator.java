@@ -1,10 +1,8 @@
 package org.sgrewritten.stargate.migration;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
@@ -14,7 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
+import org.sgrewritten.stargate.database.SQLQuery;
+import org.sgrewritten.stargate.database.SQLQueryHandler;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 
@@ -55,10 +56,24 @@ public class SQLDatabaseMigrator {
             if (stream == null) {
                 break;
             }
-
-            String queryString = nameConfiguration.replaceKnownTableNames(FileHelper.readStreamToString(stream));
-            DatabaseHelper.runStatement(connection.prepareStatement(queryString));
+            String queriesString = FileHelper.readStreamToString(stream);
+            String[] queriesStringList = queriesString.split(";");
+            for(int i = 0; i < queriesStringList.length-1; i++) {
+                String queryString = queriesStringList[i];
+                processQuery(queryString, connection);
+            }
             count++;
         }
+    }
+    
+    private void processQuery(final String queryString, Connection connection) throws SQLException {
+        String newQueryString;
+        if(ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> SQLQuery.valueOf(queryString.trim()))) {
+            newQueryString = SQLQueryHandler.getQuery(SQLQuery.valueOf(queryString.trim()), null);
+        } else {
+            newQueryString = queryString + ";";
+        }
+        newQueryString = nameConfiguration.replaceKnownTableNames(newQueryString);
+        DatabaseHelper.runStatement(connection.prepareStatement(newQueryString));
     }
 }

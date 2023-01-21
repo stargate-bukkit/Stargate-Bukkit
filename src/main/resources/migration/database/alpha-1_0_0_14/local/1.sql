@@ -38,4 +38,4 @@ DROP TABLE {PortalFlagRelation};
 
 ALTER TABLE {PortalFlagRelation}1 RENAME TO {PortalFlagRelation};
 
-CREATE_VIEW_PORTAL
+CREATE_VIEW_PORTAL;
