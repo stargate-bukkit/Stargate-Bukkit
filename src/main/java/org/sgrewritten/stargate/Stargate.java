@@ -128,7 +128,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private StorageAPI storageAPI;
     private LanguageManager languageManager;
     private BungeeManager bungeeManager;
-    private static final int CURRENT_CONFIG_VERSION = 6;
+    private static final int CURRENT_CONFIG_VERSION = 7;
     private SynchronousPopulator synchronousTickPopulator = new SynchronousPopulator();
     private SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
     private static final int MAX_TEXT_LENGTH = 13;
@@ -475,7 +475,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             dataMigrator.updateFileConfiguration(getConfig(), updatedConfig);
             this.reloadConfig();
             this.loadGateFormats();
-            dataMigrator.run();
+            dataMigrator.run(database);
         }
     }
 

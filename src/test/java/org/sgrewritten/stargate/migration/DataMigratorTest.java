@@ -224,7 +224,7 @@ public class DataMigratorTest {
         Stargate.log(Level.FINE,
                 String.format("####### Performing misc. refactoring based on the config-file %s%n", key));
         DataMigrator dataMigrator = migratorMap.get(key);
-        dataMigrator.run();
+        dataMigrator.run(sqlDatabase);
     }
 
     @Test

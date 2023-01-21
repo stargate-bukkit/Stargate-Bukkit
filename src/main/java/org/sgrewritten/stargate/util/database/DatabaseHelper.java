@@ -64,7 +64,7 @@ public class DatabaseHelper {
         try {
             // Adds a new column to some tables, if this already has been done it throws an sql error
             // Done separatly as this is part of a refactor
-            DatabaseHelper.tableRefactor_1_0_0_13(connection, sqlQueryGenerator, useInterServerNetworks);
+            DatabaseHelper.tableRefactor_1_0_0_14(connection, sqlQueryGenerator, useInterServerNetworks);
         } catch (SQLException ignored) {
         }
 
@@ -193,7 +193,7 @@ public class DatabaseHelper {
         return new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
     }
 
-    public static void tableRefactor_1_0_0_13(Connection connection, SQLQueryGenerator sqlQueryGenerator, boolean useInterServerNetworks) throws SQLException {
+    public static void tableRefactor_1_0_0_14(Connection connection, SQLQueryGenerator sqlQueryGenerator, boolean useInterServerNetworks) throws SQLException {
         DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalTableStatement(connection, StorageType.LOCAL));
         DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalPositionTableStatement(connection, StorageType.LOCAL));
         if (useInterServerNetworks) {
