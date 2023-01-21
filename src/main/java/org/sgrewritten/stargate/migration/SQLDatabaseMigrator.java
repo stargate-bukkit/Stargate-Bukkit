@@ -52,17 +52,30 @@ public class SQLDatabaseMigrator {
         File path = new File(sqlFilesPath, type.toString().toLowerCase());
         int count = 0;
         while (true) {
-            InputStream stream = FileHelper.getInputStreamForInternalFile("/" + new File(path, count + ".sql").getPath());
-            if (stream == null) {
-                break;
+            boolean failable = false;
+            try {
+                InputStream stream = FileHelper
+                        .getInputStreamForInternalFile("/" + new File(path, "step" + count + ".sql").getPath());
+                if (stream == null) {
+                    failable = true;
+                    stream = FileHelper.getInputStreamForInternalFile(
+                            "/" + new File(path, "failableStep" + count + ".sql").getPath());
+                }
+                if (stream == null) {
+                    break;
+                }
+                String queriesString = FileHelper.readStreamToString(stream);
+                String[] queriesStringList = queriesString.split(";");
+                for (int i = 0; i < queriesStringList.length - 1; i++) {
+                    String queryString = queriesStringList[i];
+                    processQuery(queryString, connection);
+                }
+                count++;
+            } catch (SQLException | IOException e) {
+                if (!failable) {
+                    throw e;
+                }
             }
-            String queriesString = FileHelper.readStreamToString(stream);
-            String[] queriesStringList = queriesString.split(";");
-            for(int i = 0; i < queriesStringList.length-1; i++) {
-                String queryString = queriesStringList[i];
-                processQuery(queryString, connection);
-            }
-            count++;
         }
     }
     
