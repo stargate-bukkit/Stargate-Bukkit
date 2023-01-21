@@ -1,1 +1,0 @@
-ALTER TABLE {PortalPosition} ADD metaData TEXT;

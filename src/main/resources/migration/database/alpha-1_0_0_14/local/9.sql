@@ -1,1 +1,0 @@
-ALTER TABLE {Portal} ADD metaData TEXT;

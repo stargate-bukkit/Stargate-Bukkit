@@ -1,1 +1,0 @@
-ALTER TABLE {PortalFlagRelation}1 RENAME TO {PortalFlagRelation};
