@@ -60,7 +60,7 @@ public class SQLTestHelper {
     
     public static void checkIfHas(String table, String name, String network, Connection connection) throws SQLException {
         PreparedStatement statement;
-        if(table.contains("PortalPosition$")) {
+        if(table.contains("PortalPosition")) {
             statement = connection.prepareStatement("SELECT * FROM " + table +
                     " WHERE portalName = ? AND networkName = ?");
         } else {

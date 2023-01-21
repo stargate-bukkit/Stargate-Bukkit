@@ -504,6 +504,8 @@ public class DatabaseTester {
         String newNetName = "newName";
         String table = portalType == StorageType.LOCAL ? nameConfig.getPortalTableName() :
             nameConfig.getInterPortalTableName();
+        String flagRelationTable = portalType == StorageType.LOCAL ? nameConfig.getFlagRelationTableName() : nameConfig.getInterFlagRelationTableName();
+        String portalPositionTable = portalType == StorageType.LOCAL ? nameConfig.getPortalPositionTableName() : nameConfig.getInterPortalPositionTableName();
         try {
             testNetwork = new LocalNetwork(initialNetworkName,NetworkType.CUSTOM);
         } catch (InvalidNameException e) {
@@ -517,6 +519,10 @@ public class DatabaseTester {
         this.portalDatabaseAPI.updatePortalName(newName, initialName, newNetName, portalType);
         SQLTestHelper.checkIfHas(table,newName,newNetName,connection);
         SQLTestHelper.checkIfHasNot(table,initialName,initialNetworkName,connection);
+        SQLTestHelper.checkIfHas(flagRelationTable, newName, newNetName, connection);
+        SQLTestHelper.checkIfHasNot(flagRelationTable, initialName, initialNetworkName, connection);
+        SQLTestHelper.checkIfHas(portalPositionTable, newName, newNetName, connection);
+        SQLTestHelper.checkIfHasNot(portalPositionTable, initialName, initialNetworkName, connection);
         
     }
     
