@@ -1,15 +1,12 @@
 package org.sgrewritten.stargate.migration;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.logging.Level;
 
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLQuery;
