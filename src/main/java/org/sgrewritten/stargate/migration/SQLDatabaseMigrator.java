@@ -86,7 +86,6 @@ public class SQLDatabaseMigrator {
             newQueryString = queryString + ";";
         }
         newQueryString = nameConfiguration.replaceKnownTableNames(newQueryString);
-        Stargate.log(Level.INFO,"Running query:\n " + newQueryString);
         DatabaseHelper.runStatement(connection.prepareStatement(newQueryString));
     }
 }
