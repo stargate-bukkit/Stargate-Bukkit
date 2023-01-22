@@ -47,4 +47,9 @@ public class SQLiteDatabase implements SQLDatabaseAPI {
         DriverManager.registerDriver(new org.sqlite.JDBC());
     }
 
+    @Override
+    public DatabaseDriver getDriver() {
+        return DatabaseDriver.SQLITE;
+    }
+
 }

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
+import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 
 import com.google.common.io.Files;
@@ -52,21 +53,20 @@ class DataMigration_1_0_14Test {
     void run_CheckFlagFix() throws SQLException {
         migration.run(database);
         Assertions.assertTrue(portalHasFlag(PortalFlag.CUSTOM_NETWORK,"portal","network"));
-        Assertions.assertTrue(portalHasFlag(PortalFlag.DEFAULT_NETWORK,"portal2","central"));
+        Assertions.assertTrue(portalHasFlag(PortalFlag.DEFAULT_NETWORK,"portal2",LocalNetwork.DEFAULT_NET_ID));
         Assertions.assertTrue(portalHasFlag(PortalFlag.PERSONAL_NETWORK,"portal1",UUID_STRING));
     }
     
     private boolean portalHasFlag(PortalFlag flag, String portalName, String networkName) throws SQLException {
-        String query = "SELECT flags FROM PortalView WHERE name = ? AND network = ?;";
-        Connection connection = database.getConnection();
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, portalName);
-        statement.setString(2, networkName);
-        ResultSet resultSet = statement.executeQuery();
-        boolean result = PortalFlag.parseFlags(resultSet.getString(1)).contains(flag);
-        statement.close();
-        connection.close();
-        return result;
+        try (Connection connection = database.getConnection()) {
+            String query = "SELECT flags FROM PortalView WHERE name = ? AND network = ?;";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, portalName);
+            statement.setString(2, networkName);
+            ResultSet resultSet = statement.executeQuery();
+            boolean result = PortalFlag.parseFlags(resultSet.getString(1)).contains(flag);
+            statement.close();
+            return result;
+        } 
     }
-    
 }

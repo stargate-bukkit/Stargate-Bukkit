@@ -82,7 +82,7 @@ public class SQLDatabaseMigrator {
     private void processQuery(final String queryString, Connection connection) throws SQLException {
         String newQueryString;
         if(ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> SQLQuery.valueOf(queryString.trim()))) {
-            newQueryString = SQLQueryHandler.getQuery(SQLQuery.valueOf(queryString.trim()), null);
+            newQueryString = SQLQueryHandler.getQuery(SQLQuery.valueOf(queryString.trim()),database.getDriver());
         } else {
             newQueryString = queryString + ";";
         }
