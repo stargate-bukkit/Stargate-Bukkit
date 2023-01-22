@@ -42,9 +42,10 @@ public class DataMigration_1_0_14 extends DataMigration {
     public void run(@NotNull SQLDatabaseAPI database) {
         boolean isInterserver = ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)
                 && ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE);
+        Stargate.log(Level.INFO, "Running database migration 1.0.0.11 -> 1.0.0.14");
         TableNameConfiguration nameConfiguration = DatabaseHelper.getTableNameConfiguration(ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE));
         try {
-            new SQLDatabaseMigrator(database, nameConfiguration, new File("/migration/database/alpha-1_0_0_14"), isInterserver).run();;
+            new SQLDatabaseMigrator(database, nameConfiguration,  "/migration/database/alpha-1_0_0_14", isInterserver).run();;
         } catch (SQLException | IOException e) {
             Stargate.log(e);
         }
