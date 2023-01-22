@@ -7,11 +7,13 @@ import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
+import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Objects;
@@ -33,6 +35,15 @@ public class DataMigration_1_0_14 extends DataMigration {
         try {
             new SQLDatabaseMigrator(database, nameConfiguration, new File("/migration/database/alpha-1_0_0_14"), isInterver).run();;
         } catch (SQLException | IOException e) {
+            Stargate.log(e);
+        }
+        addLackingNetworkFlags(database);
+    }
+    
+    private void addLackingNetworkFlags(@NotNull SQLDatabaseAPI database) {
+        try {
+            Connection connection = database.getConnection();
+        } catch (SQLException e) {
             Stargate.log(e);
         }
     }
