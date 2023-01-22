@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class DataMigration_1_0_14 extends DataMigration {
     private static HashMap<String, String> CONFIG_CONVERSIONS;
@@ -111,7 +112,7 @@ public class DataMigration_1_0_14 extends DataMigration {
     }
 
     private void insertNetworkFlags(Connection connection, Map<TwoTuple<String, String>, PortalFlag> portalsLackingFlagsMap, TableNameConfiguration nameConfiguration, StorageType type, DatabaseDriver driver) throws SQLException {
-        SQLQuery query = type == StorageType.LOCAL ? SQLQuery.INSERT_INTER_PORTAL_FLAG_RELATION : SQLQuery.INSERT_INTER_PORTAL_FLAG_RELATION;
+        SQLQuery query = type == StorageType.LOCAL ? SQLQuery.INSERT_PORTAL_FLAG_RELATION : SQLQuery.INSERT_INTER_PORTAL_FLAG_RELATION;
         String queryString = nameConfiguration.replaceKnownTableNames(SQLQueryHandler.getQuery(query,driver));
         for(TwoTuple<String, String> key : portalsLackingFlagsMap.keySet()) {
             PortalFlag flag = portalsLackingFlagsMap.get(key);

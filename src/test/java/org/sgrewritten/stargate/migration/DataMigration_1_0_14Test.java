@@ -47,14 +47,15 @@ class DataMigration_1_0_14Test {
     void tearDown() {
         Assertions.assertTrue(sqlDatabaseFile.delete());
         Assertions.assertTrue(oldSqlDatabaseFile.renameTo(sqlDatabaseFile));
+        MockBukkit.unmock();
     }
 
     @Test
     void run_CheckFlagFix() throws SQLException {
         migration.run(database);
         Assertions.assertTrue(portalHasFlag(PortalFlag.CUSTOM_NETWORK,"portal","network"));
-        Assertions.assertTrue(portalHasFlag(PortalFlag.DEFAULT_NETWORK,"portal2",LocalNetwork.DEFAULT_NET_ID));
         Assertions.assertTrue(portalHasFlag(PortalFlag.PERSONAL_NETWORK,"portal1",UUID_STRING));
+        Assertions.assertTrue(portalHasFlag(PortalFlag.DEFAULT_NETWORK,"portal2",LocalNetwork.DEFAULT_NET_ID));
     }
     
     private boolean portalHasFlag(PortalFlag flag, String portalName, String networkName) throws SQLException {
