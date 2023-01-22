@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.util.database.DatabaseHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Objects;
@@ -35,11 +36,28 @@ public class DataMigration_1_0_14 extends DataMigration {
         } catch (SQLException | IOException e) {
             Stargate.log(e);
         }
+        
+        try {
+            addLackingNetworkFlags(database);
+        } catch (SQLException e) {
+            Stargate.log(e);
+        }
     }
 
     @Override
     public int getConfigVersion() {
         return 7;
+    }
+    
+    private void addLackingNetworkFlags(@NotNull SQLDatabaseAPI database) throws SQLException {
+        Connection connection = null;
+        try {
+            connection = database.getConnection();
+        } finally {
+            if(connection != null) {
+                connection.close();
+            }
+        }
     }
 
     @Override
