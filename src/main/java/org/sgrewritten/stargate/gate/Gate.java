@@ -23,6 +23,7 @@ import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.gate.control.ControlMechanism;
+import org.sgrewritten.stargate.api.gate.control.GateActivationHandler;
 import org.sgrewritten.stargate.api.gate.control.GateTextDisplayHandler;
 import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
@@ -30,6 +31,9 @@ import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.gate.control.AlwaysOnControlMechanism;
+import org.sgrewritten.stargate.gate.control.ButtonControlMechanism;
+import org.sgrewritten.stargate.gate.control.SignControlMechanism;
 import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.vectorlogic.MatrixVectorOperation;
@@ -142,49 +146,15 @@ public class Gate implements GateAPI {
     private void drawSigns(String[] signLines) {
         GateTextDisplayHandler drawer = (GateTextDisplayHandler) controlMechanisms.get(MechanismType.SIGN);
         drawer.displayText(signLines);
-        
-        
-        
-        for (GatePosition portalPosition : portalPositions) {
-            if (portalPosition.getPositionType() != MechanismType.SIGN) {
-                continue;
-            }
-            Location signLocation = getLocation(portalPosition.getPositionLocation());
-            BlockState signState = signLocation.getBlock().getState();
-            if (!(signState instanceof Sign)) {
-                Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
-                return;
-            }
-
-            Sign sign = (Sign) signState;
-            for (int i = 0; i < 4; i++) {
-                sign.setLine(i, signLines[i]);
-            }
-            Stargate.addSynchronousTickAction(new BlockSetAction(sign, true));
-        }
     }
 
     /**
      * Draws this gate's button
      */
     private void drawButtons() {
-        for (GatePosition portalPosition : portalPositions) {
-            if (portalPosition.getPositionType() != MechanismType.BUTTON) {
-                continue;
-            }
-
-            Location buttonLocation = getLocation(portalPosition.getPositionLocation());
-            Material blockType = buttonLocation.getBlock().getType();
-            if (ButtonHelper.isButton(blockType)) {
-                continue;
-            }
-            Material buttonMaterial = ButtonHelper.getButtonMaterial(getFormat().getIrisMaterial(false));
-            Stargate.log(Level.FINEST, "buttonMaterial: " + buttonMaterial);
-            Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
-            buttonData.setFacing(facing);
-
-            buttonLocation.getBlock().setBlockData(buttonData);
-        }
+        GateActivationHandler drawer = (GateActivationHandler) controlMechanisms.get(MechanismType.BUTTON);
+        Material buttonMaterial = ButtonHelper.getButtonMaterial(getFormat().getIrisMaterial(false));
+        drawer.drawButton(buttonMaterial,facing);
     }
 
     @Override
@@ -355,39 +325,6 @@ public class Gate implements GateAPI {
      * @param alwaysOn <p>Whether this gate is always on</p>
      */
     private void calculatePortalPositions(boolean alwaysOn) {
-        //First find buttons and signs on the Stargate
-        List<BlockVector> registeredControls = getExistingControlPositions(alwaysOn);
-
-        //Return if no button is necessary
-        if (alwaysOn) {
-            return;
-        }
-        //Return if a button has already been registered
-        for (GatePosition portalPosition : portalPositions) {
-            if (portalPosition.getPositionType() == MechanismType.BUTTON) {
-                return;
-            }
-        }
-
-        //Add a button to the first available control block
-        for (BlockVector buttonVector : getFormat().getControlBlocks()) {
-            if (registeredControls.contains(buttonVector)) {
-                continue;
-            }
-            portalPositions.add(new GatePosition(MechanismType.BUTTON, buttonVector));
-            break;
-        }
-
-        //GATE_CONTROLS_FAULT
-        //TODO: What to do if no available control block?
-    }
-
-    /**
-     * Gets positions for any controls built on the Stargate
-     *
-     * @return <p>The vectors found containing controls</p>
-     */
-    private List<BlockVector> getExistingControlPositions(boolean alwaysOn) {
         List<BlockVector> foundVectors = new ArrayList<>();
         for (BlockVector blockVector : getFormat().getControlBlocks()) {
             Material material = getLocation(blockVector).getBlock().getType();
@@ -396,13 +333,20 @@ public class Gate implements GateAPI {
             }
 
             if (Tag.WALL_SIGNS.isTagged(material)) {
-                portalPositions.add(new GatePosition(MechanismType.SIGN, blockVector));
-            } else if (!alwaysOn && ButtonHelper.isButton(material)) {
-                portalPositions.add(new GatePosition(MechanismType.BUTTON, blockVector));
+                SignControlMechanism signMechanism = new SignControlMechanism(blockVector, this);
+                portalPositions.add(signMechanism);
+                this.setPortalControlMechanism(signMechanism);
+            } else {
+                if (!alwaysOn) {
+                    ButtonControlMechanism buttonMechanism = new ButtonControlMechanism(blockVector, this);
+                    portalPositions.add(buttonMechanism);
+                    this.setPortalControlMechanism(buttonMechanism);
+                } else {
+                    this.setPortalControlMechanism(new AlwaysOnControlMechanism());
+                }
             }
             foundVectors.add(blockVector);
         }
-        return foundVectors;
     }
 
     /**
@@ -464,19 +408,7 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public void addPortalPosition(Location location) {
-        BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
-        Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position", relativeBlockVector));
-        this.addPortalPosition(relativeBlockVector);
-    }
-
-    /**
-     * Add a position specific for this Gate
-     *
-     * @param relativeBlockVector <p> The relative position in format space</p>
-     */
-    public void addPortalPosition(BlockVector relativeBlockVector) {
-        GatePosition pos = new GatePosition(relativeBlockVector);
+    public void addPortalPosition(GatePosition pos) {
         this.portalPositions.add(pos);
     }
 
@@ -497,5 +429,11 @@ public class Gate implements GateAPI {
     @Override
     public ControlMechanism getPortalControlMechanism(@NotNull MechanismType type) {
         return controlMechanisms.get(type);
+    }
+
+    @Override
+    public GatePosition getPortalPosition(@NotNull Location location) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

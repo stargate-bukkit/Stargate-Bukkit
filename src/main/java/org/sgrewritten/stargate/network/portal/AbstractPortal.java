@@ -25,6 +25,7 @@ import org.sgrewritten.stargate.api.event.StargateOpenEvent;
 import org.sgrewritten.stargate.api.event.StargateSignFormatEvent;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.gate.control.GateTextDisplayHandler;
 import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.manager.PermissionManager;
 import org.sgrewritten.stargate.api.network.Network;
@@ -79,7 +80,6 @@ public abstract class AbstractPortal implements RealPortal {
     protected UUID openFor;
     protected Portal destination = null;
     protected Portal overriddenDestination = null;
-    protected LineFormatter colorDrawer;
 
     private long openTime = -1;
     private UUID ownerUUID;
@@ -117,8 +117,6 @@ public abstract class AbstractPortal implements RealPortal {
             throw new NameLengthException("Invalid length of name '" + name + "' , namelength must be above 0 and under " + Stargate.getMaxTextLength());
         }
 
-        colorDrawer = new NoLineColorFormatter();
-
         if (gate.getFormat() != null && gate.getFormat().isIronDoorBlockable()) {
             flags.add(PortalFlag.IRON_DOOR);
         }
@@ -131,14 +129,6 @@ public abstract class AbstractPortal implements RealPortal {
 
         AbstractPortal.portalCount++;
         AbstractPortal.allUsedFlags.addAll(flags);
-    }
-
-    @Override
-    public List<Location> getPortalPosition(MechanismType type) {
-        List<Location> positions = new ArrayList<>();
-        gate.getPortalPositions().stream().filter((position) -> position.getPositionType() == type).forEach(
-                (position) -> positions.add(gate.getLocation(position.getPositionLocation())));
-        return positions;
     }
 
     @Override
@@ -355,6 +345,8 @@ public abstract class AbstractPortal implements RealPortal {
             return;
         }
 
+        ((GateTextDisplayHandler)this.getGate().getPortalControlMechanism(MechanismType.SIGN)).setSignColor(color);
+        
         for (Location location : this.getPortalPosition(MechanismType.SIGN)) {
             if (!(location.getBlock().getState() instanceof Sign)) {
                 Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s \n"

@@ -75,15 +75,6 @@ public interface RealPortal extends Portal {
      */
     Location getExit();
 
-
-    /**
-     * Gets the location of all positions of the specified portal position type
-     *
-     * @param type <p> The type of portalPosition </p>
-     * @return <p>The location of this portal's signs</p>
-     */
-    List<Location> getPortalPosition(MechanismType type);
-
     /**
      * Set meta data for this portal
      * @param data <p> The meta data to set </p>

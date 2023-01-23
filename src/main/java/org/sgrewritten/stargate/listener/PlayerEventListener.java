@@ -74,85 +74,13 @@ public class PlayerEventListener implements Listener {
             return;
         }
 
-        // TODO material optimisation?
         RealPortal portal = registry.getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
         if (portal == null) {
             return;
         }
-
-        handleRelevantClickEvent(block, portal, event);
-    }
-
-    /**
-     * Handles a right-click event that is known to be relevant
-     *
-     * @param block  <p>The block that was interacted with</p>
-     * @param portal <p>The portal the block belongs to</p>
-     * @param event  <p>The player interact event to handle</p>
-     */
-    private void handleRelevantClickEvent(Block block, RealPortal portal, PlayerInteractEvent event) {
-        Material blockMaterial = block.getType();
-        Player player = event.getPlayer();
-
-        if (Tag.WALL_SIGNS.isTagged(blockMaterial)) {
-            if (event.getAction() == Action.RIGHT_CLICK_BLOCK && dyePortalSignText(event, portal)) {
-                portal.setSignColor(ColorConverter.getDyeColorFromMaterial(event.getMaterial()));
-                event.setUseInteractedBlock(Event.Result.ALLOW);
-                return;
-            }
+        if(portal.getGate().getPortalPosition(block.getLocation()).onBlockClick(event, portal)) {
             loggingCompatability.logPlayerInteractEvent(event);
-            event.setUseInteractedBlock(Event.Result.DENY);
-            if (portal.isOpenFor(player)) {
-                Stargate.log(Level.FINEST, "Player name=" + player.getName());
-                portal.onSignClick(event);
-                return;
-            }
         }
-        if (ButtonHelper.isButton(blockMaterial)) {
-            portal.onButtonClick(event);
-            loggingCompatability.logPlayerInteractEvent(event);
-            event.setUseInteractedBlock(Event.Result.DENY);
-        }
-
-    }
-
-    /**
-     * Tries to dye the text of a portals sign if the player is holding a dye and has enough permissions
-     *
-     * @param event  <p>The interact event causing this method to be triggered</p>
-     * @param portal <p>The portal whose sign to apply dye to<p>
-     * @return <p>True if the dye should be applied</p>
-     */
-    private boolean dyePortalSignText(PlayerInteractEvent event, RealPortal portal) {
-        ItemStack item = event.getItem();
-        if (!itemIsDye(item)) {
-            return false;
-        }
-
-        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(),languageManager);
-        boolean hasPermission = permissionManager.hasCreatePermissions(portal);
-        if (!hasPermission) {
-            event.getPlayer().sendMessage(permissionManager.getDenyMessage());
-        }
-        return hasPermission;
-    }
-
-    /**
-     * Checks if the given item stack is a type of dye
-     *
-     * @param item <p>The item to check</p>
-     * @return <p>True if the item stack is a type of dye</p>
-     */
-    private boolean itemIsDye(ItemStack item) {
-        if (item == null) {
-            return false;
-        }
-        String itemName = item.getType().toString();
-        Material glowInkSac = Material.matchMaterial("GLOW_INK_SAC");
-        if (glowInkSac != null && item.getType() == glowInkSac) {
-            return true;
-        }
-        return (itemName.contains("DYE") || item.getType() == Material.INK_SAC);
     }
 
     /**
