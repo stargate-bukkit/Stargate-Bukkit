@@ -55,7 +55,7 @@ public class DataMigrator {
         fileConfig.load(configurationFile);
         this.fileConfig = fileConfig;
         this.configModifications = fileConfig.getValues(true);
-        this.configVersion = fileConfig.getInt("configVersion");
+        this.configVersion = fileConfig.getInt("configVersion",0);
         this.configFile = configurationFile;
     }
 
