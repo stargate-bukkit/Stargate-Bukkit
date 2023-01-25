@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.exception;
 
+import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 
 public abstract class TranslatableException extends Exception {
@@ -14,5 +15,9 @@ public abstract class TranslatableException extends Exception {
         super(message);
     }
     
-    public abstract TranslatableMessage getTranslatableMessage();
+    protected abstract TranslatableMessage getTranslatableMessage();
+    
+    public String getLocalisedMessage(LanguageManager manager) {
+        return manager.getErrorMessage(getTranslatableMessage());
+    };
 }

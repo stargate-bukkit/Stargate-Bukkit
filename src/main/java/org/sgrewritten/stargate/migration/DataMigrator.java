@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.formatting.LanguageManager;
@@ -46,7 +47,7 @@ public class DataMigrator {
         // migration
         MIGRATIONS = new DataMigration[]{
                 new DataMigration_1_0_0(server, registry, logger,languageManager,economyManager,properties),
-                new DataMigration_1_0_12()
+                new DataMigration_1_0_14()
         };
 
         //Not StargateConfiguration, as we don't want to save comments
@@ -54,7 +55,7 @@ public class DataMigrator {
         fileConfig.load(configurationFile);
         this.fileConfig = fileConfig;
         this.configModifications = fileConfig.getValues(true);
-        this.configVersion = fileConfig.getInt("configVersion");
+        this.configVersion = fileConfig.getInt("configVersion",0);
         this.configFile = configurationFile;
     }
 
@@ -91,10 +92,10 @@ public class DataMigrator {
     /**
      * Runs all relevant config migrations
      */
-    public void run() {
+    public void run(@NotNull SQLDatabaseAPI database) {
         for (DataMigration migration : MIGRATIONS) {
             if (isMigrationNecessary(migration)) {
-                migration.run();
+                migration.run(database);
                 configVersion = migration.getConfigVersion();
             }
         }

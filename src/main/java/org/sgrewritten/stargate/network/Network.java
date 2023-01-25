@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.network;
 
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -132,6 +133,7 @@ public interface Network {
      * @param newName
      * @throws InvalidNameException
      * @throws NameLengthException 
+     * @throws UnimplementedFlagException 
      */
-    void setID(String newName) throws InvalidNameException, NameLengthException;
+    void setID(String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
 }

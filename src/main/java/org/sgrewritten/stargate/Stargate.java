@@ -128,7 +128,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private StorageAPI storageAPI;
     private LanguageManager languageManager;
     private BungeeManager bungeeManager;
-    private static final int CURRENT_CONFIG_VERSION = 6;
+    private static final int CURRENT_CONFIG_VERSION = 7;
     private SynchronousPopulator synchronousTickPopulator = new SynchronousPopulator();
     private SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
     private static final int MAX_TEXT_LENGTH = 13;
@@ -182,12 +182,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             bungeeManager = new StargateBungeeManager(this.getRegistry(),this.getLanguageManager());
             blockLogger = new CoreProtectManager();
             storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(DATA_FOLDER, INTERNAL_FOLDER, INTERNAL_PROPERTIES_FILE));
-            if (ConfigurationHelper.getInteger(ConfigurationOption.CONFIG_VERSION) != CURRENT_CONFIG_VERSION) {
-                try {
-                  this.migrateConfigurationAndData();
-                } catch (IOException | InvalidConfigurationException | SQLException e) {
-                    Stargate.log(e);
-                }
+            try {
+                this.migrateConfigurationAndData();
+            } catch (IOException | InvalidConfigurationException | SQLException e) {
+                Stargate.log(e);
             }
 
             loadGateFormats();
@@ -461,7 +459,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private void migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException {
         File databaseFile = new File(this.getDataFolder(), "stargate.db");
         SQLDatabaseAPI database = new SQLiteDatabase(databaseFile);
-
         StorageAPI storageAPI = new SQLDatabase(database, false, false, this, this.getLanguageManager());
         RegistryAPI registry = new StargateRegistry(storageAPI);
 
@@ -475,7 +472,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             dataMigrator.updateFileConfiguration(getConfig(), updatedConfig);
             this.reloadConfig();
             this.loadGateFormats();
-            dataMigrator.run();
+            dataMigrator.run(database);
         }
     }
 

@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.database;
 
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -102,8 +103,9 @@ public interface StorageAPI {
      * @return The network that was created
      * @throws InvalidNameException <p>If the given network name is invalid</p>
      * @throws NameLengthException 
+     * @throws UnimplementedFlagException 
      */
-    Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws InvalidNameException, NameLengthException;
+    Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
 
 
     /**

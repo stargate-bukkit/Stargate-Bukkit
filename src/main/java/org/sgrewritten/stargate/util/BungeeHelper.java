@@ -7,6 +7,7 @@ import com.google.gson.JsonPrimitive;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.formatting.LanguageManager;
@@ -86,8 +87,9 @@ public final class BungeeHelper {
      * @param registry      <p>The registry to use</p>
      * @param bungeeNetwork <p>The name of the legacy bungee network</p>
      * @return <p>The legacy bungee network, or null if unobtainable</p>
+     * @throws UnimplementedFlagException 
      */
-    public static Network getLegacyBungeeNetwork(RegistryAPI registry, String bungeeNetwork) {
+    public static Network getLegacyBungeeNetwork(RegistryAPI registry, String bungeeNetwork) throws UnimplementedFlagException {
         Network network = registry.getNetwork(bungeeNetwork, false);
         //Create the legacy network if it doesn't already exist
         try {

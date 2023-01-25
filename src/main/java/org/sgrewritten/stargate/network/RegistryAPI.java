@@ -2,8 +2,10 @@ package org.sgrewritten.stargate.network;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
@@ -154,8 +156,9 @@ public interface RegistryAPI {
      * @throws InvalidNameException <p>If the given network name is invalid</p>
      * @throws NameLengthException 
      * @throws NameConflictException 
+     * @throws UnimplementedFlagException 
      */
-    Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException;
+    Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException;
 
     /**
      * Creates a new network assigned to this registry
@@ -167,8 +170,9 @@ public interface RegistryAPI {
      * @throws InvalidNameException <p>If the given network name is invalid</p>
      * @throws NameLengthException 
      * @throws NameConflictException 
+     * @throws UnimplementedFlagException 
      */
-    Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException;
+    Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException;
     
     /**
      * Checks whether the given network name exists
@@ -186,7 +190,7 @@ public interface RegistryAPI {
      * @param isBungee <p>Whether the network is a BungeeCord network</p>
      * @return <p>The network with the given name</p>
      */
-    Network getNetwork(String name, boolean isBungee);
+    @Nullable Network getNetwork(String name, boolean isBungee);
 
     /**
      * Gets the map storing all BungeeCord networks
@@ -208,8 +212,9 @@ public interface RegistryAPI {
      * @param newName   <p> The new name of the network </p>
      * @throws InvalidNameException 
      * @throws NameLengthException 
+     * @throws UnimplementedFlagException 
      */
-    void rename(Network network, String newName) throws InvalidNameException, NameLengthException;
+    void rename(Network network, String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
 
     /**
      * 

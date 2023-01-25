@@ -20,8 +20,10 @@ gateCreateFallback=Unable to create your gate on the %network% network; trying y
 
 # Gate Construction Problems
 faultNetwork=You do not have access to that network!
+faultNetworkConflict=Network conflicts with a network of different type!
 faultLayout=You do not have access to that gate layout!
 faultLength=Name too short or too long!
+faultName=Invalid name for the specified network type!
 faultExists=A gate by that name already exists!
 faultFull=That network is full!
 faultWorldDeny=You do not have access to world %world%!

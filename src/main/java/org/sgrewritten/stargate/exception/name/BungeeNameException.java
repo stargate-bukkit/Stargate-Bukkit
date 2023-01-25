@@ -13,7 +13,7 @@ public class BungeeNameException extends TranslatableException{
     }
 
     @Override
-    public TranslatableMessage getTranslatableMessage() {
+    protected TranslatableMessage getTranslatableMessage() {
         return translatableMessage;
     }
 

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.container.TwoTuple;
+import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -97,16 +98,15 @@ public class DataMigration_1_0_0 extends DataMigration {
     }
 
     @Override
-    public void run() {
+    public void run(@NotNull SQLDatabaseAPI database) {
         try {
             String portalFolderName = (String) oldConfig.get(LegacyDataHandler
                     .findConfigKey(new String[] { "portal-folder", "folders.portalFolder" }, oldConfig));
             String defaultName = (String) oldConfig.get(LegacyDataHandler
                     .findConfigKey(new String[] { "gates.defaultGateNetwork", "default-gate-network" }, oldConfig));
-            Stargate.log(Level.INFO,"defaultName:" + defaultName);
             migratePortals(portalFolderName, defaultName, languageManager, economyManager);
             moveFilesToDebugDirectory(portalFolderName);
-        } catch (IOException | InvalidStructureException | InvalidNameException | TranslatableException e) {
+        } catch (IOException | InvalidStructureException | TranslatableException e) {
             Stargate.log(e);
         } catch (NullPointerException e) {
             Stargate.log(Level.SEVERE,

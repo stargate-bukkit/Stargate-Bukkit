@@ -219,7 +219,7 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void setNetwork(Network targetNetwork) throws NameConflictException {
         if (targetNetwork.getPortal(this.name) != null) {
-            throw new NameConflictException(String.format("Portal of name %s already exists in network %s" , this.name, targetNetwork.getId()));
+            throw new NameConflictException(String.format("Portal of name %s already exists in network %s" , this.name, targetNetwork.getId()),false);
         }
         this.network = targetNetwork;
         //TODO: update network in database

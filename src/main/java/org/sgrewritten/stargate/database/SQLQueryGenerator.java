@@ -94,14 +94,6 @@ public class SQLQueryGenerator {
         }
     }
 
-    public PreparedStatement generateAddMetaToPortalTableStatement(Connection connection, StorageType portalType) throws SQLException {
-        if (portalType == StorageType.LOCAL) {
-            return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_PORTAL));
-        } else {
-            return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_INTER_PORTAL));
-        }
-    }
-
     /**
      * Gets a prepared statement for creating the portal position type table
      *
@@ -148,14 +140,6 @@ public class SQLQueryGenerator {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_PORTAL_POSITION));
         } else {
             return prepareQuery(connection, getQuery(SQLQuery.CREATE_TABLE_INTER_PORTAL_POSITION));
-        }
-    }
-
-    public PreparedStatement generateAddMetaToPortalPositionTableStatement(Connection connection, StorageType type) throws SQLException {
-        if (type == StorageType.LOCAL) {
-            return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_PORTAL_POSITION));
-        } else {
-            return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_INTER_PORTAL_POSITION));
         }
     }
 

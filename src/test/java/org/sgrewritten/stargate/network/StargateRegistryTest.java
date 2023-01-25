@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -22,7 +23,7 @@ class StargateRegistryTest {
     private Network personalNetwork;
 
     @BeforeEach
-    void setUp() throws NameLengthException, NameConflictException, InvalidNameException {
+    void setUp() throws NameLengthException, NameConflictException, InvalidNameException, UnimplementedFlagException {
         server = MockBukkit.mock();
         player = server.addPlayer();
         registry = new StargateRegistry(new FakeStorage());

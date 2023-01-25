@@ -40,6 +40,7 @@ import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.util.FakeLanguageManager;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.LegacyDataHandler;
+import org.sgrewritten.stargate.util.SQLTestHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -108,7 +109,7 @@ public class DataMigratorTest {
         knarvikConfigChecks.put("defaultGateNetwork", "knarvik");
         knarvikConfigChecks.put("handleVehicles", false);
         Map<String, String> knarvikPortalChecks = new HashMap<>();
-        knarvikPortalChecks.put("knarvik1", LocalNetwork.DEFAULT_NET_ID);
+        knarvikPortalChecks.put("§6knarvik1", LocalNetwork.DEFAULT_NET_ID);
         knarvikPortalChecks.put("knarvik2", LocalNetwork.DEFAULT_NET_ID);
         knarvikPortalChecks.put("knarvik3", LocalNetwork.DEFAULT_NET_ID);
         TwoTuple<Map<String, Object>, Map<String, String>> knarvikChecks = new TwoTuple<>(knarvikConfigChecks,
@@ -128,7 +129,7 @@ public class DataMigratorTest {
         Map<String, Object> lcloConfigChecks = new HashMap<>();
         lcloConfigChecks.put("defaultGateNetwork", "lclco");
         Map<String, String> lcloPortalChecks = new HashMap<>();
-        lcloPortalChecks.put("lclo1", "d2b440c3-edde-4443-899e-6825c31d0919");
+        lcloPortalChecks.put("§6lclo1", "d2b440c3-edde-4443-899e-6825c31d0919");
         lcloPortalChecks.put("lclo2", "lclo");
         TwoTuple<Map<String, Object>, Map<String, String>> lcloChecks = new TwoTuple<>(lcloConfigChecks,
                 lcloPortalChecks);
@@ -143,7 +144,6 @@ public class DataMigratorTest {
     @AfterAll
     public static void tearDown() throws IOException, SQLException, InvalidConfigurationException, InterruptedException {
         MockBukkit.unmock();
-        sqlDatabase.getConnection().close();
         
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
@@ -220,11 +220,13 @@ public class DataMigratorTest {
     @ParameterizedTest
     @MethodSource("getTestedConfigNames")
     @Order(2)
-    public void doOtherRefactorCheck(String key) {
+    public void doOtherRefactorCheck(String key) throws SQLException {
         Stargate.log(Level.FINE,
                 String.format("####### Performing misc. refactoring based on the config-file %s%n", key));
         DataMigrator dataMigrator = migratorMap.get(key);
-        dataMigrator.run();
+        Connection connection = sqlDatabase.getConnection();
+        connection.close();
+        dataMigrator.run(sqlDatabase);
     }
 
     @Test

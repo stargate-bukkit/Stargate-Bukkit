@@ -7,6 +7,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -126,14 +127,20 @@ public final class NetworkCreationHelper {
      * @return <p>The network the portal should be connected to</p>
      * @throws InvalidNameException <p>If the network name is invalid</p>
      * @throws NameLengthException 
+     * @throws UnimplementedFlagException 
+     * @throws NameConflictException 
      */
-    public static Network selectNetwork(String name, NetworkType type, boolean isInterserver, RegistryAPI registry) throws InvalidNameException, NameLengthException {
+    public static Network selectNetwork(String name, NetworkType type, boolean isInterserver, RegistryAPI registry) throws InvalidNameException, NameLengthException, UnimplementedFlagException, NameConflictException {
         name = NameHelper.getTrimmedName(name);
         try {
             registry.createNetwork(name, type, isInterserver, false);
-        } catch (NameConflictException e) {
+        } catch (NameConflictException ignored) {
         }
-        return registry.getNetwork(name, isInterserver);
+        Network network = registry.getNetwork(name, isInterserver);
+        if(network == null || network.getType() != type) {
+            throw new NameConflictException("Could not find or create a network of type '" + type + "' with name '" + name +"'", true);
+        }
+        return network;
     }
 
     private static TwoTuple<NetworkType, String> getNetworkDataFromImplicitDefinition(String name, Player player,
@@ -159,12 +166,13 @@ public final class NetworkCreationHelper {
         String nameToTestFor = name;
         NetworkType type = NetworkType.getNetworkTypeFromHighlight(highlight);
         if (type == NetworkType.CUSTOM || type == NetworkType.TERMINAL) {
-            UUID possiblePlayerUUID = getPlayerUUID(nameToTestFor);
             int i = 1;
+            UUID possiblePlayerUUID = getPlayerUUID(nameToTestFor);
             while (getDefaultNamesTaken().contains(nameToTestFor.toLowerCase())
                     || (type == NetworkType.TERMINAL && possiblePlayerUUID != null
                             && registry.getNetwork(possiblePlayerUUID.toString(), isInterserver) != null)) {
                 nameToTestFor = name + i;
+                possiblePlayerUUID = getPlayerUUID(nameToTestFor);
                 i++;
             }
         }
@@ -185,7 +193,7 @@ public final class NetworkCreationHelper {
      * @param playerName <p>The name of a player</p>
      * @return <p>The player's unique ID</p>
      */
-    private static UUID getPlayerUUID(String playerName) {
+    public static UUID getPlayerUUID(String playerName) {
         return Bukkit.getOfflinePlayer(playerName).getUniqueId();
     }
 

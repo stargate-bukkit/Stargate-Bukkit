@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class DatabaseHelper {
     /**
@@ -59,13 +60,6 @@ public class DatabaseHelper {
         runStatement(portalRelationStatement);
         PreparedStatement portalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, StorageType.LOCAL);
         runStatement(portalViewStatement);
-
-        try {
-            // Adds a new column to some tables, if this already has been done it throws an sql error
-            // Done separatly as this is part of a refactor
-            DatabaseHelper.tableRefactor_1_0_0_13(connection, sqlQueryGenerator, useInterServerNetworks);
-        } catch (SQLException ignored) {
-        }
 
         if (!useInterServerNetworks) {
             connection.close();
@@ -190,14 +184,5 @@ public class DatabaseHelper {
                 : "";
         String serverPrefix = usingRemoteDatabase ? Stargate.getServerUUID() : "";
         return new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
-    }
-
-    public static void tableRefactor_1_0_0_13(Connection connection, SQLQueryGenerator sqlQueryGenerator, boolean useInterServerNetworks) throws SQLException {
-        DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalTableStatement(connection, StorageType.LOCAL));
-        DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalPositionTableStatement(connection, StorageType.LOCAL));
-        if (useInterServerNetworks) {
-            DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalTableStatement(connection, StorageType.INTER_SERVER));
-            DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalPositionTableStatement(connection, StorageType.INTER_SERVER));
-        }
     }
 }

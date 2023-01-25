@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.util;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,13 +15,19 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.tika.parser.txt.CharsetDetector;
+import org.apache.tika.parser.txt.CharsetMatch;
 import org.sgrewritten.stargate.Stargate;
+
 
 /**
  * Utility class for helping with file reading and writing
  */
 public final class FileHelper {
 
+    private static final String UTF8_BOM = "\uFEFF";
+    private static final int utf8_bom = 0xfeff;
+    
     private FileHelper() {
 
     }
@@ -34,8 +41,24 @@ public final class FileHelper {
      */
     public static BufferedReader getBufferedReader(File file) throws IOException {
         InputStream inputStream = Files.newInputStream(file.toPath());
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        return new BufferedReader(inputStreamReader);
+        CharsetDetector charsetDetector = new CharsetDetector();
+        charsetDetector.setText( inputStream instanceof BufferedInputStream ? inputStream : new BufferedInputStream(inputStream) );
+        charsetDetector.enableInputFilter(true);
+        CharsetMatch cm = charsetDetector.detect();
+        String encoding =  cm.getName();
+        return getBufferedReader(file, encoding);
+    }
+    
+    /**
+     * Gets a buffered reader for reading the given file
+     * 
+     * @param file <p>The file to read</p>
+     * @param encoding <p>The encoding of the file </p>
+     * @return <p>A buffered reader for reading the given file</p>
+     * @throws IOException
+     */
+    public static BufferedReader getBufferedReader(File file, String encoding) throws IOException {
+        return new BufferedReader(new InputStreamReader(Files.newInputStream(file.toPath()), encoding));
     }
 
     /**
@@ -102,6 +125,17 @@ public final class FileHelper {
             Stargate.log(e);
         }
     }
+    
+    public static String readStreamToString(InputStream stream) throws IOException {
+        BufferedReader reader = FileHelper.getBufferedReaderFromInputStream(stream);
+        String line = reader.readLine();
+        String lines = "";
+        while(line != null) {
+            lines = lines + line + "\n";
+            line = reader.readLine();
+        }
+        return lines;
+    }
 
     /**
      * Reads key/value pairs from an input stream
@@ -147,7 +181,6 @@ public final class FileHelper {
      * @return <p>A string guaranteed without a BOM</p>
      */
     public static String removeUTF8BOM(String string) {
-        String UTF8_BOM = "\uFEFF";
         if (string.startsWith(UTF8_BOM)) {
             string = string.substring(1);
         }
