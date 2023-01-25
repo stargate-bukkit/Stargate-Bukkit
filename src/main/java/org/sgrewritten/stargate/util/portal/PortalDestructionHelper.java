@@ -2,7 +2,6 @@ package org.sgrewritten.stargate.util.portal;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -34,7 +33,7 @@ public final class PortalDestructionHelper {
      */
     public static boolean destroyPortalIfHasPermissionAndCanPay(Player player, Portal portal, Runnable destroyAction, LanguageManager languageManager, StargateEconomyAPI economyManager) {
         int cost = ConfigurationHelper.getInteger(ConfigurationOption.DESTROY_COST);
-        StargatePermissionManager permissionManager = new StargatePermissionManager(player,languageManager);
+        StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
 
         boolean hasPermission = permissionManager.hasDestroyPermissions((RealPortal) portal);
         StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, player, !hasPermission,

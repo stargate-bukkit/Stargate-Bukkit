@@ -20,7 +20,7 @@ public class ColorNameInterpreterTest {
         for (String key : conversionTests.keySet()) {
             String testString = conversionTests.get(key);
             short expectedValue = Short.parseShort(key);
-            Stargate.log(Level.FINER,"testing for testString: " + testString);
+            Stargate.log(Level.FINER, "testing for testString: " + testString);
             short value = ColorConverter.getHue(ColorNameInterpreter.getColor(testString));
             Assertions.assertEquals(expectedValue, value);
         }

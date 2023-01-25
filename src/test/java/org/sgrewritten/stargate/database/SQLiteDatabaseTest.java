@@ -30,7 +30,7 @@ public class SQLiteDatabaseTest {
 
     @BeforeAll
     public static void setUp() throws SQLException, InvalidStructureException, InvalidNameException, NameLengthException {
-        Stargate.log(Level.FINE,"Setting up test data");
+        Stargate.log(Level.FINE, "Setting up test data");
         database = new SQLiteDatabase(new File("src/test/resources", "test.db"));
         nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargateLogger(), DatabaseDriver.SQLITE);
@@ -244,13 +244,13 @@ public class SQLiteDatabaseTest {
     void changeNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException, UnimplementedFlagException {
         tester.changeNames(StorageType.LOCAL);
     }
-    
+
     @Test
     @Order(7)
     void changeInterNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException, UnimplementedFlagException {
         tester.changeNames(StorageType.INTER_SERVER);
     }
-    
+
     @Test
     @Order(10)
     void destroyPortalTest() throws SQLException {

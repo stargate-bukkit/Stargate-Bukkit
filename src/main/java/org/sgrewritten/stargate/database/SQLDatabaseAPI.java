@@ -15,7 +15,7 @@ public interface SQLDatabaseAPI {
      * @throws SQLException <p>If unable to establish a database connection</p>
      */
     Connection getConnection() throws SQLException;
-    
+
     DatabaseDriver getDriver();
 
 }

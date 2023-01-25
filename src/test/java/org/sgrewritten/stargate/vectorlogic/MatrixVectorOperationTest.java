@@ -4,8 +4,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.sgrewritten.stargate.FakeStargate;
-import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 
 import java.util.ArrayList;

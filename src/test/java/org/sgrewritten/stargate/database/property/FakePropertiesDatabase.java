@@ -9,7 +9,7 @@ public class FakePropertiesDatabase implements StoredPropertiesAPI {
     public FakePropertiesDatabase() {
         properties = new Properties();
     }
-    
+
     @Override
     public String getProperty(StoredProperty property) {
         return properties.getProperty(property.getKey());

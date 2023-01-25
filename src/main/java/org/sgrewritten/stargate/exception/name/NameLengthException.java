@@ -6,7 +6,7 @@ import org.sgrewritten.stargate.formatting.TranslatableMessage;
 public class NameLengthException extends TranslatableException {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 3943182936599325569L;
 

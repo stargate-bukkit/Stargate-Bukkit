@@ -1,11 +1,6 @@
 package org.sgrewritten.stargate.migration;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
+import com.google.common.io.Files;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,26 +10,30 @@ import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.util.SQLTestHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 
-import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 class SQLDatabaseMigratorTest {
 
     private SQLDatabaseMigrator databaseMigrator;
     private SQLiteDatabase database;
     private TableNameConfiguration nameConfiguration;
-    private static final File sqlDatabaseFile =new File("src/test/resources", "alpha-1_0_0_11.db");
-    private static final File oldSqlDatabaseFile =new File("src/test/resources", "alpha-1_0_0_11.old");
-    
+    private static final File sqlDatabaseFile = new File("src/test/resources", "alpha-1_0_0_11.db");
+    private static final File oldSqlDatabaseFile = new File("src/test/resources", "alpha-1_0_0_11.old");
+
     @BeforeEach
     void setUp() throws SQLException, IOException {
         Files.copy(sqlDatabaseFile, oldSqlDatabaseFile);
-        
-        
+
+
         database = new SQLiteDatabase(sqlDatabaseFile);
-        nameConfiguration = new TableNameConfiguration("","");
-        databaseMigrator = new SQLDatabaseMigrator(database, nameConfiguration, "/migration/database/alpha-1_0_0_14",true);
+        nameConfiguration = new TableNameConfiguration("", "");
+        databaseMigrator = new SQLDatabaseMigrator(database, nameConfiguration, "/migration/database/alpha-1_0_0_14", true);
     }
-    
+
     @AfterEach
     void tearDown() {
         Assertions.assertTrue(sqlDatabaseFile.delete());
@@ -52,7 +51,7 @@ class SQLDatabaseMigratorTest {
             SQLTestHelper.checkIfHas(nameConfiguration.getPortalPositionTableName(), "portal1", "network1", connection);
         }
     }
-    
+
     @Test
     void rename_InterPortalPosition() throws SQLException, IOException {
         databaseMigrator.run();
@@ -64,7 +63,7 @@ class SQLDatabaseMigratorTest {
                     connection);
         }
     }
-    
+
     @Test
     void rename_PortalFlag() throws SQLException, IOException {
         databaseMigrator.run();
@@ -74,7 +73,7 @@ class SQLDatabaseMigratorTest {
             SQLTestHelper.checkIfHas(nameConfiguration.getFlagRelationTableName(), "portal1", "network1", connection);
         }
     }
-    
+
     @Test
     void rename_InterPortalFlag() throws SQLException, IOException {
         databaseMigrator.run();

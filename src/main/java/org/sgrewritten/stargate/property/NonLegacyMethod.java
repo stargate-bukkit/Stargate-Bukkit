@@ -58,14 +58,14 @@ public enum NonLegacyMethod {
      *
      * <p> EntityInsideBlockEvent was added to allow cancelling certain blocks from getting triggered by entities </p>
      */
-    ENTITY_INSIDE_BLOCK_EVENT("io.papermc.paper.event.entity.EntityInsideBlockEvent", "getBlock"), 
-    
+    ENTITY_INSIDE_BLOCK_EVENT("io.papermc.paper.event.entity.EntityInsideBlockEvent", "getBlock"),
+
     /**
      * The powered minecart getFuel method
      *
      * <p>This was added to Paper to change a powered minecart's z-push</p>
      */
-    GET_FUEL("org.bukkit.entity.minecart.PoweredMinecart","getFuel");
+    GET_FUEL("org.bukkit.entity.minecart.PoweredMinecart", "getFuel");
 
     private String classToCheckFor;
     private String methodInClassToCheckFor;

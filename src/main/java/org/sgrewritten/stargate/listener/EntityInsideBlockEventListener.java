@@ -6,7 +6,6 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 
@@ -20,7 +19,7 @@ public class EntityInsideBlockEventListener implements Listener {
     public EntityInsideBlockEventListener(RegistryAPI registry) {
         this.registry = registry;
     }
-    
+
     /**
      * Listens for the entity inside block event and cancels it if it's caused by a player entering a Stargate
      *

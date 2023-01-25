@@ -30,9 +30,10 @@ public final class GateFormatReader {
             Material.CAVE_AIR,
             Material.VOID_AIR,
     };
-    private static final Map<Material,Material> materialEdgecases = loadMaterialEdgecases();
+    private static final Map<Material, Material> materialEdgecases = loadMaterialEdgecases();
+
     static {
-        
+
     }
 
     private GateFormatReader() {
@@ -98,10 +99,10 @@ public final class GateFormatReader {
                     throw new ParsingErrorException("Invalid material ''" + stringId + "''");
                 }
             }
-            if(materialEdgecases.containsKey(id)) {
+            if (materialEdgecases.containsKey(id)) {
                 foundIDs.add(materialEdgecases.get(id));
             }
-            if(id.isBlock()) {
+            if (id.isBlock()) {
                 foundIDs.add(id);
             }
         }
@@ -123,7 +124,7 @@ public final class GateFormatReader {
      * @throws ParsingErrorException <p>If the gate file cannot be parsed</p>
      */
     protected static int readGateFileContents(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
-                                            List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
+                                              List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
         String line;
         boolean designing = false;
         int columns = 0;
@@ -195,7 +196,7 @@ public final class GateFormatReader {
      * @throws ParsingErrorException <p>If an invalid material is encountered</p>
      */
     protected static void readGateConfigValue(String line, Map<Character, Set<Material>> characterMaterialMap,
-                                            Map<String, String> config) throws ParsingErrorException {
+                                              Map<String, String> config) throws ParsingErrorException {
         String[] split = line.split("=");
         String key = split[0].trim();
         String value = split[1].trim();
@@ -245,14 +246,14 @@ public final class GateFormatReader {
         return foundIDs;
     }
 
-    private static Map<Material,Material> loadMaterialEdgecases(){
-        Map<Material,Material> materialEdgecases = new EnumMap<>(Material.class);
-        Map<String,String> temp = new HashMap<>();
+    private static Map<Material, Material> loadMaterialEdgecases() {
+        Map<Material, Material> materialEdgecases = new EnumMap<>(Material.class);
+        Map<String, String> temp = new HashMap<>();
         FileHelper.readInternalFileToMap("/util/materialEdgecases.properties", temp);
-        for(Material material : Material.values()) {
-            for(String edgecase : temp.keySet()) {
+        for (Material material : Material.values()) {
+            for (String edgecase : temp.keySet()) {
                 String type = material.toString().replaceAll(edgecase, "");
-                if(type.equals(material.toString())) {
+                if (type.equals(material.toString())) {
                     continue;
                 }
                 String replacement = temp.get(edgecase).replaceAll("\\*", type);
@@ -262,5 +263,5 @@ public final class GateFormatReader {
         }
         return materialEdgecases;
     }
-    
+
 }

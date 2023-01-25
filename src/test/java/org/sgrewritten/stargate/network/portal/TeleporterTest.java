@@ -1,13 +1,12 @@
 package org.sgrewritten.stargate.network.portal;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.awt.Desktop.Action;
-import java.io.File;
-import java.util.Objects;
-
+import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.WorldMock;
+import be.seeseemelk.mockbukkit.entity.HorseMock;
+import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import be.seeseemelk.mockbukkit.entity.PoweredMinecartMock;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
@@ -28,14 +27,9 @@ import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.util.FakeLanguageManager;
 import org.sgrewritten.stargate.util.FakeStorage;
-import org.sgrewritten.stargate.action.SimpleAction;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.WorldMock;
-import be.seeseemelk.mockbukkit.entity.HorseMock;
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import be.seeseemelk.mockbukkit.entity.PoweredMinecartMock;
+import java.io.File;
+import java.util.Objects;
 
 class TeleporterTest {
 
@@ -54,19 +48,19 @@ class TeleporterTest {
     private static SynchronousPopulator populator;
     private static PoweredMinecartMock furnaceMinecart;
     private static final File testGatesDir = new File("src/test/resources/gates");
-    
+
     @BeforeAll
-    public static void setup() throws NameLengthException, InvalidNameException, InvalidStructureException, UnimplementedFlagException{
+    public static void setup() throws NameLengthException, InvalidNameException, InvalidStructureException, UnimplementedFlagException {
         server = MockBukkit.mock();
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger())));
         world = server.addSimpleWorld("world");
         player = server.addPlayer();
-        destination = new Location(world,10,10,10);
-        fakePortalGenerator = new FakePortalGenerator("Portal","iPortal");
+        destination = new Location(world, 10, 10, 10);
+        fakePortalGenerator = new FakePortalGenerator("Portal", "iPortal");
         registry = new StargateRegistry(new FakeStorage());
-        
-        
-        horse = (HorseMock) world.spawnEntity(new Location(world,0,0,0), EntityType.HORSE);
+
+
+        horse = (HorseMock) world.spawnEntity(new Location(world, 0, 0, 0), EntityType.HORSE);
         horse.addPassenger(player);
         Network network = new LocalNetwork("custom", NetworkType.CUSTOM);
         RealPortal origin = fakePortalGenerator.generateFakePortal(world, network, "origin", false);
@@ -75,10 +69,10 @@ class TeleporterTest {
         teleporter = new Teleporter(destination, origin, destination.getGate().getFacing(),
                 origin.getGate().getFacing(), 0, "empty", new FakeLanguageManager(), new FakeEconomyManager(),
                 (action) -> populator.addAction(action));
-        furnaceMinecart = (PoweredMinecartMock) world.spawnEntity(new Location(world,0,0,0), EntityType.MINECART_FURNACE);
+        furnaceMinecart = (PoweredMinecartMock) world.spawnEntity(new Location(world, 0, 0, 0), EntityType.MINECART_FURNACE);
 
     }
-    
+
     @AfterAll
     public static void tearDown() {
         MockBukkit.unmock();
@@ -87,16 +81,16 @@ class TeleporterTest {
     @Test
     public void teleport() {
         teleporter.teleport(horse);
-        while(!populator.hasCompletedAllTasks()) {
+        while (!populator.hasCompletedAllTasks()) {
             populator.run();
         }
         Assertions.assertTrue(horse.hasTeleported());
     }
-    
+
     @Test
     public void teleport_FurnaceMinecart() {
         teleporter.teleport(furnaceMinecart);
-        while(!populator.hasCompletedAllTasks()) {
+        while (!populator.hasCompletedAllTasks()) {
             populator.run();
         }
         Assertions.assertTrue(furnaceMinecart.hasTeleported());

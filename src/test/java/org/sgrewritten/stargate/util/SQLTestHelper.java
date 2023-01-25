@@ -1,14 +1,14 @@
 package org.sgrewritten.stargate.util;
 
+import org.junit.jupiter.api.Assertions;
+import org.sgrewritten.stargate.Stargate;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.logging.Level;
-
-import org.junit.jupiter.api.Assertions;
-import org.sgrewritten.stargate.Stargate;
 
 public class SQLTestHelper {
     /**
@@ -18,7 +18,7 @@ public class SQLTestHelper {
      * @throws SQLException <p>If unable to get information about the table</p>
      */
     public static void printTableInfo(Level logLevel, String tableName, Connection connection, boolean isMySQL) throws SQLException {
-        Stargate.log(logLevel,"Getting table info for: " + tableName);
+        Stargate.log(logLevel, "Getting table info for: " + tableName);
         String statementMsg = String.format(!isMySQL ? "pragma table_info('%s');" : "DESCRIBE %s", tableName);
 
         PreparedStatement tableInfoStatement = connection.prepareStatement(statementMsg);
@@ -33,7 +33,7 @@ public class SQLTestHelper {
             Stargate.log(logLevel, msg);
         }
     }
-    
+
     /**
      * Checks if a table, where each element is identified by a name and a network does not contain an element
      *
@@ -44,7 +44,7 @@ public class SQLTestHelper {
      */
     public static void checkIfHasNot(String table, String name, String network, Connection connection) throws SQLException {
         PreparedStatement statement;
-        if(table.contains("PortalPosition")) {
+        if (table.contains("PortalPosition")) {
             statement = connection.prepareStatement("SELECT * FROM " + table +
                     " WHERE portalName = ? AND networkName = ?");
         } else {
@@ -57,10 +57,10 @@ public class SQLTestHelper {
         Assertions.assertFalse(set.next());
         statement.close();
     }
-    
+
     public static void checkIfHas(String table, String name, String network, Connection connection) throws SQLException {
         PreparedStatement statement;
-        if(table.contains("PortalPosition")) {
+        if (table.contains("PortalPosition")) {
             statement = connection.prepareStatement("SELECT * FROM " + table +
                     " WHERE portalName = ? AND networkName = ?");
         } else {

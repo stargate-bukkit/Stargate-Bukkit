@@ -6,8 +6,6 @@ import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalData;
@@ -114,7 +112,7 @@ public class PortalStorageHelper {
         if (portalData.destination == null || portalData.destination.trim().isEmpty()) {
             portalData.flags.add(PortalFlag.NETWORKED);
         }
-        if(portalProperties.length <= 9 || portalData.networkName.toLowerCase().equals(defaultNetworkName.toLowerCase())) {
+        if (portalProperties.length <= 9 || portalData.networkName.toLowerCase().equals(defaultNetworkName.toLowerCase())) {
             portalData.flags.add(PortalFlag.DEFAULT_NETWORK);
             portalData.networkName = LocalNetwork.DEFAULT_NET_ID;
         } else if (!ownerString.isEmpty()

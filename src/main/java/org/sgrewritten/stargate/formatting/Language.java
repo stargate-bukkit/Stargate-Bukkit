@@ -55,7 +55,7 @@ public enum Language {
      */
     EN_US("en-US", "en-US"),
     /**
-     * Spaniard Spanish 
+     * Spaniard Spanish
      */
     ES_ES("es-ES", "es-ES"),
     /**

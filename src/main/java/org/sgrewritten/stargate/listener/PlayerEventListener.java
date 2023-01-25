@@ -22,8 +22,8 @@ import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
-import org.sgrewritten.stargate.manager.BungeeManager;
 import org.sgrewritten.stargate.manager.BlockLoggingManager;
+import org.sgrewritten.stargate.manager.BungeeManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -50,8 +50,8 @@ public class PlayerEventListener implements Listener {
     private @NotNull BungeeManager bungeeManager;
     private @NotNull RegistryAPI registry;
     private @NotNull BlockLoggingManager loggingCompatability;
-    
-    public PlayerEventListener(@NotNull LanguageManager languageManager,@NotNull RegistryAPI registry,@NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatability){
+
+    public PlayerEventListener(@NotNull LanguageManager languageManager, @NotNull RegistryAPI registry, @NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatability) {
         this.languageManager = Objects.requireNonNull(languageManager);
         this.bungeeManager = Objects.requireNonNull(bungeeManager);
         this.registry = Objects.requireNonNull(registry);
@@ -129,7 +129,7 @@ public class PlayerEventListener implements Listener {
             return false;
         }
 
-        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(),languageManager);
+        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(), languageManager);
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         if (!hasPermission) {
             event.getPlayer().sendMessage(permissionManager.getDenyMessage());
