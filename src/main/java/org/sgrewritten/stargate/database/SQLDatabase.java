@@ -222,35 +222,18 @@ public class SQLDatabase implements StorageAPI {
             return;
         }
 
-        if (portalType == StorageType.INTER_SERVER) {
-            if (!portalData.serverUUID.equals(Stargate.getServerUUID())) {
-                Portal virtualPortal = new VirtualPortal(portalData.serverName, portalData.name, network, portalData.flags, portalData.ownerUUID);
-                try {
-                    network.addPortal(virtualPortal, false);
-                } catch (NameConflictException ignored) {
-                } catch (InvalidNameException e) {
-                    Stargate.log(e);
-                }
-                Stargate.log(Level.FINEST, "Added as virtual portal");
-                return;
-            }
+        //If the loaded portal is virtual, register it to the network, and not as a normal one
+        if (registerVirtualPortal(portalType, portalData, network)) {
+            return;
         }
 
         if (portalData.destination == null || portalData.destination.trim().isEmpty()) {
             portalData.flags.add(PortalFlag.NETWORKED);
         }
 
+        //Actually register the gate and its positions
         try {
-            List<PortalPosition> portalPositions = getPortalPositions(portalData);
-            Gate gate = new Gate(portalData, registry);
-            if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
-                    && !gate.isValid(portalData.flags.contains(PortalFlag.ALWAYS_ON))) {
-                throw new InvalidStructureException();
-            }
-            gate.addPortalPositions(portalPositions);
-            Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, languageManager, registry, economyManager);
-            network.addPortal(portal, false);
-            Stargate.log(Level.FINEST, "Added as normal portal");
+            registerPortalGate(portalData, network, registry, economyManager);
         } catch (TranslatableException e) {
             Stargate.log(e);
         } catch (InvalidStructureException e) {
@@ -259,6 +242,59 @@ public class SQLDatabase implements StorageAPI {
                     portalData.name, (portalType == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName,
                     portalData.topLeft));
         } catch (GateConflictException ignored) {
+        }
+    }
+
+    /**
+     * Registers the gate and portal positions for the given portal data
+     *
+     * @param portalData     <p>The portal data to register positions for</p>
+     * @param network        <p>The network the portal belongs to</p>
+     * @param registry       <p>The portal registry to register to</p>
+     * @param economyManager <p>The economy manager to use</p>
+     * @throws SQLException              <p>If unable to interact with the database</p>
+     * @throws InvalidStructureException <p>If the portal's gate is invalid</p>
+     * @throws GateConflictException     <p>If the new gate conflicts with an existing gate</p>
+     * @throws TranslatableException     <p>If some input is invalid</p>
+     */
+    private void registerPortalGate(PortalData portalData, Network network, RegistryAPI registry,
+                                    StargateEconomyAPI economyManager) throws SQLException,
+            InvalidStructureException, GateConflictException, TranslatableException {
+        List<PortalPosition> portalPositions = getPortalPositions(portalData);
+        Gate gate = new Gate(portalData, registry);
+        if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
+                && !gate.isValid(portalData.flags.contains(PortalFlag.ALWAYS_ON))) {
+            throw new InvalidStructureException();
+        }
+        gate.addPortalPositions(portalPositions);
+        Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, languageManager, registry,
+                economyManager);
+        network.addPortal(portal, false);
+        Stargate.log(Level.FINEST, "Added as normal portal");
+    }
+
+    /**
+     * Registers the given portal as a virtual portal if
+     *
+     * @param portalType <p>The type of the loaded portal</p>
+     * @param portalData <p>The data for the loaded portal</p>
+     * @param network    <p>The network the portal belongs to</p>
+     * @return <p>True if the portal was registered as a virtual portal</p>
+     */
+    private boolean registerVirtualPortal(StorageType portalType, PortalData portalData, Network network) {
+        if (portalType == StorageType.INTER_SERVER && !portalData.serverUUID.equals(Stargate.getServerUUID())) {
+            Portal virtualPortal = new VirtualPortal(portalData.serverName, portalData.name, network, portalData.flags,
+                    portalData.ownerUUID);
+            try {
+                network.addPortal(virtualPortal, false);
+            } catch (NameConflictException ignored) {
+            } catch (InvalidNameException e) {
+                Stargate.log(e);
+            }
+            Stargate.log(Level.FINEST, "Added as virtual portal");
+            return true;
+        } else {
+            return false;
         }
     }
 

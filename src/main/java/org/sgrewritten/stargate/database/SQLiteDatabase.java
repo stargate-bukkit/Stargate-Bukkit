@@ -28,11 +28,8 @@ public class SQLiteDatabase implements SQLDatabaseAPI {
     @Override
     public Connection getConnection() throws SQLException {
         Connection connection = DriverManager.getConnection(this.url);
-        PreparedStatement statement = connection.prepareStatement("PRAGMA foreign_keys = ON;");
-        try {
+        try (PreparedStatement statement = connection.prepareStatement("PRAGMA foreign_keys = ON;")) {
             statement.execute();
-        } finally {
-            statement.close();
         }
         return connection;
     }
