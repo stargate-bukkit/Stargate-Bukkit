@@ -75,21 +75,22 @@ public class DataMigration_1_0_14 extends DataMigration {
     
     private void runChangeDefaultNetworkIDStatement(SQLDatabaseAPI database, TableNameConfiguration nameConfiguration,
             StorageType type) throws SQLException {
-        Connection connection = null;
+        Connection connection = database.getConnection();
         try {
-            connection = database.getConnection();
             SQLQuery query = type == StorageType.LOCAL ? SQLQuery.UPDATE_NETWORK_NAME
                     : SQLQuery.UPDATE_INTER_NETWORK_NAME;
             String queryString = nameConfiguration
                     .replaceKnownTableNames(SQLQueryHandler.getQuery(query, database.getDriver()));
             PreparedStatement statement = connection.prepareStatement(queryString);
-            statement.setString(1, LocalNetwork.DEFAULT_NET_ID);
-            statement.setString(2, ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK));
-            statement.execute();
-        } finally {
-            if (connection != null) {
-                connection.close();
+            try {
+                statement.setString(1, LocalNetwork.DEFAULT_NET_ID);
+                statement.setString(2, ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK));
+                statement.execute();
+            } finally {
+                statement.close();
             }
+        } finally {
+            connection.close();
         }
     }
 
@@ -112,33 +113,42 @@ public class DataMigration_1_0_14 extends DataMigration {
         }
     }
 
-    private void insertNetworkFlags(Connection connection, Map<TwoTuple<String, String>, PortalFlag> portalsLackingFlagsMap, TableNameConfiguration nameConfiguration, StorageType type, DatabaseDriver driver) throws SQLException {
-        SQLQuery query = type == StorageType.LOCAL ? SQLQuery.INSERT_PORTAL_FLAG_RELATION : SQLQuery.INSERT_INTER_PORTAL_FLAG_RELATION;
-        String queryString = nameConfiguration.replaceKnownTableNames(SQLQueryHandler.getQuery(query,driver));
-        for(TwoTuple<String, String> key : portalsLackingFlagsMap.keySet()) {
+    private void insertNetworkFlags(Connection connection,
+            Map<TwoTuple<String, String>, PortalFlag> portalsLackingFlagsMap, TableNameConfiguration nameConfiguration,
+            StorageType type, DatabaseDriver driver) throws SQLException {
+        SQLQuery query = type == StorageType.LOCAL ? SQLQuery.INSERT_PORTAL_FLAG_RELATION
+                : SQLQuery.INSERT_INTER_PORTAL_FLAG_RELATION;
+        String queryString = nameConfiguration.replaceKnownTableNames(SQLQueryHandler.getQuery(query, driver));
+        for (TwoTuple<String, String> key : portalsLackingFlagsMap.keySet()) {
             PortalFlag flag = portalsLackingFlagsMap.get(key);
             PreparedStatement statement = connection.prepareStatement(queryString);
-            statement.setString(1, key.getFirstValue());
-            statement.setString(2, key.getSecondValue());
-            statement.setString(3, String.valueOf(flag.getCharacterRepresentation()));
-            statement.execute();
-            statement.close();
+            try {
+                statement.setString(1, key.getFirstValue());
+                statement.setString(2, key.getSecondValue());
+                statement.setString(3, String.valueOf(flag.getCharacterRepresentation()));
+                statement.execute();
+            } finally {
+                statement.close();
+            }
         }
     }
 
     private Map<TwoTuple<String,String>,PortalFlag> getLackingNetworkFlags(Connection connection, String view) throws SQLException {
         Map<TwoTuple<String,String>,PortalFlag> output = new HashMap<>();
-        PreparedStatement statement = connection.prepareStatement("SELECT name,network,flags FROM " + view + ";");
-        ResultSet resultSet = statement.executeQuery();
-        if(resultSet == null) {
-            statement.close();
-            return output;
-        }
-        while(resultSet.next()) {
-            if(NetworkType.getNetworkTypeFromFlags(PortalFlag.parseFlags(resultSet.getString("flags"))) == null) {
-                PortalFlag flag = determineNetworkFlagFromNetworkName(resultSet.getString("network"));
-                output.put(new TwoTuple<>(resultSet.getString("name"),resultSet.getString("network")), flag);
+        PreparedStatement statement = connection.prepareStatement("SELECT name,network,flags FROM "+ view +";");
+        try {
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet == null) {
+                return output;
             }
+            while (resultSet.next()) {
+                if (NetworkType.getNetworkTypeFromFlags(PortalFlag.parseFlags(resultSet.getString("flags"))) == null) {
+                    PortalFlag flag = determineNetworkFlagFromNetworkName(resultSet.getString("network"));
+                    output.put(new TwoTuple<>(resultSet.getString("name"), resultSet.getString("network")), flag);
+                }
+            }
+        } finally {
+            statement.close();
         }
         return output;
     }
