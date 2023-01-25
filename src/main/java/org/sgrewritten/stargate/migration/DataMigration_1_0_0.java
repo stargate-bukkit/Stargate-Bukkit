@@ -106,7 +106,7 @@ public class DataMigration_1_0_0 extends DataMigration {
                     .findConfigKey(new String[] { "gates.defaultGateNetwork", "default-gate-network" }, oldConfig));
             migratePortals(portalFolderName, defaultName, languageManager, economyManager);
             moveFilesToDebugDirectory(portalFolderName);
-        } catch (IOException | InvalidStructureException | InvalidNameException | TranslatableException e) {
+        } catch (IOException | InvalidStructureException | TranslatableException e) {
             Stargate.log(e);
         } catch (NullPointerException e) {
             Stargate.log(Level.SEVERE,

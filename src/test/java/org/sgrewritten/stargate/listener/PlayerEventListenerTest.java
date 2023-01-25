@@ -21,6 +21,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
@@ -52,7 +53,7 @@ class PlayerEventListenerTest {
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
 
     @BeforeEach
-    void setUp() throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException {
+    void setUp() throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
         server = MockBukkit.mock();
         world = server.addSimpleWorld("world");
         player = server.addPlayer();

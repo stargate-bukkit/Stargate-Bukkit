@@ -5,6 +5,7 @@ import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -48,9 +49,10 @@ public class BungeePortal extends AbstractPortal {
      * @throws InvalidNameException <p>If the portal name is invalid</p>
      * @throws BungeeNameException 
      * @throws NameLengthException 
+     * @throws UnimplementedFlagException 
      */
     public BungeePortal(Network network, String name, String destination, String destinationServer,
-                        Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager,StargateEconomyAPI economyAPI) throws InvalidNameException, BungeeNameException, NameLengthException {
+                        Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager,StargateEconomyAPI economyAPI) throws InvalidNameException, BungeeNameException, NameLengthException, UnimplementedFlagException {
         super(network, name, flags, gate, ownerUUID,languageManager,economyAPI);
 
         

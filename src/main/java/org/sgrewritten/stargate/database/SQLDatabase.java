@@ -10,6 +10,7 @@ import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
@@ -212,8 +213,9 @@ public class SQLDatabase implements StorageAPI {
                     registry.rename(network);
                 }
             } catch(NameConflictException ignored) {
-            } catch (InvalidNameException | TranslatableException e) {
+            } catch (TranslatableException e) {
                 Stargate.log(e);
+                continue;
             }
             Network network = registry.getNetwork(targetNetwork, isBungee);
 
@@ -246,7 +248,7 @@ public class SQLDatabase implements StorageAPI {
                 Portal portal = PortalCreationHelper.createPortal(network, portalData, gate,languageManager,registry,economyManager);
                 network.addPortal(portal, false);
                 Stargate.log(Level.FINEST, "Added as normal portal");
-            } catch (InvalidNameException | TranslatableException e) {
+            } catch (TranslatableException e) {
                 Stargate.log(e);
             } catch (InvalidStructureException e) {
                 Stargate.log(Level.WARNING, String.format(
@@ -347,7 +349,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws InvalidNameException, NameLengthException {
+    public Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
         if (isInterserver) {
             return new InterServerNetwork(networkName,type);
         }

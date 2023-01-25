@@ -11,12 +11,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sgrewritten.stargate.FakeStargate;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -87,12 +89,34 @@ class NetworkCreationHelperTest {
     
     @Test
     void explicitDefinitionTest_Default() throws InvalidNameException, TranslatableException{
-        Stargate.log(Level.FINE,"############### EXPLICIT TEST #############");
         Network defaultNetwork = NetworkCreationHelper.selectNetwork(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(CENTRAL), permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.DEFAULT, defaultNetwork.getType());
         Assertions.assertEquals(CENTRAL, defaultNetwork.getName());
     }
+
+    @Test
+    void explicitDefinitionTest_DefaultTypeButWrongName() throws InvalidNameException, TranslatableException {
+        Assertions.assertThrows(InvalidNameException.class, () -> NetworkCreationHelper.selectNetwork(
+                NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(INVALID_NAME), permissionManager, player,
+                new HashSet<>(), registry));
+    }
     
+    @ParameterizedTest
+    @EnumSource
+    void explicitDefinitionTest_PersonalName(NetworkType networkType) throws TranslatableException, InvalidNameException {
+        Network network1 = NetworkCreationHelper.selectNetwork(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry);
+        if(networkType == NetworkType.DEFAULT) {
+            Assertions.assertThrows(TranslatableException.class, () -> NetworkCreationHelper.selectNetwork(networkType.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry));
+        } else if(networkType == NetworkType.TERMINAL){
+            Assertions.assertThrows(UnimplementedFlagException.class, () -> NetworkCreationHelper.selectNetwork(networkType.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry));
+        } else if(networkType == NetworkType.CUSTOM){
+            Assertions.assertThrows(NameConflictException.class, () -> NetworkCreationHelper.selectNetwork(networkType.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry));
+        } else {
+            Network network2 = NetworkCreationHelper.selectNetwork(networkType.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry);
+            Assertions.assertEquals(network1, network2);
+        }
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {PLAYER_NAME,CENTRAL})
     void explicitDefinitionTest_Personal(String name) throws InvalidNameException, TranslatableException{
@@ -168,7 +192,7 @@ class NetworkCreationHelperTest {
     
     @ParameterizedTest
     @EnumSource(value = NetworkType.class, names = {"CUSTOM", "PERSONAL"})
-    void isInterserverToLocalConflictTest(NetworkType type) throws NameLengthException, NameConflictException, InvalidNameException {
+    void isInterserverToLocalConflictTest(NetworkType type) throws NameLengthException, NameConflictException, InvalidNameException, UnimplementedFlagException {
         
         String network1id = NETWORK1;
         String network2id = NETWORK2;

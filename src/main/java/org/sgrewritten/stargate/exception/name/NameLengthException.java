@@ -15,8 +15,8 @@ public class NameLengthException extends TranslatableException {
     }
 
     @Override
-    public TranslatableMessage getTranslatableMessage() {
-        return TranslatableMessage.INVALID_NAME;
+    protected TranslatableMessage getTranslatableMessage() {
+        return TranslatableMessage.INVALID_NAME_LENGTH;
     }
 
 }

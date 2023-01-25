@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.InterServerNetwork;
@@ -32,7 +33,7 @@ class TranslatableMessageFormatterTest {
         MockBukkit.unmock();
     }
     @Test
-    void formatUnimplementedConflictMessage() throws NameLengthException, InvalidNameException {
+    void formatUnimplementedConflictMessage() throws NameLengthException, InvalidNameException, UnimplementedFlagException {
         System.setProperty("bstats.relocatecheck", "false");
         Stargate plugin = MockBukkit.load(Stargate.class);
         Player player = server.addPlayer("network1");
@@ -44,7 +45,7 @@ class TranslatableMessageFormatterTest {
     }
 
     @Test
-    void formatUnimplementedConflictMessage_NullCheck() throws NameLengthException, InvalidNameException {
+    void formatUnimplementedConflictMessage_NullCheck() throws NameLengthException, InvalidNameException, UnimplementedFlagException {
         System.setProperty("bstats.relocatecheck", "false");
         Stargate plugin = MockBukkit.load(Stargate.class);
         Player player = server.addPlayer("network1");

@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -59,7 +60,7 @@ public class StargateBungeeManager implements BungeeManager{
             registry.createNetwork(network, flags, false);
         } catch ( NameConflictException ignored) {
             
-        } catch (InvalidNameException | NameLengthException  e) {
+        } catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
             Stargate.log(e);
         }
         try {
@@ -129,7 +130,13 @@ public class StargateBungeeManager implements BungeeManager{
 
             addToQueue(playerName, destination, bungeeNetworkName, false);
         } else {
-            Network network = BungeeHelper.getLegacyBungeeNetwork(registry, bungeeNetworkName);
+            Network network;
+            try {
+                network = BungeeHelper.getLegacyBungeeNetwork(registry, bungeeNetworkName);
+            } catch (UnimplementedFlagException e) {
+                Stargate.log(e);
+                return;
+            }
             if (network == null) {
                 Stargate.log(Level.WARNING, "The legacy bungee network is missing, this is most definitly a bug please contact developers (/sg about)");
                 return;

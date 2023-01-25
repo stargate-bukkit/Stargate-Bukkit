@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.util;
 
 import org.sgrewritten.stargate.database.StorageAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -64,7 +65,7 @@ public class FakeStorage implements StorageAPI{
 
     @Override
     public Network createNetwork(String networkName, NetworkType type, boolean isInterserver)
-            throws InvalidNameException, NameLengthException {
+            throws InvalidNameException, NameLengthException, UnimplementedFlagException {
         if (isInterserver) {
             return new InterServerNetwork(networkName,type);
         }

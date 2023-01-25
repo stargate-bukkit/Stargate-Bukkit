@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
@@ -47,7 +48,7 @@ class TeleportationHelperTest {
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
 
     @BeforeAll
-    public static void setUp() throws NameLengthException, InvalidNameException {
+    public static void setUp() throws NameLengthException, InvalidNameException, UnimplementedFlagException {
        server = MockBukkit.mock();
        world = server.addSimpleWorld("world");
        fakePortalGenerator = new FakePortalGenerator();

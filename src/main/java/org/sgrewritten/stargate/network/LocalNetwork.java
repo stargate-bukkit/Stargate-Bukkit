@@ -9,6 +9,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
@@ -56,16 +57,17 @@ public class LocalNetwork implements Network {
      * @param flags <p>The flags attached to this network</p>
      * @throws InvalidNameException <p>If the network name is invalid</p>
      * @throws NameLengthException 
+     * @throws UnimplementedFlagException 
      */
-    public LocalNetwork(String name, Set<PortalFlag> flags) throws InvalidNameException, NameLengthException {
+    public LocalNetwork(String name, Set<PortalFlag> flags) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
         this(name, NetworkType.getNetworkTypeFromFlags(flags));
     }
     
-    public LocalNetwork(String name, NetworkType type) throws InvalidNameException, NameLengthException {
+    public LocalNetwork(String name, NetworkType type) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
         load(name,type);
     }
     
-    private void load(String name, NetworkType type) throws InvalidNameException, NameLengthException {
+    private void load(String name, NetworkType type) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
         Objects.requireNonNull(name);
         this.networkType = Objects.requireNonNull(type);
         switch(type) {
@@ -77,8 +79,9 @@ public class LocalNetwork implements Network {
             break;
         case CUSTOM:
             loadAsCustomNetwork(name);
-        default:
             break;
+        case TERMINAL:
+            throw new UnimplementedFlagException("Terminal networks are not implemented yet",type.getRelatedFlag());
         }
         nameToPortalMap = new HashMap<>();
     }
@@ -86,7 +89,7 @@ public class LocalNetwork implements Network {
     private void loadAsDefault(String name) throws InvalidNameException {
         this.name = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
         if(!DEFAULT_NET_ID.equals(name)) {
-            throw new InvalidNameException("Invalid name '"+ name + "' can not be default network, expected name '" + DEFAULT_NET_ID + "'");//TODO refactor NameErrorException to multimple errors
+            throw new InvalidNameException("Invalid name '"+ name + "' can not be default network, expected name '" + DEFAULT_NET_ID + "'");
         }
         id = DEFAULT_NET_ID;
     }
@@ -103,9 +106,12 @@ public class LocalNetwork implements Network {
         id = NameHelper.getNormalizedName(this.name);
     }
     
-    private void loadAsPersonalNetwork(String uuidString) {
+    private void loadAsPersonalNetwork(String uuidString) throws InvalidNameException {
         Stargate.log(Level.FINER, "Initialized personal network with UUID " + uuidString);
         String possiblePlayerName = Bukkit.getOfflinePlayer(UUID.fromString(uuidString)).getName();
+        if(possiblePlayerName == null) {
+            throw new InvalidNameException("The personal network of the uuid '" + uuidString + "' has no valid player name." );
+        }
         Stargate.log(Level.FINER, "Matching player name: " + possiblePlayerName);
         if (possiblePlayerName != null
                 && (NetworkCreationHelper.getDefaultNamesTaken().contains(possiblePlayerName.toLowerCase())
@@ -146,7 +152,7 @@ public class LocalNetwork implements Network {
     @Override
     public void addPortal(Portal portal, boolean saveToDatabase) throws NameConflictException {
         if (isPortalNameTaken(portal.getName())) {
-            throw new NameConflictException("portal of name '" + portal.getName() + "' already exist in network '" + this.getId() + "'");
+            throw new NameConflictException("portal of name '" + portal.getName() + "' already exist in network '" + this.getId() + "'",false);
         }
         if (portal instanceof RealPortal) {
             RealPortal realPortal = (RealPortal) portal;
@@ -222,6 +228,9 @@ public class LocalNetwork implements Network {
     
     @Override
     public String getName() {
+        if(getType() == NetworkType.PERSONAL && registry != null && registry.networkExists(NameHelper.getNormalizedName(name), this.getStorageType() == StorageType.INTER_SERVER)) {
+            return id.split("-")[0];
+        }
         return name;
     }
 
@@ -270,7 +279,7 @@ public class LocalNetwork implements Network {
     }
 
     @Override
-    public void setID(String newName) throws InvalidNameException, NameLengthException {
+    public void setID(String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
         load(newName,this.getType());
     }
 

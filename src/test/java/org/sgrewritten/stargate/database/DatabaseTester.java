@@ -10,6 +10,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -103,7 +104,7 @@ public class DatabaseTester {
         Network testNetwork = null;
         try {
             testNetwork = new LocalNetwork("test",NetworkType.CUSTOM);
-        } catch (InvalidNameException | NameLengthException e) {
+        } catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
             Stargate.log(e);
         }
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
@@ -477,7 +478,7 @@ public class DatabaseTester {
         SQLTestHelper.checkIfHasNot(table, portal.getName(), portal.getNetwork().getName(),connection);
     }
 
-    void changeNames(StorageType portalType) throws SQLException, InvalidStructureException, InvalidNameException, StorageWriteException, NameLengthException {
+    void changeNames(StorageType portalType) throws SQLException, InvalidStructureException, InvalidNameException, StorageWriteException, NameLengthException, UnimplementedFlagException {
         //By some reason the database is locked if I don't do this. Don't ask me why // Thorin
         connection.close();
         connection = database.getConnection();

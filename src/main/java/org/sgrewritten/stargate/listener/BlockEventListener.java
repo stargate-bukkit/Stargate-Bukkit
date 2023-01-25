@@ -160,7 +160,7 @@ public class BlockEventListener implements Listener {
         flags.removeIf(PortalFlag::isInternalFlag);
 
         StargatePermissionManager permissionManager = new StargatePermissionManager(player,languageManager);
-        TranslatableMessage errorMessage = null;
+        String errorMessage = null;
 
         if (lines[1].trim().isEmpty()) {
             flags.add(PortalFlag.NETWORKED);
@@ -186,9 +186,7 @@ public class BlockEventListener implements Listener {
             NetworkType.removeNetworkTypeRelatedFlags(flags);
             flags.add(selectedNetwork.getType().getRelatedFlag());
         } catch (TranslatableException e) {
-            errorMessage = e.getTranslatableMessage();
-        } catch (InvalidNameException e) {
-            Stargate.log(e);
+            errorMessage = e.getLocalisedMessage(languageManager);
         }
         try {
             PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost,
@@ -198,9 +196,7 @@ public class BlockEventListener implements Listener {
         } catch (GateConflictException gateConflictException) {
             player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
         } catch (TranslatableException e) {
-            player.sendMessage(languageManager.getErrorMessage(e.getTranslatableMessage()));
-        } catch (InvalidNameException e) {
-            Stargate.log(e);
+            player.sendMessage(e.getLocalisedMessage(languageManager));
         }
     }
 

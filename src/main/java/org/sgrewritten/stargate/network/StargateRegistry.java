@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.database.StorageAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
@@ -25,6 +26,7 @@ import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
+import org.sgrewritten.stargate.util.NetworkCreationHelper;
 import org.sgrewritten.stargate.vectorlogic.VectorUtils;
 
 import java.util.EnumMap;
@@ -100,15 +102,16 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced)
-            throws InvalidNameException, NameLengthException, NameConflictException {
-        if (this.networkExists(networkName, isInterserver)) {
+            throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException {
+        if (this.networkExists(networkName, isInterserver)
+                || this.networkExists(NetworkCreationHelper.getPlayerUUID(networkName).toString(), isInterserver)) {
             if (isForced && type == NetworkType.DEFAULT) {
                 Network network = this.getNetwork(networkName, isInterserver);
-                if(network.getType() != type) {
+                if (network.getType() != type) {
                     this.rename(network);
                 }
             }
-            throw new NameConflictException("network of id '" + networkName + "' already exists");
+            throw new NameConflictException("network of id '" + networkName + "' already exists",true);
         }
         Network network = storageAPI.createNetwork(networkName, type, isInterserver);
         network.assignToRegistry(this);
@@ -119,7 +122,7 @@ public class StargateRegistry implements RegistryAPI {
     }
     
     @Override
-    public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException {
+    public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException {
         return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags),flags.contains(PortalFlag.FANCY_INTER_SERVER),isForced);
     }
 
@@ -255,7 +258,7 @@ public class StargateRegistry implements RegistryAPI {
     }
     
     @Override
-    public void rename(Network network, String newName) throws InvalidNameException, NameLengthException{
+    public void rename(Network network, String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException{
         if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(newName))) {
             throw new InvalidNameException("Can not rename the network to an UUID.");
         }
@@ -299,7 +302,7 @@ public class StargateRegistry implements RegistryAPI {
             }
             try {
                 rename(network, newName);
-            } catch (InvalidNameException | NameLengthException e) {
+            } catch (InvalidNameException | NameLengthException | UnimplementedFlagException  e) {
                 String annoyinglyOverThoughtName = network.getId();
                 int n = 1;
                 while (networkExists(annoyinglyOverThoughtName, isInterServer) || storageAPI.netWorkExists(newName,network.getStorageType())) {
@@ -309,7 +312,7 @@ public class StargateRegistry implements RegistryAPI {
                 }
                 try {
                     rename(network, annoyinglyOverThoughtName);
-                } catch (InvalidNameException | NameLengthException impossible) {
+                } catch (InvalidNameException | NameLengthException | UnimplementedFlagException impossible) {
                     Stargate.log(Level.SEVERE,
                             "Could not rename the network, do /sg trace and show the data in an new issue in sgrewritten.org/report");
                 }
