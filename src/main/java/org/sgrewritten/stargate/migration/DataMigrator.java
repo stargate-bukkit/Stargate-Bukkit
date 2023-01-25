@@ -12,7 +12,6 @@ import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.network.RegistryAPI;
-import org.sgrewritten.stargate.network.StargateRegistry;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,13 +39,13 @@ public class DataMigrator {
      * @throws InvalidConfigurationException <p>If unable to load the given configuration file</p>
      */
     public DataMigrator(@NotNull File configurationFile, @NotNull StargateLogger logger, @NotNull Server server,
-            @NotNull RegistryAPI registry, @NotNull LanguageManager languageManager,
-            @NotNull StargateEconomyAPI economyManager, @NotNull StoredPropertiesAPI properties)
+                        @NotNull RegistryAPI registry, @NotNull LanguageManager languageManager,
+                        @NotNull StargateEconomyAPI economyManager, @NotNull StoredPropertiesAPI properties)
             throws IOException, InvalidConfigurationException {
         // WARNING: Migrators must be defined from oldest to newest to prevent partial
         // migration
         MIGRATIONS = new DataMigration[]{
-                new DataMigration_1_0_0(server, registry, logger,languageManager,economyManager,properties),
+                new DataMigration_1_0_0(server, registry, logger, languageManager, economyManager, properties),
                 new DataMigration_1_0_14()
         };
 
@@ -55,7 +54,7 @@ public class DataMigrator {
         fileConfig.load(configurationFile);
         this.fileConfig = fileConfig;
         this.configModifications = fileConfig.getValues(true);
-        this.configVersion = fileConfig.getInt("configVersion",0);
+        this.configVersion = fileConfig.getInt("configVersion", 0);
         this.configFile = configurationFile;
     }
 

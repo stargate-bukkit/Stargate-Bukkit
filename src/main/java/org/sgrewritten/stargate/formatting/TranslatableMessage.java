@@ -76,7 +76,7 @@ public enum TranslatableMessage {
      * The message to display when a player is lacking the permission to access a network
      */
     NET_DENY("faultNetwork"),
-    
+
     /**
      * The message to display when a network is in conflict with a network of another type
      */
@@ -96,7 +96,7 @@ public enum TranslatableMessage {
      * The message to display when a portal or network name exceeds the max length
      */
     INVALID_NAME_LENGTH("faultLength"),
-    
+
     /**
      * The message to display when the NetworkType is not compatible with given name
      */
@@ -221,28 +221,28 @@ public enum TranslatableMessage {
     /**
      * The message to send if the player is teleporting past the worldborder
      */
-    OUTSIDE_WORLDBORDER("tpPastBorder"), 
-    
-    UNIMPLEMENTED_CONFLICT("unimplementedIConflict"), 
-    
+    OUTSIDE_WORLDBORDER("tpPastBorder"),
+
+    UNIMPLEMENTED_CONFLICT("unimplementedIConflict"),
+
     UNIMPLEMENTED_INTERSERVER("unimplementedInterserver"),
-    
-    
+
+
     // TERMINOLOGY
     GATE("gate"),
-    
+
     NETWORK("network"),
-    
+
     FANCY_INTER_SERVER("interserver"),
-    
+
     DEFAULT_NETWORK("default"),
-    
+
     TERMINAL_NETWORK("terminal"),
-    
+
     PERSONAL_NETWORK("personal"),
-    
-    CUSTOM_NETWORK("custom"), 
-    
+
+    CUSTOM_NETWORK("custom"),
+
     UNIMPLEMENTED_FLAG("unimplementedFlag");
 
     /*

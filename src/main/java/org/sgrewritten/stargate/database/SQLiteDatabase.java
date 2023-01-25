@@ -40,12 +40,10 @@ public class SQLiteDatabase implements SQLDatabaseAPI {
     /**
      * Sets up SQLite
      *
-     * @param databaseFile
-     *                     <p>
+     * @param databaseFile <p>
      *                     The database file to load
      *                     </p>
-     * @throws SQLException
-     *                      <p>
+     * @throws SQLException <p>
      *                      If unable to setup SQLite for the database file
      *                      </p>
      */

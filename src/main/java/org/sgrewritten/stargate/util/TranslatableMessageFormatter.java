@@ -6,11 +6,10 @@ import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import javax.annotation.Nullable;
 
 /**
  * The translatable message formatter is responsible for formatting translatable messages
@@ -116,18 +115,19 @@ public final class TranslatableMessageFormatter {
 
     /**
      * Format the {@link TranslatableMessage#UNIMPLEMENTED_CONFLICT}
-     * @param interserver <p> The interserver network at conflict </p>
-     * @param local <p> The local network at conflict (none if null) </p>
-     * @param languageManager   <p> A languageManager </p>
+     *
+     * @param interserver     <p> The interserver network at conflict </p>
+     * @param local           <p> The local network at conflict (none if null) </p>
+     * @param languageManager <p> A languageManager </p>
      * @return <p> A formated {@link TranslatableMessage#UNIMPLEMENTED_CONFLICT} message
      */
     public static String formatUnimplementedConflictMessage(Network interserver, @Nullable Network local, LanguageManager languageManager) {
         String initialMessage = languageManager.getWarningMessage(TranslatableMessage.UNIMPLEMENTED_CONFLICT);
         String localNetName = (local == null) ? interserver.getName() : local.getName();
         NetworkType localType = (local == null) ? interserver.getType() : local.getType();
-        
+
         String localTypeString = languageManager.getString(localType.getTerminology());
         String interserverTypeString = languageManager.getString(interserver.getType().getTerminology());
-        return initialMessage.replaceAll("%name%", interserver.getName()).replaceAll("%type1%", interserverTypeString).replaceAll("%type2%",localTypeString);
+        return initialMessage.replaceAll("%name%", interserver.getName()).replaceAll("%type1%", interserverTypeString).replaceAll("%type2%", localTypeString);
     }
 }

@@ -1,24 +1,19 @@
 package org.sgrewritten.stargate.util;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Objects;
-
+import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.WorldMock;
+import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.FakeStargateLogger;
-import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
@@ -38,13 +33,12 @@ import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.BlockEventType;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.WorldMock;
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Objects;
 
 class BlockEventHelperTest {
-    
+
     private static ServerMock server;
     private static WorldMock world;
     private static RegistryAPI registry;
@@ -62,15 +56,15 @@ class BlockEventHelperTest {
         player = server.addPlayer();
         world = server.addSimpleWorld("world");
 
-        signBlock = PortalBlockGenerator.generatePortal(new Location(world,0,10,0));
+        signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         registry = new StargateRegistry(new FakeStorage());
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
-        network = registry.createNetwork("network", NetworkType.CUSTOM,false, false);
-        
-        portal = new FakePortalGenerator().generateFakePortal(signBlock,network,new HashSet<>(),"name",registry);
-        
+        network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
+
+        portal = new FakePortalGenerator().generateFakePortal(signBlock, network, new HashSet<>(), "name", registry);
+
     }
-    
+
     @AfterAll
     static void tearDown() {
         MockBukkit.unmock();
@@ -79,25 +73,25 @@ class BlockEventHelperTest {
     @ParameterizedTest
     @EnumSource
     void onAnyBlockChangeEventTest_SignLocation(BlockEventType type) {
-        Cancellable event = new BlockBreakEvent(signBlock,player);
+        Cancellable event = new BlockBreakEvent(signBlock, player);
         BlockEventHelper.onAnyBlockChangeEvent(event, type, signBlock.getLocation(), registry);
         Assertions.assertTrue(event.isCancelled());
     }
-    
+
     @ParameterizedTest
     @EnumSource
     void onAnyBlockChangeEventTest_FrameLocation(BlockEventType type) {
         Location frame = portal.getGate().getLocations(GateStructureType.FRAME).get(0).getLocation();
-        Cancellable event = new BlockBreakEvent(frame.getBlock(),player);
+        Cancellable event = new BlockBreakEvent(frame.getBlock(), player);
         BlockEventHelper.onAnyBlockChangeEvent(event, type, frame, registry);
         Assertions.assertTrue(event.isCancelled());
     }
-    
+
     @ParameterizedTest
     @EnumSource
     void onAnyBlockChangeEventTest_IrisLocation(BlockEventType type) {
         Location iris = portal.getGate().getLocations(GateStructureType.IRIS).get(0).getLocation();
-        Cancellable event = new BlockBreakEvent(iris.getBlock(),player);
+        Cancellable event = new BlockBreakEvent(iris.getBlock(), player);
         BlockEventHelper.onAnyBlockChangeEvent(event, type, iris, registry);
         Assertions.assertTrue(event.isCancelled());
     }

@@ -206,9 +206,9 @@ public enum SQLQuery {
      * The query for checking if the inter-portal position index exists
      */
     SHOW_INDEX_INTER_PORTAL_POSITION,
-    
+
     DELETE_PORTAL_POSITION,
-    
+
     DELETE_INTER_PORTAL_POSITION,
 
     /**
@@ -222,12 +222,12 @@ public enum SQLQuery {
     GET_INTER_PORTAL,
 
     /**
-     * The query for setting the metadata of a portal 
+     * The query for setting the metadata of a portal
      */
     SET_PORTAL_META,
 
     /**
-     * The query for setting the metadata of a interserver portal 
+     * The query for setting the metadata of a interserver portal
      */
     SET_INTER_PORTAL_META,
 
@@ -250,21 +250,21 @@ public enum SQLQuery {
      * The query for setting the meta for a inter portal position
      */
     SET_INTER_PORTAL_POSITION_META,
-    
+
     GET_PORTAL_POSITION_META,
 
     GET_INTER_PORTAL_POSITION_META,
-    
+
     UPDATE_NETWORK_NAME,
-    
+
     UPDATE_INTER_NETWORK_NAME,
-    
+
     UPDATE_PORTAL_NAME,
-    
+
     UPDATE_INTER_PORTAL_NAME,
-    
+
     GET_ALL_PORTALS_OF_NETWORK,
-    
+
     GET_ALL_INTER_PORTALS_OF_NETWORK,
 
 

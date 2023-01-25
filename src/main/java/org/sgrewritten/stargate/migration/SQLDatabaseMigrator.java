@@ -1,11 +1,5 @@
 package org.sgrewritten.stargate.migration;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Objects;
-
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
@@ -16,35 +10,41 @@ import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Objects;
+
 public class SQLDatabaseMigrator {
     private @NotNull TableNameConfiguration nameConfiguration;
     private @NotNull String sqlFilesPath;
     private boolean interServerEnabled;
     private @NotNull SQLDatabaseAPI database;
 
-    public SQLDatabaseMigrator(@NotNull SQLDatabaseAPI database, @NotNull TableNameConfiguration nameConfiguration,@NotNull String sqlFilesPath,boolean interServerEnabled) throws SQLException {
+    public SQLDatabaseMigrator(@NotNull SQLDatabaseAPI database, @NotNull TableNameConfiguration nameConfiguration, @NotNull String sqlFilesPath, boolean interServerEnabled) throws SQLException {
         this.nameConfiguration = Objects.requireNonNull(nameConfiguration);
         this.sqlFilesPath = Objects.requireNonNull(sqlFilesPath);
         this.interServerEnabled = interServerEnabled;
         this.database = Objects.requireNonNull(database);
-        
+
     }
-    
+
     public void run() throws SQLException, IOException {
         Connection connection = null;
         try {
             connection = database.getConnection();
-            run(StorageType.LOCAL,connection);
+            run(StorageType.LOCAL, connection);
             if (interServerEnabled) {
-                run(StorageType.INTER_SERVER,connection);
+                run(StorageType.INTER_SERVER, connection);
             }
         } finally {
-            if(connection != null) {
+            if (connection != null) {
                 connection.close();
             }
         }
     }
-    
+
     private void run(StorageType type, Connection connection) throws SQLException, IOException {
         String path = sqlFilesPath + "/" + type.toString().toLowerCase();
         int count = 0;
@@ -74,11 +74,11 @@ public class SQLDatabaseMigrator {
             }
         }
     }
-    
+
     private void processQuery(final String queryString, Connection connection) throws SQLException {
         String newQueryString;
-        if(ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> SQLQuery.valueOf(queryString.trim()))) {
-            newQueryString = SQLQueryHandler.getQuery(SQLQuery.valueOf(queryString.trim()),database.getDriver());
+        if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> SQLQuery.valueOf(queryString.trim()))) {
+            newQueryString = SQLQueryHandler.getQuery(SQLQuery.valueOf(queryString.trim()), database.getDriver());
         } else {
             newQueryString = queryString + ";";
         }

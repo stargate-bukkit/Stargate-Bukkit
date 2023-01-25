@@ -5,7 +5,7 @@ public class ExceptionHelper {
         try {
             runnable.run();
             return false;
-        } catch(Throwable actualException) {
+        } catch (Throwable actualException) {
             if (expectedType.isInstance(actualException)) {
                 return true;
             } else {
@@ -13,16 +13,16 @@ public class ExceptionHelper {
             }
         }
     }
-    
+
     public static <T extends Throwable> boolean doesNotThrow(Class<T> expectedType, Runnable runnable) {
-        return !doesThrow(expectedType,runnable);
+        return !doesThrow(expectedType, runnable);
     }
-    
+
     public static boolean doesNotThrow(Runnable runnable) {
         try {
             runnable.run();
             return true;
-        } catch(Throwable exception) {
+        } catch (Throwable exception) {
             return false;
         }
     }

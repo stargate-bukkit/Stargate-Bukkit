@@ -44,7 +44,6 @@ public class MySqlDatabase implements SQLDatabaseAPI {
      * @param password <p>The password to use when connecting to the database</p>
      * @param useSSL   <p>Whether or not to force the use of SSL for the connection</p>
      * @throws org.sgrewritten.stargate.exception.StargateInitializationException
-     * 
      */
     public MySqlDatabase(DatabaseDriver driver, String address, int port, String database, String userName, String password,
                          boolean useSSL) throws StargateInitializationException {

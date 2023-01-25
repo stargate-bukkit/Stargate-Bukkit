@@ -1,11 +1,11 @@
 package org.sgrewritten.stargate.util.colors;
 
-import java.util.logging.Level;
-
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.Stargate;
+
+import java.util.logging.Level;
 
 class ColorPropertyTest {
 

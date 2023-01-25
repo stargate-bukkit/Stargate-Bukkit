@@ -7,7 +7,6 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.gate.GateAPI;
-import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
@@ -188,7 +187,7 @@ public class SQLQueryGenerator {
      *
      * @param connection <p>The database connection to use</p>
      * @param portalType <p>The type of the portal (used to determine which table to select from)</p>
-     * @param portal <b> The relevent portal.</b>
+     * @param portal     <b> The relevent portal.</b>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
@@ -336,7 +335,7 @@ public class SQLQueryGenerator {
      *
      * @param connection <p>The database connection to use</p>
      * @param portalType <p>The portal type to remove the flags from</p>
-     * @param portal <b>The relevent portal</b>
+     * @param portal     <b>The relevent portal</b>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
@@ -358,8 +357,8 @@ public class SQLQueryGenerator {
      *
      * @param connection <p>The database connection to use</p>
      * @param portalType <p>The portal type to remove the flags from</p>
-     * @param portal <b>The relevent portal</b>
-     * @param flagChar <p>A character representing a portal flag</p>
+     * @param portal     <b>The relevent portal</b>
+     * @param flagChar   <p>A character representing a portal flag</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
@@ -587,7 +586,7 @@ public class SQLQueryGenerator {
     }
 
     public PreparedStatement generateUpdateNetworkNameStatement(Connection connection, String newName, String networkName,
-            StorageType portalType) throws SQLException {
+                                                                StorageType portalType) throws SQLException {
         PreparedStatement statement;
         if (portalType == StorageType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.UPDATE_NETWORK_NAME));
@@ -600,7 +599,7 @@ public class SQLQueryGenerator {
     }
 
     public PreparedStatement generateUpdatePortalNameStatement(Connection connection, String newName, String portalName, String networkName,
-            StorageType portalType) throws SQLException {
+                                                               StorageType portalType) throws SQLException {
         PreparedStatement statement;
         if (portalType == StorageType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.UPDATE_PORTAL_NAME));
@@ -614,7 +613,7 @@ public class SQLQueryGenerator {
     }
 
     public PreparedStatement generateGetAllPortalsOfNetwork(Connection connection, String netName,
-            StorageType portalType) throws SQLException {
+                                                            StorageType portalType) throws SQLException {
         PreparedStatement statement;
         if (portalType == StorageType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.GET_ALL_PORTALS_OF_NETWORK));

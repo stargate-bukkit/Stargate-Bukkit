@@ -13,15 +13,15 @@ import java.util.UUID;
 public class PortalData {
 
     /**
-     *  The name of the portal.
+     * The name of the portal.
      */
     public String name;
     /**
-     *  The name of the network that the portal is associated with.
+     * The name of the network that the portal is associated with.
      */
     public String networkName;
     /**
-     *  The name of the portal stored as this portal's destination.
+     * The name of the portal stored as this portal's destination.
      */
     public String destination;
     /**

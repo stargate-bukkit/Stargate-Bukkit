@@ -1,7 +1,6 @@
 package org.sgrewritten.stargate.network.portal;
 
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -46,21 +45,21 @@ public class BungeePortal extends AbstractPortal {
      * @param gate              <p>The gate format used by this portal</p>
      * @param ownerUUID         <p>The UUID of this portal's owner</p>
      * @param logger
-     * @throws InvalidNameException <p>If the portal name is invalid</p>
-     * @throws BungeeNameException 
-     * @throws NameLengthException 
-     * @throws UnimplementedFlagException 
+     * @throws InvalidNameException       <p>If the portal name is invalid</p>
+     * @throws BungeeNameException
+     * @throws NameLengthException
+     * @throws UnimplementedFlagException
      */
     public BungeePortal(Network network, String name, String destination, String destinationServer,
-                        Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager,StargateEconomyAPI economyAPI) throws InvalidNameException, BungeeNameException, NameLengthException, UnimplementedFlagException {
-        super(network, name, flags, gate, ownerUUID,languageManager,economyAPI);
+                        Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyAPI) throws InvalidNameException, BungeeNameException, NameLengthException, UnimplementedFlagException {
+        super(network, name, flags, gate, ownerUUID, languageManager, economyAPI);
 
-        
+
         destination = NameHelper.getTrimmedName(destination);
         destinationServer = NameHelper.getTrimmedName(destinationServer);
-        
+
         if (destination == null || destination.isEmpty() || destinationServer == null || destinationServer.isEmpty()) {
-            throw new BungeeNameException("Lacking sign information for bungee portal",TranslatableMessage.BUNGEE_LACKING_SIGN_INFORMATION);
+            throw new BungeeNameException("Lacking sign information for bungee portal", TranslatableMessage.BUNGEE_LACKING_SIGN_INFORMATION);
         }
 
         /*

@@ -1,9 +1,8 @@
 package org.sgrewritten.stargate.listener;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.logging.Level;
-
+import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockPlugin;
+import be.seeseemelk.mockbukkit.ServerMock;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.jetbrains.annotations.NotNull;
@@ -15,9 +14,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.manager.FakeBlockLogger;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.MockPlugin;
-import be.seeseemelk.mockbukkit.ServerMock;
+import java.util.logging.Level;
 
 class PluginEventListenerTest {
 
@@ -44,27 +41,27 @@ class PluginEventListenerTest {
         MockBukkit.unmock();
         Stargate.setLogLevel(Level.INFO);
     }
-    
+
     @Test
     void onPluginDisable_Vault() {
         //TODO Find out a way to detect the disable message is sent
-        Assertions.assertDoesNotThrow(() -> listener.onPluginDisable( new PluginDisableEvent(economy)));
+        Assertions.assertDoesNotThrow(() -> listener.onPluginDisable(new PluginDisableEvent(economy)));
     }
-    
+
     @Test
     void onPluginDisable_CoreProtect() {
-        Assertions.assertDoesNotThrow(() -> listener.onPluginDisable( new PluginDisableEvent(blockLogger)));
+        Assertions.assertDoesNotThrow(() -> listener.onPluginDisable(new PluginDisableEvent(blockLogger)));
     }
-    
+
     @Test
     void onPluginEnable_Vault() {
-        listener.onPluginEnable( new PluginEnableEvent(economy));
+        listener.onPluginEnable(new PluginEnableEvent(economy));
         Assertions.assertTrue(economyManager.hasTriggeredSetupEconomy());
     }
-    
+
     @Test
     void onPluginEnable_CoreProtect() {
-        listener.onPluginEnable( new PluginEnableEvent(blockLogger));
+        listener.onPluginEnable(new PluginEnableEvent(blockLogger));
         Assertions.assertTrue(blockLoggingManager.hasTriggeredSetup());
     }
 }

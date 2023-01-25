@@ -1,10 +1,10 @@
 package org.sgrewritten.stargate.util;
 
-import java.io.File;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.Stargate;
+
+import java.io.File;
 
 class BungeeHelperTest {
 
@@ -20,5 +20,5 @@ class BungeeHelperTest {
         new File(dataFolder + "/" + internalFolder, "serverUUID.txt").delete();
     }
 
-    
+
 }

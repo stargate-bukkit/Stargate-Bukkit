@@ -8,14 +8,11 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.RegistryAPI;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.network.portal.RealPortal;
-
-import java.util.Set;
 
 /**
  * A generic API for Stargate's storage methods
@@ -25,11 +22,11 @@ public interface StorageAPI {
     /**
      * Loads all portals from storage and adds them to the portal registry
      *
-     * @param registry <p> The registry to load the portals into </p>
+     * @param registry       <p> The registry to load the portals into </p>
      * @param economyManager <p> The handle all economical transactions from the portal will be based of</p>
      * @throws StorageReadException
      */
-    void loadFromStorage(RegistryAPI registry,StargateEconomyAPI economyManager) throws StorageReadException;
+    void loadFromStorage(RegistryAPI registry, StargateEconomyAPI economyManager) throws StorageReadException;
 
     /**
      * Saves the given portal to storage
@@ -53,8 +50,8 @@ public interface StorageAPI {
     /**
      * Set misc data of a portal
      *
-     * @param portal <p>A portal</p>
-     * @param data   <p>Any data</p>
+     * @param portal     <p>A portal</p>
+     * @param data       <p>Any data</p>
      * @param portalType <p>The portal's expected type</p>
      * @throws StorageWriteException <p>If unable to successfully set the new portal data</p>
      */
@@ -63,7 +60,7 @@ public interface StorageAPI {
     /**
      * Get misc data of a portal
      *
-     * @param portal <p>A portal</p>
+     * @param portal     <p>A portal</p>
      * @param portalType <p>The portal's expected type</p>
      * @return <p>Data</p>
      * @throws StorageReadException <p>If unable to successfully get the portal data</p>
@@ -87,7 +84,7 @@ public interface StorageAPI {
      *
      * @param portal         <p>A portal</p>
      * @param portalPosition <p>A portalPosition</p>
-     * @param portalType <p>The portal's expected type</p>
+     * @param portalType     <p>The portal's expected type</p>
      * @return <p>Data</p>
      * @throws StorageReadException <p>If unable to successfully read the portal metadata</p>
      */
@@ -97,13 +94,13 @@ public interface StorageAPI {
     /**
      * Creates a new network unassigned to a registry
      *
-     * @param networkName <p>The name of the new network</p>
-     * @param type       <p>The type of network to look for.</p>
+     * @param networkName   <p>The name of the new network</p>
+     * @param type          <p>The type of network to look for.</p>
      * @param isInterserver <p>Whether or not the network works across servers (I flag)</p>
      * @return The network that was created
-     * @throws InvalidNameException <p>If the given network name is invalid</p>
-     * @throws NameLengthException 
-     * @throws UnimplementedFlagException 
+     * @throws InvalidNameException       <p>If the given network name is invalid</p>
+     * @throws NameLengthException
+     * @throws UnimplementedFlagException
      */
     Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
 

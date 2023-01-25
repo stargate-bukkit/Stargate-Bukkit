@@ -1,7 +1,10 @@
 package org.sgrewritten.stargate.listener;
 
-import java.util.HashSet;
-
+import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.WorldMock;
+import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import be.seeseemelk.mockbukkit.entity.PoweredMinecartMock;
 import org.bukkit.Location;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
@@ -30,11 +33,7 @@ import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.util.FakeStorage;
 import org.sgrewritten.stargate.util.portal.GateTestHelper;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.WorldMock;
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import be.seeseemelk.mockbukkit.entity.PoweredMinecartMock;
+import java.util.HashSet;
 
 class MoveEventListenerTest {
 
@@ -60,62 +59,62 @@ class MoveEventListenerTest {
         GateTestHelper.setUpGates();
         theEnd = server.addSimpleWorld("world");
         theEnd.setEnvironment(Environment.THE_END);
-        from = new Location(theEnd,0,0,0);
+        from = new Location(theEnd, 0, 0, 0);
         player = server.addPlayer();
-        vehicle = (PoweredMinecartMock) theEnd.spawnEntity(from,EntityType.MINECART_FURNACE);
-        sign = PortalBlockGenerator.generatePortal(new Location(theEnd,0,10,0));
+        vehicle = (PoweredMinecartMock) theEnd.spawnEntity(from, EntityType.MINECART_FURNACE);
+        sign = PortalBlockGenerator.generatePortal(new Location(theEnd, 0, 10, 0));
         registry = new StargateRegistry(new FakeStorage());
         portal = FakePortalGenerator.generateFakePortal(sign, "network", new HashSet<>(), "portal", registry);
         listener = new MoveEventListener(registry);
-        
+
         iris = portal.getGate().getLocations(GateStructureType.IRIS).get(0).getLocation();
         outsideIris = iris.clone().add(portal.getGate().getFacing().getDirection());
-        teleportDestination = new Location(theEnd,400,0,0);
+        teleportDestination = new Location(theEnd, 400, 0, 0);
     }
 
     @AfterEach
     void tearDown() {
         MockBukkit.unmock();
     }
-    
+
     @Test
     void onPlayerTeleport_EndGateway() {
-        PlayerTeleportEvent event = new PlayerTeleportEvent(player,outsideIris,iris,PlayerTeleportEvent.TeleportCause.END_GATEWAY);
+        PlayerTeleportEvent event = new PlayerTeleportEvent(player, outsideIris, iris, PlayerTeleportEvent.TeleportCause.END_GATEWAY);
         listener.onPlayerTeleport(event);
         Assertions.assertTrue(event.isCancelled());
     }
-    
+
     @Test
     void onPlayerMove_Closed() {
-        player.addAttachment(plugin,"sg.use",true);
-        PlayerMoveEvent event = new PlayerMoveEvent(player,outsideIris,iris);
+        player.addAttachment(plugin, "sg.use", true);
+        PlayerMoveEvent event = new PlayerMoveEvent(player, outsideIris, iris);
         listener.onPlayerMove(event);
         server.getScheduler().performOneTick();
         Assertions.assertFalse(player.hasTeleported());
     }
-    
+
     @Test
     void onVehicleMove_Closed() {
-        VehicleMoveEvent event = new VehicleMoveEvent(vehicle,outsideIris,iris);
+        VehicleMoveEvent event = new VehicleMoveEvent(vehicle, outsideIris, iris);
         listener.onVehicleMove(event);
         server.getScheduler().performOneTick();
         Assertions.assertFalse(vehicle.hasTeleported());
     }
-    
+
     @Test
     void onPlayerMove_Open() {
-        player.addAttachment(plugin,"sg.use",true);
+        player.addAttachment(plugin, "sg.use", true);
         portal.overrideDestination(portal);
         portal.open(player);
-        PlayerMoveEvent event = new PlayerMoveEvent(player,outsideIris,iris);
+        PlayerMoveEvent event = new PlayerMoveEvent(player, outsideIris, iris);
         listener.onPlayerMove(event);
         server.getScheduler().performOneTick();
         Assertions.assertTrue(player.hasTeleported());
     }
-    
+
     @Test
     void onVehicleMove_Open() {
-        VehicleMoveEvent event = new VehicleMoveEvent(vehicle,outsideIris,iris);
+        VehicleMoveEvent event = new VehicleMoveEvent(vehicle, outsideIris, iris);
         portal.overrideDestination(portal);
         portal.open(player);
         listener.onVehicleMove(event);

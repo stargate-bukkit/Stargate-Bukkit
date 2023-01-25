@@ -6,7 +6,7 @@ import org.sgrewritten.stargate.network.portal.Portal;
 public class FakeEconomyManager implements StargateEconomyAPI {
 
     boolean triggeredSetup;
-    
+
     @Override
     public void setupEconomy() {
         this.triggeredSetup = true;
@@ -21,10 +21,10 @@ public class FakeEconomyManager implements StargateEconomyAPI {
     public boolean refundPlayer(OfflinePlayer player, Portal origin, int amount) {
         return true;
     }
-    
+
     public boolean hasTriggeredSetupEconomy() {
         return this.triggeredSetup;
-        
+
     }
-    
+
 }

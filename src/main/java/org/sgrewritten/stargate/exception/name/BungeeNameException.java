@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.exception.name;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 
-public class BungeeNameException extends TranslatableException{
+public class BungeeNameException extends TranslatableException {
 
     private TranslatableMessage translatableMessage;
 

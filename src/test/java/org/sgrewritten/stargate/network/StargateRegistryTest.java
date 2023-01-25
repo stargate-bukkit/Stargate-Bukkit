@@ -1,5 +1,8 @@
 package org.sgrewritten.stargate.network;
 
+import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,10 +12,6 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.util.FakeStorage;
-
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
 
 class StargateRegistryTest {
 
@@ -30,7 +29,7 @@ class StargateRegistryTest {
         network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
         personalNetwork = registry.createNetwork(player.getUniqueId().toString(), NetworkType.PERSONAL, false, false);
     }
-    
+
     @AfterEach
     void tearDown() {
         MockBukkit.unmock();
@@ -41,9 +40,9 @@ class StargateRegistryTest {
         registry.rename(network);
         Assertions.assertEquals("network1", network.getId());
     }
-    
+
     @Test
-    void rename_Personal(){
+    void rename_Personal() {
         Assertions.assertThrows(InvalidNameException.class, () -> registry.rename(personalNetwork));
     }
 }

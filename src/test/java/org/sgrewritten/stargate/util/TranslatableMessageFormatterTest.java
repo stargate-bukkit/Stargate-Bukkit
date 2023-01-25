@@ -1,9 +1,8 @@
 package org.sgrewritten.stargate.util;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.ServerMock;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,9 +14,6 @@ import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
-
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
 
 class TranslatableMessageFormatterTest {
 
@@ -32,6 +28,7 @@ class TranslatableMessageFormatterTest {
     void tearDown() {
         MockBukkit.unmock();
     }
+
     @Test
     void formatUnimplementedConflictMessage() throws NameLengthException, InvalidNameException, UnimplementedFlagException {
         System.setProperty("bstats.relocatecheck", "false");

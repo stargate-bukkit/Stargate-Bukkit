@@ -1,12 +1,11 @@
 package org.sgrewritten.stargate.network;
 
 import org.bukkit.entity.Player;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.Collection;
@@ -115,25 +114,28 @@ public interface Network {
     String getId();
 
     /**
-     * Gets the NetworkType of this network 
+     * Gets the NetworkType of this network
+     *
      * @return <p> The NetworkType of this network </p>
      */
     NetworkType getType();
 
     /**
      * Gets how the network is stored
+     *
      * @return <p> The storage type of the portal </p>
      */
     StorageType getStorageType();
-    
+
     /**
      * Change the name of the network
-     * 
+     * <p>
      * Does not save to database
+     *
      * @param newName
      * @throws InvalidNameException
-     * @throws NameLengthException 
-     * @throws UnimplementedFlagException 
+     * @throws NameLengthException
+     * @throws UnimplementedFlagException
      */
     void setID(String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
 }

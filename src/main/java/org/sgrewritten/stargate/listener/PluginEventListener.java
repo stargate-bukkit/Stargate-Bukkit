@@ -26,7 +26,7 @@ public class PluginEventListener implements Listener {
         this.economyManager = Objects.requireNonNull(economyManager);
         this.blockLoggingManager = Objects.requireNonNull(blockLoggingManager);
     }
-    
+
     /**
      * Listens for any valid economy plugins being loaded and sets up economy if necessary
      *
@@ -37,7 +37,7 @@ public class PluginEventListener implements Listener {
         if (isEconomyPlugin(event.getPlugin())) {
             economyManager.setupEconomy();
         }
-        if(isLoggerPlugin(event.getPlugin())) {
+        if (isLoggerPlugin(event.getPlugin())) {
             blockLoggingManager.setUpLogging();
         }
     }
@@ -52,7 +52,7 @@ public class PluginEventListener implements Listener {
         if (isEconomyPlugin(event.getPlugin())) {
             Stargate.log(Level.WARNING, "Vault plugin lost.");
         }
-        if(isLoggerPlugin(event.getPlugin())) {
+        if (isLoggerPlugin(event.getPlugin())) {
             Stargate.log(Level.WARNING, "CoreProtect plugin lost.");
         }
     }
@@ -60,7 +60,7 @@ public class PluginEventListener implements Listener {
     private boolean isEconomyPlugin(Plugin plugin) {
         return plugin.getName().equals("Vault");
     }
-    
+
     private boolean isLoggerPlugin(Plugin plugin) {
         return plugin.getName().equals("CoreProtect");
     }

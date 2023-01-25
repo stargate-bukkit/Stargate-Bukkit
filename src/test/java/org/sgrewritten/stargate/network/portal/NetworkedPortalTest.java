@@ -1,20 +1,18 @@
 package org.sgrewritten.stargate.network.portal;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.HashSet;
-import java.util.Set;
-
+import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockPlugin;
+import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.WorldMock;
+import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Directional;
-import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,19 +24,14 @@ import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.util.FakeStorage;
 import org.sgrewritten.stargate.util.portal.GateTestHelper;
-import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.MockPlugin;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.WorldMock;
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import java.util.HashSet;
+import java.util.Set;
 
 class NetworkedPortalTest {
 
@@ -59,41 +52,41 @@ class NetworkedPortalTest {
         world = server.addSimpleWorld("world");
         registry = new StargateRegistry(new FakeStorage());
         player = server.addPlayer();
-        player.addAttachment(plugin,"sg.use",true);
-        sign = PortalBlockGenerator.generatePortal(new Location(world,0,10,0));
+        player.addAttachment(plugin, "sg.use", true);
+        sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.NETWORKED);
-        network = registry.createNetwork("network", NetworkType.CUSTOM ,false, false);
+        network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
         portal = (NetworkedPortal) FakePortalGenerator.generateFakePortal(sign, network, flags, "networked", registry);
     }
-    
+
     @AfterEach
     void tearDown() {
         MockBukkit.unmock();
     }
-    
+
     @ParameterizedTest
     @EnumSource
     void onSignClick_NoPerm(Action type) {
-        player.addAttachment(plugin,"sg.use",false);
+        player.addAttachment(plugin, "sg.use", false);
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
-        Assertions.assertDoesNotThrow(()->portal.onSignClick(event));
+        Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
     }
 
     @ParameterizedTest
     @EnumSource
     void onSignClick_NoPermSneaking(Action type) {
         player.setSneaking(true);
-        player.addAttachment(plugin,"sg.use",false);
+        player.addAttachment(plugin, "sg.use", false);
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
-        Assertions.assertDoesNotThrow(()->portal.onSignClick(event));
+        Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
     }
-    
+
     @ParameterizedTest
     @EnumSource
     void onSignClick(Action type) {
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
-        Assertions.assertDoesNotThrow(()->portal.onSignClick(event));
+        Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
     }
 
     @ParameterizedTest
@@ -101,47 +94,47 @@ class NetworkedPortalTest {
     void onSignClick_Sneaking(Action type) {
         player.setSneaking(true);
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
-        Assertions.assertDoesNotThrow(()->portal.onSignClick(event));
+        Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
     }
-    
+
     @ParameterizedTest
     @EnumSource
     void onSignClick_AvailableDestination(Action type) throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
-        sign = PortalBlockGenerator.generatePortal(new Location(world,0,20,0));
+        sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
         FakePortalGenerator.generateFakePortal(sign, network, new HashSet<>(), "destination", registry);
-        Assertions.assertDoesNotThrow(()->portal.onSignClick(event));
+        Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
     }
 
     @ParameterizedTest
     @EnumSource
     void onSignClick_SneakingAvailableDestination(Action type) throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
-        sign = PortalBlockGenerator.generatePortal(new Location(world,0,20,0));
+        sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
         FakePortalGenerator.generateFakePortal(sign, network, new HashSet<>(), "destination", registry);
         player.setSneaking(true);
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
-        Assertions.assertDoesNotThrow(()->portal.onSignClick(event));
+        Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
     }
-    
+
     @Test
     void activate() {
         portal.activate(player);
-        Assertions.assertEquals(player.getUniqueId(),portal.activator);
+        Assertions.assertEquals(player.getUniqueId(), portal.activator);
     }
-    
+
     @Test
     void deactivate() {
         portal.activate(player);
         portal.deactivate();
-        Assertions.assertNotEquals(player.getUniqueId(),portal.activator);
+        Assertions.assertNotEquals(player.getUniqueId(), portal.activator);
     }
-    
+
     @Test
     void open() {
         portal.open(player);
         Assertions.assertTrue(portal.isOpen());
     }
-    
+
     @Test
     void close() {
         portal.open(player);

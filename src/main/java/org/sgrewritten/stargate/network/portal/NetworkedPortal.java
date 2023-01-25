@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -51,11 +50,11 @@ public class NetworkedPortal extends AbstractPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @param logger
      * @throws InvalidNameException <p>If the portal name is invalid</p>
-     * @throws NameLengthException 
+     * @throws NameLengthException
      */
     public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID,
-                           LanguageManager languageManager,StargateEconomyAPI economyAPI) throws InvalidNameException, NameLengthException {
-        super(network, name, flags, gate, ownerUUID,languageManager,economyAPI);
+                           LanguageManager languageManager, StargateEconomyAPI economyAPI) throws InvalidNameException, NameLengthException {
+        super(network, name, flags, gate, ownerUUID, languageManager, economyAPI);
     }
 
     @Override
@@ -70,7 +69,7 @@ public class NetworkedPortal extends AbstractPortal {
             return;
         }
 
-        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(),super.languageManager);
+        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(), super.languageManager);
         if (!hasActivatePermissions(actor, permissionManager)) {
             Stargate.log(Level.CONFIG, "Player did not have permission to activate portal");
             return;
