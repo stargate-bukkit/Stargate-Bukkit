@@ -1,26 +1,22 @@
 package org.sgrewritten.stargate.network;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import org.bukkit.Bukkit;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.ForcibleFunctionAction;
 import org.sgrewritten.stargate.action.SupplierAction;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.property.PluginChannel;
-import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import org.sgrewritten.stargate.util.BungeeHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -32,12 +28,13 @@ public class InterServerNetwork extends LocalNetwork {
      * Instantiates a new inter-server network
      *
      * @param networkName <p>The name of the new inter-server network</p>
-     * @param type <p>The type of inter-server network to initialize</p>
-     * @throws InvalidNameException <p>If the network name is invalid</p>
-     * @throws NameLengthException 
+     * @param type        <p>The type of inter-server network to initialize</p>
+     * @throws InvalidNameException       <p>If the network name is invalid</p>
+     * @throws NameLengthException
+     * @throws UnimplementedFlagException
      */
-    public InterServerNetwork(String networkName, NetworkType type) throws InvalidNameException, NameLengthException {
-        super(networkName,type);
+    public InterServerNetwork(String networkName, NetworkType type) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
+        super(networkName, type);
     }
 
     @Override
@@ -88,7 +85,7 @@ public class InterServerNetwork extends LocalNetwork {
                     dataOutputStream.writeUTF(PluginChannel.FORWARD.getChannel());
                     dataOutputStream.writeUTF("ALL");
                     dataOutputStream.writeUTF(PluginChannel.NETWORK_CHANGED.getChannel());
-                    String jsonMessage = BungeeHelper.generateJsonMessage(portal,requestType);
+                    String jsonMessage = BungeeHelper.generateJsonMessage(portal, requestType);
                     Stargate.log(Level.FINER, String.format("Sending bungee message:\n%s", jsonMessage));
                     dataOutputStream.writeUTF(jsonMessage);
                     Bukkit.getServer().sendPluginMessage(stargate, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());

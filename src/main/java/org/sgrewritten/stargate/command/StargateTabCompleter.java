@@ -18,10 +18,10 @@ import java.util.Objects;
  * This is the tab completer for the /stargate (/sg) command
  */
 public class StargateTabCompleter implements TabCompleter {
-    
+
     private @NotNull StoredPropertiesAPI properties;
 
-    public StargateTabCompleter(@NotNull StoredPropertiesAPI properties){
+    public StargateTabCompleter(@NotNull StoredPropertiesAPI properties) {
         this.properties = Objects.requireNonNull(properties);
     }
 

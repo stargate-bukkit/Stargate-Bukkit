@@ -78,6 +78,11 @@ public enum TranslatableMessage {
     NET_DENY("faultNetwork"),
 
     /**
+     * The message to display when a network is in conflict with a network of another type
+     */
+    NET_CONFLICT("faultNetworkConflict"),
+
+    /**
      * The message to display when a player is lacking permission to create a gateDesign
      */
     GATE_DENY("faultLayout"),
@@ -90,7 +95,12 @@ public enum TranslatableMessage {
     /**
      * The message to display when a portal or network name exceeds the max length
      */
-    INVALID_NAME("faultLength"),
+    INVALID_NAME_LENGTH("faultLength"),
+
+    /**
+     * The message to display when the NetworkType is not compatible with given name
+     */
+    INVALID_NAME("faultName"),
 
     /**
      * A generic message to display when an addon prevents the user from doing something
@@ -100,7 +110,7 @@ public enum TranslatableMessage {
     /**
      * The message to display when a new stargate's name is already in use
      */
-    ALREADY_EXIST("faultExists"),
+    GATE_ALREADY_EXIST("faultExists"),
 
     /**
      * The message to display when a network is already full
@@ -211,27 +221,29 @@ public enum TranslatableMessage {
     /**
      * The message to send if the player is teleporting past the worldborder
      */
-    OUTSIDE_WORLDBORDER("tpPastBorder"), 
-    
-    UNIMPLEMENTED_CONFLICT("unimplementedIConflict"), 
-    
+    OUTSIDE_WORLDBORDER("tpPastBorder"),
+
+    UNIMPLEMENTED_CONFLICT("unimplementedIConflict"),
+
     UNIMPLEMENTED_INTERSERVER("unimplementedInterserver"),
-    
-    
+
+
     // TERMINOLOGY
     GATE("gate"),
-    
+
     NETWORK("network"),
-    
+
     FANCY_INTER_SERVER("interserver"),
-    
+
     DEFAULT_NETWORK("default"),
-    
+
     TERMINAL_NETWORK("terminal"),
-    
+
     PERSONAL_NETWORK("personal"),
-    
-    CUSTOM_NETWORK("custom");
+
+    CUSTOM_NETWORK("custom"),
+
+    UNIMPLEMENTED_FLAG("unimplementedFlag");
 
     /*
      * Available additional strings:

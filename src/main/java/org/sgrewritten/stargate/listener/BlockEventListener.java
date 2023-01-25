@@ -39,9 +39,7 @@ import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
-import org.sgrewritten.stargate.exception.PermissionException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
@@ -50,7 +48,6 @@ import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
-import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.BlockEventType;
@@ -78,7 +75,7 @@ public class BlockEventListener implements Listener {
      *
      * @param registry <p>The registry to use for looking up portals</p>
      */
-    public BlockEventListener(@NotNull RegistryAPI registry,@NotNull LanguageManager languageManager,@NotNull StargateEconomyAPI economyManager) {
+    public BlockEventListener(@NotNull RegistryAPI registry, @NotNull LanguageManager languageManager, @NotNull StargateEconomyAPI economyManager) {
         this.registry = Objects.requireNonNull(registry);
         this.languageManager = Objects.requireNonNull(languageManager);
         this.economyManager = Objects.requireNonNull(economyManager);
@@ -105,7 +102,7 @@ public class BlockEventListener implements Listener {
                 Stargate.log(Level.FINE, "Broke portal " + portal.getName());
             };
 
-            boolean shouldCancel = PortalDestructionHelper.destroyPortalIfHasPermissionAndCanPay(event.getPlayer(), portal, destroyAction, languageManager,economyManager);
+            boolean shouldCancel = PortalDestructionHelper.destroyPortalIfHasPermissionAndCanPay(event.getPlayer(), portal, destroyAction, languageManager, economyManager);
             if (shouldCancel) {
                 event.setCancelled(true);
             }
@@ -115,9 +112,9 @@ public class BlockEventListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        RealPortal portalFromIris = registry.getPortal(location,GateStructureType.IRIS);
-        if(portalFromIris != null) {
-            if(BlockEventType.BLOCK_BREAK.canDestroyPortal()) {
+        RealPortal portalFromIris = registry.getPortal(location, GateStructureType.IRIS);
+        if (portalFromIris != null) {
+            if (BlockEventType.BLOCK_BREAK.canDestroyPortal()) {
                 String msg = languageManager.getErrorMessage(TranslatableMessage.DESTROY);
                 event.getPlayer().sendMessage(msg);
                 portalFromIris.destroy();
@@ -159,8 +156,8 @@ public class BlockEventListener implements Listener {
         //Prevent the player from explicitly setting any internal flags
         flags.removeIf(PortalFlag::isInternalFlag);
 
-        StargatePermissionManager permissionManager = new StargatePermissionManager(player,languageManager);
-        TranslatableMessage errorMessage = null;
+        StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
+        String errorMessage = null;
 
         if (lines[1].trim().isEmpty()) {
             flags.add(PortalFlag.NETWORKED);
@@ -181,26 +178,22 @@ public class BlockEventListener implements Listener {
             } else {
                 selectedNetwork = NetworkCreationHelper.selectNetwork(network, permissionManager, player, flags, registry);
                 //NetworkType-flags are incompatible with each other, this makes sure that only the flag of the portals network is in use
-                
+
             }
             NetworkType.removeNetworkTypeRelatedFlags(flags);
             flags.add(selectedNetwork.getType().getRelatedFlag());
         } catch (TranslatableException e) {
-            errorMessage = e.getTranslatableMessage();
-        } catch (InvalidNameException e) {
-            Stargate.log(e);
+            errorMessage = e.getLocalisedMessage(languageManager);
         }
         try {
             PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost,
-                    permissionManager, errorMessage,registry,languageManager,economyManager);
+                    permissionManager, errorMessage, registry, languageManager, economyManager);
         } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINER, "No Gate format matches");
         } catch (GateConflictException gateConflictException) {
             player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
         } catch (TranslatableException e) {
-            player.sendMessage(languageManager.getErrorMessage(e.getTranslatableMessage()));
-        } catch (InvalidNameException e) {
-            Stargate.log(e);
+            player.sendMessage(e.getLocalisedMessage(languageManager));
         }
     }
 
@@ -211,7 +204,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_EXTEND, event.getBlocks(),registry);
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_EXTEND, event.getBlocks(), registry);
     }
 
     /**
@@ -221,7 +214,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_RETRACT, event.getBlocks(),registry);
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_RETRACT, event.getBlocks(), registry);
     }
 
     /**
@@ -232,7 +225,7 @@ public class BlockEventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
         BlockEventHelper.onAnyMultiBlockChangeEvent(event, ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION),
-                event.blockList(),registry);
+                event.blockList(), registry);
     }
 
     /**
@@ -243,7 +236,7 @@ public class BlockEventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockExplode(BlockExplodeEvent event) {
         BlockEventHelper.onAnyMultiBlockChangeEvent(event, ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION),
-                event.blockList(),registry);
+                event.blockList(), registry);
     }
 
     /**
@@ -260,7 +253,7 @@ public class BlockEventListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_FROM_TO, toBlock.getLocation(),registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_FROM_TO, toBlock.getLocation(), registry);
     }
 
     /**
@@ -270,12 +263,12 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockFormEvent(BlockFormEvent event) {
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_FORM, event.getBlock().getLocation(),registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_FORM, event.getBlock().getLocation(), registry);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPhysics(BlockPhysicsEvent event) {
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PHYSICS, event.getBlock().getLocation(),registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PHYSICS, event.getBlock().getLocation(), registry);
     }
 
     /**
@@ -285,7 +278,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBurn(BlockBurnEvent event) {
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_BURN, event.getBlock().getLocation(),registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_BURN, event.getBlock().getLocation(), registry);
     }
 
     /**
@@ -303,58 +296,58 @@ public class BlockEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockFade(BlockFadeEvent event) {
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_FADE, event.getBlock().getLocation(),registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_FADE, event.getBlock().getLocation(), registry);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockFertilize(BlockFertilizeEvent event) {
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_FERTILIZE, event.getBlock().getLocation(),registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_FERTILIZE, event.getBlock().getLocation(), registry);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockMultiPlace(BlockMultiPlaceEvent event) {
         BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_MULTI_PLACE,
-                BlockEventHelper.getBlockList(event.getReplacedBlockStates()),registry);
+                BlockEventHelper.getBlockList(event.getReplacedBlockStates()), registry);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityBlockForm(EntityBlockFormEvent event) {
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.ENTITY_BLOCK_FORM, event.getBlock().getLocation(),registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.ENTITY_BLOCK_FORM, event.getBlock().getLocation(), registry);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event) {
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.LEAVES_DECAY, event.getBlock().getLocation(),registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.LEAVES_DECAY, event.getBlock().getLocation(), registry);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSpongeAbsorb(SpongeAbsorbEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.SPONGE_ABSORB, BlockEventHelper.getBlockList(event.getBlocks()),registry);
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.SPONGE_ABSORB, BlockEventHelper.getBlockList(event.getBlocks()), registry);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.ENTITY_CHANGE_EVENT_BLOCK, event.getBlock().getLocation(),registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.ENTITY_CHANGE_EVENT_BLOCK, event.getBlock().getLocation(), registry);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityBreakDoor(EntityBreakDoorEvent event) {
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.ENTITY_BREAK_DOOR, event.getBlock().getLocation(),registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.ENTITY_BREAK_DOOR, event.getBlock().getLocation(), registry);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPortalCreate(PortalCreateEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.PORTAL_CREATE, BlockEventHelper.getBlockList(event.getBlocks()),registry);
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.PORTAL_CREATE, BlockEventHelper.getBlockList(event.getBlocks()), registry);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityPlace(EntityPlaceEvent event) {
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.ENTITY_PLACE, event.getBlock().getLocation(),registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.ENTITY_PLACE, event.getBlock().getLocation(), registry);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.PLAYER_BUCKET_EMPTY, event.getBlock().getLocation(),registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.PLAYER_BUCKET_EMPTY, event.getBlock().getLocation(), registry);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -364,6 +357,6 @@ public class BlockEventListener implements Listener {
         }
         Directional dispenser = (Directional) event.getBlock().getBlockData();
         Location dispensedLocation = event.getBlock().getLocation().clone().add(dispenser.getFacing().getDirection());
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_DISPENSE, dispensedLocation,registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_DISPENSE, dispensedLocation, registry);
     }
 }

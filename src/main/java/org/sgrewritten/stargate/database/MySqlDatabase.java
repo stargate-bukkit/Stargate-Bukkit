@@ -15,6 +15,7 @@ import org.sgrewritten.stargate.exception.StargateInitializationException;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.logging.Level;
 
 import static org.bukkit.Bukkit.getPluginManager;
@@ -30,6 +31,7 @@ public class MySqlDatabase implements SQLDatabaseAPI {
     private final HikariDataSource hikariSource;
     private HikariConfig config;
     private JavaPlugin plugin;
+    private DatabaseDriver driver;
 
     /**
      * Instantiates a new MySQL database connection using the given values
@@ -42,11 +44,11 @@ public class MySqlDatabase implements SQLDatabaseAPI {
      * @param password <p>The password to use when connecting to the database</p>
      * @param useSSL   <p>Whether or not to force the use of SSL for the connection</p>
      * @throws org.sgrewritten.stargate.exception.StargateInitializationException
-     * 
      */
     public MySqlDatabase(DatabaseDriver driver, String address, int port, String database, String userName, String password,
                          boolean useSSL) throws StargateInitializationException {
         HikariDataSource dataSource = null;
+        this.driver = Objects.requireNonNull(driver);
         try {
             switch (driver) {
                 case MYSQL:
@@ -163,4 +165,7 @@ public class MySqlDatabase implements SQLDatabaseAPI {
         return builder.toString();
     }
 
+    public DatabaseDriver getDriver() {
+        return driver;
+    }
 }

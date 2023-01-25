@@ -1,7 +1,8 @@
 package org.sgrewritten.stargate.gate;
 
-import java.io.File;
-
+import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.WorldMock;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -18,9 +19,7 @@ import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.util.FakeStorage;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.WorldMock;
+import java.io.File;
 
 class GateTest {
 
@@ -38,28 +37,28 @@ class GateTest {
         server = MockBukkit.mock();
         world = server.addSimpleWorld("world");
         portalData = new PortalData();
-        portalData.topLeft = new Location(world,0,6,0);
+        portalData.topLeft = new Location(world, 0, 6, 0);
         portalData.facing = BlockFace.SOUTH;
         portalData.gateFileName = "nether.gate";
-        signBlock = PortalBlockGenerator.generatePortal(portalData.topLeft.clone().subtract(new Vector(0,4,0)));
+        signBlock = PortalBlockGenerator.generatePortal(portalData.topLeft.clone().subtract(new Vector(0, 4, 0)));
         GateFormatHandler.setFormats(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger()));
-        
-        loadGate = new Gate(portalData,new StargateRegistry(new FakeStorage()));
+
+        loadGate = new Gate(portalData, new StargateRegistry(new FakeStorage()));
         format = GateFormatHandler.getFormat(portalData.gateFileName);
         // Note that this is created in a different registry, so as to avoid any conflicts
-        createdGate = new Gate(format,signBlock.getLocation(),portalData.facing,false,new StargateRegistry(new FakeStorage()));
+        createdGate = new Gate(format, signBlock.getLocation(), portalData.facing, false, new StargateRegistry(new FakeStorage()));
     }
 
     @AfterAll
     public static void tearDown() {
         MockBukkit.unmock();
     }
-    
+
     @Test
     public void isValid_LoadedGate() throws GateConflictException {
         Assertions.assertTrue(loadGate.isValid(false));
     }
-    
+
     @Test
     public void isValid_CreatedGate() throws GateConflictException {
         Assertions.assertTrue(createdGate.isValid(false));

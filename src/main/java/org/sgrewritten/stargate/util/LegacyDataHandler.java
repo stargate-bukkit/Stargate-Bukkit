@@ -123,11 +123,10 @@ public class LegacyDataHandler {
         LEGACY_FLAG_INDICES.put(PortalFlag.SILENT, 21);
         LEGACY_FLAG_INDICES.put(PortalFlag.NO_SIGN, 22);
     }
-    
 
-    
-    public static String findConfigKey(String[] possibleKeys, Map<String,Object> oldConfig) {
-        for(String possibleKey : possibleKeys) {
+
+    public static String findConfigKey(String[] possibleKeys, Map<String, Object> oldConfig) {
+        for (String possibleKey : possibleKeys) {
             if (oldConfig.get(possibleKey) != null) {
                 return possibleKey;
             }

@@ -2,9 +2,11 @@ package org.sgrewritten.stargate.network;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
@@ -145,31 +147,33 @@ public interface RegistryAPI {
 
     /**
      * Creates a new network assigned to this registry
-     * 
+     *
      * @param networkName   <p>The name of the new network</p>
      * @param type          <p>The type of network to create</p>
      * @param isInterserver <p>Whether to create it as a BungeeCord network</p>
      * @param isForced      <p>The authority for the creation </p>
      * @return <p> The network created </p>
-     * @throws InvalidNameException <p>If the given network name is invalid</p>
-     * @throws NameLengthException 
-     * @throws NameConflictException 
+     * @throws InvalidNameException       <p>If the given network name is invalid</p>
+     * @throws NameLengthException
+     * @throws NameConflictException
+     * @throws UnimplementedFlagException
      */
-    Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException;
+    Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException;
 
     /**
      * Creates a new network assigned to this registry
      *
      * @param targetNetwork <p>The this network will attempt creation under</p>
-     * @param flags       <p>The flags containing the network's enabled options</p>
-     * @param isForced    <p>The authority for the creation </p>
+     * @param flags         <p>The flags containing the network's enabled options</p>
+     * @param isForced      <p>The authority for the creation </p>
      * @return <p> The network created </p>
-     * @throws InvalidNameException <p>If the given network name is invalid</p>
-     * @throws NameLengthException 
-     * @throws NameConflictException 
+     * @throws InvalidNameException       <p>If the given network name is invalid</p>
+     * @throws NameLengthException
+     * @throws NameConflictException
+     * @throws UnimplementedFlagException
      */
-    Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException;
-    
+    Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException;
+
     /**
      * Checks whether the given network name exists
      *
@@ -186,7 +190,7 @@ public interface RegistryAPI {
      * @param isBungee <p>Whether the network is a BungeeCord network</p>
      * @return <p>The network with the given name</p>
      */
-    Network getNetwork(String name, boolean isBungee);
+    @Nullable Network getNetwork(String name, boolean isBungee);
 
     /**
      * Gets the map storing all BungeeCord networks
@@ -204,17 +208,18 @@ public interface RegistryAPI {
 
     /**
      * Rename the network to specified name
-     * @param network   <p> The network to rename </p>
-     * @param newName   <p> The new name of the network </p>
-     * @throws InvalidNameException 
-     * @throws NameLengthException 
+     *
+     * @param network <p> The network to rename </p>
+     * @param newName <p> The new name of the network </p>
+     * @throws InvalidNameException
+     * @throws NameLengthException
+     * @throws UnimplementedFlagException
      */
-    void rename(Network network, String newName) throws InvalidNameException, NameLengthException;
+    void rename(Network network, String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
 
     /**
-     * 
-     * @param portal    <p> The portal to rename</p>
-     * @param newName   <p> The new name of the portal </p>
+     * @param portal  <p> The portal to rename</p>
+     * @param newName <p> The new name of the portal </p>
      * @throws InvalidNameException
      */
     void rename(Portal portal, String newName) throws InvalidNameException;
@@ -222,7 +227,8 @@ public interface RegistryAPI {
 
     /**
      * Rename the network to a non clashing name
-     * @param network   <p>The network to rename </p>
+     *
+     * @param network <p>The network to rename </p>
      * @throws InvalidNameException <p> If the name is a uuid </p>
      */
     void rename(Network network) throws InvalidNameException;

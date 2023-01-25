@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.container.TwoTuple;
+import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -14,7 +15,6 @@ import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.network.RegistryAPI;
-import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.LegacyDataHandler;
@@ -50,8 +50,8 @@ public class DataMigration_1_0_0 extends DataMigration {
      * @param logger   <p>The logger to use for logging any messages</p>
      */
     public DataMigration_1_0_0(@NotNull Server server, @NotNull RegistryAPI registry, @NotNull StargateLogger logger,
-            @NotNull LanguageManager languageManager, @NotNull StargateEconomyAPI economyManager,
-            @NotNull StoredPropertiesAPI properties) {
+                               @NotNull LanguageManager languageManager, @NotNull StargateEconomyAPI economyManager,
+                               @NotNull StoredPropertiesAPI properties) {
         if (CONFIG_CONVERSIONS == null) {
             loadConfigConversions();
         }
@@ -78,17 +78,17 @@ public class DataMigration_1_0_0 extends DataMigration {
             }
         }
 
-        
-        if(oldConfig.get("debugging.permissionDebug") != null) {
+
+        if (oldConfig.get("debugging.permissionDebug") != null) {
             properties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, true);
         }
-        
-        String[] permDebug = {"permdebug","debugging.permdebug","debugging.permissionDebug"};
+
+        String[] permDebug = {"permdebug", "debugging.permdebug", "debugging.permissionDebug"};
         Level logLevel = Level.INFO;
         if (LegacyDataHandler.findConfigKey(permDebug, oldConfig).equals("true")) {
             logLevel = Level.CONFIG;
         }
-        String[] debug = {"debug","debugging.debug"};
+        String[] debug = {"debug", "debugging.debug"};
         if (LegacyDataHandler.findConfigKey(debug, oldConfig).equals("true")) {
             logLevel = Level.FINE;
         }
@@ -97,16 +97,15 @@ public class DataMigration_1_0_0 extends DataMigration {
     }
 
     @Override
-    public void run() {
+    public void run(@NotNull SQLDatabaseAPI database) {
         try {
             String portalFolderName = (String) oldConfig.get(LegacyDataHandler
-                    .findConfigKey(new String[] { "portal-folder", "folders.portalFolder" }, oldConfig));
+                    .findConfigKey(new String[]{"portal-folder", "folders.portalFolder"}, oldConfig));
             String defaultName = (String) oldConfig.get(LegacyDataHandler
-                    .findConfigKey(new String[] { "gates.defaultGateNetwork", "default-gate-network" }, oldConfig));
-            Stargate.log(Level.INFO,"defaultName:" + defaultName);
+                    .findConfigKey(new String[]{"gates.defaultGateNetwork", "default-gate-network"}, oldConfig));
             migratePortals(portalFolderName, defaultName, languageManager, economyManager);
             moveFilesToDebugDirectory(portalFolderName);
-        } catch (IOException | InvalidStructureException | InvalidNameException | TranslatableException e) {
+        } catch (IOException | InvalidStructureException | TranslatableException e) {
             Stargate.log(e);
         } catch (NullPointerException e) {
             Stargate.log(Level.SEVERE,
@@ -130,11 +129,11 @@ public class DataMigration_1_0_0 extends DataMigration {
                 oldPair.getFirstValue().equals("economy.freeGatesColored")) {
             return new TwoTuple<>(newKey, 2);
         }
-        
-        if(newKey.equals("gateFolder")) {
+
+        if (newKey.equals("gateFolder")) {
             return new TwoTuple<>(newKey, oldPair.getSecondValue().toString().replaceAll("^plugins/Stargate/", ""));
         }
-        
+
 
         return new TwoTuple<>(newKey, oldPair.getSecondValue());
     }
@@ -149,12 +148,12 @@ public class DataMigration_1_0_0 extends DataMigration {
      *
      * @param portalFolder <p>The portal folder to load portals from</p>
      * @throws InvalidStructureException <p>If the old portal has an invalid structure</p>
-     * @throws InvalidNameException        <p>If the old portal has an invalid name</p>
+     * @throws InvalidNameException      <p>If the old portal has an invalid name</p>
      * @throws IOException               <p>If unable to load previous portals</p>
-     * @throws TranslatableException 
+     * @throws TranslatableException
      */
     private void migratePortals(String portalFolder, String defaultNetworkName, LanguageManager languageManager, StargateEconomyAPI economyManager) throws InvalidStructureException, InvalidNameException, IOException, TranslatableException {
-        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, registry, logger, defaultNetworkName,languageManager,economyManager);
+        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, registry, logger, defaultNetworkName, languageManager, economyManager);
         if (portals == null) {
             logger.logMessage(Level.WARNING, "No portals migrated!");
         } else {

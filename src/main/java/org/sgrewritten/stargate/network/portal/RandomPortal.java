@@ -2,7 +2,6 @@ package org.sgrewritten.stargate.network.portal;
 
 import org.bukkit.entity.Entity;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -34,11 +33,11 @@ public class RandomPortal extends AbstractPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @param logger
      * @throws InvalidNameException <p>If the portal name is invalid</p>
-     * @throws NameLengthException 
+     * @throws NameLengthException
      */
-    public RandomPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager,StargateEconomyAPI economyAPI)
+    public RandomPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyAPI)
             throws InvalidNameException, NameLengthException {
-        super(network, name, flags, gate, ownerUUID,languageManager,economyAPI);
+        super(network, name, flags, gate, ownerUUID, languageManager, economyAPI);
     }
 
     @Override

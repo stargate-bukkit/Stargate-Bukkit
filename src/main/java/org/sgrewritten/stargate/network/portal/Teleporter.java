@@ -17,14 +17,12 @@ import org.sgrewritten.stargate.action.SimpleAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
-import org.sgrewritten.stargate.economy.EconomyAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.event.StargatePortalEvent;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
-import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.util.portal.TeleportationHelper;
 import org.sgrewritten.stargate.vectorlogic.VectorUtils;
 
@@ -71,14 +69,14 @@ public class Teleporter {
      * @param logger
      */
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,
-            BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager,StargateEconomyAPI economyManager) {
+                      BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager, StargateEconomyAPI economyManager) {
         this(destination, origin, destinationFace, entranceFace, cost, teleportMessage, languageManager,
                 economyManager, ((action) -> Stargate.addSynchronousTickAction(action)));
     }
 
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,
-            BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager,
-            StargateEconomyAPI economyManager, Consumer<SimpleAction> registerAction) {
+                      BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager,
+                      StargateEconomyAPI economyManager, Consumer<SimpleAction> registerAction) {
         // Center the destination in the destination block
         this.exit = destination.getExit().clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
@@ -110,7 +108,7 @@ public class Teleporter {
         List<Player> playersToRefund = new ArrayList<>();
 
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
-            StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity,languageManager);
+            StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity, languageManager);
             if (!hasPermission(anyEntity, permissionManager)) {
                 teleportMessage = permissionManager.getDenyMessage();
                 return false;
@@ -261,7 +259,7 @@ public class Teleporter {
                 target.addPassenger(passenger);
                 return true;
             };
-            registerAction.accept(new DelayedAction(1,action));
+            registerAction.accept(new DelayedAction(1, action));
         }
     }
 
@@ -337,7 +335,7 @@ public class Teleporter {
      * @param location        <p>The location to teleport the powered minecart to</p>
      */
     private void teleportPoweredMinecart(PoweredMinecart poweredMinecart, Vector targetVelocity, Location location) {
-        if(!NonLegacyMethod.GET_FUEL.isImplemented()) {
+        if (!NonLegacyMethod.GET_FUEL.isImplemented()) {
             Stargate.log(Level.FINE, String.format("Unable to handle Furnace Minecart at %S --" +
                     " use Paper 1.17+ for this feature.", location));
             return;
@@ -352,14 +350,14 @@ public class Teleporter {
         teleport(poweredMinecart, exit);
         poweredMinecart.setFuel(fuel);
 
-        
+
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
             poweredMinecart.setVelocity(targetVelocity);
             double pushX = 1; //any new pushing direction
             double pushZ = 0;
             poweredMinecart.setPushX(pushX);
             poweredMinecart.setPushZ(pushZ);
-        },1);
+        }, 1);
         registerAction.accept(new DelayedAction(1, () -> {
             //Re-apply fuel and velocity
             Stargate.log(Level.FINEST, "Setting new velocity " + targetVelocity);

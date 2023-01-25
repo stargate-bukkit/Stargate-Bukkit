@@ -1,5 +1,10 @@
 package org.sgrewritten.stargate.util;
 
+import org.apache.tika.parser.txt.CharsetDetector;
+import org.apache.tika.parser.txt.CharsetMatch;
+import org.sgrewritten.stargate.Stargate;
+
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,12 +19,14 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.sgrewritten.stargate.Stargate;
 
 /**
  * Utility class for helping with file reading and writing
  */
 public final class FileHelper {
+
+    private static final String UTF8_BOM = "\uFEFF";
+    private static final int utf8_bom = 0xfeff;
 
     private FileHelper() {
 
@@ -34,14 +41,30 @@ public final class FileHelper {
      */
     public static BufferedReader getBufferedReader(File file) throws IOException {
         InputStream inputStream = Files.newInputStream(file.toPath());
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        return new BufferedReader(inputStreamReader);
+        CharsetDetector charsetDetector = new CharsetDetector();
+        charsetDetector.setText(inputStream instanceof BufferedInputStream ? inputStream : new BufferedInputStream(inputStream));
+        charsetDetector.enableInputFilter(true);
+        CharsetMatch cm = charsetDetector.detect();
+        String encoding = cm.getName();
+        return getBufferedReader(file, encoding);
+    }
+
+    /**
+     * Gets a buffered reader for reading the given file
+     *
+     * @param file     <p>The file to read</p>
+     * @param encoding <p>The encoding of the file </p>
+     * @return <p>A buffered reader for reading the given file</p>
+     * @throws IOException
+     */
+    public static BufferedReader getBufferedReader(File file, String encoding) throws IOException {
+        return new BufferedReader(new InputStreamReader(Files.newInputStream(file.toPath()), encoding));
     }
 
     /**
      * Gets a buffered writer for writing to the given file
      *
-     * @param file <p>The file to write to</p>
+     * @param file         <p>The file to write to</p>
      * @param appendToFile <p>Whether the writer should append to the file</p>
      * @return <p>A buffered writer for writing to the given file</p>
      * @throws FileNotFoundException <p>If the given file does not exist</p>
@@ -103,6 +126,17 @@ public final class FileHelper {
         }
     }
 
+    public static String readStreamToString(InputStream stream) throws IOException {
+        BufferedReader reader = FileHelper.getBufferedReaderFromInputStream(stream);
+        String line = reader.readLine();
+        String lines = "";
+        while (line != null) {
+            lines = lines + line + "\n";
+            line = reader.readLine();
+        }
+        return lines;
+    }
+
     /**
      * Reads key/value pairs from an input stream
      *
@@ -147,20 +181,20 @@ public final class FileHelper {
      * @return <p>A string guaranteed without a BOM</p>
      */
     public static String removeUTF8BOM(String string) {
-        String UTF8_BOM = "\uFEFF";
         if (string.startsWith(UTF8_BOM)) {
             string = string.substring(1);
         }
         return string;
     }
-    
+
     /**
      * Creates a hidden file if it does not already exist
-     * @param dataFolder <p> The stargate datafolder </p>
-     * @param internalFolder    <p> The hidden datafolder </p>
-     * @param fileName  <p> The name of the file to be created </p>
-     * @return  <p> The location of the file created </p>
-     * @throws IOException 
+     *
+     * @param dataFolder     <p> The stargate datafolder </p>
+     * @param internalFolder <p> The hidden datafolder </p>
+     * @param fileName       <p> The name of the file to be created </p>
+     * @return <p> The location of the file created </p>
+     * @throws IOException
      */
     public static File createHiddenFileIfNotExists(String dataFolder, String internalFolder, String fileName) throws IOException {
         File path = new File(dataFolder, internalFolder);
@@ -172,7 +206,7 @@ public final class FileHelper {
             }
         }
         File hiddenFile = new File(path, fileName);
-        if(!hiddenFile.exists()) {
+        if (!hiddenFile.exists()) {
             if (!hiddenFile.createNewFile()) {
                 throw new FileNotFoundException(fileName + " was not found and could not be created");
             }

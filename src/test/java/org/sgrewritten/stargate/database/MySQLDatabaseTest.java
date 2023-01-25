@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -20,7 +21,6 @@ import org.sgrewritten.stargate.network.StorageType;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MySQLDatabaseTest {
@@ -31,7 +31,7 @@ public class MySQLDatabaseTest {
 
     @BeforeAll
     public static void setUp() throws SQLException, InvalidStructureException, InvalidNameException, StargateInitializationException, NameLengthException {
-        Stargate.log(Level.FINE,"Setting up test data");
+        Stargate.log(Level.FINE, "Setting up test data");
         DatabaseDriver driver = DatabaseDriver.MYSQL;
         String address = "LOCALHOST";
         int port = 3306;
@@ -241,16 +241,16 @@ public class MySQLDatabaseTest {
 
     @Test
     @Order(7)
-    void changeNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException {
+    void changeNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException, UnimplementedFlagException {
         tester.changeNames(StorageType.LOCAL);
     }
-    
+
     @Test
     @Order(7)
-    void changeInterNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException {
+    void changeInterNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException, UnimplementedFlagException {
         tester.changeNames(StorageType.INTER_SERVER);
     }
-    
+
     @Test
     @Order(10)
     void destroyPortalTest() throws SQLException {

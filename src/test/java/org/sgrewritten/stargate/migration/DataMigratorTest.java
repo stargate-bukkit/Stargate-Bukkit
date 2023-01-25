@@ -3,7 +3,6 @@ package org.sgrewritten.stargate.migration;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-
 import com.google.common.io.Files;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -28,7 +27,6 @@ import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.database.StorageAPI;
 import org.sgrewritten.stargate.database.property.FakePropertiesDatabase;
-import org.sgrewritten.stargate.database.property.PropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
@@ -38,8 +36,6 @@ import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.util.FakeLanguageManager;
-import org.sgrewritten.stargate.util.FileHelper;
-import org.sgrewritten.stargate.util.LegacyDataHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -95,7 +91,7 @@ public class DataMigratorTest {
         server.addSimpleWorld("epicknarvik");
         server.addSimpleWorld("lclo");
         server.addSimpleWorld("pseudoknigth");
-        server.addPlayer(new PlayerMock(server,"Thorinwasher",UUID.fromString("d2b440c3-edde-4443-899e-6825c31d0919")));
+        server.addPlayer(new PlayerMock(server, "Thorinwasher", UUID.fromString("d2b440c3-edde-4443-899e-6825c31d0919")));
         Stargate.getFileConfiguration().load(defaultConfigFile);
 
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
@@ -108,7 +104,7 @@ public class DataMigratorTest {
         knarvikConfigChecks.put("defaultGateNetwork", "knarvik");
         knarvikConfigChecks.put("handleVehicles", false);
         Map<String, String> knarvikPortalChecks = new HashMap<>();
-        knarvikPortalChecks.put("knarvik1", LocalNetwork.DEFAULT_NET_ID);
+        knarvikPortalChecks.put("§6knarvik1", LocalNetwork.DEFAULT_NET_ID);
         knarvikPortalChecks.put("knarvik2", LocalNetwork.DEFAULT_NET_ID);
         knarvikPortalChecks.put("knarvik3", LocalNetwork.DEFAULT_NET_ID);
         TwoTuple<Map<String, Object>, Map<String, String>> knarvikChecks = new TwoTuple<>(knarvikConfigChecks,
@@ -128,7 +124,7 @@ public class DataMigratorTest {
         Map<String, Object> lcloConfigChecks = new HashMap<>();
         lcloConfigChecks.put("defaultGateNetwork", "lclco");
         Map<String, String> lcloPortalChecks = new HashMap<>();
-        lcloPortalChecks.put("lclo1", "d2b440c3-edde-4443-899e-6825c31d0919");
+        lcloPortalChecks.put("§6lclo1", "d2b440c3-edde-4443-899e-6825c31d0919");
         lcloPortalChecks.put("lclo2", "lclo");
         TwoTuple<Map<String, Object>, Map<String, String>> lcloChecks = new TwoTuple<>(lcloConfigChecks,
                 lcloPortalChecks);
@@ -143,8 +139,7 @@ public class DataMigratorTest {
     @AfterAll
     public static void tearDown() throws IOException, SQLException, InvalidConfigurationException, InterruptedException {
         MockBukkit.unmock();
-        sqlDatabase.getConnection().close();
-        
+
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
             if (!oldConfigFile.exists()) {
@@ -159,19 +154,19 @@ public class DataMigratorTest {
             FileConfiguration fileConfig = new YamlConfiguration();
             fileConfig.load(configFile);
         }
-        Map<String,String> fileMovements = new HashMap<>();
+        Map<String, String> fileMovements = new HashMap<>();
         fileMovements.put("plugins/Stargate/debug/legacy_portals/epicknarvik.db", "src/test/resources/oldsaves/epicknarvik/epicknarvik.db");
         fileMovements.put("plugins/Stargate/debug/legacy_portals/lclo.db", "src/test/resources/oldsaves/lclo/lclo.db");
         fileMovements.put("plugins/Stargate/debug/legacy_portals/pseudoknigth.db", "src/test/resources/oldsaves/pseudoknight/pseudoknigth.db");
-        
-        for(String fileToMoveName : fileMovements.keySet()) {
+
+        for (String fileToMoveName : fileMovements.keySet()) {
             File fileToMove = new File(fileToMoveName);
             File destination = new File(fileMovements.get(fileToMoveName));
-            Stargate.log(Level.FINER,destination.getAbsolutePath());
+            Stargate.log(Level.FINER, destination.getAbsolutePath());
             destination.getParentFile().mkdirs();
             fileToMove.renameTo(destination);
         }
-        
+
         if (sqlDatabaseFile.exists() && !sqlDatabaseFile.delete()) {
             throw new IOException("Unable to remove database file");
         }
@@ -187,7 +182,7 @@ public class DataMigratorTest {
                 throw new IOException("Unable to delete old config file");
             }
             FakePropertiesDatabase properties = new FakePropertiesDatabase();
-            DataMigrator dataMigrator = new DataMigrator(configFile, logger, server, registry, new FakeLanguageManager(), new FakeEconomyManager(),properties);
+            DataMigrator dataMigrator = new DataMigrator(configFile, logger, server, registry, new FakeLanguageManager(), new FakeEconomyManager(), properties);
             if (!configFile.renameTo(oldConfigFile)) {
                 throw new IOException("Unable to rename existing config for backup");
             }
@@ -212,7 +207,7 @@ public class DataMigratorTest {
                 }
                 Assertions.assertTrue(fileConfig.getKeys(true).contains(option.getConfigNode()), String.format("The option %s is missing in the configuration", option.getConfigNode()));
             }
-            
+
             logger.logMessage(Level.FINEST, "End config for file '" + configFile.getName() + "': \n" + fileConfig.saveToString());
         }
     }
@@ -220,11 +215,13 @@ public class DataMigratorTest {
     @ParameterizedTest
     @MethodSource("getTestedConfigNames")
     @Order(2)
-    public void doOtherRefactorCheck(String key) {
+    public void doOtherRefactorCheck(String key) throws SQLException {
         Stargate.log(Level.FINE,
                 String.format("####### Performing misc. refactoring based on the config-file %s%n", key));
         DataMigrator dataMigrator = migratorMap.get(key);
-        dataMigrator.run();
+        Connection connection = sqlDatabase.getConnection();
+        connection.close();
+        dataMigrator.run(sqlDatabase);
     }
 
     @Test
@@ -275,7 +272,7 @@ public class DataMigratorTest {
             Assertions.assertNotNull(portal, String.format("Portal %s in network %s was null", portalName, netName));
         }
     }
-    
+
     @ParameterizedTest
     @MethodSource("getTestedConfigNames")
     @Order(3)
@@ -287,8 +284,8 @@ public class DataMigratorTest {
             Assertions.assertNull(properties.getProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE));
         }
     }
-    
-    private static Stream<String> getTestedConfigNames(){
+
+    private static Stream<String> getTestedConfigNames() {
         return configTestMap.keySet().stream();
     }
 

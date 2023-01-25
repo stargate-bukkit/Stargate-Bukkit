@@ -1,15 +1,12 @@
 package org.sgrewritten.stargate.manager;
 
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Level;
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -26,11 +23,14 @@ import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import org.sgrewritten.stargate.util.BungeeHelper;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Level;
 
-public class StargateBungeeManager implements BungeeManager{
-    
+public class StargateBungeeManager implements BungeeManager {
+
     private final RegistryAPI registry;
     private @NotNull LanguageManager languageManager;
     private final HashMap<String, Portal> bungeeQueue = new HashMap<>();
@@ -39,7 +39,7 @@ public class StargateBungeeManager implements BungeeManager{
         this.registry = Objects.requireNonNull(registry);
         this.languageManager = Objects.requireNonNull(languageManager);
     }
-    
+
     @Override
     public void updateNetwork(String message) {
         JsonParser parser = new JsonParser();
@@ -57,9 +57,9 @@ public class StargateBungeeManager implements BungeeManager{
 
         try {
             registry.createNetwork(network, flags, false);
-        } catch ( NameConflictException ignored) {
-            
-        } catch (InvalidNameException | NameLengthException  e) {
+        } catch (NameConflictException ignored) {
+
+        } catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
             Stargate.log(e);
         }
         try {
@@ -79,7 +79,7 @@ public class StargateBungeeManager implements BungeeManager{
         } catch (NameConflictException ignored) {
         }
     }
-    
+
     @Override
     public void playerConnect(String message) {
         JsonParser parser = new JsonParser();
@@ -110,7 +110,7 @@ public class StargateBungeeManager implements BungeeManager{
         }
         destinationPortal.teleportHere(player, null);
     }
-    
+
     @Override
     public void legacyPlayerConnect(String message) {
         String bungeeNetworkName = BungeePortal.getLegacyNetworkName();
@@ -129,7 +129,13 @@ public class StargateBungeeManager implements BungeeManager{
 
             addToQueue(playerName, destination, bungeeNetworkName, false);
         } else {
-            Network network = BungeeHelper.getLegacyBungeeNetwork(registry, bungeeNetworkName);
+            Network network;
+            try {
+                network = BungeeHelper.getLegacyBungeeNetwork(registry, bungeeNetworkName);
+            } catch (UnimplementedFlagException e) {
+                Stargate.log(e);
+                return;
+            }
             if (network == null) {
                 Stargate.log(Level.WARNING, "The legacy bungee network is missing, this is most definitly a bug please contact developers (/sg about)");
                 return;
@@ -145,7 +151,7 @@ public class StargateBungeeManager implements BungeeManager{
             destinationPortal.teleportHere(player, null);
         }
     }
-    
+
     /**
      * Adds a player to the BungeeCord teleportation queue
      *
@@ -155,7 +161,7 @@ public class StargateBungeeManager implements BungeeManager{
      * @param isInterServer <p>Whether the entry portal belongs to an inter-server network</p>
      */
     private void addToQueue(String playerName, String portalName, String networkName,
-                                  boolean isInterServer) {
+                            boolean isInterServer) {
         Network network = registry.getNetwork(networkName, isInterServer);
 
         /*
@@ -177,7 +183,7 @@ public class StargateBungeeManager implements BungeeManager{
         }
         bungeeQueue.put(playerName, portal);
     }
-    
+
     @Override
     public Portal pullFromQueue(String playerName) {
         return bungeeQueue.remove(playerName);

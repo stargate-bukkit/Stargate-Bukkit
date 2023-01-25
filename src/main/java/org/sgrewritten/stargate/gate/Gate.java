@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.gate;
 
+import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,7 +18,6 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.exception.GateConflictException;
@@ -31,8 +31,6 @@ import org.sgrewritten.stargate.network.portal.PositionType;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.vectorlogic.MatrixVectorOperation;
 import org.sgrewritten.stargate.vectorlogic.VectorOperation;
-
-import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +93,7 @@ public class Gate implements GateAPI {
      * @param logger     <p> A logger </p>
      * @throws InvalidStructureException <p>If the facing is invalid or if no format could be found</p>
      */
-    public Gate(PortalData portalData,@NotNull RegistryAPI registry) throws InvalidStructureException {
+    public Gate(PortalData portalData, @NotNull RegistryAPI registry) throws InvalidStructureException {
         GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);
         if (format == null) {
             Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +

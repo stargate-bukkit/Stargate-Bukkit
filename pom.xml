@@ -11,15 +11,15 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spigot-version>1.17</spigot-version>
-		<sonar.organization>stargate-rewritten</sonar.organization>
-		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.organization>stargate-rewritten</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <repositories>
-		<repository>
-			<id>playpro-repo</id>
-			<url>https://maven.playpro.com</url>
-		</repository>
+        <repository>
+            <id>playpro-repo</id>
+            <url>https://maven.playpro.com</url>
+        </repository>
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
@@ -32,7 +32,7 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-        
+
     </repositories>
 
     <dependencies>
@@ -84,12 +84,12 @@
             <version>5.9.1</version>
             <scope>test</scope>
         </dependency>
-		<dependency>
-    		<groupId>org.junit.jupiter</groupId>
-    		<artifactId>junit-jupiter</artifactId>
-    		<version>5.9.1</version>
-    		<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.9.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -108,10 +108,15 @@
             <version>8.6.1</version>
         </dependency>
         <dependency>
-        	<groupId>net.coreprotect</groupId>
-        	<artifactId>coreprotect</artifactId>
-        	<version>21.0</version>
-        	<scope>provided</scope>
+            <groupId>net.coreprotect</groupId>
+            <artifactId>coreprotect</artifactId>
+            <version>21.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers</artifactId>
+            <version>1.2</version>
         </dependency>
     </dependencies>
     <build>
@@ -138,6 +143,7 @@
                             <include>com.zaxxer:HikariCP</include>
                             <include>com.github.cryptomorin:XSeries</include>
                             <include>org.slf4j:slf4j-api</include>
+                            <include>org.apache.tika:tika-parsers</include>
                         </includes>
                     </artifactSet>
                     <relocations>
@@ -170,6 +176,12 @@
                                 <exclude>com/cryptomorin/xseries/Skull*</exclude>
                             </excludes>
                         </filter>
+                        <filter>
+                            <artifact>org.apache.tika:tika-parsers</artifact>
+                            <includes>
+                                <include>org/apache/tika/parser/txt/*</include>
+                            </includes>
+                        </filter>
                     </filters>
                 </configuration>
                 <executions>
@@ -182,34 +194,34 @@
                 </executions>
             </plugin>
             <plugin>
-			    <groupId>org.jacoco</groupId>
-			    <artifactId>jacoco-maven-plugin</artifactId>
-			    <version>0.8.7</version>
-			    <executions>
-			        <execution>
-			           <id>prepare-agent</id>
-			           <goals>
-			               <goal>prepare-agent</goal>
-			           </goals>
-			        </execution>
-			        <execution>
-			           <id>report</id>
-			           <goals>
-			              <goal>report</goal>
-			           </goals>
-			           <configuration>
-			              <formats>
-			                  <format>XML</format>
-			              </formats>
-			           </configuration>
-			        </execution>
-			    </executions>
-		    </plugin>
-			<plugin>
-	          	<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M7</version>
-	        </plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.7</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <formats>
+                                <format>XML</format>
+                            </formats>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M7</version>
+            </plugin>
         </plugins>
         <resources>
             <resource>

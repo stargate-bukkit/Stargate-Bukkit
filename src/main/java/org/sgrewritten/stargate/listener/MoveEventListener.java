@@ -37,11 +37,11 @@ public class MoveEventListener implements Listener {
             PlayerTeleportEvent.TeleportCause.END_PORTAL, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL};
     private RegistryAPI registry;
 
-    
+
     public MoveEventListener(RegistryAPI registry) {
         this.registry = registry;
     }
-    
+
     /**
      * Listens for and cancels any default vehicle portal events caused by stargates
      *

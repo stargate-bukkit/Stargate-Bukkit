@@ -1,10 +1,10 @@
 package org.sgrewritten.stargate.manager;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-
+import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.WorldMock;
+import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -15,6 +15,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -33,11 +34,10 @@ import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.FakeLanguageManager;
 import org.sgrewritten.stargate.util.FakeStorage;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.WorldMock;
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import net.kyori.adventure.text.Component;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class StargateBungeeManagerTest {
@@ -57,9 +57,9 @@ class StargateBungeeManagerTest {
     private static final String PORTAL2 = "portal2";
     private static final String PLAYER = "player";
     private static final String REGISTERED_PORTAL = "rPortal";
-        
+
     @BeforeEach
-    void setUp() throws NameLengthException, InvalidStructureException, InvalidNameException, NameConflictException {
+    void setUp() throws NameLengthException, InvalidStructureException, InvalidNameException, NameConflictException, UnimplementedFlagException {
         server = MockBukkit.mock();
         GateFormatHandler.setFormats(
                 Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger())));
@@ -69,14 +69,14 @@ class StargateBungeeManagerTest {
         Network network2 = registry.createNetwork(NETWORK2, NetworkType.CUSTOM, true, false);
         realPortal = new FakePortalGenerator().generateFakePortal(world, network2, REGISTERED_PORTAL, true);
         network2.addPortal(realPortal, false);
-        
+
         Network bungeeNetwork = registry.createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false,
                 false);
         Set<PortalFlag> bungeePortalFlags = new HashSet<>();
         bungeePortal = new FakePortalGenerator().generateFakePortal(new Location(world, 0, 10, 0), bungeeNetwork,
                 NETWORK, false, bungeePortalFlags, registry);
         bungeeNetwork.addPortal(bungeePortal, false);
-        
+
         bungeeManager = new StargateBungeeManager(registry, new FakeLanguageManager());
     }
 
@@ -84,14 +84,14 @@ class StargateBungeeManagerTest {
     void tearDown() {
         MockBukkit.unmock();
     }
-    
+
     @Test
-    void updateNetwork() throws NameLengthException, InvalidNameException, InvalidStructureException {
+    void updateNetwork() throws NameLengthException, InvalidNameException, InvalidStructureException, UnimplementedFlagException {
         //A network not assigned to a registry
-        Network network = new InterServerNetwork(NETWORK,NetworkType.CUSTOM);
+        Network network = new InterServerNetwork(NETWORK, NetworkType.CUSTOM);
         RealPortal portal = new FakePortalGenerator().generateFakePortal(world, network, PORTAL, true);
         RealPortal portal2 = new FakePortalGenerator().generateFakePortal(world, network, PORTAL2, true);
-        
+
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal2, StargateProtocolRequestType.PORTAL_ADD));
         Assertions.assertNotNull(registry.getNetwork(NETWORK, true));
@@ -102,33 +102,33 @@ class StargateBungeeManagerTest {
     @Test
     void playerConnect_Online() {
         PlayerMock player = server.addPlayer(PLAYER);
-        
+
         bungeeManager.playerConnect(BungeeHelper.generateTeleportJsonMessage(PLAYER, realPortal));
         Component componentMessage = player.nextComponentMessage();
-        Assertions.assertFalse(componentMessage != null &&componentMessage.toString().contains("[ERROR]"),"A error message was sent to the player '" + componentMessage +"'");
+        Assertions.assertFalse(componentMessage != null && componentMessage.toString().contains("[ERROR]"), "A error message was sent to the player '" + componentMessage + "'");
     }
-    
+
     @Test
     void playerConnect_Offline() {
         bungeeManager.playerConnect(BungeeHelper.generateTeleportJsonMessage(PLAYER, realPortal));
         Portal pulledPortal = bungeeManager.pullFromQueue(PLAYER);
-        Assertions.assertEquals(realPortal.getName(),pulledPortal.getName());
+        Assertions.assertEquals(realPortal.getName(), pulledPortal.getName());
         Assertions.assertEquals(realPortal.getNetwork().getId(), pulledPortal.getNetwork().getId());
     }
-    
+
     @Test
     void legacyPlayerConnect_Online() throws NameLengthException, NameConflictException, InvalidNameException, InvalidStructureException {
         PlayerMock player = server.addPlayer(PLAYER);
-        
+
         bungeeManager.legacyPlayerConnect(BungeeHelper.generateLegacyTeleportMessage(PLAYER, bungeePortal));
         Component componentMessage = player.nextComponentMessage();
-        Assertions.assertFalse(componentMessage != null &&componentMessage.toString().contains("[ERROR]"),"A error message was sent to the player '" + componentMessage +"'");
+        Assertions.assertFalse(componentMessage != null && componentMessage.toString().contains("[ERROR]"), "A error message was sent to the player '" + componentMessage + "'");
     }
-    
+
     @Test
     void legacyPlayerConnect_Offline() throws NameLengthException, NameConflictException, InvalidNameException, InvalidStructureException {
         bungeeManager.legacyPlayerConnect(BungeeHelper.generateLegacyTeleportMessage(PLAYER, bungeePortal));
         Portal pulledPortal = bungeeManager.pullFromQueue(PLAYER);
-        Assertions.assertEquals(bungeePortal,pulledPortal);
+        Assertions.assertEquals(bungeePortal, pulledPortal);
     }
 }

@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.exception;
 /**
  * The exception thrown by invalid permission checks.
  */
-public class PermissionException extends Exception{
+public class PermissionException extends Exception {
 
     /**
      * The server's Version UID.

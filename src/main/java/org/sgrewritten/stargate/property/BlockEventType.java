@@ -42,8 +42,8 @@ public enum BlockEventType {
 
     PLAYER_BUCKET_EMPTY("PlayerBucketEmptyEvent"),
 
-    BLOCK_DISPENSE("BlockDispenseEvent"), 
-    
+    BLOCK_DISPENSE("BlockDispenseEvent"),
+
     BLOCK_BREAK("BlockBreakEvent");
 
 

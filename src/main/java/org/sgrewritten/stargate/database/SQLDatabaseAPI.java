@@ -16,4 +16,6 @@ public interface SQLDatabaseAPI {
      */
     Connection getConnection() throws SQLException;
 
+    DatabaseDriver getDriver();
+
 }
