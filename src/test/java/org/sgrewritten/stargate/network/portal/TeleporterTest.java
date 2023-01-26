@@ -23,16 +23,14 @@ import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.util.FakeLanguageManager;
-import org.sgrewritten.stargate.util.FakeStorage;
 
 import java.io.File;
 import java.util.Objects;
 
 class TeleporterTest {
-    
+
     static HorseMock horse;
     private static Teleporter teleporter;
     private static SynchronousPopulator populator;
@@ -45,9 +43,7 @@ class TeleporterTest {
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger())));
         @NotNull WorldMock world = server.addSimpleWorld("world");
         @NotNull PlayerMock player = server.addPlayer();
-        Location destination1 = new Location(world, 10, 10, 10);
         FakePortalGenerator fakePortalGenerator = new FakePortalGenerator("Portal", "iPortal");
-        StargateRegistry registry = new StargateRegistry(new FakeStorage());
 
 
         horse = (HorseMock) world.spawnEntity(new Location(world, 0, 0, 0), EntityType.HORSE);

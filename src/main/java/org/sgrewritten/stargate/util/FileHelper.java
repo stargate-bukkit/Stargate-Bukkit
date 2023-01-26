@@ -26,7 +26,6 @@ import java.util.Map;
 public final class FileHelper {
 
     private static final String UTF8_BOM = "\uFEFF";
-    private static final int utf8_bom = 0xfeff;
 
     private FileHelper() {
 
@@ -55,7 +54,7 @@ public final class FileHelper {
      * @param file     <p>The file to read</p>
      * @param encoding <p>The encoding of the file </p>
      * @return <p>A buffered reader for reading the given file</p>
-     * @throws IOException
+     * @throws IOException <p>If unable to initialize the buffered reader</p>
      */
     public static BufferedReader getBufferedReader(File file, String encoding) throws IOException {
         return new BufferedReader(new InputStreamReader(Files.newInputStream(file.toPath()), encoding));
@@ -194,9 +193,10 @@ public final class FileHelper {
      * @param internalFolder <p> The hidden datafolder </p>
      * @param fileName       <p> The name of the file to be created </p>
      * @return <p> The location of the file created </p>
-     * @throws IOException
+     * @throws IOException <p>If unable to create the file</p>
      */
-    public static File createHiddenFileIfNotExists(String dataFolder, String internalFolder, String fileName) throws IOException {
+    public static File createHiddenFileIfNotExists(String dataFolder, String internalFolder,
+                                                   String fileName) throws IOException {
         File path = new File(dataFolder, internalFolder);
         if (!path.exists() && path.mkdir()) {
             try {

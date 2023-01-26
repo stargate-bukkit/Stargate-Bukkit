@@ -21,6 +21,8 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SQLiteDatabaseTest {
 
@@ -48,122 +50,202 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(1)
-    void addPortalTableTest() throws SQLException {
-        tester.addPortalTableTest();
+    void addPortalTableTest() {
+        try {
+            tester.addPortalTableTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(1)
-    void addInterPortalTableTest() throws SQLException {
-        tester.addInterPortalTableTest();
+    void addInterPortalTableTest() {
+        try {
+            tester.addInterPortalTableTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(1)
-    void createFlagTableTest() throws SQLException {
-        tester.createFlagTableTest();
+    void createFlagTableTest() {
+        try {
+            tester.createFlagTableTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(1)
-    void createServerInfoTableTest() throws SQLException {
-        tester.createServerInfoTableTest();
+    void createServerInfoTableTest() {
+        try {
+            tester.createServerInfoTableTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(1)
-    void createLastKnownNameTableTest() throws SQLException {
-        tester.createLastKnownNameTableTest();
+    void createLastKnownNameTableTest() {
+        try {
+            tester.createLastKnownNameTableTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(2)
-    void createPortalFlagRelationTableTest() throws SQLException {
-        tester.createPortalFlagRelationTableTest();
+    void createPortalFlagRelationTableTest() {
+        try {
+            tester.createPortalFlagRelationTableTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(2)
-    void createInterPortalFlagRelationTableTest() throws SQLException {
-        tester.createInterPortalFlagRelationTableTest();
+    void createInterPortalFlagRelationTableTest() {
+        try {
+            tester.createInterPortalFlagRelationTableTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(2)
-    void createPortalPositionTypeTableTest() throws SQLException {
-        tester.createPortalPositionTypeTableTest();
+    void createPortalPositionTypeTableTest() {
+        try {
+            tester.createPortalPositionTypeTableTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(3)
-    void createPortalPositionTableTest() throws SQLException {
-        tester.createPortalPositionTableTest();
+    void createPortalPositionTableTest() {
+        try {
+            tester.createPortalPositionTableTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(3)
-    void createInterPortalPositionTableTest() throws SQLException {
-        tester.createInterPortalPositionTableTest();
+    void createInterPortalPositionTableTest() {
+        try {
+            tester.createInterPortalPositionTableTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(3)
-    void createPortalViewTest() throws SQLException {
-        tester.createPortalViewTest();
+    void createPortalViewTest() {
+        try {
+            tester.createPortalViewTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(3)
-    void createInterPortalViewTest() throws SQLException {
-        tester.createInterPortalViewTest();
+    void createInterPortalViewTest() {
+        try {
+            tester.createInterPortalViewTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(3)
-    void createPortalPositionIndexTest() throws SQLException {
-        tester.createPortalPositionIndexTest(StorageType.LOCAL);
+    void createPortalPositionIndexTest() {
+        try {
+            tester.createPortalPositionIndexTest(StorageType.LOCAL);
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(3)
-    void createInterPortalPositionIndexTest() throws SQLException {
-        tester.createPortalPositionIndexTest(StorageType.INTER_SERVER);
+    void createInterPortalPositionIndexTest() {
+        try {
+            tester.createPortalPositionIndexTest(StorageType.INTER_SERVER);
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(4)
-    void portalPositionIndexExistsTest() throws SQLException {
-        tester.portalPositionIndexExistsTest(StorageType.LOCAL);
+    void portalPositionIndexExistsTest() {
+        try {
+            tester.portalPositionIndexExistsTest(StorageType.LOCAL);
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(4)
-    void interPortalPositionIndexExistsTest() throws SQLException {
-        tester.portalPositionIndexExistsTest(StorageType.INTER_SERVER);
+    void interPortalPositionIndexExistsTest() {
+        try {
+            tester.portalPositionIndexExistsTest(StorageType.INTER_SERVER);
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(4)
-    void getFlagsTest() throws SQLException {
-        tester.getFlagsTest();
+    void getFlagsTest() {
+        try {
+            tester.getFlagsTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(4)
-    void updateServerInfoTest() throws SQLException {
-        tester.updateServerInfoTest();
+    void updateServerInfoTest() {
+        try {
+            tester.updateServerInfoTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(5)
-    void addFlagsTest() throws SQLException {
-        tester.addFlags();
+    void addFlagsTest() {
+        try {
+            tester.addFlags();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(5)
-    void updateLastKnownNameTest() throws SQLException {
-        tester.updateLastKnownNameTest();
+    void updateLastKnownNameTest() {
+        try {
+            tester.updateLastKnownNameTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
@@ -180,62 +262,102 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(6)
-    void getPortalTest() throws SQLException {
-        tester.getPortalTest();
+    void getPortalTest() {
+        try {
+            tester.getPortalTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(6)
-    void getInterPortalTest() throws SQLException {
-        tester.getInterPortalTest();
+    void getInterPortalTest() {
+        try {
+            tester.getInterPortalTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(7)
-    void addAndRemovePortalPositionTest() throws SQLException {
-        tester.addAndRemovePortalPosition(StorageType.LOCAL);
+    void addAndRemovePortalPositionTest() {
+        try {
+            tester.addAndRemovePortalPosition(StorageType.LOCAL);
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(7)
-    void addAndRemoveInterPortalPositionTest() throws SQLException {
-        tester.addAndRemovePortalPosition(StorageType.INTER_SERVER);
+    void addAndRemoveInterPortalPositionTest() {
+        try {
+            tester.addAndRemovePortalPosition(StorageType.INTER_SERVER);
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(7)
-    void addAndRemovePortalFlagRelationTest() throws SQLException {
-        tester.addAndRemovePortalFlags(StorageType.LOCAL);
+    void addAndRemovePortalFlagRelationTest() {
+        try {
+            tester.addAndRemovePortalFlags(StorageType.LOCAL);
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(7)
-    void addAndRemoveInterPortalFlagRelationTest() throws SQLException {
-        tester.addAndRemovePortalFlags(StorageType.INTER_SERVER);
+    void addAndRemoveInterPortalFlagRelationTest() {
+        try {
+            tester.addAndRemovePortalFlags(StorageType.INTER_SERVER);
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(7)
-    void setPortalMetaTest() throws SQLException {
-        tester.setPortalMetaDataTest(StorageType.LOCAL);
+    void setPortalMetaTest() {
+        try {
+            tester.setPortalMetaDataTest(StorageType.LOCAL);
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(7)
-    void setInterPortalMetaTest() throws SQLException {
-        tester.setPortalMetaDataTest(StorageType.INTER_SERVER);
+    void setInterPortalMetaTest() {
+        try {
+            tester.setPortalMetaDataTest(StorageType.INTER_SERVER);
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(7)
-    void setPortalPositionMetaTest() throws SQLException {
-        tester.setPortalPositionMetaTest(StorageType.LOCAL);
+    void setPortalPositionMetaTest() {
+        try {
+            tester.setPortalPositionMetaTest(StorageType.LOCAL);
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(7)
-    void setInterPortalPositionMetaTest() throws SQLException {
-        tester.setPortalPositionMetaTest(StorageType.INTER_SERVER);
+    void setInterPortalPositionMetaTest() {
+        try {
+            tester.setPortalPositionMetaTest(StorageType.INTER_SERVER);
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
@@ -252,14 +374,22 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(10)
-    void destroyPortalTest() throws SQLException {
-        tester.destroyPortalTest();
+    void destroyPortalTest() {
+        try {
+            tester.destroyPortalTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
     @Test
     @Order(10)
-    void destroyInterPortalTest() throws SQLException {
-        tester.destroyInterPortalTest();
+    void destroyInterPortalTest() {
+        try {
+            tester.destroyInterPortalTest();
+        } catch (SQLException e) {
+            fail();
+        }
     }
 
 }
