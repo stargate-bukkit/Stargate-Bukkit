@@ -6,10 +6,9 @@
 `Supporting MC 1.16+ in the Bukkit Ecosystem`
 
 > **THIS IS A EARLY RELEASE FROM THE BETA CHANNEL**<br><br>
-> **FOR**: Early adopters and servers running recently released versions of java/bukkit, etc.
-> **ENJOY**: Testing the next version of Stargate, with general stability.
-> **EXPECT**: Mostly stable builds that need a bit of fine tuning.
-> <br>
+> **FOR**: Early adopters and servers running recently released versions of java/bukkit, etc.<br>
+> **ENJOY**: Testing the next version of Stargate, with general stability.<br>
+> **EXPECT**: Mostly stable builds that need a bit of fine tuning.<br><br>
 > This build is suitable for use on smaller production servers.<br>
 > As always, remember to make backups!
 
