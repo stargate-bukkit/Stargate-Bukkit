@@ -11,11 +11,9 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
  * <p>This event can be used to deny or change the cost of a stargate creation.</p>
  */
 @SuppressWarnings("unused")
-public class StargateCreateEvent extends DeniableStargateEvent {
+public class StargateCreateEvent extends StargateExistenceEvent {
 
-    private static final HandlerList handlers = new HandlerList();
     private final String[] lines;
-    private int cost;
 
     /**
      * Instantiates a new stargate creation event
@@ -29,10 +27,8 @@ public class StargateCreateEvent extends DeniableStargateEvent {
      */
     public StargateCreateEvent(@NotNull Player player, @NotNull Portal portal, @NotNull String[] lines, boolean deny,
                                String denyReason, int cost) {
-        super(portal, player, deny, denyReason);
-
+        super(portal, player, deny, denyReason, cost);
         this.lines = lines;
-        this.cost = cost;
     }
 
     /**
@@ -47,35 +43,11 @@ public class StargateCreateEvent extends DeniableStargateEvent {
     }
 
     /**
-     * Gets the cost of creating the stargate
-     *
-     * @return <p>The cost of creating the stargate</p>
-     */
-    public int getCost() {
-        return cost;
-    }
-
-    /**
-     * Sets the cost of creating the stargate
-     *
-     * @param cost <p>The new cost of creating the stargate</p>
-     */
-    public void setCost(int cost) {
-        this.cost = cost;
-    }
-
-    /**
      * Gets a handler-list containing all event handlers
      *
      * @return <p>A handler-list with all event handlers</p>
      */
     public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    @NotNull
-    @Override
-    public HandlerList getHandlers() {
         return handlers;
     }
 

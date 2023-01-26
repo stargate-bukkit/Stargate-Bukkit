@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.api.event;
 
 import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 
@@ -10,6 +11,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 @SuppressWarnings("unused")
 public abstract class StargateEvent extends Event {
 
+    protected static final HandlerList handlers = new HandlerList();
     private final Portal portal;
 
     /**
@@ -28,6 +30,12 @@ public abstract class StargateEvent extends Event {
      */
     public Portal getPortal() {
         return portal;
+    }
+
+    @NotNull
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
 }

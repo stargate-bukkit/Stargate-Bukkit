@@ -1,7 +1,6 @@
 package org.sgrewritten.stargate.api.event;
 
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 
 /**
@@ -12,8 +11,6 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
  */
 @SuppressWarnings("unused")
 public class StargateDeactivateEvent extends StargateEvent {
-
-    private static final HandlerList handlers = new HandlerList();
 
     /**
      * Instantiates a new stargate deactivation event
@@ -30,12 +27,6 @@ public class StargateDeactivateEvent extends StargateEvent {
      * @return <p>A handler-list with all event handlers</p>
      */
     public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    @NotNull
-    @Override
-    public HandlerList getHandlers() {
         return handlers;
     }
 

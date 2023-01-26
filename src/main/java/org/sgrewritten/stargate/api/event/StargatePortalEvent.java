@@ -12,37 +12,25 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
  * <p>This event can be used to overwrite the location the entity is teleported to.</p>
  */
 @SuppressWarnings("unused")
-public class StargatePortalEvent extends StargateEvent {
+public class StargatePortalEvent extends StargateEntityEvent {
 
-    private static final HandlerList handlers = new HandlerList();
-    final Entity travellingEntity;
     private final Portal destination;
     private Location exit;
 
     /**
      * Instantiates a new stargate portal event
      *
-     * @param travellingEntity <p>The entity travelling through a portal</p>
-     * @param portal           <p>The portal the entity entered from</p>
-     * @param destination      <p>The destination the entity should exit from</p>
-     * @param exit             <p>The exit location of the destination portal the entity will be teleported to</p>
+     * @param involvedEntity <p>The entity travelling through a portal</p>
+     * @param portal         <p>The portal the entity entered from</p>
+     * @param destination    <p>The destination the entity should exit from</p>
+     * @param exit           <p>The exit location of the destination portal the entity will be teleported to</p>
      */
-    public StargatePortalEvent(@NotNull Entity travellingEntity, @NotNull Portal portal, Portal destination,
+    public StargatePortalEvent(@NotNull Entity involvedEntity, @NotNull Portal portal, Portal destination,
                                @NotNull Location exit) {
-        super(portal);
+        super(portal, involvedEntity);
 
-        this.travellingEntity = travellingEntity;
         this.destination = destination;
         this.exit = exit;
-    }
-
-    /**
-     * Gets the teleported entity
-     *
-     * @return <p>The teleported entity</p>
-     */
-    public Entity getEntity() {
-        return travellingEntity;
     }
 
     /**
@@ -78,12 +66,6 @@ public class StargatePortalEvent extends StargateEvent {
      * @return <p>A handler-list with all event handlers</p>
      */
     public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    @Override
-    @NotNull
-    public HandlerList getHandlers() {
         return handlers;
     }
 

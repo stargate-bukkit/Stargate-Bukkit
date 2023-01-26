@@ -16,7 +16,6 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class StargateActivateEvent extends StargateEntityEvent {
 
-    private static final HandlerList handlers = new HandlerList();
     private List<String> destinations;
     private String destination;
 
@@ -78,12 +77,6 @@ public class StargateActivateEvent extends StargateEntityEvent {
      * @return <p>A handler-list with all event handlers</p>
      */
     public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    @Override
-    @NotNull
-    public HandlerList getHandlers() {
         return handlers;
     }
 

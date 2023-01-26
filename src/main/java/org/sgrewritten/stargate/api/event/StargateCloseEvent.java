@@ -13,7 +13,6 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 @SuppressWarnings("unused")
 public class StargateCloseEvent extends CancellableStargateEvent {
 
-    private static final HandlerList handlers = new HandlerList();
     private boolean force;
 
     /**
@@ -52,12 +51,6 @@ public class StargateCloseEvent extends CancellableStargateEvent {
      * @return <p>A handler-list with all event handlers</p>
      */
     public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    @NotNull
-    @Override
-    public HandlerList getHandlers() {
         return handlers;
     }
 

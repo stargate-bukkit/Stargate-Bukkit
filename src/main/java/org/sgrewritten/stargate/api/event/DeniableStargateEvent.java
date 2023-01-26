@@ -13,10 +13,10 @@ public abstract class DeniableStargateEvent extends StargateEntityEvent {
     private String denyReason;
 
     /**
-     * Instantiates a new stargate player event
+     * Instantiates a new deniable stargate event
      *
      * @param portal           <p>The portal involved in this stargate event</p>
-     * @param travellingEntity <p>The entity travelling through a portal</p>
+     * @param travellingEntity <p>The doing something with a stargate</p>
      * @param deny             <p>Whether the stargate access should be denied</p>
      * @param denyReason       <p>The reason stargate access was denied</p>
      */

@@ -2,7 +2,6 @@ package org.sgrewritten.stargate.api.event;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 
 /**
@@ -14,7 +13,6 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 @SuppressWarnings("unused")
 public class StargateAccessEvent extends DeniableStargateEvent {
 
-    private static final HandlerList handlers = new HandlerList();
     private String denyReason;
     private Entity travellingEntity;
 
@@ -36,12 +34,6 @@ public class StargateAccessEvent extends DeniableStargateEvent {
      * @return <p>A handler-list with all event handlers</p>
      */
     public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    @Override
-    @NotNull
-    public HandlerList getHandlers() {
         return handlers;
     }
 

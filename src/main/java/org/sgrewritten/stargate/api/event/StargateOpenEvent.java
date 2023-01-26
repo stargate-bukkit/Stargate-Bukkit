@@ -14,7 +14,6 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 @SuppressWarnings({"unused"})
 public class StargateOpenEvent extends StargateEntityEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
     private boolean force;
     private boolean cancelled;
 
@@ -56,12 +55,6 @@ public class StargateOpenEvent extends StargateEntityEvent implements Cancellabl
      * @return <p>A handler-list with all event handlers</p>
      */
     public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    @Override
-    @NotNull
-    public HandlerList getHandlers() {
         return handlers;
     }
 
