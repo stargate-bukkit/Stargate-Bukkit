@@ -3,13 +3,15 @@
 
 # Stargate-Bukkit
 
-`Supporting MC 1.15+ in the Bukkit Ecosystem`
+`Supporting MC 1.16+ in the Bukkit Ecosystem`
 
-> ALPHA RELEASE!<br>
-> This version should work, but may include breaking issues.<br>
+> **THIS IS A DEVELOPMENT RELEASE FROM THE ALPHA CHANNEL**<br><br>
+> **FOR**: Addon developers, early adopters, and adventure seekers.
+> **ENJOY**: Acccess to experimental features -- your feedback helps determine what makes it to beta.
+> **EXPECT**: Test builds with bugs and incompatible addons and possible crashes.<br><br>
 > <br>
-> This branch is not yet recommended for production instances!<br>
-> Use at your own risk, and remember to make backups!
+> **THIS BUILD IS NOT SUITABLE FOR USE ON MOST PRODUCTION SERVERS!<br>
+> **Use at your own risk, and remember to make backups!**
 
 ![Stargate Banner](https://i.imgur.com/7Ji4jrr.png)
 
