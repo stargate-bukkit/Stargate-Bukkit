@@ -5,13 +5,13 @@
 
 `Supporting MC 1.16+ in the Bukkit Ecosystem`
 
-> **THIS IS A DEVELOPMENT RELEASE FROM THE ALPHA CHANNEL**<br><br>
-> **FOR**: Addon developers, early adopters, and adventure seekers.
-> **ENJOY**: Acccess to experimental features -- your feedback helps determine what makes it to beta.
-> **EXPECT**: Test builds with bugs and incompatible addons and possible crashes.<br><br>
+> **THIS IS A EARLY RELEASE FROM THE BETA CHANNEL**<br><br>
+> **FOR**: Early adopters and servers running recently released versions of java/bukkit, etc.
+> **ENJOY**: Testing the next version of Stargate, with general stability.
+> **EXPECT**: Mostly stable builds that need a bit of fine tuning.
 > <br>
-> **THIS BUILD IS NOT SUITABLE FOR USE ON MOST PRODUCTION SERVERS!<br>
-> **Use at your own risk, and remember to make backups!**
+> This build is suitable for use on smaller production servers.<br>
+> As always, remember to make backups!
 
 ![Stargate Banner](https://i.imgur.com/7Ji4jrr.png)
 
