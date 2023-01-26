@@ -11,7 +11,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.WallSign;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
@@ -24,9 +23,6 @@ import org.sgrewritten.stargate.FakeStargate;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
-import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
@@ -37,15 +33,12 @@ import org.sgrewritten.stargate.util.FakeLanguageManager;
 import org.sgrewritten.stargate.util.FakeStorage;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
 class BlockEventListenerTest {
 
     private static ServerMock server;
-    private static FakeStargate plugin;
     private static RegistryAPI registry;
     private static PlayerMock player;
     private static WorldMock world;
@@ -55,10 +48,10 @@ class BlockEventListenerTest {
     private static final String CUSTOM_NETNAME = "custom";
 
     @BeforeAll
-    public static void setUp() throws NameLengthException, InvalidStructureException, InvalidNameException, FileNotFoundException, IOException, InvalidConfigurationException {
+    public static void setUp() {
         BlockEventListenerTest.server = MockBukkit.mock();
 
-        plugin = (FakeStargate) MockBukkit.load(FakeStargate.class);
+        FakeStargate plugin = MockBukkit.load(FakeStargate.class);
         player = server.addPlayer(PLAYER_NAME);
 
         world = new WorldMock(Material.GRASS, 0);

@@ -30,6 +30,9 @@ public class SQLiteDatabase implements SQLDatabaseAPI {
         Connection connection = DriverManager.getConnection(this.url);
         try (PreparedStatement statement = connection.prepareStatement("PRAGMA foreign_keys = ON;")) {
             statement.execute();
+        } catch(SQLException e) {
+            connection.close();
+            throw e;
         }
         return connection;
     }

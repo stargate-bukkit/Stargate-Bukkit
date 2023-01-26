@@ -4,7 +4,7 @@ import java.util.Properties;
 
 public class FakePropertiesDatabase implements StoredPropertiesAPI {
 
-    private Properties properties;
+    private final Properties properties;
 
     public FakePropertiesDatabase() {
         properties = new Properties();

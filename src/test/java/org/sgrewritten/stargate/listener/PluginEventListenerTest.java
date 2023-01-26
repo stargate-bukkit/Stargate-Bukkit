@@ -23,12 +23,11 @@ class PluginEventListenerTest {
     private PluginEventListener listener;
     private FakeEconomyManager economyManager;
     private FakeBlockLogger blockLoggingManager;
-    private @NotNull ServerMock server;
 
     @BeforeEach
     void setUp() {
         Stargate.setLogLevel(Level.SEVERE);
-        server = MockBukkit.mock();
+        @NotNull ServerMock server = MockBukkit.mock();
         economy = MockBukkit.createMockPlugin("Vault");
         blockLogger = MockBukkit.createMockPlugin("CoreProtect");
         economyManager = new FakeEconomyManager();

@@ -112,7 +112,7 @@ public class PortalStorageHelper {
         if (portalData.destination == null || portalData.destination.trim().isEmpty()) {
             portalData.flags.add(PortalFlag.NETWORKED);
         }
-        if (portalProperties.length <= 9 || portalData.networkName.toLowerCase().equals(defaultNetworkName.toLowerCase())) {
+        if (portalProperties.length <= 9 || portalData.networkName.equalsIgnoreCase(defaultNetworkName)) {
             portalData.flags.add(PortalFlag.DEFAULT_NETWORK);
             portalData.networkName = LocalNetwork.DEFAULT_NET_ID;
         } else if (!ownerString.isEmpty()

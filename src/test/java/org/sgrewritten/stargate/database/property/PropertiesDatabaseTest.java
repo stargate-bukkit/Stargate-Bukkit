@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 class PropertiesDatabaseTest {
@@ -17,7 +16,7 @@ class PropertiesDatabaseTest {
     private File fileLocation;
 
     @BeforeEach
-    void setUp() throws FileNotFoundException, IOException {
+    void setUp() throws IOException {
         MockBukkit.mock();
         MockPlugin plugin = MockBukkit.createMockPlugin();
         fileLocation = new File(plugin.getDataFolder(), "test.properties");
@@ -36,7 +35,7 @@ class PropertiesDatabaseTest {
     }
 
     @Test
-    void setProperty_Reload() throws FileNotFoundException, IOException {
+    void setProperty_Reload() throws IOException {
         propertiesDatabase.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, "true");
         Assertions.assertEquals("true", new PropertiesDatabase(fileLocation).getProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE));
     }

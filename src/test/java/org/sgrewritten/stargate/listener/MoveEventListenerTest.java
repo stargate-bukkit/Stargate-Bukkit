@@ -38,16 +38,11 @@ import java.util.HashSet;
 class MoveEventListenerTest {
 
     private @NotNull ServerMock server;
-    private Block sign;
-    private StargateRegistry registry;
     private MoveEventListener listener;
     private @NotNull PlayerMock player;
     private RealPortal portal;
     private Location iris;
-    private Location from;
     private @NotNull Location outsideIris;
-    private Location teleportDestination;
-    private @NotNull WorldMock theEnd;
     private @NotNull PoweredMinecartMock vehicle;
     private @NotNull Stargate plugin;
 
@@ -57,19 +52,19 @@ class MoveEventListenerTest {
         server = MockBukkit.mock();
         plugin = MockBukkit.load(Stargate.class);
         GateTestHelper.setUpGates();
-        theEnd = server.addSimpleWorld("world");
+        @NotNull WorldMock theEnd = server.addSimpleWorld("world");
         theEnd.setEnvironment(Environment.THE_END);
-        from = new Location(theEnd, 0, 0, 0);
+        Location from = new Location(theEnd, 0, 0, 0);
         player = server.addPlayer();
         vehicle = (PoweredMinecartMock) theEnd.spawnEntity(from, EntityType.MINECART_FURNACE);
-        sign = PortalBlockGenerator.generatePortal(new Location(theEnd, 0, 10, 0));
-        registry = new StargateRegistry(new FakeStorage());
+        Block sign = PortalBlockGenerator.generatePortal(new Location(theEnd, 0, 10, 0));
+        StargateRegistry registry = new StargateRegistry(new FakeStorage());
         portal = FakePortalGenerator.generateFakePortal(sign, "network", new HashSet<>(), "portal", registry);
         listener = new MoveEventListener(registry);
 
         iris = portal.getGate().getLocations(GateStructureType.IRIS).get(0).getLocation();
         outsideIris = iris.clone().add(portal.getGate().getFacing().getDirection());
-        teleportDestination = new Location(theEnd, 400, 0, 0);
+        Location teleportDestination = new Location(theEnd, 400, 0, 0);
     }
 
     @AfterEach

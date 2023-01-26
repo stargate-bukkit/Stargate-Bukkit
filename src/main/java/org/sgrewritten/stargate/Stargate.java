@@ -127,8 +127,8 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private LanguageManager languageManager;
     private BungeeManager bungeeManager;
     private static final int CURRENT_CONFIG_VERSION = 7;
-    private SynchronousPopulator synchronousTickPopulator = new SynchronousPopulator();
-    private SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
+    private final SynchronousPopulator synchronousTickPopulator = new SynchronousPopulator();
+    private final SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
     private static final int MAX_TEXT_LENGTH = 13;
 
     private static StargateEconomyAPI economyManager;
@@ -201,13 +201,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             BStatsHelper.registerMetrics(pluginId, this, getRegistry());
             servicesManager = this.getServer().getServicesManager();
             servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
-        } catch (StargateInitializationException e) {
-            Stargate.log(e);
-            getServer().getPluginManager().disablePlugin(this);
-        } catch (SQLException e) {
-            Stargate.log(e);
-            getServer().getPluginManager().disablePlugin(this);
-        } catch (IOException e) {
+        } catch (StargateInitializationException | IOException | SQLException e) {
             Stargate.log(e);
             getServer().getPluginManager().disablePlugin(this);
         }
@@ -541,13 +535,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             }
             registry.load(this.getEconomyManager());
             economyManager.setupEconomy();
-        } catch (StargateInitializationException e) {
-            Stargate.log(e);
-            getServer().getPluginManager().disablePlugin(this);
-        } catch (SQLException e) {
-            Stargate.log(e);
-            getServer().getPluginManager().disablePlugin(this);
-        } catch (IOException e) {
+        } catch (StargateInitializationException | IOException | SQLException e) {
             Stargate.log(e);
             getServer().getPluginManager().disablePlugin(this);
         }

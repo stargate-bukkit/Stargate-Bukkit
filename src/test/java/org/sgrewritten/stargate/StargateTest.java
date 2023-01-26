@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.GateConflictException;
-import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
@@ -36,34 +35,31 @@ import java.util.logging.Level;
 class StargateTest {
 
     private Stargate plugin;
-    private Network network;
     private ServerMock server;
-    private WorldMock world;
     private RealPortal portal;
     private BukkitSchedulerMock scheduler;
     private RealPortal bungeePortal;
-    private Network bungeeNetwork;
 
-    private static String PORTAL1 = "name1";
-    private static String PORTAL2 = "name2";
+    private static final String PORTAL2 = "name2";
 
     @BeforeEach
-    public void setup() throws NameLengthException, NameConflictException, InvalidNameException, InvalidStructureException, BungeeNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
+    public void setup() throws NameLengthException, NameConflictException, InvalidNameException, BungeeNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
         server = MockBukkit.mock();
         scheduler = server.getScheduler();
-        world = server.addSimpleWorld("world");
+        WorldMock world = server.addSimpleWorld("world");
         System.setProperty("bstats.relocatecheck", "false");
         plugin = MockBukkit.load(Stargate.class);
 
         Block signBlock1 = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         Block signBlock2 = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
 
-        network = plugin.getRegistry().createNetwork("network", NetworkType.CUSTOM, false, false);
+        Network network = plugin.getRegistry().createNetwork("network", NetworkType.CUSTOM, false, false);
 
+        String PORTAL1 = "name1";
         portal = FakePortalGenerator.generateFakePortal(signBlock1, network, new HashSet<>(), PORTAL1, plugin.getRegistry());
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.BUNGEE);
-        bungeeNetwork = plugin.getRegistry().createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, false);
+        Network bungeeNetwork = plugin.getRegistry().createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, false);
         bungeePortal = FakePortalGenerator.generateFakePortal(signBlock2, bungeeNetwork, flags, PORTAL2, plugin.getRegistry());
     }
 
@@ -96,25 +92,19 @@ class StargateTest {
 
     @Test
     public void addSynchronousTickAction() {
-        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            return true;
-        })));
+        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousTickAction(new SupplierAction(() -> true)));
         scheduler.performOneTick();
     }
 
     @Test
     public void addSynchronousSecAction() {
-        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousSecAction(new SupplierAction(() -> {
-            return true;
-        })));
+        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousSecAction(new SupplierAction(() -> true)));
         scheduler.performOneTick();
     }
 
     @Test
     public void addSynchronousBungeeSecAction() {
-        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousSecAction(new SupplierAction(() -> {
-            return true;
-        }), true));
+        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousSecAction(new SupplierAction(() -> true), true));
         scheduler.performOneTick();
     }
 
@@ -152,8 +142,8 @@ class StargateTest {
     }
 
     @Test
-    public void reload_Interserver() {
-        setInterserverEnabled();
+    public void reloadInterServer() {
+        setInterServerEnabled();
         plugin.reload();
         Assertions.assertTrue(plugin.isEnabled());
     }
@@ -173,8 +163,8 @@ class StargateTest {
     }
 
     @Test
-    public void restart_Interserver() {
-        setInterserverEnabled();
+    public void restartInterServer() {
+        setInterServerEnabled();
         server.getPluginManager().disablePlugin(plugin);
         Assertions.assertNull(Stargate.getInstance());
         server.getPluginManager().enablePlugin(plugin);
@@ -182,7 +172,7 @@ class StargateTest {
         Assertions.assertNotNull(Stargate.getServerUUID());
     }
 
-    private void setInterserverEnabled() {
+    private void setInterServerEnabled() {
         plugin.setConfigurationOptionValue(ConfigurationOption.USING_BUNGEE, true);
         plugin.setConfigurationOptionValue(ConfigurationOption.USING_REMOTE_DATABASE, true);
         plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_ADDRESS, "localhost");

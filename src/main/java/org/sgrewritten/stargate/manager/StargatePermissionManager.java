@@ -324,7 +324,7 @@ public class StargatePermissionManager implements PermissionManager {
             case TERMINAL:
                 return false; //NOT TET IMPLEMENTED
             case PERSONAL:
-                if (target.getName().equals(networkName) || networkName.strip().isEmpty()) {
+                if (target.getName().equals(networkName) || networkName.isBlank()) {
                     return hasPermission(target, NETWORK_CREATE_PERMISSION + ".personal.own");
                 }
                 return hasPermission(target, NETWORK_CREATE_PERMISSION + ".personal.other." + networkName);

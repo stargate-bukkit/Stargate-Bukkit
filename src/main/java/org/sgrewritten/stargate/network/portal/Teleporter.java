@@ -53,9 +53,9 @@ public class Teleporter {
     private String teleportMessage;
     private final Set<Entity> teleportedEntities = new HashSet<>();
     private List<LivingEntity> nearbyLeashed;
-    private LanguageManager languageManager;
-    private StargateEconomyAPI economyManager;
-    private Consumer<SimpleAction> registerAction;
+    private final LanguageManager languageManager;
+    private final StargateEconomyAPI economyManager;
+    private final Consumer<SimpleAction> registerAction;
 
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
@@ -66,12 +66,11 @@ public class Teleporter {
      * @param entranceFace    <p>The direction the entrance portal is facing</p>
      * @param cost            <p>The cost of teleportation for any players</p>
      * @param teleportMessage <p>The teleportation message to display if the teleportation is successful</p>
-     * @param logger
      */
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,
                       BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager, StargateEconomyAPI economyManager) {
         this(destination, origin, destinationFace, entranceFace, cost, teleportMessage, languageManager,
-                economyManager, ((action) -> Stargate.addSynchronousTickAction(action)));
+                economyManager, (Stargate::addSynchronousTickAction));
     }
 
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,

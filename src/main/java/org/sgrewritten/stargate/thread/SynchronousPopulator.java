@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.thread;
 
+import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.ForcibleAction;
 import org.sgrewritten.stargate.action.SimpleAction;

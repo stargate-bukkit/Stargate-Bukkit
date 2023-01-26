@@ -4,7 +4,7 @@ version: @version@
 description: Stargate mod for Bukkit
 authors: [ Dinnerbone, Drakia, PseudoKnight, Thorin, Knarvik ]
 website: https://discord.gg/mTaHuK6BVa
-api-version: 1.15
+api-version: 1.16
 softdepend: [ Vault ]
 commands:
   stargate:

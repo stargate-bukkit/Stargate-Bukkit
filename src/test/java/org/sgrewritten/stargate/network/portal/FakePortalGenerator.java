@@ -179,4 +179,5 @@ public class FakePortalGenerator {
         Network network = registry.createNetwork(networkName, NetworkType.CUSTOM, false, false);
         return generateFakePortal(signBlock, network, flags, name, registry);
     }
+
 }

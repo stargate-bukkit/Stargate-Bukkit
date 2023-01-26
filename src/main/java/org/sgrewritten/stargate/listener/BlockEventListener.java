@@ -67,8 +67,8 @@ import java.util.logging.Level;
 public class BlockEventListener implements Listener {
 
     private final @NotNull RegistryAPI registry;
-    private @NotNull LanguageManager languageManager;
-    private @NotNull StargateEconomyAPI economyManager;
+    private final @NotNull LanguageManager languageManager;
+    private final @NotNull StargateEconomyAPI economyManager;
 
     /**
      * Instantiates a new block event listener

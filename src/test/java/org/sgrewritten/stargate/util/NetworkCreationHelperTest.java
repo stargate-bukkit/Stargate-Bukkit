@@ -49,7 +49,7 @@ class NetworkCreationHelperTest {
     void setup() {
         server = MockBukkit.mock();
         player = new PlayerMock(server, PLAYER_NAME);
-        plugin = (FakeStargate) MockBukkit.load(FakeStargate.class);
+        plugin = MockBukkit.load(FakeStargate.class);
         permissionManager = new StargatePermissionManager(player, new FakeLanguageManager());
         server.addPlayer(player);
         server.addPlayer("central");
@@ -63,9 +63,9 @@ class NetworkCreationHelperTest {
     }
 
     @Test
-    void emptyDefinitionTest() throws InvalidNameException, TranslatableException {
+    void emptyDefinitionTest() throws TranslatableException {
         Stargate.log(Level.FINE, "############### EMPTY TEST #############");
-        Assertions.assertTrue(player.getUniqueId() != null);
+        Assertions.assertNotNull(player.getUniqueId());
         for (String emptyName : emptyNames) {
             Network personalNetwork = NetworkCreationHelper.selectNetwork(emptyName, permissionManager, player, new HashSet<>(), registry);
             Assertions.assertEquals(NetworkType.PERSONAL, personalNetwork.getType());
@@ -83,14 +83,14 @@ class NetworkCreationHelperTest {
 
 
     @Test
-    void explicitDefinitionTest_Default() throws InvalidNameException, TranslatableException {
+    void explicitDefinitionTest_Default() throws TranslatableException {
         Network defaultNetwork = NetworkCreationHelper.selectNetwork(NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(CENTRAL), permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.DEFAULT, defaultNetwork.getType());
         Assertions.assertEquals(CENTRAL, defaultNetwork.getName());
     }
 
     @Test
-    void explicitDefinitionTest_DefaultTypeButWrongName() throws InvalidNameException, TranslatableException {
+    void explicitDefinitionTest_DefaultTypeButWrongName() {
         Assertions.assertThrows(InvalidNameException.class, () -> NetworkCreationHelper.selectNetwork(
                 NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(INVALID_NAME), permissionManager, player,
                 new HashSet<>(), registry));
@@ -98,7 +98,7 @@ class NetworkCreationHelperTest {
 
     @ParameterizedTest
     @EnumSource
-    void explicitDefinitionTest_PersonalName(NetworkType networkType) throws TranslatableException, InvalidNameException {
+    void explicitDefinitionTest_PersonalName(NetworkType networkType) throws TranslatableException {
         Network network1 = NetworkCreationHelper.selectNetwork(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry);
         if (networkType == NetworkType.DEFAULT) {
             Assertions.assertThrows(TranslatableException.class, () -> NetworkCreationHelper.selectNetwork(networkType.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry));
@@ -114,7 +114,7 @@ class NetworkCreationHelperTest {
 
     @ParameterizedTest
     @ValueSource(strings = {PLAYER_NAME, CENTRAL})
-    void explicitDefinitionTest_Personal(String name) throws InvalidNameException, TranslatableException {
+    void explicitDefinitionTest_Personal(String name) throws TranslatableException {
         String highlightedPlayername = NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(name);
         Network personalNetwork = NetworkCreationHelper.selectNetwork(highlightedPlayername, permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.PERSONAL, personalNetwork.getType());
@@ -128,7 +128,7 @@ class NetworkCreationHelperTest {
     }
 
     @Test
-    void explicitDefinitionTest_Custom() throws InvalidNameException, TranslatableException {
+    void explicitDefinitionTest_Custom() throws TranslatableException {
         String customNetworkName = NetworkType.CUSTOM.getHighlightingStyle().getHighlightedName(NAME);
         Network customNetwork = NetworkCreationHelper.selectNetwork(customNetworkName, permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.CUSTOM, customNetwork.getType());
@@ -140,7 +140,7 @@ class NetworkCreationHelperTest {
     }
 
     @Test
-    void implicitDefinitionTest() throws InvalidNameException, TranslatableException {
+    void implicitDefinitionTest() throws TranslatableException {
         Stargate.log(Level.FINE, "############### IMPLICIT TEST #############");
         String name = "name";
         HighlightingStyle[] values = HighlightingStyle.values();

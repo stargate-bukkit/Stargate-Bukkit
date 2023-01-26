@@ -11,7 +11,7 @@ import org.sgrewritten.stargate.network.RegistryAPI;
  */
 public class PlayerAdvancementListener implements Listener {
 
-    private RegistryAPI registry;
+    private final RegistryAPI registry;
 
     public PlayerAdvancementListener(RegistryAPI registry) {
         this.registry = registry;

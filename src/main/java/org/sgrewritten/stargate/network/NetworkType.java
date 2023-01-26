@@ -27,9 +27,9 @@ public enum NetworkType {
      */
     TERMINAL(HighlightingStyle.DOUBLE_GREATER_LESSER_THAN, PortalFlag.TERMINAL_NETWORK, TranslatableMessage.TERMINAL_NETWORK);
 
-    private HighlightingStyle style;
-    private PortalFlag flag;
-    private TranslatableMessage terminology;
+    private final HighlightingStyle style;
+    private final PortalFlag flag;
+    private final TranslatableMessage terminology;
 
     /**
      * The network type as determined by the its given style and flags.
@@ -37,7 +37,7 @@ public enum NetworkType {
      * @param style <p>The applicable HighlightingStyle</p>
      * @param flag  <p>The applicable PortalFlag</p>
      */
-    private NetworkType(HighlightingStyle style, PortalFlag flag, TranslatableMessage terminology) {
+    NetworkType(HighlightingStyle style, PortalFlag flag, TranslatableMessage terminology) {
         this.style = style;
         this.flag = flag;
         this.terminology = terminology;

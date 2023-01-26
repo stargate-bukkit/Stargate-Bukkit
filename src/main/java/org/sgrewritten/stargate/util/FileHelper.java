@@ -129,12 +129,12 @@ public final class FileHelper {
     public static String readStreamToString(InputStream stream) throws IOException {
         BufferedReader reader = FileHelper.getBufferedReaderFromInputStream(stream);
         String line = reader.readLine();
-        String lines = "";
+        StringBuilder lines = new StringBuilder();
         while (line != null) {
-            lines = lines + line + "\n";
+            lines.append(line).append("\n");
             line = reader.readLine();
         }
-        return lines;
+        return lines.toString();
     }
 
     /**

@@ -220,9 +220,8 @@ public interface RegistryAPI {
     /**
      * @param portal  <p> The portal to rename</p>
      * @param newName <p> The new name of the portal </p>
-     * @throws InvalidNameException
      */
-    void rename(Portal portal, String newName) throws InvalidNameException;
+    void rename(Portal portal, String newName);
 
 
     /**

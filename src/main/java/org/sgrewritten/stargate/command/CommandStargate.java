@@ -18,8 +18,8 @@ import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
  */
 public class CommandStargate implements CommandExecutor {
 
-    private LanguageManager languageManager;
-    private @NotNull Stargate stargate;
+    private final LanguageManager languageManager;
+    private final @NotNull Stargate stargate;
 
     public CommandStargate(@NotNull Stargate stargate) {
         this.languageManager = stargate.getLanguageManager();

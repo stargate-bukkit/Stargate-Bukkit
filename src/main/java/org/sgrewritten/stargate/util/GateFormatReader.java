@@ -32,10 +32,6 @@ public final class GateFormatReader {
     };
     private static final Map<Material, Material> materialEdgecases = loadMaterialEdgecases();
 
-    static {
-
-    }
-
     private GateFormatReader() {
 
     }
@@ -123,8 +119,8 @@ public final class GateFormatReader {
      * @return <p>The column count/width of the loaded gate</p>
      * @throws ParsingErrorException <p>If the gate file cannot be parsed</p>
      */
-    protected static int readGateFileContents(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
-                                              List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
+    private static int readGateFileContents(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
+                                            List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
         String line;
         boolean designing = false;
         int columns = 0;
@@ -169,7 +165,7 @@ public final class GateFormatReader {
      * @param design     <p>The two-dimensional list to store the loaded design to</p>
      * @return <p>The new max columns value of the design</p>
      */
-    protected static int readGateDesignLine(String line, int maxColumns, List<List<Character>> design) {
+    private static int readGateDesignLine(String line, int maxColumns, List<List<Character>> design) {
         List<Character> row = new ArrayList<>();
 
         //Update the max columns number if this line has more columns
@@ -195,8 +191,8 @@ public final class GateFormatReader {
      * @param config               <p>The config value map to store to</p>
      * @throws ParsingErrorException <p>If an invalid material is encountered</p>
      */
-    protected static void readGateConfigValue(String line, Map<Character, Set<Material>> characterMaterialMap,
-                                              Map<String, String> config) throws ParsingErrorException {
+    private static void readGateConfigValue(String line, Map<Character, Set<Material>> characterMaterialMap,
+                                            Map<String, String> config) throws ParsingErrorException {
         String[] split = line.split("=");
         String key = split[0].trim();
         String value = split[1].trim();
@@ -219,7 +215,7 @@ public final class GateFormatReader {
      * @param stringId <p>The legacy material name to parse</p>
      * @return <p>The resulting material, or null if no such legacy material exists</p>
      */
-    protected static Material parseMaterialFromLegacyName(String stringId) {
+    private static Material parseMaterialFromLegacyName(String stringId) {
         return Material.getMaterial(XMaterial.matchXMaterial(stringId).toString());
     }
 
@@ -230,7 +226,7 @@ public final class GateFormatReader {
      * @param line     <p>The line currently parsed</p>
      * @throws ParsingErrorException <p>If unable to parse the tag</p>
      */
-    protected static Set<Material> parseMaterialTag(String stringId, String line) throws ParsingErrorException {
+    private static Set<Material> parseMaterialTag(String stringId, String line) throws ParsingErrorException {
         Set<Material> foundIDs = EnumSet.noneOf(Material.class);
         String tagString = stringId.replace(TAG_IDENTIFIER, "");
         Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS,

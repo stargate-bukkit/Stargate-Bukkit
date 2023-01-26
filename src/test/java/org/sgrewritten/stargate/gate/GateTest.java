@@ -24,27 +24,22 @@ import java.io.File;
 class GateTest {
 
     private static Gate loadGate;
-    private static ServerMock server;
-    private static WorldMock world;
     private static Gate createdGate;
-    private static Block signBlock;
-    private static GateFormat format;
-    private static PortalData portalData;
     private static final File testGatesDir = new File("src/test/resources/gates");
 
     @BeforeAll
     public static void setUp() throws InvalidStructureException, GateConflictException {
-        server = MockBukkit.mock();
-        world = server.addSimpleWorld("world");
-        portalData = new PortalData();
+        ServerMock server = MockBukkit.mock();
+        WorldMock world = server.addSimpleWorld("world");
+        PortalData portalData = new PortalData();
         portalData.topLeft = new Location(world, 0, 6, 0);
         portalData.facing = BlockFace.SOUTH;
         portalData.gateFileName = "nether.gate";
-        signBlock = PortalBlockGenerator.generatePortal(portalData.topLeft.clone().subtract(new Vector(0, 4, 0)));
+        Block signBlock = PortalBlockGenerator.generatePortal(portalData.topLeft.clone().subtract(new Vector(0, 4, 0)));
         GateFormatHandler.setFormats(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger()));
 
         loadGate = new Gate(portalData, new StargateRegistry(new FakeStorage()));
-        format = GateFormatHandler.getFormat(portalData.gateFileName);
+        GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);
         // Note that this is created in a different registry, so as to avoid any conflicts
         createdGate = new Gate(format, signBlock.getLocation(), portalData.facing, false, new StargateRegistry(new FakeStorage()));
     }

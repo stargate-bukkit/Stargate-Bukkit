@@ -19,7 +19,7 @@ import java.util.Objects;
  */
 public class StargateTabCompleter implements TabCompleter {
 
-    private @NotNull StoredPropertiesAPI properties;
+    private final @NotNull StoredPropertiesAPI properties;
 
     public StargateTabCompleter(@NotNull StoredPropertiesAPI properties) {
         this.properties = Objects.requireNonNull(properties);

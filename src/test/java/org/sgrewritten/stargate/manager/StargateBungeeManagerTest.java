@@ -117,7 +117,7 @@ class StargateBungeeManagerTest {
     }
 
     @Test
-    void legacyPlayerConnect_Online() throws NameLengthException, NameConflictException, InvalidNameException, InvalidStructureException {
+    void legacyPlayerConnect_Online() {
         PlayerMock player = server.addPlayer(PLAYER);
 
         bungeeManager.legacyPlayerConnect(BungeeHelper.generateLegacyTeleportMessage(PLAYER, bungeePortal));
@@ -126,7 +126,7 @@ class StargateBungeeManagerTest {
     }
 
     @Test
-    void legacyPlayerConnect_Offline() throws NameLengthException, NameConflictException, InvalidNameException, InvalidStructureException {
+    void legacyPlayerConnect_Offline() {
         bungeeManager.legacyPlayerConnect(BungeeHelper.generateLegacyTeleportMessage(PLAYER, bungeePortal));
         Portal pulledPortal = bungeeManager.pullFromQueue(PLAYER);
         Assertions.assertEquals(bungeePortal, pulledPortal);

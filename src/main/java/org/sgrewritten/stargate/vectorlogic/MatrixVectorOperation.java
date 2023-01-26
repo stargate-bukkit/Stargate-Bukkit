@@ -31,7 +31,6 @@ public class MatrixVectorOperation implements VectorOperation {
      * given sign face.</p>
      *
      * @param signFace <p>The sign face of a gate's sign</p>
-     * @param logger   <p>The logger to use for logging debug messages</p>
      * @throws InvalidStructureException <p>If given a sign face which is not one of EAST, SOUTH, WEST or NORTH</p>
      */
     public MatrixVectorOperation(BlockFace signFace) throws InvalidStructureException {

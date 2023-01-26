@@ -25,8 +25,6 @@ class DataMigration_1_0_14Test {
 
     private DataMigration_1_0_14 migration;
     private SQLiteDatabase database;
-    private @NotNull ServerMock server;
-    private PlayerMock player;
     private static final File sqlDatabaseFile = new File("src/test/resources", "alpha-1_0_0_11.db");
     private static final File oldSqlDatabaseFile = new File("src/test/resources", "alpha-1_0_0_11.old");
     private static final String UUID_STRING = "9a091c5a-b320-4123-8e5c-867edebc455b";
@@ -37,8 +35,8 @@ class DataMigration_1_0_14Test {
         Files.copy(sqlDatabaseFile, oldSqlDatabaseFile);
         database = new SQLiteDatabase(sqlDatabaseFile);
 
-        server = MockBukkit.mock();
-        player = new PlayerMock(server, "player", UUID.fromString(UUID_STRING));
+        @NotNull ServerMock server = MockBukkit.mock();
+        PlayerMock player = new PlayerMock(server, "player", UUID.fromString(UUID_STRING));
         server.addPlayer(player);
     }
 

@@ -48,7 +48,6 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
     /**
      * Instantiates a new stargate bungee plugin message listener
      *
-     * @param stargateAPI    <p>Something implementing the Stargate API</p>
      * @param stargateLogger <p>Something implementing the Stargate logger</p>
      */
     public StargateBungeePluginMessageListener(BungeeManager bungeeManager, StargateLogger stargateLogger) {

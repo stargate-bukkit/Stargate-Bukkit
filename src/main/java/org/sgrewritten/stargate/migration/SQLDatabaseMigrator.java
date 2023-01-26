@@ -17,12 +17,12 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 public class SQLDatabaseMigrator {
-    private @NotNull TableNameConfiguration nameConfiguration;
-    private @NotNull String sqlFilesPath;
-    private boolean interServerEnabled;
-    private @NotNull SQLDatabaseAPI database;
+    private final @NotNull TableNameConfiguration nameConfiguration;
+    private final @NotNull String sqlFilesPath;
+    private final boolean interServerEnabled;
+    private final @NotNull SQLDatabaseAPI database;
 
-    public SQLDatabaseMigrator(@NotNull SQLDatabaseAPI database, @NotNull TableNameConfiguration nameConfiguration, @NotNull String sqlFilesPath, boolean interServerEnabled) throws SQLException {
+    public SQLDatabaseMigrator(@NotNull SQLDatabaseAPI database, @NotNull TableNameConfiguration nameConfiguration, @NotNull String sqlFilesPath, boolean interServerEnabled) {
         this.nameConfiguration = Objects.requireNonNull(nameConfiguration);
         this.sqlFilesPath = Objects.requireNonNull(sqlFilesPath);
         this.interServerEnabled = interServerEnabled;
@@ -31,16 +31,10 @@ public class SQLDatabaseMigrator {
     }
 
     public void run() throws SQLException, IOException {
-        Connection connection = null;
-        try {
-            connection = database.getConnection();
+        try (Connection connection = database.getConnection()) {
             run(StorageType.LOCAL, connection);
             if (interServerEnabled) {
                 run(StorageType.INTER_SERVER, connection);
-            }
-        } finally {
-            if (connection != null) {
-                connection.close();
             }
         }
     }
