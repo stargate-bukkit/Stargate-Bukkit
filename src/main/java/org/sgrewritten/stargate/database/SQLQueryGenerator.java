@@ -423,7 +423,7 @@ public class SQLQueryGenerator {
             statement.setString(12, Stargate.getServerUUID());
         }
 
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        log(Level.FINEST, "sql query: " + statementMessage);
         return statement;
     }
 
@@ -449,7 +449,7 @@ public class SQLQueryGenerator {
         PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, portal.getName());
         statement.setString(2, portal.getNetwork().getId());
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        log(Level.FINEST, "sql query: " + statementMessage);
         return statement;
     }
 
@@ -465,7 +465,7 @@ public class SQLQueryGenerator {
     public PreparedStatement generateUpdateServerInfoStatus(Connection connection, String serverUUID, String serverName) throws SQLException {
         String statementString = getQuery(SQLQuery.REPLACE_SERVER_INFO);
         String statementMessage = tableNameConfiguration.replaceKnownTableNames(statementString);
-        logger.logMessage(Level.FINEST, statementMessage);
+        log(Level.FINEST, statementMessage);
         PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, serverUUID);
         statement.setString(2, serverName);
@@ -521,7 +521,7 @@ public class SQLQueryGenerator {
      */
     private PreparedStatement prepareQuery(Connection connection, String query) throws SQLException {
         query = tableNameConfiguration.replaceKnownTableNames(query);
-        logger.logMessage(Level.FINEST, query);
+        log(Level.FINEST, query);
         return connection.prepareStatement(query);
     }
 
@@ -622,6 +622,19 @@ public class SQLQueryGenerator {
         }
         statement.setString(1, netName);
         return statement;
+    }
+
+    /**
+     * Logs a message at the finest log level
+     *
+     * @param message <p>The message to log</p>
+     */
+    public void log(Level level, String message) {
+        if (logger != null) {
+            logger.logMessage(level, message);
+        } else {
+            System.out.println(level.getName() + ": " + message);
+        }
     }
 
 }

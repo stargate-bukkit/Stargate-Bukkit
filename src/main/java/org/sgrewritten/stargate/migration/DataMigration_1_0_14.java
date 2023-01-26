@@ -6,13 +6,15 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
-import org.sgrewritten.stargate.database.DatabaseDriver;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLQuery;
+import org.sgrewritten.stargate.database.SQLQueryExecutor;
+import org.sgrewritten.stargate.database.SQLQueryGenerator;
 import org.sgrewritten.stargate.database.SQLQueryHandler;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.FileHelper;
@@ -24,10 +26,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
+/**
+ * A data migrator to upgrade data and config to the 1.0.14 alpha
+ */
 public class DataMigration_1_0_14 extends DataMigration {
     private static HashMap<String, String> CONFIG_CONVERSIONS;
 
@@ -39,48 +46,63 @@ public class DataMigration_1_0_14 extends DataMigration {
 
     @Override
     public void run(@NotNull SQLDatabaseAPI database) {
-        boolean isInterserver = ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)
+        boolean isInterServer = ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)
                 && ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE);
         Stargate.log(Level.INFO, "Running database migration 1.0.0.11 -> 1.0.0.14");
         TableNameConfiguration nameConfiguration = DatabaseHelper.getTableNameConfiguration(ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE));
         try {
-            new SQLDatabaseMigrator(database, nameConfiguration, "/migration/database/alpha-1_0_0_14", isInterserver).run();
+            new SQLDatabaseMigrator(database, nameConfiguration, "/migration/database/alpha-1_0_0_14", isInterServer).run();
         } catch (SQLException | IOException e) {
             Stargate.log(e);
         }
 
         try {
-            addLackingNetworkFlags(database, StorageType.LOCAL, nameConfiguration);
-            if (isInterserver) {
-                addLackingNetworkFlags(database, StorageType.INTER_SERVER, nameConfiguration);
+            addNetworkTypeFlags(database, StorageType.LOCAL, nameConfiguration);
+            if (isInterServer) {
+                addNetworkTypeFlags(database, StorageType.INTER_SERVER, nameConfiguration);
             }
         } catch (SQLException e) {
             Stargate.log(e);
         }
 
-        changeDefaultNetworkID(database, nameConfiguration, isInterserver);
+        changeDefaultNetworkId(database, nameConfiguration, isInterServer);
     }
 
-    private void changeDefaultNetworkID(@NotNull SQLDatabaseAPI database, TableNameConfiguration nameConfiguration, boolean isInterserver) {
+    /**
+     * Changes the default network ids from the old values to the new ones
+     *
+     * @param database          <p>The database to use</p>
+     * @param nameConfiguration <p>The table name configuration to use</p>
+     */
+    private void changeDefaultNetworkId(@NotNull SQLDatabaseAPI database, TableNameConfiguration nameConfiguration,
+                                        boolean isInterServer) {
         try {
-            runChangeDefaultNetworkIDStatement(database, nameConfiguration, StorageType.LOCAL);
-            if (isInterserver) {
-                runChangeDefaultNetworkIDStatement(database, nameConfiguration, StorageType.INTER_SERVER);
+            runChangeDefaultNetworkIdStatement(database, nameConfiguration, StorageType.LOCAL);
+            if (isInterServer) {
+                runChangeDefaultNetworkIdStatement(database, nameConfiguration, StorageType.INTER_SERVER);
             }
         } catch (SQLException e) {
             Stargate.log(e);
         }
     }
 
-    private void runChangeDefaultNetworkIDStatement(SQLDatabaseAPI database, TableNameConfiguration nameConfiguration,
+    /**
+     * Changes the default network id from the old value to the new one
+     *
+     * @param database          <p>The database to use</p>
+     * @param nameConfiguration <p>The table name configuration to use</p>
+     * @param type              <p>The type of portal to update for</p>
+     * @throws SQLException <p>If unable to change the network id</p>
+     */
+    private void runChangeDefaultNetworkIdStatement(SQLDatabaseAPI database, TableNameConfiguration nameConfiguration,
                                                     StorageType type) throws SQLException {
         try (Connection connection = database.getConnection()) {
-            SQLQuery query = type == StorageType.LOCAL ? SQLQuery.UPDATE_NETWORK_NAME
-                    : SQLQuery.UPDATE_INTER_NETWORK_NAME;
-            String queryString = nameConfiguration
-                    .replaceKnownTableNames(SQLQueryHandler.getQuery(query, database.getDriver()));
+            SQLQuery query = type == StorageType.LOCAL ? SQLQuery.UPDATE_NETWORK_NAME :
+                    SQLQuery.UPDATE_INTER_NETWORK_NAME;
+            String queryString = nameConfiguration.replaceKnownTableNames(SQLQueryHandler.getQuery(query,
+                    database.getDriver()));
             try (PreparedStatement statement = connection.prepareStatement(queryString)) {
-                statement.setString(1, LocalNetwork.DEFAULT_NET_ID);
+                statement.setString(1, LocalNetwork.DEFAULT_NETWORK_ID);
                 statement.setString(2, ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK));
                 statement.execute();
             }
@@ -92,50 +114,86 @@ public class DataMigration_1_0_14 extends DataMigration {
         return 7;
     }
 
-    private void addLackingNetworkFlags(@NotNull SQLDatabaseAPI database, StorageType storageType, TableNameConfiguration nameConfiguration) throws SQLException {
+    /**
+     * Adds network type flags for all portals
+     *
+     * @param database          <p>The database to use</p>
+     * @param storageType       <p>The type of portal to add network type flags for</p>
+     * @param nameConfiguration <p>The table name configuration to use</p>
+     * @throws SQLException <p>If unable to add the network type flags</p>
+     */
+    private void addNetworkTypeFlags(@NotNull SQLDatabaseAPI database, StorageType storageType,
+                                     TableNameConfiguration nameConfiguration) throws SQLException {
+        SQLQueryGenerator queryGenerator = new SQLQueryGenerator(nameConfiguration, Stargate.getInstance(),
+                database.getDriver());
         try (Connection connection = database.getConnection()) {
-            String view = storageType == StorageType.LOCAL ? nameConfiguration.getPortalViewName() : nameConfiguration.getInterPortalViewName();
-            Map<TwoTuple<String, String>, PortalFlag> portalsLackingFlagsMap = getLackingNetworkFlags(connection, view);
-            insertNetworkFlags(connection, portalsLackingFlagsMap, nameConfiguration, storageType, database.getDriver());
+            Map<GlobalPortalId, PortalFlag> portalNetworkTypeFlags = getNetworkTypeFlags(queryGenerator, connection,
+                    storageType);
+            insertNetworkTypeFlags(connection, queryGenerator, portalNetworkTypeFlags, storageType);
         }
     }
 
-    private void insertNetworkFlags(Connection connection,
-                                    Map<TwoTuple<String, String>, PortalFlag> portalsLackingFlagsMap, TableNameConfiguration nameConfiguration,
-                                    StorageType type, DatabaseDriver driver) throws SQLException {
-        SQLQuery query = type == StorageType.LOCAL ? SQLQuery.INSERT_PORTAL_FLAG_RELATION
-                : SQLQuery.INSERT_INTER_PORTAL_FLAG_RELATION;
-        String queryString = nameConfiguration.replaceKnownTableNames(SQLQueryHandler.getQuery(query, driver));
-        for (TwoTuple<String, String> key : portalsLackingFlagsMap.keySet()) {
-            PortalFlag flag = portalsLackingFlagsMap.get(key);
-            try (PreparedStatement statement = connection.prepareStatement(queryString)) {
-                statement.setString(1, key.getFirstValue());
-                statement.setString(2, key.getSecondValue());
-                statement.setString(3, String.valueOf(flag.getCharacterRepresentation()));
-                statement.execute();
-            }
+    /**
+     * Adds network type flags for all portals, which wasn't used in older alpha versions
+     *
+     * @param connection             <p>The database connection to use</p>
+     * @param queryGenerator         <p>The query generation to use</p>
+     * @param portalNetworkTypeFlags <p>All portal type flags</p>
+     * @param type                   <p>The type of portal to insert for</p>
+     * @throws SQLException <p>If unable to insert any of the flags</p>
+     */
+    private void insertNetworkTypeFlags(Connection connection, SQLQueryGenerator queryGenerator,
+                                        Map<GlobalPortalId, PortalFlag> portalNetworkTypeFlags,
+                                        StorageType type) throws SQLException {
+        SQLQueryExecutor executor = new SQLQueryExecutor(connection, queryGenerator);
+        for (GlobalPortalId key : portalNetworkTypeFlags.keySet()) {
+            Set<PortalFlag> flagSet = new HashSet<>();
+            flagSet.add(portalNetworkTypeFlags.get(key));
+            executor.executeAddFlagRelation(type, key, flagSet);
         }
     }
 
-    private Map<TwoTuple<String, String>, PortalFlag> getLackingNetworkFlags(Connection connection, String view) throws SQLException {
-        Map<TwoTuple<String, String>, PortalFlag> output = new HashMap<>();
-        try (PreparedStatement statement = connection.prepareStatement("SELECT name,network,flags FROM " + view + ";")) {
+    /**
+     * Gets the network type flag for all portals
+     *
+     * @param sqlQueryGenerator <p>The SQL query generator to use</p>
+     * @param connection        <p>The database connection to use</p>
+     * @param type              <p>The type of portal to get network type flags for</p>
+     * @return <p>A map between portal identifiers, and network type flags</p>
+     * @throws SQLException <p>If unable to get the flags</p>
+     */
+    private Map<GlobalPortalId, PortalFlag> getNetworkTypeFlags(SQLQueryGenerator sqlQueryGenerator,
+                                                                Connection connection, StorageType type) throws SQLException {
+        Map<GlobalPortalId, PortalFlag> output = new HashMap<>();
+        try (PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsStatement(connection, type)) {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet == null) {
                 return output;
             }
+
             while (resultSet.next()) {
-                if (NetworkType.getNetworkTypeFromFlags(PortalFlag.parseFlags(resultSet.getString("flags"))) == null) {
-                    PortalFlag flag = determineNetworkFlagFromNetworkName(resultSet.getString("network"));
-                    output.put(new TwoTuple<>(resultSet.getString("name"), resultSet.getString("network")), flag);
+                if (NetworkType.getNetworkTypeFromFlags(PortalFlag.parseFlags(resultSet.getString("flags"))) != null) {
+                    continue;
                 }
+
+                String networkId = resultSet.getString("network");
+                PortalFlag flag = determineNetworkFlagFromNetworkName(networkId);
+                GlobalPortalId id = new GlobalPortalId(resultSet.getString("name"), networkId);
+                output.put(id, flag);
             }
         }
         return output;
     }
 
+    /**
+     * Determines the type of network the given network is, using the name of the network
+     *
+     * @param networkName <p>The name to check</p>
+     * @return <p>The portal flag corresponding to the network's type</p>
+     */
     private PortalFlag determineNetworkFlagFromNetworkName(String networkName) {
-        if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(networkName))) {
+        if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> Stargate.log(Level.FINEST,
+                "Found personal network " + UUID.fromString(networkName)))) {
             return PortalFlag.PERSONAL_NETWORK;
         }
         if (networkName.equalsIgnoreCase(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
@@ -158,8 +216,12 @@ public class DataMigration_1_0_14 extends DataMigration {
         return new TwoTuple<>(newKey, oldPair.getSecondValue());
     }
 
+    /**
+     * Loads the necessary config conversion for migrating
+     */
     private void loadConfigConversions() {
         CONFIG_CONVERSIONS = new HashMap<>();
         FileHelper.readInternalFileToMap("/migration/config-migrations-1_0_14.properties", CONFIG_CONVERSIONS);
     }
+
 }

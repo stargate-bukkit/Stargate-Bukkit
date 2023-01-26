@@ -36,7 +36,7 @@ import java.util.logging.Level;
  */
 public class LocalNetwork implements Network {
 
-    public static final String DEFAULT_NET_ID = "<@default@>";
+    public static final String DEFAULT_NETWORK_ID = "<@default@>";
 
     protected Map<String, Portal> nameToPortalMap;
     protected SQLDatabaseAPI database;
@@ -84,10 +84,10 @@ public class LocalNetwork implements Network {
 
     private void loadAsDefault(String name) throws InvalidNameException {
         this.name = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
-        if (!DEFAULT_NET_ID.equals(name)) {
-            throw new InvalidNameException("Invalid name '" + name + "' can not be default network, expected name '" + DEFAULT_NET_ID + "'");
+        if (!DEFAULT_NETWORK_ID.equals(name)) {
+            throw new InvalidNameException("Invalid name '" + name + "' can not be default network, expected name '" + DEFAULT_NETWORK_ID + "'");
         }
-        id = DEFAULT_NET_ID;
+        id = DEFAULT_NETWORK_ID;
     }
 
     private void loadAsCustomNetwork(String networkName) throws NameLengthException {
@@ -138,7 +138,7 @@ public class LocalNetwork implements Network {
 
     @Override
     public void removePortal(Portal portal, boolean removeFromDatabase) {
-        nameToPortalMap.remove(portal.getID());
+        nameToPortalMap.remove(portal.getId());
         if (!removeFromDatabase) {
             return;
         }
@@ -163,7 +163,7 @@ public class LocalNetwork implements Network {
                 savePortal((RealPortal) portal);
             }
         }
-        nameToPortalMap.put(portal.getID(), portal);
+        nameToPortalMap.put(portal.getId(), portal);
     }
 
     @Override
@@ -181,7 +181,7 @@ public class LocalNetwork implements Network {
     @Override
     public Set<String> getAvailablePortals(Player player, Portal requester) {
         Set<String> tempPortalList = new HashSet<>(nameToPortalMap.keySet());
-        tempPortalList.remove(requester.getID());
+        tempPortalList.remove(requester.getId());
         if (!requester.hasFlag(PortalFlag.FORCE_SHOW)) {
             Set<String> removeList = new HashSet<>();
             for (String portalName : tempPortalList) {

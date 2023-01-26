@@ -105,7 +105,7 @@ public final class NetworkCreationHelper {
         }
         if (type == NetworkType.DEFAULT
                 && finalNetworkName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-            finalNetworkName = LocalNetwork.DEFAULT_NET_ID;
+            finalNetworkName = LocalNetwork.DEFAULT_NETWORK_ID;
         }
         Stargate.log(Level.FINE, "Ended up with: " + type + ", " + finalNetworkName);
 
@@ -144,7 +144,7 @@ public final class NetworkCreationHelper {
             return new TwoTuple<>(NetworkType.PERSONAL, name);
         }
         if (name.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-            return new TwoTuple<>(NetworkType.DEFAULT, LocalNetwork.DEFAULT_NET_ID);
+            return new TwoTuple<>(NetworkType.DEFAULT, LocalNetwork.DEFAULT_NETWORK_ID);
         }
         Network possibleNetwork = registry.getNetwork(name, isInterserver);
         if (possibleNetwork != null) {
@@ -177,7 +177,7 @@ public final class NetworkCreationHelper {
     private static TwoTuple<NetworkType, String> getNetworkDataFromEmptyDefinition(Player player,
                                                                                    PermissionManager permissionManager) {
         if (permissionManager.canCreateInNetwork("", NetworkType.DEFAULT)) {
-            return new TwoTuple<>(NetworkType.DEFAULT, LocalNetwork.DEFAULT_NET_ID);
+            return new TwoTuple<>(NetworkType.DEFAULT, LocalNetwork.DEFAULT_NETWORK_ID);
         }
         return new TwoTuple<>(NetworkType.PERSONAL, player.getName());
     }

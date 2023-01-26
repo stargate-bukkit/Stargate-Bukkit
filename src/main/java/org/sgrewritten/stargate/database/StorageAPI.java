@@ -10,6 +10,7 @@ import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.network.portal.RealPortal;
@@ -24,7 +25,7 @@ public interface StorageAPI {
      *
      * @param registry       <p> The registry to load the portals into </p>
      * @param economyManager <p> The handle all economical transactions from the portal will be based of</p>
-     * @throws StorageReadException
+     * @throws StorageReadException <p>If unable to read from storage</p>
      */
     void loadFromStorage(RegistryAPI registry, StargateEconomyAPI economyManager) throws StorageReadException;
 
@@ -34,7 +35,7 @@ public interface StorageAPI {
      * @param portal     <p>The portal to save</p>
      * @param portalType <p>The type of portal to save</p>
      * @return <p>Whether or not the portal was successfully saved</p>
-     * @throws StorageWriteException
+     * @throws StorageWriteException <p>If unable to write to storage</p>
      */
     boolean savePortalToStorage(RealPortal portal, StorageType portalType) throws StorageWriteException;
 
@@ -43,7 +44,7 @@ public interface StorageAPI {
      *
      * @param portal     <p>The portal to remove</p>
      * @param portalType <p>The type of portal to remove</p>
-     * @throws StorageWriteException
+     * @throws StorageWriteException <p>If unable to write to storage</p>
      */
     void removePortalFromStorage(Portal portal, StorageType portalType) throws StorageWriteException;
 
@@ -96,19 +97,19 @@ public interface StorageAPI {
      *
      * @param networkName   <p>The name of the new network</p>
      * @param type          <p>The type of network to look for.</p>
-     * @param isInterserver <p>Whether or not the network works across servers (I flag)</p>
+     * @param isInterServer <p>Whether or not the network works across servers (I flag)</p>
      * @return The network that was created
      * @throws InvalidNameException       <p>If the given network name is invalid</p>
-     * @throws NameLengthException
-     * @throws UnimplementedFlagException
+     * @throws NameLengthException <p>If a name is too long or short</p>
+     * @throws UnimplementedFlagException <p>If a selected flag is unimplemented</p>
      */
-    Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
+    Network createNetwork(String networkName, NetworkType type, boolean isInterServer) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
 
 
     /**
      * "Starts" the inter-server connection by setting this server's portals as online
      *
-     * @throws StorageWriteException
+     * @throws StorageWriteException <p>If unable to write to storage</p>
      */
     void startInterServerConnection() throws StorageWriteException;
 
@@ -172,7 +173,7 @@ public interface StorageAPI {
 
     void updateNetworkName(String newName, String networkName, StorageType portalType) throws StorageWriteException;
 
-    void updatePortalName(String newName, String portalName, String networkName, StorageType portalType) throws StorageWriteException;
+    void updatePortalName(String newName, GlobalPortalId portalId, StorageType portalType) throws StorageWriteException;
 
     boolean netWorkExists(String netName, StorageType portalType) throws StorageReadException;
 

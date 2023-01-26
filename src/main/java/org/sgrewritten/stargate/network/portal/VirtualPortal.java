@@ -54,10 +54,9 @@ public class VirtualPortal implements Portal {
     public void teleportHere(Entity target, RealPortal origin) {
         //TODO: implement vehicle compatibility.
         Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
-        if (!(target instanceof Player)) {
+        if (!(target instanceof Player player)) {
             return;
         }
-        Player player = (Player) target;
 
         try {
             sendTeleportMessage(plugin, player);
@@ -196,8 +195,13 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
-    public String getID() {
+    public String getId() {
         return NameHelper.getNormalizedName(name);
+    }
+
+    @Override
+    public GlobalPortalId getGlobalId() {
+        return GlobalPortalId.getFromPortal(this);
     }
 
     public String getServer() {

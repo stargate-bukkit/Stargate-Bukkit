@@ -104,9 +104,9 @@ public class DataMigratorTest {
         knarvikConfigChecks.put("defaultGateNetwork", "knarvik");
         knarvikConfigChecks.put("handleVehicles", false);
         Map<String, String> knarvikPortalChecks = new HashMap<>();
-        knarvikPortalChecks.put("§6knarvik1", LocalNetwork.DEFAULT_NET_ID);
-        knarvikPortalChecks.put("knarvik2", LocalNetwork.DEFAULT_NET_ID);
-        knarvikPortalChecks.put("knarvik3", LocalNetwork.DEFAULT_NET_ID);
+        knarvikPortalChecks.put("§6knarvik1", LocalNetwork.DEFAULT_NETWORK_ID);
+        knarvikPortalChecks.put("knarvik2", LocalNetwork.DEFAULT_NETWORK_ID);
+        knarvikPortalChecks.put("knarvik3", LocalNetwork.DEFAULT_NETWORK_ID);
         TwoTuple<Map<String, Object>, Map<String, String>> knarvikChecks = new TwoTuple<>(knarvikConfigChecks,
                 knarvikPortalChecks);
         output.put("config-epicknarvik.yml", knarvikChecks);
@@ -163,8 +163,9 @@ public class DataMigratorTest {
             File fileToMove = new File(fileToMoveName);
             File destination = new File(fileMovements.get(fileToMoveName));
             Stargate.log(Level.FINER, destination.getAbsolutePath());
-            destination.getParentFile().mkdirs();
-            fileToMove.renameTo(destination);
+            if (!destination.getParentFile().mkdirs() || !fileToMove.renameTo(destination)) {
+                throw new IOException("Unable to move test files");
+            }
         }
 
         if (sqlDatabaseFile.exists() && !sqlDatabaseFile.delete()) {

@@ -88,7 +88,7 @@ class BlockEventListenerTest {
             String netId = null;
             switch (netName) {
                 case "":
-                    netId = LocalNetwork.DEFAULT_NET_ID;
+                    netId = LocalNetwork.DEFAULT_NETWORK_ID;
                     break;
                 case CUSTOM_NETNAME:
                     netId = CUSTOM_NETNAME;

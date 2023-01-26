@@ -21,7 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-class DataMigration_1_0_14Test {
+class DataMigration1014Test {
 
     private DataMigration_1_0_14 migration;
     private SQLiteDatabase database;
@@ -52,7 +52,7 @@ class DataMigration_1_0_14Test {
         migration.run(database);
         Assertions.assertTrue(portalHasFlag(PortalFlag.CUSTOM_NETWORK, "portal", "network"));
         Assertions.assertTrue(portalHasFlag(PortalFlag.PERSONAL_NETWORK, "portal1", UUID_STRING));
-        Assertions.assertTrue(portalHasFlag(PortalFlag.DEFAULT_NETWORK, "portal2", LocalNetwork.DEFAULT_NET_ID));
+        Assertions.assertTrue(portalHasFlag(PortalFlag.DEFAULT_NETWORK, "portal2", LocalNetwork.DEFAULT_NETWORK_ID));
     }
 
     private boolean portalHasFlag(PortalFlag flag, String portalName, String networkName) throws SQLException {

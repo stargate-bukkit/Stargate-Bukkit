@@ -274,7 +274,7 @@ public class StargateRegistry implements RegistryAPI {
     @Override
     public void rename(Portal portal, String newName) {
         try {
-            storageAPI.updatePortalName(newName, portal.getName(), portal.getNetwork().getId(), portal.getStorageType());
+            storageAPI.updatePortalName(newName, portal.getGlobalId(), portal.getStorageType());
         } catch (StorageWriteException e) {
             Stargate.log(e);
         }

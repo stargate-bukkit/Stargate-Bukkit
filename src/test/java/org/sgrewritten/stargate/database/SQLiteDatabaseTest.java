@@ -249,19 +249,19 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     void addPortalTest() {
         tester.addPortalTest();
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     void addInterPortalTest() {
         tester.addInterPortalTest();
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     void getPortalTest() {
         try {
             tester.getPortalTest();
@@ -271,7 +271,7 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     void getInterPortalTest() {
         try {
             tester.getInterPortalTest();
@@ -281,7 +281,7 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void addAndRemovePortalPositionTest() {
         try {
             tester.addAndRemovePortalPosition(StorageType.LOCAL);
@@ -291,7 +291,7 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void addAndRemoveInterPortalPositionTest() {
         try {
             tester.addAndRemovePortalPosition(StorageType.INTER_SERVER);
@@ -301,7 +301,7 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void addAndRemovePortalFlagRelationTest() {
         try {
             tester.addAndRemovePortalFlags(StorageType.LOCAL);
@@ -311,7 +311,7 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void addAndRemoveInterPortalFlagRelationTest() {
         try {
             tester.addAndRemovePortalFlags(StorageType.INTER_SERVER);
@@ -321,7 +321,7 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void setPortalMetaTest() {
         try {
             tester.setPortalMetaDataTest(StorageType.LOCAL);
@@ -331,7 +331,7 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void setInterPortalMetaTest() {
         try {
             tester.setPortalMetaDataTest(StorageType.INTER_SERVER);
@@ -341,7 +341,7 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void setPortalPositionMetaTest() {
         try {
             tester.setPortalPositionMetaTest(StorageType.LOCAL);
@@ -351,7 +351,7 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void setInterPortalPositionMetaTest() {
         try {
             tester.setPortalPositionMetaTest(StorageType.INTER_SERVER);
@@ -361,13 +361,13 @@ public class SQLiteDatabaseTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void changeNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException, UnimplementedFlagException {
         tester.changeNames(StorageType.LOCAL);
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void changeInterNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException, UnimplementedFlagException {
         tester.changeNames(StorageType.INTER_SERVER);
     }

@@ -30,6 +30,8 @@ import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import java.util.HashSet;
 import java.util.logging.Level;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 class NetworkCreationHelperTest {
     private PlayerMock player;
     private RegistryAPI registry;
@@ -77,7 +79,7 @@ class NetworkCreationHelperTest {
             Network defaultNetwork = NetworkCreationHelper.selectNetwork(emptyName, permissionManager, player, new HashSet<>(), registry);
             Assertions.assertEquals(NetworkType.DEFAULT, defaultNetwork.getType());
             Assertions.assertEquals(CENTRAL, defaultNetwork.getName());
-            Assertions.assertTrue(registry.networkExists(LocalNetwork.DEFAULT_NET_ID, false));
+            Assertions.assertTrue(registry.networkExists(LocalNetwork.DEFAULT_NETWORK_ID, false));
         }
     }
 
@@ -162,7 +164,6 @@ class NetworkCreationHelperTest {
             Assertions.assertEquals(NetworkType.PERSONAL, implicitPersonalNetwork.getType());
             Assertions.assertEquals(personalNetworkName, implicitPersonalNetwork.getName());
 
-            String implicitDefaultNetworkName = style.getHighlightedName(CENTRAL);
             Network implicitDefaultNetwork = NetworkCreationHelper.selectNetwork(CENTRAL, permissionManager, player, new HashSet<>(), registry);
             Assertions.assertEquals(defaultNetwork, implicitDefaultNetwork);
             Assertions.assertEquals(NetworkType.DEFAULT, implicitDefaultNetwork.getType());
@@ -187,7 +188,7 @@ class NetworkCreationHelperTest {
 
     @ParameterizedTest
     @EnumSource(value = NetworkType.class, names = {"CUSTOM", "PERSONAL"})
-    void isInterserverToLocalConflictTest(NetworkType type) throws NameLengthException, NameConflictException, InvalidNameException, UnimplementedFlagException {
+    void isInterServerToLocalConflictTest(NetworkType type) throws NameLengthException, NameConflictException, InvalidNameException, UnimplementedFlagException {
 
         String network1id = NETWORK1;
         String network2id = NETWORK2;
@@ -197,8 +198,14 @@ class NetworkCreationHelperTest {
             network2id = server.addPlayer(NETWORK2).getUniqueId().toString();
             invertedNetwork2id = NETWORK2;
         } else {
-            server.addPlayer(NETWORK2).getUniqueId().toString();
-            invertedNetwork2id = server.getPlayer(NETWORK2).getUniqueId().toString();
+            server.addPlayer(NETWORK2);
+            Player player1 = server.getPlayer(NETWORK2);
+            if (player1 != null) {
+                invertedNetwork2id = player1.getUniqueId().toString();
+            } else {
+                fail();
+                throw new IllegalStateException("Test cannot continue");
+            }
         }
         Network local1 = registry.createNetwork(network1id, type, false, false);
         Network inter1 = registry.createNetwork(network1id, type, true, false);

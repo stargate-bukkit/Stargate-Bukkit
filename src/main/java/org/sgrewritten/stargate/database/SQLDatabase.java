@@ -25,6 +25,7 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
+import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
@@ -121,6 +122,7 @@ public class SQLDatabase implements StorageAPI {
         try {
             connection = database.getConnection();
             connection.setAutoCommit(false);
+
             PreparedStatement savePortalStatement = sqlQueryGenerator.generateAddPortalStatement(connection, portal, portalType);
             savePortalStatement.execute();
             savePortalStatement.close();
@@ -413,8 +415,8 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
-        if (isInterserver) {
+    public Network createNetwork(String networkName, NetworkType type, boolean isInterServer) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
+        if (isInterServer) {
             return new InterServerNetwork(networkName, type);
         } else {
             return new LocalNetwork(networkName, type);
@@ -606,11 +608,12 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void updatePortalName(String newName, String portalName, String networkName, StorageType portalType) throws StorageWriteException {
+    public void updatePortalName(String newName, GlobalPortalId globalPortalId, StorageType portalType) throws StorageWriteException {
         try {
             Connection connection = database.getConnection();
             DatabaseHelper
-                    .runStatement(sqlQueryGenerator.generateUpdatePortalNameStatement(connection, newName, portalName, networkName, portalType));
+                    .runStatement(sqlQueryGenerator.generateUpdatePortalNameStatement(connection, newName, 
+                            globalPortalId.portalId(), globalPortalId.networkId(), portalType));
             connection.close();
         } catch (SQLException e) {
             throw new StorageWriteException(e);

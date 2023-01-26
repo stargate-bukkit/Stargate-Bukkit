@@ -23,7 +23,7 @@ public class LegacyLineColorFormatter implements LineFormatter {
     }
 
     private ChatColor getColor() {
-        return Stargate.getLegacySignColor();
+        return Stargate.getInstance().getLegacySignColor();
     }
 
     @Override

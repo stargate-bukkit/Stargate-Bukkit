@@ -5,7 +5,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
@@ -67,15 +66,14 @@ public class FakePortalGenerator {
      * @param portalNetwork            <p>The network of the generated portals</p>
      * @param createInterServerPortals <p>Whether to generate fake inter-server portals</p>
      * @param numberOfPortals          <p>The number of fake portals to generate</p>
-     * @param logger
      * @return <p>A map from the portal's name to the portal's object</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      * @throws InvalidNameException      <p>If the generated portal name is invalid</p>
      * @throws NameLengthException
      */
     public Map<String, RealPortal> generateFakePortals(World world, Network portalNetwork,
-                                                       boolean createInterServerPortals, int numberOfPortals,
-                                                       StargateLogger logger) throws InvalidStructureException, InvalidNameException, NameLengthException {
+                                                       boolean createInterServerPortals, int numberOfPortals) throws
+            InvalidStructureException, InvalidNameException, NameLengthException {
         Map<String, RealPortal> output = new HashMap<>();
         String baseName;
         if (createInterServerPortals) {

@@ -46,7 +46,7 @@ class NetworkedPortalTest {
     @BeforeEach
     void setUp() throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
         @NotNull ServerMock server = MockBukkit.mock();
-        plugin = MockBukkit.createMockPlugin();
+        plugin = MockBukkit.createMockPlugin("Stargate");
         GateTestHelper.setUpGates();
         world = server.addSimpleWorld("world");
         registry = new StargateRegistry(new FakeStorage());

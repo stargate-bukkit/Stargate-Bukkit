@@ -114,7 +114,7 @@ public abstract class AbstractPortal implements RealPortal {
 
         colorDrawer = new NoLineColorFormatter();
 
-        if (gate.getFormat() != null && gate.getFormat().isIronDoorBlockable()) {
+        if (gate.getFormat().isIronDoorBlockable()) {
             flags.add(PortalFlag.IRON_DOOR);
         }
 
@@ -126,6 +126,11 @@ public abstract class AbstractPortal implements RealPortal {
 
         AbstractPortal.portalCount++;
         AbstractPortal.allUsedFlags.addAll(flags);
+    }
+
+    @Override
+    public GlobalPortalId getGlobalId() {
+        return GlobalPortalId.getFromPortal(this);
     }
 
     @Override
@@ -351,13 +356,12 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         for (Location location : this.getPortalPosition(PositionType.SIGN)) {
-            if (!(location.getBlock().getState() instanceof Sign)) {
+            if (!(location.getBlock().getState() instanceof Sign sign)) {
                 Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s \n"
                                 + "This is most likely caused from a bug // please contact developers (use ''sg about'' for github repo)",
                         this.name, this.network.getName()));
                 continue;
             }
-            Sign sign = (Sign) location.getBlock().getState();
             if (color == null) {
                 color = sign.getColor();
             }
@@ -438,7 +442,7 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public String getID() {
+    public String getId() {
         return NameHelper.getNormalizedName(name);
     }
 

@@ -2,7 +2,6 @@ package org.sgrewritten.stargate.network.portal;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.StorageType;
@@ -91,8 +90,7 @@ public interface Portal {
      * Changes the network this portal belongs to
      *
      * @param targetNetwork <p>The new network this portal should belong to</p>
-     * @throws InvalidNameException  <p>If the given network name is invalid</p>
-     * @throws NameConflictException
+     * @throws NameConflictException <p>If the given network name is invalid</p>
      */
     void setNetwork(Network targetNetwork) throws NameConflictException;
 
@@ -153,9 +151,16 @@ public interface Portal {
     /**
      * Gets the unique identifier for this portal
      *
-     * @return <p>The unique identifier for this network</p>
+     * @return <p>The unique identifier for this portal</p>
      */
-    String getID();
+    String getId();
+
+    /**
+     * Gets the globally unique identifier for this portal
+     *
+     * @return <p>The globally unique identifier for this portal</p>
+     */
+    GlobalPortalId getGlobalId();
 
     /**
      * Gets how the portal is stored
@@ -165,11 +170,11 @@ public interface Portal {
     StorageType getStorageType();
 
     /**
-     * Change the name of the portal
-     * <p>
-     * DOES NOT SAVE TO DATABASE
+     * Changes the name of the portal
+     * <p>TODO: DOES NOT CURRENTLY SAVE TO DATABASE</p>
      *
-     * @param newName
+     * @param newName <p>The new name of the portal</p>
      */
     void setName(String newName);
+
 }

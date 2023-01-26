@@ -20,6 +20,7 @@ import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
@@ -41,6 +42,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test class for shared database tests to prevent duplication
@@ -109,8 +112,8 @@ public class DatabaseTester {
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
         portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
 
-        this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength, logger);
-        this.localPortals = portalGenerator.generateFakePortals(world, testNetwork, false, localPortalTestLength, logger);
+        this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength);
+        this.localPortals = portalGenerator.generateFakePortals(world, testNetwork, false, localPortalTestLength);
         DatabaseTester.testPortal = portalGenerator.generateFakePortal(world, testNetwork, "testPortal", false);
     }
 
@@ -208,7 +211,7 @@ public class DatabaseTester {
             try {
                 Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, StorageType.LOCAL));
             } catch (StorageWriteException e) {
-                throw new RuntimeException(e);
+                fail();
             }
         }
     }
@@ -219,7 +222,7 @@ public class DatabaseTester {
             try {
                 Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, StorageType.INTER_SERVER));
             } catch (StorageWriteException e) {
-                throw new RuntimeException(e);
+                fail();
             }
         }
     }
@@ -495,13 +498,14 @@ public class DatabaseTester {
             testNetwork = new LocalNetwork(initialNetworkName, NetworkType.CUSTOM);
         } catch (InvalidNameException e) {
             Stargate.log(e);
+            fail();
         }
         RealPortal portal = portalGenerator.generateFakePortal(world, testNetwork, initialName, portalType == StorageType.INTER_SERVER);
         Stargate.log(Level.FINER, portal.getName() + ", " + portal.getNetwork().getId());
         this.portalDatabaseAPI.savePortalToStorage(portal, portalType);
         SQLTestHelper.checkIfHas(table, initialName, initialNetworkName, connection);
         this.portalDatabaseAPI.updateNetworkName(newNetName, initialNetworkName, portalType);
-        this.portalDatabaseAPI.updatePortalName(newName, initialName, newNetName, portalType);
+        this.portalDatabaseAPI.updatePortalName(newName, new GlobalPortalId(initialName, newNetName), portalType);
         SQLTestHelper.checkIfHas(table, newName, newNetName, connection);
         SQLTestHelper.checkIfHasNot(table, initialName, initialNetworkName, connection);
         SQLTestHelper.checkIfHas(flagRelationTable, newName, newNetName, connection);

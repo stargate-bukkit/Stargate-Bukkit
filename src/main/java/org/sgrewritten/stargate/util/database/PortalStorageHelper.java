@@ -89,7 +89,7 @@ public class PortalStorageHelper {
     public static PortalData loadPortalData(String[] portalProperties, World world, String defaultNetworkName) {
         PortalData portalData = new PortalData();
         portalData.name = portalProperties[0];
-        portalData.networkName = (portalProperties.length > 9) ? portalProperties[9] : LocalNetwork.DEFAULT_NET_ID;
+        portalData.networkName = (portalProperties.length > 9) ? portalProperties[9] : LocalNetwork.DEFAULT_NETWORK_ID;
 
         Stargate.log(Level.FINEST, String.format("-----------------Loading portal %s in network %s--------------" +
                 "--------", portalData.name, portalData.networkName));
@@ -112,13 +112,18 @@ public class PortalStorageHelper {
         if (portalData.destination == null || portalData.destination.trim().isEmpty()) {
             portalData.flags.add(PortalFlag.NETWORKED);
         }
+
         if (portalProperties.length <= 9 || portalData.networkName.equalsIgnoreCase(defaultNetworkName)) {
             portalData.flags.add(PortalFlag.DEFAULT_NETWORK);
-            portalData.networkName = LocalNetwork.DEFAULT_NET_ID;
-        } else if (!ownerString.isEmpty()
-                && Bukkit.getOfflinePlayer(portalData.ownerUUID).getName().equals(portalData.networkName)) {
-            portalData.flags.add(PortalFlag.PERSONAL_NETWORK);
-            portalData.networkName = portalData.ownerUUID.toString();
+            portalData.networkName = LocalNetwork.DEFAULT_NETWORK_ID;
+        } else if (!ownerString.isEmpty()) {
+            String playerName = Bukkit.getOfflinePlayer(portalData.ownerUUID).getName();
+            if (playerName != null && playerName.equals(portalData.networkName)) {
+                portalData.flags.add(PortalFlag.PERSONAL_NETWORK);
+                portalData.networkName = portalData.ownerUUID.toString();
+            } else {
+                portalData.flags.add(PortalFlag.CUSTOM_NETWORK);
+            }
         } else {
             portalData.flags.add(PortalFlag.CUSTOM_NETWORK);
         }

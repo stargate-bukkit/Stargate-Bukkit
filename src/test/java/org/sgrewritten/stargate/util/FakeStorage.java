@@ -11,6 +11,7 @@ import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.network.portal.RealPortal;
@@ -61,9 +62,9 @@ public class FakeStorage implements StorageAPI {
     }
 
     @Override
-    public Network createNetwork(String networkName, NetworkType type, boolean isInterserver)
+    public Network createNetwork(String networkName, NetworkType type, boolean isInterServer)
             throws InvalidNameException, NameLengthException, UnimplementedFlagException {
-        if (isInterserver) {
+        if (isInterServer) {
             return new InterServerNetwork(networkName, type);
         } else {
             return new LocalNetwork(networkName, type);
@@ -119,9 +120,7 @@ public class FakeStorage implements StorageAPI {
     }
 
     @Override
-    public void updatePortalName(String newName, String portalName, String networkName, StorageType portalType) {
-        // TODO Auto-generated method stub
-
+    public void updatePortalName(String newName, GlobalPortalId portalId, StorageType portalType) {
     }
 
     @Override
