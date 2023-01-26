@@ -113,13 +113,14 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private static Stargate instance;
 
-    private static Level logLevel = Level.INFO;//setting before config loads
+    private Level logLevel = Level.INFO;//setting before config loads
 
     private final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
     private String gateFolder;
     private static final String INTERNAL_GATE_FOLDER = "gates";
     private static final String INTERNAL_FOLDER = ".internal";
     private static final String INTERNAL_PROPERTIES_FILE = "stargate.properties";
+    private static final String CONFIG_FILE = "config.yml";
 
     private PluginManager pluginManager;
 
@@ -131,17 +132,17 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private final SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
     private static final int MAX_TEXT_LENGTH = 13;
 
-    private static StargateEconomyAPI economyManager;
-    private static ServicesManager servicesManager;
-    private static String serverName;
-    private static boolean knowsServerName = false;
+    private StargateEconomyAPI economyManager;
+    private ServicesManager servicesManager;
+    private String serverName;
+    private boolean knowsServerName = false;
 
-    private static UUID serverUUID;
+    private UUID serverUUID;
 
-    private static org.bukkit.ChatColor legacySignColor;
+    private org.bukkit.ChatColor legacySignColor;
 
-    private static short defaultSignColorHue = 0;
-    private static Map<Material, DyeColor> defaultSignDyeColors;
+    private short defaultSignColorHue = 0;
+    private Map<Material, DyeColor> defaultSignDyeColors;
 
     private FileConfiguration config;
 
@@ -165,7 +166,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     public void onEnable() {
         try {
             instance = this;
-            if (!new File(this.getDataFolder(), "config.yml").exists()) {
+            if (!new File(this.getDataFolder(), CONFIG_FILE).exists()) {
                 super.saveDefaultConfig();
             }
 
@@ -304,7 +305,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * @return <p>The name of this server</p>
      */
     public static String getServerName() {
-        return serverName;
+        return getInstance().serverName;
     }
 
     /**
@@ -313,7 +314,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * @param serverName <p>The new name of this server</p>
      */
     public static void setServerName(String serverName) {
-        Stargate.serverName = serverName;
+        getInstance().serverName = serverName;
     }
 
     /**
@@ -322,7 +323,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * @return <p>True if this server knows its own name</p>
      */
     public static boolean knowsServerName() {
-        return knowsServerName;
+        return getInstance().knowsServerName;
     }
 
     /**
@@ -331,7 +332,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * @param knowsServerName <p>Whether this server knows its server name</p>
      */
     public static void setKnowsServerName(boolean knowsServerName) {
-        Stargate.knowsServerName = knowsServerName;
+        getInstance().knowsServerName = knowsServerName;
     }
 
     /**
@@ -340,7 +341,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * @return <p>This server's unique id</p>
      */
     public static String getServerUUID() {
-        return serverUUID.toString();
+        return getInstance().serverUUID.toString();
     }
 
     /**
@@ -349,7 +350,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * @param serverUUID <p>This server's new unique id</p>
      */
     public static void setServerUUID(UUID serverUUID) {
-        Stargate.serverUUID = serverUUID;
+        getInstance().serverUUID = serverUUID;
     }
 
     /**
@@ -358,7 +359,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * @return <p>The default color used for light signs</p>
      */
     public static short getDefaultSignHue() {
-        return Stargate.defaultSignColorHue;
+        return getInstance().defaultSignColorHue;
     }
 
     /**
@@ -369,7 +370,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      */
     public static DyeColor getDefaultSignDyeColor(Material signMaterial) {
         try {
-            return Stargate.defaultSignDyeColors.get(signMaterial);
+            return getInstance().defaultSignDyeColors.get(signMaterial);
         } catch (NullPointerException e) {
             return DyeColor.WHITE;
         }
@@ -381,7 +382,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * @return <p>The default legacy color used for light signs</p>
      */
     public static org.bukkit.ChatColor getLegacySignColor() {
-        return legacySignColor;
+        return getInstance().legacySignColor;
     }
 
     private void loadColors() {
@@ -389,13 +390,13 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             if (!NonLegacyMethod.CHAT_COLOR.isImplemented()) {
                 logMessage(Level.INFO,
                         "Default stargate coloring is not supported on your current server implementation");
-                Stargate.legacySignColor = org.bukkit.ChatColor
+                getInstance().legacySignColor = org.bukkit.ChatColor
                         .valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR).toUpperCase());
                 return;
             }
             ChatColor color = ColorNameInterpreter.getColor(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR));
-            Stargate.defaultSignColorHue = ColorConverter.getHue(color);
-            Stargate.defaultSignDyeColors = new EnumMap<>(Material.class);
+            getInstance().defaultSignColorHue = ColorConverter.getHue(color);
+            getInstance().defaultSignDyeColors = new EnumMap<>(Material.class);
             for (Material signMaterial : Tag.WALL_SIGNS.getValues()) {
                 defaultSignDyeColors.put(signMaterial, ColorConverter.getClosestDyeColor(ColorProperty.getColorFromHue(signMaterial, defaultSignColorHue, false)));
             }
@@ -423,7 +424,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     /**
      * Saves all the default gate designs to the gate folder
      *
-     * @throws IOException
+     * @throws IOException <p>If unable to read or write the default gates</p>
      */
     private void saveDefaultGates() throws IOException {
         //TODO is there a way to check all files in a resource-folder? Possible solution seems unnecessarily complex
@@ -436,6 +437,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             File fileToWrite = new File(directory, gateName);
             if (!fileToWrite.exists()) {
                 InputStream stream = this.getResource(INTERNAL_GATE_FOLDER + "/" + gateName);
+                if (stream == null) {
+                    Stargate.log(Level.WARNING, "Unable to read internal gate file " + gateName);
+                    continue;
+                }
                 stream.transferTo(new FileOutputStream(fileToWrite));
             }
         }
@@ -454,12 +459,12 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         StorageAPI storageAPI = new SQLDatabase(database, false, false, this, this.getLanguageManager());
         RegistryAPI registry = new StargateRegistry(storageAPI);
 
-        DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), "config.yml"), this,
+        DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), CONFIG_FILE), this,
                 this.getServer(), registry, this.getLanguageManager(), this.getEconomyManager(), this.getStoredPropertiesAPI());
 
         if (dataMigrator.isMigrationNecessary()) {
             Map<String, Object> updatedConfig = dataMigrator.getUpdatedConfig();
-            this.saveResource("config.yml", true);
+            this.saveResource(CONFIG_FILE, true);
             this.reloadConfig();
             dataMigrator.updateFileConfiguration(getConfig(), updatedConfig);
             this.reloadConfig();
@@ -480,7 +485,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     public void reloadConfig() {
         config = new StargateYamlConfiguration();
         try {
-            config.load(new File(this.getDataFolder(), "config.yml"));
+            config.load(new File(this.getDataFolder(), CONFIG_FILE));
         } catch (IOException | InvalidConfigurationException e) {
             Stargate.log(e);
         }
@@ -489,7 +494,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     @Override
     public void saveConfig() {
         try {
-            config.save(new File(this.getDataFolder(), "config.yml"));
+            config.save(new File(this.getDataFolder(), CONFIG_FILE));
         } catch (IOException e) {
             Stargate.log(e);
         }
@@ -623,7 +628,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     }
 
     public static void log(Level priorityLevel, String message) {
-        if (priorityLevel.intValue() < Stargate.logLevel.intValue()) {
+        if (priorityLevel.intValue() < getInstance().logLevel.intValue()) {
             return;
         }
         if (instance != null) {
@@ -639,7 +644,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * @param priorityLevel <p> The new priority level to set </p>
      */
     public static void setLogLevel(Level priorityLevel) {
-        Stargate.logLevel = priorityLevel;
+        getInstance().logLevel = priorityLevel;
     }
 
     /**
@@ -653,7 +658,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     @Override
     public void logMessage(Level priorityLevel, String message) {
-        if (priorityLevel.intValue() < Stargate.logLevel.intValue()) {
+        if (priorityLevel.intValue() < this.logLevel.intValue()) {
             return;
         }
         if (priorityLevel.intValue() < Level.INFO.intValue()) {
