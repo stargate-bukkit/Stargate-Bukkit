@@ -15,14 +15,13 @@ import org.sgrewritten.stargate.Stargate;
 class CommandTraceTest {
 
     private @NotNull Stargate plugin;
-    private @NotNull ServerMock server;
     private @NotNull PlayerMock sender;
     private CommandTrace traceCommand;
-    private Command fakeCommand = new VersionCommand("fake");
+    private final Command fakeCommand = new VersionCommand("fake");
 
     @BeforeEach
     void setUp() {
-        server = MockBukkit.mock();
+        @NotNull ServerMock server = MockBukkit.mock();
         sender = server.addPlayer();
         System.setProperty("bstats.relocatecheck", "false");
         plugin = MockBukkit.load(Stargate.class);

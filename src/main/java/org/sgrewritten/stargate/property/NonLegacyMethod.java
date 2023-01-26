@@ -108,6 +108,7 @@ public enum NonLegacyMethod {
      * @param parameters <p>The parameters required for the method</p>
      * @return <p>The return value of the invocation</p>
      */
+    @SuppressWarnings("UnusedReturnValue")
     public Object invoke(Object object, Object... parameters) {
         try {
             Class<?> aClass = Class.forName(classToCheckFor);

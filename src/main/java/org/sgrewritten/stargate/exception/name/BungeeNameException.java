@@ -5,7 +5,7 @@ import org.sgrewritten.stargate.formatting.TranslatableMessage;
 
 public class BungeeNameException extends TranslatableException {
 
-    private TranslatableMessage translatableMessage;
+    private final TranslatableMessage translatableMessage;
 
     public BungeeNameException(String message, TranslatableMessage translatableMessage) {
         super(message);

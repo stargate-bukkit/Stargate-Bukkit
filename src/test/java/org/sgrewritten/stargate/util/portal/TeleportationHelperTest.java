@@ -35,7 +35,6 @@ import java.util.Set;
 
 class TeleportationHelperTest {
 
-    private static ServerMock server;
     private static WorldMock world;
     private static FakePortalGenerator fakePortalGenerator;
     private static LocalNetwork network;
@@ -43,7 +42,7 @@ class TeleportationHelperTest {
 
     @BeforeAll
     public static void setUp() throws NameLengthException, InvalidNameException, UnimplementedFlagException {
-        server = MockBukkit.mock();
+        ServerMock server = MockBukkit.mock();
         world = server.addSimpleWorld("world");
         fakePortalGenerator = new FakePortalGenerator();
         network = new LocalNetwork("network", NetworkType.CUSTOM);

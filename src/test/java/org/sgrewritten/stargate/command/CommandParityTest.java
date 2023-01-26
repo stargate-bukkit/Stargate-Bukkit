@@ -16,23 +16,20 @@ import org.sgrewritten.stargate.database.property.PropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredProperty;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 class CommandParityTest {
 
-    private @NotNull ServerMock server;
-    private @NotNull MockPlugin plugin;
     private @NotNull PlayerMock player;
     private CommandParity command;
     private PropertiesDatabase properties;
     private @NotNull ConsoleCommandSenderMock console;
-    private Command fakeCommand = new VersionCommand("fake");
+    private final Command fakeCommand = new VersionCommand("fake");
 
     @BeforeEach
-    void setUp() throws FileNotFoundException, IOException {
-        server = MockBukkit.mock();
-        plugin = MockBukkit.createMockPlugin();
+    void setUp() throws IOException {
+        @NotNull ServerMock server = MockBukkit.mock();
+        @NotNull MockPlugin plugin = MockBukkit.createMockPlugin();
         console = server.getConsoleSender();
         player = server.addPlayer();
         properties = new PropertiesDatabase(new File(plugin.getDataFolder(), "test.properties"));
@@ -65,5 +62,5 @@ class CommandParityTest {
         properties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, "true");
         Assertions.assertTrue(command.onCommand(console, fakeCommand, "", new String[]{""}));
     }
-    
+
 }

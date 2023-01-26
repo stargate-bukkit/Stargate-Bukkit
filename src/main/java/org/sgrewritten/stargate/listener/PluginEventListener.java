@@ -19,8 +19,8 @@ import java.util.logging.Level;
  */
 public class PluginEventListener implements Listener {
 
-    private @NotNull StargateEconomyAPI economyManager;
-    private @NotNull BlockLoggingManager blockLoggingManager;
+    private final @NotNull StargateEconomyAPI economyManager;
+    private final @NotNull BlockLoggingManager blockLoggingManager;
 
     public PluginEventListener(@NotNull StargateEconomyAPI economyManager, @NotNull BlockLoggingManager blockLoggingManager) {
         this.economyManager = Objects.requireNonNull(economyManager);

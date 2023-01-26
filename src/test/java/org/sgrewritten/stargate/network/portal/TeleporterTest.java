@@ -32,32 +32,22 @@ import java.io.File;
 import java.util.Objects;
 
 class TeleporterTest {
-
-    private @NotNull
-    static ServerMock server;
-    private @NotNull
-    static PlayerMock player;
-    private @NotNull
-    static WorldMock world;
-    private static Location destination;
-    private @NotNull
+    
     static HorseMock horse;
     private static Teleporter teleporter;
-    private static FakePortalGenerator fakePortalGenerator;
-    private static StargateRegistry registry;
     private static SynchronousPopulator populator;
     private static PoweredMinecartMock furnaceMinecart;
     private static final File testGatesDir = new File("src/test/resources/gates");
 
     @BeforeAll
     public static void setup() throws NameLengthException, InvalidNameException, InvalidStructureException, UnimplementedFlagException {
-        server = MockBukkit.mock();
+        @NotNull ServerMock server = MockBukkit.mock();
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger())));
-        world = server.addSimpleWorld("world");
-        player = server.addPlayer();
-        destination = new Location(world, 10, 10, 10);
-        fakePortalGenerator = new FakePortalGenerator("Portal", "iPortal");
-        registry = new StargateRegistry(new FakeStorage());
+        @NotNull WorldMock world = server.addSimpleWorld("world");
+        @NotNull PlayerMock player = server.addPlayer();
+        Location destination1 = new Location(world, 10, 10, 10);
+        FakePortalGenerator fakePortalGenerator = new FakePortalGenerator("Portal", "iPortal");
+        StargateRegistry registry = new StargateRegistry(new FakeStorage());
 
 
         horse = (HorseMock) world.spawnEntity(new Location(world, 0, 0, 0), EntityType.HORSE);

@@ -272,7 +272,7 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void rename(Portal portal, String newName) throws InvalidNameException {
+    public void rename(Portal portal, String newName) {
         try {
             storageAPI.updatePortalName(newName, portal.getName(), portal.getNetwork().getId(), portal.getStorageType());
         } catch (StorageWriteException e) {

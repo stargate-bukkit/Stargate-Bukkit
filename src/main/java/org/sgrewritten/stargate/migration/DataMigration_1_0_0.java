@@ -38,9 +38,9 @@ public class DataMigration_1_0_0 extends DataMigration {
     private final RegistryAPI registry;
     private Map<String, Object> oldConfig;
     private final StargateLogger logger;
-    private LanguageManager languageManager;
-    private StargateEconomyAPI economyManager;
-    private @NotNull StoredPropertiesAPI properties;
+    private final LanguageManager languageManager;
+    private final StargateEconomyAPI economyManager;
+    private final @NotNull StoredPropertiesAPI properties;
 
     /**
      * Instantiates a new Ret-Com 1.0.0

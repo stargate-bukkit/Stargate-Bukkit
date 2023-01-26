@@ -45,7 +45,6 @@ public class DataMigration_1_0_14 extends DataMigration {
         TableNameConfiguration nameConfiguration = DatabaseHelper.getTableNameConfiguration(ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE));
         try {
             new SQLDatabaseMigrator(database, nameConfiguration, "/migration/database/alpha-1_0_0_14", isInterserver).run();
-            ;
         } catch (SQLException | IOException e) {
             Stargate.log(e);
         }
@@ -75,22 +74,16 @@ public class DataMigration_1_0_14 extends DataMigration {
 
     private void runChangeDefaultNetworkIDStatement(SQLDatabaseAPI database, TableNameConfiguration nameConfiguration,
                                                     StorageType type) throws SQLException {
-        Connection connection = database.getConnection();
-        try {
+        try (Connection connection = database.getConnection()) {
             SQLQuery query = type == StorageType.LOCAL ? SQLQuery.UPDATE_NETWORK_NAME
                     : SQLQuery.UPDATE_INTER_NETWORK_NAME;
             String queryString = nameConfiguration
                     .replaceKnownTableNames(SQLQueryHandler.getQuery(query, database.getDriver()));
-            PreparedStatement statement = connection.prepareStatement(queryString);
-            try {
+            try (PreparedStatement statement = connection.prepareStatement(queryString)) {
                 statement.setString(1, LocalNetwork.DEFAULT_NET_ID);
                 statement.setString(2, ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK));
                 statement.execute();
-            } finally {
-                statement.close();
             }
-        } finally {
-            connection.close();
         }
     }
 
@@ -100,16 +93,10 @@ public class DataMigration_1_0_14 extends DataMigration {
     }
 
     private void addLackingNetworkFlags(@NotNull SQLDatabaseAPI database, StorageType storageType, TableNameConfiguration nameConfiguration) throws SQLException {
-        Connection connection = null;
-        try {
-            connection = database.getConnection();
+        try (Connection connection = database.getConnection()) {
             String view = storageType == StorageType.LOCAL ? nameConfiguration.getPortalViewName() : nameConfiguration.getInterPortalViewName();
             Map<TwoTuple<String, String>, PortalFlag> portalsLackingFlagsMap = getLackingNetworkFlags(connection, view);
             insertNetworkFlags(connection, portalsLackingFlagsMap, nameConfiguration, storageType, database.getDriver());
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
         }
     }
 
@@ -121,22 +108,18 @@ public class DataMigration_1_0_14 extends DataMigration {
         String queryString = nameConfiguration.replaceKnownTableNames(SQLQueryHandler.getQuery(query, driver));
         for (TwoTuple<String, String> key : portalsLackingFlagsMap.keySet()) {
             PortalFlag flag = portalsLackingFlagsMap.get(key);
-            PreparedStatement statement = connection.prepareStatement(queryString);
-            try {
+            try (PreparedStatement statement = connection.prepareStatement(queryString)) {
                 statement.setString(1, key.getFirstValue());
                 statement.setString(2, key.getSecondValue());
                 statement.setString(3, String.valueOf(flag.getCharacterRepresentation()));
                 statement.execute();
-            } finally {
-                statement.close();
             }
         }
     }
 
     private Map<TwoTuple<String, String>, PortalFlag> getLackingNetworkFlags(Connection connection, String view) throws SQLException {
         Map<TwoTuple<String, String>, PortalFlag> output = new HashMap<>();
-        PreparedStatement statement = connection.prepareStatement("SELECT name,network,flags FROM " + view + ";");
-        try {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT name,network,flags FROM " + view + ";")) {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet == null) {
                 return output;
@@ -147,8 +130,6 @@ public class DataMigration_1_0_14 extends DataMigration {
                     output.put(new TwoTuple<>(resultSet.getString("name"), resultSet.getString("network")), flag);
                 }
             }
-        } finally {
-            statement.close();
         }
         return output;
     }
@@ -157,7 +138,7 @@ public class DataMigration_1_0_14 extends DataMigration {
         if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(networkName))) {
             return PortalFlag.PERSONAL_NETWORK;
         }
-        if (networkName.toLowerCase().equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK).toLowerCase())) {
+        if (networkName.equalsIgnoreCase(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
             return PortalFlag.DEFAULT_NETWORK;
         }
         return PortalFlag.CUSTOM_NETWORK;

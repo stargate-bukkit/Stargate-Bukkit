@@ -25,12 +25,11 @@ public class SQLTestHelper {
         ResultSet infoResult = tableInfoStatement.executeQuery();
         ResultSetMetaData infoMetaData = infoResult.getMetaData();
         while (infoResult.next()) {
-            String msg = "";
+            StringBuilder msg = new StringBuilder();
             for (int i = 1; i < infoMetaData.getColumnCount() - 1; i++) {
-                msg = msg +
-                        infoMetaData.getColumnName(i) + " = " + infoResult.getObject(i) + ", ";
+                msg.append(infoMetaData.getColumnName(i)).append(" = ").append(infoResult.getObject(i)).append(", ");
             }
-            Stargate.log(logLevel, msg);
+            Stargate.log(logLevel, msg.toString());
         }
     }
 

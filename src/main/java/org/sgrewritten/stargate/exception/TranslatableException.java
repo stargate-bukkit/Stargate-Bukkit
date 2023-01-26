@@ -3,11 +3,14 @@ package org.sgrewritten.stargate.exception;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 
+import java.io.Serial;
+
 public abstract class TranslatableException extends Exception {
 
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = -7553564667058934584L;
 
 
@@ -21,5 +24,4 @@ public abstract class TranslatableException extends Exception {
         return manager.getErrorMessage(getTranslatableMessage());
     }
 
-    ;
 }

@@ -52,7 +52,6 @@ public class DatabaseTester {
     static Connection connection;
     private static SQLQueryGenerator generator;
     private static FakePortalGenerator portalGenerator;
-    private static StargateLogger logger;
     private static WorldMock world;
     private static SQLDatabaseAPI database;
 
@@ -98,7 +97,7 @@ public class DatabaseTester {
         DatabaseTester.serverName = "aServerName";
         DatabaseTester.serverUUID = UUID.randomUUID();
         Stargate.setServerUUID(serverUUID);
-        logger = new FakeStargateLogger();
+        StargateLogger logger = new FakeStargateLogger();
         this.portalDatabaseAPI = new SQLDatabase(database, false, isMySQL, logger, nameConfig);
 
         Network testNetwork = null;
@@ -195,11 +194,11 @@ public class DatabaseTester {
         while (set.next()) {
             Stargate.log(Level.FINER, "Flag ");
             rows++;
-            String msg = "";
+            StringBuilder msg = new StringBuilder();
             for (int i = 0; i < metaData.getColumnCount(); i++) {
-                msg = msg + metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ";
+                msg.append(metaData.getColumnName(i + 1)).append(" = ").append(set.getObject(i + 1)).append(", ");
             }
-            Stargate.log(Level.FINER, msg);
+            Stargate.log(Level.FINER, msg.toString());
         }
         Assertions.assertTrue(rows > 0);
     }

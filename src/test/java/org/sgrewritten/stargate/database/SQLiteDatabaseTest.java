@@ -26,12 +26,11 @@ public class SQLiteDatabaseTest {
 
     private static DatabaseTester tester;
     private static TableNameConfiguration nameConfig;
-    private static SQLDatabaseAPI database;
 
     @BeforeAll
     public static void setUp() throws SQLException, InvalidStructureException, InvalidNameException, NameLengthException {
         Stargate.log(Level.FINE, "Setting up test data");
-        database = new SQLiteDatabase(new File("src/test/resources", "test.db"));
+        SQLDatabaseAPI database = new SQLiteDatabase(new File("src/test/resources", "test.db"));
         nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
         SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargateLogger(), DatabaseDriver.SQLITE);
         tester = new DatabaseTester(database, nameConfig, generator, false);

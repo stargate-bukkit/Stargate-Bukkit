@@ -35,7 +35,6 @@ import java.util.Set;
 
 class NetworkedPortalTest {
 
-    private @NotNull ServerMock server;
     private @NotNull WorldMock world;
     private StargateRegistry registry;
     private NetworkedPortal portal;
@@ -46,7 +45,7 @@ class NetworkedPortalTest {
 
     @BeforeEach
     void setUp() throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
-        server = MockBukkit.mock();
+        @NotNull ServerMock server = MockBukkit.mock();
         plugin = MockBukkit.createMockPlugin();
         GateTestHelper.setUpGates();
         world = server.addSimpleWorld("world");

@@ -61,7 +61,6 @@ public class Gate implements GateAPI {
      * @param signLocation <p>The location of this gate's sign</p>
      * @param signFace     <p>The direction this gate's sign is facing</p>
      * @param alwaysOn     <p>Whether this gate has been set as always-on</p>
-     * @param logger       <p>A stargate logger object</p>
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
@@ -90,7 +89,6 @@ public class Gate implements GateAPI {
      * Instantiates a gate from already predetermined parameters, no checking is done to see if format matches
      *
      * @param portalData <p> Data of the portal </p>
-     * @param logger     <p> A logger </p>
      * @throws InvalidStructureException <p>If the facing is invalid or if no format could be found</p>
      */
     public Gate(PortalData portalData, @NotNull RegistryAPI registry) throws InvalidStructureException {
@@ -224,7 +222,7 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public GateFormat getFormat() {
+    public @NotNull GateFormat getFormat() {
         return format;
     }
 

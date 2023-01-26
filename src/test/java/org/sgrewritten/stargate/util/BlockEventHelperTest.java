@@ -39,11 +39,8 @@ import java.util.Objects;
 
 class BlockEventHelperTest {
 
-    private static ServerMock server;
-    private static WorldMock world;
     private static RegistryAPI registry;
     private static BlockEventListener blockEventListener;
-    private static Network network;
     private static RealPortal portal;
     private static Block signBlock;
     private static PlayerMock player;
@@ -52,16 +49,16 @@ class BlockEventHelperTest {
 
     @BeforeAll
     static void setUp() throws NameLengthException, BungeeNameException, InvalidNameException, NoFormatFoundException, GateConflictException, NameConflictException, UnimplementedFlagException {
-        server = MockBukkit.mock();
+        ServerMock server = MockBukkit.mock();
         player = server.addPlayer();
-        world = server.addSimpleWorld("world");
+        WorldMock world = server.addSimpleWorld("world");
 
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         registry = new StargateRegistry(new FakeStorage());
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
-        network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
+        Network network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
 
-        portal = new FakePortalGenerator().generateFakePortal(signBlock, network, new HashSet<>(), "name", registry);
+        portal = FakePortalGenerator.generateFakePortal(signBlock, network, new HashSet<>(), "name", registry);
 
     }
 

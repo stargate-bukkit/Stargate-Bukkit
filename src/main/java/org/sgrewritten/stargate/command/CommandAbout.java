@@ -13,7 +13,7 @@ import org.sgrewritten.stargate.property.CommandPermission;
  */
 public class CommandAbout implements CommandExecutor {
 
-    private LanguageManager languageManager;
+    private final LanguageManager languageManager;
 
     public CommandAbout(LanguageManager languageManager) {
         this.languageManager = languageManager;

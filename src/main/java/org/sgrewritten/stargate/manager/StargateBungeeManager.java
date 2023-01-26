@@ -32,7 +32,7 @@ import java.util.logging.Level;
 public class StargateBungeeManager implements BungeeManager {
 
     private final RegistryAPI registry;
-    private @NotNull LanguageManager languageManager;
+    private final @NotNull LanguageManager languageManager;
     private final HashMap<String, Portal> bungeeQueue = new HashMap<>();
 
     public StargateBungeeManager(@NotNull RegistryAPI registry, @NotNull LanguageManager languageManager) {

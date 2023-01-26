@@ -23,12 +23,11 @@ class LegacyVirtualPortal extends VirtualPortal {
     /**
      * Instantiates a new legacy virtual portal
      *
-     * @param bungeePortal <p>The Bungee portal this virtual portal represents</p>
-     * @param server       <p>The server this virtual portal belongs to</p>
-     * @param name         <p>The name of this virtual portal</p>
-     * @param network      <p>The network this virtual portal belongs to</p>
-     * @param flags        <p>The flags enabled for this virtual portal</p>
-     * @param ownerUUID    <p>The UUID of this virtual portal's owner</p>
+     * @param server    <p>The server this virtual portal belongs to</p>
+     * @param name      <p>The name of this virtual portal</p>
+     * @param network   <p>The network this virtual portal belongs to</p>
+     * @param flags     <p>The flags enabled for this virtual portal</p>
+     * @param ownerUUID <p>The UUID of this virtual portal's owner</p>
      */
     public LegacyVirtualPortal(String server, String name, Network network,
                                Set<PortalFlag> flags, UUID ownerUUID) {

@@ -5,7 +5,6 @@ import org.sgrewritten.stargate.Stargate;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,20 +15,17 @@ import java.util.logging.Level;
 
 public class PropertiesDatabase implements StoredPropertiesAPI {
 
-    private Properties handle;
-    private @NotNull File fileLocation;
+    private final Properties handle;
+    private final @NotNull File fileLocation;
 
-    public PropertiesDatabase(@NotNull File fileLocation) throws FileNotFoundException, IOException {
+    public PropertiesDatabase(@NotNull File fileLocation) throws IOException {
         this.fileLocation = Objects.requireNonNull(fileLocation);
         if (!fileLocation.exists() && !fileLocation.createNewFile()) {
             Stargate.log(Level.WARNING, "Could not create file '" + fileLocation + "'");
         }
         handle = new Properties();
-        InputStream inputStream = new FileInputStream(fileLocation);
-        try {
+        try (InputStream inputStream = new FileInputStream(fileLocation)) {
             handle.load(inputStream);
-        } finally {
-            inputStream.close();
         }
     }
 

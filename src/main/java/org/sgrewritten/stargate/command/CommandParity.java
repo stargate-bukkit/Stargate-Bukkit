@@ -15,12 +15,11 @@ import java.util.logging.Level;
 
 public class CommandParity implements CommandExecutor {
 
-    private @NotNull File repoToMoveFilesTo;
-    private @NotNull StoredPropertiesAPI properties;
-    private boolean doParityUpgrades;
+    private final @NotNull StoredPropertiesAPI properties;
+    private final boolean doParityUpgrades;
 
     CommandParity(@NotNull StoredPropertiesAPI properties, @NotNull File repoToMoveFilesTo, boolean doParityUpgrades) {
-        this.repoToMoveFilesTo = Objects.requireNonNull(repoToMoveFilesTo);
+        @NotNull File repoToMoveFilesTo1 = Objects.requireNonNull(repoToMoveFilesTo);
         this.properties = Objects.requireNonNull(properties);
         this.doParityUpgrades = doParityUpgrades;
     }

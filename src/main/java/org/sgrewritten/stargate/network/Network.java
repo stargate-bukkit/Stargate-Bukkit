@@ -47,7 +47,7 @@ public interface Network {
      * @param saveToDatabase <p>Whether to also save the portal to the database, only instances of RealPortal can be saved</p>
      * @throws NameConflictException <p> if portal a portal with that name already exist in the network </p>
      */
-    void addPortal(Portal portal, boolean saveToDatabase) throws InvalidNameException, NameConflictException;
+    void addPortal(Portal portal, boolean saveToDatabase) throws NameConflictException;
 
     /**
      * Checks whether there is already a portal in this network with the given name

@@ -44,7 +44,6 @@ public class BungeePortal extends AbstractPortal {
      * @param flags             <p>The flags enabled for this portal</p>
      * @param gate              <p>The gate format used by this portal</p>
      * @param ownerUUID         <p>The UUID of this portal's owner</p>
-     * @param logger
      * @throws InvalidNameException       <p>If the portal name is invalid</p>
      * @throws BungeeNameException
      * @throws NameLengthException

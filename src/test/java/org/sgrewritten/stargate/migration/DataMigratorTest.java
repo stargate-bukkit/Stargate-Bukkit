@@ -137,7 +137,7 @@ public class DataMigratorTest {
     }
 
     @AfterAll
-    public static void tearDown() throws IOException, SQLException, InvalidConfigurationException, InterruptedException {
+    public static void tearDown() throws IOException, InvalidConfigurationException {
         MockBukkit.unmock();
 
         for (File configFile : configFiles) {
@@ -248,11 +248,11 @@ public class DataMigratorTest {
         int count = 0;
         while (set.next()) {
             count++;
-            String msg = "";
+            StringBuilder msg = new StringBuilder();
             for (int i = 1; i <= meta.getColumnCount(); i++) {
-                msg = msg + meta.getColumnLabel(i) + ":" + set.getObject(i) + ",";
+                msg.append(meta.getColumnLabel(i)).append(":").append(set.getObject(i)).append(",");
             }
-            Stargate.log(Level.FINE, msg);
+            Stargate.log(Level.FINE, msg.toString());
         }
         conn.close();
         Assertions.assertTrue(count > 0, "There was no portals loaded from old database");

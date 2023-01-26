@@ -14,7 +14,7 @@ import org.sgrewritten.stargate.network.RegistryAPI;
  */
 public class EntityInsideBlockEventListener implements Listener {
 
-    private RegistryAPI registry;
+    private final RegistryAPI registry;
 
     public EntityInsideBlockEventListener(RegistryAPI registry) {
         this.registry = registry;

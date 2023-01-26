@@ -39,25 +39,21 @@ import java.util.Objects;
 
 class PlayerEventListenerTest {
 
-    private ServerMock server;
-    private StargateRegistry registry;
     private PlayerEventListener listener;
-    private WorldMock world;
-    private RealPortal portal;
     private Block signBlock;
     private @NotNull PlayerMock player;
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
 
     @BeforeEach
     void setUp() throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
-        server = MockBukkit.mock();
-        world = server.addSimpleWorld("world");
+        ServerMock server = MockBukkit.mock();
+        WorldMock world = server.addSimpleWorld("world");
         player = server.addPlayer();
-        registry = new StargateRegistry(new FakeStorage());
+        StargateRegistry registry = new StargateRegistry(new FakeStorage());
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
         listener = new PlayerEventListener(new FakeLanguageManager(), registry, new StargateBungeeManager(registry, new FakeLanguageManager()), new FakeBlockLogger());
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
-        portal = new FakePortalGenerator().generateFakePortal(signBlock, "network", new HashSet<>(), "name", registry);
+        RealPortal portal = FakePortalGenerator.generateFakePortal(signBlock, "network", new HashSet<>(), "name", registry);
     }
 
     @AfterEach

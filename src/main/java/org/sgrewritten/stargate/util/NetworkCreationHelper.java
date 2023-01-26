@@ -157,7 +157,7 @@ public final class NetworkCreationHelper {
         return new TwoTuple<>(NetworkType.CUSTOM, name);
     }
 
-    private static TwoTuple<NetworkType, String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight, String name, RegistryAPI registry, boolean isInterserver) throws InvalidNameException {
+    private static TwoTuple<NetworkType, String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight, String name, RegistryAPI registry, boolean isInterserver) {
         String nameToTestFor = name;
         NetworkType type = NetworkType.getNetworkTypeFromHighlight(highlight);
         if (type == NetworkType.CUSTOM || type == NetworkType.TERMINAL) {

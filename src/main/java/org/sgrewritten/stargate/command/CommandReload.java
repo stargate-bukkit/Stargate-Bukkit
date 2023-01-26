@@ -17,7 +17,7 @@ import java.util.logging.Level;
  */
 public class CommandReload implements CommandExecutor {
 
-    private LanguageManager languageManager;
+    private final LanguageManager languageManager;
 
     public CommandReload(LanguageManager languageManager) {
         this.languageManager = languageManager;

@@ -84,8 +84,8 @@ public abstract class AbstractPortal implements RealPortal {
     protected long activatedTime;
     protected UUID activator;
     protected boolean isDestroyed = false;
-    protected LanguageManager languageManager;
-    private StargateEconomyAPI economyManager;
+    protected final LanguageManager languageManager;
+    private final StargateEconomyAPI economyManager;
     private static final int ACTIVE_DELAY = 15;
 
     /**
@@ -532,8 +532,6 @@ public abstract class AbstractPortal implements RealPortal {
             Stargate.log(e);
         }
     }
-
-    ;
 
     @Override
     public String getMetaData() {

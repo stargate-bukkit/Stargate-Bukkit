@@ -288,8 +288,6 @@ public class SQLDatabase implements StorageAPI {
             try {
                 network.addPortal(virtualPortal, false);
             } catch (NameConflictException ignored) {
-            } catch (InvalidNameException e) {
-                Stargate.log(e);
             }
             Stargate.log(Level.FINEST, "Added as virtual portal");
             return true;

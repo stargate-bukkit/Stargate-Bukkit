@@ -46,10 +46,10 @@ public class PlayerEventListener implements Listener {
 
     private static long eventTime;
     private static PlayerInteractEvent previousEvent;
-    private @NotNull LanguageManager languageManager;
-    private @NotNull BungeeManager bungeeManager;
-    private @NotNull RegistryAPI registry;
-    private @NotNull BlockLoggingManager loggingCompatability;
+    private final @NotNull LanguageManager languageManager;
+    private final @NotNull BungeeManager bungeeManager;
+    private final @NotNull RegistryAPI registry;
+    private final @NotNull BlockLoggingManager loggingCompatability;
 
     public PlayerEventListener(@NotNull LanguageManager languageManager, @NotNull RegistryAPI registry, @NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatability) {
         this.languageManager = Objects.requireNonNull(languageManager);

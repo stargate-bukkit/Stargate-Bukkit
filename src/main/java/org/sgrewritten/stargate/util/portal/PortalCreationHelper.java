@@ -69,7 +69,6 @@ public final class PortalCreationHelper {
      * @param flags        <p>The flags enabled for the portal</p>
      * @param gate         <p>The gate belonging to the portal</p>
      * @param ownerUUID    <p>The UUID of the portal's owner</p>
-     * @param logger
      * @return <p>A new portal</p>
      * @throws InvalidNameException       <p>If the portal's name is invalid</p>
      * @throws NameLengthException
@@ -102,7 +101,6 @@ public final class PortalCreationHelper {
      * @param network    <p>The network the portal belongs to</p>
      * @param portalData <p>Data of the portal </p>
      * @param gate       <p>The gate belonging to the portal</p>
-     * @param logger
      * @return <p>A new portal</p>
      * @throws InvalidNameException       <p>If the portal's name is invalid</p>
      * @throws BungeeNameException
@@ -214,6 +212,8 @@ public final class PortalCreationHelper {
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             msg = msg + languageManager.getMessage(TranslatableMessage.UNIMPLEMENTED_INTERSERVER);
         }
+
+        //TODO: This message is never used. Why is it created?
     }
 
     /**
@@ -241,7 +241,6 @@ public final class PortalCreationHelper {
      *
      * @param sign     <p>The sign containing necessary sign data</p>
      * @param alwaysOn <p>Whether the new gate should be always on</p>
-     * @param logger   <p>The logger to use for logging</p>
      * @return <p>A new Gate</p>
      * @throws NoFormatFoundException <p>If no gate format is found that matches the physical gate</p>
      * @throws GateConflictException  <p>If a registered gate conflicts with the new gate</p>

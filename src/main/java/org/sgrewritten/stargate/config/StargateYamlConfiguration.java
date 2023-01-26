@@ -136,9 +136,7 @@ public class StargateYamlConfiguration extends YamlConfiguration {
      */
     private String addIndentation(int indentationSpaces) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < indentationSpaces; i++) {
-            builder.append(" ");
-        }
+        builder.append(" ".repeat(Math.max(0, indentationSpaces)));
         return builder.toString();
     }
 

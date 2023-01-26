@@ -17,14 +17,12 @@ class StargateRegistryTest {
 
     private StargateRegistry registry;
     private Network network;
-    private ServerMock server;
-    private PlayerMock player;
     private Network personalNetwork;
 
     @BeforeEach
     void setUp() throws NameLengthException, NameConflictException, InvalidNameException, UnimplementedFlagException {
-        server = MockBukkit.mock();
-        player = server.addPlayer();
+        ServerMock server = MockBukkit.mock();
+        PlayerMock player = server.addPlayer();
         registry = new StargateRegistry(new FakeStorage());
         network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
         personalNetwork = registry.createNetwork(player.getUniqueId().toString(), NetworkType.PERSONAL, false, false);

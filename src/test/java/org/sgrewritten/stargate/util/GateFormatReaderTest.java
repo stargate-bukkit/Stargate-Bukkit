@@ -39,12 +39,12 @@ class GateFormatReaderTest {
     }
 
     @Test
-    void parseMaterialTest_InvalidMaterial2() throws ParsingErrorException {
+    void parseMaterialTest_InvalidMaterial2() {
         Assertions.assertThrows(ParsingErrorException.class, () -> GateFormatReader.parseMaterial("ACACIA_BOAT", ""));
     }
 
     @Test
-    void parseMaterialTest_InvalidTag() throws ParsingErrorException {
+    void parseMaterialTest_InvalidTag() {
         Assertions.assertThrows(ParsingErrorException.class, () -> GateFormatReader.parseMaterial("#invalid", ""));
     }
 

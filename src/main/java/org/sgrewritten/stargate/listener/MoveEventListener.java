@@ -35,7 +35,7 @@ public class MoveEventListener implements Listener {
 
     private static final PlayerTeleportEvent.TeleportCause[] causesToCheck = {PlayerTeleportEvent.TeleportCause.END_GATEWAY,
             PlayerTeleportEvent.TeleportCause.END_PORTAL, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL};
-    private RegistryAPI registry;
+    private final RegistryAPI registry;
 
 
     public MoveEventListener(RegistryAPI registry) {
