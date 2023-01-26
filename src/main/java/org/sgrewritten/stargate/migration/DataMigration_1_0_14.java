@@ -36,12 +36,11 @@ import java.util.logging.Level;
  * A data migrator to upgrade data and config to the 1.0.14 alpha
  */
 public class DataMigration_1_0_14 extends DataMigration {
-    private static HashMap<String, String> CONFIG_CONVERSIONS;
+
+    private HashMap<String, String> CONFIG_CONVERSIONS;
 
     public DataMigration_1_0_14() {
-        if (CONFIG_CONVERSIONS == null) {
-            loadConfigConversions();
-        }
+        loadConfigConversions();
     }
 
     @Override
@@ -146,10 +145,10 @@ public class DataMigration_1_0_14 extends DataMigration {
                                         Map<GlobalPortalId, PortalFlag> portalNetworkTypeFlags,
                                         StorageType type) throws SQLException {
         SQLQueryExecutor executor = new SQLQueryExecutor(connection, queryGenerator);
-        for (GlobalPortalId key : portalNetworkTypeFlags.keySet()) {
+        for (Map.Entry<GlobalPortalId, PortalFlag> entry : portalNetworkTypeFlags.entrySet()) {
             Set<PortalFlag> flagSet = new HashSet<>();
-            flagSet.add(portalNetworkTypeFlags.get(key));
-            executor.executeAddFlagRelation(type, key, flagSet);
+            flagSet.add(entry.getValue());
+            executor.executeAddFlagRelation(type, entry.getKey(), flagSet);
         }
     }
 

@@ -9,7 +9,6 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
 
-import java.io.File;
 import java.util.Objects;
 import java.util.logging.Level;
 
@@ -18,8 +17,7 @@ public class CommandParity implements CommandExecutor {
     private final @NotNull StoredPropertiesAPI properties;
     private final boolean doParityUpgrades;
 
-    CommandParity(@NotNull StoredPropertiesAPI properties, @NotNull File repoToMoveFilesTo, boolean doParityUpgrades) {
-        @NotNull File repoToMoveFilesTo1 = Objects.requireNonNull(repoToMoveFilesTo);
+    CommandParity(@NotNull StoredPropertiesAPI properties, boolean doParityUpgrades) {
         this.properties = Objects.requireNonNull(properties);
         this.doParityUpgrades = doParityUpgrades;
     }

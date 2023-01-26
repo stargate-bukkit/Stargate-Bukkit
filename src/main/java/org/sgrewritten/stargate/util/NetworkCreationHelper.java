@@ -7,10 +7,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.manager.PermissionManager;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.Network;
@@ -20,9 +17,7 @@ import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -50,25 +45,6 @@ public final class NetworkCreationHelper {
     }
 
     /**
-     * Check the name of a network, and insert the related flags into the flags collection
-     *
-     * @param networkName <p> The name of the network </p>
-     * @return
-     */
-    public static List<PortalFlag> getNameRelatedFlags(String networkName) {
-        HighlightingStyle highlight = HighlightingStyle.getHighlightType(networkName);
-        List<PortalFlag> flags = new ArrayList<>();
-
-        for (NetworkType type : NetworkType.values()) {
-            if (type.getHighlightingStyle() == highlight) {
-                flags.add(type.getRelatedFlag());
-                break;
-            }
-        }
-        return flags;
-    }
-
-    /**
      * Interprets a networkname and type, then selects it or creates it if it does not already exist
      *
      * @param name              <p> Initial name of the network</p>
@@ -77,10 +53,9 @@ public final class NetworkCreationHelper {
      * @param flags             <p> flags of a portal this selection or creation comes from</p>
      * @param registry          <p> Where named network is (or will be) registered</p>
      * @return <p>The network the portal should be connected to</p>
-     * @throws TranslatableException
-     * @throws InvalidNameException
+     * @throws TranslatableException <p>If invalid input is given</p>
      */
-    public static Network selectNetwork(String name, PermissionManager permissionManager, Player player, Set<PortalFlag> flags, RegistryAPI registry) throws TranslatableException, InvalidNameException {
+    public static Network selectNetwork(String name, PermissionManager permissionManager, Player player, Set<PortalFlag> flags, RegistryAPI registry) throws TranslatableException {
 
         Stargate.log(Level.FINER, "....Choosing network name....");
         Stargate.log(Level.FINER, "initial name is '" + name + "'");
@@ -117,21 +92,19 @@ public final class NetworkCreationHelper {
      *
      * @param name          <p>The name of the network to get</p>
      * @param type          <p>The type of network to get</p>
-     * @param isInterserver <p>Whether or not the network works (or will work) across instances.
+     * @param isInterServer <p>Whether or not the network works (or will work) across instances.
      * @param registry      <p> Where the network is (or will be) registered</p>
      * @return <p>The network the portal should be connected to</p>
-     * @throws InvalidNameException       <p>If the network name is invalid</p>
-     * @throws NameLengthException
-     * @throws UnimplementedFlagException
-     * @throws NameConflictException
+     * @throws TranslatableException <p>If the network name is invalid</p>
      */
-    public static Network selectNetwork(String name, NetworkType type, boolean isInterserver, RegistryAPI registry) throws InvalidNameException, NameLengthException, UnimplementedFlagException, NameConflictException {
+    public static Network selectNetwork(String name, NetworkType type, boolean isInterServer, RegistryAPI registry) throws TranslatableException {
         name = NameHelper.getTrimmedName(name);
         try {
-            registry.createNetwork(name, type, isInterserver, false);
-        } catch (NameConflictException ignored) {
+            registry.createNetwork(name, type, isInterServer, false);
+        } catch (NameConflictException exception) {
+            Stargate.log(exception);
         }
-        Network network = registry.getNetwork(name, isInterserver);
+        Network network = registry.getNetwork(name, isInterServer);
         if (network == null || network.getType() != type) {
             throw new NameConflictException("Could not find or create a network of type '" + type + "' with name '" + name + "'", true);
         }
@@ -151,7 +124,7 @@ public final class NetworkCreationHelper {
             return new TwoTuple<>(possibleNetwork.getType(), name);
         }
         UUID playerUUID = getPlayerUUID(name);
-        if (playerUUID != null && registry.getNetwork(playerUUID.toString(), isInterserver) != null) {
+        if (registry.getNetwork(playerUUID.toString(), isInterserver) != null) {
             return new TwoTuple<>(NetworkType.PERSONAL, name);
         }
         return new TwoTuple<>(NetworkType.CUSTOM, name);
@@ -163,9 +136,8 @@ public final class NetworkCreationHelper {
         if (type == NetworkType.CUSTOM || type == NetworkType.TERMINAL) {
             int i = 1;
             UUID possiblePlayerUUID = getPlayerUUID(nameToTestFor);
-            while (getDefaultNamesTaken().contains(nameToTestFor.toLowerCase())
-                    || (type == NetworkType.TERMINAL && possiblePlayerUUID != null
-                    && registry.getNetwork(possiblePlayerUUID.toString(), isInterserver) != null)) {
+            while (getDefaultNamesTaken().contains(nameToTestFor.toLowerCase()) || type == NetworkType.TERMINAL &&
+                    registry.getNetwork(possiblePlayerUUID.toString(), isInterserver) != null) {
                 nameToTestFor = name + i;
                 possiblePlayerUUID = getPlayerUUID(nameToTestFor);
                 i++;

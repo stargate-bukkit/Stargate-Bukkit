@@ -6,6 +6,8 @@ import org.sgrewritten.stargate.Stargate;
 
 import java.io.File;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 class BungeeHelperTest {
 
     @Test
@@ -17,7 +19,9 @@ class BungeeHelperTest {
         Assertions.assertNotNull(stargateUUID);
         BungeeHelper.getServerId(dataFolder, internalFolder);
         Assertions.assertEquals(stargateUUID, Stargate.getServerUUID());
-        new File(dataFolder + "/" + internalFolder, "serverUUID.txt").delete();
+        if (!new File(dataFolder + File.separator + internalFolder, "serverUUID.txt").delete()) {
+            fail();
+        }
     }
 
 

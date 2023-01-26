@@ -12,7 +12,6 @@ import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.formatting.LanguageManager;
 import org.sgrewritten.stargate.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.Portal;
@@ -83,13 +82,15 @@ public class DataMigration_1_0_0 extends DataMigration {
             properties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, true);
         }
 
-        String[] permDebug = {"permdebug", "debugging.permdebug", "debugging.permissionDebug"};
+        String[] permissionDebug = {"permdebug", "debugging.permdebug", "debugging.permissionDebug"};
         Level logLevel = Level.INFO;
-        if (LegacyDataHandler.findConfigKey(permDebug, oldConfig).equals("true")) {
+        String permissionDebugValue = LegacyDataHandler.findConfigKey(permissionDebug, oldConfig);
+        if (permissionDebugValue != null && permissionDebugValue.equals("true")) {
             logLevel = Level.CONFIG;
         }
         String[] debug = {"debug", "debugging.debug"};
-        if (LegacyDataHandler.findConfigKey(debug, oldConfig).equals("true")) {
+        String debugValue = LegacyDataHandler.findConfigKey(debug, oldConfig);
+        if (debugValue != null && debugValue.equals("true")) {
             logLevel = Level.FINE;
         }
         newConfig.put("loggingLevel", logLevel.toString());
@@ -148,11 +149,10 @@ public class DataMigration_1_0_0 extends DataMigration {
      *
      * @param portalFolder <p>The portal folder to load portals from</p>
      * @throws InvalidStructureException <p>If the old portal has an invalid structure</p>
-     * @throws InvalidNameException      <p>If the old portal has an invalid name</p>
      * @throws IOException               <p>If unable to load previous portals</p>
-     * @throws TranslatableException
+     * @throws TranslatableException     <p>If some use input was invalid</p>
      */
-    private void migratePortals(String portalFolder, String defaultNetworkName, LanguageManager languageManager, StargateEconomyAPI economyManager) throws InvalidStructureException, InvalidNameException, IOException, TranslatableException {
+    private void migratePortals(String portalFolder, String defaultNetworkName, LanguageManager languageManager, StargateEconomyAPI economyManager) throws InvalidStructureException, IOException, TranslatableException {
         List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, registry, logger, defaultNetworkName, languageManager, economyManager);
         if (portals == null) {
             logger.logMessage(Level.WARNING, "No portals migrated!");

@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 public class SQLDatabaseMigrator {
+
     private final @NotNull TableNameConfiguration nameConfiguration;
     private final @NotNull String sqlFilesPath;
     private final boolean interServerEnabled;
@@ -43,13 +44,12 @@ public class SQLDatabaseMigrator {
         String path = sqlFilesPath + "/" + type.toString().toLowerCase();
         int count = 0;
         while (true) {
-            boolean failable = false;
+            boolean fallible = false;
             try {
-                InputStream stream = FileHelper
-                        .getInputStreamForInternalFile(path + "/step" + count + ".sql");
+                InputStream stream = FileHelper.getInputStreamForInternalFile(path + "/step" + count + ".sql");
                 if (stream == null) {
-                    failable = true;
-                    stream = FileHelper.getInputStreamForInternalFile(path + "/failableStep" + count + ".sql");
+                    fallible = true;
+                    stream = FileHelper.getInputStreamForInternalFile(path + "/fallibleStep" + count + ".sql");
                 }
                 if (stream == null) {
                     break;
@@ -62,7 +62,7 @@ public class SQLDatabaseMigrator {
                 }
                 count++;
             } catch (SQLException | IOException e) {
-                if (!failable) {
+                if (!fallible) {
                     throw e;
                 }
             }
@@ -79,4 +79,5 @@ public class SQLDatabaseMigrator {
         newQueryString = nameConfiguration.replaceKnownTableNames(newQueryString);
         DatabaseHelper.runStatement(connection.prepareStatement(newQueryString));
     }
+
 }

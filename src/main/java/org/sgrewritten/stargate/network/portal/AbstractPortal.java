@@ -357,7 +357,7 @@ public abstract class AbstractPortal implements RealPortal {
 
         for (Location location : this.getPortalPosition(PositionType.SIGN)) {
             if (!(location.getBlock().getState() instanceof Sign sign)) {
-                Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s \n"
+                Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s %n"
                                 + "This is most likely caused from a bug // please contact developers (use ''sg about'' for github repo)",
                         this.name, this.network.getName()));
                 continue;

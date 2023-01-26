@@ -360,7 +360,7 @@ public class StargateLanguageManager implements LanguageManager {
                     continue;
                 }
                 translatedStrings.put(key, internalTranslatedValues.get(key));
-                logger.logMessage(Level.FINE, String.format("\n Adding a line of translations of key %s to language file '%s'",
+                logger.logMessage(Level.FINE, String.format("%n Adding a line of translations of key %s to language file '%s'",
                         key.toString(), languageFile));
                 writer.newLine();
                 writer.write(String.format("%s=%s", key.getMessageKey(), internalTranslatedValues.get(key)));

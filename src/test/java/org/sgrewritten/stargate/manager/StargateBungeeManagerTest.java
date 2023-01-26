@@ -15,10 +15,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.Network;
@@ -59,7 +56,7 @@ class StargateBungeeManagerTest {
     private static final String REGISTERED_PORTAL = "rPortal";
 
     @BeforeEach
-    void setUp() throws NameLengthException, InvalidStructureException, InvalidNameException, NameConflictException, UnimplementedFlagException {
+    void setUp() throws TranslatableException, InvalidStructureException {
         server = MockBukkit.mock();
         GateFormatHandler.setFormats(
                 Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger())));
@@ -86,7 +83,7 @@ class StargateBungeeManagerTest {
     }
 
     @Test
-    void updateNetwork() throws NameLengthException, InvalidNameException, InvalidStructureException, UnimplementedFlagException {
+    void updateNetwork() throws TranslatableException, InvalidStructureException {
         //A network not assigned to a registry
         Network network = new InterServerNetwork(NETWORK, NetworkType.CUSTOM);
         RealPortal portal = new FakePortalGenerator().generateFakePortal(world, network, PORTAL, true);
@@ -94,9 +91,10 @@ class StargateBungeeManagerTest {
 
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal2, StargateProtocolRequestType.PORTAL_ADD));
-        Assertions.assertNotNull(registry.getNetwork(NETWORK, true));
-        Assertions.assertNotNull(registry.getNetwork(NETWORK, true).getPortal(PORTAL));
-        Assertions.assertNotNull(registry.getNetwork(NETWORK, true).getPortal(PORTAL2));
+        Network network1 = registry.getNetwork(NETWORK, true);
+        Assertions.assertNotNull(network1);
+        Assertions.assertNotNull(network1.getPortal(PORTAL));
+        Assertions.assertNotNull(network1.getPortal(PORTAL2));
     }
 
     @Test

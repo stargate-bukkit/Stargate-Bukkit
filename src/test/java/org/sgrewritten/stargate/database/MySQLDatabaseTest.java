@@ -12,10 +12,8 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
+import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.StorageType;
 
 import java.sql.Connection;
@@ -32,8 +30,8 @@ public class MySQLDatabaseTest {
     private static SQLDatabaseAPI database;
 
     @BeforeAll
-    public static void setUp() throws SQLException, InvalidStructureException, InvalidNameException,
-            StargateInitializationException, NameLengthException {
+    public static void setUp() throws SQLException, InvalidStructureException, StargateInitializationException,
+            TranslatableException {
         Stargate.log(Level.FINE, "Setting up test data");
         DatabaseDriver driver = DatabaseDriver.MYSQL;
         String address = "LOCALHOST";
@@ -351,8 +349,7 @@ public class MySQLDatabaseTest {
     void changeNamesTest() {
         try {
             tester.changeNames(StorageType.LOCAL);
-        } catch (SQLException | InvalidStructureException | InvalidNameException | StorageWriteException |
-                 NameLengthException | UnimplementedFlagException e) {
+        } catch (SQLException | InvalidStructureException | StorageWriteException | TranslatableException e) {
             fail();
         }
     }
@@ -362,8 +359,7 @@ public class MySQLDatabaseTest {
     void changeInterNamesTest() {
         try {
             tester.changeNames(StorageType.INTER_SERVER);
-        } catch (SQLException | InvalidStructureException | InvalidNameException | StorageWriteException |
-                 NameLengthException | UnimplementedFlagException e) {
+        } catch (SQLException | InvalidStructureException | StorageWriteException | TranslatableException e) {
             fail();
         }
     }

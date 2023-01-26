@@ -10,6 +10,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -77,13 +78,12 @@ public class DatabaseTester {
      * @param nameConfig <p>The config containing all table names</p>
      * @param generator  <p>The SQL Query generator to use for generating test queries</p>
      * @param isMySQL    <p>Whether this database tester is testing MySQL as opposed to SQLite</p>
-     * @throws java.sql.SQLException
+     * @throws SQLException              <p>If unable to contact the database</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      * @throws InvalidNameException      <p>If an invalid portal name is encountered</p>
-     * @throws NameLengthException
      */
     public DatabaseTester(SQLDatabaseAPI database, TableNameConfiguration nameConfig, SQLQueryGenerator generator,
-                          boolean isMySQL) throws SQLException, InvalidStructureException, InvalidNameException, NameLengthException {
+                          boolean isMySQL) throws SQLException, InvalidStructureException, TranslatableException {
         DatabaseTester.connection = database.getConnection();
         DatabaseTester.database = database;
         DatabaseTester.generator = generator;
@@ -108,6 +108,7 @@ public class DatabaseTester {
             testNetwork = new LocalNetwork("test", NetworkType.CUSTOM);
         } catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
             Stargate.log(e);
+            fail();
         }
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
         portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
@@ -480,7 +481,7 @@ public class DatabaseTester {
         SQLTestHelper.checkIfHasNot(table, portal.getName(), portal.getNetwork().getName(), connection);
     }
 
-    void changeNames(StorageType portalType) throws SQLException, InvalidStructureException, InvalidNameException, StorageWriteException, NameLengthException, UnimplementedFlagException {
+    void changeNames(StorageType portalType) throws SQLException, InvalidStructureException, TranslatableException, StorageWriteException {
         //By some reason the database is locked if I don't do this. Don't ask me why // Thorin
         connection.close();
         connection = database.getConnection();

@@ -457,10 +457,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         File databaseFile = new File(this.getDataFolder(), "stargate.db");
         SQLDatabaseAPI database = new SQLiteDatabase(databaseFile);
         StorageAPI storageAPI = new SQLDatabase(database, false, false, this, this.getLanguageManager());
-        RegistryAPI registry = new StargateRegistry(storageAPI);
+        RegistryAPI migrationRegistry = new StargateRegistry(storageAPI);
 
         DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), CONFIG_FILE), this,
-                this.getServer(), registry, this.getLanguageManager(), this.getEconomyManager(), this.getStoredPropertiesAPI());
+                this.getServer(), migrationRegistry, this.getLanguageManager(), this.getEconomyManager(), this.getStoredPropertiesAPI());
 
         if (dataMigrator.isMigrationNecessary()) {
             Map<String, Object> updatedConfig = dataMigrator.getUpdatedConfig();
@@ -573,7 +573,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         }
     }
 
-    private void loadConfigLevel() {
+    private static void loadConfigLevel() {
 
         String debugLevelString = ConfigurationHelper.getString(ConfigurationOption.DEBUG_LEVEL);
         if (debugLevelString == null) {
@@ -633,9 +633,9 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         }
         if (instance != null) {
             instance.logMessage(priorityLevel, message);
-            return;
+        } else {
+            Bukkit.getLogger().log(priorityLevel, message);
         }
-        System.out.println("[" + priorityLevel + "]: " + message);
     }
 
     /**

@@ -236,14 +236,13 @@ public class SQLDatabase implements StorageAPI {
         //Actually register the gate and its positions
         try {
             registerPortalGate(portalData, network, registry, economyManager);
-        } catch (TranslatableException e) {
+        } catch (TranslatableException | GateConflictException e) {
             Stargate.log(e);
         } catch (InvalidStructureException e) {
             Stargate.log(Level.WARNING, String.format(
                     "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
                     portalData.name, (portalType == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName,
                     portalData.topLeft));
-        } catch (GateConflictException ignored) {
         }
     }
 
@@ -289,7 +288,8 @@ public class SQLDatabase implements StorageAPI {
                     portalData.ownerUUID);
             try {
                 network.addPortal(virtualPortal, false);
-            } catch (NameConflictException ignored) {
+            } catch (NameConflictException exception) {
+                Stargate.log(exception);
             }
             Stargate.log(Level.FINEST, "Added as virtual portal");
             return true;
@@ -320,7 +320,6 @@ public class SQLDatabase implements StorageAPI {
             if (NetworkCreationHelper.getDefaultNamesTaken().contains(network.getId().toLowerCase())) {
                 registry.rename(network);
             }
-        } catch (NameConflictException ignored) {
         } catch (TranslatableException e) {
             Stargate.log(e);
             return null;
@@ -612,7 +611,7 @@ public class SQLDatabase implements StorageAPI {
         try {
             Connection connection = database.getConnection();
             DatabaseHelper
-                    .runStatement(sqlQueryGenerator.generateUpdatePortalNameStatement(connection, newName, 
+                    .runStatement(sqlQueryGenerator.generateUpdatePortalNameStatement(connection, newName,
                             globalPortalId.portalId(), globalPortalId.networkId(), portalType));
             connection.close();
         } catch (SQLException e) {

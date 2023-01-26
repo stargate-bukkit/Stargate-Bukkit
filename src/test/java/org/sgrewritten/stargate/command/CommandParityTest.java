@@ -33,7 +33,7 @@ class CommandParityTest {
         console = server.getConsoleSender();
         player = server.addPlayer();
         properties = new PropertiesDatabase(new File(plugin.getDataFolder(), "test.properties"));
-        command = new CommandParity(properties, plugin.getDataFolder().getParentFile(), true);
+        command = new CommandParity(properties, true);
     }
 
     @AfterEach

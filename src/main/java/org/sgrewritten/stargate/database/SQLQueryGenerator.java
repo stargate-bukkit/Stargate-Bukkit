@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.database;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.BlockVector;
@@ -633,7 +634,7 @@ public class SQLQueryGenerator {
         if (logger != null) {
             logger.logMessage(level, message);
         } else {
-            System.out.println(level.getName() + ": " + message);
+            Bukkit.getLogger().log(level, message);
         }
     }
 

@@ -19,11 +19,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
-import org.sgrewritten.stargate.exception.name.BungeeNameException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateRegistry;
@@ -44,7 +40,7 @@ class NetworkedPortalTest {
     private Network network;
 
     @BeforeEach
-    void setUp() throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
+    void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException {
         @NotNull ServerMock server = MockBukkit.mock();
         plugin = MockBukkit.createMockPlugin("Stargate");
         GateTestHelper.setUpGates();
@@ -98,7 +94,7 @@ class NetworkedPortalTest {
 
     @ParameterizedTest
     @EnumSource
-    void onSignClick_AvailableDestination(Action type) throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
+    void onSignClick_AvailableDestination(Action type) throws TranslatableException, NoFormatFoundException, GateConflictException {
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
         sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
         FakePortalGenerator.generateFakePortal(sign, network, new HashSet<>(), "destination", registry);
@@ -107,7 +103,7 @@ class NetworkedPortalTest {
 
     @ParameterizedTest
     @EnumSource
-    void onSignClick_SneakingAvailableDestination(Action type) throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
+    void onSignClick_SneakingAvailableDestination(Action type) throws TranslatableException, NoFormatFoundException, GateConflictException {
         sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
         FakePortalGenerator.generateFakePortal(sign, network, new HashSet<>(), "destination", registry);
         player.setSneaking(true);

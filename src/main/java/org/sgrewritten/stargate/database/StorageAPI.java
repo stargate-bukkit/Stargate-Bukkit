@@ -18,6 +18,7 @@ import org.sgrewritten.stargate.network.portal.RealPortal;
 /**
  * A generic API for Stargate's storage methods
  */
+@SuppressWarnings("unused")
 public interface StorageAPI {
 
     /**
@@ -100,7 +101,7 @@ public interface StorageAPI {
      * @param isInterServer <p>Whether or not the network works across servers (I flag)</p>
      * @return The network that was created
      * @throws InvalidNameException       <p>If the given network name is invalid</p>
-     * @throws NameLengthException <p>If a name is too long or short</p>
+     * @throws NameLengthException        <p>If a name is too long or short</p>
      * @throws UnimplementedFlagException <p>If a selected flag is unimplemented</p>
      */
     Network createNetwork(String networkName, NetworkType type, boolean isInterServer) throws InvalidNameException, NameLengthException, UnimplementedFlagException;

@@ -16,14 +16,9 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
-import org.sgrewritten.stargate.exception.name.BungeeNameException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.gate.structure.GateStructureType;
-import org.sgrewritten.stargate.listener.BlockEventListener;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryAPI;
@@ -40,7 +35,6 @@ import java.util.Objects;
 class BlockEventHelperTest {
 
     private static RegistryAPI registry;
-    private static BlockEventListener blockEventListener;
     private static RealPortal portal;
     private static Block signBlock;
     private static PlayerMock player;
@@ -48,7 +42,7 @@ class BlockEventHelperTest {
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
 
     @BeforeAll
-    static void setUp() throws NameLengthException, BungeeNameException, InvalidNameException, NoFormatFoundException, GateConflictException, NameConflictException, UnimplementedFlagException {
+    static void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException {
         ServerMock server = MockBukkit.mock();
         player = server.addPlayer();
         WorldMock world = server.addSimpleWorld("world");

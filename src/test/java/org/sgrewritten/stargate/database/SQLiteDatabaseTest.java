@@ -11,10 +11,8 @@ import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
+import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.StorageType;
 
 import java.io.File;
@@ -30,7 +28,7 @@ public class SQLiteDatabaseTest {
     private static TableNameConfiguration nameConfig;
 
     @BeforeAll
-    public static void setUp() throws SQLException, InvalidStructureException, InvalidNameException, NameLengthException {
+    public static void setUp() throws SQLException, InvalidStructureException, TranslatableException {
         Stargate.log(Level.FINE, "Setting up test data");
         SQLDatabaseAPI database = new SQLiteDatabase(new File("src/test/resources", "test.db"));
         nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
@@ -362,13 +360,13 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(8)
-    void changeNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException, UnimplementedFlagException {
+    void changeNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, TranslatableException {
         tester.changeNames(StorageType.LOCAL);
     }
 
     @Test
     @Order(8)
-    void changeInterNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, InvalidNameException, NameLengthException, UnimplementedFlagException {
+    void changeInterNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, TranslatableException {
         tester.changeNames(StorageType.INTER_SERVER);
     }
 

@@ -14,11 +14,7 @@ import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
-import org.sgrewritten.stargate.exception.name.BungeeNameException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
@@ -32,6 +28,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 class StargateTest {
 
     private Stargate plugin;
@@ -43,7 +41,7 @@ class StargateTest {
     private static final String PORTAL2 = "name2";
 
     @BeforeEach
-    public void setup() throws NameLengthException, NameConflictException, InvalidNameException, BungeeNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
+    public void setup() throws TranslatableException, NoFormatFoundException, GateConflictException {
         server = MockBukkit.mock();
         scheduler = server.getScheduler();
         WorldMock world = server.addSimpleWorld("world");
@@ -72,7 +70,7 @@ class StargateTest {
 
     @Test
     public void getEconomyManager() {
-        Assertions.assertNotNull(plugin.getEconomyManager());
+        assertNotNull(plugin.getEconomyManager());
     }
 
     @Test
@@ -82,12 +80,12 @@ class StargateTest {
 
     @Test
     public void getAbsoluteDataFolder() {
-        Assertions.assertNotNull(plugin.getAbsoluteDataFolder());
+        assertNotNull(plugin.getAbsoluteDataFolder());
     }
 
     @Test
     public void getGateFolder() {
-        Assertions.assertNotNull(plugin.getGateFolder());
+        assertNotNull(plugin.getGateFolder());
     }
 
     @Test
@@ -159,7 +157,9 @@ class StargateTest {
         Assertions.assertNull(Stargate.getInstance());
         server.getPluginManager().enablePlugin(plugin);
         Assertions.assertTrue(plugin.isEnabled());
-        Assertions.assertNotNull(plugin.getRegistry().getNetwork(BungeePortal.getLegacyNetworkName(), false).getPortal(PORTAL2));
+        Network network = plugin.getRegistry().getNetwork(BungeePortal.getLegacyNetworkName(), false);
+        assertNotNull(network);
+        assertNotNull(network.getPortal(PORTAL2));
     }
 
     @Test
@@ -169,7 +169,7 @@ class StargateTest {
         Assertions.assertNull(Stargate.getInstance());
         server.getPluginManager().enablePlugin(plugin);
         Assertions.assertTrue(plugin.isEnabled());
-        Assertions.assertNotNull(Stargate.getServerUUID());
+        assertNotNull(Stargate.getServerUUID());
     }
 
     private void setInterServerEnabled() {

@@ -16,25 +16,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.FakeStargateLogger;
-import org.sgrewritten.stargate.exception.GateConflictException;
-import org.sgrewritten.stargate.exception.NoFormatFoundException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
-import org.sgrewritten.stargate.exception.name.BungeeNameException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.manager.FakeBlockLogger;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.util.FakeLanguageManager;
 import org.sgrewritten.stargate.util.FakeStorage;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.Objects;
 
 class PlayerEventListenerTest {
@@ -45,7 +35,7 @@ class PlayerEventListenerTest {
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
 
     @BeforeEach
-    void setUp() throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
+    void setUp() {
         ServerMock server = MockBukkit.mock();
         WorldMock world = server.addSimpleWorld("world");
         player = server.addPlayer();
@@ -53,7 +43,6 @@ class PlayerEventListenerTest {
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
         listener = new PlayerEventListener(new FakeLanguageManager(), registry, new StargateBungeeManager(registry, new FakeLanguageManager()), new FakeBlockLogger());
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
-        RealPortal portal = FakePortalGenerator.generateFakePortal(signBlock, "network", new HashSet<>(), "name", registry);
     }
 
     @AfterEach

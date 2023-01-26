@@ -30,8 +30,8 @@ public class InterServerNetwork extends LocalNetwork {
      * @param networkName <p>The name of the new inter-server network</p>
      * @param type        <p>The type of inter-server network to initialize</p>
      * @throws InvalidNameException       <p>If the network name is invalid</p>
-     * @throws NameLengthException
-     * @throws UnimplementedFlagException
+     * @throws NameLengthException        <p>If the length of the network name is invalid</p>
+     * @throws UnimplementedFlagException <p>If the network's type is invalid</p>
      */
     public InterServerNetwork(String networkName, NetworkType type) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
         super(networkName, type);
@@ -86,7 +86,7 @@ public class InterServerNetwork extends LocalNetwork {
                     dataOutputStream.writeUTF("ALL");
                     dataOutputStream.writeUTF(PluginChannel.NETWORK_CHANGED.getChannel());
                     String jsonMessage = BungeeHelper.generateJsonMessage(portal, requestType);
-                    Stargate.log(Level.FINER, String.format("Sending bungee message:\n%s", jsonMessage));
+                    Stargate.log(Level.FINER, String.format("Sending bungee message:%n%s", jsonMessage));
                     dataOutputStream.writeUTF(jsonMessage);
                     Bukkit.getServer().sendPluginMessage(stargate, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
                 } catch (IOException e) {

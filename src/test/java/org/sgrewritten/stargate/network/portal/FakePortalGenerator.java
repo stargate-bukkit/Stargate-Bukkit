@@ -9,10 +9,7 @@ import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
-import org.sgrewritten.stargate.exception.name.BungeeNameException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.Network;
@@ -68,12 +65,11 @@ public class FakePortalGenerator {
      * @param numberOfPortals          <p>The number of fake portals to generate</p>
      * @return <p>A map from the portal's name to the portal's object</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
-     * @throws InvalidNameException      <p>If the generated portal name is invalid</p>
-     * @throws NameLengthException
+     * @throws TranslatableException     <p>If the generated portal name is invalid</p>
      */
     public Map<String, RealPortal> generateFakePortals(World world, Network portalNetwork,
                                                        boolean createInterServerPortals, int numberOfPortals) throws
-            InvalidStructureException, InvalidNameException, NameLengthException {
+            InvalidStructureException, TranslatableException {
         Map<String, RealPortal> output = new HashMap<>();
         String baseName;
         if (createInterServerPortals) {
@@ -99,11 +95,10 @@ public class FakePortalGenerator {
      * @param createInterServerPortal <p>Whether to generate a fake inter-server portal</p>
      * @return <p>A fake portal</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
-     * @throws InvalidNameException      <p>If the given portal name is invalid</p>
-     * @throws NameLengthException
+     * @throws TranslatableException     <p>If the given portal name is invalid</p>
      */
     public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal)
-            throws InvalidStructureException, InvalidNameException, NameLengthException {
+            throws InvalidStructureException, TranslatableException {
         Set<PortalFlag> flags = generateRandomFlags();
         //To avoid using the Portal#open method on constructor, which uses an unimplemented function in MockBukkit (block-states)
         flags.remove(PortalFlag.ALWAYS_ON);
@@ -141,11 +136,10 @@ public class FakePortalGenerator {
      * @return <p>A fake portal</p>
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      * @throws NameLengthException       <p>IF the length of the name is invalid</p>
-     * @throws InvalidNameException      <p>If the given portal name is invalid</p>
      */
     public RealPortal generateFakePortal(Location topLeft, Network network, String name,
                                          boolean createInterServerPortal, Set<PortalFlag> flags, RegistryAPI registry)
-            throws InvalidStructureException, NameLengthException, InvalidNameException {
+            throws InvalidStructureException, NameLengthException {
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
         }
@@ -162,7 +156,8 @@ public class FakePortalGenerator {
         return new FixedPortal(network, name, "", flags, gate, UUID.randomUUID(), new FakeLanguageManager(), new FakeEconomyManager());
     }
 
-    public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name, RegistryAPI registry) throws NameLengthException, BungeeNameException, InvalidNameException, NoFormatFoundException, GateConflictException, NameConflictException, UnimplementedFlagException {
+    public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,
+                                                RegistryAPI registry) throws NoFormatFoundException, GateConflictException, TranslatableException {
         Gate gate = PortalCreationHelper.createGate(signBlock, false, registry);
         flags.add(network.getType().getRelatedFlag());
 
@@ -173,7 +168,7 @@ public class FakePortalGenerator {
     }
 
     public static RealPortal generateFakePortal(Block signBlock, String networkName, Set<PortalFlag> flags, String name,
-                                                StargateRegistry registry) throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException, UnimplementedFlagException {
+                                                StargateRegistry registry) throws TranslatableException, NoFormatFoundException, GateConflictException {
         Network network = registry.createNetwork(networkName, NetworkType.CUSTOM, false, false);
         return generateFakePortal(signBlock, network, flags, name, registry);
     }

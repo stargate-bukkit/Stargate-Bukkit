@@ -42,9 +42,8 @@ public class StargateBungeeManager implements BungeeManager {
 
     @Override
     public void updateNetwork(String message) {
-        JsonParser parser = new JsonParser();
         Stargate.log(Level.FINEST, message);
-        JsonObject json = (JsonObject) parser.parse(message);
+        JsonObject json = (JsonObject) JsonParser.parseString(message);
 
         String requestTypeString = json.get(StargateProtocolProperty.REQUEST_TYPE.toString()).getAsString();
         StargateProtocolRequestType requestType = StargateProtocolRequestType.valueOf(requestTypeString);
@@ -57,35 +56,37 @@ public class StargateBungeeManager implements BungeeManager {
 
         try {
             registry.createNetwork(network, flags, false);
-        } catch (NameConflictException ignored) {
-
-        } catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
+        } catch (NameConflictException | InvalidNameException | NameLengthException | UnimplementedFlagException e) {
             Stargate.log(e);
         }
         try {
             InterServerNetwork targetNetwork = (InterServerNetwork) registry.getNetwork(network, true);
+            if (targetNetwork == null) {
+                Stargate.log(Level.WARNING, "Unable to get inter-server network " + network);
+                return;
+            }
             VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
             switch (requestType) {
-                case PORTAL_ADD:
+                case PORTAL_ADD -> {
                     targetNetwork.addPortal(portal, false);
                     Stargate.log(Level.FINE, String.format("Adding virtual portal %s in inter-server network %s", portalName, network));
-                    break;
-                case PORTAL_REMOVE:
+                }
+                case PORTAL_REMOVE -> {
                     Stargate.log(Level.FINE, String.format("Removing virtual portal %s in inter-server network %s", portalName, network));
                     targetNetwork.removePortal(portal, false);
-                    break;
+                }
             }
             targetNetwork.updatePortals();
-        } catch (NameConflictException ignored) {
+        } catch (NameConflictException exception) {
+            Stargate.log(exception);
         }
     }
 
     @Override
     public void playerConnect(String message) {
-        JsonParser parser = new JsonParser();
         Stargate.log(Level.FINEST, message);
 
-        JsonObject json = (JsonObject) parser.parse(message);
+        JsonObject json = (JsonObject) JsonParser.parseString(message);
         String playerName = json.get(StargateProtocolProperty.PLAYER.toString()).getAsString();
         String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
         String networkName = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
