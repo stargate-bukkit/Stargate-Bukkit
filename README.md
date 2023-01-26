@@ -5,12 +5,12 @@
 
 `Supporting MC 1.16+ in the Bukkit Ecosystem`
 
-> **THIS IS A EARLY RELEASE FROM THE BETA CHANNEL**<br><br>
-> **FOR**: Early adopters and servers running recently released versions of java/bukkit, etc.<br>
-> **ENJOY**: Testing the next version of Stargate, with general stability.<br>
-> **EXPECT**: Mostly stable builds that need a bit of fine tuning.<br><br>
-> This build is suitable for use on smaller production servers.<br>
-> As always, remember to make backups!
+> **THIS IS THE LATEST OFFICIAL RELEASE OF STARGATE REWRITTEN!**<br><br>
+> **FOR**: Everyone; servers of all types, both old and new!<br>
+> **ENJOY**: The polished and stable features of SGR, allowing for versatile and intuitive player-facing transportation networks!<br>
+> **EXPECT**: An incredible, stable, and fine-tuned experience!<br><br>
+> This release channel is suitable for servers of all types!
+> As always, remember that it's a good practice to make backups!
 
 ![Stargate Banner](https://i.imgur.com/7Ji4jrr.png)
 
