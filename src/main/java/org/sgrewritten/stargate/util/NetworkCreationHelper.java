@@ -101,8 +101,7 @@ public final class NetworkCreationHelper {
         name = NameHelper.getTrimmedName(name);
         try {
             registry.createNetwork(name, type, isInterServer, false);
-        } catch (NameConflictException exception) {
-            Stargate.log(exception);
+        } catch (NameConflictException ignored) {
         }
         Network network = registry.getNetwork(name, isInterServer);
         if (network == null || network.getType() != type) {

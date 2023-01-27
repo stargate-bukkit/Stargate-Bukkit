@@ -634,7 +634,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         if (instance != null) {
             instance.logMessage(priorityLevel, message);
         } else {
-            Bukkit.getLogger().log(priorityLevel, message);
+            System.out.println("[" + priorityLevel + "]: " + message);
         }
     }
 
