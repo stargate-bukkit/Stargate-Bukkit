@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.util;
+package org.sgrewritten.stargate.database;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,24 +21,12 @@ public class MySQLCredentialsHandler {
     }
     
     
-    public static String getPassword(){
-        return properties.getProperty("DB_PASSWORD");
+    public static String getCredentialString(Credential credential) {
+        return properties.getProperty(credential.name());
     }
     
-    public static String getUser() {
-        return properties.getProperty("DB_USER");
-    }
-    
-    public static int getPort() {
-        return Integer.valueOf(properties.getProperty("DB_PORT"));
-    }
-    
-    public static String getDatabaseName() {
-        return properties.getProperty("DB_NAME");
-    }
-    
-    public static String getAddress() {
-        return properties.getProperty("DB_ADDRESS");
+    public static int getCredentialInt(Credential credential) {
+        return Integer.valueOf(properties.getProperty(credential.name()));
     }
     
     private static void loadProperties() throws IOException {
