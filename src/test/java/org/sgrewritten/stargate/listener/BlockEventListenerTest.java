@@ -16,8 +16,10 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.FakeStargate;
 import org.sgrewritten.stargate.FakeStargateLogger;
@@ -35,6 +37,7 @@ import org.sgrewritten.stargate.util.FakeStorage;
 import java.io.File;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.logging.Level;
 
 class BlockEventListenerTest {
 
@@ -47,8 +50,8 @@ class BlockEventListenerTest {
     private static final String PLAYER_NAME = "player";
     private static final String CUSTOM_NETNAME = "custom";
 
-    @BeforeAll
-    public static void setUp() {
+    @BeforeEach
+    public void setUp() {
         BlockEventListenerTest.server = MockBukkit.mock();
 
         FakeStargate plugin = MockBukkit.load(FakeStargate.class);
@@ -66,8 +69,8 @@ class BlockEventListenerTest {
         player.setOp(true);
     }
 
-    @AfterAll
-    public static void tearDown() {
+    @AfterEach
+    public void tearDown() {
         MockBukkit.unmock();
     }
 

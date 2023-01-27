@@ -206,8 +206,7 @@ public final class PortalCreationHelper {
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             msg = msg + languageManager.getMessage(TranslatableMessage.UNIMPLEMENTED_INTERSERVER);
         }
-
-        //TODO: This message is never used. Why is it created?
+        player.sendMessage(msg);
     }
 
     /**

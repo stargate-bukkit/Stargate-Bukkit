@@ -20,44 +20,36 @@ public class FakeStorage implements StorageAPI {
 
     @Override
     public void loadFromStorage(RegistryAPI registry, StargateEconomyAPI economyManager) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public boolean savePortalToStorage(RealPortal portal, StorageType portalType) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public void removePortalFromStorage(Portal portal, StorageType portalType) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void setPortalMetaData(Portal portal, String data, StorageType portalType) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public String getPortalMetaData(Portal portal, StorageType portalType) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setPortalPositionMetaData(RealPortal portal, PortalPosition portalPosition, String data,
                                           StorageType portalType) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public String getPortalPositionMetaData(Portal portal, PortalPosition portalPosition, StorageType portalType) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -73,49 +65,41 @@ public class FakeStorage implements StorageAPI {
 
     @Override
     public void startInterServerConnection() {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void addFlagType(char flagChar) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void addPortalPositionType(String portalPositionTypeName) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void addFlag(Character flagChar, Portal portal, StorageType portalType) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void removeFlag(Character flagChar, Portal portal, StorageType portalType) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void addPortalPosition(RealPortal portal, StorageType portalType, PortalPosition portalPosition) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void removePortalPosition(RealPortal portal, StorageType portalType, PortalPosition portalPosition) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void updateNetworkName(String newName, String networkName, StorageType portalType) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -125,7 +109,6 @@ public class FakeStorage implements StorageAPI {
 
     @Override
     public boolean netWorkExists(String netName, StorageType portalType) {
-        // TODO Auto-generated method stub
         return false;
     }
 

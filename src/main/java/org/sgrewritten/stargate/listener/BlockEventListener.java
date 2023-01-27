@@ -177,9 +177,8 @@ public class BlockEventListener implements Listener {
                 selectedNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), permissionManager, player, flags, registry);
             } else {
                 selectedNetwork = NetworkCreationHelper.selectNetwork(network, permissionManager, player, flags, registry);
-                //NetworkType-flags are incompatible with each other, this makes sure that only the flag of the portals network is in use
-
             }
+            //NetworkType-flags are incompatible with each other, this makes sure that only the flag of the portals network is in use
             NetworkType.removeNetworkTypeRelatedFlags(flags);
             flags.add(selectedNetwork.getType().getRelatedFlag());
         } catch (TranslatableException e) {

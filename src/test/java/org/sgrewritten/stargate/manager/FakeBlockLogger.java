@@ -13,7 +13,6 @@ public class FakeBlockLogger implements BlockLoggingManager {
 
     @Override
     public void logPlayerInteractEvent(PlayerInteractEvent event) {
-        // TODO Auto-generated method stub
 
     }
 
