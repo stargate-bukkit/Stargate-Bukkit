@@ -8,7 +8,7 @@ import java.util.Properties;
 
 import org.sgrewritten.stargate.Stargate;
 
-public class TestCredentialsHandler {
+public class MySQLCredentialsHandler {
     
     
     static private Properties properties = new Properties();
@@ -42,7 +42,7 @@ public class TestCredentialsHandler {
     }
     
     private static void loadProperties() throws IOException {
-        File location = new File("src/test/resources/credentials.secret");
+        File location = new File("src/test/resources/mysql_credentials.secret");
         try(InputStream stream = new FileInputStream(location)) {
             properties.load(stream);
         }
