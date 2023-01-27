@@ -320,8 +320,8 @@ public class SQLDatabase implements StorageAPI {
             if (NetworkCreationHelper.getDefaultNamesTaken().contains(network.getId().toLowerCase())) {
                 registry.rename(network);
             }
-        } catch(NameConflictException ignored) {
-            
+        } catch (NameConflictException ignored) {
+
         } catch (TranslatableException e) {
             Stargate.log(e);
             return null;

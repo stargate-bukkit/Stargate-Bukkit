@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -26,7 +27,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 
 /**
@@ -136,9 +136,10 @@ public final class FileHelper {
 
     /**
      * Converts the stream directly into a string, includes the newline character
+     *
      * @param stream <p> The stream to read from </p>
      * @return <p> A String of the file read </p>
-     * @throws IOException
+     * @throws IOException <p>If unable to read the stream</p>
      */
     public static String readStreamToString(InputStream stream) throws IOException {
         BufferedReader reader = FileHelper.getBufferedReaderFromInputStream(stream);
@@ -150,15 +151,19 @@ public final class FileHelper {
         }
         return lines.toString();
     }
-    
-    public static List<Path> listFilesOfInternalDirectory(String directory) throws IOException, URISyntaxException{
-        URI uri = Stargate.class.getResource(directory).toURI();
+
+    public static List<Path> listFilesOfInternalDirectory(String directory) throws IOException, URISyntaxException {
+        URL directoryURL = Stargate.class.getResource(directory);
+        if (directoryURL == null) {
+            return null;
+        }
+        URI uri = directoryURL.toURI();
         FileSystem fileSystem = null;
         List<Path> walk;
         try {
             Path path;
             if (uri.getScheme().equals("jar")) {
-                fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
+                fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
                 path = fileSystem.getPath(directory);
             } else {
                 path = Paths.get(uri);

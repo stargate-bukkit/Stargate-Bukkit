@@ -57,7 +57,7 @@ public class StargateBungeeManager implements BungeeManager {
         try {
             registry.createNetwork(network, flags, false);
         } catch (NameConflictException ignored) {
-            
+
         } catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
             Stargate.log(e);
         }

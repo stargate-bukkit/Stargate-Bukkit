@@ -38,7 +38,7 @@ public enum DatabaseDriver {
     /**
      * Instantiates a new driver enum
      *
-     * @param driver    <p>The string representation of the database driver</p>
+     * @param driver      <p>The string representation of the database driver</p>
      * @param queryFolder <p>The name of the folder containing this driver's queries</p>
      */
     DatabaseDriver(String driver, String queryFolder) {

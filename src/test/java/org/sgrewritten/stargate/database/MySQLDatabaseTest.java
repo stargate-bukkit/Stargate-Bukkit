@@ -34,11 +34,12 @@ public class MySQLDatabaseTest {
             TranslatableException {
         Stargate.log(Level.FINE, "Setting up test data");
         DatabaseDriver driver = DatabaseDriver.MYSQL;
-        String address = MySQLCredentialsHandler.getCredentialString(Credential.DB_ADDRESS);
-        int port = MySQLCredentialsHandler.getCredentialInt(Credential.DB_PORT);
-        String databaseName = MySQLCredentialsHandler.getCredentialString(Credential.DB_NAME);
-        String username = MySQLCredentialsHandler.getCredentialString(Credential.DB_USER);
-        String password = MySQLCredentialsHandler.getCredentialString(Credential.DB_PASSWORD);
+        TestCredentialsManager credentialsManager = new TestCredentialsManager("mysql_credentials.secret");
+        String address = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_ADDRESS, "localhost");
+        int port = credentialsManager.getCredentialInt(TestCredential.MYSQL_DB_PORT, 3306);
+        String databaseName = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_NAME, "Stargate");
+        String username = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_USER, "root");
+        String password = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_PASSWORD, "root");
 
         SQLDatabaseAPI database = new MySqlDatabase(driver, address, port, databaseName, username, password, false);
         MySQLDatabaseTest.nameConfig = new TableNameConfiguration("SG_Test_", "Server_");

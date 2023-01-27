@@ -3,7 +3,6 @@ package org.sgrewritten.stargate.database;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.util.FileHelper;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -12,8 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.stream.Stream;
 
 /**
  * A handler which keeps track of all queries and query variations
@@ -84,8 +81,8 @@ public class SQLQueryHandler {
      * @return <p>The read queries with the file name as key</p>
      */
     private static Map<String, Map<String, String>> readQueryFiles(Set<String> queryFolders) {
-        Map<String, Map<String,String>> readQueryFiles = new HashMap<>();
-        for(String folder : queryFolders) {
+        Map<String, Map<String, String>> readQueryFiles = new HashMap<>();
+        for (String folder : queryFolders) {
             try {
                 readQueryFiles.put(folder, readQueryFilesFromFolder(folder));
             } catch (IOException | URISyntaxException e) {
@@ -94,12 +91,14 @@ public class SQLQueryHandler {
         }
         return readQueryFiles;
     }
-    
+
     private static Map<String, String> readQueryFilesFromFolder(String folder) throws IOException, URISyntaxException {
         final Map<String, String> queries = new HashMap<>();
         String fullFolder = "/database/" + folder;
         List<Path> walk = FileHelper.listFilesOfInternalDirectory(fullFolder);
-
+        if (walk == null) {
+            return null;
+        }
         walk.forEach((path) -> {
             if (!path.toString().endsWith(".sql")) {
                 return;

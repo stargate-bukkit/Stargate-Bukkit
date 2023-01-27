@@ -15,10 +15,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.FakeStargate;
@@ -37,7 +35,6 @@ import org.sgrewritten.stargate.util.FakeStorage;
 import java.io.File;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.logging.Level;
 
 class BlockEventListenerTest {
 
@@ -54,7 +51,7 @@ class BlockEventListenerTest {
     public void setUp() {
         BlockEventListenerTest.server = MockBukkit.mock();
 
-        FakeStargate plugin = MockBukkit.load(FakeStargate.class);
+        MockBukkit.load(FakeStargate.class);
         player = server.addPlayer(PLAYER_NAME);
 
         world = new WorldMock(Material.GRASS, 0);
@@ -79,31 +76,25 @@ class BlockEventListenerTest {
         Location bottomLeft = new Location(world, 0, 1, 0);
         Location insidePortal = new Location(world, 0, 2, 0);
         Block signBlock = PortalBlockGenerator.generatePortal(bottomLeft);
-        Block irisBlock = new Location(world, 0, 2, 0).getBlock();
 
 
-        String[] netNames = {"", CUSTOM_NETNAME, player.getName()};
-        for (String netName : netNames) {
-            blockEventListener
-                    .onSignChange(new SignChangeEvent(signBlock, player, new String[]{"test", "", netName, ""}));
+        String[] networkNames = {"", CUSTOM_NETNAME, player.getName()};
+        for (String networkName : networkNames) {
+            blockEventListener.onSignChange(new SignChangeEvent(signBlock, player, new String[]{"test", "", networkName,
+                    ""}));
 
 
-            String netId = null;
-            switch (netName) {
-                case "":
-                    netId = LocalNetwork.DEFAULT_NETWORK_ID;
-                    break;
-                case CUSTOM_NETNAME:
-                    netId = CUSTOM_NETNAME;
-                    break;
-                case PLAYER_NAME:
-                    netId = player.getUniqueId().toString();
-                    break;
-            }
+            String netId = switch (networkName) {
+                case "" -> LocalNetwork.DEFAULT_NETWORK_ID;
+                case CUSTOM_NETNAME -> CUSTOM_NETNAME;
+                case PLAYER_NAME -> player.getUniqueId().toString();
+                default -> null;
+            };
 
 
             ((Directional) signBlock.getBlockData()).setFacing(BlockFace.SOUTH); //TODO Why does this need to be done?
             Network network = registry.getNetwork(netId, false);
+            Assertions.assertNotNull(network);
             Assertions.assertNotNull(network.getPortal("test"));
             Assertions.assertNotNull(registry.getPortal(insidePortal));
             blockEventListener.onBlockBreak(new BlockBreakEvent(insidePortal.getBlock(), player));
@@ -136,11 +127,10 @@ class BlockEventListenerTest {
     public void cancelBlockBreakTest() {
 
         Location bottomLeft = new Location(world, 0, 14, 0);
-        Location insidePortal = new Location(world, 0, 16, 0);
         Block signBlock = PortalBlockGenerator.generatePortal(bottomLeft);
         Block irisBlock = new Location(world, 1, 16, 0).getBlock();
-        blockEventListener
-                .onSignChange(new SignChangeEvent(signBlock, player, new String[]{"test", "", CUSTOM_NETNAME, ""}));
+        blockEventListener.onSignChange(new SignChangeEvent(signBlock, player, new String[]{"test", "", CUSTOM_NETNAME,
+                ""}));
 
         BlockBreakEvent controlBreakEvent = new BlockBreakEvent(signBlock, player);
         blockEventListener.onBlockBreak(controlBreakEvent);

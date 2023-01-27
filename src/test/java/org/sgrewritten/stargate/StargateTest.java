@@ -12,8 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.config.ConfigurationOption;
-import org.sgrewritten.stargate.database.Credential;
-import org.sgrewritten.stargate.database.MySQLCredentialsHandler;
+import org.sgrewritten.stargate.database.TestCredential;
+import org.sgrewritten.stargate.database.TestCredentialsManager;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
@@ -177,11 +177,12 @@ class StargateTest {
     private void setInterServerEnabled() {
         plugin.setConfigurationOptionValue(ConfigurationOption.USING_BUNGEE, true);
         plugin.setConfigurationOptionValue(ConfigurationOption.USING_REMOTE_DATABASE, true);
-        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_ADDRESS, MySQLCredentialsHandler.getCredentialString(Credential.DB_ADDRESS));
-        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_USERNAME, MySQLCredentialsHandler.getCredentialString(Credential.DB_USER));
-        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_PASSWORD, MySQLCredentialsHandler.getCredentialString(Credential.DB_PASSWORD));
-        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_PORT, MySQLCredentialsHandler.getCredentialInt(Credential.DB_PORT));
+        TestCredentialsManager credentialsManager = new TestCredentialsManager("mysql_credentials.secret");
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_ADDRESS, credentialsManager.getCredentialString(TestCredential.MYSQL_DB_ADDRESS, "localhost"));
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_USERNAME, credentialsManager.getCredentialString(TestCredential.MYSQL_DB_USER, "root"));
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_PASSWORD, credentialsManager.getCredentialString(TestCredential.MYSQL_DB_PASSWORD, "root"));
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_PORT, credentialsManager.getCredentialInt(TestCredential.MYSQL_DB_PORT, 3306));
         plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_USE_SSL, false);
-        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_DATABASE, MySQLCredentialsHandler.getCredentialString(Credential.DB_NAME));
+        plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_DATABASE, credentialsManager.getCredentialString(TestCredential.MYSQL_DB_NAME, "Stargate"));
     }
 }
