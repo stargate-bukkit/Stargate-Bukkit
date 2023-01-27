@@ -15,35 +15,35 @@ public enum DatabaseDriver {
     /**
      * Represents a MySQL driver
      */
-    MYSQL("mysql", "mysql-queries.properties"),
+    MYSQL("mysql", "mysql-queries"),
 
     /**
      * Represents a MariaDB driver
      */
-    MARIADB("mysql", "mysql-queries.properties"),
+    MARIADB("mysql", "mysql-queries"),
 
     /**
      * Represents an SQLite driver
      */
-    SQLITE("", "sqlite-queries.properties"),
+    SQLITE("", "sqlite-queries"),
 
     /**
      * Represents a PostgreSQL driver
      */
-    POSTGRESQL("postgresql", "postgresql-queries.properties");
+    POSTGRESQL("postgresql", "postgresql-queries");
 
     private final String driver;
-    private final String queryFile;
+    private final String queryFolder;
 
     /**
      * Instantiates a new driver enum
      *
      * @param driver    <p>The string representation of the database driver</p>
-     * @param queryFile <p>The name of the file containing this driver's queries</p>
+     * @param queryFolder <p>The name of the folder containing this driver's queries</p>
      */
-    DatabaseDriver(String driver, String queryFile) {
+    DatabaseDriver(String driver, String queryFolder) {
         this.driver = driver;
-        this.queryFile = queryFile;
+        this.queryFolder = queryFolder;
     }
 
     /**
@@ -60,8 +60,8 @@ public enum DatabaseDriver {
      *
      * @return <p>The name of the query file containing this driver's queries</p>
      */
-    public String getQueryFile() {
-        return this.queryFile;
+    public String getQueryFolder() {
+        return this.queryFolder;
     }
 
 }

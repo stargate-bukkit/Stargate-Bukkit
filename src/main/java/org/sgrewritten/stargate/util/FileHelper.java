@@ -14,10 +14,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 
 /**
@@ -125,6 +130,12 @@ public final class FileHelper {
         }
     }
 
+    /**
+     * Converts the stream directly into a string, includes the newline character
+     * @param stream <p> The stream to read from </p>
+     * @return <p> A String of the file read </p>
+     * @throws IOException
+     */
     public static String readStreamToString(InputStream stream) throws IOException {
         BufferedReader reader = FileHelper.getBufferedReaderFromInputStream(stream);
         String line = reader.readLine();
@@ -134,6 +145,11 @@ public final class FileHelper {
             line = reader.readLine();
         }
         return lines.toString();
+    }
+    
+    public static Stream<Path> listFilesOfInternalDirectory(String directory) throws IOException, URISyntaxException{
+        URI uri = Stargate.class.getResource(directory).toURI();
+        return Files.walk(Paths.get(uri), 1);
     }
 
     /**

@@ -175,7 +175,7 @@ public class MySQLDatabaseTest {
         try {
             tester.createInterPortalViewTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -185,7 +185,7 @@ public class MySQLDatabaseTest {
         try {
             tester.createPortalPositionIndexTest(StorageType.LOCAL);
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 

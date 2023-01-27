@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS {PositionType}
+(
+   id INTEGER PRIMARY KEY AUTO_INCREMENT,
+   positionName NVARCHAR (16)
+);
