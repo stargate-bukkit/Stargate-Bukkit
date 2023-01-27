@@ -314,7 +314,7 @@ public class SQLDatabase implements StorageAPI {
         Stargate.log(Level.FINEST,
                 "Trying to add portal " + portalData.name + ", on network " + targetNetwork + ",isInterServer = " + isBungee);
         try {
-            boolean isForced = portalData.flags.contains(PortalFlag.DEFAULT_NETWORK) || portalData.flags.contains(PortalFlag.TERMINAL_NETWORK);
+            boolean isForced = portalData.flags.contains(PortalFlag.DEFAULT_NETWORK);
             Network network = registry.createNetwork(targetNetwork, portalData.flags, isForced);
 
             if (NetworkCreationHelper.getDefaultNamesTaken().contains(network.getId().toLowerCase())) {
