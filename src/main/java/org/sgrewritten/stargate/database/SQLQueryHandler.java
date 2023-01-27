@@ -108,7 +108,7 @@ public class SQLQueryHandler {
                 String query = FileHelper.readStreamToString(FileHelper.getInputStreamForInternalFile(fullFolder + "/" + path.getFileName().toString()));
                 queries.put(path.getFileName().toString().replaceAll(".sql$", ""), query);
             } catch (IOException e) {
-                e.printStackTrace();
+                Stargate.log(e);
             }
         });
         return queries;
