@@ -17,10 +17,14 @@ import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -147,9 +151,25 @@ public final class FileHelper {
         return lines.toString();
     }
     
-    public static Stream<Path> listFilesOfInternalDirectory(String directory) throws IOException, URISyntaxException{
+    public static List<Path> listFilesOfInternalDirectory(String directory) throws IOException, URISyntaxException{
         URI uri = Stargate.class.getResource(directory).toURI();
-        return Files.walk(Paths.get(uri), 1);
+        FileSystem fileSystem = null;
+        List<Path> walk;
+        try {
+            Path path;
+            if (uri.getScheme().equals("jar")) {
+                fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
+                path = fileSystem.getPath(directory);
+            } else {
+                path = Paths.get(uri);
+            }
+            walk = Files.walk(path, 1).toList();
+        } finally {
+            if (fileSystem != null) {
+                fileSystem.close();
+            }
+        }
+        return walk;
     }
 
     /**

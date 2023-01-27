@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -96,14 +97,15 @@ public class SQLQueryHandler {
     
     private static Map<String, String> readQueryFilesFromFolder(String folder) throws IOException, URISyntaxException {
         final Map<String, String> queries = new HashMap<>();
-        Stream<Path> walk = FileHelper.listFilesOfInternalDirectory("/database/" + folder);
+        String fullFolder = "/database/" + folder;
+        List<Path> walk = FileHelper.listFilesOfInternalDirectory(fullFolder);
 
         walk.forEach((path) -> {
             if (!path.toString().endsWith(".sql")) {
                 return;
             }
             try {
-                String query = FileHelper.readStreamToString(new FileInputStream(path.toString()));
+                String query = FileHelper.readStreamToString(FileHelper.getInputStreamForInternalFile(fullFolder + "/" + path.getFileName().toString()));
                 queries.put(path.getFileName().toString().replaceAll(".sql$", ""), query);
             } catch (IOException e) {
                 e.printStackTrace();
