@@ -232,16 +232,6 @@ public enum SQLQuery {
     SET_INTER_PORTAL_META,
 
     /**
-     * The query for getting data of one portal position
-     */
-    GET_PORTAL_POSITION,
-
-    /**
-     * The query for getting data of one interserver portal position
-     */
-    GET_INTER_PORTAL_POSITION,
-
-    /**
      * The query for setting the meta for a portal position
      */
     SET_PORTAL_POSITION_META,
