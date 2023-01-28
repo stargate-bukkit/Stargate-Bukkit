@@ -43,7 +43,9 @@ class CommandTraceTest {
     void onCommand_NoPerms() {
         sender.addAttachment(plugin, "sg.admin.trace", false);
         Assertions.assertTrue(traceCommand.onCommand(sender, fakeCommand, "", new String[]{""}));
-        Assertions.assertTrue(sender.nextMessage().contains("Access denied!"));
+        String nextMessage = sender.nextMessage();
+        Assertions.assertNotNull(nextMessage);
+        Assertions.assertTrue(nextMessage.contains("Access denied!"));
     }
 
 }

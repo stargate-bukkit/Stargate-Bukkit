@@ -28,5 +28,5 @@ class SQLQueryHandlerTest {
 
         return allPossibleCombinations.stream();
     }
-    
+
 }

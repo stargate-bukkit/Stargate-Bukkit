@@ -123,15 +123,11 @@ public class GateFormatParser {
         for (String key : config.keySet()) {
             String line = key + "=" + config.get(key);
             switch (key) {
-                case "portal-open":
-                    irisOpen = GateFormatReader.parseMaterial(config.get(key), line);
-                    break;
-                case "portal-closed":
-                    irisClosed = GateFormatReader.parseMaterial(config.get(key), line);
-                    break;
-                default:
+                case "portal-open" -> irisOpen = GateFormatReader.parseMaterial(config.get(key), line);
+                case "portal-closed" -> irisClosed = GateFormatReader.parseMaterial(config.get(key), line);
+                default -> {
                     //Any unknown config values are ignored
-                    break;
+                }
             }
 
         }

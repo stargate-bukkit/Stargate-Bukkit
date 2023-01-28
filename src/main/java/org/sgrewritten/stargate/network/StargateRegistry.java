@@ -75,8 +75,7 @@ public class StargateRegistry implements RegistryAPI {
             Stargate.log(e);
         }
 
-        if (portal instanceof RealPortal) {
-            RealPortal realPortal = (RealPortal) portal;
+        if (portal instanceof RealPortal realPortal) {
             for (GateStructureType formatType : GateStructureType.values()) {
                 for (BlockLocation loc : realPortal.getGate().getLocations(formatType)) {
                     Stargate.log(Level.FINEST, "Unregistering type: " + formatType + " location, at: " + loc);
@@ -102,7 +101,7 @@ public class StargateRegistry implements RegistryAPI {
                 || this.networkExists(NetworkCreationHelper.getPlayerUUID(networkName).toString(), isInterserver)) {
             if (isForced && type == NetworkType.DEFAULT) {
                 Network network = this.getNetwork(networkName, isInterserver);
-                if (network.getType() != type) {
+                if (network != null && network.getType() != type) {
                     this.rename(network);
                 }
             }

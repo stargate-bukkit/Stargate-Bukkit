@@ -306,8 +306,7 @@ public class Teleporter {
         Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(ConfigurationHelper.getDouble(
                 ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER));
 
-        if (target instanceof Player) {
-            Player player = (Player) target;
+        if (target instanceof Player player) {
             String msg = "Teleporting player %s to %s";
             msg = String.format(msg, player.getName(), location);
             if (this.origin != null) {

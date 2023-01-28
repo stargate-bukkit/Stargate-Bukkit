@@ -67,17 +67,11 @@ public class LocalNetwork implements Network {
         Objects.requireNonNull(name);
         this.networkType = Objects.requireNonNull(type);
         switch (type) {
-            case DEFAULT:
-                loadAsDefault(name);
-                break;
-            case PERSONAL:
-                loadAsPersonalNetwork(name);
-                break;
-            case CUSTOM:
-                loadAsCustomNetwork(name);
-                break;
-            case TERMINAL:
-                throw new UnimplementedFlagException("Terminal networks are not implemented yet", type.getRelatedFlag());
+            case DEFAULT -> loadAsDefault(name);
+            case PERSONAL -> loadAsPersonalNetwork(name);
+            case CUSTOM -> loadAsCustomNetwork(name);
+            case TERMINAL ->
+                    throw new UnimplementedFlagException("Terminal networks are not implemented yet", type.getRelatedFlag());
         }
         nameToPortalMap = new HashMap<>();
     }
@@ -92,7 +86,7 @@ public class LocalNetwork implements Network {
 
     private void loadAsCustomNetwork(String networkName) throws NameLengthException {
         networkName = NameHelper.getTrimmedName(networkName);
-        if (!NameHelper.isValidName(networkName)) {
+        if (NameHelper.isInvalidName(networkName)) {
             throw new NameLengthException("Name '" + networkName + "' is to short or to long, expected length over 0 and under " + Stargate.getMaxTextLength());
         }
         this.name = networkName.trim();
@@ -109,9 +103,8 @@ public class LocalNetwork implements Network {
             throw new InvalidNameException("The personal network of the uuid '" + uuidString + "' has no valid player name.");
         }
         Stargate.log(Level.FINER, "Matching player name: " + possiblePlayerName);
-        if (possiblePlayerName != null
-                && (NetworkCreationHelper.getDefaultNamesTaken().contains(possiblePlayerName.toLowerCase())
-                || NetworkCreationHelper.getBannedNames().contains(possiblePlayerName.toLowerCase()))) {
+        if (NetworkCreationHelper.getDefaultNamesTaken().contains(possiblePlayerName.toLowerCase()) ||
+                NetworkCreationHelper.getBannedNames().contains(possiblePlayerName.toLowerCase())) {
             possiblePlayerName = uuidString.split("-")[0];
         }
         name = possiblePlayerName;
@@ -150,8 +143,7 @@ public class LocalNetwork implements Network {
         if (isPortalNameTaken(portal.getName())) {
             throw new NameConflictException("portal of name '" + portal.getName() + "' already exist in network '" + this.getId() + "'", false);
         }
-        if (portal instanceof RealPortal) {
-            RealPortal realPortal = (RealPortal) portal;
+        if (portal instanceof RealPortal realPortal) {
             for (GateStructureType key : GateStructureType.values()) {
                 List<BlockLocation> locations = realPortal.getGate().getLocations(key);
                 if (locations == null) {

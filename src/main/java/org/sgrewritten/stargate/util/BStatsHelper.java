@@ -222,10 +222,9 @@ public final class BStatsHelper {
             totalNetworkList.addAll(registry.getBungeeNetworkMap().values());
             for (Network network : totalNetworkList) {
                 for (Portal portal : network.getAllPortals()) {
-                    if (!(portal instanceof RealPortal)) {
+                    if (!(portal instanceof RealPortal realPortal)) {
                         continue;
                     }
-                    RealPortal realPortal = (RealPortal) portal;
                     if (realPortal.getGate().getExit().getBlock().getType() == Material.WATER) {
                         count++;
                     }

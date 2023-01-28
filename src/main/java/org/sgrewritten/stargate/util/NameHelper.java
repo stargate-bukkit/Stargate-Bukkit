@@ -51,8 +51,8 @@ public final class NameHelper {
      * @param name <p> The name to be checked </p>
      * @return <p> If the name has a valid length </p>
      */
-    public static boolean isValidName(String name) {
-        return name != null && !name.isEmpty() && name.length() < Stargate.getMaxTextLength();
+    public static boolean isInvalidName(String name) {
+        return name == null || name.isEmpty() || name.length() >= Stargate.getMaxTextLength();
     }
 
 }

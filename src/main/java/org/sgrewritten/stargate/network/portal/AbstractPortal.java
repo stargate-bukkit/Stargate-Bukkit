@@ -59,6 +59,7 @@ import java.util.logging.Level;
  * @author Thorin
  */
 public abstract class AbstractPortal implements RealPortal {
+
     /**
      * Used in bStats metrics
      */
@@ -108,7 +109,7 @@ public abstract class AbstractPortal implements RealPortal {
         this.economyManager = Objects.requireNonNull(economyManager);
 
         name = NameHelper.getTrimmedName(name);
-        if (!NameHelper.isValidName(name)) {
+        if (NameHelper.isInvalidName(name)) {
             throw new NameLengthException("Invalid length of name '" + name + "' , namelength must be above 0 and under " + Stargate.getMaxTextLength());
         }
 
@@ -560,4 +561,5 @@ public abstract class AbstractPortal implements RealPortal {
     public BlockFace getExitFacing() {
         return flags.contains(PortalFlag.BACKWARDS) ? getGate().getFacing() : getGate().getFacing().getOppositeFace();
     }
+
 }

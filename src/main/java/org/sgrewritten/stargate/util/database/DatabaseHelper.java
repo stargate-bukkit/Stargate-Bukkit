@@ -158,13 +158,12 @@ public class DatabaseHelper {
             String password = ConfigurationHelper.getString(ConfigurationOption.BUNGEE_PASSWORD);
             boolean useSSL = ConfigurationHelper.getBoolean(ConfigurationOption.BUNGEE_USE_SSL);
 
-            switch (driver) {
-                case MARIADB:
-                case MYSQL:
-                    return new MySqlDatabase(driver, address, port, bungeeDatabaseName, username, password, useSSL);
-                default:
-                    throw new SQLException("Unsupported driver: Stargate currently supports MariaDb and MySql for remote databases");
-            }
+            return switch (driver) {
+                case MARIADB, MYSQL ->
+                        new MySqlDatabase(driver, address, port, bungeeDatabaseName, username, password, useSSL);
+                default ->
+                        throw new SQLException("Unsupported driver: Stargate currently supports MariaDb and MySql for remote databases");
+            };
         } else {
             String databaseName = ConfigurationHelper.getString(ConfigurationOption.DATABASE_NAME);
             File file = new File(stargate.getAbsoluteDataFolder(), databaseName + ".db");

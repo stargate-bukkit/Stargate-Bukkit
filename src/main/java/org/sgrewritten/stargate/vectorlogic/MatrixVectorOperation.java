@@ -37,24 +37,23 @@ public class MatrixVectorOperation implements VectorOperation {
         double rotation;
 
         switch (signFace) {
-            case EAST:
+            case EAST -> {
                 rotation = 0;
                 irisNormal = Axis.Z;
-                break;
-            case SOUTH:
+            }
+            case SOUTH -> {
                 rotation = Math.PI / 2;
                 irisNormal = Axis.X;
-                break;
-            case WEST:
+            }
+            case WEST -> {
                 rotation = Math.PI;
                 irisNormal = Axis.Z;
-                break;
-            case NORTH:
+            }
+            case NORTH -> {
                 rotation = -Math.PI / 2;
                 irisNormal = Axis.X;
-                break;
-            default:
-                throw new InvalidStructureException();
+            }
+            default -> throw new InvalidStructureException();
         }
 
         this.facing = signFace;

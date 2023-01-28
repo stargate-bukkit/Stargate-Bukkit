@@ -20,6 +20,7 @@ import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.util.FakeStorage;
 
 import java.io.File;
+import java.util.List;
 
 class GateTest {
 
@@ -36,7 +37,11 @@ class GateTest {
         portalData.facing = BlockFace.SOUTH;
         portalData.gateFileName = "nether.gate";
         Block signBlock = PortalBlockGenerator.generatePortal(portalData.topLeft.clone().subtract(new Vector(0, 4, 0)));
-        GateFormatHandler.setFormats(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger()));
+        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger());
+        if (gateFormats == null) {
+            throw new IllegalStateException("Cannot get gate formats required for testing");
+        }
+        GateFormatHandler.setFormats(gateFormats);
 
         loadGate = new Gate(portalData, new StargateRegistry(new FakeStorage()));
         GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);

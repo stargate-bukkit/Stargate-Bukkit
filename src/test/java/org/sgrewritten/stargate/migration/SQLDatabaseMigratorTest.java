@@ -44,7 +44,7 @@ class SQLDatabaseMigratorTest {
     @Test
     void rename_PortalPosition() throws SQLException, IOException {
         databaseMigrator.run();
-        renamePortal(nameConfiguration.getPortalTableName(), "network", "network1", "portal", "portal1");
+        renamePortal(nameConfiguration.getPortalTableName());
         try (Connection connection = database.getConnection()) {
             SQLTestHelper.checkIfHasNot(nameConfiguration.getPortalPositionTableName(), "portal", "network",
                     connection);
@@ -55,7 +55,7 @@ class SQLDatabaseMigratorTest {
     @Test
     void rename_InterPortalPosition() throws SQLException, IOException {
         databaseMigrator.run();
-        renamePortal(nameConfiguration.getInterPortalTableName(), "network", "network1", "portal", "portal1");
+        renamePortal(nameConfiguration.getInterPortalTableName());
         try (Connection connection = database.getConnection()) {
             SQLTestHelper.checkIfHasNot(nameConfiguration.getInterPortalPositionTableName(), "portal", "network",
                     connection);
@@ -67,7 +67,7 @@ class SQLDatabaseMigratorTest {
     @Test
     void rename_PortalFlag() throws SQLException, IOException {
         databaseMigrator.run();
-        renamePortal(nameConfiguration.getPortalTableName(), "network", "network1", "portal", "portal1");
+        renamePortal(nameConfiguration.getPortalTableName());
         try (Connection connection = database.getConnection()) {
             SQLTestHelper.checkIfHasNot(nameConfiguration.getFlagRelationTableName(), "portal", "network", connection);
             SQLTestHelper.checkIfHas(nameConfiguration.getFlagRelationTableName(), "portal1", "network1", connection);
@@ -77,7 +77,7 @@ class SQLDatabaseMigratorTest {
     @Test
     void rename_InterPortalFlag() throws SQLException, IOException {
         databaseMigrator.run();
-        renamePortal(nameConfiguration.getInterPortalTableName(), "network", "network1", "portal", "portal1");
+        renamePortal(nameConfiguration.getInterPortalTableName());
         try (Connection connection = database.getConnection()) {
             SQLTestHelper.checkIfHasNot(nameConfiguration.getInterFlagRelationTableName(), "portal", "network",
                     connection);
@@ -86,14 +86,16 @@ class SQLDatabaseMigratorTest {
         }
     }
 
-    void renamePortal(String table, String oldNetwork, String newNetwork, String oldPortal, String newPortal) throws SQLException {
+    void renamePortal(String table) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement statement = connection.prepareStatement("UPDATE " + table + " SET network = ?,name = ? WHERE network = ? AND name = ?;");
-        statement.setString(1, newNetwork);
-        statement.setString(2, newPortal);
-        statement.setString(3, oldNetwork);
-        statement.setString(4, oldPortal);
+        PreparedStatement statement = connection.prepareStatement("UPDATE " + table + " SET network = ?,name = ? " +
+                "WHERE network = ? AND name = ?;");
+        statement.setString(1, "network1");
+        statement.setString(2, "portal1");
+        statement.setString(3, "network");
+        statement.setString(4, "portal");
         DatabaseHelper.runStatement(statement);
         connection.close();
     }
+
 }
