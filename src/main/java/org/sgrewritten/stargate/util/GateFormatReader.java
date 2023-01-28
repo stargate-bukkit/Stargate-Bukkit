@@ -24,6 +24,7 @@ public final class GateFormatReader {
             Material.VOID_AIR,
     };
     private static final Map<Material, Material> materialEdgecases = loadMaterialEdgecases();
+    private static Map<String, String> legacyMaterialConversions = null;
 
     private GateFormatReader() {
 
@@ -209,11 +210,25 @@ public final class GateFormatReader {
      * @return <p>The resulting material, or null if no such legacy material exists</p>
      */
     private static Material parseMaterialFromLegacyName(String stringId) {
-        try{
+        try {
+            if (stringId.contains(":") || ExceptionHelper.doesNotThrow(() -> Integer.valueOf(stringId))) {
+                return parseMaterialFromMagicalNumber(stringId);
+            }
             return XMaterial.matchXMaterial(stringId).get().parseMaterial();
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return null;
         }
+    }
+
+    private static Material parseMaterialFromMagicalNumber(String stringId) {
+        if (legacyMaterialConversions == null) {
+            legacyMaterialConversions = loadLegacyMaterials();
+        }
+        String materialId = legacyMaterialConversions.get(stringId);
+        if (materialId == null) {
+            return null;
+        }
+        return XMaterial.matchXMaterial(materialId).get().parseMaterial();
     }
 
     /**
@@ -239,10 +254,16 @@ public final class GateFormatReader {
         return foundIDs;
     }
 
+    /**
+     * A map of material edgecases, this is for example when when you don't want to differentiate between a torch and
+     * a wall torch
+     *
+     * @return <p> A map with material edgecases</p>
+     */
     private static Map<Material, Material> loadMaterialEdgecases() {
         Map<Material, Material> materialEdgecases = new EnumMap<>(Material.class);
         Map<String, String> temp = new HashMap<>();
-        FileHelper.readInternalFileToMap("/util/materialEdgecases.properties", temp);
+        FileHelper.readInternalFileToMap("/material/materialEdgecases.properties", temp);
         for (Material material : Material.values()) {
             for (String edgecase : temp.keySet()) {
                 String type = material.toString().replaceAll(edgecase, "");
@@ -257,4 +278,12 @@ public final class GateFormatReader {
         return materialEdgecases;
     }
 
+    /**
+     * @return <p>A map of all legacy number materials</p>
+     */
+    private static Map<String, String> loadLegacyMaterials() {
+        Map<String, String> output = new HashMap<>();
+        FileHelper.readInternalFileToMap("/material/legacyMaterialConversions.properties", output);
+        return output;
+    }
 }
