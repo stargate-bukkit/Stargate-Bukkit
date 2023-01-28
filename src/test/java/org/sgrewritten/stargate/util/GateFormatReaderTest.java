@@ -39,10 +39,15 @@ class GateFormatReaderTest {
     }
 
     @Test
-    void parseMaterial_LegacyMaterial() throws ParsingErrorException {
+    void parseMaterialTest_LegacyMaterial() throws ParsingErrorException {
         Set<Material> materials = GateFormatReader.parseMaterial("SILVER_GLAZED_TERRACOTTA ", "");
         Assertions.assertTrue(materials.contains(Material.LIGHT_GRAY_GLAZED_TERRACOTTA));
         Assertions.assertEquals(1, materials.size());
+    }
+
+    @Test
+    void parseMaterialTest_InvalidMaterial() {
+        Assertions.assertThrows(ParsingErrorException.class, () -> GateFormatReader.parseMaterial("invalid", ""));
     }
 
     @Test

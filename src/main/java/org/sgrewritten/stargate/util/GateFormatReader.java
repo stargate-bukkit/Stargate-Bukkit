@@ -8,16 +8,7 @@ import org.bukkit.Tag;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.ParsingErrorException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -218,7 +209,11 @@ public final class GateFormatReader {
      * @return <p>The resulting material, or null if no such legacy material exists</p>
      */
     private static Material parseMaterialFromLegacyName(String stringId) {
-        return XMaterial.matchXMaterial(stringId).get().parseMaterial();
+        try{
+            return XMaterial.matchXMaterial(stringId).get().parseMaterial();
+        } catch (NoSuchElementException e){
+            return null;
+        }
     }
 
     /**
