@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
@@ -56,7 +57,8 @@ public class LineColorFormatter implements LineFormatter {
     @Override
     public String formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
         String networkName = (network != null) ? network.getName() : "null";
-        return pointerColor + highlightingStyle.getHighlightedName(color + networkName + pointerColor);
+        String bold = (network instanceof InterServerNetwork) ? ChatColor.BOLD.toString() : "";
+        return pointerColor + bold + highlightingStyle.getHighlightedName(color + bold + networkName + pointerColor + bold);
     }
 
     @Override
