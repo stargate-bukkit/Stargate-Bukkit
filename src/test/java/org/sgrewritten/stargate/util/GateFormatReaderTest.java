@@ -46,6 +46,13 @@ class GateFormatReaderTest {
     }
 
     @Test
+    void parseMaterialTest_LegacyNumberStupidFormat() throws ParsingErrorException {
+        Set<Material> materials = GateFormatReader.parseMaterial("1 : 1", "");
+        Assertions.assertTrue(materials.contains(Material.GRANITE));
+        Assertions.assertEquals(1, materials.size());
+    }
+
+    @Test
     void parseMaterialTest_LegacyNumberWithData() throws ParsingErrorException {
         Set<Material> materials = GateFormatReader.parseMaterial("1:1", "");
         Assertions.assertTrue(materials.contains(Material.GRANITE));

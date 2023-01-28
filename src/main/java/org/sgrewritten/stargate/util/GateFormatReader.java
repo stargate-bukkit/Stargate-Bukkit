@@ -232,6 +232,10 @@ public final class GateFormatReader {
     }
 
     private static String parseMaterialFromMagicalNumber(String stringId) {
+        String[] possibleSplitNumericID = stringId.split(":");
+        if (possibleSplitNumericID.length == 2) {
+            stringId = possibleSplitNumericID[0].trim() + ":" + possibleSplitNumericID[1].trim();
+        }
         if (legacyMaterialConversions == null) {
             legacyMaterialConversions = loadLegacyMaterials();
         }
