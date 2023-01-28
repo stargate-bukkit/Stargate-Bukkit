@@ -51,12 +51,10 @@ public class MySqlDatabase implements SQLDatabaseAPI {
         this.driver = Objects.requireNonNull(driver);
         try {
             switch (driver) {
-                case MYSQL:
-                case MARIADB:
-                    this.config = setupConfig(driver, address, port, database, userName, password, useSSL);
-                    break;
-                default:
-                    Stargate.log(Level.SEVERE, "Unknown driver, '" + driver + "' Stargate currently supports MariaDB, MySql");
+                case MYSQL, MARIADB ->
+                        this.config = setupConfig(driver, address, port, database, userName, password, useSSL);
+                default ->
+                        Stargate.log(Level.SEVERE, "Unknown driver, '" + driver + "' Stargate currently supports MariaDB, MySql");
             }
             dataSource = setupMySql(this.config);
         } catch (HikariPool.PoolInitializationException exception) {

@@ -65,7 +65,7 @@ class TeleporterTest {
     @Test
     public void teleport() {
         teleporter.teleport(horse);
-        while (!populator.hasCompletedAllTasks()) {
+        while (populator.hasNotCompletedAllTasks()) {
             populator.run();
         }
         Assertions.assertTrue(horse.hasTeleported());
@@ -74,7 +74,7 @@ class TeleporterTest {
     @Test
     public void teleport_FurnaceMinecart() {
         teleporter.teleport(furnaceMinecart);
-        while (!populator.hasCompletedAllTasks()) {
+        while (populator.hasNotCompletedAllTasks()) {
             populator.run();
         }
         Assertions.assertTrue(furnaceMinecart.hasTeleported());

@@ -136,12 +136,11 @@ public class Gate implements GateAPI {
             }
             Location signLocation = getLocation(portalPosition.getPositionLocation());
             BlockState signState = signLocation.getBlock().getState();
-            if (!(signState instanceof Sign)) {
+            if (!(signState instanceof Sign sign)) {
                 Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
                 return;
             }
 
-            Sign sign = (Sign) signState;
             for (int i = 0; i < 4; i++) {
                 sign.setLine(i, signLines[i]);
             }
@@ -255,8 +254,7 @@ public class Gate implements GateAPI {
         List<BlockLocation> locations = getLocations(targetType);
         BlockData blockData = Bukkit.createBlockData(material);
 
-        if (blockData instanceof Orientable) {
-            Orientable orientation = (Orientable) blockData;
+        if (blockData instanceof Orientable orientation) {
             orientation.setAxis(converter.getIrisNormal());
         }
 

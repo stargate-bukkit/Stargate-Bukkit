@@ -37,10 +37,9 @@ class LegacyVirtualPortal extends VirtualPortal {
     @Override
     public void teleportHere(Entity target, RealPortal origin) {
         Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
-        if (!(target instanceof Player)) {
+        if (!(target instanceof Player player)) {
             return;
         }
-        Player player = (Player) target;
         try {
             ByteArrayOutputStream bao = new ByteArrayOutputStream();
             DataOutputStream msgData = new DataOutputStream(bao);

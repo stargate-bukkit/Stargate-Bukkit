@@ -65,10 +65,9 @@ public class PortalPosition {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof PortalPosition)) {
+        if (!(other instanceof PortalPosition otherPortalPosition)) {
             return false;
         }
-        PortalPosition otherPortalPosition = (PortalPosition) other;
         return otherPortalPosition.getPositionLocation().equals(this.getPositionLocation());
     }
 
