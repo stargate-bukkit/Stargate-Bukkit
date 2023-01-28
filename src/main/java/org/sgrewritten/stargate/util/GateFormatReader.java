@@ -211,8 +211,9 @@ public final class GateFormatReader {
      */
     private static Material parseMaterialFromLegacyName(String stringId) {
         try {
-            if (stringId.contains(":") || ExceptionHelper.doesNotThrow(() -> Integer.valueOf(stringId))) {
-                return parseMaterialFromMagicalNumber(stringId);
+            String fromNumeric = parseMaterialFromMagicalNumber(stringId);
+            if (fromNumeric != null) {
+                stringId = fromNumeric;
             }
             return XMaterial.matchXMaterial(stringId).get().parseMaterial();
         } catch (NoSuchElementException e) {
@@ -220,15 +221,11 @@ public final class GateFormatReader {
         }
     }
 
-    private static Material parseMaterialFromMagicalNumber(String stringId) {
+    private static String parseMaterialFromMagicalNumber(String stringId) {
         if (legacyMaterialConversions == null) {
             legacyMaterialConversions = loadLegacyMaterials();
         }
-        String materialId = legacyMaterialConversions.get(stringId);
-        if (materialId == null) {
-            return null;
-        }
-        return XMaterial.matchXMaterial(materialId).get().parseMaterial();
+        return legacyMaterialConversions.get(stringId);
     }
 
     /**
