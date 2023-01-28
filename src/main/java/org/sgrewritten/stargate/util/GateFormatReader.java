@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.ParsingErrorException;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * Helper class for reading gate files
@@ -216,7 +218,7 @@ public final class GateFormatReader {
      * @return <p>The resulting material, or null if no such legacy material exists</p>
      */
     private static Material parseMaterialFromLegacyName(String stringId) {
-        return Material.getMaterial(XMaterial.matchXMaterial(stringId).toString());
+        return XMaterial.matchXMaterial(stringId).get().parseMaterial();
     }
 
     /**
