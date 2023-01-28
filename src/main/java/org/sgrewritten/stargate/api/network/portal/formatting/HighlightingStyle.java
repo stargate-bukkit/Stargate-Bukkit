@@ -18,14 +18,14 @@ public enum HighlightingStyle {
     /**
      * HighlightingStyle generally used for terminal gates
      */
-    GREATER_LESSER_THAN("<",">"),
+    GREATER_LESSER_THAN("<", ">"),
     /**
      * The highlighting to use around a normal network name
      */
     ROUNDED_BRACKETS("(", ")"),
 
     /**
-     * The highlighting used for legacy bungee stargates' server
+     * The highlighting used for the destination server of legacy bungee stargates
      */
     SQUARE_BRACKETS("[", "]"),
 
@@ -33,11 +33,11 @@ public enum HighlightingStyle {
      * The highlighting to use for personal networks
      */
     CURLY_BRACKETS("{", "}"),
-    
+
     /**
-     *  A variant of GREATER_LESSER_THAN
+     * A variant of GREATER_LESSER_THAN
      */
-    DOUBLE_GREATER_LESSER_THAN("«","»"), 
+    DOUBLE_GREATER_LESSER_THAN("«", "»"),
 
     /**
      * No highlighting at all. Just a workaround, really

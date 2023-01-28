@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS {Flag}
+(
+   id SERIAL PRIMARY KEY,
+   `character` CHAR (1) UNIQUE NOT NULL
+);

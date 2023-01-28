@@ -1,0 +1,28 @@
+INSERT INTO {Portal}
+(
+   network,
+   name,
+   destination,
+   world,
+   x,
+   y,
+   z,
+   ownerUUID,
+   gateFileName,
+   facing,
+   flipZ
+)
+VALUES
+(
+   ?,
+   ?,
+   ?,
+   ?,
+   ?,
+   ?,
+   ?,
+   ?,
+   ?,
+   ?,
+   ?
+);

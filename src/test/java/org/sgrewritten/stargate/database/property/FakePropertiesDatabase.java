@@ -4,12 +4,12 @@ import java.util.Properties;
 
 public class FakePropertiesDatabase implements StoredPropertiesAPI {
 
-    private Properties properties;
+    private final Properties properties;
 
     public FakePropertiesDatabase() {
         properties = new Properties();
     }
-    
+
     @Override
     public String getProperty(StoredProperty property) {
         return properties.getProperty(property.getKey());

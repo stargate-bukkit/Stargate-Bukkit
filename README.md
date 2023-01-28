@@ -1,15 +1,16 @@
-> ### **Documentation:** __**[Link](https://github.com/stargate-bukkit/Stargate-Bukkit/wiki)**__<br>
 > ### **Support Discord** __**[Link](https://discord.gg/mTaHuK6BVa)**__
 
 # Stargate-Bukkit
 
-`Supporting MC 1.15+ in the Bukkit Ecosystem`
+`Supporting MC 1.16+ in the Bukkit Ecosystem`
 
-> ALPHA RELEASE!<br>
-> This version should work, but may include breaking issues.<br>
+> **THIS IS A DEVELOPMENT BUILD FROM THE NIGHTLY CHANNEL!**<br>
 > <br>
-> This branch is not yet recommended for production instances!<br>
-> Use at your own risk, and remember to make backups!
+> **FOR**: Stargate developers and contributors.<br>
+> **ENJOY**: Access to cutting edge features still under active development.<br>
+> **EXPECT**: Crashes, unstable test builds, bugs, incomplete integrations, possible data corruption.<br><br>
+> **THIS BUILD IS NOT SUITABLE FOR USE ON PRODUCTION SERVERS OF ANY SORT**<BR>
+> **Use at your own risk, and remember to make backups!**
 
 ![Stargate Banner](https://i.imgur.com/7Ji4jrr.png)
 

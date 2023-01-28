@@ -1,10 +1,7 @@
 package org.sgrewritten.stargate.util;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-
-import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
@@ -13,7 +10,9 @@ import org.sgrewritten.stargate.api.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
@@ -25,8 +24,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -77,7 +74,7 @@ public final class BungeeHelper {
             Stargate.log(e);
         }
     }
-    
+
     /**
      * Gets the legacy bungee network
      *
@@ -86,8 +83,9 @@ public final class BungeeHelper {
      * @param registry      <p>The registry to use</p>
      * @param bungeeNetwork <p>The name of the legacy bungee network</p>
      * @return <p>The legacy bungee network, or null if unobtainable</p>
+     * @throws UnimplementedFlagException
      */
-    public static Network getLegacyBungeeNetwork(RegistryAPI registry, String bungeeNetwork) {
+    public static Network getLegacyBungeeNetwork(RegistryAPI registry, String bungeeNetwork) throws UnimplementedFlagException {
         Network network = registry.getNetwork(bungeeNetwork, false);
         //Create the legacy network if it doesn't already exist
         try {
@@ -103,7 +101,7 @@ public final class BungeeHelper {
         }
         return network;
     }
-    
+
     public static String generateJsonMessage(Portal portal, StargateProtocolRequestType requestType) {
         JsonObject jsonData = new JsonObject();
         jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(requestType.toString()));
@@ -114,7 +112,7 @@ public final class BungeeHelper {
         jsonData.add(StargateProtocolProperty.OWNER.toString(), new JsonPrimitive(portal.getOwnerUUID().toString()));
         return jsonData.toString();
     }
-    
+
     public static String generateTeleportJsonMessage(String player, Portal portal) {
         JsonObject JsonData = new JsonObject();
         JsonData.add(StargateProtocolProperty.PLAYER.toString(), new JsonPrimitive(player));
@@ -122,7 +120,7 @@ public final class BungeeHelper {
         JsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getId()));
         return JsonData.toString();
     }
-    
+
     public static String generateLegacyTeleportMessage(String player, Portal portal) {
         return player + "#@#" + portal.getName();
     }

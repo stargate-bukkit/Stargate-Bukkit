@@ -176,7 +176,7 @@
 
 - Actually remove the player from the BungeeQueue when they connect. Oops :)
 - Implement stargate.server nodes
-- Improve the use of negation. You can now negate networks/worlds/servers while using stargate.use permissions.
+- Improve the use of negation. You can now negate networks/worlds/servers while using stargate. Use permissions.
 
 #### [Version 0.7.9.5]
 
@@ -682,7 +682,7 @@
 #### [Version 0.10]
 
 - Hopefully fixed the "No position found" bug.
-- If dest > origin, any blocks past origin.size will drop you at dest[0]
+- If dest > origin, any blocks past origin. Size will drop you at dest[0]
 - Switched to scheduler instead of our own thread for closing gates and deactivating signs
 - No longer depend on Permissions, use it as an option. isOp() used as defaults.
 

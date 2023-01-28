@@ -23,10 +23,10 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.EconomyAPI;
+import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
-import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.util.portal.TeleportationHelper;
 import org.sgrewritten.stargate.vectorlogic.VectorUtils;
 
@@ -57,9 +57,9 @@ public class Teleporter {
     private String teleportMessage;
     private final Set<Entity> teleportedEntities = new HashSet<>();
     private List<LivingEntity> nearbyLeashed;
-    private LanguageManager languageManager;
-    private StargateEconomyAPI economyManager;
-    private Consumer<SimpleAction> registerAction;
+    private final LanguageManager languageManager;
+    private final StargateEconomyAPI economyManager;
+    private final Consumer<SimpleAction> registerAction;
 
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
@@ -70,17 +70,16 @@ public class Teleporter {
      * @param entranceFace    <p>The direction the entrance portal is facing</p>
      * @param cost            <p>The cost of teleportation for any players</p>
      * @param teleportMessage <p>The teleportation message to display if the teleportation is successful</p>
-     * @param logger
      */
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,
-            BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager,StargateEconomyAPI economyManager) {
+                      BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager, StargateEconomyAPI economyManager) {
         this(destination, origin, destinationFace, entranceFace, cost, teleportMessage, languageManager,
-                economyManager, ((action) -> Stargate.addSynchronousTickAction(action)));
+                economyManager, (Stargate::addSynchronousTickAction));
     }
 
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,
-            BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager,
-            StargateEconomyAPI economyManager, Consumer<SimpleAction> registerAction) {
+                      BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager,
+                      StargateEconomyAPI economyManager, Consumer<SimpleAction> registerAction) {
         // Center the destination in the destination block
         this.exit = destination.getExit().clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
@@ -112,7 +111,7 @@ public class Teleporter {
         List<Player> playersToRefund = new ArrayList<>();
 
         TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
-            StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity,languageManager);
+            StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity, languageManager);
             if (!hasPermission(anyEntity, permissionManager)) {
                 teleportMessage = permissionManager.getDenyMessage();
                 return false;
@@ -160,7 +159,7 @@ public class Teleporter {
         //Cancel teleportation if outside world-border
         World world = exit.getWorld();
         if (world != null && !world.getWorldBorder().isInside(exit)) {
-            String worldBorderInterfereMessage = languageManager.getErrorMessage(TranslatableMessage.OUTSIDE_WORLDBORDER);
+            String worldBorderInterfereMessage = languageManager.getErrorMessage(TranslatableMessage.OUTSIDE_WORLD_BORDER);
             entitiesToTeleport.forEach((entity) -> entity.sendMessage(worldBorderInterfereMessage));
             return;
         }
@@ -263,7 +262,7 @@ public class Teleporter {
                 target.addPassenger(passenger);
                 return true;
             };
-            registerAction.accept(new DelayedAction(1,action));
+            registerAction.accept(new DelayedAction(1, action));
         }
     }
 
@@ -311,8 +310,7 @@ public class Teleporter {
         Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(ConfigurationHelper.getDouble(
                 ConfigurationOption.GATE_EXIT_SPEED_MULTIPLIER));
 
-        if (target instanceof Player) {
-            Player player = (Player) target;
+        if (target instanceof Player player) {
             String msg = "Teleporting player %s to %s";
             msg = String.format(msg, player.getName(), location);
             if (this.origin != null) {
@@ -339,7 +337,7 @@ public class Teleporter {
      * @param location        <p>The location to teleport the powered minecart to</p>
      */
     private void teleportPoweredMinecart(PoweredMinecart poweredMinecart, Vector targetVelocity, Location location) {
-        if(!NonLegacyMethod.GET_FUEL.isImplemented()) {
+        if (!NonLegacyMethod.GET_FUEL.isImplemented()) {
             Stargate.log(Level.FINE, String.format("Unable to handle Furnace Minecart at %S --" +
                     " use Paper 1.17+ for this feature.", location));
             return;
@@ -354,14 +352,14 @@ public class Teleporter {
         teleport(poweredMinecart, exit);
         poweredMinecart.setFuel(fuel);
 
-        
+
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
             poweredMinecart.setVelocity(targetVelocity);
             double pushX = 1; //any new pushing direction
             double pushZ = 0;
             poweredMinecart.setPushX(pushX);
             poweredMinecart.setPushZ(pushZ);
-        },1);
+        }, 1);
         registerAction.accept(new DelayedAction(1, () -> {
             //Re-apply fuel and velocity
             Stargate.log(Level.FINEST, "Setting new velocity " + targetVelocity);

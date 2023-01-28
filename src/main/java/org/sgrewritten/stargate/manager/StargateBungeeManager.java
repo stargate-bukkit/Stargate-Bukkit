@@ -1,11 +1,7 @@
 package org.sgrewritten.stargate.manager;
 
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Level;
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +13,7 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -27,25 +24,28 @@ import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import org.sgrewritten.stargate.util.BungeeHelper;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Level;
 
-public class StargateBungeeManager implements BungeeManager{
-    
+public class StargateBungeeManager implements BungeeManager {
+
     private final RegistryAPI registry;
-    private @NotNull LanguageManager languageManager;
+    private final @NotNull LanguageManager languageManager;
     private final HashMap<String, Portal> bungeeQueue = new HashMap<>();
 
     public StargateBungeeManager(@NotNull RegistryAPI registry, @NotNull LanguageManager languageManager) {
         this.registry = Objects.requireNonNull(registry);
         this.languageManager = Objects.requireNonNull(languageManager);
     }
-    
+
     @Override
     public void updateNetwork(String message) {
-        JsonParser parser = new JsonParser();
         Stargate.log(Level.FINEST, message);
-        JsonObject json = (JsonObject) parser.parse(message);
+        // Yes, a depricated method, needs to be there as spigot 1.16.5 does not support the new method
+        JsonObject json = (JsonObject) new JsonParser().parse(message);
 
         String requestTypeString = json.get(StargateProtocolProperty.REQUEST_TYPE.toString()).getAsString();
         StargateProtocolRequestType requestType = StargateProtocolRequestType.valueOf(requestTypeString);
@@ -58,35 +58,40 @@ public class StargateBungeeManager implements BungeeManager{
 
         try {
             registry.createNetwork(network, flags, false);
-        } catch ( NameConflictException ignored) {
-            
-        } catch (InvalidNameException | NameLengthException  e) {
+        } catch (NameConflictException ignored) {
+
+        } catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
             Stargate.log(e);
         }
         try {
             InterServerNetwork targetNetwork = (InterServerNetwork) registry.getNetwork(network, true);
+            if (targetNetwork == null) {
+                Stargate.log(Level.WARNING, "Unable to get inter-server network " + network);
+                return;
+            }
             VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
             switch (requestType) {
-                case PORTAL_ADD:
+                case PORTAL_ADD -> {
                     targetNetwork.addPortal(portal, false);
                     Stargate.log(Level.FINE, String.format("Adding virtual portal %s in inter-server network %s", portalName, network));
-                    break;
-                case PORTAL_REMOVE:
+                }
+                case PORTAL_REMOVE -> {
                     Stargate.log(Level.FINE, String.format("Removing virtual portal %s in inter-server network %s", portalName, network));
                     targetNetwork.removePortal(portal, false);
-                    break;
+                }
             }
             targetNetwork.updatePortals();
-        } catch (NameConflictException ignored) {
+        } catch (NameConflictException exception) {
+            Stargate.log(exception);
         }
     }
-    
+
     @Override
     public void playerConnect(String message) {
-        JsonParser parser = new JsonParser();
         Stargate.log(Level.FINEST, message);
 
-        JsonObject json = (JsonObject) parser.parse(message);
+        // Yes, a depricated method, needs to be there as spigot 1.16.5 does not support the new method
+        JsonObject json = (JsonObject) new JsonParser().parse(message);
         String playerName = json.get(StargateProtocolProperty.PLAYER.toString()).getAsString();
         String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
         String networkName = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
@@ -111,7 +116,7 @@ public class StargateBungeeManager implements BungeeManager{
         }
         destinationPortal.teleportHere(player, null);
     }
-    
+
     @Override
     public void legacyPlayerConnect(String message) {
         String bungeeNetworkName = BungeePortal.getLegacyNetworkName();
@@ -130,7 +135,13 @@ public class StargateBungeeManager implements BungeeManager{
 
             addToQueue(playerName, destination, bungeeNetworkName, false);
         } else {
-            Network network = BungeeHelper.getLegacyBungeeNetwork(registry, bungeeNetworkName);
+            Network network;
+            try {
+                network = BungeeHelper.getLegacyBungeeNetwork(registry, bungeeNetworkName);
+            } catch (UnimplementedFlagException e) {
+                Stargate.log(e);
+                return;
+            }
             if (network == null) {
                 Stargate.log(Level.WARNING, "The legacy bungee network is missing, this is most definitly a bug please contact developers (/sg about)");
                 return;
@@ -146,7 +157,7 @@ public class StargateBungeeManager implements BungeeManager{
             destinationPortal.teleportHere(player, null);
         }
     }
-    
+
     /**
      * Adds a player to the BungeeCord teleportation queue
      *
@@ -156,7 +167,7 @@ public class StargateBungeeManager implements BungeeManager{
      * @param isInterServer <p>Whether the entry portal belongs to an inter-server network</p>
      */
     private void addToQueue(String playerName, String portalName, String networkName,
-                                  boolean isInterServer) {
+                            boolean isInterServer) {
         Network network = registry.getNetwork(networkName, isInterServer);
 
         /*
@@ -178,7 +189,7 @@ public class StargateBungeeManager implements BungeeManager{
         }
         bungeeQueue.put(playerName, portal);
     }
-    
+
     @Override
     public Portal pullFromQueue(String playerName) {
         return bungeeQueue.remove(playerName);

@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.URL;
 
 public class WebHelper {
+
     public static void downloadFile(String link, File file) throws IOException {
         InputStream is = null;
         OutputStream os = null;
@@ -25,4 +26,5 @@ public class WebHelper {
             }
         }
     }
+
 }

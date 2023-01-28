@@ -21,7 +21,6 @@ import org.sgrewritten.stargate.network.portal.AbstractPortal;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,14 +35,12 @@ public final class BStatsHelper {
     /**
      * Registers a metrics with all relevant portal data
      *
-     * @param pluginId
-     * <p>
-     * The id of the Stargate plugin</p>
-     * @param plugin
-     * <p>
-     * A Stargate plugin instance</p>
+     * @param pluginId <p>
+     *                 The id of the Stargate plugin</p>
+     * @param plugin   <p>
+     *                 A Stargate plugin instance</p>
      */
-    public static void registerMetrics(int pluginId, JavaPlugin plugin,RegistryAPI registry) {
+    public static void registerMetrics(int pluginId, JavaPlugin plugin, RegistryAPI registry) {
         Metrics metrics = new Metrics(plugin, pluginId);
 
         metrics.addCustomChart(new SimplePie("gateformats", () -> String.valueOf(GateFormatHandler.formatsStored())));
@@ -55,10 +52,10 @@ public final class BStatsHelper {
                         + registry.getBungeeNetworkMap().size())));
 
         // Registers the line chart with the number of underwater gates present on the server.
-        registerUnderwaterCount(metrics,registry);
+        registerUnderwaterCount(metrics, registry);
 
         // Registers the pie chart with the number of gates present on the largest network on this server
-        registerNetworkSize(metrics,registry);
+        registerNetworkSize(metrics, registry);
 
         // Registers the all addons active on this instance.
         registerAddons(metrics);
@@ -74,14 +71,13 @@ public final class BStatsHelper {
 
         registerConfigMetrics(metrics);
     }
-    
+
     /**
      * Registers metrics for the number of portals on personal networks vs.
      * portals on non-personal networks
      *
-     * @param metrics
-     * <p>
-     * The metrics object to register metrics to</p>
+     * @param metrics <p>
+     *                The metrics object to register metrics to</p>
      */
     private static void registerPersonalNetworkMetrics(Metrics metrics) {
         metrics.addCustomChart(new AdvancedPie("networkType", () -> {
@@ -115,9 +111,8 @@ public final class BStatsHelper {
      * Registers metrics for the number of networked and fixed portals on this
      * instance
      *
-     * @param metrics
-     * <p>
-     * The metrics object to register metrics to</p>
+     * @param metrics <p>
+     *                The metrics object to register metrics to</p>
      */
     private static void registerNetworkedOrFixedMetrics(Metrics metrics) {
         metrics.addCustomChart(new AdvancedPie("networkedOrFixed", () -> {
@@ -142,9 +137,8 @@ public final class BStatsHelper {
     /**
      * Registers metrics for all flags in use on this instance
      *
-     * @param metrics
-     * <p>
-     * The metrics object to register metrics to</p>
+     * @param metrics <p>
+     *                The metrics object to register metrics to</p>
      */
     private static void registerFlagMetrics(Metrics metrics) {
         metrics.addCustomChart(new AdvancedPie("flags", () -> {
@@ -165,9 +159,8 @@ public final class BStatsHelper {
      * Registers metrics for the number of portals in the largest network on
      * this instance.
      *
-     * @param metrics
-     * <p>
-     * The metrics object to register metrics to</p>
+     * @param metrics <p>
+     *                The metrics object to register metrics to</p>
      */
     private static void registerNetworkSize(Metrics metrics, RegistryAPI registry) {
         metrics.addCustomChart(new SimplePie("largestNetwork", () -> {
@@ -188,26 +181,26 @@ public final class BStatsHelper {
             return String.valueOf(largest);
         }));
     }
+
     /**
-    * Registers metrics for all active addons
-    *
-    * @param metrics
-    * <p>
-    * The metrics object to register metrics to</p>
-    */
+     * Registers metrics for all active addons
+     *
+     * @param metrics <p>
+     *                The metrics object to register metrics to</p>
+     */
     private static void registerAddons(Metrics metrics) {
         String stargate = "stargate";
         metrics.addCustomChart(new AdvancedPie("addonsUsed", () -> {
             Map<String, Integer> addonsList = new HashMap<>();
-            
-            for(Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-                for(String depend : plugin.getDescription().getDepend()) {
-                    if(depend.toLowerCase().equals(stargate)) {
+
+            for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+                for (String depend : plugin.getDescription().getDepend()) {
+                    if (depend.toLowerCase().equals(stargate)) {
                         addonsList.put(plugin.getName(), 1);
                     }
                 }
-                for(String depend : plugin.getDescription().getSoftDepend()) {
-                    if(depend.toLowerCase().equals(stargate)) {
+                for (String depend : plugin.getDescription().getSoftDepend()) {
+                    if (depend.toLowerCase().equals(stargate)) {
                         addonsList.put(plugin.getName(), 1);
                     }
                 }
@@ -219,22 +212,20 @@ public final class BStatsHelper {
     /**
      * Registers metrics for the number of underwater portals on the instance
      *
-     * @param metrics
-     * <p>
-     * The metrics object to register metrics to</p>
+     * @param metrics <p>
+     *                The metrics object to register metrics to</p>
      */
     private static void registerUnderwaterCount(Metrics metrics, RegistryAPI registry) {
         metrics.addCustomChart(new SingleLineChart("underwaterCount", () -> {
             int count = 0;
             Collection<Network> totalNetworkList = registry.getNetworkMap().values();
             totalNetworkList.addAll(registry.getBungeeNetworkMap().values());
-            for(Network network : totalNetworkList) {
-                for(Portal portal : network.getAllPortals()) {
-                    if(!(portal instanceof RealPortal)) {
+            for (Network network : totalNetworkList) {
+                for (Portal portal : network.getAllPortals()) {
+                    if (!(portal instanceof RealPortal realPortal)) {
                         continue;
                     }
-                    RealPortal realPortal = (RealPortal) portal;
-                    if(realPortal.getGate().getExit().getBlock().getType() == Material.WATER) {
+                    if (realPortal.getGate().getExit().getBlock().getType() == Material.WATER) {
                         count++;
                     }
                 }
@@ -246,9 +237,8 @@ public final class BStatsHelper {
     /**
      * Registers metrics for all configuration options
      *
-     * @param metrics
-     * <p>
-     * The metrics object to register metrics to</p>
+     * @param metrics <p>
+     *                The metrics object to register metrics to</p>
      */
     private static void registerConfigMetrics(Metrics metrics) {
         metrics.addCustomChart(new SimplePie("language", () -> ConfigurationHelper.getString(ConfigurationOption.LANGUAGE)));

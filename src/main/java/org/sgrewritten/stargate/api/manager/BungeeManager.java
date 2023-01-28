@@ -3,24 +3,24 @@ package org.sgrewritten.stargate.api.manager;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 
 /**
- * A interface for handling anything related to bungee
+ * An interface for handling anything related to bungee
  */
 public interface BungeeManager {
-    
+
     /**
      * Updates a network according to a "network changed" message
      *
      * @param message <p>The network change message to parse and handle</p>
      */
-    public void updateNetwork(String message);
-    
+    void updateNetwork(String message);
+
     /**
      * Handles a player teleport message
      *
      * @param message <p>The player teleport message to parse and handle</p>
      */
-    public void playerConnect(String message);
-    
+    void playerConnect(String message);
+
     /**
      * Handle the connection of a player using the legacy Stargate method
      *
@@ -28,13 +28,13 @@ public interface BungeeManager {
      *
      * @param message <p>The legacy connect message to parse and handle</p>
      */
-    public void legacyPlayerConnect(String message);
-    
+    void legacyPlayerConnect(String message);
+
     /**
      * Gets a portal from the BungeeCord teleportation queue
      *
      * @param playerName <p>The player to pull from the queue</p>
      * @return <p>The portal the player should be teleported to</p>
      */
-    public Portal pullFromQueue(String playerName);
+    Portal pullFromQueue(String playerName);
 }

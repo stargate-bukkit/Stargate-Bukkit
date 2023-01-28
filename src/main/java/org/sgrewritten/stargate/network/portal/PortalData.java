@@ -14,15 +14,15 @@ import java.util.UUID;
 public class PortalData {
 
     /**
-     *  The name of the portal.
+     * The name of the portal.
      */
     public String name;
     /**
-     *  The name of the network that the portal is associated with.
+     * The name of the network that the portal is associated with.
      */
     public String networkName;
     /**
-     *  The name of the portal stored as this portal's destination.
+     * The name of the portal stored as this portal's destination.
      */
     public String destination;
     /**
@@ -42,11 +42,11 @@ public class PortalData {
      */
     public int topLeftZ;
     /**
-     * A string containing all of the flags associated with this portal.
+     * A string containing all the flags associated with this portal.
      */
     public String flagString;
     /**
-     * A set containing all of the flags associated with this portal.
+     * A set containing all the flags associated with this portal.
      */
     public Set<PortalFlag> flags;
     /**
@@ -54,11 +54,11 @@ public class PortalData {
      */
     public UUID ownerUUID;
     /**
-     * The name of the gate file that define's this portal's layout/format/design.
+     * The name of the gate file that defines this portal's layout/format/design.
      */
     public String gateFileName;
     /**
-     * Whether or not this portal is flipped on the Z axis.
+     * Whether this portal is flipped on the Z axis.
      */
     public boolean flipZ;
     /**

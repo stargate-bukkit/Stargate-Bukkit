@@ -1,9 +1,14 @@
 package org.sgrewritten.stargate.database;
 
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.util.FileHelper;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,7 +21,7 @@ public class SQLQueryHandler {
 
     static {
         //Load all queries from the query files
-        parseSQLQueries(readQueryFiles(getSQLQueryFiles()));
+        parseSQLQueries(readQueryFiles(getSQLQueryFolders()));
     }
 
     /**
@@ -55,38 +60,57 @@ public class SQLQueryHandler {
     }
 
     /**
-     * Gets all unique query files which need to be read
+     * Gets all unique query folders which need to be read
      *
      * @return <p>All unique query files</p>
      */
-    private static Set<String> getSQLQueryFiles() {
+    private static Set<String> getSQLQueryFolders() {
         Set<String> queryFiles = new HashSet<>();
         for (DatabaseDriver driver : DatabaseDriver.values()) {
-            if (!driver.getQueryFile().isEmpty()) {
-                queryFiles.add(driver.getQueryFile());
+            if (!driver.getQueryFolder().isEmpty()) {
+                queryFiles.add(driver.getQueryFolder());
             }
         }
         return queryFiles;
     }
 
     /**
-     * Reads the given query files
+     * Reads the given query folders
      *
-     * @param queryFiles <p>The query files to read</p>
+     * @param queryFolders <p>The query folders to read</p>
      * @return <p>The read queries with the file name as key</p>
      */
-    private static Map<String, Map<String, String>> readQueryFiles(Set<String> queryFiles) {
+    private static Map<String, Map<String, String>> readQueryFiles(Set<String> queryFolders) {
         Map<String, Map<String, String>> readQueryFiles = new HashMap<>();
-        for (String queryFile : queryFiles) {
-            //Prevent duplicate reading as with MySQL and MariaDB
-            if (readQueryFiles.containsKey(queryFile)) {
-                continue;
+        for (String folder : queryFolders) {
+            try {
+                readQueryFiles.put(folder, readQueryFilesFromFolder(folder));
+            } catch (IOException | URISyntaxException e) {
+                Stargate.log(e);
             }
-            Map<String, String> readValues = new HashMap<>();
-            FileHelper.readInternalFileToMap("/database/" + queryFile, readValues);
-            readQueryFiles.put(queryFile, readValues);
         }
         return readQueryFiles;
+    }
+
+    private static Map<String, String> readQueryFilesFromFolder(String folder) throws IOException, URISyntaxException {
+        final Map<String, String> queries = new HashMap<>();
+        String fullFolder = "/database/" + folder;
+        List<Path> walk = FileHelper.listFilesOfInternalDirectory(fullFolder);
+        if (walk == null) {
+            return null;
+        }
+        walk.forEach((path) -> {
+            if (!path.toString().endsWith(".sql")) {
+                return;
+            }
+            try {
+                String query = FileHelper.readStreamToString(FileHelper.getInputStreamForInternalFile(fullFolder + "/" + path.getFileName().toString()));
+                queries.put(path.getFileName().toString().replaceAll(".sql$", ""), query);
+            } catch (IOException e) {
+                Stargate.log(e);
+            }
+        });
+        return queries;
     }
 
     /**
@@ -99,10 +123,10 @@ public class SQLQueryHandler {
     private static void parseSQLQueries(Map<String, Map<String, String>> readQueryFiles) {
         for (DatabaseDriver databaseDriver : DatabaseDriver.values()) {
             //Skip any drivers without valid query files
-            if (!readQueryFiles.containsKey(databaseDriver.getQueryFile())) {
+            if (!readQueryFiles.containsKey(databaseDriver.getQueryFolder())) {
                 continue;
             }
-            Map<String, String> readQueries = readQueryFiles.get(databaseDriver.getQueryFile());
+            Map<String, String> readQueries = readQueryFiles.get(databaseDriver.getQueryFolder());
             for (String query : readQueries.keySet()) {
                 SQLQuery sqlQuery = SQLQuery.valueOf(query);
                 String queryString = readQueries.get(query);

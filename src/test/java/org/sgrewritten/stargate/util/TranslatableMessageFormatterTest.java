@@ -1,22 +1,19 @@
 package org.sgrewritten.stargate.util;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.ServerMock;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.network.NetworkType;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
-
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
 
 class TranslatableMessageFormatterTest {
 
@@ -31,12 +28,13 @@ class TranslatableMessageFormatterTest {
     void tearDown() {
         MockBukkit.unmock();
     }
+
     @Test
-    void formatUnimplementedConflictMessage() throws NameLengthException, InvalidNameException {
+    void formatUnimplementedConflictMessage() throws NameLengthException, InvalidNameException, UnimplementedFlagException {
         System.setProperty("bstats.relocatecheck", "false");
         Stargate plugin = MockBukkit.load(Stargate.class);
         Player player = server.addPlayer("network1");
-        String expectedUnimplementedConflictMessage = "§e[Stargate] §fThe network1 Personal network has been temporarily separated from the network1 Custom network, but will soon be merged.";
+        String expectedUnimplementedConflictMessage = "§e[Stargate] §fThe network1 personal inter-server network has been temporarily separated from the network1 custom network, but will soon be merged.";
         Assertions.assertEquals(expectedUnimplementedConflictMessage,
                 TranslatableMessageFormatter.formatUnimplementedConflictMessage(
                         new InterServerNetwork(player.getUniqueId().toString(), NetworkType.PERSONAL),
@@ -44,7 +42,7 @@ class TranslatableMessageFormatterTest {
     }
 
     @Test
-    void formatUnimplementedConflictMessage_NullCheck() throws NameLengthException, InvalidNameException {
+    void formatUnimplementedConflictMessage_NullCheck() throws NameLengthException, InvalidNameException, UnimplementedFlagException {
         System.setProperty("bstats.relocatecheck", "false");
         Stargate plugin = MockBukkit.load(Stargate.class);
         Player player = server.addPlayer("network1");

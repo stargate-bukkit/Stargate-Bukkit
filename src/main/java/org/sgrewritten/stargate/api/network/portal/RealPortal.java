@@ -76,19 +76,22 @@ public interface RealPortal extends Portal {
     Location getExit();
 
     /**
-     * Set meta data for this portal
+     * Set metadata for this portal
+     *
      * @param data <p> The meta data to set </p>
      */
     void setMetaData(String data);
 
     /**
-     * Get meta data for this portal
+     * Get metadata for this portal
+     *
      * @return <p> The meta data of this portal </p>
      */
     String getMetaData();
 
     /**
      * Get the facing entities exit from this portal.
+     *
      * @return <p> The facing entities exit from this portal. </p>
      */
     BlockFace getExitFacing();

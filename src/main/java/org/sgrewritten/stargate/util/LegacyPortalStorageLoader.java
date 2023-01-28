@@ -13,9 +13,8 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.exception.name.BungeeNameException;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.StargateRegistry;
@@ -49,11 +48,11 @@ public final class LegacyPortalStorageLoader {
      * @return <p>The list of loaded and saved portals</p>
      * @throws IOException               <p>If unable to read one or more .db files</p>
      * @throws InvalidStructureException <p>If an encountered portal's structure is invalid</p>
-     * @throws InvalidNameException        <p>If the name of a portal is invalid</p>
-     * @throws TranslatableException 
+     * @throws InvalidNameException      <p>If the name of a portal is invalid</p>
+     * @throws TranslatableException
      */
     public static List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server,
-            RegistryAPI registry, StargateLogger logger, String defaultNetworkName,LanguageManager languageManager, StargateEconomyAPI economyManager)
+                                                      RegistryAPI registry, StargateLogger logger, String defaultNetworkName, LanguageManager languageManager, StargateEconomyAPI economyManager)
             throws IOException, InvalidStructureException, InvalidNameException, TranslatableException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
@@ -64,13 +63,14 @@ public final class LegacyPortalStorageLoader {
 
         for (File file : files) {
             String worldName = file.getName().replaceAll("\\.db$", "");
+
             BufferedReader reader = FileHelper.getBufferedReader(file);
             String line = reader.readLine();
             while (line != null) {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
-                portals.add(readPortal(line, server.getWorld(worldName), registry, logger, defaultNetworkName, languageManager,economyManager));
+                portals.add(readPortal(line, server.getWorld(worldName), registry, logger, defaultNetworkName, languageManager, economyManager));
 
                 line = reader.readLine();
             }
@@ -88,11 +88,11 @@ public final class LegacyPortalStorageLoader {
      * @param logger   <p>The logger used for logging</p>
      * @return <p>The loaded portal</p>
      * @throws InvalidStructureException <p>If the portal's structure is invalid</p>
-     * @throws InvalidNameException        <p>If the name of the portal is invalid</p>
-     * @throws TranslatableException 
+     * @throws TranslatableException     <p>If the portal's name is invalid</p>
      */
-    private static Portal readPortal(String line, World world, RegistryAPI registry, StargateLogger logger, String defaultNetworkName, LanguageManager languageManager, StargateEconomyAPI economyManager)
-            throws InvalidStructureException, InvalidNameException, TranslatableException {
+    private static Portal readPortal(String line, World world, RegistryAPI registry, StargateLogger logger,
+                                     String defaultNetworkName, LanguageManager languageManager,
+                                     StargateEconomyAPI economyManager) throws InvalidStructureException, TranslatableException {
         String[] portalProperties = line.split(":");
         PortalData portalData = PortalStorageHelper.loadPortalData(portalProperties, world, defaultNetworkName);
         try {
@@ -106,7 +106,13 @@ public final class LegacyPortalStorageLoader {
         Network network = registry.getNetwork(portalData.networkName,
                 portalData.flags.contains(PortalFlag.FANCY_INTER_SERVER));
 
-        Gate gate = new Gate(portalData,registry);
+        if (network == null) {
+            logger.logMessage(Level.SEVERE, "Unable to get network " + portalData.networkName + " during legacy" +
+                    "portal loading");
+            return null;
+        }
+
+        Gate gate = new Gate(portalData, registry);
         Location signLocation = LegacyDataHandler.loadLocation(world, portalProperties[1]);
         Location buttonLocation = LegacyDataHandler.loadLocation(world, portalProperties[2]);
         if (signLocation != null) {
@@ -118,7 +124,7 @@ public final class LegacyPortalStorageLoader {
             gate.addPortalPosition(buttonLocation, MechanismType.BUTTON);
         }
 
-        Portal portal = PortalCreationHelper.createPortal(network, portalData, gate,languageManager,registry,economyManager);
+        Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, languageManager, registry, economyManager);
 
         // Add the portal to its network and store it to the database
         logger.logMessage(Level.FINE, String.format("Saving portal %s in network %s from old storage... ",

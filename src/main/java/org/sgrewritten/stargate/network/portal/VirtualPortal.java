@@ -1,7 +1,5 @@
 package org.sgrewritten.stargate.network.portal;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,7 +10,6 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.PluginChannel;
-import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 
@@ -60,10 +57,9 @@ public class VirtualPortal implements Portal {
     public void teleportHere(Entity target, RealPortal origin) {
         //TODO: implement vehicle compatibility.
         Stargate plugin = JavaPlugin.getPlugin(Stargate.class);
-        if (!(target instanceof Player)) {
+        if (!(target instanceof Player player)) {
             return;
         }
-        Player player = (Player) target;
 
         try {
             sendTeleportMessage(plugin, player);
@@ -186,7 +182,7 @@ public class VirtualPortal implements Portal {
             dataOutputStream.writeUTF(PluginChannel.FORWARD.getChannel());
             dataOutputStream.writeUTF(server);
             dataOutputStream.writeUTF(PluginChannel.PLAYER_TELEPORT.getChannel());
-            String dataMsg = BungeeHelper.generateTeleportJsonMessage(player.getName(),this);
+            String dataMsg = BungeeHelper.generateTeleportJsonMessage(player.getName(), this);
             dataOutputStream.writeUTF(dataMsg);
             Stargate.log(Level.FINEST, byteArrayOutputStream.toString());
             player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
@@ -202,8 +198,13 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
-    public String getID() {
+    public String getId() {
         return NameHelper.getNormalizedName(name);
+    }
+
+    @Override
+    public GlobalPortalId getGlobalId() {
+        return GlobalPortalId.getFromPortal(this);
     }
 
     public String getServer() {

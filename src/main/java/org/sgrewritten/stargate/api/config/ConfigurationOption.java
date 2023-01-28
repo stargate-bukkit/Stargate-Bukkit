@@ -249,8 +249,8 @@ public enum ConfigurationOption {
     /**
      * The folder to load gate files from
      */
-    GATE_FOLDER("gateFolder","The folder to load gate files from","gates", OptionDataType.STRING, false);
-    
+    GATE_FOLDER("gateFolder", "The folder to load gate files from", "gates", OptionDataType.STRING, false);
+
     private final String configNode;
     private final String description;
     private final Object defaultValue;

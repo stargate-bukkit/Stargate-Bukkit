@@ -78,6 +78,11 @@ public enum TranslatableMessage {
     NET_DENY("faultNetwork"),
 
     /**
+     * The message to display when a network is in conflict with a network of another type
+     */
+    NET_CONFLICT("faultNetworkConflict"),
+
+    /**
      * The message to display when a player is lacking permission to create a gateDesign
      */
     GATE_DENY("faultLayout"),
@@ -90,7 +95,12 @@ public enum TranslatableMessage {
     /**
      * The message to display when a portal or network name exceeds the max length
      */
-    INVALID_NAME("faultLength"),
+    INVALID_NAME_LENGTH("faultLength"),
+
+    /**
+     * The message to display when the NetworkType is not compatible with given name
+     */
+    INVALID_NAME("faultName"),
 
     /**
      * A generic message to display when an addon prevents the user from doing something
@@ -100,7 +110,7 @@ public enum TranslatableMessage {
     /**
      * The message to display when a new stargate's name is already in use
      */
-    ALREADY_EXIST("faultExists"),
+    GATE_ALREADY_EXIST("faultExists"),
 
     /**
      * The message to display when a network is already full
@@ -209,28 +219,58 @@ public enum TranslatableMessage {
     GATE_OWNED_BY("signPortalOwner"),
 
     /**
-     * The message to send if the player is teleporting past the worldborder
+     * The message to send if the player is teleporting past the world-border
      */
-    OUTSIDE_WORLDBORDER("tpPastBorder"), 
-    
-    UNIMPLEMENTED_CONFLICT("unimplementedIConflict"), 
-    
-    UNIMPLEMENTED_INTERSERVER("unimplementedInterserver"),
-    
-    
-    // TERMINOLOGY
+    OUTSIDE_WORLD_BORDER("tpPastBorder"),
+
+    /**
+     * The message to send when there is an inter-server conflict
+     */
+    UNIMPLEMENTED_CONFLICT("unimplementedIConflict"),
+
+    /**
+     * The message to send whenever an inter-server portal is created
+     */
+    UNIMPLEMENTED_INTER_SERVER("unimplementedInterServer"),
+
+    /**
+     * The message to send when a flag is not implemented yet
+     */
+    UNIMPLEMENTED_FLAG("unimplementedFlag"),
+
+    /**
+     * The name of a portal
+     */
     GATE("gate"),
-    
+
+    /**
+     * The name of a local network
+     */
     NETWORK("network"),
-    
-    FANCY_INTER_SERVER("interserver"),
-    
+
+    /**
+     * The name of a cross server network
+     */
+    FANCY_INTER_SERVER("interServer"),
+
+    /**
+     * The name of the default network
+     */
     DEFAULT_NETWORK("default"),
-    
+
+    /**
+     * The name of a terminal network
+     */
     TERMINAL_NETWORK("terminal"),
-    
+
+    /**
+     * The name of a personal network
+     */
     PERSONAL_NETWORK("personal"),
-    
+
+    /**
+     * The name of a custom network
+     */
     CUSTOM_NETWORK("custom");
 
     /*

@@ -118,6 +118,7 @@ public final class SpawnDetectionHelper {
      * @param depth          <p>The depth of the gate</p>
      * @return <p>The minimum corner of the gate</p>
      */
+    @SuppressWarnings("SameParameterValue") //Depth will be used for 3D gates
     private static Location getStargateMinCorner(Gate gate, int stargateHeight, int stargateWidth, int depth) {
         Location minLocation = null;
         List<Vector> stargateCorners = new ArrayList<>();
@@ -149,6 +150,7 @@ public final class SpawnDetectionHelper {
      * @param depth         <p>The depth of the gate</p>
      * @return <p>The maximum corner of the gate</p>
      */
+    @SuppressWarnings("SameParameterValue") //Depth will be used for 3D gates
     private static Location getStargateMaxCorner(Gate gate, int stargateWidth, int depth) {
         Location maxLocation = null;
         List<Vector> stargateCorners = new ArrayList<>();

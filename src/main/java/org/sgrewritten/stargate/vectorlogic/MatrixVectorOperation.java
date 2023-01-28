@@ -6,7 +6,6 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 
 import java.util.logging.Level;
@@ -32,31 +31,29 @@ public class MatrixVectorOperation implements VectorOperation {
      * given sign face.</p>
      *
      * @param signFace <p>The sign face of a gate's sign</p>
-     * @param logger   <p>The logger to use for logging debug messages</p>
      * @throws InvalidStructureException <p>If given a sign face which is not one of EAST, SOUTH, WEST or NORTH</p>
      */
     public MatrixVectorOperation(BlockFace signFace) throws InvalidStructureException {
         double rotation;
 
         switch (signFace) {
-            case EAST:
+            case EAST -> {
                 rotation = 0;
                 irisNormal = Axis.Z;
-                break;
-            case SOUTH:
+            }
+            case SOUTH -> {
                 rotation = Math.PI / 2;
                 irisNormal = Axis.X;
-                break;
-            case WEST:
+            }
+            case WEST -> {
                 rotation = Math.PI;
                 irisNormal = Axis.Z;
-                break;
-            case NORTH:
+            }
+            case NORTH -> {
                 rotation = -Math.PI / 2;
                 irisNormal = Axis.X;
-                break;
-            default:
-                throw new InvalidStructureException();
+            }
+            default -> throw new InvalidStructureException();
         }
 
         this.facing = signFace;

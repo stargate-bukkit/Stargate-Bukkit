@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.gate;
 
+import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,7 +18,6 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.gate.GateAPI;
@@ -38,8 +38,6 @@ import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.vectorlogic.MatrixVectorOperation;
 import org.sgrewritten.stargate.vectorlogic.VectorOperation;
-
-import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,7 +71,6 @@ public class Gate implements GateAPI {
      * @param signLocation <p>The location of this gate's sign</p>
      * @param signFace     <p>The direction this gate's sign is facing</p>
      * @param alwaysOn     <p>Whether this gate has been set as always-on</p>
-     * @param logger       <p>A stargate logger object</p>
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
@@ -102,10 +99,9 @@ public class Gate implements GateAPI {
      * Instantiates a gate from already predetermined parameters, no checking is done to see if format matches
      *
      * @param portalData <p> Data of the portal </p>
-     * @param logger     <p> A logger </p>
      * @throws InvalidStructureException <p>If the facing is invalid or if no format could be found</p>
      */
-    public Gate(PortalData portalData,@NotNull RegistryAPI registry) throws InvalidStructureException {
+    public Gate(PortalData portalData, @NotNull RegistryAPI registry) throws InvalidStructureException {
         GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);
         if (format == null) {
             Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
@@ -207,7 +203,7 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public GateFormat getFormat() {
+    public @NotNull GateFormat getFormat() {
         return format;
     }
 
@@ -240,8 +236,7 @@ public class Gate implements GateAPI {
         List<BlockLocation> locations = getLocations(targetType);
         BlockData blockData = Bukkit.createBlockData(material);
 
-        if (blockData instanceof Orientable) {
-            Orientable orientation = (Orientable) blockData;
+        if (blockData instanceof Orientable orientation) {
             orientation.setAxis(converter.getIrisNormal());
         }
 
@@ -425,7 +420,7 @@ public class Gate implements GateAPI {
     public void setPortalControlMechanism(@NotNull ControlMechanism mechanism) {
         controlMechanisms.put(mechanism.getType(), mechanism);
     }
-    
+
     @Override
     public ControlMechanism getPortalControlMechanism(@NotNull MechanismType type) {
         return controlMechanisms.get(type);

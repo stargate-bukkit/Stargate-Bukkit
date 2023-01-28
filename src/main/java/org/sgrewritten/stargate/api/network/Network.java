@@ -6,6 +6,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 
 import java.util.Collection;
@@ -47,7 +48,7 @@ public interface Network {
      * @param saveToDatabase <p>Whether to also save the portal to the database, only instances of RealPortal can be saved</p>
      * @throws NameConflictException <p> if portal a portal with that name already exist in the network </p>
      */
-    void addPortal(Portal portal, boolean saveToDatabase) throws InvalidNameException, NameConflictException;
+    void addPortal(Portal portal, boolean saveToDatabase) throws NameConflictException;
 
     /**
      * Checks whether there is already a portal in this network with the given name
@@ -114,24 +115,28 @@ public interface Network {
     String getId();
 
     /**
-     * Gets the NetworkType of this network 
+     * Gets the NetworkType of this network
+     *
      * @return <p> The NetworkType of this network </p>
      */
     NetworkType getType();
 
     /**
      * Gets how the network is stored
+     *
      * @return <p> The storage type of the portal </p>
      */
     StorageType getStorageType();
-    
+
     /**
      * Change the name of the network
-     * 
+     * <p>
      * Does not save to database
+     *
      * @param newName
      * @throws InvalidNameException
-     * @throws NameLengthException 
+     * @throws NameLengthException
+     * @throws UnimplementedFlagException
      */
-    void setID(String newName) throws InvalidNameException, NameLengthException;
+    void setID(String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
 }

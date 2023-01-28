@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.database;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.BlockVector;
@@ -94,14 +95,6 @@ public class SQLQueryGenerator {
         }
     }
 
-    public PreparedStatement generateAddMetaToPortalTableStatement(Connection connection, StorageType portalType) throws SQLException {
-        if (portalType == StorageType.LOCAL) {
-            return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_PORTAL));
-        } else {
-            return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_INTER_PORTAL));
-        }
-    }
-
     /**
      * Gets a prepared statement for creating the portal position type table
      *
@@ -151,14 +144,6 @@ public class SQLQueryGenerator {
         }
     }
 
-    public PreparedStatement generateAddMetaToPortalPositionTableStatement(Connection connection, StorageType type) throws SQLException {
-        if (type == StorageType.LOCAL) {
-            return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_PORTAL_POSITION));
-        } else {
-            return prepareQuery(connection, getQuery(SQLQuery.ADD_META_TO_TABLE_INTER_PORTAL_POSITION));
-        }
-    }
-
     /**
      * Gets a prepared statement for adding an index on portalName, networkName for
      * the portal position table
@@ -204,7 +189,7 @@ public class SQLQueryGenerator {
      *
      * @param connection <p>The database connection to use</p>
      * @param portalType <p>The type of the portal (used to determine which table to select from)</p>
-     * @param portal <b> The relevent portal.</b>
+     * @param portal     <b> The relevent portal.</b>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
@@ -352,7 +337,7 @@ public class SQLQueryGenerator {
      *
      * @param connection <p>The database connection to use</p>
      * @param portalType <p>The portal type to remove the flags from</p>
-     * @param portal <b>The relevent portal</b>
+     * @param portal     <b>The relevent portal</b>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
@@ -374,8 +359,8 @@ public class SQLQueryGenerator {
      *
      * @param connection <p>The database connection to use</p>
      * @param portalType <p>The portal type to remove the flags from</p>
-     * @param portal <b>The relevent portal</b>
-     * @param flagChar <p>A character representing a portal flag</p>
+     * @param portal     <b>The relevent portal</b>
+     * @param flagChar   <p>A character representing a portal flag</p>
      * @return <p>A prepared statement</p>
      * @throws SQLException <p>If unable to prepare the statement</p>
      */
@@ -440,7 +425,7 @@ public class SQLQueryGenerator {
             statement.setString(12, Stargate.getServerUUID());
         }
 
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        log(Level.FINEST, "sql query: " + statementMessage);
         return statement;
     }
 
@@ -466,7 +451,7 @@ public class SQLQueryGenerator {
         PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, portal.getName());
         statement.setString(2, portal.getNetwork().getId());
-        logger.logMessage(Level.FINEST, "sql query: " + statementMessage);
+        log(Level.FINEST, "sql query: " + statementMessage);
         return statement;
     }
 
@@ -482,7 +467,7 @@ public class SQLQueryGenerator {
     public PreparedStatement generateUpdateServerInfoStatus(Connection connection, String serverUUID, String serverName) throws SQLException {
         String statementString = getQuery(SQLQuery.REPLACE_SERVER_INFO);
         String statementMessage = tableNameConfiguration.replaceKnownTableNames(statementString);
-        logger.logMessage(Level.FINEST, statementMessage);
+        log(Level.FINEST, statementMessage);
         PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, serverUUID);
         statement.setString(2, serverName);
@@ -538,7 +523,7 @@ public class SQLQueryGenerator {
      */
     private PreparedStatement prepareQuery(Connection connection, String query) throws SQLException {
         query = tableNameConfiguration.replaceKnownTableNames(query);
-        logger.logMessage(Level.FINEST, query);
+        log(Level.FINEST, query);
         return connection.prepareStatement(query);
     }
 
@@ -603,7 +588,7 @@ public class SQLQueryGenerator {
     }
 
     public PreparedStatement generateUpdateNetworkNameStatement(Connection connection, String newName, String networkName,
-            StorageType portalType) throws SQLException {
+                                                                StorageType portalType) throws SQLException {
         PreparedStatement statement;
         if (portalType == StorageType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.UPDATE_NETWORK_NAME));
@@ -616,7 +601,7 @@ public class SQLQueryGenerator {
     }
 
     public PreparedStatement generateUpdatePortalNameStatement(Connection connection, String newName, String portalName, String networkName,
-            StorageType portalType) throws SQLException {
+                                                               StorageType portalType) throws SQLException {
         PreparedStatement statement;
         if (portalType == StorageType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.UPDATE_PORTAL_NAME));
@@ -630,7 +615,7 @@ public class SQLQueryGenerator {
     }
 
     public PreparedStatement generateGetAllPortalsOfNetwork(Connection connection, String netName,
-            StorageType portalType) throws SQLException {
+                                                            StorageType portalType) throws SQLException {
         PreparedStatement statement;
         if (portalType == StorageType.LOCAL) {
             statement = prepareQuery(connection, getQuery(SQLQuery.GET_ALL_PORTALS_OF_NETWORK));
@@ -639,6 +624,19 @@ public class SQLQueryGenerator {
         }
         statement.setString(1, netName);
         return statement;
+    }
+
+    /**
+     * Logs a message at the finest log level
+     *
+     * @param message <p>The message to log</p>
+     */
+    public void log(Level level, String message) {
+        if (logger != null) {
+            logger.logMessage(level, message);
+        } else {
+            Bukkit.getLogger().log(level, message);
+        }
     }
 
 }

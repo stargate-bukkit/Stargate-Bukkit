@@ -3,9 +3,9 @@ package org.sgrewritten.stargate.exception.name;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.exception.TranslatableException;
 
-public class BungeeNameException extends TranslatableException{
+public class BungeeNameException extends TranslatableException {
 
-    private TranslatableMessage translatableMessage;
+    private final TranslatableMessage translatableMessage;
 
     public BungeeNameException(String message, TranslatableMessage translatableMessage) {
         super(message);
@@ -13,7 +13,7 @@ public class BungeeNameException extends TranslatableException{
     }
 
     @Override
-    public TranslatableMessage getTranslatableMessage() {
+    protected TranslatableMessage getTranslatableMessage() {
         return translatableMessage;
     }
 

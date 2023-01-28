@@ -15,12 +15,12 @@ import org.sgrewritten.stargate.api.network.RegistryAPI;
  */
 public class EntityInsideBlockEventListener implements Listener {
 
-    private RegistryAPI registry;
+    private final RegistryAPI registry;
 
     public EntityInsideBlockEventListener(RegistryAPI registry) {
         this.registry = registry;
     }
-    
+
     /**
      * Listens for the entity inside block event and cancels it if it's caused by a player entering a Stargate
      *

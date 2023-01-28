@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -30,10 +32,8 @@ public final class GateFormatReader {
             Material.CAVE_AIR,
             Material.VOID_AIR,
     };
-    private static final Map<Material,Material> materialEdgecases = loadMaterialEdgecases();
-    static {
-        
-    }
+    private static final Map<Material, Material> materialEdgeCases = loadMaterialEdgeCases();
+    private static Map<String, String> legacyMaterialConversions = null;
 
     private GateFormatReader() {
 
@@ -98,10 +98,10 @@ public final class GateFormatReader {
                     throw new ParsingErrorException("Invalid material ''" + stringId + "''");
                 }
             }
-            if(materialEdgecases.containsKey(id)) {
-                foundIDs.add(materialEdgecases.get(id));
+            if (materialEdgeCases.containsKey(id)) {
+                foundIDs.add(materialEdgeCases.get(id));
             }
-            if(id.isBlock()) {
+            if (id.isBlock()) {
                 foundIDs.add(id);
             }
         }
@@ -122,7 +122,7 @@ public final class GateFormatReader {
      * @return <p>The column count/width of the loaded gate</p>
      * @throws ParsingErrorException <p>If the gate file cannot be parsed</p>
      */
-    protected static int readGateFileContents(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
+    private static int readGateFileContents(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
                                             List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
         String line;
         boolean designing = false;
@@ -168,7 +168,7 @@ public final class GateFormatReader {
      * @param design     <p>The two-dimensional list to store the loaded design to</p>
      * @return <p>The new max columns value of the design</p>
      */
-    protected static int readGateDesignLine(String line, int maxColumns, List<List<Character>> design) {
+    private static int readGateDesignLine(String line, int maxColumns, List<List<Character>> design) {
         List<Character> row = new ArrayList<>();
 
         //Update the max columns number if this line has more columns
@@ -194,7 +194,7 @@ public final class GateFormatReader {
      * @param config               <p>The config value map to store to</p>
      * @throws ParsingErrorException <p>If an invalid material is encountered</p>
      */
-    protected static void readGateConfigValue(String line, Map<Character, Set<Material>> characterMaterialMap,
+    private static void readGateConfigValue(String line, Map<Character, Set<Material>> characterMaterialMap,
                                             Map<String, String> config) throws ParsingErrorException {
         String[] split = line.split("=");
         String key = split[0].trim();
@@ -218,8 +218,28 @@ public final class GateFormatReader {
      * @param stringId <p>The legacy material name to parse</p>
      * @return <p>The resulting material, or null if no such legacy material exists</p>
      */
-    protected static Material parseMaterialFromLegacyName(String stringId) {
-        return Material.getMaterial(XMaterial.matchXMaterial(stringId).toString());
+    private static Material parseMaterialFromLegacyName(String stringId) {
+        try {
+            String fromNumeric = parseMaterialFromMagicalNumber(stringId.trim());
+            if (fromNumeric != null) {
+                stringId = fromNumeric;
+            }
+            Optional<XMaterial> matchedMaterial = XMaterial.matchXMaterial(stringId);
+            return matchedMaterial.map(XMaterial::parseMaterial).orElse(null);
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+
+    private static String parseMaterialFromMagicalNumber(String stringId) {
+        String[] possibleSplitNumericID = stringId.split(":");
+        if (possibleSplitNumericID.length == 2) {
+            stringId = possibleSplitNumericID[0].trim() + ":" + possibleSplitNumericID[1].trim();
+        }
+        if (legacyMaterialConversions == null) {
+            legacyMaterialConversions = loadLegacyMaterials();
+        }
+        return legacyMaterialConversions.get(stringId);
     }
 
     /**
@@ -229,7 +249,7 @@ public final class GateFormatReader {
      * @param line     <p>The line currently parsed</p>
      * @throws ParsingErrorException <p>If unable to parse the tag</p>
      */
-    protected static Set<Material> parseMaterialTag(String stringId, String line) throws ParsingErrorException {
+    private static Set<Material> parseMaterialTag(String stringId, String line) throws ParsingErrorException {
         Set<Material> foundIDs = EnumSet.noneOf(Material.class);
         String tagString = stringId.replace(TAG_IDENTIFIER, "");
         Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS,
@@ -245,22 +265,36 @@ public final class GateFormatReader {
         return foundIDs;
     }
 
-    private static Map<Material,Material> loadMaterialEdgecases(){
-        Map<Material,Material> materialEdgecases = new EnumMap<>(Material.class);
-        Map<String,String> temp = new HashMap<>();
-        FileHelper.readInternalFileToMap("/util/materialEdgecases.properties", temp);
-        for(Material material : Material.values()) {
-            for(String edgecase : temp.keySet()) {
-                String type = material.toString().replaceAll(edgecase, "");
-                if(type.equals(material.toString())) {
+    /**
+     * A map of material edge-cases, this is for example when you don't want to differentiate between a torch and
+     * a wall torch
+     *
+     * @return <p> A map with material edge-cases</p>
+     */
+    private static Map<Material, Material> loadMaterialEdgeCases() {
+        Map<Material, Material> materialEdgeCases = new EnumMap<>(Material.class);
+        Map<String, String> temp = new HashMap<>();
+        FileHelper.readInternalFileToMap("/material/materialEdgeCases.properties", temp);
+        for (Material material : Material.values()) {
+            for (String edgeCase : temp.keySet()) {
+                String type = material.toString().replaceAll(edgeCase, "");
+                if (type.equals(material.toString())) {
                     continue;
                 }
-                String replacement = temp.get(edgecase).replaceAll("\\*", type);
-                materialEdgecases.put(material, Material.valueOf(replacement));
-                materialEdgecases.put(Material.valueOf(replacement), material);
+                String replacement = temp.get(edgeCase).replaceAll("\\*", type);
+                materialEdgeCases.put(material, Material.valueOf(replacement));
+                materialEdgeCases.put(Material.valueOf(replacement), material);
             }
         }
-        return materialEdgecases;
+        return materialEdgeCases;
     }
-    
+
+    /**
+     * @return <p>A map of all legacy number materials</p>
+     */
+    private static Map<String, String> loadLegacyMaterials() {
+        Map<String, String> output = new HashMap<>();
+        FileHelper.readInternalFileToMap("/material/legacyMaterialConversions.properties", output);
+        return output;
+    }
 }

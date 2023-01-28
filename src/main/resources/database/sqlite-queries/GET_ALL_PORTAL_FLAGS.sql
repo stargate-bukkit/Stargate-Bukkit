@@ -1,0 +1,1 @@
+SELECT id, `character` FROM {Flag};

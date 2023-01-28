@@ -65,8 +65,8 @@ public interface PermissionManager {
     /**
      * Checks whether the entity is allowed to create stargates in the given network
      *
-     * @param network    <p>The name of the network to check</p>
-     * @param type       <p> The type if the network to check</p>
+     * @param network <p>The name of the network to check</p>
+     * @param type    <p> The type if the network to check</p>
      * @return <p>True if the entity is allowed to create stargates</p>
      */
     boolean canCreateInNetwork(String network, NetworkType type);

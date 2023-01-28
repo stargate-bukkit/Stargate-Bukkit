@@ -60,13 +60,6 @@ public class DatabaseHelper {
         PreparedStatement portalViewStatement = sqlQueryGenerator.generateCreatePortalViewStatement(connection, StorageType.LOCAL);
         runStatement(portalViewStatement);
 
-        try {
-            // Adds a new column to some tables, if this already has been done it throws an sql error
-            // Done separatly as this is part of a refactor
-            DatabaseHelper.tableRefactor_1_0_0_13(connection, sqlQueryGenerator, useInterServerNetworks);
-        } catch (SQLException ignored) {
-        }
-
         if (!useInterServerNetworks) {
             connection.close();
             return;
@@ -148,7 +141,7 @@ public class DatabaseHelper {
      *
      * @param stargate <p>The Stargate instance to use for initialization</p>
      * @return <p>The loaded database</p>
-     * @throws SQLException <p>If an SQL exception occurs</p>
+     * @throws SQLException                                                       <p>If an SQL exception occurs</p>
      * @throws org.sgrewritten.stargate.exception.StargateInitializationException
      */
     public static SQLDatabaseAPI loadDatabase(Stargate stargate) throws SQLException, StargateInitializationException {
@@ -165,13 +158,12 @@ public class DatabaseHelper {
             String password = ConfigurationHelper.getString(ConfigurationOption.BUNGEE_PASSWORD);
             boolean useSSL = ConfigurationHelper.getBoolean(ConfigurationOption.BUNGEE_USE_SSL);
 
-            switch (driver) {
-                case MARIADB:
-                case MYSQL:
-                    return new MySqlDatabase(driver, address, port, bungeeDatabaseName, username, password, useSSL);
-                default:
-                    throw new SQLException("Unsupported driver: Stargate currently supports MariaDb and MySql for remote databases");
-            }
+            return switch (driver) {
+                case MARIADB, MYSQL ->
+                        new MySqlDatabase(driver, address, port, bungeeDatabaseName, username, password, useSSL);
+                default ->
+                        throw new SQLException("Unsupported driver: Stargate currently supports MariaDb and MySql for remote databases");
+            };
         } else {
             String databaseName = ConfigurationHelper.getString(ConfigurationOption.DATABASE_NAME);
             File file = new File(stargate.getAbsoluteDataFolder(), databaseName + ".db");
@@ -190,14 +182,5 @@ public class DatabaseHelper {
                 : "";
         String serverPrefix = usingRemoteDatabase ? Stargate.getServerUUID() : "";
         return new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
-    }
-
-    public static void tableRefactor_1_0_0_13(Connection connection, SQLQueryGenerator sqlQueryGenerator, boolean useInterServerNetworks) throws SQLException {
-        DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalTableStatement(connection, StorageType.LOCAL));
-        DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalPositionTableStatement(connection, StorageType.LOCAL));
-        if (useInterServerNetworks) {
-            DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalTableStatement(connection, StorageType.INTER_SERVER));
-            DatabaseHelper.runStatement(sqlQueryGenerator.generateAddMetaToPortalPositionTableStatement(connection, StorageType.INTER_SERVER));
-        }
     }
 }

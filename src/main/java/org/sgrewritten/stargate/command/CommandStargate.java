@@ -19,14 +19,14 @@ import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
  */
 public class CommandStargate implements CommandExecutor {
 
-    private LanguageManager languageManager;
-    private @NotNull Stargate stargate;
+    private final LanguageManager languageManager;
+    private final @NotNull Stargate stargate;
 
     public CommandStargate(@NotNull Stargate stargate) {
         this.languageManager = stargate.getLanguageManager();
         this.stargate = stargate;
     }
-    
+
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
                              @NotNull String[] args) {
@@ -41,9 +41,9 @@ public class CommandStargate implements CommandExecutor {
                 case "version":
                     break;
                 case "parityconfirm":
-                    return new CommandParity(stargate.getStoredPropertiesAPI(),stargate.getDataFolder(),true).onCommand(commandSender, command, s, args);
+                    return new CommandParity(stargate.getStoredPropertiesAPI(), true).onCommand(commandSender, command, s, args);
                 case "parityreject":
-                    return new CommandParity(stargate.getStoredPropertiesAPI(),stargate.getDataFolder(),false).onCommand(commandSender, command, s, args);
+                    return new CommandParity(stargate.getStoredPropertiesAPI(), false).onCommand(commandSender, command, s, args);
                 default:
                     return false;
             }

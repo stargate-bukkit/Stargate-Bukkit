@@ -1,5 +1,10 @@
 package org.sgrewritten.stargate.util;
 
+import org.apache.tika.parser.txt.CharsetDetector;
+import org.apache.tika.parser.txt.CharsetMatch;
+import org.sgrewritten.stargate.Stargate;
+
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,17 +14,27 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.sgrewritten.stargate.Stargate;
 
 /**
  * Utility class for helping with file reading and writing
  */
 public final class FileHelper {
+
+    private static final String UTF8_BOM = "\uFEFF";
 
     private FileHelper() {
 
@@ -34,14 +49,30 @@ public final class FileHelper {
      */
     public static BufferedReader getBufferedReader(File file) throws IOException {
         InputStream inputStream = Files.newInputStream(file.toPath());
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        return new BufferedReader(inputStreamReader);
+        CharsetDetector charsetDetector = new CharsetDetector();
+        charsetDetector.setText(inputStream instanceof BufferedInputStream ? inputStream : new BufferedInputStream(inputStream));
+        charsetDetector.enableInputFilter(true);
+        CharsetMatch cm = charsetDetector.detect();
+        String encoding = cm.getName();
+        return getBufferedReader(file, encoding);
+    }
+
+    /**
+     * Gets a buffered reader for reading the given file
+     *
+     * @param file     <p>The file to read</p>
+     * @param encoding <p>The encoding of the file </p>
+     * @return <p>A buffered reader for reading the given file</p>
+     * @throws IOException <p>If unable to initialize the buffered reader</p>
+     */
+    public static BufferedReader getBufferedReader(File file, String encoding) throws IOException {
+        return new BufferedReader(new InputStreamReader(Files.newInputStream(file.toPath()), encoding));
     }
 
     /**
      * Gets a buffered writer for writing to the given file
      *
-     * @param file <p>The file to write to</p>
+     * @param file         <p>The file to write to</p>
      * @param appendToFile <p>Whether the writer should append to the file</p>
      * @return <p>A buffered writer for writing to the given file</p>
      * @throws FileNotFoundException <p>If the given file does not exist</p>
@@ -104,6 +135,49 @@ public final class FileHelper {
     }
 
     /**
+     * Converts the stream directly into a string, includes the newline character
+     *
+     * @param stream <p> The stream to read from </p>
+     * @return <p> A String of the file read </p>
+     * @throws IOException <p>If unable to read the stream</p>
+     */
+    public static String readStreamToString(InputStream stream) throws IOException {
+        BufferedReader reader = FileHelper.getBufferedReaderFromInputStream(stream);
+        String line = reader.readLine();
+        StringBuilder lines = new StringBuilder();
+        while (line != null) {
+            lines.append(line).append("\n");
+            line = reader.readLine();
+        }
+        return lines.toString();
+    }
+
+    public static List<Path> listFilesOfInternalDirectory(String directory) throws IOException, URISyntaxException {
+        URL directoryURL = Stargate.class.getResource(directory);
+        if (directoryURL == null) {
+            return null;
+        }
+        URI uri = directoryURL.toURI();
+        FileSystem fileSystem = null;
+        List<Path> walk;
+        try {
+            Path path;
+            if (uri.getScheme().equals("jar")) {
+                fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
+                path = fileSystem.getPath(directory);
+            } else {
+                path = Paths.get(uri);
+            }
+            walk = Files.walk(path, 1).toList();
+        } finally {
+            if (fileSystem != null) {
+                fileSystem.close();
+            }
+        }
+        return walk;
+    }
+
+    /**
      * Reads key/value pairs from an input stream
      *
      * @param bufferedReader <p>The buffered reader to read</p>
@@ -147,22 +221,23 @@ public final class FileHelper {
      * @return <p>A string guaranteed without a BOM</p>
      */
     public static String removeUTF8BOM(String string) {
-        String UTF8_BOM = "\uFEFF";
         if (string.startsWith(UTF8_BOM)) {
             string = string.substring(1);
         }
         return string;
     }
-    
+
     /**
      * Creates a hidden file if it does not already exist
-     * @param dataFolder <p> The stargate datafolder </p>
-     * @param internalFolder    <p> The hidden datafolder </p>
-     * @param fileName  <p> The name of the file to be created </p>
-     * @return  <p> The location of the file created </p>
-     * @throws IOException 
+     *
+     * @param dataFolder     <p> The stargate datafolder </p>
+     * @param internalFolder <p> The hidden datafolder </p>
+     * @param fileName       <p> The name of the file to be created </p>
+     * @return <p> The location of the file created </p>
+     * @throws IOException <p>If unable to create the file</p>
      */
-    public static File createHiddenFileIfNotExists(String dataFolder, String internalFolder, String fileName) throws IOException {
+    public static File createHiddenFileIfNotExists(String dataFolder, String internalFolder,
+                                                   String fileName) throws IOException {
         File path = new File(dataFolder, internalFolder);
         if (!path.exists() && path.mkdir()) {
             try {
@@ -172,7 +247,7 @@ public final class FileHelper {
             }
         }
         File hiddenFile = new File(path, fileName);
-        if(!hiddenFile.exists()) {
+        if (!hiddenFile.exists()) {
             if (!hiddenFile.createNewFile()) {
                 throw new FileNotFoundException(fileName + " was not found and could not be created");
             }

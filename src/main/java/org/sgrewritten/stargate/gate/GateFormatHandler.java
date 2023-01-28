@@ -69,12 +69,12 @@ public class GateFormatHandler {
     /**
      * Loads all gate formats from the gate folder
      *
-     * @param dir <p>The folder to load gates from</p>
+     * @param dir    <p>The folder to load gates from</p>
      * @param logger
      * @return <p>A map between a control block material and the corresponding gate format</p>
      */
     public static List<GateFormat> loadGateFormats(File dir, StargateLogger logger) {
-        Stargate.log(Level.FINE,"Loading gates from " + dir.getAbsolutePath());
+        Stargate.log(Level.FINE, "Loading gates from " + dir.getAbsolutePath());
         List<GateFormat> gateFormatMap = new ArrayList<>();
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".gate")) : new File[0];
 

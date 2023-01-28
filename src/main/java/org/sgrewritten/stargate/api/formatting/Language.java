@@ -55,7 +55,7 @@ public enum Language {
      */
     EN_US("en-US", "en-US"),
     /**
-     * Spaniard Spanish 
+     * Spaniard Spanish
      */
     ES_ES("es-ES", "es-ES"),
     /**
@@ -92,7 +92,7 @@ public enum Language {
      */
     LOL_US("lol-US", "lol"),
     /**
-     * The default dialect of Bokmal is from Norway.
+     * The default dialect of Bokmål is from Norway.
      */
     NB_NO("nb-NO", "nb"),
     /**
@@ -140,7 +140,7 @@ public enum Language {
      */
     UK_UA("uk-UA", "uk"),
     /**
-     * The default dialect of Vietnamese is from Viet Nam.
+     * The default dialect of Vietnamese is from Vietnam.
      */
     VI_VN("vi-VN", "vi"),
     /**

@@ -16,16 +16,14 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.manager.PermissionManager;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.LocalNetwork;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.BooleanSupplier;
 import java.util.logging.Level;
 
 /**
@@ -51,54 +49,31 @@ public final class NetworkCreationHelper {
     }
 
     /**
-     * Check the name of a network, and insert the related flags into the flags collection
-     *
-     * @param networkName <p> The name of the network </p>
-     * @return 
-     */
-    public static List<PortalFlag> getNameRelatedFlags(String networkName) {
-        HighlightingStyle highlight = HighlightingStyle.getHighlightType(networkName);
-        List<PortalFlag> flags = new ArrayList<>();
-        
-        for(NetworkType type : NetworkType.values()) {
-            if(type.getHighlightingStyle() == highlight) {
-                flags.add(type.getRelatedFlag());
-                break;
-            }
-        }
-        return flags;
-    }
-
-    /**
      * Interprets a networkname and type, then selects it or creates it if it does not already exist
-     * 
+     *
      * @param name              <p> Initial name of the network</p>
      * @param permissionManager <p> A permission manager of the player</p>
      * @param player            <p> The player selecting the network</p>
      * @param flags             <p> flags of a portal this selection or creation comes from</p>
      * @param registry          <p> Where named network is (or will be) registered</p>
      * @return <p>The network the portal should be connected to</p>
-     * @throws TranslatableException 
-     * @throws InvalidNameException 
+     * @throws TranslatableException <p>If invalid input is given</p>
      */
-    public static Network selectNetwork(String name, PermissionManager permissionManager, Player player, Set<PortalFlag> flags, RegistryAPI registry) throws TranslatableException, InvalidNameException{
+    public static Network selectNetwork(String name, PermissionManager permissionManager, Player player, Set<PortalFlag> flags, RegistryAPI registry) throws TranslatableException {
 
         Stargate.log(Level.FINER, "....Choosing network name....");
         Stargate.log(Level.FINER, "initial name is '" + name + "'");
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(name);
         String unHighlightedName = NameHelper.getTrimmedName(HighlightingStyle.getNameFromHighlightedText(name));
-        TwoTuple<NetworkType,String> data;
-        
-        if(flags.contains(NetworkType.TERMINAL.getRelatedFlag())) {
-            data = new TwoTuple<>(NetworkType.TERMINAL,unHighlightedName);
-        }
-        else if(unHighlightedName.trim().isEmpty()) {
-            data  = getNetworkDataFromEmptyDefinition(player,permissionManager);
-        }
-        else if(NetworkType.styleGivesNetworkType(highlight)) {
-            data = getNetworkDataFromExplicitDefinition(highlight,unHighlightedName,registry,flags.contains(PortalFlag.FANCY_INTER_SERVER));  
-        }
-        else {
+        TwoTuple<NetworkType, String> data;
+
+        if (flags.contains(NetworkType.TERMINAL.getRelatedFlag())) {
+            data = new TwoTuple<>(NetworkType.TERMINAL, unHighlightedName);
+        } else if (unHighlightedName.trim().isEmpty()) {
+            data = getNetworkDataFromEmptyDefinition(player, permissionManager);
+        } else if (NetworkType.styleGivesNetworkType(highlight)) {
+            data = getNetworkDataFromExplicitDefinition(highlight, unHighlightedName, registry, flags.contains(PortalFlag.FANCY_INTER_SERVER));
+        } else {
             data = getNetworkDataFromImplicitDefinition(unHighlightedName, player, permissionManager,
                     flags.contains(PortalFlag.FANCY_INTER_SERVER), registry);
         }
@@ -109,62 +84,65 @@ public final class NetworkCreationHelper {
         }
         if (type == NetworkType.DEFAULT
                 && finalNetworkName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-            finalNetworkName = LocalNetwork.DEFAULT_NET_ID;
+            finalNetworkName = LocalNetwork.DEFAULT_NETWORK_ID;
         }
-        Stargate.log(Level.FINE,"Ended up with: " + type + ", " + finalNetworkName);
-        
-        return selectNetwork(finalNetworkName, type, flags.contains(PortalFlag.FANCY_INTER_SERVER),registry);
+        Stargate.log(Level.FINE, "Ended up with: " + type + ", " + finalNetworkName);
+
+        return selectNetwork(finalNetworkName, type, flags.contains(PortalFlag.FANCY_INTER_SERVER), registry);
     }
 
     /**
      * Gets the network with the given name, and creates it if it doesn't already exist
      *
-     * @param name  <p>The name of the network to get</p>
-     * @param type <p>The type of network to get</p>
-     * @param isInterserver <p>Whether or not the network works (or will work) across instances.
-     * @param registry <p> Where the network is (or will be) registered</p>
+     * @param name          <p>The name of the network to get</p>
+     * @param type          <p>The type of network to get</p>
+     * @param isInterServer <p>Whether or not the network works (or will work) across instances.
+     * @param registry      <p> Where the network is (or will be) registered</p>
      * @return <p>The network the portal should be connected to</p>
-     * @throws InvalidNameException <p>If the network name is invalid</p>
-     * @throws NameLengthException 
+     * @throws TranslatableException <p>If the network name is invalid</p>
      */
-    public static Network selectNetwork(String name, NetworkType type, boolean isInterserver, RegistryAPI registry) throws InvalidNameException, NameLengthException {
+    public static Network selectNetwork(String name, NetworkType type, boolean isInterServer, RegistryAPI registry) throws TranslatableException {
         name = NameHelper.getTrimmedName(name);
         try {
-            registry.createNetwork(name, type, isInterserver, false);
-        } catch (NameConflictException e) {
+            registry.createNetwork(name, type, isInterServer, false);
+        } catch (NameConflictException ignored) {
         }
-        return registry.getNetwork(name, isInterserver);
+        Network network = registry.getNetwork(name, isInterServer);
+        if (network == null || network.getType() != type) {
+            throw new NameConflictException("Could not find or create a network of type '" + type + "' with name '" + name + "'", true);
+        }
+        return network;
     }
 
     private static TwoTuple<NetworkType, String> getNetworkDataFromImplicitDefinition(String name, Player player,
-            PermissionManager permissionManager, boolean isInterserver, RegistryAPI registry) {
-        if(name.equals(player.getName()) && permissionManager.canCreateInNetwork(name, NetworkType.PERSONAL)) {
-            return new TwoTuple<>(NetworkType.PERSONAL,name);
+                                                                                      PermissionManager permissionManager, boolean isInterserver, RegistryAPI registry) {
+        if (name.equals(player.getName()) && permissionManager.canCreateInNetwork(name, NetworkType.PERSONAL)) {
+            return new TwoTuple<>(NetworkType.PERSONAL, name);
         }
-        if(name.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-            return new TwoTuple<>(NetworkType.DEFAULT,LocalNetwork.DEFAULT_NET_ID);
+        if (name.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
+            return new TwoTuple<>(NetworkType.DEFAULT, LocalNetwork.DEFAULT_NETWORK_ID);
         }
         Network possibleNetwork = registry.getNetwork(name, isInterserver);
-        if(possibleNetwork != null) {
-            return new TwoTuple<>(possibleNetwork.getType(),name);
+        if (possibleNetwork != null) {
+            return new TwoTuple<>(possibleNetwork.getType(), name);
         }
         UUID playerUUID = getPlayerUUID(name);
-        if(playerUUID != null && registry.getNetwork(playerUUID.toString(), isInterserver) != null) {
-            return new TwoTuple<>(NetworkType.PERSONAL,name);
+        if (registry.getNetwork(playerUUID.toString(), isInterserver) != null) {
+            return new TwoTuple<>(NetworkType.PERSONAL, name);
         }
-        return new TwoTuple<>(NetworkType.CUSTOM,name);
+        return new TwoTuple<>(NetworkType.CUSTOM, name);
     }
-    
-    private static TwoTuple<NetworkType,String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight,String name, RegistryAPI registry, boolean isInterserver) throws InvalidNameException{
+
+    private static TwoTuple<NetworkType, String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight, String name, RegistryAPI registry, boolean isInterserver) {
         String nameToTestFor = name;
         NetworkType type = NetworkType.getNetworkTypeFromHighlight(highlight);
         if (type == NetworkType.CUSTOM || type == NetworkType.TERMINAL) {
-            UUID possiblePlayerUUID = getPlayerUUID(nameToTestFor);
             int i = 1;
-            while (getDefaultNamesTaken().contains(nameToTestFor.toLowerCase())
-                    || (type == NetworkType.TERMINAL && possiblePlayerUUID != null
-                            && registry.getNetwork(possiblePlayerUUID.toString(), isInterserver) != null)) {
+            UUID possiblePlayerUUID = getPlayerUUID(nameToTestFor);
+            while (getDefaultNamesTaken().contains(nameToTestFor.toLowerCase()) || type == NetworkType.TERMINAL &&
+                    registry.getNetwork(possiblePlayerUUID.toString(), isInterserver) != null) {
                 nameToTestFor = name + i;
+                possiblePlayerUUID = getPlayerUUID(nameToTestFor);
                 i++;
             }
         }
@@ -172,9 +150,9 @@ public final class NetworkCreationHelper {
     }
 
     private static TwoTuple<NetworkType, String> getNetworkDataFromEmptyDefinition(Player player,
-            PermissionManager permissionManager) {
-        if(permissionManager.canCreateInNetwork("", NetworkType.DEFAULT)) {
-            return new TwoTuple<>(NetworkType.DEFAULT, LocalNetwork.DEFAULT_NET_ID);
+                                                                                   PermissionManager permissionManager) {
+        if (permissionManager.canCreateInNetwork("", NetworkType.DEFAULT)) {
+            return new TwoTuple<>(NetworkType.DEFAULT, LocalNetwork.DEFAULT_NETWORK_ID);
         }
         return new TwoTuple<>(NetworkType.PERSONAL, player.getName());
     }
@@ -185,12 +163,12 @@ public final class NetworkCreationHelper {
      * @param playerName <p>The name of a player</p>
      * @return <p>The player's unique ID</p>
      */
-    private static UUID getPlayerUUID(String playerName) {
+    public static UUID getPlayerUUID(String playerName) {
         return Bukkit.getOfflinePlayer(playerName).getUniqueId();
     }
 
     public static Network getInterserverLocalConflict(Network network, RegistryAPI registry) {
-        String[] idsToCompare = { network.getName() , getPlayerUUID(network.getName()).toString()};
+        String[] idsToCompare = {network.getName(), getPlayerUUID(network.getName()).toString()};
 
         for (String idToCompare : idsToCompare) {
             if (network.getStorageType() == StorageType.LOCAL) {

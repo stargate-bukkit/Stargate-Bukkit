@@ -28,7 +28,7 @@ import java.util.logging.Level;
 
 public class CommandTrace implements CommandExecutor {
 
-    private Stargate stargate;
+    private final Stargate stargate;
 
 
     public CommandTrace(@NotNull Stargate stargate) {

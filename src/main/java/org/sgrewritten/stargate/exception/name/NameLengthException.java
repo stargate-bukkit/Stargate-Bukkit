@@ -3,11 +3,14 @@ package org.sgrewritten.stargate.exception.name;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.exception.TranslatableException;
 
+import java.io.Serial;
+
 public class NameLengthException extends TranslatableException {
 
     /**
-     * 
+     *
      */
+    @Serial
     private static final long serialVersionUID = 3943182936599325569L;
 
     public NameLengthException(String message) {
@@ -15,8 +18,8 @@ public class NameLengthException extends TranslatableException {
     }
 
     @Override
-    public TranslatableMessage getTranslatableMessage() {
-        return TranslatableMessage.INVALID_NAME;
+    protected TranslatableMessage getTranslatableMessage() {
+        return TranslatableMessage.INVALID_NAME_LENGTH;
     }
 
 }

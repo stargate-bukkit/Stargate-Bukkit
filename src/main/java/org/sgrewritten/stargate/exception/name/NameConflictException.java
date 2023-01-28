@@ -3,18 +3,23 @@ package org.sgrewritten.stargate.exception.name;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.exception.TranslatableException;
 
-public class NameConflictException extends TranslatableException{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -183581478633277966L;
+import java.io.Serial;
 
-    public NameConflictException(String message) {
+public class NameConflictException extends TranslatableException {
+    /**
+     *
+     */
+    @Serial
+    private static final long serialVersionUID = -183581478633277966L;
+    private final boolean isNetwork;
+
+    public NameConflictException(String message, boolean isNetwork) {
         super(message);
+        this.isNetwork = isNetwork;
     }
 
     @Override
-    public TranslatableMessage getTranslatableMessage() {
-        return TranslatableMessage.ALREADY_EXIST;
+    protected TranslatableMessage getTranslatableMessage() {
+        return isNetwork ? TranslatableMessage.NET_CONFLICT : TranslatableMessage.GATE_ALREADY_EXIST;
     }
 }

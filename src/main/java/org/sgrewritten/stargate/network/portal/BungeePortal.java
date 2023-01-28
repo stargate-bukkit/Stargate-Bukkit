@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -19,7 +20,6 @@ import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.util.NameHelper;
 
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -47,21 +47,21 @@ public class BungeePortal extends AbstractPortal {
      * @param flags             <p>The flags enabled for this portal</p>
      * @param gate              <p>The gate format used by this portal</p>
      * @param ownerUUID         <p>The UUID of this portal's owner</p>
-     * @param logger
-     * @throws InvalidNameException <p>If the portal name is invalid</p>
-     * @throws BungeeNameException 
-     * @throws NameLengthException 
+     * @throws InvalidNameException       <p>If the portal name is invalid</p>
+     * @throws BungeeNameException
+     * @throws NameLengthException
+     * @throws UnimplementedFlagException
      */
     public BungeePortal(Network network, String name, String destination, String destinationServer,
-                        Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager,StargateEconomyAPI economyAPI) throws InvalidNameException, BungeeNameException, NameLengthException {
-        super(network, name, flags, gate, ownerUUID,languageManager,economyAPI);
+                        Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyAPI) throws InvalidNameException, BungeeNameException, NameLengthException, UnimplementedFlagException {
+        super(network, name, flags, gate, ownerUUID, languageManager, economyAPI);
 
-        
+
         destination = NameHelper.getTrimmedName(destination);
         destinationServer = NameHelper.getTrimmedName(destinationServer);
-        
+
         if (destination == null || destination.isEmpty() || destinationServer == null || destinationServer.isEmpty()) {
-            throw new BungeeNameException("Lacking sign information for bungee portal",TranslatableMessage.BUNGEE_LACKING_SIGN_INFORMATION);
+            throw new BungeeNameException("Lacking sign information for bungee portal", TranslatableMessage.BUNGEE_LACKING_SIGN_INFORMATION);
         }
 
         /*

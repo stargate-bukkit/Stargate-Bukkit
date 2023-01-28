@@ -20,11 +20,11 @@ import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
-import org.sgrewritten.stargate.exception.name.BungeeNameException;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.InterServerNetwork;
@@ -78,7 +78,7 @@ public class SQLDatabase implements StorageAPI {
      */
     public SQLDatabase(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase,
                        StargateLogger logger, LanguageManager languageManager) throws SQLException {
-        load(database, usingBungee, usingRemoteDatabase, logger,languageManager);
+        load(database, usingBungee, usingRemoteDatabase, logger, languageManager);
     }
 
     /**
@@ -105,10 +105,10 @@ public class SQLDatabase implements StorageAPI {
     public void loadFromStorage(RegistryAPI registry, StargateEconomyAPI economyManager) throws StorageReadException {
         try {
             logger.logMessage(Level.FINER, "Loading portals from base database");
-            loadAllPortals(database, StorageType.LOCAL, registry,economyManager);
+            loadAllPortals(database, StorageType.LOCAL, registry, economyManager);
             if (useInterServerNetworks) {
                 logger.logMessage(Level.FINER, "Loading portals from inter-server bungee database");
-                loadAllPortals(database, StorageType.INTER_SERVER, registry,economyManager);
+                loadAllPortals(database, StorageType.INTER_SERVER, registry, economyManager);
             }
         } catch (SQLException exception) {
             throw new StorageReadException(exception);
@@ -122,6 +122,7 @@ public class SQLDatabase implements StorageAPI {
         try {
             connection = database.getConnection();
             connection.setAutoCommit(false);
+
             PreparedStatement savePortalStatement = sqlQueryGenerator.generateAddPortalStatement(connection, portal, portalType);
             savePortalStatement.execute();
             savePortalStatement.close();
@@ -184,8 +185,10 @@ public class SQLDatabase implements StorageAPI {
     /**
      * Loads all portals from the given database of the given portal type into the given registry
      *
-     * @param database   <p>The database to load from</p>
-     * @param portalType <p>The portal type to load</p>
+     * @param database       <p>The database to load from</p>
+     * @param portalType     <p>The portal type to load</p>
+     * @param registry       <p>The registry to register the loaded portals to</p>
+     * @param economyManager <p>The economy manager to use</p>
      * @throws SQLException <p>If an SQL error occurs</p>
      */
     private void loadAllPortals(SQLDatabaseAPI database, StorageType portalType, RegistryAPI registry, StargateEconomyAPI economyManager) throws SQLException {
@@ -194,71 +197,136 @@ public class SQLDatabase implements StorageAPI {
 
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
-            PortalData portalData = PortalStorageHelper.loadPortalData(resultSet, portalType);
-            if (portalData == null) {
-                continue;
-            }
-            boolean isBungee = portalData.flags.contains(PortalFlag.FANCY_INTER_SERVER);
-            String targetNetwork = portalData.networkName;
-            if (portalData.flags.contains(PortalFlag.BUNGEE)) {
-                targetNetwork = BungeePortal.getLegacyNetworkName();
-            }
-            Stargate.log(Level.FINEST,
-                    "Trying to add portal " + portalData.name + ", on network " + targetNetwork + ",isInterServer = " + isBungee);
-            try {
-                boolean isForced = portalData.flags.contains(PortalFlag.DEFAULT_NETWORK) || portalData.flags.contains(PortalFlag.TERMINAL_NETWORK);
-                Network network = registry.createNetwork(targetNetwork,portalData.flags,isForced);
-                
-                if(NetworkCreationHelper.getDefaultNamesTaken().contains(network.getId().toLowerCase())) {
-                    registry.rename(network);
-                }
-            } catch(NameConflictException ignored) {
-            } catch (InvalidNameException | TranslatableException e) {
-                Stargate.log(e);
-            }
-            Network network = registry.getNetwork(targetNetwork, isBungee);
-
-            if (portalType == StorageType.INTER_SERVER) {
-                if (!portalData.serverUUID.equals(Stargate.getServerUUID())) {
-                    Portal virtualPortal = new VirtualPortal(portalData.serverName, portalData.name, network, portalData.flags, portalData.ownerUUID);
-                    try {
-                        network.addPortal(virtualPortal, false);
-                    } catch (NameConflictException ignored) {
-                    } catch (InvalidNameException e) {
-                        Stargate.log(e);
-                    }
-                    Stargate.log(Level.FINEST, "Added as virtual portal");
-                    continue;
-                }
-            }
-
-            if (portalData.destination == null || portalData.destination.trim().isEmpty()) {
-                portalData.flags.add(PortalFlag.NETWORKED);
-            }
-
-            try {
-                List<GatePosition> portalPositions = getPortalPositions(portalData);
-                Gate gate = new Gate(portalData,registry);
-                if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
-                        && !gate.isValid(portalData.flags.contains(PortalFlag.ALWAYS_ON))) {
-                    throw new InvalidStructureException();
-                }
-                gate.addPortalPositions(portalPositions);
-                Portal portal = PortalCreationHelper.createPortal(network, portalData, gate,languageManager,registry,economyManager);
-                network.addPortal(portal, false);
-                Stargate.log(Level.FINEST, "Added as normal portal");
-            } catch (InvalidNameException | TranslatableException e) {
-                Stargate.log(e);
-            } catch (InvalidStructureException e) {
-                Stargate.log(Level.WARNING, String.format(
-                        "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
-                        portalData.name, (portalType == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName,
-                        portalData.topLeft));
-            } catch (GateConflictException ignored) {
-            }
+            loadPortal(resultSet, portalType, registry, economyManager);
         }
         statement.close();
         connection.close();
+    }
+
+    /**
+     * Loads one portal from the given result set into the given registry
+     *
+     * @param resultSet      <p>A query result with portal information</p>
+     * @param portalType     <p>The portal type to load</p>
+     * @param registry       <p>The registry to register the loaded portals to</p>
+     * @param economyManager <p>The economy manager to use</p>
+     * @throws SQLException <p>If an SQL error occurs</p>
+     */
+    private void loadPortal(ResultSet resultSet, StorageType portalType, RegistryAPI registry, StargateEconomyAPI economyManager) throws SQLException {
+        PortalData portalData = PortalStorageHelper.loadPortalData(resultSet, portalType);
+        if (portalData == null) {
+            return;
+        }
+
+        Network network = getNetwork(portalData, registry);
+        if (network == null) {
+            Stargate.log(Level.WARNING, "Unable to get network " + portalData.networkName);
+            return;
+        }
+
+        //If the loaded portal is virtual, register it to the network, and not as a normal one
+        if (registerVirtualPortal(portalType, portalData, network)) {
+            return;
+        }
+
+        if (portalData.destination == null || portalData.destination.trim().isEmpty()) {
+            portalData.flags.add(PortalFlag.NETWORKED);
+        }
+
+        //Actually register the gate and its positions
+        try {
+            registerPortalGate(portalData, network, registry, economyManager);
+        } catch (TranslatableException | GateConflictException e) {
+            Stargate.log(e);
+        } catch (InvalidStructureException e) {
+            Stargate.log(Level.WARNING, String.format(
+                    "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
+                    portalData.name, (portalType == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName,
+                    portalData.topLeft));
+        }
+    }
+
+    /**
+     * Registers the gate and portal positions for the given portal data
+     *
+     * @param portalData     <p>The portal data to register positions for</p>
+     * @param network        <p>The network the portal belongs to</p>
+     * @param registry       <p>The portal registry to register to</p>
+     * @param economyManager <p>The economy manager to use</p>
+     * @throws SQLException              <p>If unable to interact with the database</p>
+     * @throws InvalidStructureException <p>If the portal's gate is invalid</p>
+     * @throws GateConflictException     <p>If the new gate conflicts with an existing gate</p>
+     * @throws TranslatableException     <p>If some input is invalid</p>
+     */
+    private void registerPortalGate(PortalData portalData, Network network, RegistryAPI registry,
+                                    StargateEconomyAPI economyManager) throws SQLException,
+            InvalidStructureException, GateConflictException, TranslatableException {
+        List<GatePosition> gatePositions = getPortalPositions(portalData);
+        Gate gate = new Gate(portalData, registry);
+        if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
+                && !gate.isValid(portalData.flags.contains(PortalFlag.ALWAYS_ON))) {
+            throw new InvalidStructureException();
+        }
+        gate.addPortalPositions(portalPositions);
+        Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, languageManager, registry,
+                economyManager);
+        network.addPortal(portal, false);
+        Stargate.log(Level.FINEST, "Added as normal portal");
+    }
+
+    /**
+     * Registers the given portal as a virtual portal if
+     *
+     * @param portalType <p>The type of the loaded portal</p>
+     * @param portalData <p>The data for the loaded portal</p>
+     * @param network    <p>The network the portal belongs to</p>
+     * @return <p>True if the portal was registered as a virtual portal</p>
+     */
+    private boolean registerVirtualPortal(StorageType portalType, PortalData portalData, Network network) {
+        if (portalType == StorageType.INTER_SERVER && !portalData.serverUUID.equals(Stargate.getServerUUID())) {
+            Portal virtualPortal = new VirtualPortal(portalData.serverName, portalData.name, network, portalData.flags,
+                    portalData.ownerUUID);
+            try {
+                network.addPortal(virtualPortal, false);
+            } catch (NameConflictException exception) {
+                Stargate.log(exception);
+            }
+            Stargate.log(Level.FINEST, "Added as virtual portal");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Gets the network of the portal in the given portal data
+     *
+     * @param portalData <p>The portal data of a portal in the network</p>
+     * @param registry   <p>The stargate registry to use</p>
+     * @return <p>The resulting network, or null if invalid</p>
+     */
+    private Network getNetwork(PortalData portalData, RegistryAPI registry) {
+        boolean isBungee = portalData.flags.contains(PortalFlag.FANCY_INTER_SERVER);
+        String targetNetwork = portalData.networkName;
+        if (portalData.flags.contains(PortalFlag.BUNGEE)) {
+            targetNetwork = BungeePortal.getLegacyNetworkName();
+        }
+        Stargate.log(Level.FINEST,
+                "Trying to add portal " + portalData.name + ", on network " + targetNetwork + ",isInterServer = " + isBungee);
+        try {
+            boolean isForced = portalData.flags.contains(PortalFlag.DEFAULT_NETWORK);
+            Network network = registry.createNetwork(targetNetwork, portalData.flags, isForced);
+
+            if (NetworkCreationHelper.getDefaultNamesTaken().contains(network.getId().toLowerCase())) {
+                registry.rename(network);
+            }
+        } catch (NameConflictException ignored) {
+
+        } catch (TranslatableException e) {
+            Stargate.log(e);
+            return null;
+        }
+        return registry.getNetwork(targetNetwork, isBungee);
     }
 
     /**
@@ -328,14 +396,14 @@ public class SQLDatabase implements StorageAPI {
     public void load(SQLDatabaseAPI database, Stargate stargate, LanguageManager languageManager) throws StargateInitializationException {
         try {
             load(database, ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE),
-                    ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE), stargate,languageManager);
+                    ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE), stargate, languageManager);
         } catch (SQLException exception) {
             logger.logMessage(Level.SEVERE, exception.getMessage());
             throw new StargateInitializationException(exception.getMessage());
         }
     }
 
-    private void load(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase, StargateLogger logger,LanguageManager languageManager)
+    private void load(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase, StargateLogger logger, LanguageManager languageManager)
             throws SQLException {
         this.logger = logger;
         this.database = database;
@@ -348,11 +416,10 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public Network createNetwork(String networkName, NetworkType type, boolean isInterserver) throws InvalidNameException, NameLengthException {
-        if (isInterserver) {
-            return new InterServerNetwork(networkName,type);
-        }
-        else {
+    public Network createNetwork(String networkName, NetworkType type, boolean isInterServer) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
+        if (isInterServer) {
+            return new InterServerNetwork(networkName, type);
+        } else {
             return new LocalNetwork(networkName, type);
         }
     }
@@ -530,23 +597,11 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void updateNetworkName(String newName, String networkName, StorageType portalType) throws StorageWriteException{
-        
+    public void updateNetworkName(String newName, String networkName, StorageType portalType) throws StorageWriteException {
+
         try {
             Connection connection = database.getConnection();
-            DatabaseHelper.runStatement(sqlQueryGenerator.generateUpdateNetworkNameStatement(connection,newName,networkName,portalType));
-            connection.close();
-        } catch (SQLException e) {
-            throw new StorageWriteException(e);
-        }
-    }
-    
-    @Override
-    public void updatePortalName(String newName, String portalName, String networkName, StorageType portalType) throws StorageWriteException {
-        try {
-            Connection connection = database.getConnection();
-            DatabaseHelper
-                    .runStatement(sqlQueryGenerator.generateUpdatePortalNameStatement(connection, newName, portalName, networkName, portalType));
+            DatabaseHelper.runStatement(sqlQueryGenerator.generateUpdateNetworkNameStatement(connection, newName, networkName, portalType));
             connection.close();
         } catch (SQLException e) {
             throw new StorageWriteException(e);
@@ -554,10 +609,23 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public boolean netWorkExists(String netName, StorageType portalType) throws StorageReadException{
+    public void updatePortalName(String newName, GlobalPortalId globalPortalId, StorageType portalType) throws StorageWriteException {
         try {
             Connection connection = database.getConnection();
-            PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsOfNetwork(connection,netName,portalType);
+            DatabaseHelper
+                    .runStatement(sqlQueryGenerator.generateUpdatePortalNameStatement(connection, newName,
+                            globalPortalId.portalId(), globalPortalId.networkId(), portalType));
+            connection.close();
+        } catch (SQLException e) {
+            throw new StorageWriteException(e);
+        }
+    }
+
+    @Override
+    public boolean netWorkExists(String netName, StorageType portalType) throws StorageReadException {
+        try {
+            Connection connection = database.getConnection();
+            PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsOfNetwork(connection, netName, portalType);
             ResultSet resultSet = statement.getResultSet();
             return (resultSet != null) && resultSet.next();
         } catch (SQLException e) {

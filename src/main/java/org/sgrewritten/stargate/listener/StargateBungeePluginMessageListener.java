@@ -48,10 +48,9 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
     /**
      * Instantiates a new stargate bungee plugin message listener
      *
-     * @param stargateAPI    <p>Something implementing the Stargate API</p>
      * @param stargateLogger <p>Something implementing the Stargate logger</p>
      */
-    public StargateBungeePluginMessageListener(BungeeManager bungeeManager,StargateLogger stargateLogger) {
+    public StargateBungeePluginMessageListener(BungeeManager bungeeManager, StargateLogger stargateLogger) {
         this.stargateLogger = Objects.requireNonNull(stargateLogger);
         this.bungeeManager = Objects.requireNonNull(bungeeManager);
     }
@@ -68,8 +67,9 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      *  <li>plugin disable message - remove all virtual portals given in message</li>
      *  <li>portal open message - open selected portal. Too much ?</li>
      * </ul>
+     *
      * @param channel The channel being used to send the message.
-     * @param unused A player object.
+     * @param unused  A player object.
      * @param message The message being processed.
      */
     @Override

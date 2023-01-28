@@ -113,7 +113,7 @@ public class ColorNameInterpreter {
             throw new IllegalArgumentException();
         }
         String rgbArgumentsString = rgbCode.substring(rgbCode.indexOf("(") + 1, rgbCode.length() - 1);
-        String[] values = rgbArgumentsString.replace(" ", "").split("(,|:)");
+        String[] values = rgbArgumentsString.replace(" ", "").split("([,:])");
         // Check only the 3 first values, as those are the only ones related to hue (for
         // example rgb in rgba)
         return ChatColor.of(String.format("#%02X%02X%02X", Integer.valueOf(values[0]),
@@ -132,7 +132,7 @@ public class ColorNameInterpreter {
             throw new IllegalArgumentException();
         }
         String hsbArgumentsString = hsbCode.substring(hsbCode.indexOf("(") + 1, hsbCode.length() - 1);
-        String[] values = hsbArgumentsString.replace(" ", "").split("(,|:)");
+        String[] values = hsbArgumentsString.replace(" ", "").split("([,:])");
 
         try {
             java.awt.Color color = java.awt.Color.getHSBColor((float) Integer.parseInt(values[0]) / 360,

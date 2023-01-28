@@ -3,7 +3,6 @@ package org.sgrewritten.stargate.util.portal;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
@@ -81,8 +80,8 @@ public class TeleportationHelper {
      * @return <p>The locations part of the next cone layer</p>
      */
     protected static List<Location> getDirectionalConeLayer(List<Location> locations, BlockVector outwards,
-            BlockVector left, BlockVector right, BlockVector up, BlockVector down, int recursionNumber,
-            Location portalCenter) {
+                                                            BlockVector left, BlockVector right, BlockVector up, BlockVector down, int recursionNumber,
+                                                            Location portalCenter) {
         Set<Location> relativeLocations = new HashSet<>();
         for (Location location : locations) {
             /*

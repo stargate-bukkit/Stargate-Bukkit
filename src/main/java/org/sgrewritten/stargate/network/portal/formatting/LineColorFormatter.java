@@ -36,7 +36,7 @@ public class LineColorFormatter implements LineFormatter {
      * @param signMaterial <p>The material used for the sign</p>
      */
     public LineColorFormatter(DyeColor dyeColor, Material signMaterial) {
-        Stargate.log(Level.FINER, "Instantiating a new LineColorFormater with DyeColor " + dyeColor + " and sign Material " + signMaterial);
+        Stargate.log(Level.FINER, "Instantiating a new LineColorFormatter with DyeColor " + dyeColor + " and sign Material " + signMaterial);
         this.dyeColor = dyeColor;
         this.signMaterial = signMaterial;
 
@@ -59,7 +59,8 @@ public class LineColorFormatter implements LineFormatter {
     @Override
     public String formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
         String networkName = (network != null) ? network.getName() : "null";
-        return pointerColor + highlightingStyle.getHighlightedName(color + networkName + pointerColor);
+        String bold = (network instanceof InterServerNetwork) ? ChatColor.BOLD.toString() : "";
+        return pointerColor + bold + highlightingStyle.getHighlightedName(color + bold + networkName + pointerColor + bold);
     }
 
     @Override
@@ -139,9 +140,9 @@ public class LineColorFormatter implements LineFormatter {
     }
 
     /**
-     * Compile a map of all the flagcolors, good idea to use, as it avoids having to convert too much between hsb and rgb
+     * Compile a map of all the flag-colors, good idea to use, as it avoids having to convert too much between hsb and rgb
      *
-     * @return <p> A map of all the flagcolors </p>
+     * @return <p> A map of all the flag-colors </p>
      */
     private Map<PortalFlag, ChatColor> compileFlagColors() {
         Map<PortalFlag, ChatColor> flagColors = new HashMap<>();

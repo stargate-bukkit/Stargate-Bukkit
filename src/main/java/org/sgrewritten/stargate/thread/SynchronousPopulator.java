@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.thread;
 
+import org.bukkit.plugin.Plugin;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.ForcibleAction;
 import org.sgrewritten.stargate.action.SimpleAction;
@@ -12,8 +13,8 @@ import java.util.logging.Level;
 /**
  * Cycles through a queue of actions everytime the {@link SynchronousPopulator#run()} function is triggered.
  *
- * <p>If used with the {@link org.bukkit.scheduler.BukkitScheduler#scheduleSyncRepeatingTask(JavaPlugin,Runnable,long,long)} function, you can use
- * this as a handy way to do synchronous tasks (tasks that happens during a specific tick).
+ * <p>If used with the {@link org.bukkit.scheduler.BukkitScheduler#scheduleSyncRepeatingTask(Plugin, Runnable, long, long)}
+ * function, you can use this as a handy way to do synchronous tasks (tasks that happens during a specific tick).
  * Warning: Running this once, even by running forceDoAllTasks does not guarantee all tasks to finish.</p>
  *
  * @author Thorin
@@ -73,7 +74,7 @@ public class SynchronousPopulator implements Runnable {
         bungeePopulatorQueue.addAll(bungeeAddList);
         bungeeAddList.clear();
         int counter = 0;
-        while(!hasCompletedAllTasks() && counter < MAX_FORCE_COUNTER ) {
+        while (hasNotCompletedAllTasks() && counter < MAX_FORCE_COUNTER) {
             cycleQueues(true);
             counter++;
         }
@@ -127,8 +128,8 @@ public class SynchronousPopulator implements Runnable {
         }
     }
 
-    public boolean hasCompletedAllTasks() {
-        return populatorQueue.isEmpty() && bungeePopulatorQueue.isEmpty() && addList.isEmpty() && bungeeAddList.isEmpty();
+    public boolean hasNotCompletedAllTasks() {
+        return !populatorQueue.isEmpty() || !bungeePopulatorQueue.isEmpty() || !addList.isEmpty() || !bungeeAddList.isEmpty();
     }
 
 }

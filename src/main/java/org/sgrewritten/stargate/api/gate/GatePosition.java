@@ -17,7 +17,7 @@ public abstract class GatePosition {
     protected final BlockVector positionLocation;
 
     /**
-     * Instantiates a new portal position. Note that you can get this vector by 
+     * Instantiates a new portal position. Note that you can get this vector by
      * doing {@link GateAPI#getRelativeVector(org.bukkit.Location)}
      *
      * @param positionLocation <p>The location of this portal position in gatespace</p>
@@ -58,10 +58,9 @@ public abstract class GatePosition {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof GatePosition)) {
+        if (!(other instanceof GatePosition otherPortalPosition)) {
             return false;
         }
-        GatePosition otherPortalPosition = (GatePosition) other;
         return otherPortalPosition.getPositionLocation().equals(this.getPositionLocation());
     }
 
@@ -69,9 +68,9 @@ public abstract class GatePosition {
     public String toString() {
         return String.format("PortalPosition{x=%d,y=%d,z=%d}", positionLocation.getBlockX(), positionLocation.getBlockY(), positionLocation.getBlockZ());
     }
-    
+
     /**
-     * 
+     *
      * @param event
      * @param portal
      * @return <p> true if cancelled </p>

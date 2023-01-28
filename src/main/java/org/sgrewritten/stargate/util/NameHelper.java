@@ -1,7 +1,6 @@
 package org.sgrewritten.stargate.util;
 
 import net.md_5.bungee.api.ChatColor;
-
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
@@ -22,7 +21,7 @@ public final class NameHelper {
      * @return <p>The trimmed name</p>
      */
     public static String getTrimmedName(String name) {
-        if(name == null) {
+        if (name == null) {
             return null;
         }
         name = name.replaceAll("\\s\\s+", " ");
@@ -45,14 +44,15 @@ public final class NameHelper {
         }
         return normalizedName;
     }
-    
+
     /**
      * Checks the length of the name
+     *
      * @param name <p> The name to be checked </p>
      * @return <p> If the name has a valid length </p>
      */
-    public static boolean isValidName(String name) {
-        return name != null && !name.isEmpty() && name.length() < Stargate.getMaxTextLength();
+    public static boolean isInvalidName(String name) {
+        return name == null || name.isEmpty() || name.length() >= Stargate.getMaxTextLength();
     }
 
 }

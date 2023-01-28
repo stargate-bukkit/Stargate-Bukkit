@@ -35,12 +35,15 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
+import org.sgrewritten.stargate.manager.PermissionManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.formatting.LegacyLineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.LineColorFormatter;
@@ -65,6 +68,7 @@ import java.util.logging.Level;
  * @author Thorin
  */
 public abstract class AbstractPortal implements RealPortal {
+
     /**
      * Used in bStats metrics
      */
@@ -89,8 +93,8 @@ public abstract class AbstractPortal implements RealPortal {
     protected long activatedTime;
     protected UUID activator;
     protected boolean isDestroyed = false;
-    protected LanguageManager languageManager;
-    private StargateEconomyAPI economyManager;
+    protected final LanguageManager languageManager;
+    private final StargateEconomyAPI economyManager;
     private static final int ACTIVE_DELAY = 15;
 
     /**
@@ -111,7 +115,7 @@ public abstract class AbstractPortal implements RealPortal {
         this.gate = Objects.requireNonNull(gate);
         this.languageManager = Objects.requireNonNull(languageManager);
         this.economyManager = Objects.requireNonNull(economyManager);
-        
+
         name = NameHelper.getTrimmedName(name);
         if (!NameHelper.isValidName(name)) {
             throw new NameLengthException("Invalid length of name '" + name + "' , namelength must be above 0 and under " + Stargate.getMaxTextLength());
@@ -129,6 +133,11 @@ public abstract class AbstractPortal implements RealPortal {
 
         AbstractPortal.portalCount++;
         AbstractPortal.allUsedFlags.addAll(flags);
+    }
+
+    @Override
+    public GlobalPortalId getGlobalId() {
+        return GlobalPortalId.getFromPortal(this);
     }
 
     @Override
@@ -209,7 +218,7 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void setNetwork(Network targetNetwork) throws NameConflictException {
         if (targetNetwork.getPortal(this.name) != null) {
-            throw new NameConflictException(String.format("Portal of name %s already exists in network %s" , this.name, targetNetwork.getId()));
+            throw new NameConflictException(String.format("Portal of name %s already exists in network %s", this.name, targetNetwork.getId()), false);
         }
         this.network = targetNetwork;
         //TODO: update network in database
@@ -247,7 +256,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         Teleporter teleporter = new Teleporter(this, origin, portalFacing, entranceFace, useCost,
-                languageManager.getMessage(TranslatableMessage.TELEPORT),languageManager,economyManager);
+                languageManager.getMessage(TranslatableMessage.TELEPORT), languageManager, economyManager);
 
         teleporter.teleport(target);
     }
@@ -257,7 +266,7 @@ public abstract class AbstractPortal implements RealPortal {
         Portal destination = getCurrentDestination();
         if (destination == null) {
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED),languageManager,economyManager);
+                    0, languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED), languageManager, economyManager);
             teleporter.teleport(target);
             return;
         }
@@ -267,7 +276,7 @@ public abstract class AbstractPortal implements RealPortal {
         if (accessEvent.getDeny()) {
             Stargate.log(Level.CONFIG, " Access event was canceled by an external plugin");
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, accessEvent.getDenyReason(),languageManager,economyManager);
+                    0, accessEvent.getDenyReason(), languageManager, economyManager);
             teleporter.teleport(target);
             return;
         }
@@ -316,7 +325,7 @@ public abstract class AbstractPortal implements RealPortal {
             player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.INVALID));
             return;
         }
-        StargatePermissionManager permissionManager = new StargatePermissionManager(player,languageManager);
+        StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
         StargateOpenEvent stargateOpenEvent = new StargateOpenEvent(player, this, false);
         Bukkit.getPluginManager().callEvent(stargateOpenEvent);
         if (!permissionManager.hasOpenPermissions(this, destination)) {
@@ -346,7 +355,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         ((GateTextDisplayHandler)this.getGate().getPortalControlMechanism(MechanismType.SIGN)).setSignColor(color);
-        
+
         for (Location location : this.getPortalPosition(MechanismType.SIGN)) {
             if (!(location.getBlock().getState() instanceof Sign)) {
                 Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s \n"
@@ -354,7 +363,6 @@ public abstract class AbstractPortal implements RealPortal {
                         this.name, this.network.getName()));
                 continue;
             }
-            Sign sign = (Sign) location.getBlock().getState();
             if (color == null) {
                 color = sign.getColor();
             }
@@ -390,7 +398,7 @@ public abstract class AbstractPortal implements RealPortal {
         String[] lines = new String[]{name, "", "", ""};
         getGate().drawControlMechanisms(lines, false);
 
-        
+
         this.isDestroyed = true;
 
         Supplier<Boolean> destroyAction = () -> {
@@ -432,7 +440,7 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public String getID() {
+    public String getId() {
         return NameHelper.getNormalizedName(name);
     }
 
@@ -446,7 +454,7 @@ public abstract class AbstractPortal implements RealPortal {
             this.drawControlMechanisms();
             return;
         }
-        PermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(),languageManager);
+        PermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(), languageManager);
         StargateAccessEvent accessEvent = new StargateAccessEvent(event.getPlayer(), this, !permissionManager.hasAccessPermission(this),
                 permissionManager.getDenyMessage());
         Bukkit.getPluginManager().callEvent(accessEvent);
@@ -527,8 +535,6 @@ public abstract class AbstractPortal implements RealPortal {
         }
     }
 
-    ;
-
     @Override
     public String getMetaData() {
         try {
@@ -543,13 +549,14 @@ public abstract class AbstractPortal implements RealPortal {
     public StorageType getStorageType() {
         return (flags.contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
     }
-    
+
     @Override
     public void setName(String newName) {
         this.name = newName;
     }
-    
+
     public BlockFace getExitFacing() {
         return flags.contains(PortalFlag.BACKWARDS) ? getGate().getFacing() : getGate().getFacing().getOppositeFace();
     }
+
 }
