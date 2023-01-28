@@ -5,11 +5,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.ParsingErrorException;
 
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * Helper class for reading gate files
@@ -23,7 +21,7 @@ public final class GateFormatReader {
             Material.CAVE_AIR,
             Material.VOID_AIR,
     };
-    private static final Map<Material, Material> materialEdgecases = loadMaterialEdgecases();
+    private static final Map<Material, Material> materialEdgeCases = loadMaterialEdgeCases();
     private static Map<String, String> legacyMaterialConversions = null;
 
     private GateFormatReader() {
@@ -89,8 +87,8 @@ public final class GateFormatReader {
                     throw new ParsingErrorException("Invalid material ''" + stringId + "''");
                 }
             }
-            if (materialEdgecases.containsKey(id)) {
-                foundIDs.add(materialEdgecases.get(id));
+            if (materialEdgeCases.containsKey(id)) {
+                foundIDs.add(materialEdgeCases.get(id));
             }
             if (id.isBlock()) {
                 foundIDs.add(id);
@@ -211,11 +209,12 @@ public final class GateFormatReader {
      */
     private static Material parseMaterialFromLegacyName(String stringId) {
         try {
-            String fromNumeric = parseMaterialFromMagicalNumber(stringId);
+            String fromNumeric = parseMaterialFromMagicalNumber(stringId.trim());
             if (fromNumeric != null) {
                 stringId = fromNumeric;
             }
-            return XMaterial.matchXMaterial(stringId).get().parseMaterial();
+            Optional<XMaterial> matchedMaterial = XMaterial.matchXMaterial(stringId);
+            return matchedMaterial.map(XMaterial::parseMaterial).orElse(null);
         } catch (NoSuchElementException e) {
             return null;
         }
@@ -252,27 +251,27 @@ public final class GateFormatReader {
     }
 
     /**
-     * A map of material edgecases, this is for example when when you don't want to differentiate between a torch and
+     * A map of material edge-cases, this is for example when you don't want to differentiate between a torch and
      * a wall torch
      *
-     * @return <p> A map with material edgecases</p>
+     * @return <p> A map with material edge-cases</p>
      */
-    private static Map<Material, Material> loadMaterialEdgecases() {
-        Map<Material, Material> materialEdgecases = new EnumMap<>(Material.class);
+    private static Map<Material, Material> loadMaterialEdgeCases() {
+        Map<Material, Material> materialEdgeCases = new EnumMap<>(Material.class);
         Map<String, String> temp = new HashMap<>();
-        FileHelper.readInternalFileToMap("/material/materialEdgecases.properties", temp);
+        FileHelper.readInternalFileToMap("/material/materialEdgeCases.properties", temp);
         for (Material material : Material.values()) {
-            for (String edgecase : temp.keySet()) {
-                String type = material.toString().replaceAll(edgecase, "");
+            for (String edgeCase : temp.keySet()) {
+                String type = material.toString().replaceAll(edgeCase, "");
                 if (type.equals(material.toString())) {
                     continue;
                 }
-                String replacement = temp.get(edgecase).replaceAll("\\*", type);
-                materialEdgecases.put(material, Material.valueOf(replacement));
-                materialEdgecases.put(Material.valueOf(replacement), material);
+                String replacement = temp.get(edgeCase).replaceAll("\\*", type);
+                materialEdgeCases.put(material, Material.valueOf(replacement));
+                materialEdgeCases.put(Material.valueOf(replacement), material);
             }
         }
-        return materialEdgecases;
+        return materialEdgeCases;
     }
 
     /**
