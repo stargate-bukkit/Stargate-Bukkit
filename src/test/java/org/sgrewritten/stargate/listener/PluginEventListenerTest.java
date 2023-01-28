@@ -2,7 +2,6 @@ package org.sgrewritten.stargate.listener;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.MockPlugin;
-import be.seeseemelk.mockbukkit.ServerMock;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +26,7 @@ class PluginEventListenerTest {
     @BeforeEach
     void setUp() {
         Stargate.setLogLevel(Level.SEVERE);
-        @NotNull ServerMock server = MockBukkit.mock();
+        MockBukkit.mock();
         economy = MockBukkit.createMockPlugin("Vault");
         blockLogger = MockBukkit.createMockPlugin("CoreProtect");
         economyManager = new FakeEconomyManager();
@@ -42,25 +41,26 @@ class PluginEventListenerTest {
     }
 
     @Test
-    void onPluginDisable_Vault() {
+    void onPluginDisableVault() {
         //TODO Find out a way to detect the disable message is sent
         Assertions.assertDoesNotThrow(() -> listener.onPluginDisable(new PluginDisableEvent(economy)));
     }
 
     @Test
-    void onPluginDisable_CoreProtect() {
+    void onPluginDisableCoreProtect() {
         Assertions.assertDoesNotThrow(() -> listener.onPluginDisable(new PluginDisableEvent(blockLogger)));
     }
 
     @Test
-    void onPluginEnable_Vault() {
+    void onPluginEnableVault() {
         listener.onPluginEnable(new PluginEnableEvent(economy));
         Assertions.assertTrue(economyManager.hasTriggeredSetupEconomy());
     }
 
     @Test
-    void onPluginEnable_CoreProtect() {
+    void onPluginEnableCoreProtect() {
         listener.onPluginEnable(new PluginEnableEvent(blockLogger));
         Assertions.assertTrue(blockLoggingManager.hasTriggeredSetup());
     }
+
 }

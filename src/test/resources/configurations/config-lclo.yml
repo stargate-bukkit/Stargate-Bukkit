@@ -61,7 +61,7 @@ handleVehicles: true
 verifyPortals: false
 
 # Should the portal verification process account for 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 (open/closed) materials?
-# ie. will a gate still validate if its portal-open material isn't present?
+# i.e. will a gate still validate if its portal-open material isn't present?
 # 
 # When disabled, this setting makes gate validation more comprehensive;
 # 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 blocks will no longer be able to overwrite existing blocks.

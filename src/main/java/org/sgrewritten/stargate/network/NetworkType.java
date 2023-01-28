@@ -7,6 +7,7 @@ import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import java.util.Set;
 
 public enum NetworkType {
+
     /**
      * A network that is directly linked to players
      */
@@ -32,7 +33,7 @@ public enum NetworkType {
     private final TranslatableMessage terminology;
 
     /**
-     * The network type as determined by the its given style and flags.
+     * The network type as determined by its given style and flags.
      *
      * @param style <p>The applicable HighlightingStyle</p>
      * @param flag  <p>The applicable PortalFlag</p>
@@ -69,7 +70,7 @@ public enum NetworkType {
     }
 
     /**
-     * Whether or not the style of the gate contains contains sufficient information to determine its network type.
+     * Whether the style of the gate contains sufficient information to determine its network type.
      *
      * @param style <p>The applicable HighlightingStyle</p>.
      * @return <p>Whether or not sufficient information was available, represented as a boolean</p>
@@ -122,4 +123,5 @@ public enum NetworkType {
         }
         return null;
     }
+
 }

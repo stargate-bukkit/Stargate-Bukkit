@@ -219,19 +219,19 @@ public enum TranslatableMessage {
     GATE_OWNED_BY("signPortalOwner"),
 
     /**
-     * The message to send if the player is teleporting past the worldborder
+     * The message to send if the player is teleporting past the world-border
      */
-    OUTSIDE_WORLDBORDER("tpPastBorder"),
+    OUTSIDE_WORLD_BORDER("tpPastBorder"),
 
     /**
-     * The message to send when there is a interserver conflict
+     * The message to send when there is an inter-server conflict
      */
     UNIMPLEMENTED_CONFLICT("unimplementedIConflict"),
 
     /**
-     * The message to send whenever a interserver portal is created
+     * The message to send whenever an inter-server portal is created
      */
-    UNIMPLEMENTED_INTERSERVER("unimplementedInterserver"),
+    UNIMPLEMENTED_INTER_SERVER("unimplementedInterServer"),
 
     /**
      * The message to send when a flag is not implemented yet
@@ -251,7 +251,7 @@ public enum TranslatableMessage {
     /**
      * The name of a cross server network
      */
-    FANCY_INTER_SERVER("interserver"),
+    FANCY_INTER_SERVER("interServer"),
 
     /**
      * The name of the default network

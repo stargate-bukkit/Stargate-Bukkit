@@ -7,7 +7,18 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.sgrewritten.stargate.exception.ParsingErrorException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.Set;
 
 /**
  * Helper class for reading gate files

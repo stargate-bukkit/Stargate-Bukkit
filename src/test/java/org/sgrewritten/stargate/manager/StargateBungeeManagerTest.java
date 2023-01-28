@@ -98,7 +98,7 @@ class StargateBungeeManagerTest {
     }
 
     @Test
-    void playerConnect_Online() {
+    void playerConnectOnline() {
         PlayerMock player = server.addPlayer(PLAYER);
 
         bungeeManager.playerConnect(BungeeHelper.generateTeleportJsonMessage(PLAYER, realPortal));
@@ -107,7 +107,7 @@ class StargateBungeeManagerTest {
     }
 
     @Test
-    void playerConnect_Offline() {
+    void playerConnectOffline() {
         bungeeManager.playerConnect(BungeeHelper.generateTeleportJsonMessage(PLAYER, realPortal));
         Portal pulledPortal = bungeeManager.pullFromQueue(PLAYER);
         Assertions.assertEquals(realPortal.getName(), pulledPortal.getName());
@@ -115,7 +115,7 @@ class StargateBungeeManagerTest {
     }
 
     @Test
-    void legacyPlayerConnect_Online() {
+    void legacyPlayerConnectOnline() {
         PlayerMock player = server.addPlayer(PLAYER);
 
         bungeeManager.legacyPlayerConnect(BungeeHelper.generateLegacyTeleportMessage(PLAYER, bungeePortal));
@@ -124,9 +124,10 @@ class StargateBungeeManagerTest {
     }
 
     @Test
-    void legacyPlayerConnect_Offline() {
+    void legacyPlayerConnectOffline() {
         bungeeManager.legacyPlayerConnect(BungeeHelper.generateLegacyTeleportMessage(PLAYER, bungeePortal));
         Portal pulledPortal = bungeeManager.pullFromQueue(PLAYER);
         Assertions.assertEquals(bungeePortal, pulledPortal);
     }
+    
 }

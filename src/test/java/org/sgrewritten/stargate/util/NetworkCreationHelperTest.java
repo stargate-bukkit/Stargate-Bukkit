@@ -92,7 +92,7 @@ class NetworkCreationHelperTest {
     }
 
     @Test
-    void explicitDefinitionTest_DefaultTypeButWrongName() {
+    void explicitDefinitionTestDefaultTypeButWrongName() {
         Assertions.assertThrows(InvalidNameException.class, () -> NetworkCreationHelper.selectNetwork(
                 NetworkType.DEFAULT.getHighlightingStyle().getHighlightedName(INVALID_NAME), permissionManager, player,
                 new HashSet<>(), registry));
@@ -100,7 +100,7 @@ class NetworkCreationHelperTest {
 
     @ParameterizedTest
     @EnumSource
-    void explicitDefinitionTest_PersonalName(NetworkType networkType) throws TranslatableException {
+    void explicitDefinitionTestPersonalName(NetworkType networkType) throws TranslatableException {
         Network network1 = NetworkCreationHelper.selectNetwork(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry);
         if (networkType == NetworkType.DEFAULT) {
             Assertions.assertThrows(TranslatableException.class, () -> NetworkCreationHelper.selectNetwork(networkType.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry));
@@ -116,9 +116,9 @@ class NetworkCreationHelperTest {
 
     @ParameterizedTest
     @ValueSource(strings = {PLAYER_NAME, CENTRAL})
-    void explicitDefinitionTest_Personal(String name) throws TranslatableException {
-        String highlightedPlayername = NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(name);
-        Network personalNetwork = NetworkCreationHelper.selectNetwork(highlightedPlayername, permissionManager, player, new HashSet<>(), registry);
+    void explicitDefinitionTestPersonal(String name) throws TranslatableException {
+        String highlightedPlayerName = NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(name);
+        Network personalNetwork = NetworkCreationHelper.selectNetwork(highlightedPlayerName, permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.PERSONAL, personalNetwork.getType());
         if (name.equals(CENTRAL)) {
             // Name should not be "central", as it conflicts with the default network name
@@ -130,7 +130,7 @@ class NetworkCreationHelperTest {
     }
 
     @Test
-    void explicitDefinitionTest_Custom() throws TranslatableException {
+    void explicitDefinitionTestCustom() throws TranslatableException {
         String customNetworkName = NetworkType.CUSTOM.getHighlightingStyle().getHighlightedName(NAME);
         Network customNetwork = NetworkCreationHelper.selectNetwork(customNetworkName, permissionManager, player, new HashSet<>(), registry);
         Assertions.assertEquals(NetworkType.CUSTOM, customNetwork.getType());

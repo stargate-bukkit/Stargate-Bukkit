@@ -52,7 +52,7 @@ class PlayerEventListenerTest {
 
     @ParameterizedTest
     @EnumSource
-    void onPlayerInteractTest_Sign(Action type) {
+    void onPlayerInteractTestSign(Action type) {
 
         Assertions.assertDoesNotThrow(() -> listener.onPlayerInteract(new PlayerInteractEvent(player, type, null,
                 signBlock, ((Directional) signBlock.getBlockData()).getFacing())));
@@ -60,7 +60,7 @@ class PlayerEventListenerTest {
 
     @ParameterizedTest
     @EnumSource
-    void onPlayerInteractTest_SignSneaking(Action type) {
+    void onPlayerInteractTestSignSneaking(Action type) {
         player.setSneaking(true);
         Assertions.assertDoesNotThrow(() -> listener.onPlayerInteract(new PlayerInteractEvent(player, type, null,
                 signBlock, ((Directional) signBlock.getBlockData()).getFacing())));

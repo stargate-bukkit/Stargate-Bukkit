@@ -204,7 +204,7 @@ public final class PortalCreationHelper {
             msg = TranslatableMessageFormatter.formatNetwork(unformattedMessage, selectedNetwork.getName());
         }
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
-            msg = msg + " " + languageManager.getString(TranslatableMessage.UNIMPLEMENTED_INTERSERVER);
+            msg = msg + " " + languageManager.getString(TranslatableMessage.UNIMPLEMENTED_INTER_SERVER);
         }
         player.sendMessage(msg);
     }

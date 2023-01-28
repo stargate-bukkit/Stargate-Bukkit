@@ -253,6 +253,7 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public void rename(Network network, String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
+        //noinspection ResultOfMethodCallIgnored
         if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(newName))) {
             throw new InvalidNameException("Can not rename the network to an UUID.");
         }
@@ -283,6 +284,7 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public void rename(Network network) throws InvalidNameException {
+        //noinspection ResultOfMethodCallIgnored
         if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(network.getId()))) {
             throw new InvalidNameException("Can not rename the network as it's name is an UUID.");
         }

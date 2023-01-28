@@ -61,14 +61,14 @@ ecoInsolvent=Insufficient funds!
 #Terminology
 gate=Gate
 network=Network
-interserver=Interserver
+interServer=Inter-server
 default=Default
 terminal=Terminal
 personal=Personal
 custom=Custom
 
 #Temporary
-unimplementedInterserver=Interserver gates are still in active development and have only partially been implemented.
+unimplementedInterServer=Interserver gates are still in active development and have only partially been implemented.
 unimplementedIConflict=The %name% %type1% network has been temporarily separated from the %name% %type2% network, but will soon be merged.
 unimplementedFlag=The %flags% flags have not yet been implemented.
 

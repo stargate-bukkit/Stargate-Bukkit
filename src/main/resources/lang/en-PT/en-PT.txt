@@ -59,13 +59,13 @@ ecoInsolvent=Lacking booty ya strumpet!
 #Terminology
 gate=Port
 network=Ship
-interserver=Transcontinental
+interServer=Transcontinental
 default=Homeland
 terminal=Market
 personal=Yer own
 
 #Temporary
-unimplementedInterserver=The crew be workin' on ye ship still, ya blimey toad rat
+unimplementedInterServer=The crew be workin' on ye ship still, ya blimey toad rat
 unimplementedFlag=The %flags% flags can't been hoisted
 
 #Admin

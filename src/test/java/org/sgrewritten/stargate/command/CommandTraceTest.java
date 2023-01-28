@@ -40,7 +40,7 @@ class CommandTraceTest {
     }
 
     @Test
-    void onCommand_NoPerms() {
+    void onCommandNoPermissions() {
         sender.addAttachment(plugin, "sg.admin.trace", false);
         Assertions.assertTrue(traceCommand.onCommand(sender, fakeCommand, "", new String[]{""}));
         String nextMessage = sender.nextMessage();

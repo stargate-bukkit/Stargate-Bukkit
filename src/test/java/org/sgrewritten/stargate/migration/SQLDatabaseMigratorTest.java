@@ -42,7 +42,7 @@ class SQLDatabaseMigratorTest {
 
     // CHECK IF THE UPDATE ON CASCADE OPTION IS THERE, BY LOOKING AT THE BEHAVIOR
     @Test
-    void rename_PortalPosition() throws SQLException, IOException {
+    void renamePortalPosition() throws SQLException, IOException {
         databaseMigrator.run();
         renamePortal(nameConfiguration.getPortalTableName());
         try (Connection connection = database.getConnection()) {
@@ -53,7 +53,7 @@ class SQLDatabaseMigratorTest {
     }
 
     @Test
-    void rename_InterPortalPosition() throws SQLException, IOException {
+    void renameInterPortalPosition() throws SQLException, IOException {
         databaseMigrator.run();
         renamePortal(nameConfiguration.getInterPortalTableName());
         try (Connection connection = database.getConnection()) {
@@ -65,7 +65,7 @@ class SQLDatabaseMigratorTest {
     }
 
     @Test
-    void rename_PortalFlag() throws SQLException, IOException {
+    void renamePortalFlag() throws SQLException, IOException {
         databaseMigrator.run();
         renamePortal(nameConfiguration.getPortalTableName());
         try (Connection connection = database.getConnection()) {
@@ -75,7 +75,7 @@ class SQLDatabaseMigratorTest {
     }
 
     @Test
-    void rename_InterPortalFlag() throws SQLException, IOException {
+    void renameInterPortalFlag() throws SQLException, IOException {
         databaseMigrator.run();
         renamePortal(nameConfiguration.getInterPortalTableName());
         try (Connection connection = database.getConnection()) {

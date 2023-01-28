@@ -94,7 +94,7 @@ permissions:
               sg.use.type.h:
                 description: Can use hidden gates.
               sg.use.type.i:
-                description: Can use modern interserver gates.
+                description: Can use modern inter-server gates.
               sg.use.type.n:
                 description: Can use hidden-network gates.
               #NOT IMPL.    sg.use.type.o:
@@ -169,7 +169,7 @@ permissions:
               sg.create.type.h:
                 description: Can create gates with the hidden flag.
               sg.create.type.i:
-                description: Can create gates with the modern interserver flag.
+                description: Can create gates with the modern inter-server flag.
               sg.create.type.n:
                 description: Can create gates with the hidden-network flag.
               #NOT IMPL.    sg.create.type.o:
@@ -245,7 +245,7 @@ permissions:
               sg.destroy.type.h:
                 description: Can destroy hidden gates.
               sg.destroy.type.i:
-                description: Can destroy modern interserver gates.
+                description: Can destroy modern inter-server gates.
               sg.destroy.type.n:
                 description: Can destroy hidden-network gates.
               #NOT IMPL.    sg.destroy.type.o:

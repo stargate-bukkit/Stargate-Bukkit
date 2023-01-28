@@ -45,7 +45,7 @@ class GateTest {
 
         loadGate = new Gate(portalData, new StargateRegistry(new FakeStorage()));
         GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);
-        // Note that this is created in a different registry, so as to avoid any conflicts
+        // Note that this is created in a different registry, to avoid any conflicts
         createdGate = new Gate(format, signBlock.getLocation(), portalData.facing, false, new StargateRegistry(new FakeStorage()));
     }
 

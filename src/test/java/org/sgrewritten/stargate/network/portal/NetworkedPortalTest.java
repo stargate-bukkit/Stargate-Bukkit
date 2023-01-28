@@ -62,7 +62,7 @@ class NetworkedPortalTest {
 
     @ParameterizedTest
     @EnumSource
-    void onSignClick_NoPerm(Action type) {
+    void onSignClickNoPermission(Action type) {
         player.addAttachment(plugin, "sg.use", false);
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
         Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
@@ -70,7 +70,7 @@ class NetworkedPortalTest {
 
     @ParameterizedTest
     @EnumSource
-    void onSignClick_NoPermSneaking(Action type) {
+    void onSignClickNoPermissionSneaking(Action type) {
         player.setSneaking(true);
         player.addAttachment(plugin, "sg.use", false);
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
@@ -86,7 +86,7 @@ class NetworkedPortalTest {
 
     @ParameterizedTest
     @EnumSource
-    void onSignClick_Sneaking(Action type) {
+    void onSignClickSneaking(Action type) {
         player.setSneaking(true);
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
         Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
@@ -94,7 +94,7 @@ class NetworkedPortalTest {
 
     @ParameterizedTest
     @EnumSource
-    void onSignClick_AvailableDestination(Action type) throws TranslatableException, NoFormatFoundException, GateConflictException {
+    void onSignClickAvailableDestination(Action type) throws TranslatableException, NoFormatFoundException, GateConflictException {
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
         sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
         FakePortalGenerator.generateFakePortal(sign, network, new HashSet<>(), "destination", registry);
@@ -103,7 +103,7 @@ class NetworkedPortalTest {
 
     @ParameterizedTest
     @EnumSource
-    void onSignClick_SneakingAvailableDestination(Action type) throws TranslatableException, NoFormatFoundException, GateConflictException {
+    void onSignClickSneakingAvailableDestination(Action type) throws TranslatableException, NoFormatFoundException, GateConflictException {
         sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
         FakePortalGenerator.generateFakePortal(sign, network, new HashSet<>(), "destination", registry);
         player.setSneaking(true);
@@ -136,4 +136,5 @@ class NetworkedPortalTest {
         portal.close(false);
         Assertions.assertFalse(portal.isOpen());
     }
+
 }

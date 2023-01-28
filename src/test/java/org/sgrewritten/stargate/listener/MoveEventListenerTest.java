@@ -68,14 +68,14 @@ class MoveEventListenerTest {
     }
 
     @Test
-    void onPlayerTeleport_EndGateway() {
+    void onPlayerTeleportEndGateway() {
         PlayerTeleportEvent event = new PlayerTeleportEvent(player, outsideIris, iris, PlayerTeleportEvent.TeleportCause.END_GATEWAY);
         listener.onPlayerTeleport(event);
         Assertions.assertTrue(event.isCancelled());
     }
 
     @Test
-    void onPlayerMove_Closed() {
+    void onPlayerMoveClosed() {
         player.addAttachment(plugin, "sg.use", true);
         PlayerMoveEvent event = new PlayerMoveEvent(player, outsideIris, iris);
         listener.onPlayerMove(event);
@@ -84,7 +84,7 @@ class MoveEventListenerTest {
     }
 
     @Test
-    void onVehicleMove_Closed() {
+    void onVehicleMoveClosed() {
         VehicleMoveEvent event = new VehicleMoveEvent(vehicle, outsideIris, iris);
         listener.onVehicleMove(event);
         server.getScheduler().performOneTick();
@@ -103,7 +103,7 @@ class MoveEventListenerTest {
     }
 
     @Test
-    void onVehicleMove_Open() {
+    void onVehicleMoveOpen() {
         VehicleMoveEvent event = new VehicleMoveEvent(vehicle, outsideIris, iris);
         portal.overrideDestination(portal);
         portal.open(player);

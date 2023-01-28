@@ -25,7 +25,7 @@ public enum HighlightingStyle {
     ROUNDED_BRACKETS("(", ")"),
 
     /**
-     * The highlighting used for legacy bungee stargates' server
+     * The highlighting used for the destination server of legacy bungee stargates
      */
     SQUARE_BRACKETS("[", "]"),
 

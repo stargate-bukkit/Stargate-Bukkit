@@ -59,13 +59,13 @@ ecoInsolvent=Onvoldoende saldo!
 #Terminology
 gate=Poort
 network=Netwerk
-interserver=Interserver
+interServer=Inter-server
 default=Standaard
 terminal=Terminal
 personal=Persoonlijk
 
 #Temporary
-unimplementedInterserver=Interserver poorten zijn nog in ontwikkeling en zijn nog maar gedeeltelijk geïmplementeerd.
+unimplementedInterServer=Interserver poorten zijn nog in ontwikkeling en zijn nog maar gedeeltelijk geïmplementeerd.
 unimplementedIConflict=Het %name% %type1% netwerk is tijdelijk gescheiden van het %name% %type2% netwerk, maar zal binnenkort worden samengevoegd.
 unimplementedFlag=De %flags% markeringen zijn nog niet geïmplementeerd.
 

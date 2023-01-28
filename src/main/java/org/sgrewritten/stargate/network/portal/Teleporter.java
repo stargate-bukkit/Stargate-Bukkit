@@ -155,7 +155,7 @@ public class Teleporter {
         //Cancel teleportation if outside world-border
         World world = exit.getWorld();
         if (world != null && !world.getWorldBorder().isInside(exit)) {
-            String worldBorderInterfereMessage = languageManager.getErrorMessage(TranslatableMessage.OUTSIDE_WORLDBORDER);
+            String worldBorderInterfereMessage = languageManager.getErrorMessage(TranslatableMessage.OUTSIDE_WORLD_BORDER);
             entitiesToTeleport.forEach((entity) -> entity.sendMessage(worldBorderInterfereMessage));
             return;
         }

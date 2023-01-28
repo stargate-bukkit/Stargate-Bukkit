@@ -51,6 +51,7 @@ class GateFormatReaderTest {
         Assertions.assertTrue(materials.contains(Material.GRANITE));
         Assertions.assertEquals(1, materials.size());
     }
+
     @Test
     void parseMaterialTest_LegacyNumber() throws ParsingErrorException {
         Set<Material> materials = GateFormatReader.parseMaterial("1", "");
@@ -59,8 +60,8 @@ class GateFormatReaderTest {
     }
 
     @Test
-    void  parseMaterialTest_invalidNumber(){
-        Assertions.assertThrows(ParsingErrorException.class, () -> GateFormatReader.parseMaterial("3000",""));
+    void parseMaterialTest_invalidNumber() {
+        Assertions.assertThrows(ParsingErrorException.class, () -> GateFormatReader.parseMaterial("3000", ""));
     }
 
     @Test

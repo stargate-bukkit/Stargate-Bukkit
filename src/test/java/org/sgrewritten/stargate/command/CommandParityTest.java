@@ -42,23 +42,23 @@ class CommandParityTest {
     }
 
     @Test
-    void onCommand_NotConsole() {
+    void onCommandNotConsole() {
         Assertions.assertFalse(command.onCommand(player, fakeCommand, "", new String[]{""}));
     }
 
     @Test
-    void onCommand_ParityNotSet() {
+    void onCommandParityNotSet() {
         Assertions.assertFalse(command.onCommand(console, fakeCommand, "", new String[]{""}));
     }
 
     @Test
-    void onCommand_ParityFalse() {
+    void onCommandParityFalse() {
         properties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, "false");
         Assertions.assertFalse(command.onCommand(console, fakeCommand, "", new String[]{""}));
     }
 
     @Test
-    void onCommand_ParityTrue() {
+    void onCommandParityTrue() {
         properties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, "true");
         Assertions.assertTrue(command.onCommand(console, fakeCommand, "", new String[]{""}));
     }
