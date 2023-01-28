@@ -227,7 +227,7 @@ public enum SQLQuery {
     SET_PORTAL_META,
 
     /**
-     * The query for setting the metadata of a interserver portal
+     * The query for setting the metadata of an interserver portal
      */
     SET_INTER_PORTAL_META,
 
@@ -237,7 +237,7 @@ public enum SQLQuery {
     SET_PORTAL_POSITION_META,
 
     /**
-     * The query for setting the meta for a inter portal position
+     * The query for setting the meta for an inter portal position
      */
     SET_INTER_PORTAL_POSITION_META,
 

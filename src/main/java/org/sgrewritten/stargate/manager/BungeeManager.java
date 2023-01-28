@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.manager;
 import org.sgrewritten.stargate.network.portal.Portal;
 
 /**
- * A interface for handling anything related to bungee
+ * An interface for handling anything related to bungee
  */
 public interface BungeeManager {
 

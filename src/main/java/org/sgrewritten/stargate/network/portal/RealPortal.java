@@ -84,14 +84,14 @@ public interface RealPortal extends Portal {
     List<Location> getPortalPosition(PositionType type);
 
     /**
-     * Set meta data for this portal
+     * Set metadata for this portal
      *
      * @param data <p> The meta data to set </p>
      */
     void setMetaData(String data);
 
     /**
-     * Get meta data for this portal
+     * Get metadata for this portal
      *
      * @return <p> The meta data of this portal </p>
      */

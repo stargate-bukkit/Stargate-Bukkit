@@ -224,12 +224,12 @@ public enum TranslatableMessage {
     OUTSIDE_WORLDBORDER("tpPastBorder"),
 
     /**
-     * The message to send when there is a interserver conflict
+     * The message to send when there is an interserver conflict
      */
     UNIMPLEMENTED_CONFLICT("unimplementedIConflict"),
 
     /**
-     * The message to send whenever a interserver portal is created
+     * The message to send whenever an interserver portal is created
      */
     UNIMPLEMENTED_INTERSERVER("unimplementedInterserver"),
 
