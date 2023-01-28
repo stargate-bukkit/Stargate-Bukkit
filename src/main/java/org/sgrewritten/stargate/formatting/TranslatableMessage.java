@@ -223,27 +223,55 @@ public enum TranslatableMessage {
      */
     OUTSIDE_WORLDBORDER("tpPastBorder"),
 
+    /**
+     * The message to send when there is a interserver conflict
+     */
     UNIMPLEMENTED_CONFLICT("unimplementedIConflict"),
 
+    /**
+     * The message to send whenever a interserver portal is created
+     */
     UNIMPLEMENTED_INTERSERVER("unimplementedInterserver"),
 
+    /**
+     * The message to send when a flag is not implemented yet
+     */
+    UNIMPLEMENTED_FLAG("unimplementedFlag"),
 
-    // TERMINOLOGY
+    /**
+     * The name of a portal
+     */
     GATE("gate"),
 
+    /**
+     * The name of a local network
+     */
     NETWORK("network"),
 
+    /**
+     * The name of a cross server network
+     */
     FANCY_INTER_SERVER("interserver"),
 
+    /**
+     * The name of the default network
+     */
     DEFAULT_NETWORK("default"),
 
+    /**
+     * The name of a terminal network
+     */
     TERMINAL_NETWORK("terminal"),
 
+    /**
+     * The name of a personal network
+     */
     PERSONAL_NETWORK("personal"),
 
-    CUSTOM_NETWORK("custom"),
-
-    UNIMPLEMENTED_FLAG("unimplementedFlag");
+    /**
+     * The name of a custom network
+     */
+    CUSTOM_NETWORK("custom");
 
     /*
      * Available additional strings:

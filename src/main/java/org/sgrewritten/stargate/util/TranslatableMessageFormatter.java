@@ -127,7 +127,7 @@ public final class TranslatableMessageFormatter {
         NetworkType localType = (local == null) ? interserver.getType() : local.getType();
 
         String localTypeString = languageManager.getString(localType.getTerminology());
-        String interserverTypeString = languageManager.getString(interserver.getType().getTerminology());
-        return initialMessage.replaceAll("%name%", interserver.getName()).replaceAll("%type1%", interserverTypeString).replaceAll("%type2%", localTypeString);
+        String interserverTypeString = languageManager.getString(interserver.getType().getTerminology()) + " " + languageManager.getString(TranslatableMessage.FANCY_INTER_SERVER);
+        return initialMessage.replaceAll("%name%", interserver.getName()).replaceAll("%type1%", interserverTypeString.toLowerCase()).replaceAll("%type2%", localTypeString.toLowerCase());
     }
 }
