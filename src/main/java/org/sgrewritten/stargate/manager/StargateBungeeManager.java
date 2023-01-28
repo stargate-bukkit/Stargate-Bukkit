@@ -43,7 +43,8 @@ public class StargateBungeeManager implements BungeeManager {
     @Override
     public void updateNetwork(String message) {
         Stargate.log(Level.FINEST, message);
-        JsonObject json = (JsonObject) JsonParser.parseString(message);
+        // Yes, a depricated method, needs to be there as spigot 1.16.5 does not support the new method
+        JsonObject json = (JsonObject) new JsonParser().parse(message);
 
         String requestTypeString = json.get(StargateProtocolProperty.REQUEST_TYPE.toString()).getAsString();
         StargateProtocolRequestType requestType = StargateProtocolRequestType.valueOf(requestTypeString);
@@ -88,7 +89,8 @@ public class StargateBungeeManager implements BungeeManager {
     public void playerConnect(String message) {
         Stargate.log(Level.FINEST, message);
 
-        JsonObject json = (JsonObject) JsonParser.parseString(message);
+        // Yes, a depricated method, needs to be there as spigot 1.16.5 does not support the new method
+        JsonObject json = (JsonObject) new JsonParser().parse(message);
         String playerName = json.get(StargateProtocolProperty.PLAYER.toString()).getAsString();
         String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
         String networkName = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
