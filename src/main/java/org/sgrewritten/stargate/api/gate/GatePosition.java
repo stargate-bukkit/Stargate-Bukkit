@@ -36,7 +36,7 @@ public abstract class GatePosition {
 
     /**
      * @param portal <p> The portal which this position belongs to </p>
-     * @return
+     * @return <p>The metadata of the position</p>
      */
     public String getMetaData(RealPortal portal) {
         try {
@@ -65,13 +65,22 @@ public abstract class GatePosition {
 
     @Override
     public String toString() {
-        return String.format("PortalPosition{x=%d,y=%d,z=%d}", positionLocation.getBlockX(), positionLocation.getBlockY(), positionLocation.getBlockZ());
+        return String.format("PortalPosition{x=%d,y=%d,z=%d, %s}", positionLocation.getBlockX(), positionLocation.getBlockY(), positionLocation.getBlockZ(), getName());
     }
 
     /**
-     * @param event
-     * @param portal
+     * What should happen when a player clicks on this block?
+     *
+     * @param event  <p>A PlayerInteractEvent</p>
+     * @param portal <p>The portal related</p>
      * @return <p> true if cancelled </p>
      */
     public abstract boolean onBlockClick(PlayerInteractEvent event, RealPortal portal);
+
+    /**
+     * Get the unique name that identifies this gate position. Note that it only has to be unique within a gate
+     *
+     * @return <p>The unique name that identifies this gate position</p>
+     */
+    public abstract String getName();
 }

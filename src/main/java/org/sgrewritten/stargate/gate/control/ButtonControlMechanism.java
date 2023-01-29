@@ -10,11 +10,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.gate.control.GateActivationHandler;
 import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.util.ButtonHelper;
 
 import java.util.Objects;
@@ -23,9 +23,9 @@ import java.util.logging.Level;
 public class ButtonControlMechanism extends GatePosition implements GateActivationHandler {
 
     private boolean active;
-    private @NotNull Gate gate;
+    private @NotNull GateAPI gate;
 
-    public ButtonControlMechanism(@NotNull BlockVector positionLocation, @NotNull Gate gate) {
+    public ButtonControlMechanism(@NotNull BlockVector positionLocation, GateAPI gate) {
         super(positionLocation);
         this.gate = Objects.requireNonNull(gate);
     }
@@ -40,6 +40,11 @@ public class ButtonControlMechanism extends GatePosition implements GateActivati
         portal.onButtonClick(event);
         event.setUseInteractedBlock(Event.Result.DENY);
         return true;
+    }
+
+    @Override
+    public String getName() {
+        return getType().name();
     }
 
     @Override

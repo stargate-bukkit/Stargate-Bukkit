@@ -373,12 +373,18 @@ public class Gate implements GateAPI {
     }
 
     /**
-     * Add portal positions specific for this Gate
+     * Add portal positions specific for this Gate. Also assigns them as control mechanisms, if they are an instance
+     * of {@link ControlMechanism}
      *
      * @param portalPositions <p> A list of portalPositions </p>
      */
     public void addPortalPositions(List<GatePosition> portalPositions) {
         this.portalPositions.addAll(portalPositions);
+        for (GatePosition portalPosition : portalPositions) {
+            if (portalPosition instanceof ControlMechanism controlMechanism) {
+                this.setPortalControlMechanism(controlMechanism);
+            }
+        }
     }
 
     @Override

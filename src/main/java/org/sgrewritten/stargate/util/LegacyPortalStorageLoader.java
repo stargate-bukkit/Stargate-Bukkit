@@ -5,7 +5,6 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
-import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
@@ -17,6 +16,9 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
+import org.sgrewritten.stargate.gate.control.AlwaysOnControlMechanism;
+import org.sgrewritten.stargate.gate.control.ButtonControlMechanism;
+import org.sgrewritten.stargate.gate.control.SignControlMechanism;
 import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
@@ -116,11 +118,20 @@ public final class LegacyPortalStorageLoader {
         Location buttonLocation = LegacyDataHandler.loadLocation(world, portalProperties[2]);
         if (signLocation != null) {
             logger.logMessage(Level.FINEST, "signLocation=" + signLocation);
-            gate.addPortalPosition(signLocation, MechanismType.SIGN);
+            SignControlMechanism mechanism = new SignControlMechanism(gate.getRelativeVector(signLocation).toBlockVector(), gate, languageManager);
+            gate.setPortalControlMechanism(mechanism);
+            gate.addPortalPosition(mechanism);
         }
-        if (buttonLocation != null && !portalData.flags.contains(PortalFlag.ALWAYS_ON)) {
+        if (buttonLocation != null) {
             logger.logMessage(Level.FINEST, "buttonLocation=" + buttonLocation);
-            gate.addPortalPosition(buttonLocation, MechanismType.BUTTON);
+            if (portalData.flags.contains(PortalFlag.ALWAYS_ON)) {
+                AlwaysOnControlMechanism mechanism = new AlwaysOnControlMechanism();
+                gate.setPortalControlMechanism(mechanism);
+            } else {
+                ButtonControlMechanism mechanism = new ButtonControlMechanism(gate.getRelativeVector(buttonLocation).toBlockVector(), gate);
+                gate.addPortalPosition(mechanism);
+                gate.setPortalControlMechanism(mechanism);
+            }
         }
 
         Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, languageManager, registry, economyManager);

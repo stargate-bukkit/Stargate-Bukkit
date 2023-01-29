@@ -6,11 +6,16 @@ import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.network.StorageType;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.gate.UnkownGatePosition;
+import org.sgrewritten.stargate.gate.control.ButtonControlMechanism;
+import org.sgrewritten.stargate.gate.control.SignControlMechanism;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.util.LegacyDataHandler;
@@ -59,13 +64,24 @@ public class PortalStorageHelper {
         return portalData;
     }
 
-    public static GatePosition loadPortalPosition(ResultSet resultSet) throws NumberFormatException, SQLException {
+    public static GatePosition loadPortalPosition(ResultSet resultSet, GateAPI gate, LanguageManager languageManager) throws NumberFormatException, SQLException {
         int xCoordinate = Integer.parseInt(resultSet.getString("xCoordinate"));
         int yCoordinate = Integer.parseInt(resultSet.getString("yCoordinate"));
         int zCoordinate = -Integer.parseInt(resultSet.getString("zCoordinate"));
         BlockVector positionVector = new BlockVector(xCoordinate, yCoordinate, zCoordinate);
-        MechanismType positionType = MechanismType.valueOf(resultSet.getString("positionName"));
-        return new GatePosition(positionType, positionVector);
+        String positionName = resultSet.getString("positionName");
+        try {
+            MechanismType positionType = MechanismType.valueOf(positionName);
+            if (positionType == MechanismType.SIGN) {
+                return new SignControlMechanism(positionVector, gate, languageManager);
+            }
+            if (positionType == MechanismType.BUTTON) {
+                return new ButtonControlMechanism(positionVector, gate);
+            }
+        } catch (IllegalArgumentException ignored) {
+
+        }
+        return new UnkownGatePosition(positionVector, positionName);
     }
 
 
@@ -75,7 +91,7 @@ public class PortalStorageHelper {
         addPositionStatement.setString(3, String.valueOf(portalPosition.getPositionLocation().getBlockX()));
         addPositionStatement.setString(4, String.valueOf(portalPosition.getPositionLocation().getBlockY()));
         addPositionStatement.setString(5, String.valueOf(-portalPosition.getPositionLocation().getBlockZ()));
-        addPositionStatement.setString(6, portalPosition.getPositionType().name());
+        addPositionStatement.setString(6, portalPosition.getName());
         addPositionStatement.execute();
     }
 

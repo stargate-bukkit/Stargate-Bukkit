@@ -6,6 +6,7 @@ import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkType;
@@ -263,12 +264,12 @@ public class SQLDatabase implements StorageAPI {
     private void registerPortalGate(PortalData portalData, Network network, RegistryAPI registry,
                                     StargateEconomyAPI economyManager) throws SQLException,
             InvalidStructureException, GateConflictException, TranslatableException {
-        List<GatePosition> gatePositions = getPortalPositions(portalData);
         Gate gate = new Gate(portalData, registry);
         if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
                 && !gate.isValid(portalData.flags.contains(PortalFlag.ALWAYS_ON))) {
             throw new InvalidStructureException();
         }
+        List<GatePosition> portalPositions = getPortalPositions(portalData, gate);
         gate.addPortalPositions(portalPositions);
         Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, languageManager, registry,
                 economyManager);
@@ -338,7 +339,7 @@ public class SQLDatabase implements StorageAPI {
      * @return <p>The portal positions belonging to the portal</p>
      * @throws SQLException <p>If the SQL query fails to successfully execute</p>
      */
-    private List<GatePosition> getPortalPositions(PortalData portalData) throws SQLException {
+    private List<GatePosition> getPortalPositions(PortalData portalData, GateAPI gate) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionsStatement(connection, portalData.portalType);
         statement.setString(1, portalData.networkName);
@@ -347,7 +348,7 @@ public class SQLDatabase implements StorageAPI {
         List<GatePosition> portalPositions = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
-            portalPositions.add(PortalStorageHelper.loadPortalPosition(resultSet));
+            portalPositions.add(PortalStorageHelper.loadPortalPosition(resultSet, gate, languageManager));
         }
         statement.close();
         connection.close();

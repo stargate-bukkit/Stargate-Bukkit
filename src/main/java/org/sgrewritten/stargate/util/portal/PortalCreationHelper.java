@@ -24,25 +24,15 @@ import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.gate.GateFormat;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
-import org.sgrewritten.stargate.network.portal.BungeePortal;
-import org.sgrewritten.stargate.network.portal.FixedPortal;
-import org.sgrewritten.stargate.network.portal.NetworkedPortal;
-import org.sgrewritten.stargate.network.portal.PortalData;
-import org.sgrewritten.stargate.network.portal.RandomPortal;
+import org.sgrewritten.stargate.network.portal.*;
 import org.sgrewritten.stargate.property.BypassPermission;
-import org.sgrewritten.stargate.util.EconomyHelper;
-import org.sgrewritten.stargate.util.NameHelper;
-import org.sgrewritten.stargate.util.NetworkCreationHelper;
-import org.sgrewritten.stargate.util.SpawnDetectionHelper;
-import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
+import org.sgrewritten.stargate.util.*;
 
 import java.util.List;
 import java.util.Set;
@@ -61,22 +51,22 @@ public final class PortalCreationHelper {
     /**
      * Creates a new portal of the correct type
      *
-     * @param network      <p>The network the portal belongs to</p>
-     * @param name         <p>The name of the portal</p>
-     * @param destination  <p>The destination of the portal</p>
-     * @param targetServer <p>The portal's target server (if bungee)</p>
-     * @param flags        <p>The flags enabled for the portal</p>
-     * @param gate         <p>The gate belonging to the portal</p>
-     * @param ownerUUID    <p>The UUID of the portal's owner</p>
-     * @param logger
+     * @param network         <p>The network the portal belongs to</p>
+     * @param name            <p>The name of the portal</p>
+     * @param destination     <p>The destination of the portal</p>
+     * @param targetServer    <p>The portal's target server (if bungee)</p>
+     * @param flags           <p>The flags enabled for the portal</p>
+     * @param gate            <p>The gate belonging to the portal</p>
+     * @param ownerUUID       <p>The UUID of the portal's owner</p>
+     * @param languageManager <p>The manager that deals with localized messages</p>
+     * @param registry        <p>The registry the portal is going to be assigned to</p>
+     * @param economyAPI      <p>The manager that deals with economy</p>
      * @return <p>A new portal</p>
-     * @throws InvalidNameException <p>If the portal's name is invalid</p>
-     * @throws NameLengthException
-     * @throws BungeeNameException
+     * @throws TranslatableException <p>If there was any issue with creation</p>
      */
     public static RealPortal createPortal(Network network, String name, String destination, String targetServer,
                                           Set<PortalFlag> flags, Gate gate, UUID ownerUUID,
-                                          LanguageManager languageManager, RegistryAPI registry, StargateEconomyAPI economyAPI) throws InvalidNameException, NameLengthException, BungeeNameException {
+                                          LanguageManager languageManager, RegistryAPI registry, StargateEconomyAPI economyAPI) throws TranslatableException {
         name = NameHelper.getTrimmedName(name);
 
         if (flags.contains(PortalFlag.BUNGEE)) {
@@ -99,14 +89,11 @@ public final class PortalCreationHelper {
      * @param network    <p>The network the portal belongs to</p>
      * @param portalData <p>Data of the portal </p>
      * @param gate       <p>The gate belonging to the portal</p>
-     * @param logger
      * @return <p>A new portal</p>
-     * @throws InvalidNameException <p>If the portal's name is invalid</p>
-     * @throws BungeeNameException
-     * @throws NameLengthException
+     * @throws TranslatableException <p>If there was any issue with creation</p>
      */
     public static RealPortal createPortal(Network network, PortalData portalData, Gate gate, LanguageManager languageManager, RegistryAPI registry, StargateEconomyAPI economyAPI)
-            throws InvalidNameException, NameLengthException, BungeeNameException {
+            throws TranslatableException {
         return createPortal(network, portalData.name, portalData.destination, portalData.networkName, portalData.flags, gate, portalData.ownerUUID, languageManager, registry, economyAPI);
     }
 
@@ -160,7 +147,7 @@ public final class PortalCreationHelper {
         }
 
         if (selectedNetwork.isPortalNameTaken(portal.getName())) {
-            throw new NameConflictException(String.format("portal %s in network %s already exists", portal.getName(), selectedNetwork.getId()));
+            throw new NameConflictException(String.format("portal %s in network %s already exists", portal.getName(), selectedNetwork.getId()), false);
         }
 
         //Display an error if trying to create portals across servers while the feature is disabled
@@ -207,8 +194,9 @@ public final class PortalCreationHelper {
             msg = TranslatableMessageFormatter.formatNetwork(unformattedMessage, selectedNetwork.getName());
         }
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
-            msg = msg + languageManager.getMessage(TranslatableMessage.UNIMPLEMENTED_INTERSERVER);
+            msg = msg + languageManager.getMessage(TranslatableMessage.UNIMPLEMENTED_INTER_SERVER);
         }
+        player.sendMessage(msg);
     }
 
     /**
@@ -220,12 +208,10 @@ public final class PortalCreationHelper {
      * @param gate      <p>The gate belonging to the portal</p>
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @return <p>A new portal</p>
-     * @throws InvalidNameException <p>If the portal's name is invalid</p>
-     * @throws BungeeNameException
-     * @throws NameLengthException
+     * @throws TranslatableException <p>If there was any issue with creation</p>
      */
     private static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Gate gate,
-                                                   UUID ownerUUID, LanguageManager languageManager, RegistryAPI registry, StargateEconomyAPI economyAPI) throws InvalidNameException, NameLengthException, BungeeNameException {
+                                                   UUID ownerUUID, LanguageManager languageManager, RegistryAPI registry, StargateEconomyAPI economyAPI) throws TranslatableException {
         return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID, languageManager, registry, economyAPI);
     }
 
@@ -234,7 +220,7 @@ public final class PortalCreationHelper {
      *
      * @param sign     <p>The sign containing necessary sign data</p>
      * @param alwaysOn <p>Whether the new gate should be always on</p>
-     * @param logger   <p>The logger to use for logging</p>
+     * @param registry <p>The registry the gate will be assigned to</p>
      * @return <p>A new Gate</p>
      * @throws NoFormatFoundException <p>If no gate format is found that matches the physical gate</p>
      * @throws GateConflictException  <p>If a registered gate conflicts with the new gate</p>

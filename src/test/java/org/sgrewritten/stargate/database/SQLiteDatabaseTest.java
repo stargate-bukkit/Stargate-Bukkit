@@ -1,14 +1,10 @@
 package org.sgrewritten.stargate.database;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.api.network.StorageType;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;

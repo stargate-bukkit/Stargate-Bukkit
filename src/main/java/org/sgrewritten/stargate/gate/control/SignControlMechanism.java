@@ -16,13 +16,13 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.api.event.StargateSignFormatEvent;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.gate.control.GateTextDisplayHandler;
 import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.formatting.FormattableObject;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
-import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.formatting.LegacyLineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.LineColorFormatter;
@@ -36,10 +36,10 @@ import java.util.logging.Level;
 public class SignControlMechanism extends GatePosition implements GateTextDisplayHandler {
 
     private final LanguageManager languageManager;
-    private @NotNull Gate gate;
+    private @NotNull GateAPI gate;
     private LineFormatter colorDrawer;
 
-    public SignControlMechanism(@NotNull BlockVector positionLocation, @NotNull Gate gate, @NotNull LanguageManager languageManager) {
+    public SignControlMechanism(@NotNull BlockVector positionLocation, @NotNull GateAPI gate, @NotNull LanguageManager languageManager) {
         super(positionLocation);
         this.gate = Objects.requireNonNull(gate);
         colorDrawer = new NoLineColorFormatter();
@@ -79,6 +79,11 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
             portal.onSignClick(event);
         }
         return true;
+    }
+
+    @Override
+    public String getName() {
+        return getType().name();
     }
 
     @Override
