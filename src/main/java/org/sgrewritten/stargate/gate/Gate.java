@@ -28,7 +28,6 @@ import org.sgrewritten.stargate.gate.control.AlwaysOnControlMechanism;
 import org.sgrewritten.stargate.gate.control.ButtonControlMechanism;
 import org.sgrewritten.stargate.gate.control.SignControlMechanism;
 import org.sgrewritten.stargate.network.portal.PortalData;
-import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.util.ClassConditionsHelper;
 import org.sgrewritten.stargate.vectorlogic.MatrixVectorOperation;
 import org.sgrewritten.stargate.vectorlogic.VectorOperation;
@@ -285,38 +284,25 @@ public class Gate implements GateAPI {
 
         for (BlockVector blockVector : getFormat().getControlBlocks()) {
             Material material = getLocation(blockVector).getBlock().getType();
-            if (!isControl(material)) {
-                continue;
-            }
 
             if (Tag.WALL_SIGNS.isTagged(material) && !assignedMechanismTypes.contains(MechanismType.SIGN)) {
                 SignControlMechanism signMechanism = new SignControlMechanism(blockVector, this, languageManager);
                 portalPositions.add(signMechanism);
                 this.setPortalControlMechanism(signMechanism);
-                assignedMechanismTypes.add(signMechanism.getType());
+                assignedMechanismTypes.add(MechanismType.SIGN);
                 continue;
             }
             if (!alwaysOn && !assignedMechanismTypes.contains(MechanismType.BUTTON)) {
                 ButtonControlMechanism buttonMechanism = new ButtonControlMechanism(blockVector, this);
                 portalPositions.add(buttonMechanism);
                 this.setPortalControlMechanism(buttonMechanism);
-                assignedMechanismTypes.add(buttonMechanism.getType());
+                assignedMechanismTypes.add(MechanismType.BUTTON);
             }
         }
 
         if (alwaysOn) {
             this.setPortalControlMechanism(new AlwaysOnControlMechanism());
         }
-    }
-
-    /**
-     * Checks whether the given material corresponds to a control
-     *
-     * @param material <p>The material to check</p>
-     * @return <p>True if the material corresponds to a control</p>
-     */
-    private boolean isControl(Material material) {
-        return Tag.WALL_SIGNS.isTagged(material) || ButtonHelper.isButton(material);
     }
 
     /**
@@ -404,8 +390,13 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public GatePosition getPortalPosition(@NotNull Location location) {
-        // TODO Auto-generated method stub
+    public @Nullable GatePosition getPortalPosition(@NotNull Location location) {
+        BlockVector vector = this.getRelativeVector(location).toBlockVector();
+        for (GatePosition portalPosition : portalPositions) {
+            if (portalPosition.getPositionLocation().equals(vector)) {
+                return portalPosition;
+            }
+        }
         return null;
     }
 }
