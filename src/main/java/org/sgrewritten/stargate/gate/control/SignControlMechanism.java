@@ -38,6 +38,7 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
     private final LanguageManager languageManager;
     private @NotNull GateAPI gate;
     private LineFormatter colorDrawer;
+    private FormattableObject[] recentDisplayedLines;
 
     public SignControlMechanism(@NotNull BlockVector positionLocation, @NotNull GateAPI gate, @NotNull LanguageManager languageManager) {
         super(positionLocation);
@@ -50,6 +51,7 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
     public void displayText(FormattableObject[] lines) {
         Location signLocation = gate.getLocation(this.positionLocation);
         BlockState signState = signLocation.getBlock().getState();
+        this.recentDisplayedLines = lines;
         if (!(signState instanceof Sign)) {
             Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
             return;
@@ -105,6 +107,9 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
         StargateSignFormatEvent formatEvent = new StargateSignFormatEvent(portal, colorDrawer, color);
         Bukkit.getPluginManager().callEvent(formatEvent);
         this.colorDrawer = formatEvent.getLineFormatter();
+        if (recentDisplayedLines != null) {
+            this.displayText(recentDisplayedLines);
+        }
     }
 
 
