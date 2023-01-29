@@ -30,6 +30,7 @@ import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
+import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;

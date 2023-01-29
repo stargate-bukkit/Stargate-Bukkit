@@ -107,24 +107,25 @@ public interface GateAPI {
      * @return <p>This gate's top-left location</p>
      */
     Location getTopLeft();
-    
+
     /**
      * Add a position specific for this Gate
      *
      * @param pos <p> The position to add</p>
      */
     public void addPortalPosition(GatePosition pos);
-    
+
     /**
      * Set a portal control mechanism. Note that a portal can only have one type of each control mechanism at the same time.
-     * 
+     *
      * @param mechanism <p> The mechanism to set </p>
-     * @param type <p> The function of the mechanism </p>
+     * @param type      <p> The function of the mechanism </p>
      */
     void setPortalControlMechanism(@NotNull ControlMechanism mechanism);
 
     /**
      * Get a portal control mechanism.
+     *
      * @param type <p> The type of control to get </p>
      * @return <p> A ControlMechanism or null if none has been set </p>
      */

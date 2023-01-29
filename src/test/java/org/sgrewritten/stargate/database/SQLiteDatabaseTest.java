@@ -14,9 +14,6 @@ import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.network.StorageType;
 
 import java.io.File;
 import java.sql.SQLException;

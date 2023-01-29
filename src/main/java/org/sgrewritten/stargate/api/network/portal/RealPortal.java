@@ -6,9 +6,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
-import org.sgrewritten.stargate.api.gate.control.MechanismType;
-
-import java.util.List;
 
 /**
  * A real portal with a physical sign that is located on this server

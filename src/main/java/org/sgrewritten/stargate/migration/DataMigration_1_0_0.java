@@ -15,8 +15,6 @@ import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.LegacyDataHandler;
 import org.sgrewritten.stargate.util.LegacyPortalStorageLoader;

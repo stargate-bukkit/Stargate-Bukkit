@@ -7,7 +7,6 @@ import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.manager.BungeeManager;
 import org.sgrewritten.stargate.api.manager.PermissionManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
-import org.sgrewritten.stargate.manager.BlockLoggingManager;
 
 /**
  * An API to facilitate addons and integrations
@@ -52,13 +51,13 @@ public interface StargateAPI {
      * @return <p>The language manager used for translating strings</p>
      */
     LanguageManager getLanguageManager();
-    
+
     /**
      * Gets the bungee manager used for dealing with bungee related events
+     *
      * @return <p> The bungee manager used for dealing with bungee related events </p>
      */
     BungeeManager getBungeeManager();
-    
-    
+
 
 }

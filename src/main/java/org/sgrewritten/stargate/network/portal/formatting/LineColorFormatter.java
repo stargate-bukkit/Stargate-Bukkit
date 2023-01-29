@@ -11,11 +11,11 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.util.colors.ColorConverter;
 import org.sgrewritten.stargate.util.colors.ColorProperty;
 
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;

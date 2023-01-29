@@ -8,17 +8,13 @@ import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.EndGateway;
-import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GatePosition;
@@ -150,7 +146,7 @@ public class Gate implements GateAPI {
     private void drawButtons() {
         GateActivationHandler drawer = (GateActivationHandler) controlMechanisms.get(MechanismType.BUTTON);
         Material buttonMaterial = ButtonHelper.getButtonMaterial(getFormat().getIrisMaterial(false));
-        drawer.drawButton(buttonMaterial,facing);
+        drawer.drawButton(buttonMaterial, facing);
     }
 
     @Override

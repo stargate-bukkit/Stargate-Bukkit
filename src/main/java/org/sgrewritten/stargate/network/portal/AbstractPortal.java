@@ -35,15 +35,12 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
-import org.sgrewritten.stargate.manager.PermissionManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.formatting.LegacyLineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.LineColorFormatter;
@@ -53,9 +50,7 @@ import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -90,6 +85,7 @@ public abstract class AbstractPortal implements RealPortal {
     private final Gate gate;
     private final Set<PortalFlag> flags;
 
+    protected LineFormatter colorDrawer;
     protected long activatedTime;
     protected UUID activator;
     protected boolean isDestroyed = false;
@@ -354,7 +350,7 @@ public abstract class AbstractPortal implements RealPortal {
             return;
         }
 
-        ((GateTextDisplayHandler)this.getGate().getPortalControlMechanism(MechanismType.SIGN)).setSignColor(color);
+        ((GateTextDisplayHandler) this.getGate().getPortalControlMechanism(MechanismType.SIGN)).setSignColor(color);
 
         for (Location location : this.getPortalPosition(MechanismType.SIGN)) {
             if (!(location.getBlock().getState() instanceof Sign)) {

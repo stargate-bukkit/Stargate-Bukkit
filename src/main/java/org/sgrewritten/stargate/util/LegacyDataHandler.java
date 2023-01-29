@@ -6,8 +6,6 @@ import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 
-import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

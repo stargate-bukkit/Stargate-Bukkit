@@ -5,8 +5,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
-import org.sgrewritten.stargate.FakeStargateLogger;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkType;
@@ -126,7 +124,7 @@ public class FakePortalGenerator {
         Set<PortalFlag> flags = new HashSet<>();
 
         for (int i = 0; i < flagsToGenerate; i++) {
-            flags.add(possibleFlags.get( random.nextInt(possibleFlags.size())));
+            flags.add(possibleFlags.get(random.nextInt(possibleFlags.size())));
         }
         return flags;
     }
@@ -159,7 +157,7 @@ public class FakePortalGenerator {
 
         gate.addPortalPosition(new BlockVector(1, -2, 0), MechanismType.BUTTON);
         gate.addPortalPosition(new BlockVector(1, -2, -3), MechanismType.SIGN);
-        return new FixedPortal(network, name, "", flags, gate, UUID.randomUUID(), new FakeLanguageManager(),new FakeEconomyManager());
+        return new FixedPortal(network, name, "", flags, gate, UUID.randomUUID(), new FakeLanguageManager(), new FakeEconomyManager());
     }
 
     public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,

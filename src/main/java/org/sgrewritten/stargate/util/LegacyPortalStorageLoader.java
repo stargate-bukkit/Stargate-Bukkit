@@ -17,7 +17,6 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
-import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;

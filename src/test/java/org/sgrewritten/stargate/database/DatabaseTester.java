@@ -26,7 +26,9 @@ import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.PortalData;
+import org.sgrewritten.stargate.util.SQLTestHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
 
@@ -245,14 +247,14 @@ public class DatabaseTester {
 
         for (RealPortal portal : portals.values()) {
             List<GatePosition> portalPositions = fetchPortalPositions(portal, type);
-            Stargate.log(Level.FINER,"---- Initial portalPositions ----");
+            Stargate.log(Level.FINER, "---- Initial portalPositions ----");
             for (GatePosition fetchedPosition : portalPositions) {
-                Stargate.log(Level.FINER,String.format("%s%n", fetchedPosition));
+                Stargate.log(Level.FINER, String.format("%s%n", fetchedPosition));
             }
             for (GatePosition position : portalPositions) {
                 DatabaseHelper.runStatement(generator.generateRemovePortalPositionStatement(connection, type, portal, position));
                 List<GatePosition> updatedPortalPositionList = fetchPortalPositions(portal, type);
-                Stargate.log(Level.FINER,"---- fetched portalPositions ----");
+                Stargate.log(Level.FINER, "---- fetched portalPositions ----");
                 for (GatePosition fetchedPosition : updatedPortalPositionList) {
                     Stargate.log(Level.FINER, String.format("%s, isEqualToRemovedPosition = %b%n", fetchedPosition, fetchedPosition.equals(position)));
                 }

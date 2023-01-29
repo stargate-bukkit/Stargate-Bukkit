@@ -7,7 +7,6 @@ import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.network.NetworkType;
 import org.sgrewritten.stargate.api.network.StorageType;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;

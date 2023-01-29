@@ -1,7 +1,8 @@
 package org.sgrewritten.stargate.api.network.portal;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,13 +10,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Represents a portal flag which defines an enabled behavior for a stargate
  */
 public class PortalFlag {
-    
+
     // Has to be at the top, as this needs run before everything else
     private final static Map<Character, PortalFlag> charMap = new HashMap<>();
     private final static Map<String, PortalFlag> nameMap = new HashMap<>();
@@ -44,7 +43,7 @@ public class PortalFlag {
     /**
      * A stargate which is hidden on the network for unprivileged users, except for the owner
      */
-    public static PortalFlag HIDDEN = new PortalFlag('H', "HIDDEN",true);
+    public static PortalFlag HIDDEN = new PortalFlag('H', "HIDDEN", true);
 
     /**
      * A stargate which can only be used by the owner and unprivileged users
@@ -54,7 +53,7 @@ public class PortalFlag {
     /**
      * A stargate displaying all available destinations, regardless of whether they are available to the player
      */
-    public static PortalFlag FORCE_SHOW = new PortalFlag('S', "FORCE_SHOW",true);
+    public static PortalFlag FORCE_SHOW = new PortalFlag('S', "FORCE_SHOW", true);
 
     /**
      * A stargate with its network name hidden
@@ -109,7 +108,7 @@ public class PortalFlag {
      * A stargate on the default network
      */
     public static PortalFlag DEFAULT_NETWORK = new PortalFlag('5', "DEFAULT_NETWORK", false);
-    
+
     /**
      * A stargate custom network
      */
@@ -120,7 +119,7 @@ public class PortalFlag {
      * NOT IMPLEMENTED AT THE MOMENT, temporary an internal flag (inaccessible)
      */
     public static PortalFlag TERMINAL_NETWORK = new PortalFlag('T', "TERMINAL_NETWORK", false);
-    
+
     static {
         registerAllStargateFlags();
     }
@@ -130,12 +129,12 @@ public class PortalFlag {
     private final @NotNull String name;
 
     /**
-     * Instantiates a new portal flag 
+     * Instantiates a new portal flag
      *
      * @param characterRepresentation <p>The character used to identify this portal flag in flag strings</p>
      * @param isUserSpecifiable       <p>Whether a user can specify whether this flag is enabled for a portal</p>
      */
-    public PortalFlag(char characterRepresentation,@NotNull String name, boolean isUserSpecifiable) {
+    public PortalFlag(char characterRepresentation, @NotNull String name, boolean isUserSpecifiable) {
         this.characterRepresentation = characterRepresentation;
         this.isUserSpecifiable = isUserSpecifiable;
         this.name = Objects.requireNonNull(name);
@@ -163,15 +162,15 @@ public class PortalFlag {
                 CUSTOM_NETWORK,
                 TERMINAL_NETWORK
         };
-        for(PortalFlag flag : stargateFlags) {
+        for (PortalFlag flag : stargateFlags) {
             registerFlag(flag);
         }
     }
-    
+
     public static void registerFlag(PortalFlag flag) {
         if (charMap.containsKey(flag.getCharacterRepresentation())) {
             throw new IllegalArgumentException(
-                    String.format("The flag-character '%s' is already in use, could not register %s", flag.getCharacterRepresentation(),flag.toString()));
+                    String.format("The flag-character '%s' is already in use, could not register %s", flag.getCharacterRepresentation(), flag.toString()));
         }
         if (nameMap.containsKey(flag.toString())) {
             throw new IllegalArgumentException(String.format("The flag-name '%s' is already in use", flag.toString()));
@@ -235,9 +234,8 @@ public class PortalFlag {
             throw new IllegalArgumentException("No flag has been assigned the char '" + label + "'");
         }
     }
-    
+
     /**
-     * 
      * @param name
      * @return
      * @throws IllegalArgumentException <p>If unable to find a matching flag</p>
@@ -250,13 +248,14 @@ public class PortalFlag {
             throw new IllegalArgumentException("No flag has been assigned the name '" + name + "'");
         }
     }
-    public static List<PortalFlag> values(){
+
+    public static List<PortalFlag> values() {
         return list;
     }
-    
+
     @Override
     public boolean equals(Object other) {
-        if(other == null || !other.getClass().equals(PortalFlag.class)) {
+        if (other == null || !other.getClass().equals(PortalFlag.class)) {
             return false;
         }
         PortalFlag otherFlag = (PortalFlag) other;
@@ -267,11 +266,11 @@ public class PortalFlag {
     public String toString() {
         return name;
     }
-    
+
     @Override
     public int hashCode() {
         return this.getCharacterRepresentation();
     }
-    
-    
+
+
 }

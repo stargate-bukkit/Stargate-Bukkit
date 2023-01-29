@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkType;

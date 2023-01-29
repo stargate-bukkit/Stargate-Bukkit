@@ -1,7 +1,6 @@
 package org.sgrewritten.stargate.network.portal;
 
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;

@@ -1,8 +1,5 @@
 package org.sgrewritten.stargate.gate.control;
 
-import java.util.Objects;
-import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -21,7 +18,6 @@ import org.sgrewritten.stargate.api.event.StargateSignFormatEvent;
 import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.gate.control.GateTextDisplayHandler;
 import org.sgrewritten.stargate.api.gate.control.MechanismType;
-import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.gate.Gate;
@@ -32,7 +28,10 @@ import org.sgrewritten.stargate.network.portal.formatting.NoLineColorFormatter;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.util.colors.ColorConverter;
 
-public class SignControlMechanism extends GatePosition implements GateTextDisplayHandler{
+import java.util.Objects;
+import java.util.logging.Level;
+
+public class SignControlMechanism extends GatePosition implements GateTextDisplayHandler {
 
     private @NotNull Gate gate;
     private LineFormatter colorDrawer;
@@ -98,7 +97,6 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
         Bukkit.getPluginManager().callEvent(formatEvent);
         this.colorDrawer = formatEvent.getLineFormatter();
     }
-    
 
 
     /**
@@ -121,7 +119,6 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
         }
         return hasPermission;
     }
-    
 
 
     /**

@@ -21,7 +21,6 @@ import org.sgrewritten.stargate.property.BypassPermission;
 import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
 import org.sgrewritten.stargate.util.portal.PortalPermissionHelper;
 
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
