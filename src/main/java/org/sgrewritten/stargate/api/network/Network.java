@@ -138,4 +138,5 @@ public interface Network {
      * @throws UnimplementedFlagException
      */
     void setID(String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
+
 }

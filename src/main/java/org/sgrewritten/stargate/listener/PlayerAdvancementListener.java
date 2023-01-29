@@ -3,7 +3,6 @@ package org.sgrewritten.stargate.listener;
 import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 
@@ -17,7 +16,7 @@ public class PlayerAdvancementListener implements Listener {
     public PlayerAdvancementListener(RegistryAPI registry) {
         this.registry = registry;
     }
-    
+
     /**
      * Listen to player advancement events, and cancel if the advancement came from touching a generated portal block
      *

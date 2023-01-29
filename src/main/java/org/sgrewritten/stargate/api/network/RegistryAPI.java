@@ -2,13 +2,12 @@ package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;

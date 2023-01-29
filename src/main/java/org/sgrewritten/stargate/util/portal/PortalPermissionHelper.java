@@ -158,8 +158,8 @@ public final class PortalPermissionHelper {
         Set<PortalFlag> flags = PortalFlag.parseFlags(portal.getAllFlagsString());
         for (PortalFlag flag : flags) {
             String identifier;
-            
-            
+
+
             switch (flag.toString()) {
                 case "FIXED":
                 case "NETWORKED":

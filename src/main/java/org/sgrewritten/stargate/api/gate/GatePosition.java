@@ -4,7 +4,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -70,7 +69,6 @@ public abstract class GatePosition {
     }
 
     /**
-     *
      * @param event
      * @param portal
      * @return <p> true if cancelled </p>

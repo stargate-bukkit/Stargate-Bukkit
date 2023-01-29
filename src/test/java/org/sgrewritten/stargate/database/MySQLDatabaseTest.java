@@ -16,7 +16,6 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
-import org.sgrewritten.stargate.network.StorageType;
 
 import java.sql.Connection;
 import java.sql.SQLException;

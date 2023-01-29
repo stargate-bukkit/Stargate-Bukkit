@@ -129,5 +129,5 @@ class StargateBungeeManagerTest {
         Portal pulledPortal = bungeeManager.pullFromQueue(PLAYER);
         Assertions.assertEquals(bungeePortal, pulledPortal);
     }
-    
+
 }

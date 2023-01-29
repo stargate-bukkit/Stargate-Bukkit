@@ -1,10 +1,10 @@
 package org.sgrewritten.stargate.api.gate.control;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * An enum containing the different types a portal position can have
@@ -16,7 +16,7 @@ public class MechanismType {
     private @NotNull String name;
 
     private int ordinal;
-    
+
     /**
      * A sign that works as an interface for selecting destination and displaying portal information
      */
@@ -26,7 +26,7 @@ public class MechanismType {
      * A button that works as an interface for confirming destination or activating a portal
      */
     public static final MechanismType BUTTON = new MechanismType("BUTTON");
-    
+
     static {
         registerTypes();
     }
@@ -34,13 +34,13 @@ public class MechanismType {
     public MechanismType(@NotNull String name) {
         this.name = Objects.requireNonNull(name);
     }
-    
+
     private static void registerTypes() {
         MechanismType[] types = {
                 SIGN,
                 BUTTON
         };
-        for(MechanismType type : types) {
+        for (MechanismType type : types) {
             registerMechanismType(type);
         }
     }
@@ -49,30 +49,30 @@ public class MechanismType {
         type.ordinal = values.size();
         values.add(type);
     }
-    
-    public static List<MechanismType> values(){
+
+    public static List<MechanismType> values() {
         return values;
     }
-    
+
     public static MechanismType valueOf(String name) {
         // O(N) speed, as this "enum" is so damn small
-        for(MechanismType type : values) {
-            if(type.toString().equals(name)) {
+        for (MechanismType type : values) {
+            if (type.toString().equals(name)) {
                 return type;
             }
         }
         throw new IllegalArgumentException("Could not find any registered mechanismtype of the name '" + name + "'");
     }
-    
+
     @Override
     public String toString() {
         return name;
     }
-    
+
     public String name() {
         return name;
     }
-    
+
     @Override
     public int hashCode() {
         return ordinal;
