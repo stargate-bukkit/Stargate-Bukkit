@@ -161,7 +161,6 @@ public class FakePortalGenerator {
         Gate gate = PortalCreationHelper.createGate(signBlock, false, registry, new FakeLanguageManager());
         flags.add(network.getType().getRelatedFlag());
 
-
         RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, gate, UUID.randomUUID(), new FakeLanguageManager(), registry, new FakeEconomyManager());
         network.addPortal(portal, true);
         return portal;

@@ -39,6 +39,9 @@ public class LineColorFormatter implements LineFormatter {
 
     @Override
     public String formatFormattableObject(FormattableObject formattableObject) {
+        if (formattableObject == null) {
+            return "";
+        }
         ChatColor pointerColor = this.pointerColor;
         ChatColor objectSpecifiedColor = formattableObject.getPointerColor(signMaterial);
         if (ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 2 && objectSpecifiedColor != null) {

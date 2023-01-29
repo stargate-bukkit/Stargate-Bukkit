@@ -46,6 +46,11 @@ public class MechanismType {
     }
 
     public static void registerMechanismType(MechanismType type) {
+        for (MechanismType mechanismType : MechanismType.values()) {
+            if (type.name().equals(mechanismType.name())) {
+                throw new IllegalArgumentException("A Mechanism type of name '" + type.name() + "' already exist");
+            }
+        }
         type.ordinal = values.size();
         values.add(type);
     }

@@ -1,6 +1,6 @@
 package org.sgrewritten.stargate.database;
 
-import org.bukkit.Bukkit;
+import org.sgrewritten.stargate.Stargate;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,7 +62,7 @@ public class TestCredentialsManager {
         try (InputStream stream = new FileInputStream(location)) {
             properties.load(stream);
         } catch (IOException ignored) {
-            Bukkit.getLogger().log(Level.WARNING, "Unable to load test credentials. Defaults will be used!");
+            Stargate.log(Level.WARNING, "Unable to load test credentials. Defaults will be used!");
         }
     }
 

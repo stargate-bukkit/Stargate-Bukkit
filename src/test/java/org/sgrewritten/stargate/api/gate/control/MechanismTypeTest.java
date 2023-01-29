@@ -22,7 +22,7 @@ class MechanismTypeTest {
 
     @Test
     void equals() {
-        Assertions.assertNotEquals(MechanismType.SIGN, MechanismType.SIGN);
+        Assertions.assertEquals(MechanismType.SIGN, MechanismType.SIGN);
     }
 
     @Test
