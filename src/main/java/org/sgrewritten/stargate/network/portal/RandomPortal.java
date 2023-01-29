@@ -2,13 +2,13 @@ package org.sgrewritten.stargate.network.portal;
 
 import org.bukkit.entity.Entity;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.gate.control.GateTextDisplayHandler;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.api.network.portal.formatting.*;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
@@ -42,13 +42,17 @@ public class RandomPortal extends AbstractPortal {
 
     @Override
     public void drawControlMechanisms() {
-        String[] lines = new String[4];
-        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN);
-        lines[1] = super.colorDrawer.formatLine(HighlightingStyle.LESSER_GREATER_THAN.getHighlightedName(
-                super.languageManager.getString(TranslatableMessage.RANDOM)));
-        lines[2] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()) : "";
-        lines[3] = "";
-        getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+        GateTextDisplayHandler display = super.getPortalTextDisplay();
+        if (display == null) {
+            return;
+        }
+        FormattableObject[] lines = new FormattableObject[4];
+        lines[0] = new PortalFormattingObject(this, HighlightingStyle.MINUS_SIGN);
+        lines[1] = new StringFormattableObject(
+                super.languageManager.getString(TranslatableMessage.RANDOM), HighlightingStyle.LESSER_GREATER_THAN);
+        lines[2] = new NetworkFormattingObject(network, this.hasFlag(PortalFlag.HIDE_NETWORK));
+        lines[3] = new StringFormattableObject("");
+        display.displayText(lines);
     }
 
     @Override

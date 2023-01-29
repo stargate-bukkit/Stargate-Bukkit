@@ -1,13 +1,12 @@
 package org.sgrewritten.stargate.network.portal;
 
-import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.gate.control.GateTextDisplayHandler;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.api.network.portal.formatting.*;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
@@ -33,8 +32,7 @@ public class FixedPortal extends AbstractPortal {
      * @param ownerUUID       <p>The UUID of the portal's owner</p>
      * @throws NameLengthException
      */
-    public FixedPortal(Network network, String name, String destinationName, Set<PortalFlag> flags, Gate gate,
-                       UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyAPI) throws NameLengthException {
+    public FixedPortal(Network network, String name, String destinationName, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyAPI) throws NameLengthException {
         super(network, name, flags, gate, ownerUUID, languageManager, economyAPI);
         this.destinationName = destinationName;
         this.destination = network.getPortal(destinationName);
@@ -42,18 +40,21 @@ public class FixedPortal extends AbstractPortal {
 
     @Override
     public void drawControlMechanisms() {
-        String[] lines = new String[4];
-        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN);
-        lines[2] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()) : "";
+        GateTextDisplayHandler display = super.getPortalTextDisplay();
+        if (display == null) {
+            return;
+        }
+        FormattableObject[] lines = new FormattableObject[4];
+        lines[0] = new PortalFormattingObject(this, HighlightingStyle.MINUS_SIGN);
+        lines[2] = new NetworkFormattingObject(network, this.hasFlag(PortalFlag.HIDE_NETWORK));
         Portal destination = getDestination();
         if (destination != null) {
-            lines[1] = super.colorDrawer.formatPortalName(destination, HighlightingStyle.LESSER_GREATER_THAN);
+            lines[1] = new PortalFormattingObject(destination, HighlightingStyle.LESSER_GREATER_THAN);
         } else {
-            lines[1] = super.colorDrawer.formatLine(destinationName);
-            lines[3] = super.colorDrawer.formatErrorLine(super.languageManager.getString(
-                    TranslatableMessage.DISCONNECTED), HighlightingStyle.SQUARE_BRACKETS);
+            lines[1] = new StringFormattableObject(destinationName, HighlightingStyle.LESSER_GREATER_THAN);
+            lines[3] = new StringFormattableObject(languageManager.getString(TranslatableMessage.DISCONNECTED), HighlightingStyle.SQUARE_BRACKETS);
         }
-        getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+        display.displayText(lines);
     }
 
     @Override

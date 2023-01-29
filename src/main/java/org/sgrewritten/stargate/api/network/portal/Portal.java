@@ -7,6 +7,7 @@ import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.StorageType;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 
 import java.util.UUID;
 

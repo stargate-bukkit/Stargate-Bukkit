@@ -49,7 +49,7 @@ import org.sgrewritten.stargate.command.StargateTabCompleter;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
 import org.sgrewritten.stargate.database.SQLDatabase;
-import org.sgrewritten.stargate.database.SQLDatabaseAPI;
+import org.sgrewritten.stargate.api.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.database.property.PropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;

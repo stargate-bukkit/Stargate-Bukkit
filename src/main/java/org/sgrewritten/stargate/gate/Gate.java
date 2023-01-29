@@ -1,25 +1,17 @@
 package org.sgrewritten.stargate.gate;
 
 import com.google.common.base.Preconditions;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Tag;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.EndGateway;
-import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.BlockSetAction;
-import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.gate.control.ControlMechanism;
@@ -36,14 +28,11 @@ import org.sgrewritten.stargate.gate.control.ButtonControlMechanism;
 import org.sgrewritten.stargate.gate.control.SignControlMechanism;
 import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.util.ButtonHelper;
+import org.sgrewritten.stargate.util.ClassConditionsHelper;
 import org.sgrewritten.stargate.vectorlogic.MatrixVectorOperation;
 import org.sgrewritten.stargate.vectorlogic.VectorOperation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -74,8 +63,7 @@ public class Gate implements GateAPI {
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
-    public Gate(@NotNull GateFormat format, @NotNull Location signLocation, BlockFace signFace, boolean alwaysOn, @NotNull RegistryAPI registry)
-            throws InvalidStructureException, GateConflictException {
+    public Gate(@NotNull GateFormat format, @NotNull Location signLocation, BlockFace signFace, boolean alwaysOn, @NotNull RegistryAPI registry) throws InvalidStructureException, GateConflictException {
         Objects.requireNonNull(signLocation);
         this.format = Objects.requireNonNull(format);
         this.registry = Objects.requireNonNull(registry);
@@ -104,8 +92,7 @@ public class Gate implements GateAPI {
     public Gate(PortalData portalData, @NotNull RegistryAPI registry) throws InvalidStructureException {
         GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);
         if (format == null) {
-            Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
-                    "log for more information", portalData.gateFileName));
+            Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " + "log for more information", portalData.gateFileName));
             throw new InvalidStructureException("Could not find a matching gateformat");
         }
         this.topLeft = portalData.topLeft;
@@ -118,30 +105,8 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public void drawControlMechanisms(String[] signLines, boolean drawButton) {
-        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            drawSigns(signLines);
-            return true;
-        }));
-
-        if (drawButton) {
-            drawButtons();
-        }
-    }
-
-    @Override
     public List<GatePosition> getPortalPositions() {
         return new ArrayList<>(this.portalPositions);
-    }
-
-    /**
-     * Draws this gate's signs
-     *
-     * @param signLines <p>The lines to draw on the sign</p>
-     */
-    private void drawSigns(String[] signLines) {
-        GateTextDisplayHandler drawer = (GateTextDisplayHandler) controlMechanisms.get(MechanismType.SIGN);
-        drawer.displayText(signLines);
     }
 
     /**
@@ -150,7 +115,7 @@ public class Gate implements GateAPI {
     private void drawButtons() {
         GateActivationHandler drawer = (GateActivationHandler) controlMechanisms.get(MechanismType.BUTTON);
         Material buttonMaterial = ButtonHelper.getButtonMaterial(getFormat().getIrisMaterial(false));
-        drawer.drawButton(buttonMaterial,facing);
+        drawer.drawButton(buttonMaterial, facing);
     }
 
     @Override
@@ -418,11 +383,17 @@ public class Gate implements GateAPI {
 
     @Override
     public void setPortalControlMechanism(@NotNull ControlMechanism mechanism) {
+        if (mechanism.getType() == MechanismType.SIGN) {
+            ClassConditionsHelper.assertInstanceOf(GateTextDisplayHandler.class, mechanism);
+        }
+        if (mechanism.getType() == MechanismType.BUTTON) {
+            ClassConditionsHelper.assertInstanceOf(GateActivationHandler.class, mechanism);
+        }
         controlMechanisms.put(mechanism.getType(), mechanism);
     }
 
     @Override
-    public ControlMechanism getPortalControlMechanism(@NotNull MechanismType type) {
+    public @Nullable ControlMechanism getPortalControlMechanism(@NotNull MechanismType type) {
         return controlMechanisms.get(type);
     }
 

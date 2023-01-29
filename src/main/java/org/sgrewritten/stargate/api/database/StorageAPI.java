@@ -14,6 +14,7 @@ import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 
 /**
  * A generic API for Stargate's storage methods

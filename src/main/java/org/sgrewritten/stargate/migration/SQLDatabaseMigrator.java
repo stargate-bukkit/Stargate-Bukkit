@@ -2,10 +2,10 @@ package org.sgrewritten.stargate.migration;
 
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
-import org.sgrewritten.stargate.database.SQLDatabaseAPI;
+import org.sgrewritten.stargate.api.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLQuery;
 import org.sgrewritten.stargate.database.SQLQueryHandler;
-import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.api.network.StorageType;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;

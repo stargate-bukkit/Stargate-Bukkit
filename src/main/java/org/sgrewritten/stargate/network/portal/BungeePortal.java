@@ -1,15 +1,15 @@
 package org.sgrewritten.stargate.network.portal;
 
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.gate.control.GateTextDisplayHandler;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkType;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.api.network.portal.formatting.*;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
@@ -96,13 +96,16 @@ public class BungeePortal extends AbstractPortal {
     @Override
     public void drawControlMechanisms() {
         Stargate.log(Level.FINEST, "serverDestination = " + serverDestination);
-
-        String[] lines = new String[4];
-        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN);
-        lines[1] = super.colorDrawer.formatPortalName(getDestination(), HighlightingStyle.LESSER_GREATER_THAN);
-        lines[2] = super.colorDrawer.formatStringWithHiglighting(serverDestination, HighlightingStyle.SQUARE_BRACKETS);
-        lines[3] = super.colorDrawer.formatLine(bungeeString);
-        getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+        GateTextDisplayHandler display = super.getPortalTextDisplay();
+        if (display == null) {
+            return;
+        }
+        FormattableObject[] lines = new FormattableObject[4];
+        lines[0] = new PortalFormattingObject(this, HighlightingStyle.MINUS_SIGN);
+        lines[1] = new PortalFormattingObject(getDestination(), HighlightingStyle.LESSER_GREATER_THAN);
+        lines[2] = new StringFormattableObject(serverDestination, HighlightingStyle.SQUARE_BRACKETS);
+        lines[3] = new StringFormattableObject(bungeeString, HighlightingStyle.NOTHING);
+        display.displayText(lines);
     }
 
     @Override

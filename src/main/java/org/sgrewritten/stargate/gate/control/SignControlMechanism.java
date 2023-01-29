@@ -1,8 +1,5 @@
 package org.sgrewritten.stargate.gate.control;
 
-import java.util.Objects;
-import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -18,11 +15,12 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.api.event.StargateSignFormatEvent;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.gate.control.GateTextDisplayHandler;
 import org.sgrewritten.stargate.api.gate.control.MechanismType;
-import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.formatting.FormattableObject;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
@@ -32,19 +30,24 @@ import org.sgrewritten.stargate.network.portal.formatting.NoLineColorFormatter;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.util.colors.ColorConverter;
 
-public class SignControlMechanism extends GatePosition implements GateTextDisplayHandler{
+import java.util.Objects;
+import java.util.logging.Level;
 
+public class SignControlMechanism extends GatePosition implements GateTextDisplayHandler {
+
+    private final LanguageManager languageManager;
     private @NotNull Gate gate;
     private LineFormatter colorDrawer;
 
-    public SignControlMechanism(@NotNull BlockVector positionLocation, @NotNull Gate gate) {
+    public SignControlMechanism(@NotNull BlockVector positionLocation, @NotNull Gate gate, @NotNull LanguageManager languageManager) {
         super(positionLocation);
         this.gate = Objects.requireNonNull(gate);
         colorDrawer = new NoLineColorFormatter();
+        this.languageManager = Objects.requireNonNull(languageManager);
     }
 
     @Override
-    public void displayText(String[] lines) {
+    public void displayText(FormattableObject[] lines) {
         Location signLocation = gate.getLocation(this.positionLocation);
         BlockState signState = signLocation.getBlock().getState();
         if (!(signState instanceof Sign)) {
@@ -53,7 +56,7 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
         }
         Sign sign = (Sign) signState;
         for (int i = 0; i < 4; i++) {
-            sign.setLine(i, lines[i]);
+            sign.setLine(i, colorDrawer.formatFormattableObject(lines[i]));
         }
         Stargate.addSynchronousTickAction(new BlockSetAction(sign, true));
     }
@@ -79,7 +82,7 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
     }
 
     @Override
-    public void setSignColor(DyeColor color, RealPortal portal) {
+    public void setTextColor(DyeColor color, RealPortal portal) {
         Location location = gate.getLocation(positionLocation);
         Sign sign = (Sign) location.getBlock().getState();
         if (color == null) {
@@ -98,7 +101,6 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
         Bukkit.getPluginManager().callEvent(formatEvent);
         this.colorDrawer = formatEvent.getLineFormatter();
     }
-    
 
 
     /**
@@ -114,14 +116,13 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
             return false;
         }
 
-        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer());
+        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(), this.languageManager);
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         if (!hasPermission) {
             event.getPlayer().sendMessage(permissionManager.getDenyMessage());
         }
         return hasPermission;
     }
-    
 
 
     /**

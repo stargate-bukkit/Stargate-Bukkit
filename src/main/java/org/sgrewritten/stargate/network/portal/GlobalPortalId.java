@@ -1,5 +1,7 @@
 package org.sgrewritten.stargate.network.portal;
 
+import org.sgrewritten.stargate.api.network.portal.Portal;
+
 /**
  * A class representing a portal's global identifier
  *

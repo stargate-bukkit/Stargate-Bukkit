@@ -9,7 +9,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.database.DatabaseDriver;
 import org.sgrewritten.stargate.database.MySqlDatabase;
-import org.sgrewritten.stargate.database.SQLDatabaseAPI;
+import org.sgrewritten.stargate.api.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLQueryGenerator;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.exception.StargateInitializationException;

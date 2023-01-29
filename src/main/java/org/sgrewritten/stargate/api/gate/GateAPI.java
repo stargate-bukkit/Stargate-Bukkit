@@ -18,14 +18,6 @@ import java.util.List;
 public interface GateAPI {
 
     /**
-     * Set button and draw sign
-     *
-     * @param signLines  <p>an array with 4 elements, representing each line of a sign</p>
-     * @param drawButton <p>whether or not include a button.</p>
-     */
-    void drawControlMechanisms(String[] signLines, boolean drawButton);
-
-    /**
      * Gets a copy of this gate's portal positions
      *
      * @return <p>A copy of this gate's portal positions</p>
@@ -107,24 +99,24 @@ public interface GateAPI {
      * @return <p>This gate's top-left location</p>
      */
     Location getTopLeft();
-    
+
     /**
      * Add a position specific for this Gate
      *
      * @param pos <p> The position to add</p>
      */
     public void addPortalPosition(GatePosition pos);
-    
+
     /**
      * Set a portal control mechanism. Note that a portal can only have one type of each control mechanism at the same time.
-     * 
+     *
      * @param mechanism <p> The mechanism to set </p>
-     * @param type <p> The function of the mechanism </p>
      */
     void setPortalControlMechanism(@NotNull ControlMechanism mechanism);
 
     /**
      * Get a portal control mechanism.
+     *
      * @param type <p> The type of control to get </p>
      * @return <p> A ControlMechanism or null if none has been set </p>
      */

@@ -26,7 +26,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabase;
-import org.sgrewritten.stargate.database.SQLDatabaseAPI;
+import org.sgrewritten.stargate.api.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.database.property.FakePropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;

@@ -1,4 +1,6 @@
-package org.sgrewritten.stargate.database;
+package org.sgrewritten.stargate.api.database;
+
+import org.sgrewritten.stargate.database.DatabaseDriver;
 
 import java.sql.Connection;
 import java.sql.SQLException;

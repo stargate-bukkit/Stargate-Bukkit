@@ -1,10 +1,9 @@
 package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.entity.Player;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;

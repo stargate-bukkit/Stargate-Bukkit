@@ -5,16 +5,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.event.StargateAccessEvent;
 import org.sgrewritten.stargate.api.event.StargateActivateEvent;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.gate.control.GateTextDisplayHandler;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.api.network.portal.formatting.*;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -22,11 +22,7 @@ import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -53,11 +49,11 @@ public class NetworkedPortal extends AbstractPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @param logger
      * @throws InvalidNameException <p>If the portal name is invalid</p>
-     * @throws NameLengthException 
+     * @throws NameLengthException
      */
     public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID,
-                           LanguageManager languageManager,StargateEconomyAPI economyAPI) throws InvalidNameException, NameLengthException {
-        super(network, name, flags, gate, ownerUUID,languageManager,economyAPI);
+                           LanguageManager languageManager, StargateEconomyAPI economyAPI) throws InvalidNameException, NameLengthException {
+        super(network, name, flags, gate, ownerUUID, languageManager, economyAPI);
     }
 
     @Override
@@ -72,7 +68,7 @@ public class NetworkedPortal extends AbstractPortal {
             return;
         }
 
-        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(),super.languageManager);
+        StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(), super.languageManager);
         if (!hasActivatePermissions(actor, permissionManager)) {
             Stargate.log(Level.CONFIG, "Player did not have permission to activate portal");
             return;
@@ -171,16 +167,20 @@ public class NetworkedPortal extends AbstractPortal {
 
     @Override
     public void drawControlMechanisms() {
-        String[] lines = new String[4];
-        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN);
+        GateTextDisplayHandler display = super.getPortalTextDisplay();
+        if (display == null) {
+            return;
+        }
+        FormattableObject[] lines = new FormattableObject[4];
+        lines[0] = new PortalFormattingObject(this, HighlightingStyle.MINUS_SIGN);
         if (!this.isActive) {
-            lines[1] = super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.RIGHT_CLICK));
-            lines[2] = super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.TO_USE));
-            lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()) : "";
+            lines[1] = new StringFormattableObject(super.languageManager.getString(TranslatableMessage.RIGHT_CLICK));
+            lines[2] = new StringFormattableObject(super.languageManager.getString(TranslatableMessage.TO_USE));
+            lines[3] = new NetworkFormattingObject(network, this.hasFlag(PortalFlag.HIDE_NETWORK));
         } else {
             drawActiveSign(lines);
         }
-        getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+        display.displayText(lines);
     }
 
     @Override
@@ -196,7 +196,7 @@ public class NetworkedPortal extends AbstractPortal {
      *
      * @param lines <p>The sign lines to update</p>
      */
-    private void drawActiveSign(String[] lines) {
+    private void drawActiveSign(FormattableObject[] lines) {
         int destinationIndex = selectedDestination % 3;
         int firstDestination = selectedDestination - destinationIndex;
         int maxLength = destinations.size();
@@ -217,10 +217,11 @@ public class NetworkedPortal extends AbstractPortal {
      * @param destinationIndex <p>The modulo of the selected destination</p>
      * @param lines            <p>The sign lines to update</p>
      */
-    private void drawDestination(int lineIndex, int destination, int destinationIndex, String[] lines) {
+    private void drawDestination(int lineIndex, int destination, int destinationIndex, FormattableObject[] lines) {
         HighlightingStyle highlightingStyle = (destinationIndex == lineIndex) ? HighlightingStyle.LESSER_GREATER_THAN
                 : HighlightingStyle.NOTHING;
-        lines[lineIndex + 1] = super.colorDrawer.formatPortalName(destinations.get(destination), highlightingStyle);
+
+        lines[lineIndex + 1] = new PortalFormattingObject(destinations.get(destination), highlightingStyle);
     }
 
     /**

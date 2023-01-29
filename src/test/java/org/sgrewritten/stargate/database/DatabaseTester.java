@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.api.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.network.Network;
@@ -245,14 +246,14 @@ public class DatabaseTester {
 
         for (RealPortal portal : portals.values()) {
             List<GatePosition> portalPositions = fetchPortalPositions(portal, type);
-            Stargate.log(Level.FINER,"---- Initial portalPositions ----");
+            Stargate.log(Level.FINER, "---- Initial portalPositions ----");
             for (GatePosition fetchedPosition : portalPositions) {
-                Stargate.log(Level.FINER,String.format("%s%n", fetchedPosition));
+                Stargate.log(Level.FINER, String.format("%s%n", fetchedPosition));
             }
             for (GatePosition position : portalPositions) {
                 DatabaseHelper.runStatement(generator.generateRemovePortalPositionStatement(connection, type, portal, position));
                 List<GatePosition> updatedPortalPositionList = fetchPortalPositions(portal, type);
-                Stargate.log(Level.FINER,"---- fetched portalPositions ----");
+                Stargate.log(Level.FINER, "---- fetched portalPositions ----");
                 for (GatePosition fetchedPosition : updatedPortalPositionList) {
                     Stargate.log(Level.FINER, String.format("%s, isEqualToRemovedPosition = %b%n", fetchedPosition, fetchedPosition.equals(position)));
                 }

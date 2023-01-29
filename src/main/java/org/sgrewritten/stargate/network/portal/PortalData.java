@@ -12,7 +12,6 @@ import java.util.UUID;
  * The data contained within a Portal.
  */
 public class PortalData {
-
     /**
      * The name of the portal.
      */

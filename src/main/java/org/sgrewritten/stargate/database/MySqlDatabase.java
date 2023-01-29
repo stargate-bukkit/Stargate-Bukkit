@@ -10,6 +10,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
 
 import java.io.File;

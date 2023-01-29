@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.migration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.container.TwoTuple;
-import org.sgrewritten.stargate.database.SQLDatabaseAPI;
+import org.sgrewritten.stargate.api.database.SQLDatabaseAPI;
 
 import java.util.HashMap;
 import java.util.Map;

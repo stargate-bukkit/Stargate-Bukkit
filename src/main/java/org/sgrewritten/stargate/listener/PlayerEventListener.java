@@ -12,7 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.ConditionalDelayedAction;
@@ -27,11 +26,7 @@ import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.manager.BlockLoggingManager;
-import org.sgrewritten.stargate.manager.BungeeManager;
-import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.PluginChannel;
-import org.sgrewritten.stargate.util.ButtonHelper;
-import org.sgrewritten.stargate.util.colors.ColorConverter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -79,7 +74,7 @@ public class PlayerEventListener implements Listener {
         if (portal == null) {
             return;
         }
-        if(portal.getGate().getPortalPosition(block.getLocation()).onBlockClick(event, portal)) {
+        if (portal.getGate().getPortalPosition(block.getLocation()).onBlockClick(event, portal)) {
             loggingCompatability.logPlayerInteractEvent(event);
         }
     }

@@ -6,7 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -22,9 +21,9 @@ import org.sgrewritten.stargate.api.event.StargateAccessEvent;
 import org.sgrewritten.stargate.api.event.StargateCloseEvent;
 import org.sgrewritten.stargate.api.event.StargateDeactivateEvent;
 import org.sgrewritten.stargate.api.event.StargateOpenEvent;
-import org.sgrewritten.stargate.api.event.StargateSignFormatEvent;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.gate.control.ControlMechanism;
 import org.sgrewritten.stargate.api.gate.control.GateTextDisplayHandler;
 import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.manager.PermissionManager;
@@ -33,29 +32,21 @@ import org.sgrewritten.stargate.api.network.StorageType;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
+import org.sgrewritten.stargate.api.network.portal.formatting.FormattableObject;
+import org.sgrewritten.stargate.api.network.portal.formatting.StringFormattableObject;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
-import org.sgrewritten.stargate.manager.PermissionManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
-import org.sgrewritten.stargate.network.portal.formatting.LegacyLineColorFormatter;
-import org.sgrewritten.stargate.network.portal.formatting.LineColorFormatter;
-import org.sgrewritten.stargate.network.portal.formatting.NoLineColorFormatter;
 import org.sgrewritten.stargate.property.BypassPermission;
-import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -117,7 +108,7 @@ public abstract class AbstractPortal implements RealPortal {
         this.economyManager = Objects.requireNonNull(economyManager);
 
         name = NameHelper.getTrimmedName(name);
-        if (!NameHelper.isValidName(name)) {
+        if (NameHelper.isInvalidName(name)) {
             throw new NameLengthException("Invalid length of name '" + name + "' , namelength must be above 0 and under " + Stargate.getMaxTextLength());
         }
 
@@ -343,47 +334,11 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void setSignColor(DyeColor color) {
-
-        /* NoLineColorFormatter should only be used during startup, this means
-         * that if it has already been changed, and if there's no color to change to,
-         * then the line formatter does not need to be reinstated again
-         *
-         * Just avoids some unnecessary minute lag
-         */
-        if (!(colorDrawer instanceof NoLineColorFormatter) && color == null) {
+        GateTextDisplayHandler display = this.getPortalTextDisplay();
+        if (display == null) {
             return;
         }
-
-        ((GateTextDisplayHandler)this.getGate().getPortalControlMechanism(MechanismType.SIGN)).setSignColor(color);
-
-        for (Location location : this.getPortalPosition(MechanismType.SIGN)) {
-            if (!(location.getBlock().getState() instanceof Sign)) {
-                Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s \n"
-                                + "This is most likely caused from a bug // please contact developers (use ''sg about'' for github repo)",
-                        this.name, this.network.getName()));
-                continue;
-            }
-            if (color == null) {
-                color = sign.getColor();
-            }
-
-            if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
-                colorDrawer = new LineColorFormatter(color, sign.getType());
-            } else {
-                colorDrawer = new LegacyLineColorFormatter();
-            }
-            //TODO: The StargateSignFormatEvent should be called each time a sign is formatted. This implementation 
-            // will only update the formatter when run on startup, or if changed with a dye. Instead, this should either
-            // be called every time a color formatting happens, or be replaced with an API method
-            StargateSignFormatEvent formatEvent = new StargateSignFormatEvent(this, colorDrawer, color);
-            Bukkit.getPluginManager().callEvent(formatEvent);
-            this.colorDrawer = formatEvent.getLineFormatter();
-        }
-        // Has to be done one tick later to avoid a bukkit bug
-        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            this.drawControlMechanisms();
-            return true;
-        }));
+        display.setTextColor(color, this);
     }
 
     @Override
@@ -451,7 +406,12 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         if (!event.getPlayer().isSneaking()) {
+            //Reset the information display to normal if player is not sneaking
             this.drawControlMechanisms();
+            return;
+        }
+        GateTextDisplayHandler displayHandler = this.getPortalTextDisplay();
+        if (displayHandler == null) {
             return;
         }
         PermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(), languageManager);
@@ -462,17 +422,14 @@ public abstract class AbstractPortal implements RealPortal {
             event.getPlayer().sendMessage(accessEvent.getDenyReason());
             return;
         }
-        String[] signText = {
-                this.colorDrawer.formatLine(languageManager.getString(TranslatableMessage.PREFIX).trim()),
-                this.colorDrawer
-                        .formatLine(languageManager.getString(TranslatableMessage.GATE_OWNED_BY)),
-                this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName()),
-                this.colorDrawer.formatLine(getAllFlagsString().replaceAll("[0-9]", ""))};
-
-        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            gate.drawControlMechanisms(signText, false);
-            return true;
-        }));
+        String nullablePlayerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
+        String playerName = nullablePlayerName == null ? "null" : nullablePlayerName;
+        FormattableObject[] signText = {
+                new StringFormattableObject(languageManager.getString(TranslatableMessage.PREFIX).trim()),
+                new StringFormattableObject(languageManager.getString(TranslatableMessage.GATE_OWNED_BY)),
+                new StringFormattableObject(playerName),
+                new StringFormattableObject(getAllFlagsString().replaceAll("[0-9]", ""))};
+        displayHandler.displayText(signText);
         activate(event.getPlayer());
     }
 
@@ -557,6 +514,14 @@ public abstract class AbstractPortal implements RealPortal {
 
     public BlockFace getExitFacing() {
         return flags.contains(PortalFlag.BACKWARDS) ? getGate().getFacing() : getGate().getFacing().getOppositeFace();
+    }
+
+    protected GateTextDisplayHandler getPortalTextDisplay() {
+        ControlMechanism mechanism = this.getGate().getPortalControlMechanism(MechanismType.SIGN);
+        if (mechanism == null) {
+            return null;
+        }
+        return (GateTextDisplayHandler) mechanism;
     }
 
 }
