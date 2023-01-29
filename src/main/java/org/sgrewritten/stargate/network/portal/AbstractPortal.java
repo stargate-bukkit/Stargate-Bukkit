@@ -353,7 +353,7 @@ public abstract class AbstractPortal implements RealPortal {
         String[] lines = new String[]{name, "", "", ""};
         GateTextDisplayHandler display = this.getPortalTextDisplay();
         if (display != null) {
-            display.displayText(new FormattableObject[]{new StringFormattableObject(name), new StringFormattableObject(""), new StringFormattableObject(""), new StringFormattableObject("")});
+            display.displayText(new FormattableObject[]{new StringFormattableObject(name), new StringFormattableObject(""), new StringFormattableObject(""), new StringFormattableObject("")}, this);
         }
 
         this.isDestroyed = true;
@@ -431,7 +431,7 @@ public abstract class AbstractPortal implements RealPortal {
                 new StringFormattableObject(languageManager.getString(TranslatableMessage.GATE_OWNED_BY)),
                 new StringFormattableObject(playerName),
                 new StringFormattableObject(getAllFlagsString().replaceAll("[0-9]", ""))};
-        displayHandler.displayText(signText);
+        displayHandler.displayText(signText, this);
         activate(event.getPlayer());
     }
 

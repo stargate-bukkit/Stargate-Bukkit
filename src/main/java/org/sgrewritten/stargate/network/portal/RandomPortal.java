@@ -52,7 +52,7 @@ public class RandomPortal extends AbstractPortal {
                 super.languageManager.getString(TranslatableMessage.RANDOM), HighlightingStyle.LESSER_GREATER_THAN);
         lines[2] = new NetworkFormattingObject(network, this.hasFlag(PortalFlag.HIDE_NETWORK));
         lines[3] = new StringFormattableObject("");
-        display.displayText(lines);
+        display.displayText(lines, this);
     }
 
     @Override

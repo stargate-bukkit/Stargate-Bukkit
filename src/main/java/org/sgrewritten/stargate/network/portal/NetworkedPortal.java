@@ -180,7 +180,7 @@ public class NetworkedPortal extends AbstractPortal {
         } else {
             drawActiveSign(lines);
         }
-        display.displayText(lines);
+        display.displayText(lines, this);
     }
 
     @Override

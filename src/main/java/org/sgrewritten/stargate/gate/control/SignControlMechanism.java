@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.api.event.StargateSignFormatEvent;
@@ -48,7 +49,7 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
     }
 
     @Override
-    public void displayText(FormattableObject[] lines) {
+    public void displayText(FormattableObject[] lines, @NotNull RealPortal portal) {
         Location signLocation = gate.getLocation(this.positionLocation);
         BlockState signState = signLocation.getBlock().getState();
         this.recentDisplayedLines = lines;
@@ -89,7 +90,7 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
     }
 
     @Override
-    public void setTextColor(DyeColor color, RealPortal portal) {
+    public void setTextColor(@Nullable DyeColor color, @NotNull RealPortal portal) {
         Location location = gate.getLocation(positionLocation);
         Sign sign = (Sign) location.getBlock().getState();
         if (color == null) {
@@ -108,7 +109,7 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
         Bukkit.getPluginManager().callEvent(formatEvent);
         this.colorDrawer = formatEvent.getLineFormatter();
         if (recentDisplayedLines != null) {
-            this.displayText(recentDisplayedLines);
+            this.displayText(recentDisplayedLines, portal);
         }
     }
 

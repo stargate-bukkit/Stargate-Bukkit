@@ -105,7 +105,7 @@ public class BungeePortal extends AbstractPortal {
         lines[1] = new PortalFormattingObject(getDestination(), HighlightingStyle.LESSER_GREATER_THAN);
         lines[2] = new StringFormattableObject(serverDestination, HighlightingStyle.SQUARE_BRACKETS);
         lines[3] = new StringFormattableObject(bungeeString, HighlightingStyle.NOTHING);
-        display.displayText(lines);
+        display.displayText(lines, this);
     }
 
     @Override

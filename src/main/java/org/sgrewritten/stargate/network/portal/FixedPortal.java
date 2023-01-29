@@ -54,7 +54,7 @@ public class FixedPortal extends AbstractPortal {
             lines[1] = new StringFormattableObject(destinationName, HighlightingStyle.LESSER_GREATER_THAN);
             lines[3] = new StringFormattableObject(languageManager.getString(TranslatableMessage.DISCONNECTED), HighlightingStyle.SQUARE_BRACKETS);
         }
-        display.displayText(lines);
+        display.displayText(lines, this);
     }
 
     @Override
