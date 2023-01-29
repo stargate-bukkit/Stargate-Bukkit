@@ -41,7 +41,7 @@ jobs:
       mysql:
         image: mysql:5.7.22
         env:
-          MYSQL_DATABASE: stargate
+          MYSQL_DATABASE: Stargate
           MYSQL_ROOT_PASSWORD: root
         ports:
           - 3306:3306
