@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.gate;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +17,13 @@ import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import java.util.List;
 
 public class FakeGate implements GateAPI {
+
+    private final World world;
+
+    public FakeGate(World world) {
+        this.world = world;
+    }
+
     @Override
     public List<GatePosition> getPortalPositions() {
         return null;
@@ -48,7 +56,7 @@ public class FakeGate implements GateAPI {
 
     @Override
     public GateFormatAPI getFormat() {
-        return null;
+        return new FakeGateFormat();
     }
 
     @Override
@@ -68,7 +76,7 @@ public class FakeGate implements GateAPI {
 
     @Override
     public Location getLocation(@NotNull Vector vector) {
-        return null;
+        return new Location(world, 0, 0, 0);
     }
 
     @Override

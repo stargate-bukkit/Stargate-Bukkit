@@ -239,7 +239,7 @@ public class DatabaseTester {
         ResultSet portalPositionsData = statement.executeQuery();
         List<GatePosition> output = new ArrayList<>();
         while (portalPositionsData.next()) {
-            GatePosition position = PortalStorageHelper.loadPortalPosition(portalPositionsData, new FakeGate(), new FakeLanguageManager());
+            GatePosition position = PortalStorageHelper.loadPortalPosition(portalPositionsData, new FakeGate(world), new FakeLanguageManager());
             output.add(position);
         }
         return output;

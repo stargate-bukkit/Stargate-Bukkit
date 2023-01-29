@@ -28,6 +28,7 @@ public class ButtonControlMechanism extends GatePosition implements GateActivati
     public ButtonControlMechanism(@NotNull BlockVector positionLocation, GateAPI gate) {
         super(positionLocation);
         this.gate = Objects.requireNonNull(gate);
+        this.drawButton(ButtonHelper.getButtonMaterial(gate.getFormat().getIrisMaterial(false)), gate.getFacing());
     }
 
     @Override
