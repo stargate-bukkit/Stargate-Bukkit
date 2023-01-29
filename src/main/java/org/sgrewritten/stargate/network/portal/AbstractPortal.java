@@ -351,8 +351,10 @@ public abstract class AbstractPortal implements RealPortal {
         this.network.removePortal(this, true);
         this.close(true);
         String[] lines = new String[]{name, "", "", ""};
-        getGate().drawControlMechanisms(lines, false);
-
+        GateTextDisplayHandler display = this.getPortalTextDisplay();
+        if (display != null) {
+            display.displayText(new FormattableObject[]{new StringFormattableObject(name), new StringFormattableObject(""), new StringFormattableObject(""), new StringFormattableObject("")});
+        }
 
         this.isDestroyed = true;
 
@@ -516,7 +518,7 @@ public abstract class AbstractPortal implements RealPortal {
         return flags.contains(PortalFlag.BACKWARDS) ? getGate().getFacing() : getGate().getFacing().getOppositeFace();
     }
 
-    protected GateTextDisplayHandler getPortalTextDisplay() {
+    protected @Nullable GateTextDisplayHandler getPortalTextDisplay() {
         ControlMechanism mechanism = this.getGate().getPortalControlMechanism(MechanismType.SIGN);
         if (mechanism == null) {
             return null;

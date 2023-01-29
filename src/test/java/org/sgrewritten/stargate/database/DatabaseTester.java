@@ -24,11 +24,13 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.gate.FakeGate;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.PortalData;
+import org.sgrewritten.stargate.util.FakeLanguageManager;
 import org.sgrewritten.stargate.util.SQLTestHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
@@ -237,7 +239,7 @@ public class DatabaseTester {
         ResultSet portalPositionsData = statement.executeQuery();
         List<GatePosition> output = new ArrayList<>();
         while (portalPositionsData.next()) {
-            GatePosition position = PortalStorageHelper.loadPortalPosition(portalPositionsData);
+            GatePosition position = PortalStorageHelper.loadPortalPosition(portalPositionsData, new FakeGate(), new FakeLanguageManager());
             output.add(position);
         }
         return output;

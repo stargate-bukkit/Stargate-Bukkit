@@ -120,7 +120,7 @@ public final class PortalCreationHelper {
             throws GateConflictException, NoFormatFoundException, TranslatableException, InvalidNameException {
 
 
-        Gate gate = createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON), registry);
+        Gate gate = createGate(signLocation, flags.contains(PortalFlag.ALWAYS_ON), registry, languageManager);
         if (errorMessage != null) {
             player.sendMessage(errorMessage);
             return;
@@ -225,7 +225,7 @@ public final class PortalCreationHelper {
      * @throws NoFormatFoundException <p>If no gate format is found that matches the physical gate</p>
      * @throws GateConflictException  <p>If a registered gate conflicts with the new gate</p>
      */
-    public static Gate createGate(Block sign, boolean alwaysOn, RegistryAPI registry) throws NoFormatFoundException, GateConflictException {
+    public static Gate createGate(Block sign, boolean alwaysOn, RegistryAPI registry, LanguageManager languageManager) throws NoFormatFoundException, GateConflictException {
         if (!(Tag.WALL_SIGNS.isTagged(sign.getType()))) {
             throw new NoFormatFoundException();
         }
@@ -233,7 +233,7 @@ public final class PortalCreationHelper {
         Directional signDirection = (Directional) sign.getBlockData();
         Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
         List<GateFormat> gateFormats = GateFormatHandler.getPossibleGateFormatsFromControlBlockMaterial(behind.getType());
-        return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), alwaysOn, registry);
+        return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), alwaysOn, registry, languageManager);
     }
 
     /**
@@ -248,13 +248,13 @@ public final class PortalCreationHelper {
      * @throws GateConflictException  <p>If the found gate conflicts with another gate</p>
      */
     private static Gate findMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing,
-                                         boolean alwaysOn, RegistryAPI registry)
+                                         boolean alwaysOn, RegistryAPI registry, LanguageManager languageManager)
             throws NoFormatFoundException, GateConflictException {
         Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
         for (GateFormat gateFormat : gateFormats) {
             Stargate.log(Level.FINE, "--------- " + gateFormat.getFileName() + " ---------");
             try {
-                return new Gate(gateFormat, signLocation, signFacing, alwaysOn, registry);
+                return new Gate(gateFormat, signLocation, signFacing, alwaysOn, registry, languageManager);
             } catch (InvalidStructureException ignored) {
             }
         }

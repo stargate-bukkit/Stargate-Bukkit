@@ -19,10 +19,7 @@ import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
-import org.sgrewritten.stargate.exception.name.BungeeNameException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.manager.FakeBlockLogger;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
@@ -48,7 +45,7 @@ class PlayerEventListenerTest {
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
 
     @BeforeEach
-    void setUp() throws NameLengthException, BungeeNameException, NameConflictException, InvalidNameException, NoFormatFoundException, GateConflictException {
+    void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException {
         server = MockBukkit.mock();
         world = server.addSimpleWorld("world");
         player = server.addPlayer();
@@ -56,7 +53,7 @@ class PlayerEventListenerTest {
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
         listener = new PlayerEventListener(new FakeLanguageManager(), registry, new StargateBungeeManager(registry, new FakeLanguageManager()), new FakeBlockLogger());
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
-        portal = new FakePortalGenerator().generateFakePortal(signBlock, "network", new HashSet<>(), "name", registry);
+        portal = FakePortalGenerator.generateFakePortal(signBlock, "network", new HashSet<>(), "name", registry);
     }
 
     @AfterEach

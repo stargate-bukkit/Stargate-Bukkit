@@ -264,7 +264,7 @@ public class SQLDatabase implements StorageAPI {
     private void registerPortalGate(PortalData portalData, Network network, RegistryAPI registry,
                                     StargateEconomyAPI economyManager) throws SQLException,
             InvalidStructureException, GateConflictException, TranslatableException {
-        Gate gate = new Gate(portalData, registry);
+        Gate gate = new Gate(portalData, registry, languageManager);
         if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
                 && !gate.isValid(portalData.flags.contains(PortalFlag.ALWAYS_ON))) {
             throw new InvalidStructureException();

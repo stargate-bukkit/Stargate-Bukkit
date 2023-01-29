@@ -17,6 +17,7 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.PortalData;
+import org.sgrewritten.stargate.util.FakeLanguageManager;
 import org.sgrewritten.stargate.util.FakeStorage;
 
 import java.io.File;
@@ -43,10 +44,10 @@ class GateTest {
         }
         GateFormatHandler.setFormats(gateFormats);
 
-        loadGate = new Gate(portalData, new StargateRegistry(new FakeStorage()));
+        loadGate = new Gate(portalData, new StargateRegistry(new FakeStorage()), new FakeLanguageManager());
         GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);
         // Note that this is created in a different registry, to avoid any conflicts
-        createdGate = new Gate(format, signBlock.getLocation(), portalData.facing, false, new StargateRegistry(new FakeStorage()));
+        createdGate = new Gate(format, signBlock.getLocation(), portalData.facing, false, new StargateRegistry(new FakeStorage()), new FakeLanguageManager());
     }
 
     @AfterAll

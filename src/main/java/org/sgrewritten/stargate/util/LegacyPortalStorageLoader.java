@@ -113,7 +113,7 @@ public final class LegacyPortalStorageLoader {
             return null;
         }
 
-        Gate gate = new Gate(portalData, registry);
+        Gate gate = new Gate(portalData, registry, languageManager);
         Location signLocation = LegacyDataHandler.loadLocation(world, portalProperties[1]);
         Location buttonLocation = LegacyDataHandler.loadLocation(world, portalProperties[2]);
         if (signLocation != null) {

@@ -5,7 +5,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
-import org.sgrewritten.stargate.api.gate.control.MechanismType;
+import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
@@ -19,18 +19,14 @@ import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
+import org.sgrewritten.stargate.gate.control.ButtonControlMechanism;
+import org.sgrewritten.stargate.gate.control.SignControlMechanism;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.util.FakeLanguageManager;
 import org.sgrewritten.stargate.util.FakeStorage;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A generator for generating fake portals
@@ -153,16 +149,16 @@ public class FakePortalGenerator {
         portalData.gateFileName = "nether.gate";
         portalData.portalType = createInterServerPortal ? StorageType.INTER_SERVER : StorageType.LOCAL;
 
-        Gate gate = new Gate(portalData, registry);
+        Gate gate = new Gate(portalData, registry, new FakeLanguageManager());
 
-        gate.addPortalPosition(new BlockVector(1, -2, 0), MechanismType.BUTTON);
-        gate.addPortalPosition(new BlockVector(1, -2, -3), MechanismType.SIGN);
+        List<GatePosition> portalPositions = List.of(new ButtonControlMechanism(new BlockVector(1, -2, 0), gate), new SignControlMechanism(new BlockVector(1, -2, -3), gate, new FakeLanguageManager()));
+        gate.addPortalPositions(portalPositions);
         return new FixedPortal(network, name, "", flags, gate, UUID.randomUUID(), new FakeLanguageManager(), new FakeEconomyManager());
     }
 
     public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,
                                                 RegistryAPI registry) throws NoFormatFoundException, GateConflictException, TranslatableException {
-        Gate gate = PortalCreationHelper.createGate(signBlock, false, registry);
+        Gate gate = PortalCreationHelper.createGate(signBlock, false, registry, new FakeLanguageManager());
         flags.add(network.getType().getRelatedFlag());
 
 

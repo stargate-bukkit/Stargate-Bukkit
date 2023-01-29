@@ -12,6 +12,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GatePosition;
 import org.sgrewritten.stargate.api.gate.control.ControlMechanism;
@@ -51,6 +52,7 @@ public class Gate implements GateAPI {
     private boolean isOpen = false;
     private boolean flipped;
     private final @NotNull RegistryAPI registry;
+    private final @NotNull LanguageManager languageManager;
 
 
     /**
@@ -63,11 +65,12 @@ public class Gate implements GateAPI {
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
-    public Gate(@NotNull GateFormat format, @NotNull Location signLocation, BlockFace signFace, boolean alwaysOn, @NotNull RegistryAPI registry) throws InvalidStructureException, GateConflictException {
+    public Gate(@NotNull GateFormat format, @NotNull Location signLocation, @NotNull BlockFace signFace, boolean alwaysOn, @NotNull RegistryAPI registry, @NotNull LanguageManager languageManager) throws InvalidStructureException, GateConflictException {
         Objects.requireNonNull(signLocation);
         this.format = Objects.requireNonNull(format);
         this.registry = Objects.requireNonNull(registry);
-        facing = signFace;
+        this.languageManager = Objects.requireNonNull(languageManager);
+        facing = Objects.requireNonNull(signFace);
         converter = new MatrixVectorOperation(signFace);
 
         //Allow mirroring for non-symmetrical gates
@@ -89,11 +92,12 @@ public class Gate implements GateAPI {
      * @param portalData <p> Data of the portal </p>
      * @throws InvalidStructureException <p>If the facing is invalid or if no format could be found</p>
      */
-    public Gate(PortalData portalData, @NotNull RegistryAPI registry) throws InvalidStructureException {
+    public Gate(@NotNull PortalData portalData, @NotNull RegistryAPI registry, @NotNull LanguageManager languageManager) throws InvalidStructureException {
         GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);
+        this.languageManager = Objects.requireNonNull(languageManager);
         if (format == null) {
             Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " + "log for more information", portalData.gateFileName));
-            throw new InvalidStructureException("Could not find a matching gateformat");
+            throw new InvalidStructureException("Could not find a matching gate-format");
         }
         this.topLeft = portalData.topLeft;
         this.converter = new MatrixVectorOperation(portalData.facing);
@@ -107,15 +111,6 @@ public class Gate implements GateAPI {
     @Override
     public List<GatePosition> getPortalPositions() {
         return new ArrayList<>(this.portalPositions);
-    }
-
-    /**
-     * Draws this gate's button
-     */
-    private void drawButtons() {
-        GateActivationHandler drawer = (GateActivationHandler) controlMechanisms.get(MechanismType.BUTTON);
-        Material buttonMaterial = ButtonHelper.getButtonMaterial(getFormat().getIrisMaterial(false));
-        drawer.drawButton(buttonMaterial, facing);
     }
 
     @Override
@@ -285,27 +280,32 @@ public class Gate implements GateAPI {
      * @param alwaysOn <p>Whether this gate is always on</p>
      */
     private void calculatePortalPositions(boolean alwaysOn) {
-        List<BlockVector> foundVectors = new ArrayList<>();
+
+        List<MechanismType> assignedMechanismTypes = new ArrayList<>();
+
         for (BlockVector blockVector : getFormat().getControlBlocks()) {
             Material material = getLocation(blockVector).getBlock().getType();
             if (!isControl(material)) {
                 continue;
             }
 
-            if (Tag.WALL_SIGNS.isTagged(material)) {
-                SignControlMechanism signMechanism = new SignControlMechanism(blockVector, this);
+            if (Tag.WALL_SIGNS.isTagged(material) && !assignedMechanismTypes.contains(MechanismType.SIGN)) {
+                SignControlMechanism signMechanism = new SignControlMechanism(blockVector, this, languageManager);
                 portalPositions.add(signMechanism);
                 this.setPortalControlMechanism(signMechanism);
-            } else {
-                if (!alwaysOn) {
-                    ButtonControlMechanism buttonMechanism = new ButtonControlMechanism(blockVector, this);
-                    portalPositions.add(buttonMechanism);
-                    this.setPortalControlMechanism(buttonMechanism);
-                } else {
-                    this.setPortalControlMechanism(new AlwaysOnControlMechanism());
-                }
+                assignedMechanismTypes.add(signMechanism.getType());
+                continue;
             }
-            foundVectors.add(blockVector);
+            if (!alwaysOn && !assignedMechanismTypes.contains(MechanismType.BUTTON)) {
+                ButtonControlMechanism buttonMechanism = new ButtonControlMechanism(blockVector, this);
+                portalPositions.add(buttonMechanism);
+                this.setPortalControlMechanism(buttonMechanism);
+                assignedMechanismTypes.add(buttonMechanism.getType());
+            }
+        }
+
+        if (alwaysOn) {
+            this.setPortalControlMechanism(new AlwaysOnControlMechanism());
         }
     }
 
