@@ -99,23 +99,28 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced)
+    public Network createNetwork(String networkName, NetworkType type, boolean isInterServer, boolean isForced)
             throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException {
-        if (this.networkExists(networkName, isInterserver)
-                || this.networkExists(NetworkCreationHelper.getPlayerUUID(networkName).toString(), isInterserver)) {
+        if (NetworkCreationHelper.getDefaultNamesTaken().contains(networkName.toLowerCase()) && type != NetworkType.DEFAULT) {
+            throw new NameConflictException("Network of id '" + networkName + "' has an id that conflicts with the default network", true);
+        }
+
+        if (this.networkExists(networkName, isInterServer)
+                || this.networkExists(NetworkCreationHelper.getPlayerUUID(networkName).toString(), isInterServer)) {
             if (isForced && type == NetworkType.DEFAULT) {
-                Network network = this.getNetwork(networkName, isInterserver);
+                Network network = this.getNetwork(networkName, isInterServer);
                 if (network != null && network.getType() != type) {
                     this.rename(network);
                 }
             }
             throw new NameConflictException("network of id '" + networkName + "' already exists", true);
         }
-        Network network = storageAPI.createNetwork(networkName, type, isInterserver);
+
+        Network network = storageAPI.createNetwork(networkName, type, isInterServer);
         network.assignToRegistry(this);
-        getNetworkMap(isInterserver).put(network.getId(), network);
+        getNetworkMap(isInterServer).put(network.getId(), network);
         Stargate.log(
-                Level.FINEST, String.format("Adding networkid %s to interServer = %b", network.getId(), isInterserver));
+                Level.FINEST, String.format("Adding networkid %s to interServer = %b", network.getId(), isInterServer));
         return network;
     }
 

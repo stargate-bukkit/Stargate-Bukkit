@@ -68,7 +68,7 @@ public final class NetworkCreationHelper {
         } else if (unHighlightedName.trim().isEmpty()) {
             data = getNetworkDataFromEmptyDefinition(player, permissionManager);
         } else if (NetworkType.styleGivesNetworkType(highlight)) {
-            data = getNetworkDataFromExplicitDefinition(highlight, unHighlightedName, registry, flags.contains(PortalFlag.FANCY_INTER_SERVER));
+            data = getNetworkDataFromExplicitDefinition(highlight, unHighlightedName, registry);
         } else {
             data = getNetworkDataFromImplicitDefinition(unHighlightedName, player, permissionManager,
                     flags.contains(PortalFlag.FANCY_INTER_SERVER), registry);
@@ -129,20 +129,9 @@ public final class NetworkCreationHelper {
         return new TwoTuple<>(NetworkType.CUSTOM, name);
     }
 
-    private static TwoTuple<NetworkType, String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight, String name, RegistryAPI registry, boolean isInterserver) {
-        String nameToTestFor = name;
+    private static TwoTuple<NetworkType, String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight, String name, RegistryAPI registry) {
         NetworkType type = NetworkType.getNetworkTypeFromHighlight(highlight);
-        if (type == NetworkType.CUSTOM || type == NetworkType.TERMINAL) {
-            int i = 1;
-            UUID possiblePlayerUUID = getPlayerUUID(nameToTestFor);
-            while (getDefaultNamesTaken().contains(nameToTestFor.toLowerCase()) || type == NetworkType.TERMINAL &&
-                    registry.getNetwork(possiblePlayerUUID.toString(), isInterserver) != null) {
-                nameToTestFor = name + i;
-                possiblePlayerUUID = getPlayerUUID(nameToTestFor);
-                i++;
-            }
-        }
-        return new TwoTuple<>(type, nameToTestFor);
+        return new TwoTuple<>(type, name);
     }
 
     private static TwoTuple<NetworkType, String> getNetworkDataFromEmptyDefinition(Player player,

@@ -104,9 +104,7 @@ class NetworkCreationHelperTest {
         Network network1 = NetworkCreationHelper.selectNetwork(NetworkType.PERSONAL.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry);
         if (networkType == NetworkType.DEFAULT) {
             Assertions.assertThrows(TranslatableException.class, () -> NetworkCreationHelper.selectNetwork(networkType.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry));
-        } else if (networkType == NetworkType.TERMINAL) {
-            Assertions.assertThrows(UnimplementedFlagException.class, () -> NetworkCreationHelper.selectNetwork(networkType.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry));
-        } else if (networkType == NetworkType.CUSTOM) {
+        } else if (networkType == NetworkType.CUSTOM || networkType == NetworkType.TERMINAL) {
             Assertions.assertThrows(NameConflictException.class, () -> NetworkCreationHelper.selectNetwork(networkType.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry));
         } else {
             Network network2 = NetworkCreationHelper.selectNetwork(networkType.getHighlightingStyle().getHighlightedName(player.getName()), permissionManager, player, new HashSet<>(), registry);
@@ -128,17 +126,10 @@ class NetworkCreationHelperTest {
             Assertions.assertEquals(name, personalNetwork.getName());
         }
     }
-
+    
     @Test
-    void explicitDefinitionTestCustom() throws TranslatableException {
-        String customNetworkName = NetworkType.CUSTOM.getHighlightingStyle().getHighlightedName(NAME);
-        Network customNetwork = NetworkCreationHelper.selectNetwork(customNetworkName, permissionManager, player, new HashSet<>(), registry);
-        Assertions.assertEquals(NetworkType.CUSTOM, customNetwork.getType());
-        Assertions.assertEquals(NAME, customNetwork.getName());
-
-        Network changedNameFromDefault = NetworkCreationHelper.selectNetwork(NetworkType.CUSTOM.getHighlightingStyle().getHighlightedName(CENTRAL), permissionManager, player, new HashSet<>(), registry);
-        Assertions.assertEquals(NetworkType.CUSTOM, changedNameFromDefault.getType());
-        Assertions.assertEquals(CENTRAL + 1, changedNameFromDefault.getName());
+    void default_NameConflicts() {
+        Assertions.assertThrows(NameConflictException.class, () -> NetworkCreationHelper.selectNetwork(NetworkType.CUSTOM.getHighlightingStyle().getHighlightedName(CENTRAL), permissionManager, player, new HashSet<>(), registry));
     }
 
     @Test
