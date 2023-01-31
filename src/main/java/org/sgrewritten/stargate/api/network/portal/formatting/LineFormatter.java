@@ -1,10 +1,12 @@
 package org.sgrewritten.stargate.api.network.portal.formatting;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * A formatter for formatting a line on a sign
  */
 public interface LineFormatter {
 
-    String formatFormattableObject(FormattableObject formattableObject);
+    @NotNull String formatFormattableObject(FormattableObject formattableObject);
 
 }

@@ -22,6 +22,7 @@ import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.gate.control.AlwaysOnControlMechanism;
@@ -105,6 +106,9 @@ public class Gate implements GateAPI {
         this.facing = portalData.facing;
         this.flipped = portalData.flipZ;
         this.registry = Preconditions.checkNotNull(registry);
+        if (portalData.flags.contains(PortalFlag.ALWAYS_ON)) {
+            this.setPortalControlMechanism(new AlwaysOnControlMechanism());
+        }
     }
 
     @Override

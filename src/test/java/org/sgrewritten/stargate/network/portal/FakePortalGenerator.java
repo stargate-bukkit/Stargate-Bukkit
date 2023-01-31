@@ -148,6 +148,7 @@ public class FakePortalGenerator {
         portalData.facing = BlockFace.EAST;
         portalData.gateFileName = "nether.gate";
         portalData.portalType = createInterServerPortal ? StorageType.INTER_SERVER : StorageType.LOCAL;
+        portalData.flags = flags;
 
         Gate gate = new Gate(portalData, registry, new FakeLanguageManager());
 
@@ -156,14 +157,18 @@ public class FakePortalGenerator {
         return new FixedPortal(network, name, "", flags, gate, UUID.randomUUID(), new FakeLanguageManager(), new FakeEconomyManager());
     }
 
-    public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,
-                                                RegistryAPI registry) throws NoFormatFoundException, GateConflictException, TranslatableException {
-        Gate gate = PortalCreationHelper.createGate(signBlock, false, registry, new FakeLanguageManager());
+    public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name, String destination, String server, RegistryAPI registry) throws GateConflictException, NoFormatFoundException, TranslatableException {
+        Gate gate = PortalCreationHelper.createGate(signBlock, flags.contains(PortalFlag.ALWAYS_ON), registry, new FakeLanguageManager());
         flags.add(network.getType().getRelatedFlag());
 
-        RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, gate, UUID.randomUUID(), new FakeLanguageManager(), registry, new FakeEconomyManager());
+        RealPortal portal = PortalCreationHelper.createPortal(network, name, destination, server, flags, gate, UUID.randomUUID(), new FakeLanguageManager(), registry, new FakeEconomyManager());
         network.addPortal(portal, true);
         return portal;
+    }
+
+    public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,
+                                                RegistryAPI registry) throws NoFormatFoundException, GateConflictException, TranslatableException {
+        return generateFakePortal(signBlock, network, flags, name, "destination", "server", registry);
     }
 
     public static RealPortal generateFakePortal(Block signBlock, String networkName, Set<PortalFlag> flags, String name,

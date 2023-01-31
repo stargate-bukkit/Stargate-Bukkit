@@ -128,13 +128,13 @@ class NetworkedPortalTest {
 
     @Test
     void open() {
-        portal.open(player);
+        portal.open(player.getUniqueId());
         Assertions.assertTrue(portal.isOpen());
     }
 
     @Test
     void close() {
-        portal.open(player);
+        portal.open(player.getUniqueId());
         portal.close(false);
         Assertions.assertFalse(portal.isOpen());
     }

@@ -95,7 +95,7 @@ class MoveEventListenerTest {
     void onPlayerMove_Open() {
         player.addAttachment(plugin, "sg.use", true);
         portal.overrideDestination(portal);
-        portal.open(player);
+        portal.open(player.getUniqueId());
         PlayerMoveEvent event = new PlayerMoveEvent(player, outsideIris, iris);
         listener.onPlayerMove(event);
         server.getScheduler().performOneTick();
@@ -106,7 +106,7 @@ class MoveEventListenerTest {
     void onVehicleMoveOpen() {
         VehicleMoveEvent event = new VehicleMoveEvent(vehicle, outsideIris, iris);
         portal.overrideDestination(portal);
-        portal.open(player);
+        portal.open(player.getUniqueId());
         listener.onVehicleMove(event);
         server.getScheduler().performOneTick();
         Assertions.assertTrue(vehicle.hasTeleported());

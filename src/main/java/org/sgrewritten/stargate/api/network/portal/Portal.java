@@ -1,7 +1,6 @@
 package org.sgrewritten.stargate.api.network.portal;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.StorageType;
@@ -62,9 +61,9 @@ public interface Portal {
     /**
      * Opens this portal for the given player
      *
-     * @param player <p>The player to open this portal for</p>
+     * @param player <p>The uuid of the player to open this portal for</p>
      */
-    void open(@Nullable Player player);
+    void open(@Nullable UUID player);
 
     /**
      * Gets the name of this portal

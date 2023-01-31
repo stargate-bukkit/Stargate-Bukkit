@@ -21,6 +21,7 @@ import org.sgrewritten.stargate.util.FakeLanguageManager;
 import org.sgrewritten.stargate.util.FakeStorage;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
 
 class GateTest {
@@ -37,6 +38,7 @@ class GateTest {
         portalData.topLeft = new Location(world, 0, 6, 0);
         portalData.facing = BlockFace.SOUTH;
         portalData.gateFileName = "nether.gate";
+        portalData.flags = new HashSet<>();
         Block signBlock = PortalBlockGenerator.generatePortal(portalData.topLeft.clone().subtract(new Vector(0, 4, 0)));
         List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger());
         if (gateFormats == null) {

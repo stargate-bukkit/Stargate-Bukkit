@@ -1,9 +1,10 @@
 package org.sgrewritten.stargate.gate.control;
 
-import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.gate.control.GateActivationHandler;
 import org.sgrewritten.stargate.api.gate.control.MechanismType;
+
+import java.util.UUID;
 
 public class AlwaysOnControlMechanism implements GateActivationHandler {
 
@@ -18,8 +19,8 @@ public class AlwaysOnControlMechanism implements GateActivationHandler {
     }
 
     @Override
-    public void drawButton(Material buttonMaterial, BlockFace facing) {
-        // Do nothing
+    public @Nullable UUID getActivator() {
+        return null;
     }
 
 }

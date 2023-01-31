@@ -24,6 +24,7 @@ import org.sgrewritten.stargate.api.event.StargateOpenEvent;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.gate.control.ControlMechanism;
+import org.sgrewritten.stargate.api.gate.control.GateActivationHandler;
 import org.sgrewritten.stargate.api.gate.control.GateTextDisplayHandler;
 import org.sgrewritten.stargate.api.gate.control.MechanismType;
 import org.sgrewritten.stargate.api.manager.PermissionManager;
@@ -69,24 +70,21 @@ public abstract class AbstractPortal implements RealPortal {
      */
     public static final Set<PortalFlag> allUsedFlags = new HashSet<>();
 
-    protected final int openDelay = 20;
     protected Network network;
     protected String name;
     protected UUID openFor;
     protected Portal destination = null;
     protected Portal overriddenDestination = null;
-
-    private long openTime = -1;
     private UUID ownerUUID;
     private final Gate gate;
     private final Set<PortalFlag> flags;
 
     protected long activatedTime;
-    protected UUID activator;
     protected boolean isDestroyed = false;
     protected final LanguageManager languageManager;
     private final StargateEconomyAPI economyManager;
     private static final int ACTIVE_DELAY = 15;
+    protected UUID activator;
 
     /**
      * Instantiates a new abstract portal
@@ -112,7 +110,7 @@ public abstract class AbstractPortal implements RealPortal {
             throw new NameLengthException("Invalid length of name '" + name + "' , namelength must be above 0 and under " + Stargate.getMaxTextLength());
         }
 
-        if (gate.getFormat() != null && gate.getFormat().isIronDoorBlockable()) {
+        if (gate.getFormat().isIronDoorBlockable()) {
             flags.add(PortalFlag.IRON_DOOR);
         }
 
@@ -139,8 +137,13 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         Portal currentDestination = getCurrentDestination();
-        if (hasFlag(PortalFlag.ALWAYS_ON) && currentDestination != null) {
-            this.open(null);
+        ControlMechanism activation = getGate().getPortalControlMechanism(MechanismType.BUTTON);
+        if (activation != null && ((GateActivationHandler) activation).isActive() && currentDestination != null) {
+            UUID activator = ((GateActivationHandler) activation).getActivator();
+            this.open(activator);
+            if (activator != null) {
+                this.openFor = activator;
+            }
         }
         if (isOpen() && currentDestination == null) {
             close(true);
@@ -154,21 +157,14 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public void open(@Nullable Player actor) {
+    public void open(@Nullable UUID actor) {
         getGate().open();
         if (actor != null) {
-            this.openFor = actor.getUniqueId();
+            this.openFor = actor;
         }
         if (hasFlag(PortalFlag.ALWAYS_ON)) {
             return;
         }
-        long openTime = System.currentTimeMillis();
-        this.openTime = openTime;
-
-        Stargate.addSynchronousSecAction(new DelayedAction(openDelay, () -> {
-            close(openTime);
-            return true;
-        }));
     }
 
     @Override
@@ -328,8 +324,8 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         this.destination = destination;
-        open(player);
-        destination.open(player);
+        open(player.getUniqueId());
+        destination.open(player.getUniqueId());
     }
 
     @Override
@@ -350,7 +346,6 @@ public abstract class AbstractPortal implements RealPortal {
     public void destroy() {
         this.network.removePortal(this, true);
         this.close(true);
-        String[] lines = new String[]{name, "", "", ""};
         GateTextDisplayHandler display = this.getPortalTextDisplay();
         if (display != null) {
             display.displayText(new FormattableObject[]{new StringFormattableObject(name), new StringFormattableObject(""), new StringFormattableObject(""), new StringFormattableObject("")}, this);
@@ -363,13 +358,6 @@ public abstract class AbstractPortal implements RealPortal {
             return true;
         };
         Stargate.addSynchronousTickAction(new SupplierAction(destroyAction));
-    }
-
-    @Override
-    public void close(long relatedOpenTime) {
-        if (relatedOpenTime == openTime) {
-            close(false);
-        }
     }
 
     @Override
@@ -518,6 +506,11 @@ public abstract class AbstractPortal implements RealPortal {
         return flags.contains(PortalFlag.BACKWARDS) ? getGate().getFacing() : getGate().getFacing().getOppositeFace();
     }
 
+    /**
+     * Convenience method to get the display handler of the portal
+     *
+     * @return <p>A gate text display handler</p>
+     */
     protected @Nullable GateTextDisplayHandler getPortalTextDisplay() {
         ControlMechanism mechanism = this.getGate().getPortalControlMechanism(MechanismType.SIGN);
         if (mechanism == null) {

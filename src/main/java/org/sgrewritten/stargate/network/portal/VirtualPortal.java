@@ -94,7 +94,7 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
-    public void open(Player player) {
+    public void open(UUID player) {
     }
 
     @Override

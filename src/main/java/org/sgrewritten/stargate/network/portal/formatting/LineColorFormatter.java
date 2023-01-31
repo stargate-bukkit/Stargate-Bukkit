@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.network.portal.formatting;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.portal.formatting.FormattableObject;
@@ -38,7 +39,7 @@ public class LineColorFormatter implements LineFormatter {
     }
 
     @Override
-    public String formatFormattableObject(FormattableObject formattableObject) {
+    public @NotNull String formatFormattableObject(FormattableObject formattableObject) {
         if (formattableObject == null) {
             return "";
         }

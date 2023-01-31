@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.network.portal.formatting;
 
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.network.portal.formatting.FormattableObject;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
 
@@ -12,7 +13,7 @@ public class NoLineColorFormatter implements LineFormatter {
 
 
     @Override
-    public String formatFormattableObject(FormattableObject formattableObject) {
+    public @NotNull String formatFormattableObject(FormattableObject formattableObject) {
         return formattableObject.getHighlighting().getHighlightedName(formattableObject.getName());
     }
 }
