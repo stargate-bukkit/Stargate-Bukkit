@@ -59,13 +59,14 @@ ecoInsolvent=Unzureichende Mittel
 #Terminology
 gate=Tor
 network=Netzwerk
-interServer=Inter-server
+interserver=Interserver
 default=Standard
 terminal=Terminal
 personal=Persönlich
+custom=Angepasst
 
 #Temporary
-unimplementedInterServer=Interserver-Tore befinden sich noch in aktiver Entwicklung und sind nur teilweise implementiert.
+unimplementedInterserver=Interserver-Tore befinden sich noch in aktiver Entwicklung und sind nur teilweise implementiert.
 unimplementedIConflict=Das %name% %type1% Netzwerk wurde vorübergehend vom %name% %type2% Netzwerk getrennt, wird aber bald zusammengefügt
 unimplementedFlag=Die %flags% Flags sind noch nicht implementiert.
 

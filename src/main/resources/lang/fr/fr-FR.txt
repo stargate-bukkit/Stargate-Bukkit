@@ -59,13 +59,14 @@ ecoInsolvent=Fonds insuffisants !
 #Terminology
 gate=Portail
 network=Réseau
-interServer=Inter-serveur
+interserver=Inter-serveur
 default=Défaut
 terminal=Terminal
 personal=Personnel
+custom=Personnaliser
 
 #Temporary
-unimplementedInterServer=Les portails inter-serveurs sont encore en cours de développement et n'ont été que partiellement implémentées.
+unimplementedInterserver=Les portails inter-serveurs sont encore en cours de développement et n'ont été que partiellement implémentées.
 unimplementedIConflict=Le réseau %name% %type1% a été temporairement séparé du réseau %name% %type2% mais sera bientôt fusionné.
 unimplementedFlag=Les option %flags% n'ont pas encore été implémentés.
 
