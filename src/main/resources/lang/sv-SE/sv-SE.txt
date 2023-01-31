@@ -57,6 +57,7 @@ ecoObtain=Erhöll %cost% från StarGate %portal%!
 ecoInsolvent=Inte tillräckligt med pengar.
 
 #Terminology
+gate=Port
 
 #Temporary
 

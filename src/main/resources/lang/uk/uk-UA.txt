@@ -1,21 +1,77 @@
 # General Styling
+prefix=[Stargate] 
 
 # Sign Formatting
+signLegacyBungee=Застаріле банджі
+signNonFixedL2=ПКМ, щоб
+signNonFixedL3=використов. шлюз
+signRandom=Випадковий
+signDisconnected=Відключено
+signTerminalL2=На продаж
+signPortalOwner=Належить:
 
 # Gate Actions
+gateDestroy=Шлюз знищено!
+gateCreateSpecified=Шлюз створено в мережі %network%!
+gateCreatePersonal=Створення шлюзу в персональній мережі.
+gateTerminalSold=Придбано шлюз %gateName% у %terminalName% за %cost%.
+gateTerminalSale=Зазначений шлюз %gateName% для продажу в %terminalName% за %cost%.
+gateCreateFallback=Неможливо створити ваш шлюз у мережі %network%; натомість спробуйте свою персональну мережу!
 
 # Gate Construction Problems
+faultNetwork=Ви не маєте доступу до цієї мережі!
+faultLayout=Ви не маєте доступу до цього макета шлюзу!
+faultLength=Назва занадто коротка або довга!
+faultExists=Шлюз з такою назвою вже існує!
+faultFull=Ця мережа повна!
+faultWorldDeny=Ви не маєте доступу до світу %world%!
+faultConflict=Цей шлюз конфліктує з наявним шлюзом.
+faultFlag=У вас немає дозволу на використання %flags%; Ваш портал створено без них!
+faultControls=Конструкція цих шлюзів має занадто мало блоків керування, щоб вмістити вибрані вами позначки!
+faultAddon=Аддон завадив вам це зробити!
 
 # Bungee Problems
+bungeePerms=Ви не маєте дозволу робити банджі шлюзи!
+bungeeDisabled=Підтримка Bungeecord не ввімкнена.
+bungeeLocal=Сучасні банджі шлюзів не ввімкнуті.
+bungeeLegacySyntax=Застарілі шлюзи банджі вимагають, щоб ви вказали шлюз призначення та сервер.
+bungeeInvalidExitNetwork=Мережа цього порталу більше не існує на цільовому сервері.
+bungeeInvalidExitGate=Вихід цього порталу більше не існує на цільовому сервері.
+bungeeProxyOffline=Цей портал виходить на сервер, який зараз недоступний.
+bungeeTargetOffline=Проксі наразі не працює; банджі портали тимчасово вимкнуті.
 
 # Gate Usage
+tpSuccess=Телепортовано!
+tpDestInvalid=Недійсний пункт призначення!
+tpEmptyNet=Список пунктів призначення порожній!
+tpOccupied=Інший гравець зараз використовує цей портал; спробуйте ще раз через кілька хвилин!
+tpPastBorder=Пункт призначення знаходиться за межами світового кордону!
 
 # Access
+conflictPerms=У доступі відмовлено!
+conflictSpawn=Чанки спавну заважають цьому порталу!
 
 # Economy
+ecoDeduct=Вираховано %cost%.
+ecoObtain=Отримано %cost% на StarGate %portal%!
+ecoInsolvent=Недостатньо коштів!
 
 #Terminology
+gate=Шлюз
+network=Мережа
+interserver=Інтерсервер
+default=Типовий
+terminal=Термінал
+personal=Персональний
+custom=Власний
 
 #Temporary
+unimplementedInterserver=Міжсерверні шлюзи все ще знаходяться в активній розробці та реалізовані лише частково.
+unimplementedIConflict=Мережу Інтерсервер %name% тимчасово відокремлено від мережі місцевий %name%, але незабаром буде об’єднано.
+unimplementedFlag=Позначки %flags% ще не реалізовано.
 
 #Admin
+adminReload=Конфігурацію перезавантажено!
+adminInfo=Запускається версія %version%. Журнал змін: https://git.io/JD4Qo
+adminHelp=Документацію StarGate можна знайти за адресою https://git.io/JDclf
+translatedBy=Veydzher

@@ -85,10 +85,17 @@ signFormatting.pointerBehaviourL3=Options:
 signFormatting.pointerBehaviourL4=1: No styling (the pointer will be the same default colour used by the sign's text).
 signFormatting.pointerBehaviourL5=2: Destination type (the pointer will colour-code based on the selected destination)
 signFormatting.pointerBehaviourL6=3: Accented (pointer brightness will shift to contrast with the sign's default colour)
+disableCustomColoredNamesL1=By default, SG allows users to specify coloured names for their gates via external plugins.
+disableCustomColoredNamesL2=Such names override the colours specified for signStyle (above).
+disableCustomColoredNamesL4=Should SG disable this behaviour by forcing the game to display exactly what was written?
+rememberLastDestinationL1=Will the destination a networked portal last connected to be listed first in its scroll menu?
 
 #Technical
 portalFileL1=When useRemoteDatabase is false, Stargate stores all of its portal data in a flatfile.
 portalFileL2=What should this flatfile be named?
+gateFolderL1=Currently, on startup, a folder is checked for gate layouts stored as ‘.gate’ files.
+gateFolderL2=Where is that folder?
+gateFolderL4=This option is provided as a patch to allow data to be imported from some older forks.
 customRemoteDatabasePrefixL1=By default, SG will preface its remote database tables with `SG_`.
 customRemoteDatabasePrefixL2=If this conflicts with another plugin, you can change that prefix here.
 loggingLevelL1=Possible Values:
