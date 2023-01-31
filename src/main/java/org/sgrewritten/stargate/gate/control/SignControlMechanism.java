@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.BlockSetAction;
+import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.event.StargateSignFormatEvent;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.gate.GateAPI;
@@ -53,11 +54,10 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
         Location signLocation = gate.getLocation(this.positionLocation);
         BlockState signState = signLocation.getBlock().getState();
         this.recentDisplayedLines = lines;
-        if (!(signState instanceof Sign)) {
+        if (!(signState instanceof Sign sign)) {
             Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
             return;
         }
-        Sign sign = (Sign) signState;
         for (int i = 0; i < 4; i++) {
             sign.setLine(i, colorDrawer.formatFormattableObject(lines[i]));
         }
@@ -109,8 +109,17 @@ public class SignControlMechanism extends GatePosition implements GateTextDispla
         Bukkit.getPluginManager().callEvent(formatEvent);
         this.colorDrawer = formatEvent.getLineFormatter();
         if (recentDisplayedLines != null) {
-            this.displayText(recentDisplayedLines, portal);
+            /*
+             * Sign needs to be left alone one tick after it has been dyed, such that
+             * the DyeColor can apply. This is why the displaying the text has to be
+             * delayed two ticks.
+             */
+            Stargate.addSynchronousTickAction(new SupplierAction(() -> {
+                displayText(recentDisplayedLines, portal);
+                return true;
+            }));
         }
+
     }
 
 
