@@ -8,6 +8,7 @@ signNonFixedL3=以使用星门
 signRandom=随机
 signDisconnected=断开连接
 signTerminalL2=付款使用
+signPortalOwner=拥有者：
 
 # Gate Actions
 gateDestroy=星门已被摧毁!
@@ -15,6 +16,7 @@ gateCreateSpecified=在网络 %network% 中创建了星门!
 gateCreatePersonal=在私人网络中创建了星门.
 gateTerminalSold=已为在 %terminalName% 中的星门 %gateName% 支付了 %cost%.
 gateTerminalSale=已列出售价为 %cost% 的在 %terminalName% 中的星门 %gateName%
+gateCreateFallback=无法在%network%网络上创建您的门；请尝试使用您的个人网络！
 
 # Gate Construction Problems
 faultNetwork=你没有这个星门网络的访问许可!
@@ -26,6 +28,7 @@ faultWorldDeny=你没有链接世界 %world% 的权限!
 faultConflict=这个星门与现有星门冲突.
 faultFlag=你没有使用 %flags% 的权限; 已从星门中去除!
 faultControls=这个星门的控制方块太少了, 无法容纳你选择的标志!
+faultAddon=一个插件阻止你这样做！
 
 # Bungee Problems
 bungeePerms=你没有创建跨服星门的权限!
@@ -41,6 +44,8 @@ bungeeTargetOffline=代理服务器正在关闭；临时禁用跨服星门.
 tpSuccess=已传送!
 tpDestInvalid=无效的目的地!
 tpEmptyNet=目的地列表为空!
+tpOccupied=其他玩家当前正在使用此门户；请稍后重试！
+tpPastBorder=目的地在世界边界之外！
 
 # Access
 conflictPerms=访问被拒绝!
@@ -52,8 +57,19 @@ ecoObtain=从星门 %portal% 赚取了 %cost%!
 ecoInsolvent=存款不足!
 
 #Terminology
+gate=门
+network=网络
+interserver=服务器间
+default=默认
+terminal=终端
+personal=个人
+custom=自定义
+local=本地
 
 #Temporary
+unimplementedInterserver=服务器间门仍在积极开发中，目前仅部分实施。
+unimplementedIConflict=本地网络和服务器间%name%网络当前脱节；在将来的更新中，它们将被合并。当前服务器间网络%name%上的任何星门都将被移动到具有相同名称的本地网络。
+unimplementedFlag=%flags%标志尚未实施。
 
 #Admin
 adminReload=配置文件已重载!

@@ -64,6 +64,7 @@ default=Défaut
 terminal=Terminal
 personal=Personnel
 custom=Personnaliser
+local=Locale
 
 #Temporary
 unimplementedInterserver=Les portails inter-serveurs sont encore en cours de développement et n'ont été que partiellement implémentées.

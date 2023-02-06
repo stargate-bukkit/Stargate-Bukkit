@@ -75,6 +75,7 @@ signFormatting.pointerBehaviourL3=Параметри:
 #Technical
 portalFileL1=Якщо useRemoteDatabase має значення false, Stargate зберігає всі свої дані порталу в flat файлі.
 portalFileL2=Як має бути названий цей flat файл?
+gateFolderL2=Де та тека?
 customRemoteDatabasePrefixL1=За замовчуванням SG перед таблицями віддаленої бази даних вказує `SG_`.
 customRemoteDatabasePrefixL2=Якщо це конфліктує з іншим плагіном, ви можете змінити цей префікс тут.
 loggingLevelL1=Можливі значення:

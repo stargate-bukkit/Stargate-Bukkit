@@ -8,6 +8,7 @@ signNonFixedL3=geçiti kullanmak için
 signRandom=Rastgele
 signDisconnected=Bağlantı Kesildi
 signTerminalL2=Satılık
+signPortalOwner=Sahibi:
 
 # Gate Actions
 gateDestroy=Geçit yıkıldı!
@@ -15,6 +16,7 @@ gateCreateSpecified=Geçit %network% ağında yaratıldı!
 gateCreatePersonal=Kişisel ağda geçit yaratılıyor.
 gateTerminalSold=Satın Aldığınız geçit olan %gateName% %terminalName% içinde %cost% fiyatında.
 gateTerminalSale=Listelenen geçit olan %gateName% %terminalName% içinde %cost% fiyatında satılık.
+gateCreateFallback=Geçidiniz %network% ağında oluşturulamıyor; bunun yerine kişisel ağınızı deneyin.
 
 # Gate Construction Problems
 faultNetwork=Bu ağa erişim izniniz yok.
@@ -25,6 +27,8 @@ faultFull=Bu ağ dolu!
 faultWorldDeny=%world% dünyasına erişim izniniz yok!
 faultConflict=Bu geçit var olan geçitle çakışmaktadır.
 faultFlag=%flags% Bayraklarını kullanmak için yetkin az; portalın bayraksız yaratıldı!
+faultControls=Bu geçidin tasarımında seçtiğiniz bayrakları yerleştirmek için çok az denetim bloğu bulunur.
+faultAddon=Bir eklenti bunu yapmanızı engelledi.
 
 # Bungee Problems
 bungeePerms=Bungee geçitleri yapmak için yetkiniz yok!
@@ -40,6 +44,8 @@ bungeeTargetOffline=Proxy şu anda kapalı; bungee portalları geçiçi olarak k
 tpSuccess=Işınlanıldı!
 tpDestInvalid=Geçersiz Hedef!
 tpEmptyNet=Hedef listesi boş!
+tpOccupied=Şu anda bu portalı başka bir oyuncu kullanıyor; birkaç dakika sonra tekrar deneyin.
+tpPastBorder=Varış noktası Worldborder dışında!
 
 # Access
 conflictPerms=Erişim reddedildi!
@@ -51,8 +57,19 @@ ecoObtain=Stargarte %portal% 'ından %cost% elde edildi!
 ecoInsolvent=Yetersiz Bakiye!
 
 #Terminology
+gate=Geçit
+network=Ağ
+interserver=Sunucular arası
+default=Varsayılan
+terminal=Terminal
+personal=Kişisel
+custom=Özel
+local=Yerel
 
 #Temporary
+unimplementedInterserver=Sunucular arası kapılar hâlâ aktif geliştirme aşamasındadır ve geliştirmelerin sadece bir kısmı uygulamaya konmuştur.
+unimplementedIConflict=Yerel ve sunucular arası %name% ağları şu anda birleştirilmemiş; gelecekteki bir güncellemede birleştirilecekler.\nŞu anda sunucular arası %name% ağında bulunan tüm yıldız geçitleri aynı adla yerel ağa taşınacaktır.
+unimplementedFlag=%flags% bayrak henüz uygulanmadı.
 
 #Admin
 adminReload=Yapılandırma yeniden yüklendi!
