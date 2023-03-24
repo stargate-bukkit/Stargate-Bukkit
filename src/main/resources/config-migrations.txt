@@ -2,6 +2,7 @@ lang=language
 defaultNetwork=defaultGateNetwork
 use-mysql=
 ignoreEntrance=
+enableEconomy=economy.useEconomy
 portal-save-location=folders.portalFolder
 portal-folder=folders.portalFolder
 gate-folder=folders.gateFolder
