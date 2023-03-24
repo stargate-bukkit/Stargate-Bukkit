@@ -4,7 +4,7 @@ version: '${project.version}'
 description: Stargate mod for Bukkit Revived
 author: EpicKnarvik97
 authors: [ Drakia, PseudoKnight, EpicKnarvik97 ]
-website: https://github.com/stargate-rewritten/Stargate-Bukkit/tree/temp-legacy
+website: https://sgrewritten.org/legacygit
 api-version: 1.16
 softdepend: [ Vault, dynmap ]
 commands:
