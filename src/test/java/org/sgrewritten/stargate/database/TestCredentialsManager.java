@@ -29,6 +29,16 @@ public class TestCredentialsManager {
      * Gets a credential value as a string
      *
      * @param testCredential <p>The credential to get</p>
+     * @return <p>The value of the credential, or the default</p>
+     */
+    public String getCredentialString(TestCredential testCredential) {
+        return properties.getProperty(testCredential.name());
+    }
+    
+    /**
+     * Gets a credential value as a string
+     *
+     * @param testCredential <p>The credential to get</p>
      * @param defaultValue   <p>The default value, if credential is not set</p>
      * @return <p>The value of the credential, or the default</p>
      */

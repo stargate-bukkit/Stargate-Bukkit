@@ -38,8 +38,12 @@ public class MySQLDatabaseTest {
         String address = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_ADDRESS, "localhost");
         int port = credentialsManager.getCredentialInt(TestCredential.MYSQL_DB_PORT, 3306);
         String databaseName = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_NAME, "Stargate");
-        String username = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_USER, "root");
-        String password = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_PASSWORD, "root");
+        String username = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_USER);
+        String password = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_PASSWORD);
+        
+        if (username == null || password == null) {
+            throw new IllegalArgumentException("You need to set MySQL credentials to run this test!");
+        }
 
         SQLDatabaseAPI database = new MySqlDatabase(driver, address, port, databaseName, username, password, false);
         MySQLDatabaseTest.nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
