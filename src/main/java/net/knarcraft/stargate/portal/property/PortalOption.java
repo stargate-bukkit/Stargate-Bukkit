@@ -58,7 +58,7 @@ public enum PortalOption {
     /**
      * This option causes a fixed portal's sign to be removed after creation
      */
-    NO_SIGN('e', "stargate.option.nosign", 22);
+    NO_SIGN('v', "stargate.option.nosign", 22);
 
     private final char characterRepresentation;
     private final String permissionString;
