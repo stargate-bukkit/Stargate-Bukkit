@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 
 /**
  * Helper class for reading gate files
@@ -29,13 +28,12 @@ public final class GateReader {
      * @param materialTagMap       <p>The map of characters to store valid tag symbols in</p>
      * @param fileName             <p>The filename of the loaded gate config file</p>
      * @param design               <p>The list to store the loaded design/layout to</p>
-     * @param frameTypes           <p>The set to store frame/border materials to</p>
      * @param config               <p>The map of config values to store to</p>
      * @return <p>The column count/width of the loaded gate</p>
      */
     public static int readGateFile(Scanner scanner, Map<Character, Material> characterMaterialMap,
                                    Map<Character, Tag<Material>> materialTagMap, String fileName,
-                                   List<List<Character>> design, Set<Material> frameTypes, Map<String, String> config) {
+                                   List<List<Character>> design, Map<String, String> config) {
         boolean designing = false;
         int columns = 0;
         try {
@@ -51,7 +49,7 @@ public final class GateReader {
                 } else {
                     if (!line.isEmpty() && !line.startsWith("#")) {
                         //Read a normal config value
-                        readGateConfigValue(line, characterMaterialMap, materialTagMap, frameTypes, config);
+                        readGateConfigValue(line, characterMaterialMap, materialTagMap, config);
                     } else if ((line.isEmpty()) || (!line.contains("=") && !line.startsWith("#"))) {
                         //An empty line marks the start of the gate's layout/design
                         designing = true;
@@ -115,12 +113,11 @@ public final class GateReader {
      * @param line                 <p>The line to read</p>
      * @param characterMaterialMap <p>The character to material map to store to</p>
      * @param materialTagMap       <p>The character to material tag map to store to</p>
-     * @param frameTypes           <p>The set to store gate frame/border types to</p>
      * @param config               <p>The config value map to store to</p>
      * @throws Exception <p>If an invalid material is encountered</p>
      */
     private static void readGateConfigValue(String line, Map<Character, Material> characterMaterialMap,
-                                            Map<Character, Tag<Material>> materialTagMap, Set<Material> frameTypes,
+                                            Map<Character, Tag<Material>> materialTagMap,
                                             Map<String, String> config) throws Exception {
         String[] split = line.split("=");
         String key = split[0].trim();
@@ -143,8 +140,6 @@ public final class GateReader {
                 if (material != null) {
                     //Register the map between the read symbol and the corresponding material
                     characterMaterialMap.put(symbol, material);
-                    //Save the material as one of the frame materials used for this kind of gate
-                    frameTypes.add(material);
                     return;
                 }
             }

@@ -11,11 +11,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 
 import static net.knarcraft.stargate.utility.GateReader.generateLayoutMatrix;
 import static net.knarcraft.stargate.utility.GateReader.readGateConfig;
@@ -134,7 +132,6 @@ public class GateHandler {
         Map<Character, Material> characterMaterialMap = new HashMap<>();
         Map<Character, Tag<Material>> characterTagMap = new HashMap<>();
         Map<String, String> config = new HashMap<>();
-        Set<Material> frameTypes = new HashSet<>();
 
         //Initialize character to material map
         characterMaterialMap.put(ENTRANCE, Material.AIR);
@@ -142,7 +139,7 @@ public class GateHandler {
         characterMaterialMap.put(ANYTHING, Material.AIR);
 
         //Read the file into appropriate lists and maps
-        int columns = readGateFile(scanner, characterMaterialMap, characterTagMap, fileName, design, frameTypes, config);
+        int columns = readGateFile(scanner, characterMaterialMap, characterTagMap, fileName, design, config);
         if (columns < 0) {
             return null;
         }
