@@ -4,6 +4,7 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.utility.GateReader;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 
 import java.io.File;
@@ -34,8 +35,9 @@ public class GateHandler {
     private static final Material defaultPortalBlockClosed = Material.AIR;
     private static final Material defaultButton = Material.STONE_BUTTON;
 
-    private static final HashMap<String, Gate> gates = new HashMap<>();
-    private static final HashMap<Material, List<Gate>> controlBlocks = new HashMap<>();
+    private static final Map<String, Gate> gates = new HashMap<>();
+    private static final Map<Material, List<Gate>> controlBlocks = new HashMap<>();
+    private static final Map<String, List<Gate>> controlBlockTags = new HashMap<>();
 
     private GateHandler() {
 
@@ -86,13 +88,22 @@ public class GateHandler {
     private static void registerGate(Gate gate) {
         gates.put(gate.getFilename(), gate);
 
-        Material blockID = gate.getControlBlock();
-
-        if (!controlBlocks.containsKey(blockID)) {
-            controlBlocks.put(blockID, new ArrayList<>());
+        Material blockId = gate.getControlBlock();
+        if (blockId != null) {
+            if (!controlBlocks.containsKey(blockId)) {
+                controlBlocks.put(blockId, new ArrayList<>());
+            } else {
+                controlBlocks.get(blockId).add(gate);
+            }
+            return;
         }
 
-        controlBlocks.get(blockID).add(gate);
+        Tag<Material> materialTag = gate.getControlBlockTag();
+        if (!controlBlockTags.containsKey(materialTag.getKey().toString())) {
+            controlBlockTags.put(materialTag.getKey().toString(), new ArrayList<>());
+        } else {
+            controlBlockTags.get(materialTag.getKey().toString()).add(gate);
+        }
     }
 
     /**
@@ -121,6 +132,7 @@ public class GateHandler {
     private static Gate loadGate(String fileName, String parentFolder, Scanner scanner) {
         List<List<Character>> design = new ArrayList<>();
         Map<Character, Material> characterMaterialMap = new HashMap<>();
+        Map<Character, Tag<Material>> characterTagMap = new HashMap<>();
         Map<String, String> config = new HashMap<>();
         Set<Material> frameTypes = new HashSet<>();
 
@@ -130,14 +142,14 @@ public class GateHandler {
         characterMaterialMap.put(ANYTHING, Material.AIR);
 
         //Read the file into appropriate lists and maps
-        int columns = readGateFile(scanner, characterMaterialMap, fileName, design, frameTypes, config);
+        int columns = readGateFile(scanner, characterMaterialMap, characterTagMap, fileName, design, frameTypes, config);
         if (columns < 0) {
             return null;
         }
         Character[][] layout = generateLayoutMatrix(design, columns);
 
         //Create and validate the new gate
-        Gate gate = createGate(config, fileName, layout, characterMaterialMap);
+        Gate gate = createGate(config, fileName, layout, characterMaterialMap, characterTagMap);
         if (gate == null) {
             return null;
         }
@@ -154,10 +166,12 @@ public class GateHandler {
      * @param fileName             <p>The name of the saved gate config file</p>
      * @param layout               <p>The layout matrix of the new gate</p>
      * @param characterMaterialMap <p>A map between layout characters and the material to use</p>
+     * @param materialTagMap       <p>A map between layout characters and the material tags to use</p>
      * @return <p>A new gate, or null if the config is invalid</p>
      */
     private static Gate createGate(Map<String, String> config, String fileName, Character[][] layout,
-                                   Map<Character, Material> characterMaterialMap) {
+                                   Map<Character, Material> characterMaterialMap,
+                                   Map<Character, Tag<Material>> materialTagMap) {
         //Read relevant material types
         Material portalOpenBlock = readGateConfig(config, fileName, "portal-open", defaultPortalBlockOpen);
         Material portalClosedBlock = readGateConfig(config, fileName, "portal-closed", defaultPortalBlockClosed);
@@ -171,8 +185,8 @@ public class GateHandler {
                 Stargate.getEconomyConfig().sendPaymentToOwner());
 
         //Create the new gate
-        Gate gate = new Gate(fileName, new GateLayout(layout), characterMaterialMap, portalOpenBlock, portalClosedBlock,
-                portalButton, useCost, createCost, destroyCost, toOwner);
+        Gate gate = new Gate(fileName, new GateLayout(layout), characterMaterialMap, materialTagMap, portalOpenBlock,
+                portalClosedBlock, portalButton, useCost, createCost, destroyCost, toOwner);
 
         if (!validateGate(gate, fileName)) {
             return null;

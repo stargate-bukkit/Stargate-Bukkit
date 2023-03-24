@@ -1,7 +1,10 @@
 package net.knarcraft.stargate.utility;
 
 import net.knarcraft.stargate.Stargate;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +26,15 @@ public final class GateReader {
      *
      * @param scanner              <p>The scanner to read from</p>
      * @param characterMaterialMap <p>The map of characters to store valid symbols in</p>
+     * @param materialTagMap       <p>The map of characters to store valid tag symbols in</p>
      * @param fileName             <p>The filename of the loaded gate config file</p>
      * @param design               <p>The list to store the loaded design/layout to</p>
      * @param frameTypes           <p>The set to store frame/border materials to</p>
      * @param config               <p>The map of config values to store to</p>
      * @return <p>The column count/width of the loaded gate</p>
      */
-    public static int readGateFile(Scanner scanner, Map<Character, Material> characterMaterialMap, String fileName,
+    public static int readGateFile(Scanner scanner, Map<Character, Material> characterMaterialMap,
+                                   Map<Character, Tag<Material>> materialTagMap, String fileName,
                                    List<List<Character>> design, Set<Material> frameTypes, Map<String, String> config) {
         boolean designing = false;
         int columns = 0;
@@ -39,14 +44,14 @@ public final class GateReader {
 
                 if (designing) {
                     //If we have reached the gate's layout/design, read it
-                    columns = readGateDesignLine(line, columns, characterMaterialMap, fileName, design);
+                    columns = readGateDesignLine(line, columns, characterMaterialMap, materialTagMap, fileName, design);
                     if (columns < 0) {
                         return -1;
                     }
                 } else {
                     if (!line.isEmpty() && !line.startsWith("#")) {
                         //Read a normal config value
-                        readGateConfigValue(line, characterMaterialMap, frameTypes, config);
+                        readGateConfigValue(line, characterMaterialMap, materialTagMap, frameTypes, config);
                     } else if ((line.isEmpty()) || (!line.contains("=") && !line.startsWith("#"))) {
                         //An empty line marks the start of the gate's layout/design
                         designing = true;
@@ -73,11 +78,13 @@ public final class GateReader {
      * @param line                 <p>The line to read</p>
      * @param maxColumns           <p>The current max columns value of the design</p>
      * @param characterMaterialMap <p>The map between characters and the corresponding materials to use</p>
+     * @param materialTagMap       <p>The map between characters and the corresponding material tags to use</p>
      * @param fileName             <p>The filename of the loaded gate config file</p>
      * @param design               <p>The two-dimensional list to store the loaded design to</p>
      * @return <p>The new max columns value of the design</p>
      */
     private static int readGateDesignLine(String line, int maxColumns, Map<Character, Material> characterMaterialMap,
+                                          Map<Character, Tag<Material>> materialTagMap,
                                           String fileName, List<List<Character>> design) {
         List<Character> row = new ArrayList<>();
 
@@ -88,7 +95,7 @@ public final class GateReader {
 
         for (Character symbol : line.toCharArray()) {
             //Refuse read gate designs with unknown characters
-            if (symbol.equals('?') || (!characterMaterialMap.containsKey(symbol))) {
+            if (symbol.equals('?') || (!characterMaterialMap.containsKey(symbol) && !materialTagMap.containsKey(symbol))) {
                 Stargate.logSevere(String.format("Could not load Gate %s - Unknown symbol '%s' in diagram", fileName,
                         symbol));
                 return -1;
@@ -107,12 +114,14 @@ public final class GateReader {
      *
      * @param line                 <p>The line to read</p>
      * @param characterMaterialMap <p>The character to material map to store to</p>
+     * @param materialTagMap       <p>The character to material tag map to store to</p>
      * @param frameTypes           <p>The set to store gate frame/border types to</p>
      * @param config               <p>The config value map to store to</p>
      * @throws Exception <p>If an invalid material is encountered</p>
      */
     private static void readGateConfigValue(String line, Map<Character, Material> characterMaterialMap,
-                                            Set<Material> frameTypes, Map<String, String> config) throws Exception {
+                                            Map<Character, Tag<Material>> materialTagMap, Set<Material> frameTypes,
+                                            Map<String, String> config) throws Exception {
         String[] split = line.split("=");
         String key = split[0].trim();
         String value = split[1].trim();
@@ -120,14 +129,26 @@ public final class GateReader {
         if (key.length() == 1) {
             //Read a gate frame material
             Character symbol = key.charAt(0);
-            Material material = Material.getMaterial(value);
-            if (material == null) {
-                throw new Exception("Invalid material in line: " + line);
+
+            if (value.startsWith("#")) {
+                String tagString = value.replaceFirst("#", "");
+                Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.minecraft(tagString.toLowerCase()),
+                        Material.class);
+                if (tag != null) {
+                    materialTagMap.put(symbol, tag);
+                    return;
+                }
+            } else {
+                Material material = Material.getMaterial(value);
+                if (material != null) {
+                    //Register the map between the read symbol and the corresponding material
+                    characterMaterialMap.put(symbol, material);
+                    //Save the material as one of the frame materials used for this kind of gate
+                    frameTypes.add(material);
+                    return;
+                }
             }
-            //Register the map between the read symbol and the corresponding material
-            characterMaterialMap.put(symbol, material);
-            //Save the material as one of the frame materials used for this kind of gate
-            frameTypes.add(material);
+            throw new Exception("Invalid material in line: " + line);
         } else {
             //Read a normal config value
             config.put(key, value);

@@ -73,7 +73,7 @@ public class PortalStructure {
             return true;
         }
         for (RelativeBlockVector control : gate.getLayout().getControls()) {
-            verified = verified && portal.getBlockAt(control).getBlock().getType().equals(gate.getControlBlock());
+            verified = verified && gate.isValidControlBlock(portal.getBlockAt(control).getBlock().getType());
         }
         this.verified = verified;
         return verified;

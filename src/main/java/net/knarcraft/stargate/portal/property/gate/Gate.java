@@ -4,6 +4,7 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -21,6 +22,7 @@ public class Gate {
     private final String filename;
     private final GateLayout layout;
     private final Map<Character, Material> characterMaterialMap;
+    private final Map<Character, Tag<Material>> characterTagMap;
     //Gate materials
     private final Material portalOpenBlock;
     private final Material portalClosedBlock;
@@ -37,6 +39,7 @@ public class Gate {
      * @param filename             <p>The name of the gate file, including extension</p>
      * @param layout               <p>The gate layout defined in the gate file</p>
      * @param characterMaterialMap <p>The material types the different layout characters represent</p>
+     * @param characterTagMap      <p>The material tag types the different layout characters represent</p>
      * @param portalOpenBlock      <p>The material to set the opening to when the portal is open</p>
      * @param portalClosedBlock    <p>The material to set the opening to when the portal is closed</p>
      * @param portalButton         <p>The material to use for the portal button</p>
@@ -45,7 +48,8 @@ public class Gate {
      * @param destroyCost          <p>The cost of destroying a portal with this gate layout (-1 to disable)</p>
      * @param toOwner              <p>Whether any payment should go to the owner of the gate, as opposed to just disappearing</p>
      */
-    public Gate(String filename, GateLayout layout, Map<Character, Material> characterMaterialMap, Material portalOpenBlock,
+    public Gate(String filename, GateLayout layout, Map<Character, Material> characterMaterialMap,
+                Map<Character, Tag<Material>> characterTagMap, Material portalOpenBlock,
                 Material portalClosedBlock, Material portalButton, int useCost, int createCost, int destroyCost,
                 boolean toOwner) {
         this.filename = filename;
@@ -58,6 +62,7 @@ public class Gate {
         this.createCost = createCost;
         this.destroyCost = destroyCost;
         this.toOwner = toOwner;
+        this.characterTagMap = characterTagMap;
     }
 
     /**
@@ -76,6 +81,25 @@ public class Gate {
      */
     public Map<Character, Material> getCharacterMaterialMap() {
         return new HashMap<>(characterMaterialMap);
+    }
+
+    /**
+     * Checks whether the given material is valid for control blocks
+     *
+     * @param material <p>The material to check</p>
+     * @return <p>True if the material is valid for control blocks</p>
+     */
+    public boolean isValidControlBlock(Material material) {
+        return (getControlBlock() != null) ? getControlBlock().equals(material) : getControlBlockTag().isTagged(material);
+    }
+
+    /**
+     * Gets the material tag used for this gate's control blocks
+     *
+     * @return <p>The material tag type used for control blocks</p>
+     */
+    public Tag<Material> getControlBlockTag() {
+        return characterTagMap.get(GateHandler.getControlBlockCharacter());
     }
 
     /**
@@ -195,15 +219,29 @@ public class Gate {
      */
     private boolean verifyGateBorderMatches(BlockLocation topLeft, double yaw) {
         Map<Character, Material> characterMaterialMap = new HashMap<>(this.characterMaterialMap);
+        Map<Character, Tag<Material>> characterTagMap = new HashMap<>(this.characterTagMap);
         for (RelativeBlockVector borderVector : layout.getBorder()) {
             int rowIndex = borderVector.getRight();
             int lineIndex = borderVector.getDown();
             Character key = layout.getLayout()[lineIndex][rowIndex];
 
             Material materialInLayout = characterMaterialMap.get(key);
+            Tag<Material> tagInLayout = characterTagMap.get(key);
             Material materialAtLocation = topLeft.getRelativeLocation(borderVector, yaw).getType();
 
-            if (materialInLayout == null) {
+            if (materialInLayout != null) {
+                if (materialAtLocation != materialInLayout) {
+                    Stargate.debug("Gate::Matches", String.format("Block Type Mismatch: %s != %s",
+                            materialAtLocation, materialInLayout));
+                    return false;
+                }
+            } else if (tagInLayout != null) {
+                if (!tagInLayout.isTagged(materialAtLocation)) {
+                    Stargate.debug("Gate::Matches", String.format("Block Type Mismatch: %s != %s",
+                            materialAtLocation, tagInLayout));
+                    return false;
+                }
+            } else {
                 /* This generally should not happen with proper checking, but just in case a material character is not
                  * recognized, but still allowed in previous checks, verify the gate as long as all such instances of
                  * the character correspond to the same material in the physical gate. All subsequent gates will also
@@ -211,10 +249,6 @@ public class Gate {
                 characterMaterialMap.put(key, materialAtLocation);
                 Stargate.debug("Gate::Matches", String.format("Missing layout material in %s. Using %s from the" +
                         " physical portal.", getFilename(), materialAtLocation));
-            } else if (materialAtLocation != materialInLayout) {
-                Stargate.debug("Gate::Matches", String.format("Block Type Mismatch: %s != %s",
-                        materialAtLocation, materialInLayout));
-                return false;
             }
         }
         return true;
