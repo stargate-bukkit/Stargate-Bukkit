@@ -1,0 +1,12 @@
+portal-open=END_GATEWAY
+portal-closed=AIR
+button=BIRCH_BUTTON
+toowner=false
+X=END_STONE_BRICKS
+-=END_STONE_BRICKS
+
+ XX
+X..X
+-..-
+X*.X
+ XX

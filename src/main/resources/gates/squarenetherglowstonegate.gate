@@ -1,0 +1,13 @@
+portal-open=NETHER_PORTAL
+portal-closed=AIR
+button=OAK_BUTTON
+toowner=false
+X=OBSIDIAN
+-=GLOWSTONE
+A=GLOWSTONE
+
+ XAX
+X...X
+-...-
+X.*.X
+ XAX

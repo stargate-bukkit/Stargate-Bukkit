@@ -1,0 +1,24 @@
+#This is the default gate type. You can copy this and make as many .gate files as you need.
+#The portal-open block can be most blocks which do not fill the entire block or otherwise prevent the player from
+#entering the portal, but NETHER_PORTAL, AIR, WATER, LAVA, KELP_PLANT, OAK_FENCE, IRON_BARS, CHAIN, BAMBOO, SUGAR_CANE,
+#COBWEB and VINE gives an impression of which blocks will work.
+portal-open=NETHER_PORTAL
+#The portal-closed block can be any of the blocks used for portal-open, but also any solid, full-size block such as DIRT.
+portal-closed=AIR
+#The button can be the following: A chest (CHEST), any type of button (STONE_BUTTON, OAK_BUTTON), any type of shulker
+#box (LIME_SHULKER_BOX), or any wall coral (DEAD_TUBE_CORAL_WALL_FAN, TUBE_CORAL_WALL_FAN, DEAD_BRAIN_CORAL_WALL_FAN,
+#BRAIN_CORAL_WALL_FAN, etc.)
+button=STONE_BUTTON
+#Whether payment for entry should go to this gate's owner
+toowner=false
+#The material to use for the normal frame
+X=OBSIDIAN
+#The material to use for the sign and button blocks of the frame
+-=OBSIDIAN
+#The description of the required portal blocks. X = Frame block. - = Sign/button position. . = Empty blocks. * = Exit
+
+ XX
+X..X
+-..-
+X*.X
+ XX

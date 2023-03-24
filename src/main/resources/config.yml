@@ -1,0 +1,107 @@
+# stargate Configuration File
+# Main stargate config
+
+# language - The language file to load for messages (de,en,es,fr,hu,it,ja,nb-no,nl,nn-no,pt-br,ru,zh_cn)
+language: en
+# adminUpdateAlert - Whether to alert admins about new plugin updates
+adminUpdateAlert: true
+folders:
+  # portalFolder -  The folder for storing portals
+  portalFolder: plugins/Stargate/portals/
+  # gateFolder - The folder for storing gate layouts
+  gateFolder: plugins/Stargate/gates/
+gates:
+  # maxGatesEachNetwork - The maximum number of gates allowed on a network - 0 for unlimited
+  maxGatesEachNetwork: 0
+  # defaultGateNetwork - The default gate network
+  defaultGateNetwork: central
+  # exitVelocity - The velocity to give players exiting stargates, relative to the entry velocity
+  exitVelocity: 0.1
+  cosmetic:
+    # rememberDestination - Whether to remember the cursor location between uses
+    rememberDestination: false
+    # sortNetworkDestinations - Whether to sort network lists alphabetically
+    sortNetworkDestinations: false
+    # mainSignColor - The color used for drawing signs (Default: BLACK).
+    mainSignColor: BLACK
+    # highlightSignColor - The color used for sign markings (Default: WHITE)
+    highlightSignColor: WHITE
+    perSignColors:
+      - 'ACACIA:default,default'
+      - 'BIRCH:default,default'
+      - 'CRIMSON:inverted,inverted'
+      - 'DARK_OAK:inverted,inverted'
+      - 'JUNGLE:default,default'
+      - 'OAK:default,default'
+      - 'SPRUCE:inverted,inverted'
+      - 'WARPED:inverted,inverted'
+  integrity:
+    # destroyedByExplosion - Whether to destroy gates with explosions (Creeper, TNT, etc.)
+    destroyedByExplosion: false
+    # verifyPortals - Whether all the non-sign blocks are checked to match the gate layout when a stargate is loaded.
+    verifyPortals: false
+    # protectEntrance - Whether to protect gate entrance material (More resource intensive. Only enable if using 
+    #  destroyable open/closed material)
+    protectEntrance: false
+  functionality:
+    enableBungee: false
+    # handleVehicles - Whether to allow vehicles through gates. This overrides other vehicle settings
+    handleVehicles: true
+    # handleEmptyVehicles - Whether to allow empty vehicles through gates (chest/hopper/tnt/furnace minecarts included)
+    handleEmptyVehicles: true
+    # handleCreatureTransportation - Whether to allow players to transport creatures by sending vehicles (minecarts, 
+    #  boats) through gates
+    handleCreatureTransportation: true
+    # handleNonPlayerVehicles - Whether to allow vehicles with a passenger which is not a player through gates. 
+    #  handleCreatureTransportation must be enabled
+    handleNonPlayerVehicles: true
+    # handleLeashedCreatures - Whether to allow creatures lead by a player to teleport with the player
+    handleLeashedCreatures: true
+    # enableCraftBookRemoveOnEjectFix - Whether to enable a fix that causes loss of NBT data, but allows vehicle 
+    #  teleportation to work when CraftBook's remove minecart/boat on eject setting is enabled
+    enableCraftBookRemoveOnEjectFix: false
+
+# ######################## #
+# stargate economy options #
+# ######################## #
+economy:
+  # useEconomy - Whether to use an economy plugin
+  useEconomy: false
+  # createCost - The cost to create a gate
+  createCost: 0
+  # destroyCost - The cost to destroy a gate
+  destroyCost: 0
+  # useCost - The cost to use a gate
+  useCost: 0
+  # toOwner - Whether the charge for using a gate goes to the gate's owner
+  toOwner: false
+  # chargeFreeDestination - Whether a gate whose destination is a free gate is still charged
+  chargeFreeDestination: true
+  # freeGatesColored - Whether a free gate in the destination list is marked with a color
+  freeGatesColored: false
+  # freeGatesColor - The color to use for marking free gates
+  freeGatesColor: DARK_GREEN
+
+# ############# #
+# Debug options #
+# ############# #
+debugging:
+  # debug - Debug -- Only enable if you have issues, massive console output
+  debug: false
+  # permissionDebug - This will output any and all Permissions checks to console, used for permissions debugging 
+  #  (Requires debug: true)
+  permissionDebug: false
+advanced:
+  # waitForPlayerAfterTeleportDelay - The amount of ticks to wait before adding a player as passenger of a vehicle. 
+  #  On slow servers, a value of 6 is required to avoid client glitches after teleporting on a vehicle.
+  waitForPlayerAfterTeleportDelay: 6
+
+# ############## #
+# Dynmap options #
+# ############## #
+dynmap:
+  # enableDynmap - Whether to display Stargates in Dynmap's map
+  enableDynmap: true
+  # dynmapIconsHiddenByDefault - Whether to hide the set of Stargate icons by default, requiring users to 
+  #  manually enable them with a checkbox.
+  dynmapIconsHiddenByDefault: true

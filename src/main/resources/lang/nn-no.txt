@@ -1,0 +1,43 @@
+author=EpicKnarvik97
+prefix=[Stjerneport] 
+teleportMsg=Teleporterte
+destroyMsg=Port Øydelagd
+invalidMsg=Ugyldig Destinasjon
+blockMsg=Destinasjon Blokkert
+destEmpty=Destinasjonslista Er Tom
+denyMsg=Tilgang Avslått
+reloaded=Stjerneport Vart Lasta Inn På Nytt
+
+ecoDeduct=Fråtrekk %cost%
+ecoRefund=Refundert %cost%
+ecoObtain=Mottok %cost% frå Stjerneport %portal%
+ecoInFunds=Manglande Midlar
+ecoLoadError=Vault vart lasta inn men inga brukbar økonomi-utviding vart funnen
+vaultLoadError=Økonomi er skrudd på, men Vault kunne ikkje lastas inn. Økonomi er skrudd av
+vaultLoaded=Vault v%version% funnen
+
+createMsg=Port oppretta
+createNetDeny=Du har ikkje tilgang til det nettverket
+createGateDeny=Du har ikkje tilgang til den portutforminga
+createPersonal=Opprettar port på personleg nettverk
+createNameLength=Namnet er for kort eller for langt.
+createExists=Ein port med det namnet eksisterar allereie
+createFull=Dette nettverket er fullt
+createWorldDeny=Du har ikkje tilgang til den verda
+createConflict=Port er i konflikt med ein eksisterande port
+
+signRightClick=Høgreklikk
+signToUse=for å bruke port
+signRandom=Tilfeldig
+signDisconnected=Kopla frå
+
+bungeeDisabled=BungeeCord støtte er slått av.
+bungeeDeny=Du har ikkje løyve til å opprette BungeeCord portar.
+bungeeEmpty=BungeeCord portar treng bade ein destinasjon og eit nettverk.
+bungeeSign=Teleporter til
+
+portalInfoTitle=[STJERNEPORT INFO]
+portalInfoName=Namn: %name%
+portalInfoDestination=Destinasjon: %destination%
+portalInfoNetwork=Nettverk: %network%
+portalInfoServer=Server: %server%

@@ -1,0 +1,28 @@
+author=EduardBaer
+prefix=[Stargate] 
+teleportMsg=Du wurdest Teleportiert.
+destroyMsg=Gate zerstört
+invalidMsg=Ungültiges Ziel
+blockMsg=Ziel blockiert
+destEmpty=Zielliste leer
+denyMsg=Zugriff verweigert
+
+ecoDeduct=%cost% abgezogen
+ecoRefund=%cost% zurückerstattet
+ecoObtain=%cost% von Stargate %portal% erhalten
+ecoInFunds=Das kannst du dir nicht leisten.
+
+createMsg=Gate erstellt.
+createNetDeny=Du hast keinen Zugriff auf dieses Netzwerk.
+createGateDeny=Du hast keinen Zugriff auf dieses Gate-Layout.
+createPersonal=Gate im persönlichen Netzwerk erstellt.
+createNameLength=Name zu kurz oder zu lang.
+createExists=Ein Gate mit diesem Name existiert bereits.
+createFull=Dieses Netzwerk ist voll.
+createWorldDeny=Du hast keinen Zugriff auf diese Welt.
+createConflict=Dieses Gate steht im Konflikt mit einem bereits existierenden.
+
+signRightClick=Right click
+signToUse=to use gate
+signRandom=Random
+signDisconnected=Disconnected
