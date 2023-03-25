@@ -1,0 +1,12 @@
+portal-open=WATER
+portal-closed=AIR
+button=STONE_BUTTON
+toowner=false
+X=#WOOL
+-=#WOOL
+
+XXXXX
+X...X
+-...-
+X.*.X
+XXXXX

@@ -3,7 +3,9 @@ package net.knarcraft.stargate.portal.property.gate;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.utility.GateReader;
 import net.knarcraft.stargate.utility.MaterialHelper;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 
@@ -90,18 +92,16 @@ public class GateHandler {
         if (blockId != null) {
             if (!controlBlocks.containsKey(blockId)) {
                 controlBlocks.put(blockId, new ArrayList<>());
-            } else {
-                controlBlocks.get(blockId).add(gate);
             }
+            controlBlocks.get(blockId).add(gate);
             return;
         }
 
         Tag<Material> materialTag = gate.getControlBlockTag();
         if (!controlBlockTags.containsKey(materialTag.getKey().toString())) {
             controlBlockTags.put(materialTag.getKey().toString(), new ArrayList<>());
-        } else {
-            controlBlockTags.get(materialTag.getKey().toString()).add(gate);
         }
+        controlBlockTags.get(materialTag.getKey().toString()).add(gate);
     }
 
     /**
@@ -274,6 +274,7 @@ public class GateHandler {
         loadGateFromJar("watergate.gate", gateFolder);
         loadGateFromJar("endgate.gate", gateFolder);
         loadGateFromJar("squarenetherglowstonegate.gate", gateFolder);
+        loadGateFromJar("wool.gate", gateFolder);
     }
 
     /**
@@ -318,14 +319,25 @@ public class GateHandler {
      * @return <p>A list of gates using the given material for control block</p>
      */
     public static Gate[] getGatesByControlBlock(Material type) {
-        Gate[] result = new Gate[0];
-        List<Gate> lookup = controlBlocks.get(type);
-
-        if (lookup != null) {
-            result = lookup.toArray(result);
+        List<Gate> result = new ArrayList<>();
+        List<Gate> fromId = controlBlocks.get(type);
+        List<Gate> fromTag = null;
+        for (String tagString : controlBlockTags.keySet()) {
+            Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.minecraft(tagString.replaceFirst(
+                    "minecraft:", "")), Material.class);
+            if (tag != null && tag.isTagged(type)) {
+                fromTag = controlBlockTags.get(tag.getKey().toString());
+            }
         }
 
-        return result;
+        if (fromId != null) {
+            result.addAll(fromId);
+        }
+        if (fromTag != null) {
+            result.addAll(fromTag);
+        }
+
+        return result.toArray(new Gate[0]);
     }
 
     /**
@@ -353,6 +365,7 @@ public class GateHandler {
     public static void clearGates() {
         gates.clear();
         controlBlocks.clear();
+        controlBlockTags.clear();
     }
 
 }

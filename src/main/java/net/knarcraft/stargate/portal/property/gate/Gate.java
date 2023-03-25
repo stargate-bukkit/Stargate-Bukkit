@@ -301,7 +301,7 @@ public class Gate {
             saveEconomyValues(bufferedWriter);
 
             //Store material types to use for frame blocks
-            saveFrameBlockTypes(bufferedWriter);
+            saveFrameBlockType(bufferedWriter);
 
             bufferedWriter.newLine();
 
@@ -342,24 +342,38 @@ public class Gate {
      * @param bufferedWriter <p>The buffered writer to write to</p>
      * @throws IOException <p>If unable to write to the buffered writer</p>
      */
-    private void saveFrameBlockTypes(BufferedWriter bufferedWriter) throws IOException {
-        for (Map.Entry<Character, Material> entry : characterMaterialMap.entrySet()) {
-            Character type = entry.getKey();
-            Material value = entry.getValue();
+    private void saveFrameBlockType(BufferedWriter bufferedWriter) throws IOException {
+        for (Map.Entry<Character, Material> entry : this.characterMaterialMap.entrySet()) {
+            Character key = entry.getKey();
             //Skip characters not part of the frame
-            if (type.equals(GateHandler.getAnythingCharacter()) ||
-                    type.equals(GateHandler.getEntranceCharacter()) ||
-                    type.equals(GateHandler.getExitCharacter())) {
+            if (key.equals(GateHandler.getAnythingCharacter()) ||
+                    key.equals(GateHandler.getEntranceCharacter()) ||
+                    key.equals(GateHandler.getExitCharacter())) {
                 continue;
             }
-
-            bufferedWriter.append(type);
-            bufferedWriter.append('=');
-            if (value != null) {
-                bufferedWriter.append(value.toString());
-            }
-            bufferedWriter.newLine();
+            saveFrameBlockType(key, entry.getValue().toString(), bufferedWriter);
         }
+        for (Map.Entry<Character, Tag<Material>> entry : this.characterTagMap.entrySet()) {
+            saveFrameBlockType(entry.getKey(), "#" + entry.getValue().getKey().toString().replaceFirst(
+                    "minecraft:", ""), bufferedWriter);
+        }
+    }
+
+    /**
+     * Saves a type of block used for the gate frame/border using a buffered writer
+     *
+     * @param key            <p>The character key to store</p>
+     * @param value          <p>The string value to store</p>
+     * @param bufferedWriter <p>The buffered writer to write to</p>
+     * @throws IOException <p>If unable to write to the buffered writer</p>
+     */
+    private void saveFrameBlockType(Character key, String value, BufferedWriter bufferedWriter) throws IOException {
+        bufferedWriter.append(key.toString());
+        bufferedWriter.append('=');
+        if (value != null) {
+            bufferedWriter.append(value);
+        }
+        bufferedWriter.newLine();
     }
 
     /**
