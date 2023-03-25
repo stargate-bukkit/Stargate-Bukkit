@@ -23,6 +23,7 @@ import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.thread.BlockChangeThread;
 import net.knarcraft.stargate.thread.ChunkUnloadThread;
 import net.knarcraft.stargate.thread.StarGateThread;
+import net.knarcraft.stargate.utility.BStatsHelper;
 import org.bukkit.Server;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -367,6 +368,8 @@ public class Stargate extends JavaPlugin {
         //Check for any available updates
         UpdateChecker.checkForUpdate(this, "https://api.spigotmc.org/legacy/update.php?resource=87978",
                 Stargate::getPluginVersion, Stargate::setUpdateAvailable);
+
+        BStatsHelper.initialize(this);
     }
 
     /**
