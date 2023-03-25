@@ -141,7 +141,7 @@ section). See the Custom Gate Layout section to learn how to add custom gates.
     - 'R' is for random gates. These follow standard permissions of gates, but have a random exit location every time a
       player enters. (Implicitly always on)
     - 'U' is for a gate connecting to another through bungee (Implicitly always on)
-    - 'I' is for a silent gate, which does not output anything to the chat while teleporting. Increases immersion
+    - 'Q' is for a quiet gate, which does not output anything to the chat while teleporting. Increases immersion
     - 'V' is for invisible gates, i.e. a gate without a sign. Only for fixed stargates
 
 The options are the single letter, not the word. So to make a private hidden gate, your 4th line would be 'PH'. The
