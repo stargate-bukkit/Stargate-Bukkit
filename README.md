@@ -1,11 +1,20 @@
-# Description
 
-Create gates that allow for instant-teleportation between large distances. Gates can be always-open or triggered; they
-can share a network or be split into clusters; they can be hidden on a network or accessible to everybody.
+> **Documentation may be found** [here](https://sgrewritten.org/legacywiki)<br>
+> **Support is available via** [discord](https://discord.gg/mTaHuK6BVa)**.**
+
+> **THIS IS A LEGACY-BASED BRANCH: IT IS SUPPORTED, BUT NOT ACTIVELY UPDATED**<br>
+> This branch expands upon Drakia's original 2013 codebase, with fixes as needed.<br>
+> In the near future, this branch will be superseded by [SGR](https://github.com/stargate-rewritten/Stargate-Bukkit) (a complete rewrite).
+
+# Description
+The Original, and still the best, MineCraft transportation solution!<br>Intuitively and organically facilitates instant transportation across large distances!<br><br>
+Highly capable, simple to use, with robust network capabilities and extensive customisability! <br>
+
 
 - **Player permissions** -- let players build their own networks.
 - **Vault economy support** -- can add costs for create, destroy and use.
-- **Ability to create custom gate configurations**. Four different default gate configurations are available.
+- **Ability to create custom gate configurations**. -- Four different default gate configurations are available.
+- **Ability to include #Tags in gate designs**. (Ability to include material lists as valid options within a format)
 - **Message customization**
 - **Multiple built-in languages** (de, en, es, fr, hu, it, ja, nb-no, nl, nn-no, pt-br, ru, zh_cn)
 - **Teleport across worlds or servers** (BungeeCord supported)
@@ -18,38 +27,43 @@ can share a network or be split into clusters; they can be hidden on a network o
 - **Color customization** -- Stargate signs can be colored in many ways. Colors can be set globally, or on a per sign
   type basis
 - **RGB and dye support** -- Signs can use RGB colors (using hex codes) as their main and highlighting colors, and can
-  also be dyed on a per-sign basis
+  also be dyed on a per-sign basis.
 
 ## Background
-
-This was originally TheDgtl's Bukkit port of the Stargate plugin for hMod by Dinnerbone. This is a fork
-of [PseudoKnight's fork](https://github.com/PseudoKnight/Stargate-Bukkit). This fork's main purpose is to create a clean
-version of Stargate compliant with Spigot 1.17, even if it means changing the entire project's previous structure.
+- This plugin was originally TheDgtl's Bukkit port of the Stargate plugin for hMod by Dinnerbone.
+- After this plugin was dropped by TheDgtl, PseudoKnight began maintaining it for modern versions of Spigot (adding support for UUIDs & Material Strings).
+- EpicKnarvik97 forked that version to clean up the code, added leash support, and improved vehicle support.
+- LockedCraft and LittleBigBug also forked that version to add underwater and tag support, as well as a few bug fixes.
+- This version is a combination of all the forks above, maintained by the Stargate Rewritten project.
+- This branch is currently in a maintenance-only mode; a total rewrite is forthcoming.
 
 ## License
+Stargate is licensed under the GNU Lesser General Public License Version 3.0.<br> This includes every source and resource
+file; see the LICENSE file for more information.
 
-Stargate is licensed under the GNU Lesser General Public License Version 3.0. This includes every source and resource
-file. See the HEADER file for a more detailed license description.
 
 ## Migration
+This plugin should be fully compatible all known versions StarGate forks, with the following exceptions:<br>
+- Any version from outside of the bukkit ecosystem
+- Any version of SGR (version numbers 1.0.0.0+)
+- Any configurations with outdated material names (i.e. numIDs)
 
-This plugin should be compatible with configurations from the Stargate plugin all the way back. The nethergate.gate
-file, the endgate.gate file and the watergate.gate file will be overwritten if they exist. Take a backup of the files
-and overwrite the files after the first startup if you want to keep your custom gates.
+**Note that this plugin's default gate files** __**AND ANY PRESENT CUSTOM .GATEs**__ **will be overwritten by the import!**<br>
+If you wish to keep any such files, take a backup of your "gates" folder!
 
-If you have legacy gate files using the old numeric material ids, you need to change them to the new format manually.
-Use F3 + H to see material ids. Use them exactly as written after "minecraft:". The configuration will be updated to a
-more easily readable format, but the old configuration will be saved in case you want to change back right away.
+Legacy gate files filled with outdated material IDs will need to be manually updated.<br>
+A list of old materials and their conversions may be found [here](https://github.com/CryptoMorin/XSeries/blob/master/src/main/java/com/cryptomorin/xseries/XMaterial.java).<br>
+A list of modern, valid, material names may be found [here](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html).<br>
 
-Permissions have had a few changes, so you should check the permissions section for any differences since you set up
-permissions.
+
+Permissions have had a few changes, so you should check the permissions section for any differences since you set up permissions.
 
 Payment to owner using Economy, through Vault, is only possible if the portal owner in the portal database is defined by
 a UUID, and not a username. A player name will be upgraded to a UUID when the player with the given name joins the
 server.
 
-# Permissions
 
+# Permissions
 ```
 stargate.use -- Allow use of all Stargates linking to any world in any network (Override ALL network/world permissions. Set to false to use network/world specific permissions)  
   stargate.world -- Allow use of Stargates linking to any world  
@@ -78,7 +92,7 @@ stargate.create -- Allow creating Stargates on any network (Override all create 
   stargate.create.gate -- Allow creation using any gate layout
     stargate.create.gate.{gatefile} -- Allow creation using only {gatefile} gates
 
-stargate.destroy -- Allow destruction of Stargates on any network (Orderride all destroy permissions)
+stargate.destroy -- Allow destruction of Stargates on any network (Overrides all destroy permissions)
   stargate.destroy.personal -- Allow destruction of Stargates owned by the player only
   stargate.destroy.network -- Allow destruction of Stargates on any network
     stargate.destroy.network.{networkname} -- Allow destruction of Stargates on network {networkname}. Set to false to disallow destruction of {networkname}
@@ -90,15 +104,13 @@ stargate.free -- Allow free use/creation/destruction of Stargates
   
 stargate.admin -- Allow all admin features (Hidden/Private bypass, BungeeCord, Reload, Config)
   stargate.admin.private -- Allow use of Private gates not owned by user
-  stargate.admin.hidden -- Allow access to Hidden gates not ownerd by user
+  stargate.admin.hidden -- Allow access to Hidden gates not owned by the user
   stargate.admin.bungee -- Allow the creation of BungeeCord stargates (U option)
   stargate.admin.reload -- Allow use of the reload command
   stargate.admin.config -- Allows the player to change config values from the chat
   stargate.admin.dye -- Allows this player to change the dye of any stargate's sign
 ```
-
 ## Default Permissions
-
 ```
 stargate.use -- Everyone
 stargate.create -- Op
@@ -108,19 +120,14 @@ stargate.free -- Op
 stargate.admin -- Op
 ```
 
+
 # Instructions
-
 ## Building a gate:
-
-There are currently three default gate configurations. They all use the same structure as a standard nether portal. One
-gate is using obsidian blocks, one is using end bricks and the last uses sea lanterns. Only the sea lantern one can be
-used underwater. You must put a sign on one of the blocks in the middle of the layout to activate the portal (see next
-section). See the Custom Gate Layout section to learn how to add custom gates.
-
+This a default gate configuration. See the Custom Gate Layout section for more options, and how to redesign this.
 ```
     OO 
-   O  O - These are Obsidian blocks, End bricks or Sea Lanterns. You need 10.
-   O  O - Place a sign on either of these two middle blocks.
+   O  O - These are Obsidian blocks (End Bricks and Sea Lanterns also work). You need 10.
+   ■  ■ - Place a sign on either of these two blocks.
    O  O
     OO
 ```
@@ -128,62 +135,67 @@ section). See the Custom Gate Layout section to learn how to add custom gates.
 ### Sign Layout:
 
 - Line 1: Gate Name (Max 13 characters)
-- Line 2: Destination Name \[Optional] (Max 13 characters, used for fixed-gates only)
-- Line 3: Network name \[Optional] (Max 13 characters)
-- Line 4: Options \[Optional] :
-    - 'A' for always-on fixed gate
-    - 'H' for hidden networked gate
-    - 'P' for a private gate
-    - 'F' for a free gate
-    - 'B' is for a backwards facing gate (You will exit the back)
-    - 'S' is for showing an always-on gate in the network list
-    - 'N' is for hiding the network name
-    - 'R' is for random gates. These follow standard permissions of gates, but have a random exit location every time a
-      player enters. (Implicitly always on)
-    - 'U' is for a gate connecting to another through bungee (Implicitly always on)
-    - 'Q' is for a quiet gate, which does not output anything to the chat while teleporting. Increases immersion
-    - 'V' is for invisible gates, i.e. a gate without a sign. Only for fixed stargates
+- Line 2: Destination Name [Optional] (Max 13 characters, used for fixed-gates only)
+- Line 3: Network name [Optional] (Max 13 characters)
+- Line 4: Options [Optional] :
+  - `A` is for an **A**lways-on fixed gate
+  - `H` is for a **H**idden networked gate
+  - `P` is for a **P**rivate gate
+  - `F` is for a **F**ree gate
+  - `B` is for a **B**ackwards facing gate (which exit you at the back)
+  - `S` is for **S**howing an always-on gate in the network list
+  - `N` is for a **N**o network gate (the network name is hidden from the sign)
+  - `R` is for a **R**andom gate (implicitly always on; sends players to a random exit)
+  - `U` is for a b**U**ngee gate (connecting to another servers via bungeecord)
+  - `Q` is for a **Q**uiet gate (it will not output anything to chat when teleporting)
+  - `V` is for an in**V**isible gate (it will appear without a sign)
 
-The options are the single letter, not the word. So to make a private hidden gate, your 4th line would be 'PH'. The
-&\[0-9a-f] color codes are not counted in the character limit, thus allowing a 13-character name with an additional 2
-characters used for the color code.
+
+The options are the single letter, not the word. So to make a private hidden gate, your 4th line would be 'PH'.<br>
+Note that colour characters (if enabled) are not counted towards the character limit.
 
 #### Gate networks:
-
-- Gates are all part of a network, by default this is "central".
-- You can specify (and create) your own network on the third line of the sign when making a new gate.
-- Gates on one network will not see gates on the second network, and vice versa.
-- Gates on different worlds, but in the same network, will see each other.
-- If the gate is a bungee gate, the network name should be the name of the server as displayed when typing /servers
+ - Gates are all part of a network, by default this is "central".
+ - You can specify (and create) your own network on the third line of the sign when making a new gate.
+ - Gates on one network will not see gates on the second network, and vice versa.
+ - Gates on different worlds, but in the same network, will see each other.
+ - Notwithstanding the above, the network for bUngee gates will always be name of its destination /server
 
 #### Fixed gates:
-
-- Fixed gates go to only one set destination.
-- Fixed gates can be linked to other fixed gates, or normal gates. A normal gate cannot open a portal to a fixed gate,
-  however.
-- To create a fixed gate, specify a destination on the second line of the stargate sign.
-- Set the 4th line of the stargate sign to "A" to enable an always-open fixed gate.
-- A bungee gate is always automatically a fixed gate
-
+ - Fixed gates go to only one set destination.
+ - Fixed gates can be linked to other fixed gates, or normal gates. A normal gate cannot open a portal to a fixed gate however.
+ - To create a fixed gate, specify a destination on the second line of the stargate sign.
+ - Set the 4th line of the stargate sign to `A` to enable an always-open fixed gate.
+ - Gates with the U or R flags are fixed gates by definition.
+ 
 #### Hidden Gates:
+ - Hidden gates are like normal gates, but only show on the destination list of other gates under certain conditions.
+ - A hidden gate is only visible to the creator of the gate or somebody with the stargate.hidden permission.
+ - Set the 4th line of the stargate sign to `H` to make it a hidden gate.
+  
+ #### Force Shown Gates:
+ - Gates with the `A`, `R`, or `U` gates do not show up on networks by default.
+ - To force such gates to show up on network lists, add the `S` flag to the sign's 4th line.
 
-- Hidden gates are like normal gates, but only show on the destination list of other gates under certain conditions.
-- A hidden gate is only visible to the creator of the gate, or somebody with the stargate.hidden permission.
-- Set the 4th line of the stargate sign to 'H' to make it a hidden gate.
+#### Random Gates:
+ - Random gates are similar to Always-On gates, but do not have a fixed exit;
+   - They instead randomly select an exit from the list of gates on their network.
+ - Marking a gate as 'R' will automatically make that gate always-on.
+ - 'R' gates ignore any gate with the 'R', 'A', and/or 'S' flag(s) when choosing their exit.
 
 ## Using a gate:
+ - Right click the sign to choose a destination (not needed for Fixed gates, undefined gates).
+ - Right click the activator to open up a portal.
+ - Step through.
+ 
+## Custom Gate Layouts
 
-- Right-click the sign to choose a destination.
-- Right-click the button to open up a portal.
-- Step through.
+You may create as many gate formats as you wish through the use of .gate files within your `gates` folder.<br>
 
-# Custom Gate Layout
+The .gate file follows a specific format, with config lines at the top, and the gate layout/design below it.<br>
+For example, take the default nether.gate file shown below:
 
-You can create as many gate formats as you want, the gate layouts are stored in `plugins/Stargate/gates/`.  
-The .gate file must be laid out a specific way, the first lines will be config information, and after a blank line you
-will lay out the gate format. Here is the default nethergate.gate file:
-
-```
+```properties
 portal-open=NETHER_PORTAL
 portal-closed=AIR
 button=STONE_BUTTON
@@ -201,34 +213,20 @@ X*.X
  XX 
 ```
 
-The keys `portal-open` and `portal-closed` are used to define the material in the gate when it is open or closed. The
-material for `portal-closed` can be most things, including solid blocks. Some materials may act weirdly though. The
-material for `portal-open` can be any block the player can partially enter, even things like `GLOW_LICHEN`.
-`NETHER_PORTAL`, `END_GATEWAY` and `END_PORTAL` all work.
+### Keys
+#### Materials
+> Note that MATERIAL NAMES (such as `OBSIDIAN`) can be found [here](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html).<br>
+As of version 0.10.7.0, TAGS (such as `#WOOL`) can be found [here](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Tag.html).
 
-The `usecost`, `createcost` and `destroycost` keys can be used to set an economy price for gates of this type, different
-from the cost defined in the config. With economy enabled, all gates without these values set will use the values from
-the config. If you want to have different costs for different portals, you must create different gate types and set
-different costs for each one. The `toowner` key can be used to set whether funds withdrawn for using portals with this
-gate type should go to the portal's owner.
 
-The key `button` is used to define the type of button that is generated for this gate. It can be a button (of any type),
-a type of wall coral (dead or alive), a type of shulker box or a chest.
+- `portal-open` and `portal-closed` are used to specify the [materials](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html) the portal's iris will use when active/inactive respectively.
+  - Note that portal-open should be a *traversable* material, such as those listed [here](https://sgrewritten.org/traversables).
+- Notwithstanding `#`, any single character may be used to represent any material (for example, `X` as a representation of `OBSIDIAN`).
+- `-` is a special character: it represents the material to be used for behind your portal's control blocks (activator + sign).
+- `button` is used to define what is used for the gate's *activator*. It may be any type of button, wall coral, or container.
 
-`X` and `-` are used to define block types for the layout (Any single-character can be used, such as `#`).  
-In the gate format, you can see we use `X` to show where obsidian must be, `-` where the controls (Button/sign) are.
-
-For more complex gate designs, it is possible to add more materials. If you add something like a=GLOWSTONE, `a` can then
-be used in the gate layout, just as `X` is used. See the `squarenetherglowstonegate.gate` file for an example.
-
-You will also notice a `*` in the gate layout, this is the "exit point" of the gate, the block at which the player will
-teleport in front of.
-
-## Buttons
-
-The actual buttons cannot be used underwater, but all the other items in the button list can be.
 <details>
-    <summary>The entire list of button types is as follows: (Click to expand)</summary>
+    <summary>The full list of valid activator types may be found below: (Click to expand)</summary>
 
 ``` 
 STONE_BUTTON
@@ -273,35 +271,104 @@ DEAD_BUBBLE_CORAL_WALL_FAN
 DEAD_FIRE_CORAL_WALL_FAN
 DEAD_HORN_CORAL_WALL_FAN
 ```
-
 </details>
 
-## Underwater Portals
+#### Economy
+> These values require `useEconomy` to be true.
+- `useCost` defines the cost players are charged when using an existing portal.
+- `createCost` defines the cost players are charged when constructing a new portal.
+- `destroyCost` defines the cost players are charged when breaking an existing portal.
+- `toOwner` specifies the money's destination: if true, it will go to the player who made (owns) the gate; if false, the money will be deleted.
+### Structure
+#### Standard Custom Gates
+##### Basic formatting:
+Following a blank line after your keys section, you may specify your gate layout:<br>Simply lay out the portal as it will appear in your world, with every character representing a block.
+```properties
+X=OBSIDIAN
+-=OBSIDIAN
 
-There is a default gate type for underwater gates. There are no real restrictions on underwater gate materials, except
-normal buttons cannot be used since they'd fall off. Using wall coral fans work much better, though `CHEST` and
-`SHULKER_BOX` works too.
-
-Using `AIR` for a closed underwater gate looks weird, so `WATER` might be better. If using `AIR` for the closed gate,
-you need to make sure it actually contains air when creating it. For partially submerged portals, like ones used for
-boat teleportation, you need to keep water away from the portal entrance/opening until it's been created.
-
-## Economy Support:
-
-The latest version of Stargate has support for Vault. Gate creation, destruction and use can all have different costs
-associated with them. You can also define per-gate layout costs. The default cost is assigned in the config.yml file,
-while the per-gate costs re defined in the .gate files. To define a certain cost to a gate just add these lines to your
-.gate file:
-
+ XX 
+X..X
+-..-
+X*.X
+ XX 
 ```
-  createCost: 5 -- Will cost 5 currency to create
-  destroyCost: 5 -- Will clost 5 currency to destroy (negative to get back the spent money)
-  useCost: 5 -- Will cost 5 currency to use the stargate
-  toOwner: true -- Will send any fees to the gate's owner
+This example is a standard nether portal.
+
+Any single character symbol (except for `#`) may represent any material<br>
+In this case, `X` and `-` point to OBSIDIAN.<br>
+<br>`-` is a special material character that specifies where the control blocks will be placed (i.e. sign & button). <br>In this case, it is also `OBSIDIAN`.
+
+Other special characters include the following:
+- Spaces/blank characters (` `) will not be checked, and as such, represent any block.
+- Periods (`.`) represent the portal's *iris* (i.e. the part that opens and closes)
+- An asterix (`*`) represents the portals's "exit point" (i.e. the block the player will teleport in front of).
+
+##### Underwater Portals
+Gates may be constructed underwater in much the same manner as they may be constructed above the surface.<br>
+There are, however, a few considerations for underwater portals:
+```properties
+portal-open=KELP_PLANT
+portal-closed=WATER
+button=BRAIN_CORAL_WALL_FAN
+toowner=false
+X=SEA_LANTERN
+-=SEA_LANTERN
+
+ XX
+X..X
+-..-
+X*.X
+ XX
 ```
+- Buttons can not be waterlogged, and as such, are not ideal: wall coral fans are an ideal substitute.
+  - Containers (such as `CHEST` and `SHULKER_BOX`) are also valid alternatives.
+- `AIR` is generally a poor `portal-closed` material for underwater portals, since such portals are difficult to construct and are visually problematic.
+  - `WATER` and other underwater [traversables](https://sgrewritten.org/traversables) work much better.
+  
+##### Advanced format
+Gates are not limited to the shape of a standard nether portal -- they can be thousands of blocks big!<br>
+In this case, a simple 5x5 square has been used as a gate.
+
+Gates are also not limited to [materials](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html) (such as `OBSIDIAN`); they may also use [tags](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Tag.html)) (such as `#WOOL`).<br>
+Note that all tags must be prefaced with a hashtag (`#`), as in `#WOOL`.
+
+
+```properties
+portal-open=WATER
+portal-closed=AIR
+X=#WOOL
+-=#WOOL
+
+XXXXX
+X...X
+-...-
+X.*.X
+XXXXX
+```
+Any block that is included within a given tag may be used to construct the portal.
+
+
+Furthermore, it is important to note that gates may have multiple materials in their frame, as shown below:
+```properties
+portal-open=NETHER_PORTAL
+portal-closed=AIR
+button=OAK_BUTTON
+toowner=false
+X=OBSIDIAN
+-=GLOWSTONE
+A=GLOWSTONE
+
+ XAX
+X...X
+-...-
+X.*.X
+ XAX
+```
+
+
 
 # Configuration
-
 ```
 language - The language to use (Included languages: en, de, es, fr, hu, it, ja, nb-no, nl, nn-no, pt-br, ru, zh_cn)
 adminUpdateAlert - Whether to alert admins about an available update when joining the server
@@ -347,15 +414,14 @@ advanced:
 ```
 
 # Message Customization
+It is possible to customize all the messages Stargate displays, including the \[Stargate] prefix. <br>You may find these
+strings in `plugins/Stargate/lang/chosenLanguage.txt`.
 
-It is possible to customize all the messages Stargate displays, including the \[Stargate] prefix. You can find the
-strings in plugins/Stargate/lang/chosenLanguage.txt.
+If a string is removed, or left blank, it will default to the default english string.<br>There are some special cases
+Please note that %variableName% should be kept, as it will be replaced with a relevant value.
 
-If a string is removed, or left blank, it will default to the default english string. There are some special cases
-regarding messages. When you see %variableName%, you need to keep this part in your string, as it will be replaced with
-relevant values.
-
-The full list of strings is as follows:
+<details>
+    <summary>The full list of strings may be found below: (Click to expand)</summary>
 
 ```
 prefix=[Stargate] 
@@ -402,213 +468,205 @@ portalInfoDestination=Destination: %destination%
 portalInfoNetwork=Network: %network%
 portalInfoServer=Server: %server%
 ```
+</details>
+
+> **PLEASE NOTE**: This method of localisation is slated to change in the upcoming rewrite!<br> If stargate does not currently support your language, please submit a translation [here](https://sgrewritten.org/translate)!
 
 # Changes
+#### [Version 0.11.5.1] UNIFIED LEGACY FORK
+- Merged the fork into the [SG Rewritten Project](https://sgrewritten.org)
+- *This fork is now the maintained legacy branch of the Stargate Rewritten Project*.
+  - This plugin will be superseded in the near future by Stargate Rewritten,<br> a collaborative effort to wholly rewrite and reimagine Drakia's code base.
+- Changed the `E` flag to `V`, to improve consistency for the rewrite.
+- Reworked the readme and changed some shortcuts
 
-#### \[Version 0.9.4.2] EpicKnarvik97 fork
+#### [Version 0.10.X.X] LCLO fork
+- Reimplemented/merged the [LCLO fork ecosystem](https://github.com/stargate-rewritten/Stargate-Bukkit/tree/legacy), notably:
+  - Added material #tag support
+  - Expanded legacy migration support
+  - Changed MSV to 1.16
+  - Added a new default gate file
+  - Added bstats
+> **NOTE: The LCLO fork has its own changelog, found [here](https://github.com/stargate-rewritten/Stargate-Bukkit/blob/legacy/README.md#changes)!**<br>
+For brevity, the full list has been excluded from the below.<br>
+In general, it is safe to assume **FULL LCLO PARITY** as of this version.
 
-- Avoids a NullPointerException if Dynmap is present, but isn't properly loaded.
-- Avoids some potential NullPointerExceptions related to Dynmap integration
-- Fixes end portals hijacking BungeeCord teleportation
-- Fixes a problem where a player might not be properly teleported from an end portal Stargate in the end to the
-  over-world.
+#### [Version 0.9.4.2] EpicKnarvik97 fork
+- Prevents improperly loaded dependencies from causing problems with SG.
+- Improved Dynmap integration and associated bug fixes.
+- Fixes for some issues surrounding end portals.
 
 #### \[Version 0.9.4.1] EpicKnarvik97 fork
-
-- Reverts to Spigot API 1.18
-- Adds Dynmap integration
+- Adds integration with [Dynmap](https://www.spigotmc.org/resources/dynmap%C2%AE.274/)
 
 #### \[Version 0.9.4.0] EpicKnarvik97 fork
 
-- Updates Stargate to 1.19
+- Minecraft version 1.19 support.
 
 #### \[Version 0.9.3.7] EpicKnarvik97 fork
 
-- Adds the Japanese language file provided by spigot user furplag
+- Added a Japanese localisation courtesy of `furplag`.<br>
+*For more info translation status, please see [this](sgrewritten.org/translate)*.
 
 #### \[Version 0.9.3.6] EpicKnarvik97 fork
 
-- Adds the simplified Chinese language file provided by spigot user YKDZ
+- Added a Chinese (simplified) localisation courtesy of `YKDZ`.<br>
+*For more info translation status, please see [this](sgrewritten.org/translate)*.
 
 #### \[Version 0.9.3.5] EpicKnarvik97 fork
 
-- Fixes the wait for player delay being too low by default
-- Performs some minor code optimizations and restructuring
+- Fixed an issue that could result in invisible players following teleportation.
+- Made some minor optimisations and code refactors.
 
 #### \[Version 0.9.3.4] EpicKnarvik97 fork
 
-- Includes passengers of passengers when teleporting entities
-- Fixes a bug which caused Stargate to use more CPU for no reason
-- Teleports boats/minecarts like other vehicles unless *enableCraftBookRemoveOnEjectFix* is enabled
-- Adds the *waitForPlayerAfterTeleportDelay* config option which allows changing the delay between vehicle teleportation
-  and the player being teleported to the vehicle
-- Makes boats keep their wood type even when re-created
+- Entities will now teleport with any passengers they may have.
+- Significantly optimised the plugin's CPU usage.
+- Added an alternative transportation method to resolve a CraftBook incompatibility, and an associated config toggle (`enableCraftBookRemoveOnEjectFix`).
+- Added a config option (`waitForPlayerAfterTeleportDelay`) to allow users to specify the delay between vehicle teleportation and player teleportation.
 
 #### \[Version 0.9.3.3] EpicKnarvik97 fork
-
-- Prevents Zombified Piglins from randomly spawning at Stargates
+- Prevents Zombified Piglins from spawning at stargates with `nether-portal` irises.
 
 #### \[Version 0.9.3.2] EpicKnarvik97 fork
 
-- Adds a config option to set the exit velocity of any players exiting a stargate
-- Adjusts vehicle teleportation a bit to prevent passengers' exit rotation from being wrong
-- Improves the checking for buggy double-clicks on non-button blocks
+- The velocity multiplier applied to users exiting stargates may now be modified through a config option.
+- Fixes an issue where players could exit stargates with improper head rotation.
+- Fixes an issue where, in certain circumstances, double-clicks on frame (non-activator) blocks could activate a gate.
 
 #### \[Version 0.9.3.1] EpicKnarvik97 fork
 
-- Ignores the type of air when checking if a stargate is valid
+- Fixed an issue wherein one would be unable to create a stargate due to the presence of nonstandard air.
 
 #### \[Version 0.9.3.0] EpicKnarvik97 fork
 
-- Adds support for RGB colors (use hex color codes)
-- Adds support for dyed and glowing signs
-- Adds support for specifying sign colors per sign type
-- Adds a tab-completable config sub-command for easily changing per-sign colors
-- Allows a per-sign color to be set as the inverse of the default color of the given type
+- Adds full support for the new sign colour features:
+  - Sign colours may now be specified through the use of RGB colour codes.
+  - Signs may now be dyed and/or glow-inked
+  - Colours may now be specified per sign type.
+- Adds the "sg config" command to allow users to easily change a given sign's RGB colours.
+  - One new option for this is "inverse", which inverts the default colour for a specific sign.
 
 #### \[Version 0.9.2.5] EpicKnarvik97 fork
 
-- Updates Java version to JDK 17
-- Updates Spigot API version to 1.18
+- Updated plugin to use Java 17
+- Adds support for MineCraft version 1.18
 
 #### \[Version 0.9.2.4] EpicKnarvik97 fork
 
-- Adds update checking, which will display a notice in the console when updates are available
-- Adds an alert about an available update when an admin joins the server
-- Adds the adminUpdateAlert config option to allow the admin notices to be turned off
+- Adds update checker, which will (optionally) display a notice in console and admins whenever a new SG update is available.
+- Adds a config toggle (`adminUpdateAlert`) to disable the above.
 
 #### \[Version 0.9.2.3] EpicKnarvik97 fork
 
-- Fixes a typo which caused both colors to change into the highlightSignColor
+- Fixes an issue that resulted in `highlightSignColor` being used for all colours.
 
 #### \[Version 0.9.2.2] EpicKnarvik97 fork
 
-- Prevents teleportation of a player holding creatures on a leash when handleLeashedCreatures is disabled, to prevent
-  players accidentally losing the creatures during teleportation
-- Fixes a potential exception when a gate's open-block or closed-block is set to a material which isn't a block
-- Fixes a potential exception when a portal without a sign has an invalid gate type
-- Prevents loading of gate files using non-blocks as part of the border
-- Prevents a player smuggling another player through a restricted stargate by sitting on a creature held in a lead by
-  the first player
+- Fixed an issue wherein`handleLeashedCreatures` could cause accidental creature losses when disabled.
+- Prevented several potential crashes relating to invalid block and gate types.
+- Fixed an issue wherein a players could smuggle each other through Private stargates.
 
 #### \[Version 0.9.2.1] EpicKnarvik97 fork
 
-- Makes sure to only reload whatever is necessary when config values are changed using commands, instead of reloading
-  the entire config file every time
-- Protects portals from block placement when protectEntrance is enabled
+- Improves the efficiency and stability of the reload command.
+- Adds a toggle (`protectEntrance`) to extend portal protection to the iris.
 
 #### \[Version 0.9.2.0] EpicKnarvik97 fork
 
 - Increases max length of names and networks to 13 characters
-- Excludes color codes from the counted character length to allow a colored, 13-character name
-- Makes portal names and networks case- and color-agnostic to prevent some confusion caused by typos or sloppy
-  configuration
-- Makes the free gate color configurable, and renames freeGatesGreen to freeGatesColored
+- Excludes color codes from the counted character length to allow coloured names with up to 13 characters.
+- Fixes an issue wherein typos or mistaken capitalisation could result in the creation of duplicated portals.
+- Makes the free gate color configurable, and renames the `freeGatesGreen` toggle to `freeGatesColored`.
 
 #### \[Version 0.9.1.2] EpicKnarvik97 fork
 
-- Allows a sneaking player to see information about a silent stargate with no sign
+- Players may now see information about stargates (especially V gates) by sneaking and right-clicking.
 
 #### \[Version 0.9.1.1] EpicKnarvik97 fork
 
-- Makes sure to translate the `&` character to fix a bug causing portal signs to not be colored on some servers
+- Fixed a bug where sign colouring failed due to improper translation of the `&` symbol.
 
 #### \[Version 0.9.1.0] EpicKnarvik97 fork
 
-- Rewrites config loading as a part of the changes required to implement config commands
-- This update adds commands to change all config values from the chat or the console, complete with tab completion
-- Adds a new permission "stargate.admin.config" which is required to edit config values from the chat
+- Refactors the configuration loading systems as to facilitate the below:
+- Added the `sg config` command, to allow for all config values to be changed in-game by users with permission.
+  - The relevant permission is `stargate.admin.config`.
 
 #### \[Version 0.9.0.7] EpicKnarvik97 fork
 
-- Stops registering the sign as a lookup block for stargates without a sign
-- Only removes a stargate's button if it's actually a button-compatible block
-- Only displays portal info if not placing a block
+- Fixes an issue involving sign registration for V gates.
+- Prevents a situation that may result in an invalid button state.
+- Tweaks when portal information is displayed to prevent an inconvenient conflict with block placement.
 
 #### \[Version 0.9.0.6] EpicKnarvik97 fork
 
-- Makes containers no longer open when used as buttons
-- Validates and updates stargate buttons when the plugin is loaded or reloaded
-- Adds an option to make a stargate silent (no text in chat when teleporting) for better immersion on RP servers
-- Makes buttons update and/or remove themselves when their location or material changes
-- Adds another default gate to show that it's possible to use any number of materials for a stargate's border
-- Adds an option for stargates without a sign. Right-clicking such a stargate will display gate information
-- Fixes a bug causing signs to be re-drawn after they're broken
-- Makes buttons and signs be replaced by water instead of air when underwater
-- Makes portal info shown when right-clicking a stargate fully customizable
+- Prevents containers used as buttons from displaying the opening animation.
+- Improved load-time gate and button validation.
+- Adds the `Q` flag (suppresses chat messages related to portal use -- perfect for RP servers!).
+- Prevents a bug where buttons could incorrect overwrite materials.
+- Adds an additional default gate as to explain multi-material stargates.
+- Adds the `V` flag (hides the stargate's sign -- right-clicking will display the relevant information in chat).
+  - This is presented as an alternative for the `B` flag.
+- Fixes a bug where, in certain circumstances, signs could become unbreakable.
+- Improves how waterlogging is handled.
+- Right-clicking a stargate's frame will now display information in chat.
 
 #### \[Version 0.9.0.5] EpicKnarvik97 fork
 
-- Adds an option to stargate functionality to disable all teleportation of creatures
-- Adds an option to stargate functionality to disable all teleportation of empty minecarts
-- Adds an option to stargate functionality to disable teleportation of creatures if no player is present in the vehicle
-- Prevents a player in a vehicle from teleporting without the vehicle if vehicle teleportation is disabled
-- Prevents an infinite number of teleportation messages if vehicle teleportation is detected but denied
+- Adds configuration toggles for:
+  - Whether or not living non-player entities may be teleported.
+  - Whether or not vehicles may teleport without a player riding them.
+  - Whether or not vehicles may teleport living non-player entities if accompanied by a player rider.
+- Fixes a bug that could result in unauthorised teleportation.
+- Fixes a bug that, in certain circumstances, could result in chat spam.
 
 #### \[Version 0.9.0.4] EpicKnarvik97 fork
 
-- Adds teleportation of leashed creatures. By default, any creature connected to a player by a lead will be teleported
-  with the player through stargates, even if the player is in a vehicle. This behavior can be disabled in the config
-  file.
+- Leashed entities will now teleport with their associated player, even when that player is in a vehicle!
+- Added a configuration toggle for this feature.
 
 #### \[Version 0.9.0.3] EpicKnarvik97 fork
 
-- Adds a missing error message when a player in a vehicle cannot pay the teleportation fee
-- Adds UUID migration to automatically update player names to UUID when possible
+- An error message has been clarified as to better account for vehicles.
+- Players with legacy string IDs will now be automatically converted to modern UUIDs upon joining.
 
 #### \[Version 0.9.0.2] EpicKnarvik97 fork
 
-- Fixes a bug causing Stargates using NETHER_PORTAL blocks to generate nether portals in the nether.
+- Fixes a bug that could result in unwanted portals to generate in the nether.
 
 #### \[Version 0.9.0.1] EpicKnarvik97 fork
 
-- Adds the highlightSignColor option and renames the signColor option to mainSignColor
-- Fixes some inconsistencies in sign coloring by using the highlight color for all markings
-- Fixes the order in which configs are loaded to prevent an exception
-- Adds migrations for the config change
+- Added coloured highlight patterns to signs: `highlightSignColor` has been added, and `signColor` has been renamed to `mainSignColor`.
+- Addressed some inconsistencies in sign coloring by using the highlight color for all markings
+- Fixed some issues pertaining to configuration handling and management.
 
 #### \[Version 0.9.0.0] EpicKnarvik97 fork
 
-- Changes entire path structure to a more modern and maven-compliant one
-- Changes package structure to net.knarcraft.stargate.*
-- Moves language files into the resources folder
-- Fixes some bugs caused by language files not being read as UTF-8
-- Adds JavaDoc to a lot of the code
-- Adds Norwegian translation for both Norwegian languages
-- Adds missing dependency information to plugin.yml
-- Uses text from the language files in more places
-- Changes how backup language works, causing english strings to be shown if not available from the chosen language
-- Removes some pre-UUID code
-- Adds underwater portals
-- Makes it easier to add more default gates
-- Adds a new default gate which can be used underwater
-- Adds more items usable as buttons (corals, chest, shulker-box), which allows underwater portals
-- Splits a lot of the code into smaller objects
-- Moves duplicated code into helper classes
-- Re-implements vehicle teleportation
-- Makes boat teleportation work as expected, including being able to teleport with two passengers. This allows players
-  to use boats to transport creatures through portals and to other areas, or even worlds
-- Makes it possible to teleport a player riding a living entity (a pig, a horse, a donkey, a zombie horse, a skeleton
-  horse or a strider). It does not work for entities the player cannot control, such as llamas.
-- Makes both nether portals and end gateways work properly without causing mayhem
-- Replaces the modX and modZ stuff with yaw calculation to make it easier to understand
-- Comments all the code
-- Extracts portal options and portal-related locations to try and reduce size
-- Rewrites tons of code to make it more readable and manageable
-- Implements proper snowman snow blocking, and removes the "temporary" ignoreEntrances option
-- Adds a default gate using end stone bricks and end gateway for more default diversity
-- Makes portals using end portal blocks work as expected
-- Adds missing permissions to the readme
-- Adds missing permissions to plugin.yml and simplifies permission checks by specifying default values for child
-  permissions
-- Renames stargate.reload to stargate.admin.reload to maintain consistency
-- Marks stargates which cannot be loaded because of the gate layout not having been loaded
-- Uses white for the "-" characters on the side of each stargate name when drawing signs to increase readability
-- Uses white to mark the selected destination when cycling through stargate destinations
+- Significantly refactored the legacy codebase for readability and quality.
+  - Added developer documentation.
+- Changed the package to net.knarcraft.stargate.*
+- Improved localisations and their handling.
+  - Added several new translations.
+- Fixed some encoding problems.
+- Added some missing dependencies, updated the project's plugin file.
+- Made underwater portals practical by reworking activator materials and adding support for waterlogging.
+- Updated the vehicle teleportation code to work in modern versions of the game, and addressed CVE-2021-43819. 
+- Updated boat teleportation to account for multi-passenger vehicles.
+- Added support for passengers and leashed entities.
+- Fixed some issues surrounding block states and data (notably, nether portals and end gateways).
+- Overhauled the plugin's handling of movement.
+- Slightly improved the plugin's flatfile storage structure.
+- Improved portal protection, implemented many associated "TODOs"
+- Adds another default gate to illustrate multi-type designs.
+- Significantly improved the plugin's documentation via README
+- Properly implemented a load of missing permissions -- especially including handling of child nodes.
+- Renamed the stargate.reload node to stargate.admin.reload as to improve consistency
+- Improves the stability of Stargate's load-time portal handling.
+- Highlights destination selector brackets on signs ("-") as to improve readability.
 - Uses dark red to mark portals which are inactive (missing destination or invalid gate type)
-- Re-draws signs on startup in case they change
-- Fixes some bugs preventing changing the portal-open block on the fly
-- Adds a translate-able string for when the plugin has been reloaded
+- Adds provisions to re-draw incorrect signs.
+- Fixed a load of other miscellaneous bugs.
 
 #### \[Version 0.8.0.3] PseudoKnight fork
 
