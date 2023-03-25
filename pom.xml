@@ -113,19 +113,15 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.4.1</version>
+                
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <artifactSet>
                         <includes>
                             <include>org.bstats:*</include>
+                            <include>net.knarcraft:knarlib</include>
                         </includes>
                     </artifactSet>
-                    <relocations>
-                        <relocation>
-                            <pattern>org.bstats</pattern>
-                            <shadedPattern>net.knarcraft.stargate</shadedPattern>
-                        </relocation>
-                    </relocations>
                 </configuration>
                 <executions>
                     <execution>
@@ -134,7 +130,16 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>net.knarcraft.stargate.metrics</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.knarcraft</pattern>
+                                    <shadedPattern>net.knarcraft</shadedPattern>
+                                </relocation>
+                            </relocations>
                             <filters>
                                 <filter>
                                     <artifact>net.knarcraft:knarlib</artifact>
