@@ -40,16 +40,6 @@
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
-    <distributionManagement>
-        <repository>
-            <id>knarcraft-repo</id>
-            <url>https://git.knarcraft.net/api/packages/EpicKnarvik97/maven</url>
-        </repository>
-        <snapshotRepository>
-            <id>knarcraft-repo</id>
-            <url>https://git.knarcraft.net/api/packages/EpicKnarvik97/maven</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -122,7 +112,21 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.4.1</version>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <artifactSet>
+                        <includes>
+                            <include>org.bstats:*</include>
+                        </includes>
+                    </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>net.knarcraft.stargate</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
