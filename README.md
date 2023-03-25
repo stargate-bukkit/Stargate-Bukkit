@@ -126,7 +126,7 @@ stargate.admin -- Op
 This a default gate configuration. See the Custom Gate Layout section for more options, and how to redesign this.
 ```
     OO 
-   O  O - These are Obsidian blocks (use Sea Lanterns if underwater). You need 10.
+   O  O - These are Obsidian blocks (End Bricks and Sea Lanterns also work). You need 10.
    ■  ■ - Place a sign on either of these two blocks.
    O  O
     OO
