@@ -134,9 +134,9 @@ This a default gate configuration. See the Custom Gate Layout section for more o
 
 ### Sign Layout:
 
-- Line 1: Gate Name (Max 12 characters)
-- Line 2: Destination Name [Optional] (Max 12 characters, used for fixed-gates only)
-- Line 3: Network name [Optional] (Max 12 characters)
+- Line 1: Gate Name (Max 13 characters)
+- Line 2: Destination Name [Optional] (Max 13 characters, used for fixed-gates only)
+- Line 3: Network name [Optional] (Max 13 characters)
 - Line 4: Options [Optional] :
   - `A` is for an **A**lways-on fixed gate
   - `H` is for a **H**idden networked gate
@@ -151,7 +151,8 @@ This a default gate configuration. See the Custom Gate Layout section for more o
   - `V` is for an in**V**isible gate (it will appear without a sign)
 
 
-The options are the single letter, not the word. So to make a private hidden gate, your 4th line would be 'PH'.
+The options are the single letter, not the word. So to make a private hidden gate, your 4th line would be 'PH'.<br>
+Note that colour characters (if enabled) are not counted towards the character limit.
 
 #### Gate networks:
  - Gates are all part of a network, by default this is "central".
