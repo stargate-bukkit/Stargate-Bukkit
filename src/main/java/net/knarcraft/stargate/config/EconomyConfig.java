@@ -133,6 +133,15 @@ public final class EconomyConfig {
     }
 
     /**
+     * Gets the account all taxes are paid to
+     *
+     * @return <p>The account all taxes are paid to</p>
+     */
+    public String getTaxAccount() {
+        return (String) configOptions.get(ConfigOption.TAX_ACCOUNT);
+    }
+
+    /**
      * Checks whether the given player can afford the given fee
      *
      * @param player <p>The player to check</p>

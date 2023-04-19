@@ -50,7 +50,7 @@ file; see the LICENSE file for more information.
 
 This plugin should be fully compatible all known versions StarGate forks, with the following exceptions:<br>
 
-- Any version from outside of the bukkit ecosystem
+- Any version from outside the bukkit ecosystem
 - Any version of SGR (version numbers 1.0.0.0+)
 - Any configurations with outdated material names (i.e. numIDs)
 
@@ -173,12 +173,12 @@ Note that colour characters (if enabled) are not counted towards the character l
 - You can specify (and create) your own network on the third line of the sign when making a new gate.
 - Gates on one network will not see gates on the second network, and vice versa.
 - Gates on different worlds, but in the same network, will see each other.
-- Notwithstanding the above, the network for bUngee gates will always be name of its destination /server
+- Notwithstanding the above, the network for BungeeCord gates will always be the name of its destination /server
 
 #### Fixed gates:
 
 - Fixed gates go to only one set destination.
-- Fixed gates can be linked to other fixed gates, or normal gates. A normal gate cannot open a portal to a fixed gate
+- Fixed gates can be linked to other fixed gates, or normal gates. A normal gate cannot open a portal to a fixed gate,
   however.
 - To create a fixed gate, specify a destination on the second line of the stargate sign.
 - Set the 4th line of the stargate sign to `A` to enable an always-open fixed gate.
@@ -204,8 +204,8 @@ Note that colour characters (if enabled) are not counted towards the character l
 
 ## Using a gate:
 
-- Right click the sign to choose a destination (not needed for Fixed gates, undefined gates).
-- Right click the activator to open up a portal.
+- Right-click the sign to choose a destination (not needed for Fixed gates, undefined gates).
+- Right-click the activator to open up a portal.
 - Step through.
 
 ## Custom Gate Layouts
@@ -225,11 +225,11 @@ destroycost=0
 toowner=false
 X=OBSIDIAN
 -=OBSIDIAN
-XX
+ XX
 X..X
 -..-
 X*.X
-XX 
+ XX 
 ```
 
 ### Keys
@@ -324,11 +324,11 @@ will appear in your world, with every character representing a block.
 ```
 X=OBSIDIAN
 -=OBSIDIAN
-XX
+ XX
 X..X
 -..-
 X*.X
-XX 
+ XX 
 ```
 
 This example is a standard nether portal.
@@ -349,18 +349,18 @@ Other special characters include the following:
 Gates may be constructed underwater in much the same manner as they may be constructed above the surface.<br>
 There are, however, a few considerations for underwater portals:
 
-```properties
+```
 portal-open=KELP_PLANT
 portal-closed=WATER
 button=BRAIN_CORAL_WALL_FAN
 toowner=false
 X=SEA_LANTERN
 -=SEA_LANTERN
-XX
+ XX
 X..X
 -..-
 X*.X
-XX
+ XX
 ```
 
 - Buttons can not be waterlogged, and as such, are not ideal: wall coral fans are an ideal substitute.
@@ -379,7 +379,7 @@ as `OBSIDIAN`); they may also use [tags](https://hub.spigotmc.org/javadocs/spigo
 as `#WOOL`).<br>
 Note that all tags must be prefaced with a hashtag (`#`), as in `#WOOL`.
 
-```properties
+```
 portal-open=WATER
 portal-closed=AIR
 X=#WOOL
@@ -403,11 +403,11 @@ toowner=false
 X=OBSIDIAN
 -=GLOWSTONE
 A=GLOWSTONE
-XAX
+ XAX
 X...X
 -...-
 X.*.X
-XAX
+ XAX
 ```
 
 # Configuration
@@ -674,9 +674,9 @@ found [here](https://github.com/stargate-rewritten/Stargate-Bukkit/blob/legacy/R
 #### \[Version 0.9.0.5] EpicKnarvik97 fork
 
 - Adds configuration toggles for:
-    - Whether or not living non-player entities may be teleported.
-    - Whether or not vehicles may teleport without a player riding them.
-    - Whether or not vehicles may teleport living non-player entities if accompanied by a player rider.
+    - Whether living non-player entities may be teleported.
+    - Whether vehicles may teleport without a player riding them.
+    - Whether vehicles may teleport living non-player entities if accompanied by a player rider.
 - Fixes a bug that could result in unauthorised teleportation.
 - Fixes a bug that, in certain circumstances, could result in chat spam.
 

@@ -151,6 +151,11 @@ public enum ConfigOption {
             "Whether to require payment if the destination is free, but the entrance stargate is not", true),
 
     /**
+     * The account to transfer all paid fees to
+     */
+    TAX_ACCOUNT("economy.taxAccount", "The UUID of the account all fees are paid to (except for money to the Stargate owner)", ""),
+
+    /**
      * Whether to mark free gates with a different color
      */
     FREE_GATES_COLORED("economy.freeGatesColored", "Whether to use coloring to mark all free stargates", false),

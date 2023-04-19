@@ -46,5 +46,6 @@ portal-open=
 portal-closed=
 cost-type=
 cost-to-activate=
-taxaccount=taxAccount
+taxAccount=economy.taxAccount
+taxaccount=economy.taxAccount
 usevault=

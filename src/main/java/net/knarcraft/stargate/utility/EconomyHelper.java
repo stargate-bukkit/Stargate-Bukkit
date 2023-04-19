@@ -7,6 +7,7 @@ import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.property.PortalOwner;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -187,6 +188,28 @@ public final class EconomyHelper {
     }
 
     /**
+     * Transfers the given fees to the tax account
+     *
+     * @param economy <p>The economy to use</p>
+     * @param cost    <p>The cost to transfer</p>
+     */
+    @SuppressWarnings("deprecation")
+    private static void transferFees(Economy economy, int cost) {
+        String accountName = Stargate.getEconomyConfig().getTaxAccount();
+        if (accountName == null || accountName.isEmpty()) {
+            return;
+        }
+
+        try {
+            UUID accountId = UUID.fromString(accountName);
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(accountId);
+            economy.depositPlayer(offlinePlayer, cost);
+        } catch (IllegalArgumentException exception) {
+            economy.depositPlayer(accountName, cost);
+        }
+    }
+
+    /**
      * Charges the player for an action, if required
      *
      * @param player <p>The player to take money from</p>
@@ -198,7 +221,14 @@ public final class EconomyHelper {
             return true;
         }
         //Charge player
-        return chargePlayer(player, cost);
+        boolean charged = chargePlayer(player, cost);
+
+        // Transfer the charged amount to the tax account
+        if (charged) {
+            transferFees(Stargate.getEconomyConfig().getEconomy(), cost);
+        }
+
+        return charged;
     }
 
     /**
