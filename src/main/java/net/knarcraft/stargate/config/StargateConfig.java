@@ -399,7 +399,13 @@ public final class StargateConfig {
 
         //Get important folders from the config
         portalFolder = (String) configOptions.get(ConfigOption.PORTAL_FOLDER);
+        if (portalFolder.isEmpty()) {
+            portalFolder = dataFolderPath + "/portals/";
+        }
         gateFolder = (String) configOptions.get(ConfigOption.GATE_FOLDER);
+        if (gateFolder.isEmpty()) {
+            gateFolder = dataFolderPath + "/gates/";
+        }
 
         //If users have an outdated config, assume they also need to update their default gates
         if (isMigrating) {
@@ -480,7 +486,7 @@ public final class StargateConfig {
 
         // Copy all keys to the new config
         for (String key : oldConfiguration.getKeys(true)) {
-            Stargate.logInfo("Setting " + key + " to " + oldConfiguration.get(key));
+            Stargate.debug("Stargate::migrateConfig", "Setting " + key + " to " + oldConfiguration.get(key));
             newConfiguration.set(key, oldConfiguration.get(key));
         }
 
