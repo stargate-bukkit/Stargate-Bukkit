@@ -356,6 +356,16 @@ public class Stargate extends JavaPlugin {
     }
 
     @Override
+    public void saveConfig() {
+        super.saveConfig();
+        try {
+            configuration.save(configFile);
+        } catch (IOException e) {
+            logSevere(e.getMessage());
+        }
+    }
+
+    @Override
     public void onDisable() {
         PortalHandler.closeAllPortals();
         PortalRegistry.clearPortals();
