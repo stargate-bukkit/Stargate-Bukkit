@@ -1,5 +1,5 @@
 lang=language
-defaultNetwork=defaultGateNetwork
+defaultNetwork=gates.defaultGateNetwork
 use-mysql=
 ignoreEntrance=
 enableEconomy=economy.useEconomy
@@ -17,7 +17,7 @@ sortLists=gates.cosmetic.sortNetworkDestinations
 protectEntrance=gates.integrity.protectEntrance
 enableBungee=gates.functionality.enableBungee
 verifyPortals=gates.integrity.verifyPortals
-signColor=gates.cosmetic.signColor
+signColor=gates.cosmetic.mainSignColor
 gates.cosmetic.signColor=gates.cosmetic.mainSignColor
 debug=debugging.debug
 permdebug=debugging.permissionDebug

@@ -361,7 +361,7 @@ public final class StargateConfig {
      */
     public void loadConfig() {
         Stargate.getInstance().reloadConfig();
-        FileConfiguration newConfig = Stargate.getInstance().getConfig();
+        FileConfiguration newConfig = Stargate.getInstance().getConfiguration();
 
         boolean isMigrating = false;
         if (newConfig.getString("lang") != null || newConfig.getString("economy.freeGatesGreen") != null ||

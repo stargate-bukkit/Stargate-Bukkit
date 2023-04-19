@@ -66,7 +66,7 @@ public class CommandConfig implements CommandExecutor {
      * @param value          <p>The new value of the config option</p>
      */
     private void updateConfigValue(ConfigOption selectedOption, CommandSender commandSender, String value) {
-        FileConfiguration configuration = Stargate.getInstance().getConfig();
+        FileConfiguration configuration = Stargate.getInstance().getConfiguration();
 
         //Validate any sign colors
         if (ConfigTag.COLOR.isTagged(selectedOption)) {
@@ -162,7 +162,7 @@ public class CommandConfig implements CommandExecutor {
      * @param arguments      <p>The arguments for the new config option</p>
      */
     private void updateListConfigValue(ConfigOption selectedOption, CommandSender commandSender, String[] arguments) {
-        FileConfiguration configuration = Stargate.getInstance().getConfig();
+        FileConfiguration configuration = Stargate.getInstance().getConfiguration();
 
         if (selectedOption == ConfigOption.PER_SIGN_COLORS) {
             if (arguments.length < 4) {

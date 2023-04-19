@@ -7,6 +7,7 @@ import net.knarcraft.stargate.config.EconomyConfig;
 import net.knarcraft.stargate.config.MessageSender;
 import net.knarcraft.stargate.config.StargateConfig;
 import net.knarcraft.stargate.config.StargateGateConfig;
+import net.knarcraft.stargate.config.StargateYamlConfiguration;
 import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.container.ChunkUnloadRequest;
 import net.knarcraft.stargate.listener.BlockEventListener;
@@ -26,6 +27,7 @@ import net.knarcraft.stargate.thread.StarGateThread;
 import net.knarcraft.stargate.utility.BStatsHelper;
 import org.bukkit.Server;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -34,6 +36,7 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -70,6 +73,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @SuppressWarnings("unused")
 public class Stargate extends JavaPlugin {
 
+    private static File configFile;
     private static final Queue<BlockChangeRequest> blockChangeRequestQueue = new LinkedList<>();
     private static final Queue<ChunkUnloadRequest> chunkUnloadQueue = new PriorityQueue<>();
 
@@ -79,6 +83,7 @@ public class Stargate extends JavaPlugin {
     private static PluginManager pluginManager;
     private static StargateConfig stargateConfig;
     private static String updateAvailable = null;
+    private FileConfiguration configuration;
 
     /**
      * Empty constructor necessary for Spigot
@@ -330,6 +335,26 @@ public class Stargate extends JavaPlugin {
         return stargateConfig.getEconomyConfig();
     }
 
+    /**
+     * Gets the raw configuration
+     *
+     * @return <p>The raw configuration</p>
+     */
+    public FileConfiguration getConfiguration() {
+        return this.configuration;
+    }
+
+    @Override
+    public void reloadConfig() {
+        super.reloadConfig();
+        this.configuration = new StargateYamlConfiguration();
+        try {
+            configuration.load(configFile);
+        } catch (IOException | InvalidConfigurationException e) {
+            Stargate.logSevere(e.getMessage());
+        }
+    }
+
     @Override
     public void onDisable() {
         PortalHandler.closeAllPortals();
@@ -340,11 +365,17 @@ public class Stargate extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        configFile = new File(this.getDataFolder(), "config.yml");
         PluginDescriptionFile pluginDescriptionFile = this.getDescription();
         pluginManager = getServer().getPluginManager();
-        FileConfiguration newConfig = this.getConfig();
+        configuration = new StargateYamlConfiguration();
+        try {
+            configuration.load(configFile);
+        } catch (IOException | InvalidConfigurationException e) {
+            Stargate.logSevere(e.getMessage());
+        }
         this.saveDefaultConfig();
-        newConfig.options().copyDefaults(true);
+        configuration.options().copyDefaults(true);
 
         logger = Logger.getLogger("Minecraft");
         Server server = getServer();
