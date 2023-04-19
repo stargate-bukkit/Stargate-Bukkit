@@ -1,31 +1,171 @@
-# stargate Configuration File
-# Main stargate config
+#                                                                                  Version: ${project.version}
+# +--------------▄▄▄-- ‚——. -▄--▄-▄--▄-▄-▄▄▄▄▄---------------------------------------------------+ #
+# |              █▄▄▀ (“‡‡”) █▄▄▀ █▄▄▀ █   █       Support available at: sgrewritten.org/discord | #
+# |              █▄▄█  \__/  █  █ █  █ █   █                    ‚-.                              | #
+# |         —————————————————————————————————————————————————— ((_)) ——————————————————          | #
+# |                                                             ‘-’                              | #
+# |         .|'''.|  |''||''|     |     '||''|.    ..|'''.|      |     |''||''| '||''''|         | #
+# |         ||..  '     ||       |||     ||   ||  .|'     '     |||       ||     ||  .           | #
+# |          ''|||.     ||      |  ||    ||''|'   ||    ....   |  ||      ||     ||''|           | #
+# |        .     '||    ||     .''''|.   ||   |.  '|.    ||   ;’   |.     ||     ||              | #
+# |         '....|'    .||.   .|.  .||. .||.  '|'  ''|...'|  .|.  .||.   .||.   .||.....|        | #
+# +----------------------------------------------------------------------------------------------+ #
+# |                                    UNIFIED LEGACY BRANCH                                     | #
+# +----------------------------------------------+-----------------------------------------------+ #
+# |   Documentation: sgrewritten.org/legacywiki  |      Bug Reports: sgrewritten.org/report      | #
+# +----------------------------------------------+-----------------------------------------------+ #
 
-# language - The language file to load for messages (de,en,es,fr,hu,it,ja,nb-no,nl,nn-no,pt-br,ru,zh_cn)
+# +----------------------------------------------------------------------------------------------+ #
+# |                                      General Preferences                                     | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# What language will stargate use when communicating with your users?
+# Supported values: [de, en, es, fr, hu, it, ja, nb-no, nl, nn-no, pt-br, ru, zh-cn]
+#  
+# If SG isn't yet available in your language, please consider adding a translation:
+# https://sgrewritten.org/translate
+# For more information on language codes, see ISO 639-1: https://git.io/JcwaI
 language: en
-# adminUpdateAlert - Whether to alert admins about new plugin updates
+
+# Would you like to us to notify admin users when new StarGate updates are available?
 adminUpdateAlert: true
-folders:
-  # portalFolder -  The folder for storing portals
-  portalFolder: plugins/Stargate/portals/
-  # gateFolder - The folder for storing gate layouts
-  gateFolder: plugins/Stargate/gates/
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                         Compatibility                                        | #
+# +----------------------------------------------------------------------------------------------+ #
+dynmap:
+  # Should StarGate enable integration with Dynmap? This will show StarGates on your map.
+  enableDynmap: true
+  
+  # Should StarGate icons be hidden by default? (must users manually enable their checkbox?)
+  dynmapIconsHiddenByDefault: true
+
 gates:
-  # maxGatesEachNetwork - The maximum number of gates allowed on a network - 0 for unlimited
+  functionality:
+    # Should an alternative (and less effective) teleportation script be used to teleport vehicles?
+    # This will fix an incompatibility with CraftBook, but will cause vehicles' data to be wiped on teleportation.
+    enableCraftBookRemoveOnEjectFix: false
+    
+    # +----------------------------------------------------------------------------------------------+ #
+    # |                                        Gate Behaviour                                        | #
+    # +----------------------------------------------------------------------------------------------+ #
+    
+    # Are you connected to a BungeeCord-compatible proxy?
+    # Set this value to true if you intend on building gates with the 'u' flag.
+    enableBungee: false
+    
+    # Will vehicles and their passengers be able to travel through StarGate portals?
+    #  [minecarts, boats, & saddled mobs = vehicles | players & mobs = passengers]
+    handleVehicles: true
+    
+    # Should vehicles without any passengers be allowed to go through a StarGate?
+    handleEmptyVehicles: true
+    
+    # Should StarGate teleport creatures through portals?
+    # For example, if a player and a mob are in a boat, should the teleportation be allowed?
+    handleCreatureTransportation: true
+    
+    # If handleCreatureTransportation is true, must the player be present?
+    # I.e., can a mob in a vehicle go through a gate on its own?
+    handleNonPlayerVehicles: true
+    
+    # Should StarGate also handle creatures attached to a player via a lead?
+    handleLeashedCreatures: true
+  
+  # What is the maximum number of gates a single network may contain? (0 for unlimited)
   maxGatesEachNetwork: 0
-  # defaultGateNetwork - The default gate network
+  
+  # What network will be used when none has been specified? (Max length 12 characters)
+  # 
+  # Note that this primarily applies to users with the stargate.create.network node.
+  # Generally, that node is given to staff (we recommend stargate.create.personal for users).
   defaultGateNetwork: central
-  # exitVelocity - The velocity to give players exiting stargates, relative to the entry velocity
+  
+  
+  # At what speed should players be sent out of portals?
+  # When exiting a gate, players retain their original movement velocity, multiplied by this value.
   exitVelocity: 0.1
+  
+  integrity:
+    
+    # Can StarGates be broken via an explosion?
+    #  [tnt, creepers, etc.]
+    destroyedByExplosion: false
+    
+    # Will the server re-verify all existing portals on startup?
+    # 
+    # This checks that the expected gates are both present and using a valid layout.
+    # Designed to catch .gate file modifications, world changes, and terrain regeneration.
+    # 
+    # …««»»…  If you set this to true, you should also set protectEntrance (below) to true!
+    # “NOTE”  Otherwise, disallowed players, block updates, and snowmen can invalidate your portals!
+    verifyPortals: false
+    
+    # Should the portal verification process account for 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 (open/closed) materials?
+    # i.e. will a gate still validate if its portal-open material isn't present?
+    # 
+    # This is more resource intensive, and should really only be used if verifyPortals is true.
+    # Or if using an easily destroyable open/closed material.
+    protectEntrance: false
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                            Economy                                           | #
+# +----------------------------------------------------------------------------------------------+ #
+economy:
+  # Will StarGate interact with your server's economy?
+  # 
+  # …««»»…  For these features, StarGate depends on the Vault plugin.
+  # “NOTE”  https://www.spigotmc.org/resources/vault.34315/
+  useEconomy: false
+  
+  # How much will be deducted from players' accounts when creating a new gate?
+  createCost: 0
+  
+  # How much will be deducted from players' accounts when destroying an existing gate?
+  destroyCost: 0
+  
+  # How much will be deducted from players' accounts when using a stargate to teleport?
+  # This does not apply to stargates with the 'f' flag.
+  useCost: 0
+  
+  # Will fees collected for ‘usecost’ be paid to whomever created (owns) the applicable stargate?
+  # If false, collected funds will be deleted.
+  toOwner: false
+  
+  # Will ‘createcost’ still be charged if the new gate's destination is a gate with the 'f' flag?
+  # Note that this only applies to fixed gates.
+  chargeFreeDestination: true
+  
+  # +----------------------------------------------------------------------------------------------+ #
+  # |                                       Aesthetic Tweaks                                       | #
+  # +----------------------------------------------------------------------------------------------+ # 
+  
+  # When scrolling through a networked portal's destination list, should SG color free gates?
+  freeGatesColored: false
+  
+  # If freeGatesColored is true, which color should SG use?
+  #
+  # All color names should follow this format:
+  # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html 
+  freeGatesColor: DARK_GREEN
+  
   cosmetic:
-    # rememberDestination - Whether to remember the cursor location between uses
+    # Will the destination a networked portal last connected to be listed first in its scroll menu?
     rememberDestination: false
-    # sortNetworkDestinations - Whether to sort network lists alphabetically
+    
+    # For networked gates, are destinations listed alphabetically instead of chronologically?
+    # (This applies to all non-fixed and non-random gates).
     sortNetworkDestinations: false
-    # mainSignColor - The color used for drawing signs (Default: BLACK).
+    
+    # What color will StarGate use for the text on gate signs?
+    # Note that players can override this with DYE and/or GLOW_INK_SAC
     mainSignColor: BLACK
-    # highlightSignColor - The color used for sign markings (Default: WHITE)
+    
+    # What color will StarGate use to accent the above text?
     highlightSignColor: WHITE
+    
+    # Text and highlight colors can be modified on a per-sign basis (below).
+    # Format: 'SIGN_TYPE:mainSignColor,highlightSignColor'
     perSignColors:
       - 'ACACIA:default,default'
       - 'BIRCH:default,default'
@@ -35,73 +175,41 @@ gates:
       - 'OAK:default,default'
       - 'SPRUCE:inverted,inverted'
       - 'WARPED:inverted,inverted'
-  integrity:
-    # destroyedByExplosion - Whether to destroy gates with explosions (Creeper, TNT, etc.)
-    destroyedByExplosion: false
-    # verifyPortals - Whether all the non-sign blocks are checked to match the gate layout when a stargate is loaded.
-    verifyPortals: false
-    # protectEntrance - Whether to protect gate entrance material (More resource intensive. Only enable if using 
-    #  destroyable open/closed material)
-    protectEntrance: false
-  functionality:
-    enableBungee: false
-    # handleVehicles - Whether to allow vehicles through gates. This overrides other vehicle settings
-    handleVehicles: true
-    # handleEmptyVehicles - Whether to allow empty vehicles through gates (chest/hopper/tnt/furnace minecarts included)
-    handleEmptyVehicles: true
-    # handleCreatureTransportation - Whether to allow players to transport creatures by sending vehicles (minecarts, 
-    #  boats) through gates
-    handleCreatureTransportation: true
-    # handleNonPlayerVehicles - Whether to allow vehicles with a passenger which is not a player through gates. 
-    #  handleCreatureTransportation must be enabled
-    handleNonPlayerVehicles: true
-    # handleLeashedCreatures - Whether to allow creatures lead by a player to teleport with the player
-    handleLeashedCreatures: true
-    # enableCraftBookRemoveOnEjectFix - Whether to enable a fix that causes loss of NBT data, but allows vehicle 
-    #  teleportation to work when CraftBook's remove minecart/boat on eject setting is enabled
-    enableCraftBookRemoveOnEjectFix: false
 
-# ######################## #
-# stargate economy options #
-# ######################## #
-economy:
-  # useEconomy - Whether to use an economy plugin
-  useEconomy: false
-  # createCost - The cost to create a gate
-  createCost: 0
-  # destroyCost - The cost to destroy a gate
-  destroyCost: 0
-  # useCost - The cost to use a gate
-  useCost: 0
-  # toOwner - Whether the charge for using a gate goes to the gate's owner
-  toOwner: false
-  # chargeFreeDestination - Whether a gate whose destination is a free gate is still charged
-  chargeFreeDestination: true
-  # freeGatesColored - Whether a free gate in the destination list is marked with a color
-  freeGatesColored: false
-  # freeGatesColor - The color to use for marking free gates
-  freeGatesColor: DARK_GREEN
+# +----------------------------------------------------------------------------------------------+ #
+# |                                           Technical                                          | #
+# +----------------------------------------------------------------------------------------------+ #
 
-# ############# #
-# Debug options #
-# ############# #
+# |                                          [ Storage ]                                         | #
+# |__             These settings are provided to customise how SG stores its data.             __| #
+folders:
+  # Currently, all valid gates, their details, and their owners, are stored in a flatfile database
+  # Where should that flatfile be stored?
+  # 
+  # This option is provided as a patch to allow data to be imported from some older forks.
+  portalFolder: plugins/Stargate/portals/
+  
+  # Currently, on startup, a folder is checked for gate layouts stored as ‘.gate’ files.
+  # Where is that folder?
+  # 
+  # This option is provided as a patch to allow data to be imported from some older forks.
+  gateFolder: plugins/Stargate/gates/
+
+# |                                           [ Debug ]                                          | #
+# |__     These settings are provided to help developers diagnose issues with this plugin.     __| #
 debugging:
-  # debug - Debug -- Only enable if you have issues, massive console output
+  # Should SG spam console with A LOT of technical information?
+  # This includes checks, events, etc.
   debug: false
-  # permissionDebug - This will output any and all Permissions checks to console, used for permissions debugging 
-  #  (Requires debug: true)
+  
+  # Should SG spam console with A LOT of permission-based information?
+  # This visualises how stargate determines what players can do.
+  # 
+  # Note that (regardless of this setting), permdebug is always hidden when ‘debug’ is false.
   permissionDebug: false
-advanced:
-  # waitForPlayerAfterTeleportDelay - The amount of ticks to wait before adding a player as passenger of a vehicle. 
-  #  On slow servers, a value of 6 is required to avoid client glitches after teleporting on a vehicle.
-  waitForPlayerAfterTeleportDelay: 6
 
-# ############## #
-# Dynmap options #
-# ############## #
-dynmap:
-  # enableDynmap - Whether to display Stargates in Dynmap's map
-  enableDynmap: true
-  # dynmapIconsHiddenByDefault - Whether to hide the set of Stargate icons by default, requiring users to 
-  #  manually enable them with a checkbox.
-  dynmapIconsHiddenByDefault: true
+advanced:
+  # How long should SG wait before returning players to their vehicles after teleportation?
+  # This is done to prevent possible visual bugs; slower servers need larger values.
+  # In most cases, a value of 6 should be fine.
+  waitForPlayerAfterTeleportDelay: 6
