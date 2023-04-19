@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.messaging.Messenger;
 import org.dynmap.DynmapAPI;
 
@@ -434,17 +435,24 @@ public final class StargateConfig {
     /**
      * Changes all configuration values from the old name to the new name
      *
-     * @param newConfig <p>The config to read from and write to</p>
+     * @param currentConfiguration <p>The current config to back up</p>
      */
-    private void migrateConfig(FileConfiguration newConfig) {
+    private void migrateConfig(FileConfiguration currentConfiguration) {
         //Save the old config just in case something goes wrong
         try {
-            newConfig.save(dataFolderPath + "/config.yml.old");
+            currentConfiguration.save(new File(dataFolderPath, "config.yml.old"));
         } catch (IOException e) {
             Stargate.debug("Stargate::migrateConfig", "Unable to save old backup and do migration");
             e.printStackTrace();
             return;
         }
+
+        //Load old and new configuration
+        Stargate.getInstance().reloadConfig();
+        FileConfiguration oldConfiguration = Stargate.getInstance().getConfig();
+        YamlConfiguration newConfiguration = StargateYamlConfiguration.loadConfiguration(
+                FileHelper.getBufferedReaderFromInputStream(
+                        FileHelper.getInputStreamForInternalFile("/config.yml")));
 
         //Read all available config migrations
         Map<String, String> migrationFields;
@@ -460,15 +468,30 @@ public final class StargateConfig {
 
         //Replace old config names with the new ones
         for (String key : migrationFields.keySet()) {
-            if (newConfig.contains(key)) {
+            if (oldConfiguration.contains(key)) {
                 String newPath = migrationFields.get(key);
-                Object oldValue = newConfig.get(key);
+                Object oldValue = oldConfiguration.get(key);
                 if (!newPath.trim().isEmpty()) {
-                    newConfig.set(newPath, oldValue);
+                    oldConfiguration.set(newPath, oldValue);
                 }
-                newConfig.set(key, null);
+                oldConfiguration.set(key, null);
             }
         }
+
+        // Copy all keys to the new config
+        for (String key : oldConfiguration.getKeys(true)) {
+            Stargate.logInfo("Setting " + key + " to " + oldConfiguration.get(key));
+            newConfiguration.set(key, oldConfiguration.get(key));
+        }
+
+        try {
+            newConfiguration.save(new File(dataFolderPath, "config.yml"));
+        } catch (IOException e) {
+            Stargate.debug("Stargate::migrateConfig", "Unable to save migrated config");
+            e.printStackTrace();
+        }
+
+        Stargate.getInstance().reloadConfig();
     }
 
     /**

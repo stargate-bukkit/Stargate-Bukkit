@@ -25,6 +25,7 @@ import net.knarcraft.stargate.thread.BlockChangeThread;
 import net.knarcraft.stargate.thread.ChunkUnloadThread;
 import net.knarcraft.stargate.thread.StarGateThread;
 import net.knarcraft.stargate.utility.BStatsHelper;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -73,7 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @SuppressWarnings("unused")
 public class Stargate extends JavaPlugin {
 
-    private static File configFile;
+    private static final String configFileName = "config.yml";
     private static final Queue<BlockChangeRequest> blockChangeRequestQueue = new LinkedList<>();
     private static final Queue<ChunkUnloadRequest> chunkUnloadQueue = new PriorityQueue<>();
 
@@ -247,7 +248,14 @@ public class Stargate extends JavaPlugin {
      * @param message  <p>The message to log</p>
      */
     private static void log(Level severity, String message) {
-        logger.log(severity, getBackupString("prefix") + message);
+        if (logger == null) {
+            logger = Bukkit.getLogger();
+        }
+        if (getInstance() == null) {
+            logger.log(severity, "[Stargate]: " + message);
+        } else {
+            logger.log(severity, getBackupString("prefix") + message);
+        }
     }
 
     /**
@@ -349,9 +357,9 @@ public class Stargate extends JavaPlugin {
         super.reloadConfig();
         this.configuration = new StargateYamlConfiguration();
         try {
-            configuration.load(configFile);
+            configuration.load(new File(getDataFolder(), configFileName));
         } catch (IOException | InvalidConfigurationException e) {
-            Stargate.logSevere(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -359,9 +367,9 @@ public class Stargate extends JavaPlugin {
     public void saveConfig() {
         super.saveConfig();
         try {
-            configuration.save(configFile);
+            configuration.save(new File(getDataFolder(), configFileName));
         } catch (IOException e) {
-            logSevere(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -375,16 +383,16 @@ public class Stargate extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        configFile = new File(this.getDataFolder(), "config.yml");
+        this.saveDefaultConfig();
+        this.getConfig();
         PluginDescriptionFile pluginDescriptionFile = this.getDescription();
         pluginManager = getServer().getPluginManager();
         configuration = new StargateYamlConfiguration();
         try {
-            configuration.load(configFile);
+            configuration.load(new File(getDataFolder(), configFileName));
         } catch (IOException | InvalidConfigurationException e) {
-            Stargate.logSevere(e.getMessage());
+            getLogger().log(Level.SEVERE, e.getMessage());
         }
-        this.saveDefaultConfig();
         configuration.options().copyDefaults(true);
 
         logger = Logger.getLogger("Minecraft");

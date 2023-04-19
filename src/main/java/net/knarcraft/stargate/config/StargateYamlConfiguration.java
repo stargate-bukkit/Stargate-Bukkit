@@ -20,6 +20,12 @@ public class StargateYamlConfiguration extends YamlConfiguration {
     static public final String START_OF_COMMENT = "comment_";
 
     @Override
+    @SuppressWarnings("deprecation")
+    protected @NotNull String buildHeader() {
+        return "";
+    }
+
+    @Override
     public @NotNull String saveToString() {
         return this.convertYAMLMappingsToComments(super.saveToString());
     }
