@@ -366,7 +366,7 @@ public class Stargate extends JavaPlugin {
         this.registerCommands();
 
         //Check for any available updates
-        UpdateChecker.checkForUpdate(this, "https://api.spigotmc.org/legacy/update.php?resource=87978",
+        UpdateChecker.checkForUpdate(this, "https://api.spigotmc.org/legacy/update.php?resource=109355",
                 Stargate::getPluginVersion, Stargate::setUpdateAvailable);
 
         BStatsHelper.initialize(this);
