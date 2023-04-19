@@ -51,7 +51,7 @@ gates:
     # +----------------------------------------------------------------------------------------------+ #
     
     # Are you connected to a BungeeCord-compatible proxy?
-    # Set this value to true if you intend on building gates with the 'u' flag.
+    # Set this value to true if you intend on building gates with the bUngee flag.
     enableBungee: false
     
     # Will vehicles and their passengers be able to travel through StarGate portals?
@@ -101,7 +101,7 @@ gates:
     # “NOTE”  Otherwise, disallowed players, block updates, and snowmen can invalidate your portals!
     verifyPortals: false
     
-    # Should the portal verification process account for 𝑡𝑟𝑎𝑣𝑒𝑟𝑠𝑎𝑏𝑙𝑒 (open/closed) materials?
+    # Should the portal verification process account for iris (open/closed) materials?
     # i.e. will a gate still validate if its portal-open material isn't present?
     # 
     # This is more resource intensive, and should really only be used if verifyPortals is true.
@@ -125,14 +125,14 @@ economy:
   destroyCost: 0
   
   # How much will be deducted from players' accounts when using a stargate to teleport?
-  # This does not apply to stargates with the 'f' flag.
+  # This does not apply to stargates with the Free flag.
   useCost: 0
   
   # Will fees collected for ‘usecost’ be paid to whomever created (owns) the applicable stargate?
   # If false, collected funds will be deleted.
   toOwner: false
   
-  # Will ‘createcost’ still be charged if the new gate's destination is a gate with the 'f' flag?
+  # Will ‘createcost’ still be charged if the new gate's destination is a gate with the Free flag?
   # Note that this only applies to fixed gates.
   chargeFreeDestination: true
   
