@@ -28,11 +28,13 @@ public class StargateYamlConfiguration extends YamlConfiguration {
 
     @Override
     public @NotNull String saveToString() {
+        // Convert YAML comments to normal comments
         return this.convertYAMLMappingsToComments(super.saveToString());
     }
 
     @Override
     public void loadFromString(@NotNull String contents) throws InvalidConfigurationException {
+        // Convert normal comments to YAML comments to prevent them from disappearing
         super.loadFromString(this.convertCommentsToYAMLMappings(contents));
     }
 
@@ -50,19 +52,23 @@ public class StargateYamlConfiguration extends YamlConfiguration {
         int commentId = 0;
 
         for (String line : configString.split("\n")) {
-            if (line.trim().startsWith("#")) {
+            String trimmed = line.trim();
+            if (trimmed.startsWith("#")) {
                 //Temporarily store the comment line
-                currentComment.add(line.trim().replaceFirst(line.trim().startsWith("# ") ? "# " : "{2}#",
-                        START_OF_COMMENT_LINE));
+                if (trimmed.startsWith("# ")) {
+                    currentComment.add(trimmed.replaceFirst("# ", START_OF_COMMENT_LINE));
+                } else {
+                    currentComment.add(trimmed.replaceFirst("#", START_OF_COMMENT_LINE));
+                }
             } else {
                 //Write the full formatted comment to the StringBuilder
                 if (!currentComment.isEmpty()) {
                     int indentation = getIndentation(line);
                     generateCommentYAML(yamlBuilder, currentComment, commentId++, indentation);
-                    currentComment = new ArrayList<>();
+                    currentComment.clear();
                 }
                 //Add the non-comment line assuming it isn't empty
-                if (!line.trim().isEmpty()) {
+                if (!trimmed.isEmpty()) {
                     yamlBuilder.append(line).append("\n");
                 }
             }
