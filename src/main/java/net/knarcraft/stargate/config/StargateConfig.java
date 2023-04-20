@@ -14,6 +14,7 @@ import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.messaging.Messenger;
@@ -48,6 +49,7 @@ public final class StargateConfig {
     private String gateFolder;
     private String portalFolder;
     private String languageName = "en";
+    private boolean isLoaded = false;
 
     private final Map<ConfigOption, Object> configOptions;
 
@@ -109,6 +111,17 @@ public final class StargateConfig {
             DynmapManager.initialize(dynmapAPI);
             DynmapManager.addAllPortalMarkers();
         }
+
+        this.isLoaded = true;
+    }
+
+    /**
+     * Gets whether this configuration has been fully loaded
+     *
+     * @return <p>True if fully loaded</p>
+     */
+    public boolean isLoaded() {
+        return this.isLoaded;
     }
 
     /**
@@ -365,10 +378,11 @@ public final class StargateConfig {
         FileConfiguration newConfig = Stargate.getInstance().getConfiguration();
 
         boolean isMigrating = false;
-        if (newConfig.getString("lang") != null || newConfig.getString("economy.freeGatesGreen") != null ||
-                newConfig.getString("economy.taxAccount") == null) {
+        if (newConfig.getString("lang") != null || newConfig.getString("economy.taxAccount") == null) {
             migrateConfig(newConfig);
             isMigrating = true;
+            Stargate.getInstance().reloadConfig();
+            newConfig = Stargate.getInstance().getConfiguration();
         }
 
         //Copy missing default values if any values are missing
@@ -409,6 +423,7 @@ public final class StargateConfig {
 
         //If users have an outdated config, assume they also need to update their default gates
         if (isMigrating) {
+            this.createMissingFolders();
             GateHandler.writeDefaultGatesToFolder(gateFolder);
         }
 
@@ -486,6 +501,9 @@ public final class StargateConfig {
 
         // Copy all keys to the new config
         for (String key : oldConfiguration.getKeys(true)) {
+            if (oldConfiguration.get(key) instanceof MemorySection) {
+                continue;
+            }
             Stargate.debug("Stargate::migrateConfig", "Setting " + key + " to " + oldConfiguration.get(key));
             newConfiguration.set(key, oldConfiguration.get(key));
         }
@@ -527,17 +545,27 @@ public final class StargateConfig {
      * Creates missing folders
      */
     private void createMissingFolders() {
-        File newPortalDir = new File(portalFolder);
-        if (!newPortalDir.exists()) {
-            if (!newPortalDir.mkdirs()) {
-                logger.severe("Unable to create portal directory");
-            }
-        }
+        createMissingFolder(new File(gateFolder), "Unable to create gate directory");
+        createMissingFolder(new File(portalFolder), "Unable to create portal directory");
         File newFile = new File(portalFolder, Stargate.getInstance().getServer().getWorlds().get(0).getName() +
                 ".db");
         if (!newFile.exists() && !newFile.getParentFile().exists()) {
             if (!newFile.getParentFile().mkdirs()) {
                 logger.severe("Unable to create portal database folder: " + newFile.getParentFile().getPath());
+            }
+        }
+    }
+
+    /**
+     * Creates the given folder if it's missing
+     *
+     * @param folder       <p>The folder to create</p>
+     * @param errorMessage <p>The error message to display if unable to create the folder</p>
+     */
+    private void createMissingFolder(File folder, String errorMessage) {
+        if (!folder.exists()) {
+            if (!folder.mkdirs()) {
+                logger.severe(errorMessage);
             }
         }
     }

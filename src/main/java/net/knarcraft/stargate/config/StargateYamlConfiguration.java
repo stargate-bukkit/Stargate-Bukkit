@@ -16,6 +16,7 @@ import java.util.List;
  */
 public class StargateYamlConfiguration extends YamlConfiguration {
 
+    public static final String START_OF_COMMENT_LINE = "[HASHTAG]";
     static public final String END_OF_COMMENT = "_endOfComment_";
     static public final String START_OF_COMMENT = "comment_";
 
@@ -51,7 +52,8 @@ public class StargateYamlConfiguration extends YamlConfiguration {
         for (String line : configString.split("\n")) {
             if (line.trim().startsWith("#")) {
                 //Temporarily store the comment line
-                currentComment.add(line.trim().replaceFirst("#", ""));
+                currentComment.add(line.trim().replaceFirst(line.trim().startsWith("# ") ? "# " : "{2}#",
+                        START_OF_COMMENT_LINE));
             } else {
                 //Write the full formatted comment to the StringBuilder
                 if (!currentComment.isEmpty()) {
@@ -119,6 +121,7 @@ public class StargateYamlConfiguration extends YamlConfiguration {
                 //Output the empty line as-is, as it's not part of a comment
                 finalText.append("\n");
             } else if (isReadingCommentBlock) {
+                possibleComment = possibleComment.replace(START_OF_COMMENT_LINE, "");
                 //Output the comment with correct indentation
                 finalText.append(addIndentation(commentIndentation)).append("# ").append(possibleComment).append("\n");
             } else {

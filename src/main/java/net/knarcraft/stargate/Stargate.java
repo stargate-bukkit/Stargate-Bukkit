@@ -207,7 +207,7 @@ public class Stargate extends JavaPlugin {
      * @param message <p>A message describing what happened</p>
      */
     public static void debug(String route, String message) {
-        if (stargateConfig == null || stargateConfig.isDebuggingEnabled()) {
+        if (stargateConfig == null || !stargateConfig.isLoaded() || stargateConfig.isDebuggingEnabled()) {
             logger.info("[Stargate::" + route + "] " + message);
         } else {
             logger.log(Level.FINEST, "[Stargate::" + route + "] " + message);
@@ -357,7 +357,7 @@ public class Stargate extends JavaPlugin {
         super.reloadConfig();
         this.configuration = new StargateYamlConfiguration();
         try {
-            configuration.load(new File(getDataFolder(), configFileName));
+            this.configuration.load(new File(getDataFolder(), configFileName));
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
@@ -367,7 +367,7 @@ public class Stargate extends JavaPlugin {
     public void saveConfig() {
         super.saveConfig();
         try {
-            configuration.save(new File(getDataFolder(), configFileName));
+            this.configuration.save(new File(getDataFolder(), configFileName));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -387,13 +387,13 @@ public class Stargate extends JavaPlugin {
         this.getConfig();
         PluginDescriptionFile pluginDescriptionFile = this.getDescription();
         pluginManager = getServer().getPluginManager();
-        configuration = new StargateYamlConfiguration();
+        this.configuration = new StargateYamlConfiguration();
         try {
-            configuration.load(new File(getDataFolder(), configFileName));
+            this.configuration.load(new File(getDataFolder(), configFileName));
         } catch (IOException | InvalidConfigurationException e) {
             getLogger().log(Level.SEVERE, e.getMessage());
         }
-        configuration.options().copyDefaults(true);
+        this.configuration.options().copyDefaults(true);
 
         logger = Logger.getLogger("Minecraft");
         Server server = getServer();
