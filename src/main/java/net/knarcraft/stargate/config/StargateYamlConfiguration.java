@@ -10,7 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A YAML configuration which keeps all comments
+ * A YAML configuration which retains all comments
+ *
+ * <p>This configuration converts all comments to YAML values when loaded, which all start with comment_. When saved,
+ * those YAML values are converted to normal text comments. This ensures that the comments aren't removed by the
+ * YamlConfiguration during its parsing.</p>
  *
  * @author Thorin
  */

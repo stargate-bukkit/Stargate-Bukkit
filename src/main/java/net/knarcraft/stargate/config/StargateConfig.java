@@ -549,10 +549,8 @@ public final class StargateConfig {
         createMissingFolder(new File(portalFolder), "Unable to create portal directory");
         File newFile = new File(portalFolder, Stargate.getInstance().getServer().getWorlds().get(0).getName() +
                 ".db");
-        if (!newFile.exists() && !newFile.getParentFile().exists()) {
-            if (!newFile.getParentFile().mkdirs()) {
-                logger.severe("Unable to create portal database folder: " + newFile.getParentFile().getPath());
-            }
+        if (!newFile.exists() && !newFile.getParentFile().exists() && !newFile.getParentFile().mkdirs()) {
+            logger.severe("Unable to create portal database folder: " + newFile.getParentFile().getPath());
         }
     }
 
@@ -563,10 +561,8 @@ public final class StargateConfig {
      * @param errorMessage <p>The error message to display if unable to create the folder</p>
      */
     private void createMissingFolder(File folder, String errorMessage) {
-        if (!folder.exists()) {
-            if (!folder.mkdirs()) {
-                logger.severe(errorMessage);
-            }
+        if (!folder.exists() && !folder.mkdirs()) {
+            logger.severe(errorMessage);
         }
     }
 

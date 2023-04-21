@@ -74,7 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @SuppressWarnings("unused")
 public class Stargate extends JavaPlugin {
 
-    private static final String configFileName = "config.yml";
+    private static final String CONFIG_FILE_NAME = "config.yml";
     private static final Queue<BlockChangeRequest> blockChangeRequestQueue = new LinkedList<>();
     private static final Queue<ChunkUnloadRequest> chunkUnloadQueue = new PriorityQueue<>();
 
@@ -353,7 +353,7 @@ public class Stargate extends JavaPlugin {
         super.reloadConfig();
         this.configuration = new StargateYamlConfiguration();
         try {
-            this.configuration.load(new File(getDataFolder(), configFileName));
+            this.configuration.load(new File(getDataFolder(), CONFIG_FILE_NAME));
         } catch (IOException | InvalidConfigurationException e) {
             logSevere("Unable to load the configuration! Message: " + e.getMessage());
         }
@@ -363,7 +363,7 @@ public class Stargate extends JavaPlugin {
     public void saveConfig() {
         super.saveConfig();
         try {
-            this.configuration.save(new File(getDataFolder(), configFileName));
+            this.configuration.save(new File(getDataFolder(), CONFIG_FILE_NAME));
         } catch (IOException e) {
             logSevere("Unable to save the configuration! Message: " + e.getMessage());
         }
@@ -381,15 +381,15 @@ public class Stargate extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        stargate = this;
-        logger = getLogger();
+        Stargate.stargate = this;
+        Stargate.logger = getLogger();
         this.saveDefaultConfig();
         this.getConfig();
         PluginDescriptionFile pluginDescriptionFile = this.getDescription();
         pluginManager = getServer().getPluginManager();
         this.configuration = new StargateYamlConfiguration();
         try {
-            this.configuration.load(new File(getDataFolder(), configFileName));
+            this.configuration.load(new File(getDataFolder(), CONFIG_FILE_NAME));
         } catch (IOException | InvalidConfigurationException e) {
             getLogger().log(Level.SEVERE, e.getMessage());
         }
