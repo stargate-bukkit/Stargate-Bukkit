@@ -16,6 +16,7 @@ import java.util.List;
  * those YAML values are converted to normal text comments. This ensures that the comments aren't removed by the
  * YamlConfiguration during its parsing.</p>
  *
+ * @author Kristian Knarvik
  * @author Thorin
  */
 public class StargateYamlConfiguration extends YamlConfiguration {
