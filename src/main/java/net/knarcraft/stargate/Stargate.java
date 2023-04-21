@@ -25,6 +25,7 @@ import net.knarcraft.stargate.thread.BlockChangeThread;
 import net.knarcraft.stargate.thread.ChunkUnloadThread;
 import net.knarcraft.stargate.thread.StarGateThread;
 import net.knarcraft.stargate.utility.BStatsHelper;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -73,7 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @SuppressWarnings("unused")
 public class Stargate extends JavaPlugin {
 
-    private static File configFile;
+    private static final String CONFIG_FILE_NAME = "config.yml";
     private static final Queue<BlockChangeRequest> blockChangeRequestQueue = new LinkedList<>();
     private static final Queue<ChunkUnloadRequest> chunkUnloadQueue = new PriorityQueue<>();
 
@@ -206,7 +207,7 @@ public class Stargate extends JavaPlugin {
      * @param message <p>A message describing what happened</p>
      */
     public static void debug(String route, String message) {
-        if (stargateConfig == null || stargateConfig.isDebuggingEnabled()) {
+        if (stargateConfig == null || stargateConfig.isNotLoaded() || stargateConfig.isDebuggingEnabled()) {
             logger.info("[Stargate::" + route + "] " + message);
         } else {
             logger.log(Level.FINEST, "[Stargate::" + route + "] " + message);
@@ -219,7 +220,7 @@ public class Stargate extends JavaPlugin {
      * @param message <p>The message to log</p>
      */
     public static void logInfo(String message) {
-        logger.info(getBackupString("prefix") + message);
+        log(Level.INFO, message);
     }
 
     /**
@@ -247,7 +248,10 @@ public class Stargate extends JavaPlugin {
      * @param message  <p>The message to log</p>
      */
     private static void log(Level severity, String message) {
-        logger.log(severity, getBackupString("prefix") + message);
+        if (logger == null) {
+            logger = Bukkit.getLogger();
+        }
+        logger.log(severity, message);
     }
 
     /**
@@ -349,9 +353,9 @@ public class Stargate extends JavaPlugin {
         super.reloadConfig();
         this.configuration = new StargateYamlConfiguration();
         try {
-            configuration.load(configFile);
+            this.configuration.load(new File(getDataFolder(), CONFIG_FILE_NAME));
         } catch (IOException | InvalidConfigurationException e) {
-            Stargate.logSevere(e.getMessage());
+            logSevere("Unable to load the configuration! Message: " + e.getMessage());
         }
     }
 
@@ -359,9 +363,9 @@ public class Stargate extends JavaPlugin {
     public void saveConfig() {
         super.saveConfig();
         try {
-            configuration.save(configFile);
+            this.configuration.save(new File(getDataFolder(), CONFIG_FILE_NAME));
         } catch (IOException e) {
-            logSevere(e.getMessage());
+            logSevere("Unable to save the configuration! Message: " + e.getMessage());
         }
     }
 
@@ -369,30 +373,41 @@ public class Stargate extends JavaPlugin {
     public void onDisable() {
         PortalHandler.closeAllPortals();
         PortalRegistry.clearPortals();
-        stargateConfig.clearManagedWorlds();
+        if (stargateConfig != null) {
+            stargateConfig.clearManagedWorlds();
+        }
         getServer().getScheduler().cancelTasks(this);
     }
 
     @Override
     public void onEnable() {
-        configFile = new File(this.getDataFolder(), "config.yml");
+        Stargate.stargate = this;
+        Stargate.logger = getLogger();
+        this.saveDefaultConfig();
+        this.getConfig();
         PluginDescriptionFile pluginDescriptionFile = this.getDescription();
         pluginManager = getServer().getPluginManager();
-        configuration = new StargateYamlConfiguration();
+        this.configuration = new StargateYamlConfiguration();
         try {
-            configuration.load(configFile);
+            this.configuration.load(new File(getDataFolder(), CONFIG_FILE_NAME));
         } catch (IOException | InvalidConfigurationException e) {
-            Stargate.logSevere(e.getMessage());
+            getLogger().log(Level.SEVERE, e.getMessage());
         }
-        this.saveDefaultConfig();
-        configuration.options().copyDefaults(true);
+        this.configuration.options().copyDefaults(true);
 
-        logger = Logger.getLogger("Minecraft");
         Server server = getServer();
-        stargate = this;
 
-        stargateConfig = new StargateConfig(logger);
-        stargateConfig.finishSetup();
+        try {
+            stargateConfig = new StargateConfig(logger);
+            stargateConfig.finishSetup();
+        } catch (NoClassDefFoundError exception) {
+            logSevere("Could not properly load. Class not found: " +
+                    exception.getMessage() + "\nThis is probably because you are using CraftBukkit, or other outdated" +
+                    "Minecraft server software. Minecraft server software based on Spigot or Paper is required. Paper" +
+                    " is recommended, and can be downloaded at: https://papermc.io/downloads/paper");
+            this.onDisable();
+            return;
+        }
 
         pluginVersion = pluginDescriptionFile.getVersion();
 

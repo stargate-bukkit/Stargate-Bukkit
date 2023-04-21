@@ -152,7 +152,7 @@ public class GateHandler {
         }
 
         //Update gate file in case the format has changed between versions
-        gate.save(parentFolder + "/");
+        gate.save(parentFolder);
         return gate;
     }
 

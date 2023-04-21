@@ -10,22 +10,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A YAML configuration which keeps all comments
+ * A YAML configuration which retains all comments
+ *
+ * <p>This configuration converts all comments to YAML values when loaded, which all start with comment_. When saved,
+ * those YAML values are converted to normal text comments. This ensures that the comments aren't removed by the
+ * YamlConfiguration during its parsing.</p>
  *
  * @author Thorin
  */
 public class StargateYamlConfiguration extends YamlConfiguration {
 
+    public static final String START_OF_COMMENT_LINE = "[HASHTAG]";
     static public final String END_OF_COMMENT = "_endOfComment_";
     static public final String START_OF_COMMENT = "comment_";
 
     @Override
+    @SuppressWarnings("deprecation")
+    protected @NotNull String buildHeader() {
+        return "";
+    }
+
+    @Override
     public @NotNull String saveToString() {
+        // Convert YAML comments to normal comments
         return this.convertYAMLMappingsToComments(super.saveToString());
     }
 
     @Override
     public void loadFromString(@NotNull String contents) throws InvalidConfigurationException {
+        // Convert normal comments to YAML comments to prevent them from disappearing
         super.loadFromString(this.convertCommentsToYAMLMappings(contents));
     }
 
@@ -41,25 +54,62 @@ public class StargateYamlConfiguration extends YamlConfiguration {
         StringBuilder yamlBuilder = new StringBuilder();
         List<String> currentComment = new ArrayList<>();
         int commentId = 0;
+        int previousIndentation = 0;
 
         for (String line : configString.split("\n")) {
-            if (line.trim().startsWith("#")) {
+            String trimmed = line.trim();
+            if (trimmed.startsWith("#")) {
+                // Store the indentation of the block
+                if (currentComment.isEmpty()) {
+                    previousIndentation = getIndentation(line);
+                }
                 //Temporarily store the comment line
-                currentComment.add(line.trim().replaceFirst("#", ""));
+                addComment(currentComment, trimmed);
             } else {
-                //Write the full formatted comment to the StringBuilder
-                if (!currentComment.isEmpty()) {
-                    int indentation = getIndentation(line);
-                    generateCommentYAML(yamlBuilder, currentComment, commentId++, indentation);
-                    currentComment = new ArrayList<>();
-                }
-                //Add the non-comment line assuming it isn't empty
-                if (!line.trim().isEmpty()) {
-                    yamlBuilder.append(line).append("\n");
-                }
+                addYamlString(yamlBuilder, currentComment, line, previousIndentation, commentId);
+                commentId++;
+                previousIndentation = 0;
             }
         }
         return yamlBuilder.toString();
+    }
+
+    /**
+     * Adds a YAML string to the given string builder
+     *
+     * @param yamlBuilder         <p>The string builder used for building YAML</p>
+     * @param currentComment      <p>The comment to add as a YAML string</p>
+     * @param line                <p>The current line</p>
+     * @param previousIndentation <p>The indentation of the current block comment</p>
+     * @param commentId           <p>The id of the comment</p>
+     */
+    private void addYamlString(StringBuilder yamlBuilder, List<String> currentComment, String line,
+                               int previousIndentation, int commentId) {
+        String trimmed = line.trim();
+        //Write the full formatted comment to the StringBuilder
+        if (!currentComment.isEmpty()) {
+            int indentation = trimmed.isEmpty() ? previousIndentation : getIndentation(line);
+            generateCommentYAML(yamlBuilder, currentComment, commentId, indentation);
+            currentComment.clear();
+        }
+        //Add the non-comment line assuming it isn't empty
+        if (!trimmed.isEmpty()) {
+            yamlBuilder.append(line).append("\n");
+        }
+    }
+
+    /**
+     * Adds the given comment to the given list
+     *
+     * @param commentParts <p>The list to add to</p>
+     * @param comment      <p>The comment to add</p>
+     */
+    private void addComment(List<String> commentParts, String comment) {
+        if (comment.startsWith("# ")) {
+            commentParts.add(comment.replaceFirst("# ", START_OF_COMMENT_LINE));
+        } else {
+            commentParts.add(comment.replaceFirst("#", START_OF_COMMENT_LINE));
+        }
     }
 
     /**
@@ -94,33 +144,47 @@ public class StargateYamlConfiguration extends YamlConfiguration {
      */
     private String convertYAMLMappingsToComments(String yamlString) {
         StringBuilder finalText = new StringBuilder();
-        boolean isReadingCommentBlock = false;
-        int commentIndentation = 0;
-        for (String line : yamlString.split("\n")) {
+
+        String[] lines = yamlString.split("\n");
+        for (int currentIndex = 0; currentIndex < lines.length; currentIndex++) {
+            String line = lines[currentIndex];
             String possibleComment = line.trim();
 
-            if (isReadingCommentBlock && line.contains(END_OF_COMMENT)) {
-                //Skip the line signifying the end of a comment
-                isReadingCommentBlock = false;
-            } else if (possibleComment.startsWith(START_OF_COMMENT)) {
-                //Skip the comment start line, and start comment parsing
-                isReadingCommentBlock = true;
-                //Get the indentation to use for the comment block
-                commentIndentation = getIndentation(line);
+            if (possibleComment.startsWith(START_OF_COMMENT)) {
                 //Add an empty line before every comment block
                 finalText.append("\n");
-            } else if (line.isEmpty() && !isReadingCommentBlock) {
-                //Output the empty line as-is, as it's not part of a comment
-                finalText.append("\n");
-            } else if (isReadingCommentBlock) {
-                //Output the comment with correct indentation
-                finalText.append(addIndentation(commentIndentation)).append("# ").append(possibleComment).append("\n");
+                currentIndex = readComment(finalText, lines, currentIndex + 1, getIndentation(line));
             } else {
                 //Output the configuration key
                 finalText.append(line).append("\n");
             }
         }
+
         return finalText.toString().trim();
+    }
+
+    /**
+     * Fully reads a comment
+     *
+     * @param builder            <p>The string builder to write to</p>
+     * @param lines              <p>The lines to read from</p>
+     * @param startIndex         <p>The index to start reading from</p>
+     * @param commentIndentation <p>The indentation of the read comment</p>
+     * @return <p>The index containing the next non-comment line</p>
+     */
+    private int readComment(StringBuilder builder, String[] lines, int startIndex, int commentIndentation) {
+        for (int currentIndex = startIndex; currentIndex < lines.length; currentIndex++) {
+            String line = lines[currentIndex];
+            String possibleComment = line.trim();
+            if (!line.contains(END_OF_COMMENT)) {
+                possibleComment = possibleComment.replace(START_OF_COMMENT_LINE, "");
+                builder.append(addIndentation(commentIndentation)).append("# ").append(possibleComment).append("\n");
+            } else {
+                return currentIndex;
+            }
+        }
+
+        return startIndex;
     }
 
     /**

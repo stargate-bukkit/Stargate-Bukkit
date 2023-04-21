@@ -170,10 +170,9 @@ public final class PortalFileHelper {
                     "Starting post loading tasks", world));
             doPostLoadTasks(world, needsToSaveDatabase);
             return true;
-        } catch (Exception e) {
-            Stargate.logSevere(String.format("Exception while reading stargates from %s: %d", database.getName(),
-                    lineIndex));
-            e.printStackTrace();
+        } catch (Exception exception) {
+            Stargate.logSevere(String.format("Exception while reading stargates from %s: %d! Message: %s",
+                    database.getName(), lineIndex, exception.getMessage()));
         }
         return false;
     }

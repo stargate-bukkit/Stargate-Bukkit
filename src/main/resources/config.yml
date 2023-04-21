@@ -1,4 +1,4 @@
-#                                                                                  Version: ${project.version}
+#                                                                                   Version: ${project.version}
 # +--------------▄▄▄-- ‚——. -▄--▄-▄--▄-▄-▄▄▄▄▄---------------------------------------------------+ #
 # |              █▄▄▀ (“‡‡”) █▄▄▀ █▄▄▀ █   █       Support available at: sgrewritten.org/discord | #
 # |              █▄▄█  \__/  █  █ █  █ █   █                    ‚-.                              | #
@@ -107,6 +107,33 @@ gates:
     # This is more resource intensive, and should really only be used if verifyPortals is true.
     # Or if using an easily destroyable open/closed material.
     protectEntrance: false
+  
+  cosmetic:
+    # Will the destination a networked portal last connected to be listed first in its scroll menu?
+    rememberDestination: false
+
+    # For networked gates, are destinations listed alphabetically instead of chronologically?
+    # (This applies to all non-fixed and non-random gates).
+    sortNetworkDestinations: false
+
+    # What color will StarGate use for the text on gate signs?
+    # Note that players can override this with DYE and/or GLOW_INK_SAC
+    mainSignColor: BLACK
+
+    # What color will StarGate use to accent the above text?
+    highlightSignColor: WHITE
+
+    # Text and highlight colors can be modified on a per-sign basis (below).
+    # Format: 'SIGN_TYPE:mainSignColor,highlightSignColor'
+    perSignColors:
+      - 'ACACIA:default,default'
+      - 'BIRCH:default,default'
+      - 'CRIMSON:inverted,inverted'
+      - 'DARK_OAK:inverted,inverted'
+      - 'JUNGLE:default,default'
+      - 'OAK:default,default'
+      - 'SPRUCE:inverted,inverted'
+      - 'WARPED:inverted,inverted'
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                            Economy                                           | #
@@ -149,32 +176,12 @@ economy:
   # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html 
   freeGatesColor: DARK_GREEN
   
-  cosmetic:
-    # Will the destination a networked portal last connected to be listed first in its scroll menu?
-    rememberDestination: false
-    
-    # For networked gates, are destinations listed alphabetically instead of chronologically?
-    # (This applies to all non-fixed and non-random gates).
-    sortNetworkDestinations: false
-    
-    # What color will StarGate use for the text on gate signs?
-    # Note that players can override this with DYE and/or GLOW_INK_SAC
-    mainSignColor: BLACK
-    
-    # What color will StarGate use to accent the above text?
-    highlightSignColor: WHITE
-    
-    # Text and highlight colors can be modified on a per-sign basis (below).
-    # Format: 'SIGN_TYPE:mainSignColor,highlightSignColor'
-    perSignColors:
-      - 'ACACIA:default,default'
-      - 'BIRCH:default,default'
-      - 'CRIMSON:inverted,inverted'
-      - 'DARK_OAK:inverted,inverted'
-      - 'JUNGLE:default,default'
-      - 'OAK:default,default'
-      - 'SPRUCE:inverted,inverted'
-      - 'WARPED:inverted,inverted'
+  # Does your server have a tax account (closed economy)?
+  # If so, please provide the name of your tax account (collected money will be sent to it).
+  # If not, leave this section blank (collected money will be deleted).
+  #
+  # Note that useCost money is excluded from this system when toOwner is true.
+  taxAccount: ''
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                           Technical                                          | #

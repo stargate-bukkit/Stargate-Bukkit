@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.Tag;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -290,7 +291,7 @@ public class Gate {
      */
     public void save(String gateFolder) {
         try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(gateFolder + filename));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(gateFolder, filename)));
 
             //Save main material names
             writeConfig(bufferedWriter, "portal-open", portalOpenBlock.name());
@@ -309,8 +310,8 @@ public class Gate {
             layout.saveLayout(bufferedWriter);
 
             bufferedWriter.close();
-        } catch (IOException ex) {
-            Stargate.logSevere(String.format("Could not save Gate %s - %s", filename, ex.getMessage()));
+        } catch (IOException exception) {
+            Stargate.logSevere(String.format("Could not save Gate %s - %s", filename, exception.getMessage()));
         }
     }
 

@@ -313,14 +313,16 @@ public final class StargateGateConfig {
         try {
             PortalSignDrawer.setMainColor(ChatColor.of(mainSignColor.toUpperCase()));
         } catch (IllegalArgumentException | NullPointerException exception) {
-            Stargate.logWarning("You have specified an invalid main sign color in your config.yml. Defaulting to BLACK");
+            Stargate.logWarning("You have specified an invalid main sign color in your config.yml (" + mainSignColor +
+                    "). Defaulting to BLACK");
             PortalSignDrawer.setMainColor(ChatColor.BLACK);
         }
 
         try {
             PortalSignDrawer.setHighlightColor(ChatColor.of(highlightSignColor.toUpperCase()));
         } catch (IllegalArgumentException | NullPointerException exception) {
-            Stargate.logWarning("You have specified an invalid highlighting sign color in your config.yml. Defaulting to WHITE");
+            Stargate.logWarning("You have specified an invalid highlighting sign color in your config.yml (" +
+                    highlightSignColor + "). Defaulting to WHITE");
             PortalSignDrawer.setHighlightColor(ChatColor.WHITE);
         }
     }
