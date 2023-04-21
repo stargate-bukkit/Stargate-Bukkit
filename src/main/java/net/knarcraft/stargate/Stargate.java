@@ -251,11 +251,7 @@ public class Stargate extends JavaPlugin {
         if (logger == null) {
             logger = Bukkit.getLogger();
         }
-        if (getInstance() == null || stargateConfig == null || stargateConfig.isNotLoaded()) {
-            logger.log(severity, "[Stargate]: " + message);
-        } else {
-            logger.log(severity, getBackupString("prefix") + message);
-        }
+        logger.log(severity, message);
     }
 
     /**
@@ -385,6 +381,8 @@ public class Stargate extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        stargate = this;
+        logger = getLogger();
         this.saveDefaultConfig();
         this.getConfig();
         PluginDescriptionFile pluginDescriptionFile = this.getDescription();
@@ -397,9 +395,7 @@ public class Stargate extends JavaPlugin {
         }
         this.configuration.options().copyDefaults(true);
 
-        logger = Logger.getLogger("Minecraft");
         Server server = getServer();
-        stargate = this;
 
         try {
             stargateConfig = new StargateConfig(logger);
