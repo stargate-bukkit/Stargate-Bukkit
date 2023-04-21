@@ -50,10 +50,15 @@ public class StargateYamlConfiguration extends YamlConfiguration {
         StringBuilder yamlBuilder = new StringBuilder();
         List<String> currentComment = new ArrayList<>();
         int commentId = 0;
+        int previousIndentation = 0;
 
         for (String line : configString.split("\n")) {
             String trimmed = line.trim();
             if (trimmed.startsWith("#")) {
+                // Store the indentation of the block
+                if (currentComment.isEmpty()) {
+                    previousIndentation = getIndentation(line);
+                }
                 //Temporarily store the comment line
                 if (trimmed.startsWith("# ")) {
                     currentComment.add(trimmed.replaceFirst("# ", START_OF_COMMENT_LINE));
@@ -63,9 +68,10 @@ public class StargateYamlConfiguration extends YamlConfiguration {
             } else {
                 //Write the full formatted comment to the StringBuilder
                 if (!currentComment.isEmpty()) {
-                    int indentation = getIndentation(line);
+                    int indentation = trimmed.isEmpty() ? previousIndentation : getIndentation(line);
                     generateCommentYAML(yamlBuilder, currentComment, commentId++, indentation);
                     currentComment.clear();
+                    previousIndentation = 0;
                 }
                 //Add the non-comment line assuming it isn't empty
                 if (!trimmed.isEmpty()) {
