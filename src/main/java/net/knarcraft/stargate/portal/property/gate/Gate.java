@@ -310,9 +310,8 @@ public class Gate {
             layout.saveLayout(bufferedWriter);
 
             bufferedWriter.close();
-        } catch (IOException ex) {
-            Stargate.logSevere(String.format("Could not save Gate %s - %s", filename, ex.getMessage()));
-            ex.printStackTrace();
+        } catch (IOException exception) {
+            Stargate.logSevere(String.format("Could not save Gate %s - %s", filename, exception.getMessage()));
         }
     }
 

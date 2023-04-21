@@ -82,8 +82,7 @@ public final class BungeeHelper {
             //Send the plugin message
             player.sendPluginMessage(Stargate.getInstance(), bungeeChannel, byteArrayOutputStream.toByteArray());
         } catch (IOException ex) {
-            Stargate.logSevere("Error sending BungeeCord teleport packet");
-            ex.printStackTrace();
+            Stargate.logSevere("Error sending BungeeCord teleport packet! Message: " + ex.getMessage());
             return false;
         }
         return true;
@@ -107,9 +106,8 @@ public final class BungeeHelper {
 
             //Send the plugin message
             player.sendPluginMessage(Stargate.getInstance(), bungeeChannel, byteArrayOutputStream.toByteArray());
-        } catch (IOException ex) {
-            Stargate.logSevere("Error sending BungeeCord connect packet");
-            ex.printStackTrace();
+        } catch (IOException exception) {
+            Stargate.logSevere("Error sending BungeeCord connect packet! Message: " + exception.getMessage());
             return false;
         }
         return true;
@@ -137,9 +135,8 @@ public final class BungeeHelper {
             data = new byte[dataLength];
             //Read the message to the prepared array
             dataInputStream.readFully(data);
-        } catch (IOException ex) {
-            Stargate.logSevere("Error receiving BungeeCord message");
-            ex.printStackTrace();
+        } catch (IOException exception) {
+            Stargate.logSevere("Error receiving BungeeCord message. Message: " + exception.getMessage());
             return null;
         }
         return new String(data);

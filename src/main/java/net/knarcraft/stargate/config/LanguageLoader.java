@@ -120,8 +120,8 @@ public final class LanguageLoader {
 
         try {
             readChangedLanguageStrings(inputStream, language, currentLanguageValues);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException exception) {
+            Stargate.logSevere("Unable to read language strings! Message: " + exception.getMessage());
         }
     }
 

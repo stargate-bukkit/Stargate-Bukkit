@@ -355,7 +355,7 @@ public class Stargate extends JavaPlugin {
         try {
             this.configuration.load(new File(getDataFolder(), configFileName));
         } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
+            logSevere("Unable to load the configuration! Message: " + e.getMessage());
         }
     }
 
@@ -365,7 +365,7 @@ public class Stargate extends JavaPlugin {
         try {
             this.configuration.save(new File(getDataFolder(), configFileName));
         } catch (IOException e) {
-            e.printStackTrace();
+            logSevere("Unable to save the configuration! Message: " + e.getMessage());
         }
     }
 
