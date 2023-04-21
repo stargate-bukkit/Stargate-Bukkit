@@ -459,11 +459,13 @@ public final class StargateConfig {
      * @param currentConfiguration <p>The current config to back up</p>
      */
     private void migrateConfig(FileConfiguration currentConfiguration) {
+        String debugPath = "StargateConfig::migrateConfig";
+
         //Save the old config just in case something goes wrong
         try {
             currentConfiguration.save(new File(dataFolderPath, "config.yml.old"));
         } catch (IOException e) {
-            Stargate.debug("StargateConfig::migrateConfig", "Unable to save old backup and do migration");
+            Stargate.debug(debugPath, "Unable to save old backup and do migration");
             return;
         }
 
@@ -481,7 +483,7 @@ public final class StargateConfig {
                             FileHelper.getInputStreamForInternalFile("/config-migrations.txt")), "=",
                     ColorConversion.NORMAL);
         } catch (IOException e) {
-            Stargate.debug("StargateConfig::migrateConfig", "Unable to load config migration file");
+            Stargate.debug(debugPath, "Unable to load config migration file");
             return;
         }
 
@@ -502,7 +504,7 @@ public final class StargateConfig {
             if (oldConfiguration.get(key) instanceof MemorySection) {
                 continue;
             }
-            Stargate.debug("StargateConfig::migrateConfig", "Setting " + key + " to " +
+            Stargate.debug(debugPath, "Setting " + key + " to " +
                     oldConfiguration.get(key));
             newConfiguration.set(key, oldConfiguration.get(key));
         }
@@ -510,7 +512,7 @@ public final class StargateConfig {
         try {
             newConfiguration.save(new File(dataFolderPath, "config.yml"));
         } catch (IOException exception) {
-            Stargate.debug("StargateConfig::migrateConfig", "Unable to save migrated config");
+            Stargate.debug(debugPath, "Unable to save migrated config");
         }
 
         Stargate.getInstance().reloadConfig();
