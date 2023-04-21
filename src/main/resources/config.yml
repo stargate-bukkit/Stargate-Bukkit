@@ -107,7 +107,10 @@ gates:
     # This is more resource intensive, and should really only be used if verifyPortals is true.
     # Or if using an easily destroyable open/closed material.
     protectEntrance: false
-  
+    
+  # +----------------------------------------------------------------------------------------------+ #
+  # |                                       Aesthetic Tweaks                                       | #
+  # +----------------------------------------------------------------------------------------------+ # 
   cosmetic:
     # Will the destination a networked portal last connected to be listed first in its scroll menu?
     rememberDestination: false
@@ -135,10 +138,20 @@ gates:
       - 'SPRUCE:inverted,inverted'
       - 'WARPED:inverted,inverted'
 
-# +----------------------------------------------------------------------------------------------+ #
-# |                                            Economy                                           | #
-# +----------------------------------------------------------------------------------------------+ #
 economy:
+  # When scrolling through a networked portal's destination list, should SG color free gates?
+  freeGatesColored: false
+  
+  # If freeGatesColored is true, which color should SG use?
+  #
+  # All color names should follow this format:
+  # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html 
+  freeGatesColor: DARK_GREEN
+  
+  # +----------------------------------------------------------------------------------------------+ #
+  # |                                            Economy                                           | #
+  # +----------------------------------------------------------------------------------------------+ #
+  
   # Will StarGate interact with your server's economy?
   # 
   # …««»»…  For these features, StarGate depends on the Vault plugin.
@@ -162,19 +175,6 @@ economy:
   # Will ‘createcost’ still be charged if the new gate's destination is a gate with the Free flag?
   # Note that this only applies to fixed gates.
   chargeFreeDestination: true
-  
-  # +----------------------------------------------------------------------------------------------+ #
-  # |                                       Aesthetic Tweaks                                       | #
-  # +----------------------------------------------------------------------------------------------+ # 
-  
-  # When scrolling through a networked portal's destination list, should SG color free gates?
-  freeGatesColored: false
-  
-  # If freeGatesColored is true, which color should SG use?
-  #
-  # All color names should follow this format:
-  # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html 
-  freeGatesColor: DARK_GREEN
   
   # Does your server have a tax account (closed economy)?
   # If so, please provide the name of your tax account (collected money will be sent to it).

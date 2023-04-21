@@ -524,6 +524,7 @@ portalInfoServer=Server: %server%
 - Significantly improved an internal system responsible for yaml migrations.
 - Imported the LCLO fork's configuration comments.
 - Fixed a problem that caused the update checker to produce false positives.
+- Added support for Tax Accounts (part of Towny Closed Economies)
 
 #### \[Version 0.11.5.1] UNIFIED LEGACY FORK
 
