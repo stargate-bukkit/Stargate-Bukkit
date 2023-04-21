@@ -34,7 +34,7 @@ public class TestCredentialsManager {
     public String getCredentialString(TestCredential testCredential) {
         return properties.getProperty(testCredential.name());
     }
-    
+
     /**
      * Gets a credential value as a string
      *

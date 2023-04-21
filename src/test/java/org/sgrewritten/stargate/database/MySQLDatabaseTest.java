@@ -40,7 +40,7 @@ public class MySQLDatabaseTest {
         String databaseName = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_NAME, "Stargate");
         String username = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_USER);
         String password = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_PASSWORD);
-        
+
         if (username == null || password == null) {
             throw new IllegalArgumentException("You need to set MySQL credentials to run this test!");
         }
