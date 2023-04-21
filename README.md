@@ -519,7 +519,9 @@ portalInfoServer=Server: %server%
 > currently support your language, please submit a translation [here](https://sgrewritten.org/translate)!
 
 # Changes
+
 #### \[Version 0.11.5.2] Unified Legacy Fork
+
 - Improved handling of incompatible server environments (i.e. CraftBukkit)
 - Significantly improved an internal system responsible for yaml migrations.
 - Imported the LCLO fork's configuration comments.
@@ -537,7 +539,8 @@ portalInfoServer=Server: %server%
 
 #### \[Version 0.10.X.X] LCLO fork
 
-- Reimplemented/merged the [LCLO fork ecosystem](https://github.com/stargate-rewritten/Stargate-ESR/tree/ESR-1.13.2-1.16.5),
+- Reimplemented/merged
+  the [LCLO fork ecosystem](https://github.com/stargate-rewritten/Stargate-ESR/tree/ESR-1.13.2-1.16.5),
   notably:
     - Added material #tag support
     - Expanded legacy migration support

@@ -81,7 +81,6 @@ gates:
   # Generally, that node is given to staff (we recommend stargate.create.personal for users).
   defaultGateNetwork: central
   
-  
   # At what speed should players be sent out of portals?
   # When exiting a gate, players retain their original movement velocity, multiplied by this value.
   exitVelocity: 0.1
@@ -107,7 +106,7 @@ gates:
     # This is more resource intensive, and should really only be used if verifyPortals is true.
     # Or if using an easily destroyable open/closed material.
     protectEntrance: false
-    
+  
   # +----------------------------------------------------------------------------------------------+ #
   # |                                       Aesthetic Tweaks                                       | #
   # +----------------------------------------------------------------------------------------------+ # 
