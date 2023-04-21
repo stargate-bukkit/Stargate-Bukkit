@@ -118,10 +118,10 @@ public final class StargateConfig {
     /**
      * Gets whether this configuration has been fully loaded
      *
-     * @return <p>True if fully loaded</p>
+     * @return <p>True if not fully loaded</p>
      */
-    public boolean isLoaded() {
-        return this.isLoaded;
+    public boolean isNotLoaded() {
+        return !this.isLoaded;
     }
 
     /**

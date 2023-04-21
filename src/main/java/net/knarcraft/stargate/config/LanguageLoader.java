@@ -45,7 +45,7 @@ public final class LanguageLoader {
             loadedBackupStrings = load("en", inputStream);
         } else {
             loadedBackupStrings = null;
-            Stargate.getConsoleLogger().severe("[stargate] Error loading backup language. " +
+            Stargate.logSevere("Error loading backup language. " +
                     "There may be missing text in-game");
         }
     }
@@ -226,7 +226,7 @@ public final class LanguageLoader {
             strings = FileHelper.readKeyValuePairs(bufferedReader, "=", ColorConversion.NORMAL);
         } catch (Exception e) {
             if (Stargate.getStargateConfig().isDebuggingEnabled()) {
-                Stargate.getConsoleLogger().info("[Stargate] Unable to load language " + lang);
+                Stargate.logInfo("Unable to load language " + lang);
             }
             return null;
         }

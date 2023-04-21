@@ -207,7 +207,7 @@ public class Stargate extends JavaPlugin {
      * @param message <p>A message describing what happened</p>
      */
     public static void debug(String route, String message) {
-        if (stargateConfig == null || !stargateConfig.isLoaded() || stargateConfig.isDebuggingEnabled()) {
+        if (stargateConfig == null || stargateConfig.isNotLoaded() || stargateConfig.isDebuggingEnabled()) {
             logger.info("[Stargate::" + route + "] " + message);
         } else {
             logger.log(Level.FINEST, "[Stargate::" + route + "] " + message);
@@ -220,7 +220,7 @@ public class Stargate extends JavaPlugin {
      * @param message <p>The message to log</p>
      */
     public static void logInfo(String message) {
-        logger.info(getBackupString("prefix") + message);
+        log(Level.INFO, message);
     }
 
     /**
@@ -251,7 +251,7 @@ public class Stargate extends JavaPlugin {
         if (logger == null) {
             logger = Bukkit.getLogger();
         }
-        if (getInstance() == null) {
+        if (getInstance() == null || stargateConfig == null || stargateConfig.isNotLoaded()) {
             logger.log(severity, "[Stargate]: " + message);
         } else {
             logger.log(severity, getBackupString("prefix") + message);
@@ -377,7 +377,9 @@ public class Stargate extends JavaPlugin {
     public void onDisable() {
         PortalHandler.closeAllPortals();
         PortalRegistry.clearPortals();
-        stargateConfig.clearManagedWorlds();
+        if (stargateConfig != null) {
+            stargateConfig.clearManagedWorlds();
+        }
         getServer().getScheduler().cancelTasks(this);
     }
 
@@ -399,8 +401,17 @@ public class Stargate extends JavaPlugin {
         Server server = getServer();
         stargate = this;
 
-        stargateConfig = new StargateConfig(logger);
-        stargateConfig.finishSetup();
+        try {
+            stargateConfig = new StargateConfig(logger);
+            stargateConfig.finishSetup();
+        } catch (NoClassDefFoundError exception) {
+            logSevere("Could not properly load. Class not found: " +
+                    exception.getMessage() + "\nThis is probably because you are using CraftBukkit, or other outdated" +
+                    "Minecraft server software. Minecraft server software based on Spigot or Paper is required. Paper" +
+                    " is recommended, and can be downloaded at: https://papermc.io/downloads/paper");
+            this.onDisable();
+            return;
+        }
 
         pluginVersion = pluginDescriptionFile.getVersion();
 
