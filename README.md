@@ -519,8 +519,13 @@ portalInfoServer=Server: %server%
 > currently support your language, please submit a translation [here](https://sgrewritten.org/translate)!
 
 # Changes
+#### \[Version 0.11.5.2] Unified Legacy Fork
+- Improved handling of incompatible server environments (i.e. CraftBukkit)
+- Significantly improved an internal system responsible for yaml migrations.
+- Imported the LCLO fork's configuration comments.
+- Fixed a problem that caused the update checker to produce false positives.
 
-#### [Version 0.11.5.1] UNIFIED LEGACY FORK
+#### \[Version 0.11.5.1] UNIFIED LEGACY FORK
 
 - Merged the fork into the [SG Rewritten Project](https://sgrewritten.org)
 - *This fork is now the maintained legacy branch of the Stargate Rewritten Project*.
@@ -529,9 +534,9 @@ portalInfoServer=Server: %server%
 - Changed the `E` flag to `V`, to improve consistency for the rewrite.
 - Reworked the readme and changed some shortcuts
 
-#### [Version 0.10.X.X] LCLO fork
+#### \[Version 0.10.X.X] LCLO fork
 
-- Reimplemented/merged the [LCLO fork ecosystem](https://github.com/stargate-rewritten/Stargate-Bukkit/tree/legacy),
+- Reimplemented/merged the [LCLO fork ecosystem](https://github.com/stargate-rewritten/Stargate-ESR/tree/ESR-1.13.2-1.16.5),
   notably:
     - Added material #tag support
     - Expanded legacy migration support
@@ -540,11 +545,11 @@ portalInfoServer=Server: %server%
     - Added bstats
 
 > **NOTE: The LCLO fork has its own changelog,
-found [here](https://github.com/stargate-rewritten/Stargate-Bukkit/blob/legacy/README.md#changes)!**<br>
+found [here](https://github.com/stargate-rewritten/Stargate-ESR#version-01081-lclo-fork)!**<br>
 > For brevity, the full list has been excluded from the below.<br>
 > In general, it is safe to assume **FULL LCLO PARITY** as of this version.
 
-#### [Version 0.9.4.2] EpicKnarvik97 fork
+#### \[Version 0.9.4.2] EpicKnarvik97 fork
 
 - Prevents improperly loaded dependencies from causing problems with SG.
 - Improved Dynmap integration and associated bug fixes.
