@@ -1,64 +1,59 @@
-name: Issue Report
-description: If something is not working as intended, please describe it here!
+name: "Issue Report"
+description: "If something is not working as intended, please describe it here!"
+title: ""
+labels: ""
+assignees: ""
 body:
     - type: input
-      id: Description
+      id: "Description"
       attributes:
-        label: Bug Description
-        description: A brief overview/description of what this bug is and when it occurs.
-        placeholder: ex. In these circumstances, StarGate breaks by doing this instead of this!
+        label: "Bug Description"
+        description: "A brief overview/description of what this bug is and when it occurs."
+        placeholder: "ex. In these circumstances, StarGate breaks by doing this instead of this!"
       validations:
         required: true
     - type: textarea
-      id: Repro-Steps
+      id: "Repro-Steps"
       attributes:
-        label: Reproduction Steps
-        description: From start to finish, how should one go about reproducing this problem?
+        label: "Reproduction Steps"
+        description: "From start to finish, how should one go about reproducing this problem?"
         placeholder: "No repro steps provided!"
-        value: |
-            For Example:
-                1. Setup to lead to a situation wherein the bug may be reproduced
-                2. Steps within that setup which lead to the bug occurring.
-                3. Things to observe; problematic behaviour to expect to see.
+        value: "ex. 1. Do this, 2. Do that, 3. See this."
       validations:
         required: true
-        
     - type: textarea
-      id: Intended
+      id: "Intended"
       attributes:
-        label: Desired Behaviour
-        description: What should have happened?
+        label: "Desired Behaviour"
+        description: "What should have happened?"
         placeholder: "N/A"
         value: "ex. This should not have crashed."
       validations:
         required: false
-        
     - type: textarea
-      id: Observed
+      id: "Observed"
       attributes:
-        label: Observed Behaviour
-        description: What actually happened?
+        label: "Observed Behaviour"
+        description: "What actually happened?"
         placeholder: "N/A"
         value: "ex. It crashed with a stack trace and prevented me from doing something."
       validations:
         required: false
-        
     - type: textarea
-      id: Trace
+      id: "Trace"
       attributes:
-        label: Trace Logs
-        description: Below, please paste the output of /sg trace
+        label: "Trace Logs"
+        description: "Below, please paste the output of /sg trace"
         placeholder: "N/A"
-        value: "The `sg trace` command may be run on console or in-game."
+        value: "The sg trace command may be run through console or in-game."
       validations:
         required: false
-        
     - type: textarea
-      id: Other
+      id: "Other"
       attributes:
-        label: Other Information
-        description: If you have any other information, please post it here.
-        placeholder: " "
-        value: ex. Screenshots, error messages, additional context, bugged files, etc.
+        label: "Other Information"
+        description: "If you have any other information, please post it here."
+        placeholder: "N/A"
+        value: "ex. Screenshots, error messages, additional context, bugged files, etc."
       validations:
         required: false

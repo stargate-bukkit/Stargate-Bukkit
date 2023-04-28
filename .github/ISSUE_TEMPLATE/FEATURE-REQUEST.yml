@@ -1,8 +1,10 @@
-name: Feature Request
-description: Have a use case not presently accounted for in SG? Please describe it here!
+name: "Feature Request"
+description: "Have a use case not presently accounted for in SG? Please describe it here!"
+title: ""
+labels: ""
+assignees: ""
 body:
     - type: markdown
-      id: philosophy
       attributes:
         value: |
             **Philosophy**
@@ -16,33 +18,30 @@ body:
               - Functionality that requires breaking interface immersion, for example, requiring a user to interact with a portal through commands and/or chat.
             - [Suggesting a modular interlinkage](https://github.com/stargate-rewritten/Stargate-Customizations/issues/new)
               - Functionality that requires breaking gameplay continuity by requiring interaction with an external resource (for example, a website).
-              
     - type: textarea
-      id: use-cases
+      id: "use-cases"
       attributes:
-        label: Use Case
-        description: In SG, is there any behaviour someone may wish for that is not accommodated as-is?
+        label: "Use Case"
+        description: "In SG, is there any behaviour someone may wish for that is not accommodated as-is?"
         placeholder: "No use case specified!"
-        value: What problem are you trying to solve and who does this problem most frequently impact?
+        value: "What problem are you trying to solve and who does this problem most frequently impact?"
       validations:
         required: true
-        
     - type: textarea
-      id: suggestion-content
+      id: "suggestion-content"
       attributes:
-        label: Proposed Solution
-        description: What do you think the best way to accomodate your use case is?
+        label: "Proposed Solution"
+        description: "What do you think the best way to accomodate your use case is?"
         placeholder: "No suggestions provided!"
         value: "Describe your proposal, including examples and visuals if possible."
       validations:
         required: true
-        
     - type: textarea
-      id: additional-content
+      id: "additional-content"
       attributes:
-        label: Additional Context
-        description: Add any other context or screenshots about the feature request may be placed here.
-        placeholder: ""
+        label: "Additional Context"
+        description: "Add any other context or screenshots about the feature request may be placed here."
+        placeholder: "N/A"
         value: "Optional; can include anything including precedents or other considerations."
       validations:
         required: false
