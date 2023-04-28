@@ -14,12 +14,12 @@ body:
       attributes:
         label: Reproduction Steps
         description: From start to finish, how should one go about reproducing this problem?
-        placeholder: |
+        placeholder: "No repro steps provided!"
+        value: |
             For Example:
                 1. Setup to lead to a situation wherein the bug may be reproduced
                 2. Steps within that setup which lead to the bug occurring.
                 3. Things to observe; problematic behaviour to expect to see.
-        value: "No steps provided!"
       validations:
         required: true
         
@@ -28,8 +28,8 @@ body:
       attributes:
         label: Desired Behaviour
         description: What should have happened?
-        placeholder: ex. This should not have crashed.
-        value: "Not provided."
+        placeholder: "N/A"
+        value: "ex. This should not have crashed."
       validations:
         required: false
         
@@ -38,8 +38,8 @@ body:
       attributes:
         label: Observed Behaviour
         description: What actually happened?
-        placeholder: ex. It crashed with a stack trace and prevented me from doing something.
-        value: "Not provided."
+        placeholder: "N/A"
+        value: "ex. It crashed with a stack trace and prevented me from doing something."
       validations:
         required: false
         
@@ -48,8 +48,8 @@ body:
       attributes:
         label: Trace Logs
         description: Below, please paste the output of /sg trace
-        placeholder: The "Sg Trace" command may be run on console or in-game.
-        value: "Not provided."
+        placeholder: "N/A"
+        value: "The `sg trace` command may be run on console or in-game."
       validations:
         required: false
         
@@ -58,7 +58,7 @@ body:
       attributes:
         label: Other Information
         description: If you have any other information, please post it here.
-        placeholder: ex. Screenshots, error messages, additional context, bugged files, etc.
-        value: "Not provided."
+        placeholder: " "
+        value: ex. Screenshots, error messages, additional context, bugged files, etc.
       validations:
         required: false
