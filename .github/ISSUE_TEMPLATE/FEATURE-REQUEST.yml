@@ -1,0 +1,47 @@
+name: Feature Request
+about: Have a use case not presently accounted for in SG? Please describe it here!
+body:
+    - type: markdown
+      attributes:
+        value: |
+            **Philosophy**
+            Before submitting a feature request, please consider how it fits within the Dinnerbone Philosophy:
+            > "End-users in survival mode must be able to fully interact with all features of the plugin through the course of their game-play and without breaking immersion".
+            
+            If your suggested behaviour falls outside of this philosophy, please instead consider:
+            - [Suggesting a modular mechanic](https://github.com/stargate-rewritten/Stargate-Mechanics)
+              - Functionality that requires breaking mechanical immersion, for example, requiring users to program gate behaviour with text inputs.
+            - [Suggesting a modular interface](https://github.com/stargate-rewritten/Stargate-Interfaces)
+              - Functionality that requires breaking interface immersion, for example, requiring a user to interact with a portal through commands and/or chat.
+            - [Suggesting a modular interlinkage](https://github.com/stargate-rewritten/Stargate-Customizations/issues/new)
+              - Functionality that requires breaking gameplay continuity by requiring interaction with an external resource (for example, a website).
+              
+    - type: textarea
+      id: use-cases
+      attributes:
+        label: Use Case
+        description: In SG, is there any behaviour someone may wish for that is not accommodated as-is?
+        placeholder: What problem are you trying to solve and who does this problem most frequently impact?
+        value: "No use case specified"
+      validations:
+        required: true
+        
+    - type: textarea
+      id: suggestion-content
+      attributes:
+        label: Proposed Solution
+        description: What do you think the best way to accomodate your use case is?
+        placeholder: "Describe your proposal, including examples and visuals if possible."
+        value: "No suggestion included"
+      validations:
+        required: true
+        
+    - type: textarea
+      id: additional-content
+      attributes:
+        label: Additional Context
+        description: Add any other context or screenshots about the feature request may be placed here.
+        placeholder: "Optional; can include anything including precedents or other considerations."
+        value: ""
+      validations:
+        required: false
