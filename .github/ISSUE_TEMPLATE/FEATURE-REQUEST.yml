@@ -1,5 +1,5 @@
 name: Feature Request
-about: Have a use case not presently accounted for in SG? Please describe it here!
+description: Have a use case not presently accounted for in SG? Please describe it here!
 body:
     - type: markdown
       attributes:

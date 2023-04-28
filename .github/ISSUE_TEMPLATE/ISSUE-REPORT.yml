@@ -1,5 +1,5 @@
 name: Issue Report
-about: If something is not working as intended, please describe it here!
+description: If something is not working as intended, please describe it here!
 body:
     - type: input
       id: Description
