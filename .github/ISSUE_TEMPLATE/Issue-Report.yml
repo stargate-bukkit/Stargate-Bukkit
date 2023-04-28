@@ -1,8 +1,5 @@
 name: Issue Report
 about: If something is not working as intended, please describe it here!
-title: ''
-labels: ''
-assignees: ''
 body:
     - type: input
       id: Description
@@ -25,6 +22,7 @@ body:
         value: "No steps provided!"
       validations:
         required: true
+        
     - type: textarea
       id: Intended
       attributes:
@@ -34,6 +32,7 @@ body:
         value: "Not provided."
       validations:
         required: false
+        
     - type: textarea
       id: Observed
       attributes:
@@ -43,6 +42,7 @@ body:
         value: "Not provided."
       validations:
         required: false
+        
     - type: textarea
       id: Trace
       attributes:
@@ -52,6 +52,7 @@ body:
         value: "Not provided."
       validations:
         required: false
+        
     - type: textarea
       id: Other
       attributes:
