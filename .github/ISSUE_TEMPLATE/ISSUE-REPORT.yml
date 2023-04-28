@@ -1,8 +1,8 @@
-name: "Issue Report"
+name: "Report an Issue"
 description: "If something is not working as intended, please describe it here!"
-title: ""
-labels: ""
-assignees: ""
+title: "<Issue Title (Please describe)>"
+labels: []
+assignees: []
 body:
     - type: input
       id: "Description"

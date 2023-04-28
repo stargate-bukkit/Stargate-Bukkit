@@ -1,8 +1,8 @@
-name: "Feature Request"
+name: "Request a Feature"
 description: "Have a use case not presently accounted for in SG? Please describe it here!"
-title: ""
-labels: ""
-assignees: ""
+title: "<Issue Title (Please describe)>"
+labels: []
+assignees: []
 body:
     - type: markdown
       attributes:
