@@ -1,7 +1,7 @@
 name: Stargate
 main: net.knarcraft.stargate.Stargate
 version: '${project.version}'
-description: Stargate mod for Bukkit Revived
+description: The original, and still the best, MineCraft transportation solution (Legacy Version)
 author: EpicKnarvik97
 authors: [ Drakia, PseudoKnight, EpicKnarvik97 ]
 website: https://sgrewritten.org/legacygit

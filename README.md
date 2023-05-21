@@ -520,6 +520,9 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+#### \[Version 0.11.5.3] Unified Legacy Fork
+- Hotfix for an issue wherein the gate folder failed to populate on fresh installs.
+
 #### \[Version 0.11.5.2] Unified Legacy Fork
 
 - Improved handling of incompatible server environments (i.e. CraftBukkit)
