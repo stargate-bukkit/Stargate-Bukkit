@@ -100,8 +100,8 @@ public final class StargateConfig {
             languageLoader.debug();
         }
 
-        this.createMissingFolders();
         this.loadGates();
+        this.createMissingFolders();
         this.loadAllPortals();
 
         //Set up vault economy if vault has been loaded
