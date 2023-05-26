@@ -197,6 +197,7 @@ public class GateFormatParser {
                 break;
             case EXIT:
                 iris.addExit(selectedLocation.clone());
+                gateHasEntrance = true;
                 break;
             case ENTRANCE:
                 iris.addPart(selectedLocation.clone());
