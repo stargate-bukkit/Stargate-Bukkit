@@ -32,8 +32,7 @@ public class GateFormatParser {
     private static final char EXIT = '*';
     private static final char ENTRANCE = '.';
     private static final char CONTROL = '-';
-
-    private boolean gateHasEntrance = false;
+    private boolean gateHasExit = false;
     private int amountOfControlBlocks = 0;
     private boolean canBeBlockedByIronDoor = false;
 
@@ -84,8 +83,8 @@ public class GateFormatParser {
         loadDesignLocations(design);
         checkIfCanBeBlockedByIronDoor();
 
-        if (!gateHasEntrance) {
-            throw new ParsingErrorException("Design is missing an entrance ");
+        if (!gateHasExit) {
+            throw new ParsingErrorException("Design is missing an exit ");
         }
 
         if (amountOfControlBlocks < 2) {
@@ -197,11 +196,10 @@ public class GateFormatParser {
                 break;
             case EXIT:
                 iris.addExit(selectedLocation.clone());
-                gateHasEntrance = true;
+                gateHasExit = true;
                 break;
             case ENTRANCE:
                 iris.addPart(selectedLocation.clone());
-                gateHasEntrance = true;
                 break;
             case CONTROL:
                 amountOfControlBlocks++;
