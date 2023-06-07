@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.block.sign.Side;
 
 import java.util.Map;
 
@@ -175,7 +176,7 @@ public class PortalSignDrawer {
      */
     private void clearSign(Sign sign) {
         for (int index = 0; index <= 3; index++) {
-            sign.setLine(index, "");
+            sign.getSide(Side.FRONT).setLine(index, "");
         }
     }
 
@@ -188,7 +189,7 @@ public class PortalSignDrawer {
             return;
         }
         clearSign(sign);
-        sign.setLine(0, translateAllColorCodes(portal.getName()));
+        sign.getSide(Side.FRONT).setLine(0, translateAllColorCodes(portal.getName()));
         sign.update();
     }
 
@@ -256,7 +257,7 @@ public class PortalSignDrawer {
      */
     public void setLine(SignData signData, int index, String text) {
         ChatColor mainColor = signData.getMainSignColor();
-        signData.getSign().setLine(index, mainColor + text);
+        signData.getSign().getSide(Side.FRONT).setLine(index, mainColor + text);
     }
 
     /**
@@ -357,7 +358,7 @@ public class PortalSignDrawer {
         if (!(blockState instanceof Sign sign)) {
             return;
         }
-        sign.setLine(3, errorColor + Stargate.getString("signInvalidGate"));
+        sign.getSide(Side.FRONT).setLine(3, errorColor + Stargate.getString("signInvalidGate"));
         sign.update();
 
         Stargate.logInfo(String.format("Gate layout on line %d does not exist [%s]", lineIndex, gateName));

@@ -521,10 +521,12 @@ portalInfoServer=Server: %server%
 # Changes
 
 #### \[Version 0.11.5.4] Unified Legacy Fork
+
 - Fix for a problem which could cause activators to generate at invalid locations.
 - Minor documentation clarification.
 
 #### \[Version 0.11.5.3] Unified Legacy Fork
+
 - Hotfix for an issue wherein the gate folder failed to populate on fresh installs.
 
 #### \[Version 0.11.5.2] Unified Legacy Fork

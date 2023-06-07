@@ -172,7 +172,7 @@ public class PortalHandler {
                     portalLocation.setButtonVector(controlVector);
                 }
             }
-            
+
             //If our gate has been found, look no further
             if (gate != null) {
                 break;
