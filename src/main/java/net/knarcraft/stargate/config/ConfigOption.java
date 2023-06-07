@@ -55,7 +55,8 @@ public enum ConfigOption {
      */
     PER_SIGN_COLORS("gates.cosmetic.perSignColors", "The per-sign color specification", new String[]{
             "'ACACIA:default,default'", "'BIRCH:default,default'", "'CRIMSON:inverted,inverted'", "'DARK_OAK:inverted,inverted'",
-            "'JUNGLE:default,default'", "'OAK:default,default'", "'SPRUCE:inverted,inverted'", "'WARPED:inverted,inverted'"}),
+            "'JUNGLE:default,default'", "'OAK:default,default'", "'SPRUCE:inverted,inverted'", "'WARPED:inverted,inverted'",
+            "'BAMBOO:default,default'", "'CHERRY:default,default'"}),
 
     /**
      * Whether to destroy portals when any blocks are broken by explosions

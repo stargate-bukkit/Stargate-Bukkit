@@ -136,6 +136,8 @@ gates:
       - 'OAK:default,default'
       - 'SPRUCE:inverted,inverted'
       - 'WARPED:inverted,inverted'
+      - 'BAMBOO:default,default'
+      - 'CHERRY:default,default'
 
 economy:
   # When scrolling through a networked portal's destination list, should SG color free gates?
