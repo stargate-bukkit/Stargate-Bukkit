@@ -267,6 +267,8 @@ DARK_OAK_BUTTON
 CRIMSON_BUTTON
 WARPED_BUTTON
 POLISHED_BLACKSTONE_BUTTON
+BAMBOO_BUTTON
+CHERRY_BUTTON
 
 CHEST
 TRAPPED_CHEST
@@ -524,6 +526,7 @@ portalInfoServer=Server: %server%
 
 - Fix for a problem which could cause activators to generate at invalid locations.
 - Minor documentation clarification.
+- Added support for MineCraft version 1.20
 
 #### \[Version 0.11.5.3] Unified Legacy Fork
 
