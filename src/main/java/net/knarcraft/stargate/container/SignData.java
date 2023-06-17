@@ -1,10 +1,10 @@
 package net.knarcraft.stargate.container;
 
 import net.knarcraft.knarlib.util.ColorHelper;
+import net.knarcraft.stargate.utility.SignHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.block.Sign;
-import org.bukkit.block.sign.Side;
 
 /**
  * A class that keeps track of the sign colors for a given sign
@@ -27,7 +27,7 @@ public class SignData {
         this.sign = sign;
         this.mainSignColor = mainSignColor;
         this.highlightSignColor = highlightSignColor;
-        this.dyedColor = sign.getSide(Side.FRONT).getColor();
+        this.dyedColor = SignHelper.getDye(sign);
     }
 
     /**
