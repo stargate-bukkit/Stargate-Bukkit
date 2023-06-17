@@ -1,7 +1,7 @@
 package org.sgrewritten.stargate.exception;
 
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.util.TranslatableMessageFormatter;

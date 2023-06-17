@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.migration;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;

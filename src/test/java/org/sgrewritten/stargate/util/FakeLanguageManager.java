@@ -1,6 +1,6 @@
 package org.sgrewritten.stargate.util;
 
-import org.sgrewritten.stargate.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 
 public class FakeLanguageManager implements LanguageManager {

@@ -23,8 +23,8 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
-import org.sgrewritten.stargate.manager.BungeeManager;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.manager.BungeeManager;
 import org.sgrewritten.stargate.property.PluginChannel;
 
 import java.io.ByteArrayInputStream;
