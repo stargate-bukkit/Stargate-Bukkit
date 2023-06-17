@@ -1,9 +1,9 @@
-package org.sgrewritten.stargate.manager;
+package org.sgrewritten.stargate.api.manager;
 
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
-import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
 import java.util.Set;
 

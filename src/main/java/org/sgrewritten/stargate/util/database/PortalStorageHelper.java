@@ -12,7 +12,7 @@ import org.sgrewritten.stargate.network.portal.PortalData;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.network.portal.PositionType;
-import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.util.LegacyDataHandler;
 
 import java.sql.PreparedStatement;

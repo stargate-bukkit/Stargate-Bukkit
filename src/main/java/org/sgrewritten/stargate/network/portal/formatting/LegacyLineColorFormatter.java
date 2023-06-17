@@ -2,8 +2,8 @@ package org.sgrewritten.stargate.network.portal.formatting;
 
 import org.bukkit.ChatColor;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 
 public class LegacyLineColorFormatter implements LineFormatter {
 

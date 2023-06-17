@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.gate.structure;
+package org.sgrewritten.stargate.api.gate.structure;
 
 /**
  * The gate structure type represents the different types of structures used in a gate

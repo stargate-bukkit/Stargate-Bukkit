@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.config;
+package org.sgrewritten.stargate.api.config;
 
 /**
  * An enum defining the different data types an option can have

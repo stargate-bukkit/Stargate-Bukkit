@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.network;
+package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -8,11 +8,13 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
-import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
-import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
 import java.util.HashMap;
 import java.util.List;

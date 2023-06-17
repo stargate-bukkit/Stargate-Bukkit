@@ -10,8 +10,8 @@ import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.formatting.LanguageManager;
-import org.sgrewritten.stargate.network.RegistryAPI;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
 
 import java.io.File;
 import java.io.IOException;

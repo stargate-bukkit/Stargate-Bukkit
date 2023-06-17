@@ -1,6 +1,6 @@
 package org.sgrewritten.stargate.exception;
 
-import org.sgrewritten.stargate.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 
 import java.io.Serial;

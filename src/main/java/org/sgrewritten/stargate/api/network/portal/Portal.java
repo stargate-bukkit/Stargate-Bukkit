@@ -1,10 +1,12 @@
-package org.sgrewritten.stargate.network.portal;
+package org.sgrewritten.stargate.api.network.portal;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
-import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.GlobalPortalId;
+import org.sgrewritten.stargate.network.portal.PortalFlag;
 
 import java.util.UUID;
 

@@ -1,7 +1,7 @@
 package org.sgrewritten.stargate.event;
 
 import org.bukkit.entity.Entity;
-import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 
 /**
  * An abstract event describing any stargate event where a player is involved

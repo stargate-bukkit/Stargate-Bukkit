@@ -1,11 +1,13 @@
-package org.sgrewritten.stargate.network;
+package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.Collection;

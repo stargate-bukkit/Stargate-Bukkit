@@ -2,7 +2,7 @@ package org.sgrewritten.stargate.event;
 
 import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 
 /**
  * A Stargate event which can be cancelled

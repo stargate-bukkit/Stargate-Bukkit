@@ -1,11 +1,12 @@
-package org.sgrewritten.stargate.network.portal;
+package org.sgrewritten.stargate.api.network.portal;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.sgrewritten.stargate.gate.GateAPI;
+import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.network.portal.PositionType;
 
 import java.util.List;
 

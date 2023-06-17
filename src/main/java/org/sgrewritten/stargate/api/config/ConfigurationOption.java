@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.config;
+package org.sgrewritten.stargate.api.config;
 
 import org.sgrewritten.stargate.Stargate;
 

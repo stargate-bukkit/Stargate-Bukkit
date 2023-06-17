@@ -1,10 +1,10 @@
-package org.sgrewritten.stargate.gate;
+package org.sgrewritten.stargate.api.gate;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.network.portal.PositionType;

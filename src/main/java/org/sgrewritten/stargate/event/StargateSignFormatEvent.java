@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.event;
 import org.bukkit.DyeColor;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.portal.formatting.LineFormatter;
 
 public class StargateSignFormatEvent extends StargateEvent {

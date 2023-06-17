@@ -1,7 +1,7 @@
 package org.sgrewritten.stargate.network.portal.formatting;
 
-import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 
 /**
  * A line formatter used for backwards compatibility before ChatColor was a thing
