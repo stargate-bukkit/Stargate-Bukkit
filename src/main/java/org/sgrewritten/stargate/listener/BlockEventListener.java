@@ -42,7 +42,7 @@ import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;

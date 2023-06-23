@@ -1,13 +1,12 @@
-package org.sgrewritten.stargate.api.gate;
+package org.sgrewritten.stargate.api;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
-import org.sgrewritten.stargate.network.portal.PositionType;
 
 import java.util.List;
 

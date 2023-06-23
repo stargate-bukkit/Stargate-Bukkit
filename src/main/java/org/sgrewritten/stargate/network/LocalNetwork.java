@@ -13,7 +13,7 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;

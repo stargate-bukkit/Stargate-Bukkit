@@ -16,6 +16,7 @@ import org.bukkit.util.Vector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.DelayedAction;
 import org.sgrewritten.stargate.action.SupplierAction;
+import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;

@@ -12,7 +12,7 @@ import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
-import org.sgrewritten.stargate.network.portal.PositionType;
+import org.sgrewritten.stargate.api.PositionType;
 
 import java.io.File;
 import java.sql.Connection;

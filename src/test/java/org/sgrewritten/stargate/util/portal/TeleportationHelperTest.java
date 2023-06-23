@@ -17,7 +17,7 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateRegistry;

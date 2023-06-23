@@ -7,7 +7,7 @@ import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
-import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.GateAPI;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalPosition;

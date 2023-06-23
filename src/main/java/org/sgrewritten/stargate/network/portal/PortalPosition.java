@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.network.portal;
 
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;

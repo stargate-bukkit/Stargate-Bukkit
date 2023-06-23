@@ -5,6 +5,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
+import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.GateConflictException;

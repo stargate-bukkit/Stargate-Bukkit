@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.gate;
+package org.sgrewritten.stargate.api;
 
 import org.bukkit.Material;
 

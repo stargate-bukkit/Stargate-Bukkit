@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.network.portal;
+package org.sgrewritten.stargate.api;
 
 /**
  * An enum containing the different types a portal position can have
@@ -13,6 +13,11 @@ public enum PositionType {
     /**
      * A button that works as an interface for confirming destination or activating a portal
      */
-    BUTTON
+    BUTTON,
+
+    /**
+     * A custom position type meant for addon use
+     */
+    CUSTOM;
 
 }

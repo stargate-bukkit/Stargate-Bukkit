@@ -18,7 +18,7 @@ import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
