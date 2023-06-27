@@ -27,8 +27,9 @@ public final class DynmapManager {
      * Initializes the dynmap manager
      *
      * @param dynmapAPI <p>A reference</p>
+     * @throws NullPointerException <p>If dynmap has an invalid state</p>
      */
-    public static void initialize(DynmapAPI dynmapAPI) {
+    public static void initialize(DynmapAPI dynmapAPI) throws NullPointerException {
         if (dynmapAPI == null || dynmapAPI.getMarkerAPI() == null) {
             markerSet = null;
             portalIcon = null;

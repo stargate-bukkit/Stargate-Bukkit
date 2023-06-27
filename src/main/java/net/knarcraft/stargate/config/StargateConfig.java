@@ -108,8 +108,13 @@ public final class StargateConfig {
         setupVaultEconomy();
         DynmapAPI dynmapAPI = (DynmapAPI) Bukkit.getPluginManager().getPlugin("dynmap");
         if (dynmapAPI != null) {
-            DynmapManager.initialize(dynmapAPI);
-            DynmapManager.addAllPortalMarkers();
+            try {
+                DynmapManager.initialize(dynmapAPI);
+                DynmapManager.addAllPortalMarkers();
+            } catch (NullPointerException exception) {
+                logger.warning("Dynmap started in an invalid state. Check your log/console for dynmap-related " +
+                        "problems. Dynmap integration cannot be initialized.");
+            }
         }
 
         this.isLoaded = true;
