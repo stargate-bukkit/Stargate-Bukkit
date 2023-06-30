@@ -2,7 +2,9 @@ package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
+import org.sgrewritten.stargate.api.BlockHandlerInterface;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -233,4 +235,24 @@ public interface RegistryAPI {
      * @throws InvalidNameException <p> If the name is a uuid </p>
      */
     void rename(Network network) throws InvalidNameException;
+
+    /**
+     * Add a listener for block placement next by a portal
+     *
+     * @param blockHandlerInterface A listener for block placement next by a portal
+     */
+    void addBlockHandlerInterface(BlockHandlerInterface blockHandlerInterface);
+
+    /**
+     * Remove a listener for block placement next by a portal
+     *
+     * @param blockHandlerInterface listener for block placement next by a portal
+     */
+    void removeBlockHandlerInterface(BlockHandlerInterface blockHandlerInterface);
+
+    /**
+     * Remove all listeners for block placement next by a portal
+     * @param plugin The plugin to remove listeners from
+     */
+    void removeBlockHandlerInterfaces(Plugin plugin);
 }

@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.api;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
@@ -14,9 +15,7 @@ public enum Priority {
     private final int priority;
     private static final ArrayList<Priority> highToLowPriority = new ArrayList<>();
     static{
-        for(Priority aPriority : Priority.values()) {
-            highToLowPriority.add(aPriority);
-        }
+        highToLowPriority.addAll(Arrays.asList(Priority.values()));
         highToLowPriority.sort(Comparator.comparingInt((aPriority) -> -aPriority.priority));
     }
 

@@ -1,11 +1,15 @@
 package org.sgrewritten.stargate.network;
 
+import co.aikar.util.LoadingMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.SupplierAction;
+import org.sgrewritten.stargate.api.BlockHandlerInterface;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
@@ -26,12 +30,7 @@ import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 import org.sgrewritten.stargate.vectorlogic.VectorUtils;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -45,6 +44,7 @@ public class StargateRegistry implements RegistryAPI {
     private final HashMap<String, Network> networkMap = new HashMap<>();
     private final HashMap<String, Network> bungeeNetworkMap = new HashMap<>();
     private final Map<GateStructureType, Map<BlockLocation, RealPortal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
+    private final Map<Material,List<BlockHandlerInterface>> blockHandlerMap = new HashMap<>();
 
     /**
      * Instantiates a new Stargate registry
@@ -319,4 +319,29 @@ public class StargateRegistry implements RegistryAPI {
             Stargate.log(e);
         }
     }
+
+    @Override
+    public void addBlockHandlerInterface(BlockHandlerInterface blockHandlerInterface) {
+        List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.computeIfAbsent(blockHandlerInterface.getHandledMaterial(), k -> new ArrayList<>());
+        blockHandlerInterfaceList.add(blockHandlerInterface);
+    }
+
+    @Override
+    public void removeBlockHandlerInterface(BlockHandlerInterface blockHandlerInterface) {
+        for(Material key : this.blockHandlerMap.keySet()){
+            List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.get(key);
+            if(blockHandlerInterfaceList.remove(blockHandlerInterface)){
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void removeBlockHandlerInterfaces(Plugin plugin) {
+        for(Material key : this.blockHandlerMap.keySet()){
+            List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.get(key);
+            blockHandlerInterfaceList.removeIf(blockHandlerInterface -> blockHandlerInterface.getPlugin() == plugin);
+        }
+    }
+
 }
