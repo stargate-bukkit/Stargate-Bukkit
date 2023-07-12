@@ -4,6 +4,9 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+
+import java.util.HashSet;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
@@ -70,7 +73,8 @@ class StargateRegistryTest {
         Material testMaterial = Material.END_GATEWAY;
         Character testFlag = 'c';
         Plugin plugin = MockBukkit.createMockPlugin("Test");
-        RealPortal portal = FakePortalGenerator.generateFakePortal(this.world, network, "test", true);
+        Location locaton = new Location(world,0,0,0);
+        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(), registry);
         // TODO add testflag to portal
         Location location = new Location(world, 0, 0, 0);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, testMaterial,
@@ -90,7 +94,8 @@ class StargateRegistryTest {
         Material placedMaterial = Material.DIRT;
         Character testFlag = 'c';
         Plugin plugin = MockBukkit.createMockPlugin("Test");
-        RealPortal portal = FakePortalGenerator.generateFakePortal(this.world, network, "test", true);
+        Location locaton = new Location(world,0,0,0);
+        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(), registry);
         // TODO add testflag to portal
         Location location = new Location(world, 0, 0, 0);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
@@ -101,12 +106,13 @@ class StargateRegistryTest {
     }
     
     @Test
-    void registerPlacementUnregisterPlacement_materialMissmatch()
+    void registerPlacementUnregisterPlacement_priorityCheck()
             throws TranslatableException, InvalidStructureException {
         Material placedMaterial = Material.END_GATEWAY;
         Character testFlag = 'c';
         Plugin plugin = MockBukkit.createMockPlugin("Test");
-        RealPortal portal = FakePortalGenerator.generateFakePortal(this.world, network, "test", true);
+        Location locaton = new Location(world,0,0,0);
+        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(), registry);
         // TODO add testflag to portal
         Location location = new Location(world, 0, 0, 0);
         BlockHandlerInterfaceMock highPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
@@ -118,6 +124,23 @@ class StargateRegistryTest {
         registry.registerPlacement(location, portal, placedMaterial, player);
         Assertions.assertTrue(highPriority.blockIsRegistered(location, player, portal));
         Assertions.assertFalse(lowPriority.blockIsRegistered(location, player, portal));
+    }
+    
+    @ParameterizedTest
+    @EnumSource(Priority.class)
+    void registerPlacementUnregisterPlacement_wrongFlag(Priority priority)
+            throws TranslatableException, InvalidStructureException {
+        Material handlerMaterial = Material.END_GATEWAY;
+        Character testFlag = 'c';
+        Plugin plugin = MockBukkit.createMockPlugin("Test");
+        Location locaton = new Location(world,0,0,0);
+        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(), registry);
+        Location location = new Location(world, 0, 0, 0);
+        BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
+                plugin, priority, testFlag);
+        registry.addBlockHandlerInterface(blockHandler);
+        registry.registerPlacement(location, portal, handlerMaterial, player);
+        Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
     }
     
 }
