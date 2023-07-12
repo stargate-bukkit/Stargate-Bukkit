@@ -15,6 +15,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.BlockVector;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,16 +24,28 @@ import org.sgrewritten.stargate.FakeStargate;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
+import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.LocalNetwork;
+import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.api.BlockHandlerInterfaceMock;
+import org.sgrewritten.stargate.api.PositionType;
+import org.sgrewritten.stargate.api.Priority;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.StargateRegistry;
+import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
 import org.sgrewritten.stargate.util.StorageMock;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -48,7 +61,7 @@ class BlockEventListenerTest {
     private static final String CUSTOM_NETNAME = "custom";
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         BlockEventListenerTest.server = MockBukkit.mock();
 
         MockBukkit.load(FakeStargate.class);
@@ -67,12 +80,12 @@ class BlockEventListenerTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         MockBukkit.unmock();
     }
 
     @Test
-    public void portalCreationDestuctionTest() {
+    void portalCreationDestuctionTest() {
         Location bottomLeft = new Location(world, 0, 1, 0);
         Location insidePortal = new Location(world, 0, 2, 0);
         Block signBlock = PortalBlockGenerator.generatePortal(bottomLeft);
@@ -105,7 +118,7 @@ class BlockEventListenerTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void portalInvalidBlockPlaceTest() {
+    void portalInvalidBlockPlaceTest() {
         Location bottomLeft = new Location(world, 0, 7, 0);
         Location insidePortal = new Location(world, 0, 9, 0);
         Block signBlock = PortalBlockGenerator.generatePortal(bottomLeft);
@@ -124,7 +137,7 @@ class BlockEventListenerTest {
     }
 
     @Test
-    public void cancelBlockBreakTest() {
+    void cancelBlockBreakTest() {
 
         Location bottomLeft = new Location(world, 0, 14, 0);
         Block signBlock = PortalBlockGenerator.generatePortal(bottomLeft);
@@ -141,6 +154,22 @@ class BlockEventListenerTest {
         Assertions.assertTrue(irisBreakEvent.isCancelled());
 
     }
+
+    void blockPlace_registerBlockPosition() throws NameLengthException, InvalidNameException, NameConflictException,
+            UnimplementedFlagException, InvalidStructureException {
+        Material placedMaterial = Material.DIRT;
+        Character flag = 'g';
+        BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
+                MockBukkit.createMockPlugin(), Priority.HIGH, flag);
+        registry.addBlockHandlerInterface(blockHandler);
+        Location locaton = new Location(world, 0, 0, 0);
+        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton,
+                registry.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, false, false), "test", true, new HashSet<>(),
+                registry);
+        Location locationNextToPortal = portal.getGate().getLocation(new BlockVector(1,-3,0));
+        locationNextToPortal.getBlock().setType(placedMaterial);
+    }
+
 }
 
 
