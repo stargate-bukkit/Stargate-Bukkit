@@ -35,7 +35,7 @@ import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.util.FakeLanguageManager;
+import org.sgrewritten.stargate.util.LanguageManagerMock;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,7 +82,7 @@ public class DataMigratorTest {
         defaultConfigFile = new File("src/main/resources", "config.yml");
         sqlDatabaseFile = new File("src/test/resources", "migrate-test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);
-        StorageAPI storageAPI = new SQLDatabase(sqlDatabase, false, false, logger, new FakeLanguageManager());
+        StorageAPI storageAPI = new SQLDatabase(sqlDatabase, false, false, logger, new LanguageManagerMock());
         registry = new StargateRegistry(storageAPI);
 
 
@@ -183,7 +183,7 @@ public class DataMigratorTest {
                 throw new IOException("Unable to delete old config file");
             }
             FakePropertiesDatabase properties = new FakePropertiesDatabase();
-            DataMigrator dataMigrator = new DataMigrator(configFile, logger, server, registry, new FakeLanguageManager(), new FakeEconomyManager(), properties);
+            DataMigrator dataMigrator = new DataMigrator(configFile, logger, server, registry, new LanguageManagerMock(), new FakeEconomyManager(), properties);
             if (!configFile.renameTo(oldConfigFile)) {
                 throw new IOException("Unable to rename existing config for backup");
             }

@@ -52,10 +52,10 @@ class NetworkCreationHelperTest {
         server = MockBukkit.mock();
         player = new PlayerMock(server, PLAYER_NAME);
         plugin = MockBukkit.load(FakeStargate.class);
-        permissionManager = new StargatePermissionManager(player, new FakeLanguageManager());
+        permissionManager = new StargatePermissionManager(player, new LanguageManagerMock());
         server.addPlayer(player);
         server.addPlayer("central");
-        registry = new StargateRegistry(new FakeStorage());
+        registry = new StargateRegistry(new StorageMock());
         emptyNames = new String[]{"", " ", "  "};
     }
 
@@ -158,8 +158,8 @@ class NetworkCreationHelperTest {
             String implicitPersonalNetworkName = style.getHighlightedName(personalNetworkName);
             Player player = server.addPlayer(personalNetworkName);
             // Create a personal network explicitly, then fetch it implicitly
-            Network explicitPersonalNetwork = NetworkCreationHelper.selectNetwork(explicitPersonalNetworkName, new StargatePermissionManager(player, new FakeLanguageManager()), player, new HashSet<>(), registry);
-            Network implicitPersonalNetwork = NetworkCreationHelper.selectNetwork(implicitPersonalNetworkName, new StargatePermissionManager(player, new FakeLanguageManager()), player, new HashSet<>(), registry);
+            Network explicitPersonalNetwork = NetworkCreationHelper.selectNetwork(explicitPersonalNetworkName, new StargatePermissionManager(player, new LanguageManagerMock()), player, new HashSet<>(), registry);
+            Network implicitPersonalNetwork = NetworkCreationHelper.selectNetwork(implicitPersonalNetworkName, new StargatePermissionManager(player, new LanguageManagerMock()), player, new HashSet<>(), registry);
             Assertions.assertEquals(explicitPersonalNetwork, implicitPersonalNetwork);
             Assertions.assertEquals(NetworkType.PERSONAL, implicitPersonalNetwork.getType());
             Assertions.assertEquals(personalNetworkName, implicitPersonalNetwork.getName());

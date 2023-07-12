@@ -29,8 +29,8 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.util.FakeLanguageManager;
-import org.sgrewritten.stargate.util.FakeStorage;
+import org.sgrewritten.stargate.util.LanguageManagerMock;
+import org.sgrewritten.stargate.util.StorageMock;
 
 import java.io.File;
 import java.util.Objects;
@@ -57,9 +57,9 @@ class BlockEventListenerTest {
         world = new WorldMock(Material.GRASS, 0);
         server.addWorld(world);
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
-        registry = new StargateRegistry(new FakeStorage());
+        registry = new StargateRegistry(new StorageMock());
         Stargate.setServerUUID(UUID.randomUUID());
-        blockEventListener = new BlockEventListener(registry, new FakeLanguageManager(), new FakeEconomyManager());
+        blockEventListener = new BlockEventListener(registry, new LanguageManagerMock(), new FakeEconomyManager());
 
         Assertions.assertInstanceOf(WallSign.class, BlockDataMock.mock(Material.ACACIA_WALL_SIGN), " Too old mockbukkit version, requires at least v1.19:1.141.0");
 

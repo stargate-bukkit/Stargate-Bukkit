@@ -16,7 +16,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
-public class FakeStorage implements StorageAPI {
+public class StorageMock implements StorageAPI {
 
     @Override
     public void loadFromStorage(RegistryAPI registry, StargateEconomyAPI economyManager) {

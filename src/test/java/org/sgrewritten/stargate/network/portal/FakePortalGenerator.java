@@ -19,8 +19,8 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.util.FakeLanguageManager;
-import org.sgrewritten.stargate.util.FakeStorage;
+import org.sgrewritten.stargate.util.LanguageManagerMock;
+import org.sgrewritten.stargate.util.StorageMock;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
 import java.util.EnumSet;
@@ -99,7 +99,7 @@ public class FakePortalGenerator {
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      * @throws TranslatableException     <p>If the given portal name is invalid</p>
      */
-    public RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal)
+    public static RealPortal generateFakePortal(World world, Network portalNetwork, String name, boolean createInterServerPortal)
             throws InvalidStructureException, TranslatableException {
         Set<PortalFlag> flags = generateRandomFlags();
         //To avoid using the Portal#open method on constructor, which uses an unimplemented function in MockBukkit (block-states)
@@ -107,7 +107,7 @@ public class FakePortalGenerator {
         Location topLeft = new Location(world, 0, 10, 0);
         NetworkType.removeNetworkTypeRelatedFlags(flags);
         flags.add(portalNetwork.getType().getRelatedFlag());
-        return generateFakePortal(topLeft, portalNetwork, name, createInterServerPortal, flags, new StargateRegistry(new FakeStorage()));
+        return generateFakePortal(topLeft, portalNetwork, name, createInterServerPortal, flags, new StargateRegistry(new StorageMock()));
     }
 
     /**
@@ -115,7 +115,7 @@ public class FakePortalGenerator {
      *
      * @return <p>A random set of portal flags</p>
      */
-    private Set<PortalFlag> generateRandomFlags() {
+    private static Set<PortalFlag> generateRandomFlags() {
         PortalFlag[] possibleFlags = PortalFlag.values();
         Random random = new Random();
         int flagsToGenerate = random.nextInt(possibleFlags.length);
@@ -139,7 +139,7 @@ public class FakePortalGenerator {
      * @throws InvalidStructureException <p>If an invalid structure is encountered</p>
      * @throws NameLengthException       <p>IF the length of the name is invalid</p>
      */
-    public RealPortal generateFakePortal(Location topLeft, Network network, String name,
+    public static RealPortal generateFakePortal(Location topLeft, Network network, String name,
                                          boolean createInterServerPortal, Set<PortalFlag> flags, RegistryAPI registry)
             throws InvalidStructureException, NameLengthException {
         if (createInterServerPortal) {
@@ -155,7 +155,7 @@ public class FakePortalGenerator {
 
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON);
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);
-        return new FixedPortal(network, name, "", flags, gate, UUID.randomUUID(), new FakeLanguageManager(), new FakeEconomyManager());
+        return new FixedPortal(network, name, "", flags, gate, UUID.randomUUID(), new LanguageManagerMock(), new FakeEconomyManager());
     }
 
     public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,
@@ -164,7 +164,7 @@ public class FakePortalGenerator {
         flags.add(network.getType().getRelatedFlag());
 
 
-        RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, gate, UUID.randomUUID(), new FakeLanguageManager(), registry, new FakeEconomyManager());
+        RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, gate, UUID.randomUUID(), new LanguageManagerMock(), registry, new FakeEconomyManager());
         network.addPortal(portal, true);
         return portal;
     }

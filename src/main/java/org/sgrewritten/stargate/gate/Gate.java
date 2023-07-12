@@ -454,6 +454,12 @@ public class Gate implements GateAPI {
         this.addPortalPosition(relativeBlockVector, type);
     }
 
+    @Override
+    public void removePortalPosition(Location location) {
+        BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
+        this.portalPositions.removeIf((portalPosition) -> (portalPosition.getPositionLocation().equals(relativeBlockVector)));
+    }
+
     /**
      * Add a position specific for this Gate
      *

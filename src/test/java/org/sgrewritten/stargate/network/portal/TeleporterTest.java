@@ -23,7 +23,7 @@ import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
-import org.sgrewritten.stargate.util.FakeLanguageManager;
+import org.sgrewritten.stargate.util.LanguageManagerMock;
 
 import java.io.File;
 import java.util.Objects;
@@ -52,7 +52,7 @@ class TeleporterTest {
         RealPortal destination = fakePortalGenerator.generateFakePortal(world, network, "destination", false);
         populator = new SynchronousPopulator();
         teleporter = new Teleporter(destination, origin, destination.getGate().getFacing(),
-                origin.getGate().getFacing(), 0, "empty", new FakeLanguageManager(), new FakeEconomyManager(),
+                origin.getGate().getFacing(), 0, "empty", new LanguageManagerMock(), new FakeEconomyManager(),
                 (action) -> populator.addAction(action));
         furnaceMinecart = (PoweredMinecartMock) world.spawnEntity(new Location(world, 0, 0, 0), EntityType.MINECART_FURNACE);
 

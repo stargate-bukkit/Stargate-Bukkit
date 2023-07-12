@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.util;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 
-public class FakeLanguageManager implements LanguageManager {
+public class LanguageManagerMock implements LanguageManager {
 
     @Override
     public String getErrorMessage(TranslatableMessage translatableMessage) {

@@ -1,10 +1,10 @@
 package org.sgrewritten.stargate.network;
 
-import co.aikar.util.LoadingMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
@@ -45,6 +45,8 @@ public class StargateRegistry implements RegistryAPI {
     private final HashMap<String, Network> bungeeNetworkMap = new HashMap<>();
     private final Map<GateStructureType, Map<BlockLocation, RealPortal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
     private final Map<Material,List<BlockHandlerInterface>> blockHandlerMap = new HashMap<>();
+
+    private final Map<BlockLocation,BlockHandlerInterface> blockBlockHandlerMap = new HashMap<>();
 
     /**
      * Instantiates a new Stargate registry
@@ -194,13 +196,18 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public boolean isNextToPortal(Location location, GateStructureType structureType) {
+        return (getPortalFromBlockNextTo(location,structureType) != null);
+    }
+
+    public RealPortal getPortalFromBlockNextTo(Location location, GateStructureType structureType){
         for (BlockVector adjacentVector : VectorUtils.getAdjacentRelativePositions()) {
             Location adjacentLocation = location.clone().add(adjacentVector);
-            if (getPortal(adjacentLocation, structureType) != null) {
-                return true;
+            RealPortal portal = getPortal(adjacentLocation, structureType);
+            if (portal != null) {
+                return portal;
             }
         }
-        return false;
+        return null;
     }
 
 
@@ -324,6 +331,7 @@ public class StargateRegistry implements RegistryAPI {
     public void addBlockHandlerInterface(BlockHandlerInterface blockHandlerInterface) {
         List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.computeIfAbsent(blockHandlerInterface.getHandledMaterial(), k -> new ArrayList<>());
         blockHandlerInterfaceList.add(blockHandlerInterface);
+        blockHandlerInterfaceList.sort(Comparator.comparingInt((ablockHandlerInterface) -> -ablockHandlerInterface.getPriority().getPriorityValue()));
     }
 
     @Override
@@ -342,6 +350,33 @@ public class StargateRegistry implements RegistryAPI {
             List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.get(key);
             blockHandlerInterfaceList.removeIf(blockHandlerInterface -> blockHandlerInterface.getPlugin() == plugin);
         }
+    }
+
+    @Override
+    public void registerPlacement(Location location, RealPortal portal, Material material, Player player) {
+        if(blockHandlerMap.containsKey(material)){
+            return;
+        }
+        for(BlockHandlerInterface blockHandlerInterface : blockHandlerMap.get(material)){
+            if(blockHandlerInterface.registerPlacedBlock(location,player,portal)){
+                portal.getGate().addPortalPosition(location, blockHandlerInterface.getInterfaceType());
+                blockBlockHandlerMap.put(new BlockLocation(location),blockHandlerInterface);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void registerRemoval(Location location, RealPortal portal, Material material, Player player) {
+        if(blockHandlerMap.containsKey(material)){
+            return;
+        }
+        BlockHandlerInterface blockHandlerInterface = this.blockBlockHandlerMap.get(new BlockLocation(location));
+        if(blockHandlerInterface == null){
+            return;
+        }
+        blockHandlerInterface.unRegisterPlacedBlock(location,player,portal);
+        portal.getGate().removePortalPosition(location);
     }
 
 }

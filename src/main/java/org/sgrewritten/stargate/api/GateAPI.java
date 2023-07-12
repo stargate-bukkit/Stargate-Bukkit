@@ -114,4 +114,9 @@ public interface GateAPI {
      */
     void addPortalPosition(Location location, PositionType type);
 
+    /**
+     * Remove portal position at specified location
+     * @param location The location of the portal position to be removed
+     */
+    void removePortalPosition(Location location);
 }

@@ -23,7 +23,7 @@ import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateRegistry;
-import org.sgrewritten.stargate.util.FakeStorage;
+import org.sgrewritten.stargate.util.StorageMock;
 import org.sgrewritten.stargate.util.portal.GateTestHelper;
 
 import java.util.HashSet;
@@ -45,7 +45,7 @@ class NetworkedPortalTest {
         plugin = MockBukkit.createMockPlugin("Stargate");
         GateTestHelper.setUpGates();
         world = server.addSimpleWorld("world");
-        registry = new StargateRegistry(new FakeStorage());
+        registry = new StargateRegistry(new StorageMock());
         player = server.addPlayer();
         player.addAttachment(plugin, "sg.use", true);
         sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));

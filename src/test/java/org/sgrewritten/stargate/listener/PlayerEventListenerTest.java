@@ -21,8 +21,8 @@ import org.sgrewritten.stargate.manager.FakeBlockLogger;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.util.FakeLanguageManager;
-import org.sgrewritten.stargate.util.FakeStorage;
+import org.sgrewritten.stargate.util.LanguageManagerMock;
+import org.sgrewritten.stargate.util.StorageMock;
 
 import java.io.File;
 import java.util.Objects;
@@ -39,9 +39,9 @@ class PlayerEventListenerTest {
         ServerMock server = MockBukkit.mock();
         WorldMock world = server.addSimpleWorld("world");
         player = server.addPlayer();
-        StargateRegistry registry = new StargateRegistry(new FakeStorage());
+        StargateRegistry registry = new StargateRegistry(new StorageMock());
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
-        listener = new PlayerEventListener(new FakeLanguageManager(), registry, new StargateBungeeManager(registry, new FakeLanguageManager()), new FakeBlockLogger());
+        listener = new PlayerEventListener(new LanguageManagerMock(), registry, new StargateBungeeManager(registry, new LanguageManagerMock()), new FakeBlockLogger());
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
     }
 

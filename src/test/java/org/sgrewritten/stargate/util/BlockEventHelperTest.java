@@ -48,7 +48,7 @@ class BlockEventHelperTest {
         WorldMock world = server.addSimpleWorld("world");
 
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
-        registry = new StargateRegistry(new FakeStorage());
+        registry = new StargateRegistry(new StorageMock());
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
         Network network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
 

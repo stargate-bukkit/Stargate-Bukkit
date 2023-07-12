@@ -26,7 +26,7 @@ import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.util.FakeStorage;
+import org.sgrewritten.stargate.util.StorageMock;
 import org.sgrewritten.stargate.util.portal.GateTestHelper;
 
 import java.util.HashSet;
@@ -54,7 +54,7 @@ class MoveEventListenerTest {
         player = server.addPlayer();
         vehicle = (PoweredMinecartMock) theEnd.spawnEntity(from, EntityType.MINECART_FURNACE);
         Block sign = PortalBlockGenerator.generatePortal(new Location(theEnd, 0, 10, 0));
-        StargateRegistry registry = new StargateRegistry(new FakeStorage());
+        StargateRegistry registry = new StargateRegistry(new StorageMock());
         portal = FakePortalGenerator.generateFakePortal(sign, "network", new HashSet<>(), "portal", registry);
         listener = new MoveEventListener(registry);
 

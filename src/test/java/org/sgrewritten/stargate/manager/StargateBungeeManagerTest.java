@@ -28,8 +28,8 @@ import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import org.sgrewritten.stargate.util.BungeeHelper;
-import org.sgrewritten.stargate.util.FakeLanguageManager;
-import org.sgrewritten.stargate.util.FakeStorage;
+import org.sgrewritten.stargate.util.LanguageManagerMock;
+import org.sgrewritten.stargate.util.StorageMock;
 
 import java.io.File;
 import java.util.HashSet;
@@ -61,7 +61,7 @@ class StargateBungeeManagerTest {
         GateFormatHandler.setFormats(
                 Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger())));
         Stargate.setServerName(SERVER);
-        registry = new StargateRegistry(new FakeStorage());
+        registry = new StargateRegistry(new StorageMock());
         world = server.addSimpleWorld("world");
         Network network2 = registry.createNetwork(NETWORK2, NetworkType.CUSTOM, true, false);
         realPortal = new FakePortalGenerator().generateFakePortal(world, network2, REGISTERED_PORTAL, true);
@@ -74,7 +74,7 @@ class StargateBungeeManagerTest {
                 NETWORK, false, bungeePortalFlags, registry);
         bungeeNetwork.addPortal(bungeePortal, false);
 
-        bungeeManager = new StargateBungeeManager(registry, new FakeLanguageManager());
+        bungeeManager = new StargateBungeeManager(registry, new LanguageManagerMock());
     }
 
     @AfterEach

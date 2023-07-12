@@ -1,7 +1,9 @@
 package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.BlockHandlerInterface;
@@ -255,4 +257,22 @@ public interface RegistryAPI {
      * @param plugin The plugin to remove listeners from
      */
     void removeBlockHandlerInterfaces(Plugin plugin);
+
+    /**
+     *
+     * @param location The location of the block that is being placed
+     * @param portal The portal to try registration on
+     * @param material The material of the block
+     * @param player The player that placed the block
+     */
+    void registerPlacement(Location location, RealPortal portal, Material material, Player player);
+
+    /**
+     *
+     * @param location The location of the block that is being removed
+     * @param portal The portal to try removal on
+     * @param material The material of the block that is being removed
+     * @param player The player that removed the block
+     */
+    void registerRemoval(Location location, RealPortal portal, Material material, Player player);
 }
