@@ -6,6 +6,7 @@ import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 
 import java.util.HashSet;
+import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -80,9 +81,9 @@ class StargateRegistryTest {
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, testMaterial,
                 plugin, priority, testFlag);
         registry.addBlockHandlerInterface(blockHandler);
-        registry.registerPlacement(location, portal, testMaterial, player);
+        registry.registerPlacement(location, List.of(portal), testMaterial, player);
         Assertions.assertTrue(blockHandler.blockIsRegistered(location, player, portal));
-        registry.registerRemoval(location, portal, testMaterial, player);
+        registry.registerRemoval(location, List.of(portal), testMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
     }
     
@@ -101,7 +102,7 @@ class StargateRegistryTest {
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
                 plugin, priority, testFlag);
         registry.addBlockHandlerInterface(blockHandler);
-        registry.registerPlacement(location, portal, placedMaterial, player);
+        registry.registerPlacement(location, List.of(portal), placedMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
     }
     
@@ -121,7 +122,7 @@ class StargateRegistryTest {
                 plugin, Priority.LOWEST, testFlag);
         registry.addBlockHandlerInterface(highPriority);
         registry.addBlockHandlerInterface(lowPriority);
-        registry.registerPlacement(location, portal, placedMaterial, player);
+        registry.registerPlacement(location, List.of(portal), placedMaterial, player);
         Assertions.assertTrue(highPriority.blockIsRegistered(location, player, portal));
         Assertions.assertFalse(lowPriority.blockIsRegistered(location, player, portal));
     }
@@ -139,7 +140,7 @@ class StargateRegistryTest {
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
                 plugin, priority, testFlag);
         registry.addBlockHandlerInterface(blockHandler);
-        registry.registerPlacement(location, portal, handlerMaterial, player);
+        registry.registerPlacement(location, List.of(portal), handlerMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
     }
     

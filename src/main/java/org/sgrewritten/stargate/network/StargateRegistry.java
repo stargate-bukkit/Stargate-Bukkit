@@ -196,18 +196,20 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public boolean isNextToPortal(Location location, GateStructureType structureType) {
-        return (getPortalFromBlockNextTo(location,structureType) != null);
+        return !getPortalsFromTouchingBlock(location,structureType).isEmpty();
     }
 
-    public RealPortal getPortalFromBlockNextTo(Location location, GateStructureType structureType){
+    @Override
+    public List<RealPortal> getPortalsFromTouchingBlock(Location location, GateStructureType structureType){
+        List<RealPortal> portals = new ArrayList<>();
         for (BlockVector adjacentVector : VectorUtils.getAdjacentRelativePositions()) {
             Location adjacentLocation = location.clone().add(adjacentVector);
             RealPortal portal = getPortal(adjacentLocation, structureType);
             if (portal != null) {
-                return portal;
+                portals.add(portal);
             }
         }
-        return null;
+        return portals;
     }
 
 
@@ -353,30 +355,39 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void registerPlacement(Location location, RealPortal portal, Material material, Player player) {
-        if(blockHandlerMap.containsKey(material)){
+    public void registerPlacement(Location location, List<RealPortal> portals, Material material, Player player) {
+        if(!blockHandlerMap.containsKey(material)){
             return;
         }
-        for(BlockHandlerInterface blockHandlerInterface : blockHandlerMap.get(material)){
-            if(blockHandlerInterface.registerPlacedBlock(location,player,portal)){
-                portal.getGate().addPortalPosition(location, blockHandlerInterface.getInterfaceType());
-                blockBlockHandlerMap.put(new BlockLocation(location),blockHandlerInterface);
-                break;
+        for(RealPortal portal: portals) {
+            for(BlockHandlerInterface blockHandlerInterface : blockHandlerMap.get(material)){
+                if(blockHandlerInterface.registerPlacedBlock(location,player,portal)){
+                    portal.getGate().addPortalPosition(location, blockHandlerInterface.getInterfaceType());
+                    blockBlockHandlerMap.put(new BlockLocation(location),blockHandlerInterface);
+                    return;
+                }
             }
         }
     }
 
     @Override
-    public void registerRemoval(Location location, RealPortal portal, Material material, Player player) {
-        if(blockHandlerMap.containsKey(material)){
+    public void registerRemoval(Location location, List<RealPortal> portals, Material material, Player player) {
+        if(!blockHandlerMap.containsKey(material)){
             return;
         }
         BlockHandlerInterface blockHandlerInterface = this.blockBlockHandlerMap.get(new BlockLocation(location));
         if(blockHandlerInterface == null){
             return;
         }
-        blockHandlerInterface.unRegisterPlacedBlock(location,player,portal);
-        portal.getGate().removePortalPosition(location);
+        for(RealPortal portal: portals) {
+            blockHandlerInterface.unRegisterPlacedBlock(location,player,portal);
+            portal.getGate().removePortalPosition(location);
+        }
+    }
+
+    @Override
+    public boolean hasRegisteredBlockHandler(Material material) {
+        return blockHandlerMap.containsKey(material);
     }
 
 }

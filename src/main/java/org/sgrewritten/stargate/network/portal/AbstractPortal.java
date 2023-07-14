@@ -300,6 +300,10 @@ public abstract class AbstractPortal implements RealPortal {
     public boolean hasFlag(PortalFlag flag) {
         return flags.contains(flag);
     }
+    
+    boolean hasFlag(Character flag) {
+        return false;
+    }
 
     @Override
     public String getAllFlagsString() {

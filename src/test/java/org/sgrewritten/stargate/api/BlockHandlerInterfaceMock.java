@@ -21,7 +21,7 @@ public class BlockHandlerInterfaceMock implements BlockHandlerInterface{
     private Priority priority;
     private Character flag;
     private Map<BlockLocation, TwoTuple<Player,Portal>> registeredBlocks = new HashMap<>();
-    private boolean isRegisterPlacedBlock;
+    private boolean isRegisterPlacedBlock = true;
 
     public BlockHandlerInterfaceMock(PositionType interfaceType, Material handledMaterial, Plugin plugin, Priority priority, Character flag){
         this.interfaceType = interfaceType;

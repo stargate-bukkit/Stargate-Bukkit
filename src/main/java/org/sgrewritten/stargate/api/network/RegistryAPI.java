@@ -132,6 +132,15 @@ public interface RegistryAPI {
     boolean isNextToPortal(Location location, GateStructureType structureType);
 
     /**
+     * Get portal from block next to portal, will randomly chose one portal if block is
+     * next to two portals
+     * @param location 
+     * @param structureType 
+     * @return
+     */
+    List<RealPortal> getPortalsFromTouchingBlock(Location location, GateStructureType structureType);
+    
+    /**
      * Registers the existence of the given structure type in the given locations
      *
      * <p>Basically stores the portals that exist at the given locations, but using the structure type as the key to be
@@ -261,18 +270,26 @@ public interface RegistryAPI {
     /**
      *
      * @param location The location of the block that is being placed
-     * @param portal The portal to try registration on
+     * @param portals The portal to try registration on
      * @param material The material of the block
      * @param player The player that placed the block
      */
-    void registerPlacement(Location location, RealPortal portal, Material material, Player player);
+    void registerPlacement(Location location, List<RealPortal> portals, Material material, Player player);
 
     /**
      *
      * @param location The location of the block that is being removed
-     * @param portal The portal to try removal on
+     * @param portals The portal to try removal on
      * @param material The material of the block that is being removed
      * @param player The player that removed the block
      */
-    void registerRemoval(Location location, RealPortal portal, Material material, Player player);
+    void registerRemoval(Location location, List<RealPortal> portals, Material material, Player player);
+
+    /**
+     * Method used for performance
+     * @param material The material
+     * @return Whether there exists a BlockHandlerInterface that
+     * has registed for the material
+     */
+    boolean hasRegisteredBlockHandler(Material material);
 }

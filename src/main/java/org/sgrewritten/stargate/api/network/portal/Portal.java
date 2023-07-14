@@ -112,6 +112,13 @@ public interface Portal {
     boolean hasFlag(PortalFlag flag);
 
     /**
+     * Checks whether this portal has the given portal flag enabled
+     *
+     * @param flag <p>The portal flag to check for</p>
+     * @return <p>True if this portal has the given portal flag enabled</p>
+     */
+    boolean hasFlag(Character flag);
+    /**
      * Gets all of this portal's portal flags in the form of a string
      *
      * <p>This returns the concatenation of all character representations for the flags used by this portal.</p>

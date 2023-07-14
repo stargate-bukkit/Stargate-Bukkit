@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -155,6 +156,7 @@ class BlockEventListenerTest {
 
     }
 
+    @Test
     void blockPlace_registerBlockPosition() throws NameLengthException, InvalidNameException, NameConflictException,
             UnimplementedFlagException, InvalidStructureException {
         Material placedMaterial = Material.DIRT;
@@ -162,12 +164,18 @@ class BlockEventListenerTest {
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
                 MockBukkit.createMockPlugin(), Priority.HIGH, flag);
         registry.addBlockHandlerInterface(blockHandler);
-        Location locaton = new Location(world, 0, 0, 0);
+        Location locaton = new Location(world, 0, 5, 0);
         RealPortal portal = FakePortalGenerator.generateFakePortal(locaton,
                 registry.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, false, false), "test", true, new HashSet<>(),
                 registry);
         Location locationNextToPortal = portal.getGate().getLocation(new BlockVector(1,-3,0));
-        locationNextToPortal.getBlock().setType(placedMaterial);
+        Block block = locationNextToPortal.getBlock();
+        BlockState replacedBlock = block.getState();
+        block.setType(placedMaterial);
+        BlockPlaceEvent event = new BlockPlaceEvent(block, replacedBlock, block.getRelative(BlockFace.DOWN), new ItemStack(placedMaterial), player, true);
+        blockEventListener.onBlockPlace(event);
+        Assertions.assertFalse(event.isCancelled(), "Event should not be cancelled");
+        Assertions.assertTrue(blockHandler.blockIsRegistered(locationNextToPortal, player, portal), "Block was not registered to blockhandler");
     }
 
 }

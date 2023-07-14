@@ -49,6 +49,7 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.BlockEventType;
 import org.sgrewritten.stargate.util.BlockEventHelper;
@@ -57,6 +58,7 @@ import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 import org.sgrewritten.stargate.util.portal.PortalDestructionHelper;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
@@ -134,6 +136,14 @@ public class BlockEventListener implements Listener {
         BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PLACE, event.getBlock().getLocation(),
                 registry,
                 () -> event.getPlayer().sendMessage(languageManager.getErrorMessage(TranslatableMessage.DESTROY)));
+        if(event.isCancelled() || !registry.hasRegisteredBlockHandler(event.getBlock().getType())) {
+            return;
+        }
+        List<RealPortal> portals = registry.getPortalsFromTouchingBlock(event.getBlock().getLocation(), GateStructureType.FRAME);
+        if(portals.isEmpty()) {
+            return;
+        }
+        registry.registerPlacement(event.getBlock().getLocation(), portals, event.getBlock().getType(), event.getPlayer());
     }
 
     /**
