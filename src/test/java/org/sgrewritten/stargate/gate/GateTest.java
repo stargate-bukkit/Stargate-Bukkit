@@ -41,7 +41,7 @@ class GateTest {
         Location topLeft = new Location(world, 0, 6, 0);
         BlockFace facing = BlockFace.SOUTH;
         String gateFileName = "nether.gate";
-        this.gateData = new GateData(gateFileName, gateData.topLeftX(), gateData.topLeftY(), gateData.topLeftZ(), topLeft.getWorld().getName(),false,topLeft,facing);
+        this.gateData = new GateData(gateFileName, topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ(), topLeft.getWorld().getName(),false,topLeft,facing);
         this.signBlock = PortalBlockGenerator.generatePortal(gateData.topLeft().clone().subtract(new Vector(0, 4, 0)));
         List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger());
         if (gateFormats == null) {
