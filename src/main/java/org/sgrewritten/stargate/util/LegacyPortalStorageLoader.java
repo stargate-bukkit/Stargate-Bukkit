@@ -15,7 +15,7 @@ import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalData;
+import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
@@ -97,30 +97,30 @@ public final class LegacyPortalStorageLoader {
         String[] portalProperties = line.split(":");
         PortalData portalData = PortalStorageHelper.loadPortalData(portalProperties, world, defaultNetworkName);
         try {
-            registry.createNetwork(portalData.networkName, portalData.flags, false);
+            registry.createNetwork(portalData.networkName(), portalData.flags(), false);
         } catch (InvalidNameException | NameLengthException | NameConflictException ignored) {
         }
-        if (portalData.topLeft == null) {
+        if (portalData.gateData().topLeft() == null) {
             throw new InvalidStructureException();
         }
 
-        Network network = registry.getNetwork(portalData.networkName,
-                portalData.flags.contains(PortalFlag.FANCY_INTER_SERVER));
+        Network network = registry.getNetwork(portalData.networkName(),
+                portalData.flags().contains(PortalFlag.FANCY_INTER_SERVER));
 
         if (network == null) {
-            logger.logMessage(Level.SEVERE, "Unable to get network " + portalData.networkName + " during legacy" +
+            logger.logMessage(Level.SEVERE, "Unable to get network " + portalData.networkName() + " during legacy" +
                     "portal loading");
             return null;
         }
 
-        Gate gate = new Gate(portalData, registry);
+        Gate gate = new Gate(portalData.gateData(), registry);
         Location signLocation = LegacyDataHandler.loadLocation(world, portalProperties[1]);
         Location buttonLocation = LegacyDataHandler.loadLocation(world, portalProperties[2]);
         if (signLocation != null) {
             logger.logMessage(Level.FINEST, "signLocation=" + signLocation);
             gate.addPortalPosition(signLocation, PositionType.SIGN);
         }
-        if (buttonLocation != null && !portalData.flags.contains(PortalFlag.ALWAYS_ON)) {
+        if (buttonLocation != null && !portalData.flags().contains(PortalFlag.ALWAYS_ON)) {
             logger.logMessage(Level.FINEST, "buttonLocation=" + buttonLocation);
             gate.addPortalPosition(buttonLocation, PositionType.BUTTON);
         }
@@ -129,7 +129,7 @@ public final class LegacyPortalStorageLoader {
 
         // Add the portal to its network and store it to the database
         logger.logMessage(Level.FINE, String.format("Saving portal %s in network %s from old storage... ",
-                portalData.name, portalData.networkName));
+                portalData.name(), portalData.networkName()));
         network.addPortal(portal, true);
 
         return portal;

@@ -1,9 +1,8 @@
 package org.sgrewritten.stargate.network.portal;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import org.sgrewritten.stargate.util.ExceptionHelper;
+
+import java.util.*;
 
 /**
  * Represents a portal flag which defines an enabled behavior for a stargate
@@ -184,6 +183,16 @@ public enum PortalFlag {
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    public static Set<Character> getUnrecognisedFlags(String flagString){
+        Set<Character> unrecognisedFlags = new HashSet<>();
+        for(char flag : flagString.toCharArray()){
+            if(!ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)) ) {
+                unrecognisedFlags.add(flag);
+            }
+        }
+        return unrecognisedFlags;
     }
 
 }

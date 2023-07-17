@@ -24,7 +24,7 @@ import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalData;
+import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
@@ -357,14 +357,14 @@ public class DatabaseTester {
             addFlagStatement.execute();
             // This for loop is just a lazy search algorithm
             for (PortalData data : getKnownPortalData(type)) {
-                if (data.name.equals(portal.getName()) && data.networkName.equals(portal.getNetwork().getName())) {
-                    Assertions.assertTrue(data.flagString.contains("G"), "No flag was added to the portal " + portal.getName());
+                if (data.name().equals(portal.getName()) && data.networkName().equals(portal.getNetwork().getName())) {
+                    Assertions.assertTrue(data.flagString().contains("G"), "No flag was added to the portal " + portal.getName());
                 }
             }
             DatabaseHelper.runStatement(generator.generateRemoveFlagStatement(connection, type, portal, 'G'));
             for (PortalData data : getKnownPortalData(type)) {
-                if (data.name.equals(portal.getName()) && data.networkName.equals(portal.getNetwork().getName())) {
-                    Assertions.assertFalse(data.flagString.contains("G"), "No flag was removed from the portal " + portal.getName());
+                if (data.name().equals(portal.getName()) && data.networkName().equals(portal.getNetwork().getName())) {
+                    Assertions.assertFalse(data.flagString().contains("G"), "No flag was removed from the portal " + portal.getName());
                 }
             }
         }

@@ -30,7 +30,7 @@ import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.FixedPortal;
 import org.sgrewritten.stargate.network.portal.NetworkedPortal;
-import org.sgrewritten.stargate.network.portal.PortalData;
+import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.RandomPortal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
@@ -69,21 +69,21 @@ public final class PortalCreationHelper {
      * @throws TranslatableException <p>If the portal's name is invalid</p>
      */
     public static RealPortal createPortal(Network network, String name, String destination, String targetServer,
-                                          Set<PortalFlag> flags, Gate gate, UUID ownerUUID,
+                                          Set<PortalFlag> flags, Set<Character> unrecognisedFlags, Gate gate, UUID ownerUUID,
                                           LanguageManager languageManager, RegistryAPI registry, StargateEconomyAPI economyAPI) throws TranslatableException {
         name = NameHelper.getTrimmedName(name);
 
         if (flags.contains(PortalFlag.BUNGEE)) {
             flags.add(PortalFlag.FIXED);
             Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, registry);
-            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, gate, ownerUUID, languageManager, economyAPI);
+            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags,unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI);
         } else if (flags.contains(PortalFlag.RANDOM)) {
-            return new RandomPortal(network, name, flags, gate, ownerUUID, languageManager, economyAPI);
+            return new RandomPortal(network, name, flags, unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI);
         } else if (flags.contains(PortalFlag.NETWORKED)) {
-            return new NetworkedPortal(network, name, flags, gate, ownerUUID, languageManager, economyAPI);
+            return new NetworkedPortal(network, name, flags, unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI);
         } else {
             flags.add(PortalFlag.FIXED);
-            return new FixedPortal(network, name, destination, flags, gate, ownerUUID, languageManager, economyAPI);
+            return new FixedPortal(network, name, destination, flags, unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI);
         }
     }
 
@@ -99,7 +99,7 @@ public final class PortalCreationHelper {
     public static RealPortal createPortal(Network network, PortalData portalData, Gate gate,
                                           LanguageManager languageManager, RegistryAPI registry,
                                           StargateEconomyAPI economyAPI) throws TranslatableException {
-        return createPortal(network, portalData.name, portalData.destination, portalData.networkName, portalData.flags, gate, portalData.ownerUUID, languageManager, registry, economyAPI);
+        return createPortal(network, portalData.name(), portalData.destination(), portalData.networkName(), portalData.flags(), portalData.unrecognisedFlags(), gate, portalData.ownerUUID(), languageManager, registry, economyAPI);
     }
 
     /**
@@ -119,7 +119,7 @@ public final class PortalCreationHelper {
      * @throws TranslatableException  <p>If the name of the stargate does not follow set rules</p>
      */
     public static void tryPortalCreation(Network selectedNetwork, String[] lines, Block signLocation,
-                                         Set<PortalFlag> flags, Player player, int cost,
+                                         Set<PortalFlag> flags, Set<Character> unrecognisedFlags, Player player, int cost,
                                          StargatePermissionManager permissionManager, String errorMessage,
                                          RegistryAPI registry, LanguageManager languageManager,
                                          StargateEconomyAPI economyAPI)
@@ -132,7 +132,7 @@ public final class PortalCreationHelper {
             return;
         }
         UUID ownerUUID = getOwnerUUID(selectedNetwork, player, flags);
-        RealPortal portal = createPortalFromSign(selectedNetwork, lines, flags, gate, ownerUUID, languageManager,
+        RealPortal portal = createPortalFromSign(selectedNetwork, lines, flags, unrecognisedFlags, gate, ownerUUID, languageManager,
                 registry, economyAPI);
 
 
@@ -220,10 +220,10 @@ public final class PortalCreationHelper {
      * @return <p>A new portal</p>
      * @throws TranslatableException <p>If the portal's name is invalid</p>
      */
-    private static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Gate gate,
+    private static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, Gate gate,
                                                    UUID ownerUUID, LanguageManager languageManager,
                                                    RegistryAPI registry, StargateEconomyAPI economyAPI) throws TranslatableException {
-        return createPortal(network, lines[0], lines[1], lines[2], flags, gate, ownerUUID, languageManager, registry,
+        return createPortal(network, lines[0], lines[1], lines[2], flags, unrecognisedFlags, gate, ownerUUID, languageManager, registry,
                 economyAPI);
     }
 

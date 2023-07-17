@@ -10,6 +10,7 @@ import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.util.BungeeHelper;
+import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 
 import java.io.ByteArrayOutputStream;
@@ -30,6 +31,7 @@ import java.util.logging.Level;
 public class VirtualPortal implements Portal {
 
     protected final String server;
+    private final Set<Character> unrecognisedFlags;
     private String name;
     private Network network;
     private final Set<PortalFlag> flags;
@@ -44,11 +46,12 @@ public class VirtualPortal implements Portal {
      * @param flags     <p>The portal flags enabled for this virtual portal</p>
      * @param ownerUUID <p>The UUID of this virtual portal's owner</p>
      */
-    public VirtualPortal(String server, String name, Network network, Set<PortalFlag> flags, UUID ownerUUID) {
+    public VirtualPortal(String server, String name, Network network, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, UUID ownerUUID) {
         this.server = server;
         this.name = name;
         this.network = network;
         this.flags = flags;
+        this.unrecognisedFlags = unrecognisedFlags;
         this.ownerUUID = ownerUUID;
     }
 
@@ -104,6 +107,11 @@ public class VirtualPortal implements Portal {
     @Override
     public boolean hasFlag(PortalFlag flag) {
         return flags.contains(flag);
+    }
+
+    @Override
+    public boolean hasFlag(Character flag) {
+        return unrecognisedFlags.contains(flag) || ( ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)) && flags.contains(PortalFlag.valueOf(flag)) );
     }
 
     @Override

@@ -163,6 +163,7 @@ public class BlockEventListener implements Listener {
         int cost = ConfigurationHelper.getInteger(ConfigurationOption.CREATION_COST);
         Player player = event.getPlayer();
         Set<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
+        Set<Character> unrecognisedFlags = PortalFlag.getUnrecognisedFlags(lines[3]);
         //Prevent the player from explicitly setting any internal flags
         flags.removeIf(PortalFlag::isInternalFlag);
 
@@ -195,7 +196,7 @@ public class BlockEventListener implements Listener {
             errorMessage = e.getLocalisedMessage(languageManager);
         }
         try {
-            PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost,
+            PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, unrecognisedFlags, event.getPlayer(), cost,
                     permissionManager, errorMessage, registry, languageManager, economyManager);
         } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINER, "No Gate format matches");

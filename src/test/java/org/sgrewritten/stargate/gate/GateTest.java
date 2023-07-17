@@ -9,10 +9,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.FakeStargateLogger;
@@ -21,7 +19,8 @@ import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.network.portal.PortalData;
+import org.sgrewritten.stargate.network.portal.portaldata.GateData;
+import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.util.StorageMock;
 
@@ -32,18 +31,18 @@ class GateTest {
 
     private final File testGatesDir = new File("src/test/resources/gates");
     private @NotNull WorldMock world;
-    private PortalData portalData;
+    private GateData gateData;
     private Block signBlock;
 
     @BeforeEach
     void setUp() throws InvalidStructureException, GateConflictException {
         ServerMock server = MockBukkit.mock();
         this.world = server.addSimpleWorld("world");
-        this.portalData = new PortalData();
-        portalData.topLeft = new Location(world, 0, 6, 0);
-        portalData.facing = BlockFace.SOUTH;
-        portalData.gateFileName = "nether.gate";
-        this.signBlock = PortalBlockGenerator.generatePortal(portalData.topLeft.clone().subtract(new Vector(0, 4, 0)));
+        Location topLeft = new Location(world, 0, 6, 0);
+        BlockFace facing = BlockFace.SOUTH;
+        String gateFileName = "nether.gate";
+        this.gateData = new GateData(gateFileName, gateData.topLeftX(), gateData.topLeftY(), gateData.topLeftZ(), topLeft.getWorld().getName(),false,topLeft,facing);
+        this.signBlock = PortalBlockGenerator.generatePortal(gateData.topLeft().clone().subtract(new Vector(0, 4, 0)));
         List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger());
         if (gateFormats == null) {
             throw new IllegalStateException("Cannot get gate formats required for testing");
@@ -58,17 +57,17 @@ class GateTest {
 
     @Test
     void isValid_LoadedGate() throws GateConflictException, InvalidStructureException {
-        Assertions.assertTrue(createLoadedGate(portalData).isValid(false));
+        Assertions.assertTrue(createLoadedGate(gateData).isValid(false));
     }
 
     @Test
     void isValid_CreatedGate() throws GateConflictException, InvalidStructureException {
-        Assertions.assertTrue(createCreatedGate(portalData).isValid(false));
+        Assertions.assertTrue(createCreatedGate(gateData).isValid(false));
     }
     
     @Test
     void addAndRemovePortalPosition_loadedGate() throws InvalidStructureException {
-        Gate loadedGate = createLoadedGate(portalData);
+        Gate loadedGate = createLoadedGate(gateData);
         Location location = new Location(world,0,0,0);
         loadedGate.addPortalPosition(location, PositionType.BUTTON);
         Assertions.assertTrue(gatePositionIsAdded(location, loadedGate),"A gate position was not added");
@@ -78,7 +77,7 @@ class GateTest {
     
     @Test
     void addAndRemovePortalPosition_createdGate() throws InvalidStructureException, GateConflictException {
-        Gate createdGate = createCreatedGate(portalData);
+        Gate createdGate = createCreatedGate(gateData);
         Location location = new Location(world,0,0,0);
         createdGate.addPortalPosition(location, PositionType.BUTTON);
         Assertions.assertTrue(gatePositionIsAdded(location, createdGate),"A gate position was not added");
@@ -86,13 +85,13 @@ class GateTest {
         Assertions.assertFalse(gatePositionIsAdded(location, createdGate),"A gate position was not added");
     }
     
-    Gate createLoadedGate(PortalData portalData) throws InvalidStructureException {
-        return new Gate(portalData, new StargateRegistry(new StorageMock()));
+    Gate createLoadedGate(GateData gateData) throws InvalidStructureException {
+        return new Gate(gateData, new StargateRegistry(new StorageMock()));
     }
     
-    Gate createCreatedGate(PortalData portalData) throws InvalidStructureException, GateConflictException {
-        GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);
-        return new Gate(format, signBlock.getLocation(), portalData.facing, false, new StargateRegistry(new StorageMock()));
+    Gate createCreatedGate(GateData gateData) throws InvalidStructureException, GateConflictException {
+        GateFormat format = GateFormatHandler.getFormat(gateData.gateFileName());
+        return new Gate(format, signBlock.getLocation(), gateData.facing(), false, new StargateRegistry(new StorageMock()));
     }
     
     boolean gatePositionIsAdded(Location location, Gate gate) {

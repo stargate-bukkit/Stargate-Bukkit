@@ -26,7 +26,8 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
-import org.sgrewritten.stargate.network.portal.PortalData;
+import org.sgrewritten.stargate.network.portal.portaldata.GateData;
+import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.util.ButtonHelper;
@@ -89,22 +90,22 @@ public class Gate implements GateAPI {
     /**
      * Instantiates a gate from already predetermined parameters, no checking is done to see if format matches
      *
-     * @param portalData <p> Data of the portal </p>
+     * @param gateData <p> Data of the gate </p>
      * @throws InvalidStructureException <p>If the facing is invalid or if no format could be found</p>
      */
-    public Gate(PortalData portalData, @NotNull RegistryAPI registry) throws InvalidStructureException {
-        GateFormat format = GateFormatHandler.getFormat(portalData.gateFileName);
+    public Gate(GateData gateData, @NotNull RegistryAPI registry) throws InvalidStructureException {
+        GateFormat format = GateFormatHandler.getFormat(gateData.gateFileName());
         if (format == null) {
             Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
-                    "log for more information", portalData.gateFileName));
+                    "log for more information", gateData.gateFileName()));
             throw new InvalidStructureException("Could not find a matching gateformat");
         }
-        this.topLeft = portalData.topLeft;
-        this.converter = new MatrixVectorOperation(portalData.facing);
-        this.converter.setFlipZAxis(portalData.flipZ);
+        this.topLeft = gateData.topLeft();
+        this.converter = new MatrixVectorOperation(gateData.facing());
+        this.converter.setFlipZAxis(gateData.flipZ());
         this.format = format;
-        this.facing = portalData.facing;
-        this.flipped = portalData.flipZ;
+        this.facing = gateData.facing();
+        this.flipped = gateData.flipZ();
         this.registry = Preconditions.checkNotNull(registry);
     }
 

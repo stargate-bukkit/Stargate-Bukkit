@@ -31,8 +31,8 @@ class LegacyVirtualPortal extends VirtualPortal {
      * @param ownerUUID <p>The UUID of this virtual portal's owner</p>
      */
     public LegacyVirtualPortal(String server, String name, Network network,
-                               Set<PortalFlag> flags, UUID ownerUUID) {
-        super(server, name, network, flags, ownerUUID);
+                               Set<PortalFlag> flags, Set<Character> unrecognisedFlags, UUID ownerUUID) {
+        super(server, name, network, flags, unrecognisedFlags, ownerUUID);
     }
 
     @Override

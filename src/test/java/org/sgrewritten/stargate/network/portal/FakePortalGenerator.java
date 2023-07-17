@@ -19,16 +19,13 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.portaldata.GateData;
+import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
 import org.sgrewritten.stargate.util.StorageMock;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A generator for generating fake portals
@@ -145,17 +142,16 @@ public class FakePortalGenerator {
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
         }
-        PortalData portalData = new PortalData();
-        portalData.topLeft = topLeft;
-        portalData.facing = BlockFace.EAST;
-        portalData.gateFileName = "nether.gate";
-        portalData.portalType = createInterServerPortal ? StorageType.INTER_SERVER : StorageType.LOCAL;
+        BlockFace facing = BlockFace.EAST;
+        String gateFileName = "nether.gate";
+        StorageType portalType = createInterServerPortal ? StorageType.INTER_SERVER : StorageType.LOCAL;
+        GateData gateData = new GateData(gateFileName, topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ(), topLeft.getWorld().getName(),false, topLeft, facing);
 
-        Gate gate = new Gate(portalData, registry);
+        Gate gate = new Gate(gateData, registry);
 
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON);
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);
-        return new FixedPortal(network, name, "", flags, gate, UUID.randomUUID(), new LanguageManagerMock(), new FakeEconomyManager());
+        return new FixedPortal(network, name, "", flags, new HashSet<>(), gate, UUID.randomUUID(), new LanguageManagerMock(), new FakeEconomyManager());
     }
 
     public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,
@@ -164,7 +160,7 @@ public class FakePortalGenerator {
         flags.add(network.getType().getRelatedFlag());
 
 
-        RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, gate, UUID.randomUUID(), new LanguageManagerMock(), registry, new FakeEconomyManager());
+        RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, new HashSet<>(), gate, UUID.randomUUID(), new LanguageManagerMock(), registry, new FakeEconomyManager());
         network.addPortal(portal, true);
         return portal;
     }

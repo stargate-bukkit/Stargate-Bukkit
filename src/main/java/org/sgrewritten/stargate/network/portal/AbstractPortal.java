@@ -44,15 +44,11 @@ import org.sgrewritten.stargate.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.NoLineColorFormatter;
 import org.sgrewritten.stargate.property.BypassPermission;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
+import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
@@ -84,7 +80,7 @@ public abstract class AbstractPortal implements RealPortal {
     private UUID ownerUUID;
     private final Gate gate;
     private final Set<PortalFlag> flags;
-
+    private final Set<Character> unrecognisedFlags;
     protected long activatedTime;
     protected UUID activator;
     protected boolean isDestroyed = false;
@@ -101,12 +97,13 @@ public abstract class AbstractPortal implements RealPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameLengthException <p>If the portal name is invalid</p>
      */
-    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyManager)
+    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, Gate gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyManager)
             throws NameLengthException {
         this.ownerUUID = Objects.requireNonNull(ownerUUID);
         this.network = Objects.requireNonNull(network);
         this.name = Objects.requireNonNull(name);
         this.flags = Objects.requireNonNull(flags);
+        this.unrecognisedFlags = Objects.requireNonNull(unrecognisedFlags);
         this.gate = Objects.requireNonNull(gate);
         this.languageManager = Objects.requireNonNull(languageManager);
         this.economyManager = Objects.requireNonNull(economyManager);
@@ -300,9 +297,10 @@ public abstract class AbstractPortal implements RealPortal {
     public boolean hasFlag(PortalFlag flag) {
         return flags.contains(flag);
     }
-    
-    boolean hasFlag(Character flag) {
-        return false;
+
+    @Override
+    public boolean hasFlag(Character flag) {
+        return unrecognisedFlags.contains(flag) || ( ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)) && flags.contains(PortalFlag.valueOf(flag)) );
     }
 
     @Override
