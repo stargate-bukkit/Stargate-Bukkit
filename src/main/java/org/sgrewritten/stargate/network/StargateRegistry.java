@@ -361,7 +361,7 @@ public class StargateRegistry implements RegistryAPI {
         }
         for(RealPortal portal: portals) {
             for(BlockHandlerInterface blockHandlerInterface : blockHandlerMap.get(material)){
-                if(blockHandlerInterface.registerPlacedBlock(location,player,portal)){
+                if(portal.hasFlag(blockHandlerInterface.getFlag()) && blockHandlerInterface.registerPlacedBlock(location,player,portal)){
                     portal.getGate().addPortalPosition(location, blockHandlerInterface.getInterfaceType());
                     blockBlockHandlerMap.put(new BlockLocation(location),blockHandlerInterface);
                     return;

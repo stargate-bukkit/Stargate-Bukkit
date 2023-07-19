@@ -7,6 +7,7 @@ import be.seeseemelk.mockbukkit.entity.PlayerMock;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -75,7 +76,9 @@ class StargateRegistryTest {
         Character testFlag = 'c';
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location locaton = new Location(world,0,0,0);
-        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(), registry);
+        Set<Character> flags = new HashSet<>();
+        flags.add(testFlag);
+        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(),flags, registry);
         // TODO add testflag to portal
         Location location = new Location(world, 0, 0, 0);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, testMaterial,
@@ -96,7 +99,9 @@ class StargateRegistryTest {
         Character testFlag = 'c';
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location locaton = new Location(world,0,0,0);
-        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(), registry);
+        Set<Character> flags = new HashSet<>();
+        flags.add(testFlag);
+        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(),flags, registry);
         // TODO add testflag to portal
         Location location = new Location(world, 0, 0, 0);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
@@ -113,7 +118,9 @@ class StargateRegistryTest {
         Character testFlag = 'c';
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location locaton = new Location(world,0,0,0);
-        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(), registry);
+        Set<Character> flags = new HashSet<>();
+        flags.add(testFlag);
+        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(), flags, registry);
         // TODO add testflag to portal
         Location location = new Location(world, 0, 0, 0);
         BlockHandlerInterfaceMock highPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
@@ -135,7 +142,9 @@ class StargateRegistryTest {
         Character testFlag = 'c';
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location locaton = new Location(world,0,0,0);
-        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(), registry);
+        Set<Character> flags = new HashSet<>();
+        flags.add('d');
+        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(), flags, registry);
         Location location = new Location(world, 0, 0, 0);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
                 plugin, priority, testFlag);

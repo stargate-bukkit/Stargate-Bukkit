@@ -104,7 +104,7 @@ public class FakePortalGenerator {
         Location topLeft = new Location(world, 0, 10, 0);
         NetworkType.removeNetworkTypeRelatedFlags(flags);
         flags.add(portalNetwork.getType().getRelatedFlag());
-        return generateFakePortal(topLeft, portalNetwork, name, createInterServerPortal, flags, new StargateRegistry(new StorageMock()));
+        return generateFakePortal(topLeft, portalNetwork, name, createInterServerPortal, flags, new HashSet<>(), new StargateRegistry(new StorageMock()));
     }
 
     /**
@@ -137,7 +137,7 @@ public class FakePortalGenerator {
      * @throws NameLengthException       <p>IF the length of the name is invalid</p>
      */
     public static RealPortal generateFakePortal(Location topLeft, Network network, String name,
-                                         boolean createInterServerPortal, Set<PortalFlag> flags, RegistryAPI registry)
+                                         boolean createInterServerPortal, Set<PortalFlag> flags, Set<Character> unknownFlags, RegistryAPI registry)
             throws InvalidStructureException, NameLengthException {
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
@@ -151,7 +151,7 @@ public class FakePortalGenerator {
 
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON);
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);
-        return new FixedPortal(network, name, "", flags, new HashSet<>(), gate, UUID.randomUUID(), new LanguageManagerMock(), new FakeEconomyManager());
+        return new FixedPortal(network, name, "", flags, unknownFlags, gate, UUID.randomUUID(), new LanguageManagerMock(), new FakeEconomyManager());
     }
 
     public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,

@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.FakeStargate;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
@@ -48,22 +49,24 @@ import org.sgrewritten.stargate.util.StorageMock;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 
 class BlockEventListenerTest {
 
-    private static ServerMock server;
-    private static RegistryAPI registry;
-    private static PlayerMock player;
-    private static WorldMock world;
-    private static BlockEventListener blockEventListener;
+    private ServerMock server;
+    private RegistryAPI registry;
+    private PlayerMock player;
+    private WorldMock world;
+    private BlockEventListener blockEventListener;
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
     private static final String PLAYER_NAME = "player";
     private static final String CUSTOM_NETNAME = "custom";
 
     @BeforeEach
     void setUp() {
-        BlockEventListenerTest.server = MockBukkit.mock();
+        server = MockBukkit.mock();
 
         MockBukkit.load(FakeStargate.class);
         player = server.addPlayer(PLAYER_NAME);
@@ -165,10 +168,14 @@ class BlockEventListenerTest {
                 MockBukkit.createMockPlugin(), Priority.HIGH, flag);
         registry.addBlockHandlerInterface(blockHandler);
         Location locaton = new Location(world, 0, 5, 0);
+        Network network = registry.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, false, false);
         RealPortal portal = FakePortalGenerator.generateFakePortal(locaton,
-                registry.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, false, false), "test", true, new HashSet<>(),
+                network, "test", true, new HashSet<>(), Set.of(flag),
                 registry);
-        Location locationNextToPortal = portal.getGate().getLocation(new BlockVector(1,-3,0));
+        network.addPortal(portal, false);
+        Assertions.assertNotNull(registry.getPortal(portal.getGate().getLocations(GateStructureType.FRAME).get(0).getLocation()), "Portal not assigned to registry");
+
+        Location locationNextToPortal = portal.getGate().getLocation(new BlockVector(1, -3, 0));
         Block block = locationNextToPortal.getBlock();
         BlockState replacedBlock = block.getState();
         block.setType(placedMaterial);

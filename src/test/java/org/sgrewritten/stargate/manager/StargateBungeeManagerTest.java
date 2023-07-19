@@ -71,7 +71,7 @@ class StargateBungeeManagerTest {
                 false);
         Set<PortalFlag> bungeePortalFlags = new HashSet<>();
         bungeePortal = new FakePortalGenerator().generateFakePortal(new Location(world, 0, 10, 0), bungeeNetwork,
-                NETWORK, false, bungeePortalFlags, registry);
+                NETWORK, false, bungeePortalFlags, new HashSet<>(), registry);
         bungeeNetwork.addPortal(bungeePortal, false);
 
         bungeeManager = new StargateBungeeManager(registry, new LanguageManagerMock());
