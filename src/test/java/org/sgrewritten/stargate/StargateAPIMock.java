@@ -10,12 +10,12 @@ import org.sgrewritten.stargate.api.manager.BungeeManager;
 import org.sgrewritten.stargate.api.manager.PermissionManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.config.ConfigurationAPIMock;
-import org.sgrewritten.stargate.economy.FakeEconomyManager;
+import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
-import org.sgrewritten.stargate.util.StorageMock;
+import org.sgrewritten.stargate.database.StorageMock;
 
 public class StargateAPIMock implements StargateAPI {
 
@@ -73,7 +73,7 @@ public class StargateAPIMock implements StargateAPI {
             this.materialHandlerResolver = new MaterialHandlerResolver(registry,storageAPI);
         }
         if(this.economyManager == null) {
-            this.economyManager = new FakeEconomyManager();
+            this.economyManager = new StargateEconomyManagerMock();
         }
     }
     @Override

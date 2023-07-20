@@ -24,8 +24,6 @@ import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.StargateRegistry;
-import org.sgrewritten.stargate.util.StorageMock;
 import org.sgrewritten.stargate.util.portal.GateTestHelper;
 
 import java.util.HashSet;
@@ -56,7 +54,7 @@ class NetworkedPortalTest {
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.NETWORKED);
         network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
-        portal = (NetworkedPortal) FakePortalGenerator.generateFakePortal(sign, network, flags, "networked", stargateAPI);
+        portal = (NetworkedPortal) PortalFactory.generateFakePortal(sign, network, flags, "networked", stargateAPI);
     }
 
     @AfterEach
@@ -101,7 +99,7 @@ class NetworkedPortalTest {
     void onSignClickAvailableDestination(Action type) throws TranslatableException, NoFormatFoundException, GateConflictException {
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
         sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
-        FakePortalGenerator.generateFakePortal(sign, network, new HashSet<>(), "destination", stargateAPI);
+        PortalFactory.generateFakePortal(sign, network, new HashSet<>(), "destination", stargateAPI);
         Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
     }
 
@@ -109,7 +107,7 @@ class NetworkedPortalTest {
     @EnumSource
     void onSignClickSneakingAvailableDestination(Action type) throws TranslatableException, NoFormatFoundException, GateConflictException {
         sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
-        FakePortalGenerator.generateFakePortal(sign, network, new HashSet<>(), "destination", stargateAPI);
+        PortalFactory.generateFakePortal(sign, network, new HashSet<>(), "destination", stargateAPI);
         player.setSneaking(true);
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
         Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));

@@ -5,33 +5,23 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.sgrewritten.stargate.api.BlockHandlerInterfaceMock;
-import org.sgrewritten.stargate.api.PositionType;
-import org.sgrewritten.stargate.api.Priority;
 import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
-import org.sgrewritten.stargate.util.StorageMock;
+import org.sgrewritten.stargate.database.StorageMock;
+import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.util.portal.GateTestHelper;
+import org.sgrewritten.stargate.util.portal.PortalMock;
 
 class StargateRegistryTest {
 
@@ -40,6 +30,7 @@ class StargateRegistryTest {
     private Network personalNetwork;
     private WorldMock world;
     private PlayerMock player;
+    private StorageMock storage;
 
     @BeforeEach
     void setUp() throws NameLengthException, NameConflictException, InvalidNameException, UnimplementedFlagException {
@@ -47,7 +38,8 @@ class StargateRegistryTest {
         GateTestHelper.setUpGates();
         this.world = server.addSimpleWorld("world");
         this.player = server.addPlayer();
-        registry = new StargateRegistry(new StorageMock());
+        this.storage = new StorageMock();
+        registry = new StargateRegistry(storage);
         network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
         personalNetwork = registry.createNetwork(player.getUniqueId().toString(), NetworkType.PERSONAL, false, false);
     }
@@ -67,5 +59,16 @@ class StargateRegistryTest {
     void rename_Personal() {
         Assertions.assertThrows(InvalidNameException.class, () -> registry.rename(personalNetwork));
     }
-    
+
+    @ParameterizedTest
+    @EnumSource
+    void registerUnregisterPosition(GateStructureType type){
+        PortalMock portal = new PortalMock();
+        Location location = new Location(world,0,0,0);
+        BlockLocation blockLocation = new BlockLocation(location);
+        registry.registerLocation(type,blockLocation, portal);
+        Assertions.assertEquals(registry.getPortal(location), portal);
+        registry.unRegisterLocation(type,blockLocation);
+        Assertions.assertNull(registry.getPortal(location));
+    }
 }

@@ -2,7 +2,7 @@ package org.sgrewritten.stargate.manager;
 
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class FakeBlockLogger implements BlockLoggingManager {
+public class BlockLoggerMock implements BlockLoggingManager {
 
     private boolean setUpIsTriggered;
 

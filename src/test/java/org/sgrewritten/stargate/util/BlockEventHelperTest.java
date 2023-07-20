@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.database.StorageMock;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
@@ -24,7 +24,7 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StargateRegistry;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.BlockEventType;
@@ -55,7 +55,7 @@ class BlockEventHelperTest {
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         Network network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
 
-        portal = FakePortalGenerator.generateFakePortal(signBlock, network, new HashSet<>(), "name", stargateAPI);
+        portal = PortalFactory.generateFakePortal(signBlock, network, new HashSet<>(), "name", stargateAPI);
 
     }
 

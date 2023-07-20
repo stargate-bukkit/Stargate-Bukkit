@@ -11,7 +11,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -21,10 +20,10 @@ import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateRegistry;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.util.StorageMock;
+import org.sgrewritten.stargate.database.StorageMock;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class TeleportationHelperTest {
 
     private static WorldMock world;
-    private static FakePortalGenerator fakePortalGenerator;
+    private static PortalFactory fakePortalGenerator;
     private static LocalNetwork network;
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
 
@@ -46,7 +45,7 @@ class TeleportationHelperTest {
     public static void setUp() throws NameLengthException, InvalidNameException, UnimplementedFlagException {
         ServerMock server = MockBukkit.mock();
         world = server.addSimpleWorld("world");
-        fakePortalGenerator = new FakePortalGenerator();
+        fakePortalGenerator = new PortalFactory();
         network = new LocalNetwork("network", NetworkType.CUSTOM);
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
     }

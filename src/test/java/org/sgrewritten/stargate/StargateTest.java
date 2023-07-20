@@ -20,7 +20,7 @@ import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
@@ -56,11 +56,11 @@ class StargateTest {
         Network network = plugin.getRegistry().createNetwork("network", NetworkType.CUSTOM, false, false);
 
         String PORTAL1 = "name1";
-        portal = FakePortalGenerator.generateFakePortal(signBlock1, network, new HashSet<>(), PORTAL1, plugin);
+        portal = PortalFactory.generateFakePortal(signBlock1, network, new HashSet<>(), PORTAL1, plugin);
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.BUNGEE);
         Network bungeeNetwork = plugin.getRegistry().createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, false);
-        bungeePortal = FakePortalGenerator.generateFakePortal(signBlock2, bungeeNetwork, flags, PORTAL2, plugin);
+        bungeePortal = PortalFactory.generateFakePortal(signBlock2, bungeeNetwork, flags, PORTAL2, plugin);
     }
 
     @AfterEach

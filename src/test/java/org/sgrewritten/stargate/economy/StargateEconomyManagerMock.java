@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.economy;
 import org.bukkit.OfflinePlayer;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 
-public class FakeEconomyManager implements StargateEconomyAPI {
+public class StargateEconomyManagerMock implements StargateEconomyAPI {
 
     boolean triggeredSetup;
 

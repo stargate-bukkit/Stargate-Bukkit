@@ -13,16 +13,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
-import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
-import org.sgrewritten.stargate.util.StorageMock;
+import org.sgrewritten.stargate.database.StorageMock;
 
 import java.io.File;
 import java.util.List;

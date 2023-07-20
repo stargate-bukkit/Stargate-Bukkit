@@ -13,9 +13,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.economy.FakeEconomyManager;
+import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
@@ -42,7 +41,7 @@ class TeleporterTest {
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
         @NotNull WorldMock world = server.addSimpleWorld("world");
         @NotNull PlayerMock player = server.addPlayer();
-        FakePortalGenerator fakePortalGenerator = new FakePortalGenerator("Portal", "iPortal");
+        PortalFactory fakePortalGenerator = new PortalFactory("Portal", "iPortal");
 
 
         horse = (HorseMock) world.spawnEntity(new Location(world, 0, 0, 0), EntityType.HORSE);
@@ -52,7 +51,7 @@ class TeleporterTest {
         RealPortal destination = fakePortalGenerator.generateFakePortal(world, network, "destination", false);
         populator = new SynchronousPopulator();
         teleporter = new Teleporter(destination, origin, destination.getGate().getFacing(),
-                origin.getGate().getFacing(), 0, "empty", new LanguageManagerMock(), new FakeEconomyManager(),
+                origin.getGate().getFacing(), 0, "empty", new LanguageManagerMock(), new StargateEconomyManagerMock(),
                 (action) -> populator.addAction(action));
         furnaceMinecart = (PoweredMinecartMock) world.spawnEntity(new Location(world, 0, 0, 0), EntityType.MINECART_FURNACE);
 

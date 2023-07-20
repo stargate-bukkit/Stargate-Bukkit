@@ -21,12 +21,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sgrewritten.stargate.FakeStargate;
-import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.structure.GateStructureType;
-import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -41,18 +38,14 @@ import org.sgrewritten.stargate.api.Priority;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.network.StargateRegistry;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.util.LanguageManagerMock;
-import org.sgrewritten.stargate.util.StorageMock;
 
 import java.io.File;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
 
 class BlockEventListenerTest {
 
@@ -70,7 +63,6 @@ class BlockEventListenerTest {
     void setUp() {
         server = MockBukkit.mock();
 
-        MockBukkit.load(FakeStargate.class);
         player = server.addPlayer(PLAYER_NAME);
 
         world = new WorldMock(Material.GRASS, 0);
@@ -172,7 +164,7 @@ class BlockEventListenerTest {
         stargateAPI.getMaterialHandlerResolver().addBlockHandlerInterface(blockHandler);
         Location locaton = new Location(world, 0, 5, 0);
         Network network = registry.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, false, false);
-        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton,
+        RealPortal portal = PortalFactory.generateFakePortal(locaton,
                 network, "test", true, new HashSet<>(), Set.of(flag),
                 registry);
         network.addPortal(portal, false);

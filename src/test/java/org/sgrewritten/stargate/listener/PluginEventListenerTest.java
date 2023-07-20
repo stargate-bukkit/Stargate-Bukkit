@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.economy.FakeEconomyManager;
-import org.sgrewritten.stargate.manager.FakeBlockLogger;
+import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
+import org.sgrewritten.stargate.manager.BlockLoggerMock;
 
 import java.util.logging.Level;
 
@@ -20,8 +20,8 @@ class PluginEventListenerTest {
     private @NotNull MockPlugin economy;
     private @NotNull MockPlugin blockLogger;
     private PluginEventListener listener;
-    private FakeEconomyManager economyManager;
-    private FakeBlockLogger blockLoggingManager;
+    private StargateEconomyManagerMock economyManager;
+    private BlockLoggerMock blockLoggingManager;
 
     @BeforeEach
     void setUp() {
@@ -29,8 +29,8 @@ class PluginEventListenerTest {
         MockBukkit.mock();
         economy = MockBukkit.createMockPlugin("Vault");
         blockLogger = MockBukkit.createMockPlugin("CoreProtect");
-        economyManager = new FakeEconomyManager();
-        blockLoggingManager = new FakeBlockLogger();
+        economyManager = new StargateEconomyManagerMock();
+        blockLoggingManager = new BlockLoggerMock();
         listener = new PluginEventListener(economyManager, blockLoggingManager);
     }
 

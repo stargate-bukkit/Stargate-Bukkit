@@ -8,7 +8,7 @@ import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.economy.FakeEconomyManager;
+import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
@@ -21,9 +21,8 @@ import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
-import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
-import org.sgrewritten.stargate.util.StorageMock;
+import org.sgrewritten.stargate.database.StorageMock;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
 import java.util.*;
@@ -31,7 +30,7 @@ import java.util.*;
 /**
  * A generator for generating fake portals
  */
-public class FakePortalGenerator {
+public class PortalFactory {
 
     private final String portalDefaultName;
     private final String interPortalDefaultName;
@@ -41,7 +40,7 @@ public class FakePortalGenerator {
      * Local portals will have a name based on "portal", and InterServer portals,
      * "iportal".
      */
-    public FakePortalGenerator() {
+    public PortalFactory() {
         this("portal", "iportal");
     }
 
@@ -51,7 +50,7 @@ public class FakePortalGenerator {
      * @param portalBaseName      <p>The base-name used for all fake portals</p>
      * @param interPortalBaseName <p>The base-name used for all fake inter-portals</p>
      */
-    public FakePortalGenerator(String portalBaseName, String interPortalBaseName) {
+    public PortalFactory(String portalBaseName, String interPortalBaseName) {
         this.portalDefaultName = portalBaseName;
         this.interPortalDefaultName = interPortalBaseName;
     }
@@ -152,7 +151,7 @@ public class FakePortalGenerator {
 
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON);
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);
-        return new FixedPortal(network, name, "", flags, unknownFlags, gate, UUID.randomUUID(), new LanguageManagerMock(), new FakeEconomyManager());
+        return new FixedPortal(network, name, "", flags, unknownFlags, gate, UUID.randomUUID(), new LanguageManagerMock(), new StargateEconomyManagerMock());
     }
 
     public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,

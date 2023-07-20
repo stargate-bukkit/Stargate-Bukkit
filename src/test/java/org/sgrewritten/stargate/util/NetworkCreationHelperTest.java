@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.util;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockPlugin;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import org.bukkit.entity.Player;
@@ -11,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.sgrewritten.stargate.FakeStargate;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.database.StorageMock;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -37,7 +38,6 @@ class NetworkCreationHelperTest {
     private RegistryAPI registry;
     private PermissionManager permissionManager;
     private String[] emptyNames;
-    private FakeStargate plugin;
     private ServerMock server;
 
     private static final String CENTRAL = "central";
@@ -46,12 +46,13 @@ class NetworkCreationHelperTest {
     private static final String INVALID_NAME = "invalid";
     private static final String NAME = "name";
     private static final String PLAYER_NAME = "playerName";
+    private MockPlugin plugin;
 
     @BeforeEach
     void setup() {
         server = MockBukkit.mock();
         player = new PlayerMock(server, PLAYER_NAME);
-        plugin = MockBukkit.load(FakeStargate.class);
+        plugin = MockBukkit.createMockPlugin();
         permissionManager = new StargatePermissionManager(player, new LanguageManagerMock());
         server.addPlayer(player);
         server.addPlayer("central");

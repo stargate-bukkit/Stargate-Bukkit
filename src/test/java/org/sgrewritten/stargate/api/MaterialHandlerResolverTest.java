@@ -24,8 +24,8 @@ import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateRegistry;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
-import org.sgrewritten.stargate.util.StorageMock;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
+import org.sgrewritten.stargate.database.StorageMock;
 
 import java.util.HashSet;
 import java.util.List;
@@ -67,7 +67,7 @@ public class MaterialHandlerResolverTest {
         Location locaton = new Location(world,0,0,0);
         Set<Character> flags = new HashSet<>();
         flags.add(testFlag);
-        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(),flags, registry);
+        RealPortal portal = PortalFactory.generateFakePortal(locaton, network, "test", true, new HashSet<>(),flags, registry);
         // TODO add testflag to portal
         Location location = new Location(world, 0, 0, 0);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, testMaterial,
@@ -81,7 +81,7 @@ public class MaterialHandlerResolverTest {
 
     @ParameterizedTest
     @EnumSource(Priority.class)
-    void registerPlacementUnregisterPlacement_materialMissmatch(Priority priority)
+    void registerPlacement_materialMismatch(Priority priority)
             throws TranslatableException, InvalidStructureException {
         Material handlerMaterial = Material.END_GATEWAY;
         Material placedMaterial = Material.DIRT;
@@ -90,7 +90,7 @@ public class MaterialHandlerResolverTest {
         Location locaton = new Location(world,0,0,0);
         Set<Character> flags = new HashSet<>();
         flags.add(testFlag);
-        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(),flags, registry);
+        RealPortal portal = PortalFactory.generateFakePortal(locaton, network, "test", true, new HashSet<>(),flags, registry);
         // TODO add testflag to portal
         Location location = new Location(world, 0, 0, 0);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
@@ -101,7 +101,7 @@ public class MaterialHandlerResolverTest {
     }
 
     @Test
-    void registerPlacementUnregisterPlacement_priorityCheck()
+    void registerPlacement_priorityCheck()
             throws TranslatableException, InvalidStructureException {
         Material placedMaterial = Material.END_GATEWAY;
         Character testFlag = 'c';
@@ -109,7 +109,7 @@ public class MaterialHandlerResolverTest {
         Location locaton = new Location(world,0,0,0);
         Set<Character> flags = new HashSet<>();
         flags.add(testFlag);
-        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(), flags, registry);
+        RealPortal portal = PortalFactory.generateFakePortal(locaton, network, "test", true, new HashSet<>(), flags, registry);
         // TODO add testflag to portal
         Location location = new Location(world, 0, 0, 0);
         BlockHandlerInterfaceMock highPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
@@ -125,7 +125,7 @@ public class MaterialHandlerResolverTest {
 
     @ParameterizedTest
     @EnumSource(Priority.class)
-    void registerPlacementUnregisterPlacement_wrongFlag(Priority priority)
+    void registerPlacement_wrongFlag(Priority priority)
             throws TranslatableException, InvalidStructureException {
         Material handlerMaterial = Material.END_GATEWAY;
         Character testFlag = 'c';
@@ -133,12 +133,34 @@ public class MaterialHandlerResolverTest {
         Location locaton = new Location(world,0,0,0);
         Set<Character> flags = new HashSet<>();
         flags.add('d');
-        RealPortal portal = FakePortalGenerator.generateFakePortal(locaton, network, "test", true, new HashSet<>(), flags, registry);
+        RealPortal portal = PortalFactory.generateFakePortal(locaton, network, "test", true, new HashSet<>(), flags, registry);
         Location location = new Location(world, 0, 0, 0);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
                 plugin, priority, testFlag);
         materialHandlerResolver.addBlockHandlerInterface(blockHandler);
         materialHandlerResolver.registerPlacement(location, List.of(portal), handlerMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
+    }
+
+    void registerPlacement_rejected() throws InvalidStructureException, NameLengthException {
+        Material placedMaterial = Material.END_GATEWAY;
+        Character testFlag = 'c';
+        Plugin plugin = MockBukkit.createMockPlugin("Test");
+        Location locaton = new Location(world,0,0,0);
+        Set<Character> flags = new HashSet<>();
+        flags.add(testFlag);
+        RealPortal portal = PortalFactory.generateFakePortal(locaton, network, "test", true, new HashSet<>(), flags, registry);
+        // TODO add testflag to portal
+        Location location = new Location(world, 0, 0, 0);
+        BlockHandlerInterfaceMock highPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
+                plugin, Priority.HIGH, testFlag);
+        BlockHandlerInterfaceMock lowPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
+                plugin, Priority.LOWEST, testFlag);
+        materialHandlerResolver.addBlockHandlerInterface(highPriority);
+        materialHandlerResolver.addBlockHandlerInterface(lowPriority);
+        highPriority.setRegisterPlacedBlock(false);
+        materialHandlerResolver.registerPlacement(location, List.of(portal), placedMaterial, player);
+        Assertions.assertFalse(highPriority.blockIsRegistered(location, player, portal));
+        Assertions.assertTrue(lowPriority.blockIsRegistered(location, player, portal));
     }
 }

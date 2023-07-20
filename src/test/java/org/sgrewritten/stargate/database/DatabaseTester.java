@@ -5,9 +5,7 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
-import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
@@ -21,7 +19,7 @@ import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
@@ -56,7 +54,7 @@ public class DatabaseTester {
 
     static Connection connection;
     private static SQLQueryGenerator generator;
-    private static FakePortalGenerator portalGenerator;
+    private static PortalFactory portalGenerator;
     private static WorldMock world;
     private static SQLDatabaseAPI database;
 
@@ -111,7 +109,7 @@ public class DatabaseTester {
             fail();
         }
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
-        portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
+        portalGenerator = new PortalFactory(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
 
         this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength);
         this.localPortals = portalGenerator.generateFakePortals(world, testNetwork, false, localPortalTestLength);

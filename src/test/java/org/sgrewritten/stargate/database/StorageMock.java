@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.util;
+package org.sgrewritten.stargate.database;
 
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
@@ -22,7 +22,7 @@ public class StorageMock implements StorageAPI {
 
     @Override
     public void loadFromStorage(RegistryAPI registry, StargateAPI stargateAPI) throws StorageReadException {
-
+        
     }
 
     @Override

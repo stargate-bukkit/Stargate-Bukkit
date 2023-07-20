@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
@@ -22,14 +21,14 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
-import org.sgrewritten.stargate.util.StorageMock;
+import org.sgrewritten.stargate.database.StorageMock;
 
 import java.io.File;
 import java.util.HashSet;
@@ -64,13 +63,13 @@ class StargateBungeeManagerTest {
         registry = new StargateRegistry(new StorageMock());
         world = server.addSimpleWorld("world");
         Network network2 = registry.createNetwork(NETWORK2, NetworkType.CUSTOM, true, false);
-        realPortal = new FakePortalGenerator().generateFakePortal(world, network2, REGISTERED_PORTAL, true);
+        realPortal = new PortalFactory().generateFakePortal(world, network2, REGISTERED_PORTAL, true);
         network2.addPortal(realPortal, false);
 
         Network bungeeNetwork = registry.createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false,
                 false);
         Set<PortalFlag> bungeePortalFlags = new HashSet<>();
-        bungeePortal = new FakePortalGenerator().generateFakePortal(new Location(world, 0, 10, 0), bungeeNetwork,
+        bungeePortal = new PortalFactory().generateFakePortal(new Location(world, 0, 10, 0), bungeeNetwork,
                 NETWORK, false, bungeePortalFlags, new HashSet<>(), registry);
         bungeeNetwork.addPortal(bungeePortal, false);
 
@@ -86,8 +85,8 @@ class StargateBungeeManagerTest {
     void updateNetwork() throws TranslatableException, InvalidStructureException {
         //A network not assigned to a registry
         Network network = new InterServerNetwork(NETWORK, NetworkType.CUSTOM);
-        RealPortal portal = new FakePortalGenerator().generateFakePortal(world, network, PORTAL, true);
-        RealPortal portal2 = new FakePortalGenerator().generateFakePortal(world, network, PORTAL2, true);
+        RealPortal portal = new PortalFactory().generateFakePortal(world, network, PORTAL, true);
+        RealPortal portal2 = new PortalFactory().generateFakePortal(world, network, PORTAL2, true);
 
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal2, StargateProtocolRequestType.PORTAL_ADD));
