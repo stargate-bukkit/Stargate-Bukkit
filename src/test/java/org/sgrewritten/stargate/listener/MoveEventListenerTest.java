@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
@@ -54,9 +56,9 @@ class MoveEventListenerTest {
         player = server.addPlayer();
         vehicle = (PoweredMinecartMock) theEnd.spawnEntity(from, EntityType.MINECART_FURNACE);
         Block sign = PortalBlockGenerator.generatePortal(new Location(theEnd, 0, 10, 0));
-        StargateRegistry registry = new StargateRegistry(new StorageMock());
-        portal = FakePortalGenerator.generateFakePortal(sign, "network", new HashSet<>(), "portal", registry);
-        listener = new MoveEventListener(registry);
+        StargateAPI stargateAPI = new StargateAPIMock();
+        portal = FakePortalGenerator.generateFakePortal(sign, "network", new HashSet<>(), "portal", stargateAPI);
+        listener = new MoveEventListener(stargateAPI.getRegistry());
 
         iris = portal.getGate().getLocations(GateStructureType.IRIS).get(0).getLocation();
         outsideIris = iris.clone().add(portal.getGate().getFacing().getDirection());

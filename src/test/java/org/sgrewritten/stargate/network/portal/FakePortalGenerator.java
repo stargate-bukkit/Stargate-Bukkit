@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.api.PositionType;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.GateConflictException;
@@ -155,20 +156,20 @@ public class FakePortalGenerator {
     }
 
     public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,
-                                                RegistryAPI registry) throws NoFormatFoundException, GateConflictException, TranslatableException {
-        Gate gate = PortalCreationHelper.createGate(signBlock, false, registry);
+                                                StargateAPI stargateAPI) throws NoFormatFoundException, GateConflictException, TranslatableException {
+        Gate gate = PortalCreationHelper.createGate(signBlock, false, stargateAPI.getRegistry());
         flags.add(network.getType().getRelatedFlag());
 
 
-        RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, new HashSet<>(), gate, UUID.randomUUID(), new LanguageManagerMock(), registry, new FakeEconomyManager());
+        RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, new HashSet<>(), gate, UUID.randomUUID(), stargateAPI);
         network.addPortal(portal, true);
         return portal;
     }
 
     public static RealPortal generateFakePortal(Block signBlock, String networkName, Set<PortalFlag> flags, String name,
-                                                StargateRegistry registry) throws TranslatableException, NoFormatFoundException, GateConflictException {
-        Network network = registry.createNetwork(networkName, NetworkType.CUSTOM, false, false);
-        return generateFakePortal(signBlock, network, flags, name, registry);
+                                                StargateAPI stargateAPI) throws TranslatableException, NoFormatFoundException, GateConflictException {
+        Network network = stargateAPI.getRegistry().createNetwork(networkName, NetworkType.CUSTOM, false, false);
+        return generateFakePortal(signBlock, network, flags, name, stargateAPI);
     }
 
 }

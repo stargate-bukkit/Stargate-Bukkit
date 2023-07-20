@@ -34,6 +34,9 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.BlockHandlerInterface;
+import org.sgrewritten.stargate.api.MaterialHandlerResolver;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -71,16 +74,20 @@ public class BlockEventListener implements Listener {
     private final @NotNull RegistryAPI registry;
     private final @NotNull LanguageManager languageManager;
     private final @NotNull StargateEconomyAPI economyManager;
+    private final @NotNull MaterialHandlerResolver addonRegistry;
+    private final @NotNull StargateAPI stargateAPI;
 
     /**
      * Instantiates a new block event listener
      *
-     * @param registry <p>The registry to use for looking up portals</p>
+     * @param stargateAPI <p>The stargate API</p>
      */
-    public BlockEventListener(@NotNull RegistryAPI registry, @NotNull LanguageManager languageManager, @NotNull StargateEconomyAPI economyManager) {
-        this.registry = Objects.requireNonNull(registry);
-        this.languageManager = Objects.requireNonNull(languageManager);
-        this.economyManager = Objects.requireNonNull(economyManager);
+    public BlockEventListener(@NotNull StargateAPI stargateAPI) {
+        this.stargateAPI = Objects.requireNonNull(stargateAPI);
+        this.registry = stargateAPI.getRegistry();
+        this.languageManager = stargateAPI.getLanguageManager();
+        this.economyManager = stargateAPI.getEconomyManager();
+        this.addonRegistry = stargateAPI.getMaterialHandlerResolver();
     }
 
     /**
@@ -136,14 +143,14 @@ public class BlockEventListener implements Listener {
         BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PLACE, event.getBlock().getLocation(),
                 registry,
                 () -> event.getPlayer().sendMessage(languageManager.getErrorMessage(TranslatableMessage.DESTROY)));
-        if(event.isCancelled() || !registry.hasRegisteredBlockHandler(event.getBlock().getType())) {
+        if(event.isCancelled() || !addonRegistry.hasRegisteredBlockHandler(event.getBlock().getType())) {
             return;
         }
         List<RealPortal> portals = registry.getPortalsFromTouchingBlock(event.getBlock().getLocation(), GateStructureType.FRAME);
         if(portals.isEmpty()) {
             return;
         }
-        registry.registerPlacement(event.getBlock().getLocation(), portals, event.getBlock().getType(), event.getPlayer());
+        addonRegistry.registerPlacement(event.getBlock().getLocation(), portals, event.getBlock().getType(), event.getPlayer());
     }
 
     /**
@@ -197,7 +204,7 @@ public class BlockEventListener implements Listener {
         }
         try {
             PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, unrecognisedFlags, event.getPlayer(), cost,
-                    permissionManager, errorMessage, registry, languageManager, economyManager);
+                    permissionManager, errorMessage, stargateAPI);
         } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINER, "No Gate format matches");
         } catch (GateConflictException gateConflictException) {

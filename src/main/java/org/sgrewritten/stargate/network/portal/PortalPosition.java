@@ -1,11 +1,14 @@
 package org.sgrewritten.stargate.network.portal;
 
 import org.bukkit.util.BlockVector;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
+
+import java.util.Objects;
 
 /**
  * A position of a portal's control block
@@ -21,9 +24,9 @@ public class PortalPosition {
      * @param positionType     <p>The type of this portal position</p>
      * @param positionLocation <p>The location of this portal position</p>
      */
-    public PortalPosition(PositionType positionType, BlockVector positionLocation) {
-        this.positionType = positionType;
-        this.positionLocation = positionLocation;
+    public PortalPosition(@NotNull PositionType positionType, @NotNull BlockVector positionLocation) {
+        this.positionType = Objects.requireNonNull(positionType);
+        this.positionLocation = Objects.requireNonNull(positionLocation);
     }
 
     /**

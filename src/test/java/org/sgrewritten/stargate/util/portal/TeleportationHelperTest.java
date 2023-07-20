@@ -48,7 +48,7 @@ class TeleportationHelperTest {
         world = server.addSimpleWorld("world");
         fakePortalGenerator = new FakePortalGenerator();
         network = new LocalNetwork("network", NetworkType.CUSTOM);
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
+        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
     }
 
     @AfterAll

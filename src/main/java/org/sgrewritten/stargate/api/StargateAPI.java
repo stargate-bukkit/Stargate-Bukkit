@@ -7,6 +7,7 @@ import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.manager.BungeeManager;
 import org.sgrewritten.stargate.api.manager.PermissionManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 
 /**
  * An API to facilitate addons and integrations
@@ -59,7 +60,14 @@ public interface StargateAPI {
      */
     BungeeManager getBungeeManager();
 
+    /**
+     * @return <p> The economy manager used by Stargate</p>
+     */
+    StargateEconomyAPI getEconomyManager();
 
-
-
+    /**
+     *
+     * @return <p> The material handler resolver used by stargate addons</p>
+     */
+    MaterialHandlerResolver getMaterialHandlerResolver();
 }

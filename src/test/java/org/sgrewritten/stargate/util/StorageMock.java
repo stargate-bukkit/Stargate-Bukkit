@@ -1,8 +1,10 @@
 package org.sgrewritten.stargate.util;
 
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
+import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.InterServerNetwork;
@@ -19,7 +21,8 @@ import org.sgrewritten.stargate.api.network.portal.RealPortal;
 public class StorageMock implements StorageAPI {
 
     @Override
-    public void loadFromStorage(RegistryAPI registry, StargateEconomyAPI economyManager) {
+    public void loadFromStorage(RegistryAPI registry, StargateAPI stargateAPI) throws StorageReadException {
+
     }
 
     @Override

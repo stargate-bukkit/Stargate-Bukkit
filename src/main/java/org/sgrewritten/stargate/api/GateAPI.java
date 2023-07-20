@@ -115,7 +115,15 @@ public interface GateAPI {
     void addPortalPosition(Location location, PositionType type);
 
     /**
+     * Add a position specific to this Gate
+     *
+     * @param portalPosition <p> The portal position</p>
+     */
+    void addPortalPosition(PortalPosition portalPosition);
+
+    /**
      * Remove portal position at specified location
+     *
      * @param location The location of the portal position to be removed
      */
     void removePortalPosition(Location location);

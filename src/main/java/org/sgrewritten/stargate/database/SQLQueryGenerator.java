@@ -22,8 +22,6 @@ import java.util.logging.Level;
  * The SQL query generator is responsible for generating prepared statements for various queries
  */
 public class SQLQueryGenerator {
-
-    private final StargateLogger logger;
     private final TableNameConfiguration tableNameConfiguration;
     private final DatabaseDriver databaseDriver;
 
@@ -31,12 +29,10 @@ public class SQLQueryGenerator {
      * Instantiates a new SQL query generator
      *
      * @param tableNameConfiguration <p>The config to use for table names</p>
-     * @param logger                 <p>The logger to use for logging error messages</p>
      * @param databaseDriver         <p>The currently used database driver (for syntax variations)</p>
      */
-    public SQLQueryGenerator(TableNameConfiguration tableNameConfiguration, StargateLogger logger, DatabaseDriver databaseDriver) {
+    public SQLQueryGenerator(TableNameConfiguration tableNameConfiguration, DatabaseDriver databaseDriver) {
         this.tableNameConfiguration = tableNameConfiguration;
-        this.logger = logger;
         this.databaseDriver = databaseDriver;
     }
 
@@ -424,7 +420,7 @@ public class SQLQueryGenerator {
             statement.setString(12, Stargate.getServerUUID());
         }
 
-        log(Level.FINEST, "sql query: " + statementMessage);
+        Stargate.log(Level.FINEST, "sql query: " + statementMessage);
         return statement;
     }
 
@@ -450,7 +446,7 @@ public class SQLQueryGenerator {
         PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, portal.getName());
         statement.setString(2, portal.getNetwork().getId());
-        log(Level.FINEST, "sql query: " + statementMessage);
+        Stargate.log(Level.FINEST, "sql query: " + statementMessage);
         return statement;
     }
 
@@ -466,7 +462,7 @@ public class SQLQueryGenerator {
     public PreparedStatement generateUpdateServerInfoStatus(Connection connection, String serverUUID, String serverName) throws SQLException {
         String statementString = getQuery(SQLQuery.REPLACE_SERVER_INFO);
         String statementMessage = tableNameConfiguration.replaceKnownTableNames(statementString);
-        log(Level.FINEST, statementMessage);
+        Stargate.log(Level.FINEST, statementMessage);
         PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, serverUUID);
         statement.setString(2, serverName);
@@ -522,7 +518,7 @@ public class SQLQueryGenerator {
      */
     private PreparedStatement prepareQuery(Connection connection, String query) throws SQLException {
         query = tableNameConfiguration.replaceKnownTableNames(query);
-        log(Level.FINEST, query);
+        Stargate.log(Level.FINEST, query);
         return connection.prepareStatement(query);
     }
 
@@ -623,19 +619,6 @@ public class SQLQueryGenerator {
         }
         statement.setString(1, netName);
         return statement;
-    }
-
-    /**
-     * Logs a message at the finest log level
-     *
-     * @param message <p>The message to log</p>
-     */
-    public void log(Level level, String message) {
-        if (logger != null) {
-            logger.logMessage(level, message);
-        } else {
-            Bukkit.getLogger().log(level, message);
-        }
     }
 
 }

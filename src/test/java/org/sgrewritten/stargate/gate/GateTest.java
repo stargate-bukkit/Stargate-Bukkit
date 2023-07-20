@@ -43,7 +43,7 @@ class GateTest {
         String gateFileName = "nether.gate";
         this.gateData = new GateData(gateFileName, topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ(), topLeft.getWorld().getName(),false,topLeft,facing);
         this.signBlock = PortalBlockGenerator.generatePortal(gateData.topLeft().clone().subtract(new Vector(0, 4, 0)));
-        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger());
+        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(testGatesDir);
         if (gateFormats == null) {
             throw new IllegalStateException("Cannot get gate formats required for testing");
         }

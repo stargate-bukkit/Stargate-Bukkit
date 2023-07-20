@@ -123,7 +123,7 @@ public class DataMigration_1_0_14 extends DataMigration {
      */
     private void addNetworkTypeFlags(@NotNull SQLDatabaseAPI database, StorageType storageType,
                                      TableNameConfiguration nameConfiguration) throws SQLException {
-        SQLQueryGenerator queryGenerator = new SQLQueryGenerator(nameConfiguration, Stargate.getInstance(),
+        SQLQueryGenerator queryGenerator = new SQLQueryGenerator(nameConfiguration,
                 database.getDriver());
         try (Connection connection = database.getConnection()) {
             Map<GlobalPortalId, PortalFlag> portalNetworkTypeFlags = getNetworkTypeFlags(queryGenerator, connection,

@@ -10,6 +10,7 @@ import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.BlockHandlerInterface;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
@@ -25,6 +26,7 @@ import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
@@ -44,9 +46,6 @@ public class StargateRegistry implements RegistryAPI {
     private final HashMap<String, Network> networkMap = new HashMap<>();
     private final HashMap<String, Network> bungeeNetworkMap = new HashMap<>();
     private final Map<GateStructureType, Map<BlockLocation, RealPortal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
-    private final Map<Material,List<BlockHandlerInterface>> blockHandlerMap = new HashMap<>();
-
-    private final Map<BlockLocation,BlockHandlerInterface> blockBlockHandlerMap = new HashMap<>();
 
     /**
      * Instantiates a new Stargate registry
@@ -58,9 +57,9 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void loadPortals(StargateEconomyAPI economyManager) {
+    public void loadPortals(StargateAPI stargateAPI) {
         try {
-            storageAPI.loadFromStorage(this, economyManager);
+            storageAPI.loadFromStorage(this, stargateAPI);
         } catch (StorageReadException e) {
             Stargate.log(e);
             return;
@@ -222,6 +221,14 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
+    public void registerLocation(GateStructureType structureType, BlockLocation location, RealPortal portal){
+        if (!portalFromStructureTypeMap.containsKey(structureType)) {
+            portalFromStructureTypeMap.put(structureType, new HashMap<>());
+        }
+        portalFromStructureTypeMap.get(structureType).put(location,portal);
+    }
+
+    @Override
     public void unRegisterLocation(GateStructureType structureType, BlockLocation blockLocation) {
         Map<BlockLocation, RealPortal> map = portalFromStructureTypeMap.get(structureType);
         if (map != null && map.get(blockLocation) != null) {
@@ -255,11 +262,11 @@ public class StargateRegistry implements RegistryAPI {
         return networkMap;
     }
 
-    public void load(StargateEconomyAPI economyManager) {
+    public void load(StargateAPI stargateAPI) {
         networkMap.clear();
         bungeeNetworkMap.clear();
         portalFromStructureTypeMap.clear();
-        this.loadPortals(economyManager);
+        this.loadPortals(stargateAPI);
     }
 
     @Override
@@ -327,67 +334,6 @@ public class StargateRegistry implements RegistryAPI {
         } catch (StorageReadException e) {
             Stargate.log(e);
         }
-    }
-
-    @Override
-    public void addBlockHandlerInterface(BlockHandlerInterface blockHandlerInterface) {
-        List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.computeIfAbsent(blockHandlerInterface.getHandledMaterial(), k -> new ArrayList<>());
-        blockHandlerInterfaceList.add(blockHandlerInterface);
-        blockHandlerInterfaceList.sort(Comparator.comparingInt((ablockHandlerInterface) -> -ablockHandlerInterface.getPriority().getPriorityValue()));
-    }
-
-    @Override
-    public void removeBlockHandlerInterface(BlockHandlerInterface blockHandlerInterface) {
-        for(Material key : this.blockHandlerMap.keySet()){
-            List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.get(key);
-            if(blockHandlerInterfaceList.remove(blockHandlerInterface)){
-                return;
-            }
-        }
-    }
-
-    @Override
-    public void removeBlockHandlerInterfaces(Plugin plugin) {
-        for(Material key : this.blockHandlerMap.keySet()){
-            List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.get(key);
-            blockHandlerInterfaceList.removeIf(blockHandlerInterface -> blockHandlerInterface.getPlugin() == plugin);
-        }
-    }
-
-    @Override
-    public void registerPlacement(Location location, List<RealPortal> portals, Material material, Player player) {
-        if(!blockHandlerMap.containsKey(material)){
-            return;
-        }
-        for(RealPortal portal: portals) {
-            for(BlockHandlerInterface blockHandlerInterface : blockHandlerMap.get(material)){
-                if(portal.hasFlag(blockHandlerInterface.getFlag()) && blockHandlerInterface.registerPlacedBlock(location,player,portal)){
-                    portal.getGate().addPortalPosition(location, blockHandlerInterface.getInterfaceType());
-                    blockBlockHandlerMap.put(new BlockLocation(location),blockHandlerInterface);
-                    return;
-                }
-            }
-        }
-    }
-
-    @Override
-    public void registerRemoval(Location location, List<RealPortal> portals, Material material, Player player) {
-        if(!blockHandlerMap.containsKey(material)){
-            return;
-        }
-        BlockHandlerInterface blockHandlerInterface = this.blockBlockHandlerMap.get(new BlockLocation(location));
-        if(blockHandlerInterface == null){
-            return;
-        }
-        for(RealPortal portal: portals) {
-            blockHandlerInterface.unRegisterPlacedBlock(location,player,portal);
-            portal.getGate().removePortalPosition(location);
-        }
-    }
-
-    @Override
-    public boolean hasRegisteredBlockHandler(Material material) {
-        return blockHandlerMap.containsKey(material);
     }
 
 }

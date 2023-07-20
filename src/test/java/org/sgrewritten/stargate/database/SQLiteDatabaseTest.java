@@ -32,7 +32,7 @@ public class SQLiteDatabaseTest {
         Stargate.log(Level.FINE, "Setting up test data");
         SQLDatabaseAPI database = new SQLiteDatabase(new File("src/test/resources", "test.db"));
         nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
-        SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, new FakeStargateLogger(), DatabaseDriver.SQLITE);
+        SQLQueryGenerator generator = new SQLQueryGenerator(nameConfig, DatabaseDriver.SQLITE);
         tester = new DatabaseTester(database, nameConfig, generator, false);
     }
 

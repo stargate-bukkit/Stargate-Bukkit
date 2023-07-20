@@ -31,11 +31,11 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.action.SimpleAction;
+import org.sgrewritten.stargate.api.MaterialHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.command.CommandStargate;
 import org.sgrewritten.stargate.command.StargateTabCompleter;
@@ -109,7 +109,7 @@ import java.util.logging.Level;
  * @author Drakia (2011-2013)
  * @author Dinnerbone (2010-2011)
  */
-public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI, ConfigurationAPI {
+public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAPI {
 
     private static Stargate instance;
 
@@ -153,13 +153,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
     private static final FileConfiguration staticConfig = new StargateYamlConfiguration();
 
-    public Stargate() {
-    }
-
-    protected Stargate(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
-        super(loader, description, dataFolder, file);
-    }
-
     @Override
     public void onEnable() {
         try {
@@ -170,10 +163,10 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
             fetchServerId();
             String LANGUAGE_FOLDER = "lang";
-            languageManager = new StargateLanguageManager(this, new File(DATA_FOLDER, LANGUAGE_FOLDER));
+            languageManager = new StargateLanguageManager(new File(DATA_FOLDER, LANGUAGE_FOLDER));
             economyManager = new VaultEconomyManager(languageManager);
             SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
-            storageAPI = new SQLDatabase(database, this, this.getLanguageManager());
+            storageAPI = new SQLDatabase(database);
             registry = new StargateRegistry(storageAPI);
             bungeeManager = new StargateBungeeManager(this.getRegistry(), this.getLanguageManager());
             blockLogger = new CoreProtectManager();
@@ -186,7 +179,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
             loadGateFormats();
             load();
-            registry.loadPortals(getEconomyManager());
+            registry.loadPortals(this);
 
             pluginManager = getServer().getPluginManager();
             registerListeners();
@@ -213,6 +206,11 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      */
     public StargateEconomyAPI getEconomyManager() {
         return economyManager;
+    }
+
+    @Override
+    public MaterialHandlerResolver getMaterialHandlerResolver() {
+        return null;
     }
 
     /**
@@ -409,7 +407,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
      * Registers all necessary listeners for this plugin
      */
     private void registerListeners() {
-        pluginManager.registerEvents(new BlockEventListener(getRegistry(), this.getLanguageManager(), getEconomyManager()), this);
+        pluginManager.registerEvents(new BlockEventListener(this), this);
         pluginManager.registerEvents(new MoveEventListener(getRegistry()), this);
         pluginManager.registerEvents(new PlayerEventListener(this.getLanguageManager(), getRegistry(), this.getBungeeManager(), this.getBlockLoggerManager()), this);
         pluginManager.registerEvents(new PluginEventListener(getEconomyManager(), getBlockLoggerManager()), this);
@@ -456,11 +454,11 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private void migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException {
         File databaseFile = new File(this.getDataFolder(), "stargate.db");
         SQLDatabaseAPI database = new SQLiteDatabase(databaseFile);
-        StorageAPI storageAPI = new SQLDatabase(database, false, false, this, this.getLanguageManager());
+        StorageAPI storageAPI = new SQLDatabase(database, false, false);
         RegistryAPI migrationRegistry = new StargateRegistry(storageAPI);
 
-        DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), CONFIG_FILE), this,
-                this.getServer(), migrationRegistry, this.getLanguageManager(), this.getEconomyManager(), this.getStoredPropertiesAPI());
+        DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), CONFIG_FILE),
+                this.getServer(), migrationRegistry, this, this.getStoredPropertiesAPI());
 
         if (dataMigrator.isMigrationNecessary()) {
             Map<String, Object> updatedConfig = dataMigrator.getUpdatedConfig();
@@ -503,7 +501,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
     private void loadGateFormats() throws IOException {
         this.gateFolder = ConfigurationHelper.getString(ConfigurationOption.GATE_FOLDER);
         saveDefaultGates();
-        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(new File(this.getDataFolder(), this.getGateFolder()), this);
+        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(new File(this.getDataFolder(), this.getGateFolder()));
         if (gateFormats == null) {
             log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
             GateFormatHandler.setFormats(new ArrayList<>());
@@ -536,9 +534,9 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
             loadGateFormats();
             if (storageAPI instanceof SQLDatabase) {
                 SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
-                ((SQLDatabase) storageAPI).load(database, this, this.getLanguageManager());
+                ((SQLDatabase) storageAPI).load(database);
             }
-            registry.load(this.getEconomyManager());
+            registry.load(this);
             economyManager.setupEconomy();
         } catch (StargateInitializationException | IOException | SQLException e) {
             Stargate.log(e);
@@ -561,7 +559,7 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
 
             messenger.registerOutgoingPluginChannel(this, PluginChannel.BUNGEE.getChannel());
             messenger.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(),
-                    new StargateBungeePluginMessageListener(getBungeeManager(), this));
+                    new StargateBungeePluginMessageListener(getBungeeManager()));
         }
     }
 
@@ -656,7 +654,6 @@ public class Stargate extends JavaPlugin implements StargateLogger, StargateAPI,
         return instance;
     }
 
-    @Override
     public void logMessage(Level priorityLevel, String message) {
         if (priorityLevel.intValue() < logLevel.intValue()) {
             return;

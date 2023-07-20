@@ -59,7 +59,7 @@ class StargateBungeeManagerTest {
     void setUp() throws TranslatableException, InvalidStructureException {
         server = MockBukkit.mock();
         GateFormatHandler.setFormats(
-                Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger())));
+                Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
         Stargate.setServerName(SERVER);
         registry = new StargateRegistry(new StorageMock());
         world = server.addSimpleWorld("world");

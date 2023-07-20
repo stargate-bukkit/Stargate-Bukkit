@@ -18,7 +18,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
@@ -66,6 +68,7 @@ public class DataMigratorTest {
 
     static private ServerMock server;
     private static StargateRegistry registry;
+    private static StargateAPIMock stargateAPI;
 
     @BeforeAll
     public static void setUp() throws IOException, InvalidConfigurationException, SQLException {
@@ -82,9 +85,9 @@ public class DataMigratorTest {
         defaultConfigFile = new File("src/main/resources", "config.yml");
         sqlDatabaseFile = new File("src/test/resources", "migrate-test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);
-        StorageAPI storageAPI = new SQLDatabase(sqlDatabase, false, false, logger, new LanguageManagerMock());
+        StorageAPI storageAPI = new SQLDatabase(sqlDatabase, false, false);
         registry = new StargateRegistry(storageAPI);
-
+        stargateAPI = new StargateAPIMock(storageAPI,registry);
 
         defaultConfigFile = new File("src/main/resources", "config.yml");
         server = MockBukkit.mock();
@@ -94,7 +97,7 @@ public class DataMigratorTest {
         server.addPlayer(new PlayerMock(server, "Thorinwasher", UUID.fromString("d2b440c3-edde-4443-899e-6825c31d0919")));
         Stargate.getFileConfiguration().load(defaultConfigFile);
 
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
+        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
     }
 
     private static Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> getSettingTestMaps() {
@@ -183,7 +186,7 @@ public class DataMigratorTest {
                 throw new IOException("Unable to delete old config file");
             }
             FakePropertiesDatabase properties = new FakePropertiesDatabase();
-            DataMigrator dataMigrator = new DataMigrator(configFile, logger, server, registry, new LanguageManagerMock(), new FakeEconomyManager(), properties);
+            DataMigrator dataMigrator = new DataMigrator(configFile, server, registry ,stargateAPI, properties);
             if (!configFile.renameTo(oldConfigFile)) {
                 throw new IOException("Unable to rename existing config for backup");
             }

@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -32,20 +33,18 @@ public class DataMigrator {
      * Instantiates a new data migrator
      *
      * @param configurationFile <p>The configuration file to migrate to a newer format</p>
-     * @param logger            <p>The logger used for logging any error or debug messages</p>
      * @param server            <p>A server object</p>
      * @param registry          <p>The registry that manages all portals</p>
      * @throws IOException                   <p>If unable to read or write to a file</p>
      * @throws InvalidConfigurationException <p>If unable to load the given configuration file</p>
      */
-    public DataMigrator(@NotNull File configurationFile, @NotNull StargateLogger logger, @NotNull Server server,
-                        @NotNull RegistryAPI registry, @NotNull LanguageManager languageManager,
-                        @NotNull StargateEconomyAPI economyManager, @NotNull StoredPropertiesAPI properties)
+    public DataMigrator(@NotNull File configurationFile, @NotNull Server server,
+                        @NotNull RegistryAPI registry, @NotNull StargateAPI stargateAPI, @NotNull StoredPropertiesAPI properties)
             throws IOException, InvalidConfigurationException {
         // WARNING: Migrators must be defined from oldest to newest to prevent partial
         // migration
         MIGRATIONS = new DataMigration[]{
-                new DataMigration_1_0_0(server, registry, logger, languageManager, economyManager, properties),
+                new DataMigration_1_0_0(server, registry, stargateAPI,properties),
                 new DataMigration_1_0_14()
         };
 

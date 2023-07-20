@@ -101,8 +101,7 @@ public class DatabaseTester {
         DatabaseTester.serverName = "aServerName";
         DatabaseTester.serverUUID = UUID.randomUUID();
         Stargate.setServerUUID(serverUUID);
-        StargateLogger logger = new FakeStargateLogger();
-        this.portalDatabaseAPI = new SQLDatabase(database, false, isMySQL, logger, nameConfig);
+        this.portalDatabaseAPI = new SQLDatabase(database, false, isMySQL, nameConfig);
 
         Network testNetwork = null;
         try {
@@ -111,7 +110,7 @@ public class DatabaseTester {
             Stargate.log(e);
             fail();
         }
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
+        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
         portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
 
         this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength);

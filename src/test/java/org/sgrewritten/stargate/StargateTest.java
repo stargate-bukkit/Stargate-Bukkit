@@ -56,11 +56,11 @@ class StargateTest {
         Network network = plugin.getRegistry().createNetwork("network", NetworkType.CUSTOM, false, false);
 
         String PORTAL1 = "name1";
-        portal = FakePortalGenerator.generateFakePortal(signBlock1, network, new HashSet<>(), PORTAL1, plugin.getRegistry());
+        portal = FakePortalGenerator.generateFakePortal(signBlock1, network, new HashSet<>(), PORTAL1, plugin);
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.BUNGEE);
         Network bungeeNetwork = plugin.getRegistry().createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, false);
-        bungeePortal = FakePortalGenerator.generateFakePortal(signBlock2, bungeeNetwork, flags, PORTAL2, plugin.getRegistry());
+        bungeePortal = FakePortalGenerator.generateFakePortal(signBlock2, bungeeNetwork, flags, PORTAL2, plugin);
     }
 
     @AfterEach

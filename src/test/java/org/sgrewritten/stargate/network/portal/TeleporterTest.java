@@ -39,7 +39,7 @@ class TeleporterTest {
     @BeforeAll
     public static void setup() throws TranslatableException, InvalidStructureException {
         @NotNull ServerMock server = MockBukkit.mock();
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger())));
+        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
         @NotNull WorldMock world = server.addSimpleWorld("world");
         @NotNull PlayerMock player = server.addPlayer();
         FakePortalGenerator fakePortalGenerator = new FakePortalGenerator("Portal", "iPortal");

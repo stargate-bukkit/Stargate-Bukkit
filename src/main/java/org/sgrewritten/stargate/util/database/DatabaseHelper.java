@@ -174,7 +174,7 @@ public class DatabaseHelper {
     public static SQLQueryGenerator getSQLGenerator(Stargate stargate, boolean usingRemoteDatabase) {
         TableNameConfiguration config = DatabaseHelper.getTableNameConfiguration(usingRemoteDatabase);
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
-        return new SQLQueryGenerator(config, stargate, databaseEnum);
+        return new SQLQueryGenerator(config, databaseEnum);
     }
 
     public static TableNameConfiguration getTableNameConfiguration(boolean usingRemoteDatabase) {

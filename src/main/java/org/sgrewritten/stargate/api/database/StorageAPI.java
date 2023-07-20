@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.api.database;
 
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
@@ -24,11 +25,11 @@ public interface StorageAPI {
     /**
      * Loads all portals from storage and adds them to the portal registry
      *
-     * @param registry       <p> The registry to load the portals into </p>
-     * @param economyManager <p> The handle all economical transactions from the portal will be based of</p>
+     * @param stargateAPI <p> The stargate API </p>
+     * @param registry <p> The registry to insert the portals into</p>
      * @throws StorageReadException <p>If unable to read from storage</p>
      */
-    void loadFromStorage(RegistryAPI registry, StargateEconomyAPI economyManager) throws StorageReadException;
+    void loadFromStorage(RegistryAPI registry, StargateAPI stargateAPI) throws StorageReadException;
 
     /**
      * Saves the given portal to storage

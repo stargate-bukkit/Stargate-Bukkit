@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.database;
 
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
@@ -54,18 +55,15 @@ public class SQLDatabase implements StorageAPI {
     private SQLDatabaseAPI database;
     private SQLQueryGenerator sqlQueryGenerator;
     private boolean useInterServerNetworks;
-    private StargateLogger logger;
-    private LanguageManager languageManager;
 
     /**
      * Instantiates a new stargate registry
      *
      * @param database <p>The database connected to this Stargate instance</p>
-     * @param stargate <p>The Stargate instance to use</p>
      * @throws StargateInitializationException <p>If unable to initialize the database</p>
      */
-    public SQLDatabase(SQLDatabaseAPI database, Stargate stargate, LanguageManager languageManager) throws StargateInitializationException {
-        load(database, stargate, languageManager);
+    public SQLDatabase(SQLDatabaseAPI database) throws StargateInitializationException {
+        load(database);
     }
 
     /**
@@ -74,12 +72,10 @@ public class SQLDatabase implements StorageAPI {
      * @param database            <p>The database used for storing portals</p>
      * @param usingBungee         <p>Whether BungeeCord support is enabled</p>
      * @param usingRemoteDatabase <p>Whether a remote database, not a flatfile database is used</p>
-     * @param logger              <p>The Stargate logger to use for logging</p>
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
-    public SQLDatabase(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase,
-                       StargateLogger logger, LanguageManager languageManager) throws SQLException {
-        load(database, usingBungee, usingRemoteDatabase, logger, languageManager);
+    public SQLDatabase(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase) throws SQLException {
+        load(database, usingBungee, usingRemoteDatabase);
     }
 
     /**
@@ -88,28 +84,26 @@ public class SQLDatabase implements StorageAPI {
      * @param database            <p>The database used for storing portals</p>
      * @param usingBungee         <p>Whether BungeeCord support is enabled</p>
      * @param usingRemoteDatabase <p>Whether a remote database, not a flatfile database is used</p>
-     * @param logger              <p>The Stargate logger to use for logging</p>
      * @param config              <p>The table name configuration to use</p>
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
     public SQLDatabase(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase,
-                       StargateLogger logger, TableNameConfiguration config) throws SQLException {
-        this.logger = logger;
+                       TableNameConfiguration config) throws SQLException {
         this.database = database;
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
-        this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
+        this.sqlQueryGenerator = new SQLQueryGenerator(config, databaseEnum);
         DatabaseHelper.createTables(database, this.sqlQueryGenerator, useInterServerNetworks);
     }
 
     @Override
-    public void loadFromStorage(RegistryAPI registry, StargateEconomyAPI economyManager) throws StorageReadException {
+    public void loadFromStorage(RegistryAPI registry, StargateAPI stargateAPI) throws StorageReadException {
         try {
-            logger.logMessage(Level.FINER, "Loading portals from base database");
-            loadAllPortals(database, StorageType.LOCAL, registry, economyManager);
+            Stargate.log(Level.FINER, "Loading portals from base database");
+            loadAllPortals(database, StorageType.LOCAL, stargateAPI);
             if (useInterServerNetworks) {
-                logger.logMessage(Level.FINER, "Loading portals from inter-server bungee database");
-                loadAllPortals(database, StorageType.INTER_SERVER, registry, economyManager);
+                Stargate.log(Level.FINER, "Loading portals from inter-server bungee database");
+                loadAllPortals(database, StorageType.INTER_SERVER, stargateAPI);
             }
         } catch (SQLException exception) {
             throw new StorageReadException(exception);
@@ -188,17 +182,16 @@ public class SQLDatabase implements StorageAPI {
      *
      * @param database       <p>The database to load from</p>
      * @param portalType     <p>The portal type to load</p>
-     * @param registry       <p>The registry to register the loaded portals to</p>
-     * @param economyManager <p>The economy manager to use</p>
+     * @param stargateAPI    <p>The stargate registry</p>
      * @throws SQLException <p>If an SQL error occurs</p>
      */
-    private void loadAllPortals(SQLDatabaseAPI database, StorageType portalType, RegistryAPI registry, StargateEconomyAPI economyManager) throws SQLException {
+    private void loadAllPortals(SQLDatabaseAPI database, StorageType portalType, StargateAPI stargateAPI) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsStatement(connection, portalType);
 
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
-            loadPortal(resultSet, portalType, registry, economyManager);
+            loadPortal(resultSet, portalType, stargateAPI);
         }
         statement.close();
         connection.close();
@@ -209,17 +202,16 @@ public class SQLDatabase implements StorageAPI {
      *
      * @param resultSet      <p>A query result with portal information</p>
      * @param portalType     <p>The portal type to load</p>
-     * @param registry       <p>The registry to register the loaded portals to</p>
-     * @param economyManager <p>The economy manager to use</p>
+     * @param stargateAPI    <p>The stargate API</p>
      * @throws SQLException <p>If an SQL error occurs</p>
      */
-    private void loadPortal(ResultSet resultSet, StorageType portalType, RegistryAPI registry, StargateEconomyAPI economyManager) throws SQLException {
+    private void loadPortal(ResultSet resultSet, StorageType portalType, StargateAPI stargateAPI) throws SQLException {
         PortalData portalData = PortalStorageHelper.loadPortalData(resultSet, portalType);
         if (portalData == null) {
             return;
         }
 
-        Network network = getNetwork(portalData, registry);
+        Network network = getNetwork(portalData, stargateAPI.getRegistry());
         if (network == null) {
             Stargate.log(Level.WARNING, "Unable to get network " + portalData.networkName());
             return;
@@ -236,7 +228,7 @@ public class SQLDatabase implements StorageAPI {
 
         //Actually register the gate and its positions
         try {
-            registerPortalGate(portalData, network, registry, economyManager);
+            registerPortalGate(portalData, network, stargateAPI);
         } catch (TranslatableException | GateConflictException e) {
             Stargate.log(e);
         } catch (InvalidStructureException e) {
@@ -252,25 +244,22 @@ public class SQLDatabase implements StorageAPI {
      *
      * @param portalData     <p>The portal data to register positions for</p>
      * @param network        <p>The network the portal belongs to</p>
-     * @param registry       <p>The portal registry to register to</p>
-     * @param economyManager <p>The economy manager to use</p>
+     * @param stargateAPI    <p>The portal stargate API</p>
      * @throws SQLException              <p>If unable to interact with the database</p>
      * @throws InvalidStructureException <p>If the portal's gate is invalid</p>
      * @throws GateConflictException     <p>If the new gate conflicts with an existing gate</p>
      * @throws TranslatableException     <p>If some input is invalid</p>
      */
-    private void registerPortalGate(PortalData portalData, Network network, RegistryAPI registry,
-                                    StargateEconomyAPI economyManager) throws SQLException,
+    private void registerPortalGate(PortalData portalData, Network network, StargateAPI stargateAPI) throws SQLException,
             InvalidStructureException, GateConflictException, TranslatableException {
         List<PortalPosition> portalPositions = getPortalPositions(portalData);
-        Gate gate = new Gate(portalData.gateData(), registry);
+        Gate gate = new Gate(portalData.gateData(), stargateAPI.getRegistry());
         if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
                 && !gate.isValid(portalData.flags().contains(PortalFlag.ALWAYS_ON))) {
             throw new InvalidStructureException();
         }
         gate.addPortalPositions(portalPositions);
-        Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, languageManager, registry,
-                economyManager);
+        Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, stargateAPI);
         network.addPortal(portal, false);
         Stargate.log(Level.FINEST, "Added as normal portal");
     }
@@ -391,28 +380,24 @@ public class SQLDatabase implements StorageAPI {
      * Loads the database from the given API, and prepares necessary tables
      *
      * @param database <p>The database API to get a connection from</p>
-     * @param stargate <p>A reference to the Stargate API</p>
-     * @throws StargateInitializationException <p>If unable to initializes the datbase and tables</p>
+     * @throws StargateInitializationException <p>If unable to initializes the database and tables</p>
      */
-    public void load(SQLDatabaseAPI database, Stargate stargate, LanguageManager languageManager) throws StargateInitializationException {
+    public void load(SQLDatabaseAPI database) throws StargateInitializationException {
         try {
             load(database, ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE),
-                    ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE), stargate, languageManager);
+                    ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE));
         } catch (SQLException exception) {
-            logger.logMessage(Level.SEVERE, exception.getMessage());
-            throw new StargateInitializationException(exception.getMessage());
+            throw new StargateInitializationException(exception);
         }
     }
 
-    private void load(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase, StargateLogger logger, LanguageManager languageManager)
+    private void load(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase)
             throws SQLException {
-        this.logger = logger;
         this.database = database;
-        this.languageManager = languageManager;
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
         TableNameConfiguration config = DatabaseHelper.getTableNameConfiguration(usingRemoteDatabase);
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
-        this.sqlQueryGenerator = new SQLQueryGenerator(config, logger, databaseEnum);
+        this.sqlQueryGenerator = new SQLQueryGenerator(config, databaseEnum);
         DatabaseHelper.createTables(database, this.sqlQueryGenerator, useInterServerNetworks);
     }
 

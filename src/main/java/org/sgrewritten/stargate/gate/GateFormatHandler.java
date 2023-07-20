@@ -73,7 +73,7 @@ public class GateFormatHandler {
      * @param logger
      * @return <p>A map between a control block material and the corresponding gate format</p>
      */
-    public static List<GateFormat> loadGateFormats(File dir, StargateLogger logger) {
+    public static List<GateFormat> loadGateFormats(File dir) {
         Stargate.log(Level.FINE, "Loading gates from " + dir.getAbsolutePath());
         List<GateFormat> gateFormatMap = new ArrayList<>();
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".gate")) : new File[0];
@@ -84,12 +84,12 @@ public class GateFormatHandler {
 
         for (File file : files) {
             try {
-                gateFormatMap.add(loadGateFormat(file, logger));
+                gateFormatMap.add(loadGateFormat(file));
             } catch (FileNotFoundException | ParsingErrorException exception) {
-                logger.logMessage(Level.WARNING, "Could not load Gate " + file.getName() + " - " + exception.getMessage());
+                Stargate.log(Level.WARNING, "Could not load Gate " + file.getName() + " - " + exception.getMessage());
                 if (exception instanceof ParsingErrorException && file.exists()) {
                     if (!file.renameTo(new File(dir, file.getName() + ".invalid"))) {
-                        logger.logMessage(Level.WARNING, "Could not add .invalid to gate. Make sure file " +
+                        Stargate.log(Level.WARNING, "Could not add .invalid to gate. Make sure file " +
                                 "permissions are set correctly.");
                     }
                 }
@@ -140,7 +140,7 @@ public class GateFormatHandler {
      * @throws ParsingErrorException <p>If unable to load the gate format</p>
      * @throws FileNotFoundException <p>If the gate file does not exist</p>
      */
-    private static GateFormat loadGateFormat(File file, StargateLogger logger) throws ParsingErrorException,
+    private static GateFormat loadGateFormat(File file) throws ParsingErrorException,
             FileNotFoundException {
         Stargate.log(Level.CONFIG, "Loaded gate format " + file.getName());
         try (Scanner scanner = new Scanner(file)) {
@@ -149,7 +149,7 @@ public class GateFormatHandler {
                 throw new ParsingErrorException("Design is too large");
             }
 
-            GateFormatParser gateParser = new GateFormatParser(scanner, file.getName(), logger);
+            GateFormatParser gateParser = new GateFormatParser(scanner, file.getName());
             return gateParser.parseGateFormat();
         }
     }

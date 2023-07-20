@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.BlockHandlerInterface;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -35,8 +36,9 @@ import java.util.Set;
 public interface RegistryAPI {
     /**
      * Loads all portals from storage
+     * @param stargateAPI <p>The stargate api</p>
      */
-    void loadPortals(StargateEconomyAPI economyManager);
+    void loadPortals(StargateAPI stargateAPI);
 
     /**
      * Removes the given portal from storage
@@ -151,6 +153,8 @@ public interface RegistryAPI {
      */
     void registerLocations(GateStructureType structureType, Map<BlockLocation, RealPortal> locationsMap);
 
+    void registerLocation(GateStructureType structureType, BlockLocation location, RealPortal portal);
+
     /**
      * Un-registers all portal blocks with the given structure type, at the given block location
      *
@@ -246,50 +250,4 @@ public interface RegistryAPI {
      * @throws InvalidNameException <p> If the name is a uuid </p>
      */
     void rename(Network network) throws InvalidNameException;
-
-    /**
-     * Add a listener for block placement next by a portal
-     *
-     * @param blockHandlerInterface A listener for block placement next by a portal
-     */
-    void addBlockHandlerInterface(BlockHandlerInterface blockHandlerInterface);
-
-    /**
-     * Remove a listener for block placement next by a portal
-     *
-     * @param blockHandlerInterface listener for block placement next by a portal
-     */
-    void removeBlockHandlerInterface(BlockHandlerInterface blockHandlerInterface);
-
-    /**
-     * Remove all listeners for block placement next by a portal
-     * @param plugin The plugin to remove listeners from
-     */
-    void removeBlockHandlerInterfaces(Plugin plugin);
-
-    /**
-     *
-     * @param location The location of the block that is being placed
-     * @param portals The portal to try registration on
-     * @param material The material of the block
-     * @param player The player that placed the block
-     */
-    void registerPlacement(Location location, List<RealPortal> portals, Material material, Player player);
-
-    /**
-     *
-     * @param location The location of the block that is being removed
-     * @param portals The portal to try removal on
-     * @param material The material of the block that is being removed
-     * @param player The player that removed the block
-     */
-    void registerRemoval(Location location, List<RealPortal> portals, Material material, Player player);
-
-    /**
-     * Method used for performance
-     * @param material The material
-     * @return Whether there exists a BlockHandlerInterface that
-     * has registed for the material
-     */
-    boolean hasRegisteredBlockHandler(Material material);
 }

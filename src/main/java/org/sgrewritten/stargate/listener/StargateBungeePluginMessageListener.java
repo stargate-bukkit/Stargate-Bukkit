@@ -42,16 +42,14 @@ import java.util.logging.Level;
  */
 public class StargateBungeePluginMessageListener implements PluginMessageListener {
 
-    private final StargateLogger stargateLogger;
     private final BungeeManager bungeeManager;
 
     /**
      * Instantiates a new stargate bungee plugin message listener
      *
-     * @param stargateLogger <p>Something implementing the Stargate logger</p>
+     * @param bungeeManager <p>Manager for bungee related events</p>
      */
-    public StargateBungeePluginMessageListener(BungeeManager bungeeManager, StargateLogger stargateLogger) {
-        this.stargateLogger = Objects.requireNonNull(stargateLogger);
+    public StargateBungeePluginMessageListener(BungeeManager bungeeManager) {
         this.bungeeManager = Objects.requireNonNull(bungeeManager);
     }
 
@@ -74,7 +72,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
      */
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player unused, byte[] message) {
-        stargateLogger.logMessage(Level.FINEST, "Received plugin-message");
+        Stargate.log(Level.FINEST, "Received plugin-message");
 
         boolean usingBungee = ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE);
         if (!usingBungee || !channel.equals("BungeeCord")) {
@@ -87,7 +85,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
             //Ignore any unknown sub-channels to prevent an exception caused by converting null into ordinal
             PluginChannel subPluginChannel = PluginChannel.parse(subChannel);
             if (subPluginChannel == null) {
-                stargateLogger.logMessage(Level.FINEST, "Received unknown message on unknown sub-channel: " + subChannel);
+                Stargate.log(Level.FINEST, "Received unknown message on unknown sub-channel: " + subChannel);
                 return;
             }
             switch (subPluginChannel) {
@@ -103,18 +101,18 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     bungeeManager.updateNetwork(in.readUTF());
                     break;
                 case PLAYER_TELEPORT:
-                    stargateLogger.logMessage(Level.FINEST, "trying to read player join json msg");
+                    Stargate.log(Level.FINEST, "trying to read player join json msg");
                     bungeeManager.playerConnect(in.readUTF());
                     break;
                 case LEGACY_BUNGEE:
                     bungeeManager.legacyPlayerConnect(in.readUTF());
                     break;
                 default:
-                    stargateLogger.logMessage(Level.FINEST, "Received unknown message with a sub-channel: " + subChannel);
+                    Stargate.log(Level.FINEST, "Received unknown message with a sub-channel: " + subChannel);
                     break;
             }
         } catch (IOException e) {
-            stargateLogger.logMessage(Level.WARNING, "[Stargate] Error receiving BungeeCord message");
+            Stargate.log(Level.WARNING, "[Stargate] Error receiving BungeeCord message");
             Stargate.log(e);
         }
     }

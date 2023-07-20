@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.FakeStargate;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
@@ -63,6 +64,7 @@ class BlockEventListenerTest {
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
     private static final String PLAYER_NAME = "player";
     private static final String CUSTOM_NETNAME = "custom";
+    private StargateAPIMock stargateAPI;
 
     @BeforeEach
     void setUp() {
@@ -73,10 +75,11 @@ class BlockEventListenerTest {
 
         world = new WorldMock(Material.GRASS, 0);
         server.addWorld(world);
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
-        registry = new StargateRegistry(new StorageMock());
+        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
+        this.stargateAPI = new StargateAPIMock();
+        registry = stargateAPI.getRegistry();
         Stargate.setServerUUID(UUID.randomUUID());
-        blockEventListener = new BlockEventListener(registry, new LanguageManagerMock(), new FakeEconomyManager());
+        blockEventListener = new BlockEventListener(stargateAPI);
 
         Assertions.assertInstanceOf(WallSign.class, BlockDataMock.mock(Material.ACACIA_WALL_SIGN), " Too old mockbukkit version, requires at least v1.19:1.141.0");
 
@@ -166,7 +169,7 @@ class BlockEventListenerTest {
         Character flag = 'g';
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
                 MockBukkit.createMockPlugin(), Priority.HIGH, flag);
-        registry.addBlockHandlerInterface(blockHandler);
+        stargateAPI.getMaterialHandlerResolver().addBlockHandlerInterface(blockHandler);
         Location locaton = new Location(world, 0, 5, 0);
         Network network = registry.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, false, false);
         RealPortal portal = FakePortalGenerator.generateFakePortal(locaton,
