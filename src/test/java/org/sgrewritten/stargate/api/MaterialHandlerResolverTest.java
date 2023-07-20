@@ -23,6 +23,7 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.database.StorageMock;
@@ -35,7 +36,7 @@ public class MaterialHandlerResolverTest {
 
     private ServerMock server;
     private MaterialHandlerResolver materialHandlerResolver;
-    private RegistryAPI registry;
+    private RegistryMock registry;
     private StorageMock storage;
     private PlayerMock player;
     private WorldMock world;
@@ -45,7 +46,7 @@ public class MaterialHandlerResolverTest {
     void setUp() throws InvalidNameException, UnimplementedFlagException, NameLengthException, NameConflictException {
         this.server = MockBukkit.mock();
         this.storage = new StorageMock();
-        this.registry = new StargateRegistry(storage);
+        this.registry = new RegistryMock();
         this.materialHandlerResolver = new MaterialHandlerResolver(registry,storage);
         this.player = server.addPlayer();
         this.world = server.addSimpleWorld("world");
@@ -64,19 +65,19 @@ public class MaterialHandlerResolverTest {
         Material testMaterial = Material.END_GATEWAY;
         Character testFlag = 'c';
         Plugin plugin = MockBukkit.createMockPlugin("Test");
-        Location locaton = new Location(world,0,0,0);
+        Location location = new Location(world,0,0,0);
         Set<Character> flags = new HashSet<>();
         flags.add(testFlag);
-        RealPortal portal = PortalFactory.generateFakePortal(locaton, network, "test", true, new HashSet<>(),flags, registry);
-        // TODO add testflag to portal
-        Location location = new Location(world, 0, 0, 0);
+        RealPortal portal = PortalFactory.generateFakePortal(location, network, "test", true, new HashSet<>(),flags, registry);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, testMaterial,
                 plugin, priority, testFlag);
         materialHandlerResolver.addBlockHandlerInterface(blockHandler);
         materialHandlerResolver.registerPlacement(location, List.of(portal), testMaterial, player);
         Assertions.assertTrue(blockHandler.blockIsRegistered(location, player, portal));
+        Assertions.assertNotNull(registry.getNextRegisteredLocation());
         materialHandlerResolver.registerRemoval(location, portal, testMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
+        Assertions.assertNotNull(registry.getNextUnregisteredLocation());
     }
 
     @ParameterizedTest
@@ -98,6 +99,7 @@ public class MaterialHandlerResolverTest {
         materialHandlerResolver.addBlockHandlerInterface(blockHandler);
         materialHandlerResolver.registerPlacement(location, List.of(portal), placedMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
+        Assertions.assertNull(registry.getNextRegisteredLocation());
     }
 
     @Test
@@ -121,6 +123,7 @@ public class MaterialHandlerResolverTest {
         materialHandlerResolver.registerPlacement(location, List.of(portal), placedMaterial, player);
         Assertions.assertTrue(highPriority.blockIsRegistered(location, player, portal));
         Assertions.assertFalse(lowPriority.blockIsRegistered(location, player, portal));
+        Assertions.assertNotNull(registry.getNextRegisteredLocation());
     }
 
     @ParameterizedTest
@@ -140,8 +143,10 @@ public class MaterialHandlerResolverTest {
         materialHandlerResolver.addBlockHandlerInterface(blockHandler);
         materialHandlerResolver.registerPlacement(location, List.of(portal), handlerMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
+        Assertions.assertNull(registry.getNextRegisteredLocation());
     }
 
+    @Test
     void registerPlacement_rejected() throws InvalidStructureException, NameLengthException {
         Material placedMaterial = Material.END_GATEWAY;
         Character testFlag = 'c';
@@ -162,5 +167,6 @@ public class MaterialHandlerResolverTest {
         materialHandlerResolver.registerPlacement(location, List.of(portal), placedMaterial, player);
         Assertions.assertFalse(highPriority.blockIsRegistered(location, player, portal));
         Assertions.assertTrue(lowPriority.blockIsRegistered(location, player, portal));
+        Assertions.assertNotNull(registry.getNextRegisteredLocation());
     }
 }

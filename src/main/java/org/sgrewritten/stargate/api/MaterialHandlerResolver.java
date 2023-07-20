@@ -114,6 +114,7 @@ public class MaterialHandlerResolver {
         }
         blockHandlerInterface.unRegisterPlacedBlock(location,player,portal);
         portal.getGate().removePortalPosition(location);
+        registry.unRegisterLocation(GateStructureType.CONTROL_BLOCK,new BlockLocation(location));
     }
 
     /**
