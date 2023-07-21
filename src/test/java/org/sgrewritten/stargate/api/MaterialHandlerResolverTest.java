@@ -7,6 +7,7 @@ import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.BlockVector;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
@@ -22,9 +22,10 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.gate.GateTestHelper;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryMock;
-import org.sgrewritten.stargate.network.StargateRegistry;
+import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.database.StorageMock;
 
@@ -45,6 +46,7 @@ public class MaterialHandlerResolverTest {
     @BeforeEach
     void setUp() throws InvalidNameException, UnimplementedFlagException, NameLengthException, NameConflictException {
         this.server = MockBukkit.mock();
+        GateTestHelper.setUpGates();
         this.storage = new StorageMock();
         this.registry = new RegistryMock();
         this.materialHandlerResolver = new MaterialHandlerResolver(registry,storage);
@@ -71,13 +73,16 @@ public class MaterialHandlerResolverTest {
         RealPortal portal = PortalFactory.generateFakePortal(location, network, "test", true, new HashSet<>(),flags, registry);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, testMaterial,
                 plugin, priority, testFlag);
+        BlockVector positionVector = portal.getGate().getRelativeVector(location).toBlockVector();
         materialHandlerResolver.addBlockHandlerInterface(blockHandler);
         materialHandlerResolver.registerPlacement(location, List.of(portal), testMaterial, player);
         Assertions.assertTrue(blockHandler.blockIsRegistered(location, player, portal));
-        Assertions.assertNotNull(registry.getNextRegisteredLocation());
+        Assertions.assertEquals(registry.getNextRegisteredLocation().getSecondValue(),new BlockLocation(location));
+        Assertions.assertEquals(storage.getNextAddedPortalPosition().getThirdValue().getPositionLocation(),positionVector);
         materialHandlerResolver.registerRemoval(location, portal, testMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
-        Assertions.assertNotNull(registry.getNextUnregisteredLocation());
+        Assertions.assertEquals(new BlockLocation(registry.getNextUnregisteredLocation().getSecondValue().getLocation()),new BlockLocation(location));
+        Assertions.assertEquals(storage.getNextRemovedPortalPosition().getThirdValue().getPositionLocation(),positionVector);
     }
 
     @ParameterizedTest
@@ -88,18 +93,17 @@ public class MaterialHandlerResolverTest {
         Material placedMaterial = Material.DIRT;
         Character testFlag = 'c';
         Plugin plugin = MockBukkit.createMockPlugin("Test");
-        Location locaton = new Location(world,0,0,0);
+        Location location = new Location(world,0,0,0);
         Set<Character> flags = new HashSet<>();
         flags.add(testFlag);
-        RealPortal portal = PortalFactory.generateFakePortal(locaton, network, "test", true, new HashSet<>(),flags, registry);
-        // TODO add testflag to portal
-        Location location = new Location(world, 0, 0, 0);
+        RealPortal portal = PortalFactory.generateFakePortal(location, network, "test", true, new HashSet<>(),flags, registry);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
                 plugin, priority, testFlag);
         materialHandlerResolver.addBlockHandlerInterface(blockHandler);
         materialHandlerResolver.registerPlacement(location, List.of(portal), placedMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
         Assertions.assertNull(registry.getNextRegisteredLocation());
+        Assertions.assertNull(storage.getNextAddedPortalPosition());
     }
 
     @Test
@@ -108,12 +112,10 @@ public class MaterialHandlerResolverTest {
         Material placedMaterial = Material.END_GATEWAY;
         Character testFlag = 'c';
         Plugin plugin = MockBukkit.createMockPlugin("Test");
-        Location locaton = new Location(world,0,0,0);
+        Location location = new Location(world,0,0,0);
         Set<Character> flags = new HashSet<>();
         flags.add(testFlag);
-        RealPortal portal = PortalFactory.generateFakePortal(locaton, network, "test", true, new HashSet<>(), flags, registry);
-        // TODO add testflag to portal
-        Location location = new Location(world, 0, 0, 0);
+        RealPortal portal = PortalFactory.generateFakePortal(location, network, "test", true, new HashSet<>(), flags, registry);
         BlockHandlerInterfaceMock highPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
                 plugin, Priority.HIGH, testFlag);
         BlockHandlerInterfaceMock lowPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
@@ -133,17 +135,18 @@ public class MaterialHandlerResolverTest {
         Material handlerMaterial = Material.END_GATEWAY;
         Character testFlag = 'c';
         Plugin plugin = MockBukkit.createMockPlugin("Test");
-        Location locaton = new Location(world,0,0,0);
+        Location location = new Location(world,0,0,0);
         Set<Character> flags = new HashSet<>();
         flags.add('d');
-        RealPortal portal = PortalFactory.generateFakePortal(locaton, network, "test", true, new HashSet<>(), flags, registry);
-        Location location = new Location(world, 0, 0, 0);
+        RealPortal portal = PortalFactory.generateFakePortal(location, network, "test", true, new HashSet<>(), flags, registry);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
                 plugin, priority, testFlag);
+        BlockVector positionVector = portal.getGate().getRelativeVector(location).toBlockVector();
         materialHandlerResolver.addBlockHandlerInterface(blockHandler);
         materialHandlerResolver.registerPlacement(location, List.of(portal), handlerMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
         Assertions.assertNull(registry.getNextRegisteredLocation());
+        Assertions.assertNull(storage.getNextAddedPortalPosition());
     }
 
     @Test
@@ -151,16 +154,15 @@ public class MaterialHandlerResolverTest {
         Material placedMaterial = Material.END_GATEWAY;
         Character testFlag = 'c';
         Plugin plugin = MockBukkit.createMockPlugin("Test");
-        Location locaton = new Location(world,0,0,0);
+        Location location = new Location(world,0,0,0);
         Set<Character> flags = new HashSet<>();
         flags.add(testFlag);
-        RealPortal portal = PortalFactory.generateFakePortal(locaton, network, "test", true, new HashSet<>(), flags, registry);
-        // TODO add testflag to portal
-        Location location = new Location(world, 0, 0, 0);
+        RealPortal portal = PortalFactory.generateFakePortal(location, network, "test", true, new HashSet<>(), flags, registry);
         BlockHandlerInterfaceMock highPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
                 plugin, Priority.HIGH, testFlag);
         BlockHandlerInterfaceMock lowPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
                 plugin, Priority.LOWEST, testFlag);
+        BlockVector positionVector = portal.getGate().getRelativeVector(location).toBlockVector();
         materialHandlerResolver.addBlockHandlerInterface(highPriority);
         materialHandlerResolver.addBlockHandlerInterface(lowPriority);
         highPriority.setRegisterPlacedBlock(false);
@@ -168,5 +170,6 @@ public class MaterialHandlerResolverTest {
         Assertions.assertFalse(highPriority.blockIsRegistered(location, player, portal));
         Assertions.assertTrue(lowPriority.blockIsRegistered(location, player, portal));
         Assertions.assertNotNull(registry.getNextRegisteredLocation());
+        Assertions.assertEquals(storage.getNextAddedPortalPosition().getThirdValue().getPositionLocation(),positionVector);
     }
 }

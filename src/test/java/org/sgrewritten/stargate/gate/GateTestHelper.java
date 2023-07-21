@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.util.portal;
+package org.sgrewritten.stargate.gate;
 
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.gate.GateFormatHandler;

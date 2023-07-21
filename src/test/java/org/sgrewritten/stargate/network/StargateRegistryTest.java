@@ -20,7 +20,7 @@ import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.database.StorageMock;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
-import org.sgrewritten.stargate.util.portal.GateTestHelper;
+import org.sgrewritten.stargate.gate.GateTestHelper;
 import org.sgrewritten.stargate.util.portal.PortalMock;
 
 class StargateRegistryTest {

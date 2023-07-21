@@ -17,6 +17,7 @@ import org.bukkit.block.data.Orientable;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.action.SupplierAction;
@@ -462,9 +463,15 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public void removePortalPosition(Location location) {
+    public @Nullable PortalPosition removePortalPosition(Location location) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
-        this.portalPositions.removeIf((portalPosition) -> (portalPosition.getPositionLocation().equals(relativeBlockVector)));
+        for(PortalPosition portalPosition : this.portalPositions){
+            if(portalPosition.getPositionLocation().equals(relativeBlockVector)){
+                this.portalPositions.remove(portalPosition);
+                return portalPosition;
+            }
+        }
+        return null;
     }
 
     /**

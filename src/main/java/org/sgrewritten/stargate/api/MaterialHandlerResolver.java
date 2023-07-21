@@ -17,6 +17,7 @@ import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class MaterialHandlerResolver {
     private final Map<Material,List<BlockHandlerInterface>> blockHandlerMap = new HashMap<>();
@@ -113,8 +114,13 @@ public class MaterialHandlerResolver {
             return;
         }
         blockHandlerInterface.unRegisterPlacedBlock(location,player,portal);
-        portal.getGate().removePortalPosition(location);
+        PortalPosition portalPosition = portal.getGate().removePortalPosition(location);
         registry.unRegisterLocation(GateStructureType.CONTROL_BLOCK,new BlockLocation(location));
+        try {
+            storageAPI.removePortalPosition(portal,portal.getStorageType(),portalPosition);
+        } catch (StorageWriteException e) {
+            Stargate.log(e);
+        }
     }
 
     /**

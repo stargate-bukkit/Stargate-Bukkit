@@ -27,7 +27,7 @@ import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.util.portal.GateTestHelper;
+import org.sgrewritten.stargate.gate.GateTestHelper;
 
 import java.util.HashSet;
 

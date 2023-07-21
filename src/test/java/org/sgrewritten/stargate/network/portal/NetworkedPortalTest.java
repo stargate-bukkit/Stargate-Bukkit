@@ -24,7 +24,7 @@ import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.util.portal.GateTestHelper;
+import org.sgrewritten.stargate.gate.GateTestHelper;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
@@ -125,6 +126,7 @@ public interface GateAPI {
      * Remove portal position at specified location
      *
      * @param location The location of the portal position to be removed
+     * @return <p> The removed portal position</p>
      */
-    void removePortalPosition(Location location);
+    @Nullable PortalPosition removePortalPosition(Location location);
 }
