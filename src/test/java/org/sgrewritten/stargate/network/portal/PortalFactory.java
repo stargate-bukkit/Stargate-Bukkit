@@ -149,8 +149,8 @@ public class PortalFactory {
 
         Gate gate = new Gate(gateData, registry);
 
-        gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON);
-        gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN);
+        gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON, "Stargate");
+        gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN, "Stargate");
         return new FixedPortal(network, name, "", flags, unknownFlags, gate, UUID.randomUUID(), new LanguageManagerMock(), new StargateEconomyManagerMock());
     }
 

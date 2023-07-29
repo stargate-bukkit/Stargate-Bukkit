@@ -338,15 +338,17 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateRemoveFlagsStatement(Connection connection,
                                                           StorageType portalType, Portal portal) throws SQLException {
-        PreparedStatement removeFlagsStatement;
+        String stringStatement;
         if (portalType == StorageType.LOCAL) {
-            removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATIONS));
+            stringStatement = getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATIONS);
         } else {
-            removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATIONS));
+            stringStatement = getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATIONS);
         }
-        removeFlagsStatement.setString(1, portal.getName());
-        removeFlagsStatement.setString(2, portal.getNetwork().getId());
-        return removeFlagsStatement;
+        try(PreparedStatement removeFlagsStatement = prepareQuery(connection, stringStatement)) {
+            removeFlagsStatement.setString(1, portal.getName());
+            removeFlagsStatement.setString(2, portal.getNetwork().getId());
+            return removeFlagsStatement;
+        }
     }
 
     /**
@@ -361,16 +363,19 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateRemoveFlagStatement(Connection connection,
                                                          StorageType portalType, Portal portal, Character flagChar) throws SQLException {
-        PreparedStatement removeFlagsStatement;
+        String stringStatement;
         if (portalType == StorageType.LOCAL) {
-            removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATION));
+            stringStatement = getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATION);
         } else {
-            removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATION));
+            stringStatement = getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATION);
         }
-        removeFlagsStatement.setString(1, portal.getName());
-        removeFlagsStatement.setString(2, portal.getNetwork().getName());
-        removeFlagsStatement.setString(3, String.valueOf(flagChar));
-        return removeFlagsStatement;
+
+        try(PreparedStatement removeFlagsStatement = prepareQuery(connection, stringStatement) ) {
+            removeFlagsStatement.setString(1, portal.getName());
+            removeFlagsStatement.setString(2, portal.getNetwork().getName());
+            removeFlagsStatement.setString(3, String.valueOf(flagChar));
+            return removeFlagsStatement;
+        }
     }
 
     /**

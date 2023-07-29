@@ -42,22 +42,28 @@ public class SQLTestHelper {
      * @throws SQLException <p>If unable to get data from the database</p>
      */
     public static void checkIfHasNot(String table, String name, String network, Connection connection) throws SQLException {
-        PreparedStatement statement;
-        if (table.contains("PortalPosition")) {
-            statement = connection.prepareStatement("SELECT * FROM " + table +
-                    " WHERE portalName = ? AND networkName = ?");
-        } else {
-            statement = connection.prepareStatement("SELECT * FROM " + table +
-                    " WHERE name = ? AND network = ?");
+        try(PreparedStatement statement = getFetchStatement(table,name,network,connection)) {
+            ResultSet set = statement.executeQuery();
+            Assertions.assertFalse(set.next());
         }
-        statement.setString(1, name);
-        statement.setString(2, network);
-        ResultSet set = statement.executeQuery();
-        Assertions.assertFalse(set.next());
-        statement.close();
     }
 
     public static void checkIfHas(String table, String name, String network, Connection connection) throws SQLException {
+        try(PreparedStatement statement = getFetchStatement(table,name,network,connection)) {
+            ResultSet set = statement.executeQuery();
+            Assertions.assertTrue(set.next());
+        }
+    }
+
+    public static void checkIfColumnIs(String table, String column, String name, String network, Object value ,Connection connection) throws SQLException {
+        try(PreparedStatement statement = getFetchStatement(table,name,network,connection)) {
+            ResultSet set = statement.executeQuery();
+            Assertions.assertEquals(set.getObject(column), value);
+        }
+    }
+
+
+    private static PreparedStatement getFetchStatement(String table, String name, String network, Connection connection) throws SQLException {
         PreparedStatement statement;
         if (table.contains("PortalPosition")) {
             statement = connection.prepareStatement("SELECT * FROM " + table +
@@ -68,9 +74,6 @@ public class SQLTestHelper {
         }
         statement.setString(1, name);
         statement.setString(2, network);
-        ResultSet set = statement.executeQuery();
-        Assertions.assertTrue(set.next());
-        statement.close();
+        return statement;
     }
-
 }

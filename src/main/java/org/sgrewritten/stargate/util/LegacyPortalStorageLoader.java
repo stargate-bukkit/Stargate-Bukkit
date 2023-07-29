@@ -116,11 +116,11 @@ public final class LegacyPortalStorageLoader {
         Location buttonLocation = LegacyDataHandler.loadLocation(world, portalProperties[2]);
         if (signLocation != null) {
             Stargate.log(Level.FINEST, "signLocation=" + signLocation);
-            gate.addPortalPosition(signLocation, PositionType.SIGN);
+            gate.addPortalPosition(signLocation, PositionType.SIGN, "Stargate");
         }
         if (buttonLocation != null && !portalData.flags().contains(PortalFlag.ALWAYS_ON)) {
             Stargate.log(Level.FINEST, "buttonLocation=" + buttonLocation);
-            gate.addPortalPosition(buttonLocation, PositionType.BUTTON);
+            gate.addPortalPosition(buttonLocation, PositionType.BUTTON, "Stargate");
         }
 
         Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, stargateAPI);

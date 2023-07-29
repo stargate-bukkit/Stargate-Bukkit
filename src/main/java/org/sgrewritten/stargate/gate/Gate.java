@@ -360,7 +360,7 @@ public class Gate implements GateAPI {
             if (registeredControls.contains(buttonVector)) {
                 continue;
             }
-            portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector));
+            portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector, "Stargate"));
             break;
         }
 
@@ -382,9 +382,9 @@ public class Gate implements GateAPI {
             }
 
             if (Tag.WALL_SIGNS.isTagged(material)) {
-                portalPositions.add(new PortalPosition(PositionType.SIGN, blockVector));
+                portalPositions.add(new PortalPosition(PositionType.SIGN, blockVector, "Stargate"));
             } else if (!alwaysOn && ButtonHelper.isButton(material)) {
-                portalPositions.add(new PortalPosition(PositionType.BUTTON, blockVector));
+                portalPositions.add(new PortalPosition(PositionType.BUTTON, blockVector, "Stargate"));
             }
             foundVectors.add(blockVector);
         }
@@ -450,10 +450,10 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public void addPortalPosition(Location location, PositionType type) {
+    public void addPortalPosition(Location location, PositionType type, String pluginName) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
         Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position %s", type.toString(), relativeBlockVector));
-        this.addPortalPosition(relativeBlockVector, type);
+        this.addPortalPosition(relativeBlockVector, type, pluginName);
     }
 
     @Override
@@ -480,8 +480,8 @@ public class Gate implements GateAPI {
      * @param relativeBlockVector <p> The relative position in format space</p>
      * @param type                <p> The type of position </p>
      */
-    public void addPortalPosition(BlockVector relativeBlockVector, PositionType type) {
-        PortalPosition pos = new PortalPosition(type, relativeBlockVector);
+    public void addPortalPosition(BlockVector relativeBlockVector, PositionType type, String pluginName) {
+        PortalPosition pos = new PortalPosition(type, relativeBlockVector, pluginName);
         this.portalPositions.add(pos);
     }
 

@@ -17,16 +17,19 @@ public class PortalPosition {
 
     private final PositionType positionType;
     private final BlockVector positionLocation;
+    private final String pluginName;
 
     /**
      * Instantiates a new portal position
      *
      * @param positionType     <p>The type of this portal position</p>
      * @param positionLocation <p>The location of this portal position</p>
+     * @param pluginName <p> The name of the plugin this position relates to</p>
      */
-    public PortalPosition(@NotNull PositionType positionType, @NotNull BlockVector positionLocation) {
+    public PortalPosition(@NotNull PositionType positionType, @NotNull BlockVector positionLocation, @NotNull String pluginName) {
         this.positionType = Objects.requireNonNull(positionType);
         this.positionLocation = Objects.requireNonNull(positionLocation);
+        this.pluginName = Objects.requireNonNull(pluginName);
     }
 
     /**
@@ -68,6 +71,9 @@ public class PortalPosition {
         }
     }
 
+    public String getPluginName() {
+        return this.pluginName;
+    }
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof PortalPosition otherPortalPosition)) {
@@ -80,4 +86,5 @@ public class PortalPosition {
     public String toString() {
         return String.format("{x=%d,y=%d,z=%d,%s}", positionLocation.getBlockX(), positionLocation.getBlockY(), positionLocation.getBlockZ(), positionType);
     }
+
 }

@@ -5,7 +5,9 @@ INSERT INTO {InterPortalPosition}
    xCoordinate,
    yCoordinate,
    zCoordinate,
-   positionType
+   positionType,
+   metaData,
+   pluginName
 )
 VALUES
 (
@@ -14,7 +16,8 @@ VALUES
    ?,
    ?,
    ?,
-
+   ?,
+   ?,
    (
       SELECT
          {PositionType}.id

@@ -69,7 +69,8 @@ public class PortalStorageHelper {
         int zCoordinate = -Integer.parseInt(resultSet.getString("zCoordinate"));
         BlockVector positionVector = new BlockVector(xCoordinate, yCoordinate, zCoordinate);
         PositionType positionType = PositionType.valueOf(resultSet.getString("positionName"));
-        return new PortalPosition(positionType, positionVector);
+        String pluginName = resultSet.getString("pluginName");
+        return new PortalPosition(positionType, positionVector, pluginName);
     }
 
 
@@ -80,6 +81,8 @@ public class PortalStorageHelper {
         addPositionStatement.setString(4, String.valueOf(portalPosition.getPositionLocation().getBlockY()));
         addPositionStatement.setString(5, String.valueOf(-portalPosition.getPositionLocation().getBlockZ()));
         addPositionStatement.setString(6, portalPosition.getPositionType().name());
+        addPositionStatement.setString(7, "");
+        addPositionStatement.setString(8, portalPosition.getPluginName());
         addPositionStatement.execute();
     }
 

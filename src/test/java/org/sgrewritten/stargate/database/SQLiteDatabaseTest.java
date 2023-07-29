@@ -52,7 +52,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.addPortalTableTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -62,7 +62,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.addInterPortalTableTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -72,7 +72,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.createFlagTableTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -82,7 +82,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.createServerInfoTableTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -92,7 +92,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.createLastKnownNameTableTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -102,7 +102,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.createPortalFlagRelationTableTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -112,7 +112,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.createInterPortalFlagRelationTableTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -122,7 +122,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.createPortalPositionTypeTableTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -132,7 +132,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.createPortalPositionTableTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -142,7 +142,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.createInterPortalPositionTableTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -152,7 +152,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.createPortalViewTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -162,7 +162,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.createInterPortalViewTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -172,7 +172,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.createPortalPositionIndexTest(StorageType.LOCAL);
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -182,7 +182,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.createPortalPositionIndexTest(StorageType.INTER_SERVER);
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -192,7 +192,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.portalPositionIndexExistsTest(StorageType.LOCAL);
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -202,7 +202,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.portalPositionIndexExistsTest(StorageType.INTER_SERVER);
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -212,7 +212,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.getFlagsTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -222,7 +222,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.updateServerInfoTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -232,7 +232,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.addFlags();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -242,7 +242,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.updateLastKnownNameTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -264,7 +264,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.getPortalTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -274,7 +274,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.getInterPortalTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -284,7 +284,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.addAndRemovePortalPosition(StorageType.LOCAL);
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -294,7 +294,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.addAndRemovePortalPosition(StorageType.INTER_SERVER);
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -304,7 +304,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.addAndRemovePortalFlags(StorageType.LOCAL);
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -314,7 +314,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.addAndRemovePortalFlags(StorageType.INTER_SERVER);
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -324,7 +324,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.setPortalMetaDataTest(StorageType.LOCAL);
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -334,7 +334,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.setPortalMetaDataTest(StorageType.INTER_SERVER);
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -344,7 +344,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.setPortalPositionMetaTest(StorageType.LOCAL);
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -354,7 +354,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.setPortalPositionMetaTest(StorageType.INTER_SERVER);
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -376,7 +376,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.destroyPortalTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -386,7 +386,7 @@ public class SQLiteDatabaseTest {
         try {
             tester.destroyInterPortalTest();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 

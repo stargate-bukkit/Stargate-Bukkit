@@ -81,7 +81,7 @@ public class MaterialHandlerResolver {
             for(BlockHandlerInterface blockHandlerInterface : blockHandlerMap.get(material)){
                 if(portal.hasFlag(blockHandlerInterface.getFlag()) && blockHandlerInterface.registerPlacedBlock(location,player,portal)){
                     BlockVector relativeVector = portal.getGate().getRelativeVector(location).toBlockVector();
-                    PortalPosition portalPosition = new PortalPosition(blockHandlerInterface.getInterfaceType(),relativeVector);
+                    PortalPosition portalPosition = new PortalPosition(blockHandlerInterface.getInterfaceType(),relativeVector,blockHandlerInterface.getPlugin().getName());
                     portal.getGate().addPortalPosition(portalPosition);
                     blockBlockHandlerMap.put(new BlockLocation(location),blockHandlerInterface);
                     registry.registerLocation(GateStructureType.CONTROL_BLOCK,new BlockLocation(location),portal);

@@ -67,7 +67,7 @@ class GateTest {
     void addAndRemovePortalPosition_loadedGate() throws InvalidStructureException {
         Gate loadedGate = createLoadedGate(gateData);
         Location location = new Location(world,0,0,0);
-        loadedGate.addPortalPosition(location, PositionType.BUTTON);
+        loadedGate.addPortalPosition(location, PositionType.BUTTON, "Stargate");
         Assertions.assertTrue(gatePositionIsAdded(location, loadedGate),"A gate position was not added");
         loadedGate.removePortalPosition(location);
         Assertions.assertFalse(gatePositionIsAdded(location, loadedGate),"A gate position was not added");
@@ -77,7 +77,7 @@ class GateTest {
     void addAndRemovePortalPosition_createdGate() throws InvalidStructureException, GateConflictException {
         Gate createdGate = createCreatedGate(gateData);
         Location location = new Location(world,0,0,0);
-        createdGate.addPortalPosition(location, PositionType.BUTTON);
+        createdGate.addPortalPosition(location, PositionType.BUTTON, "Stargate");
         Assertions.assertTrue(gatePositionIsAdded(location, createdGate),"A gate position was not added");
         createdGate.removePortalPosition(location);
         Assertions.assertFalse(gatePositionIsAdded(location, createdGate),"A gate position was not added");

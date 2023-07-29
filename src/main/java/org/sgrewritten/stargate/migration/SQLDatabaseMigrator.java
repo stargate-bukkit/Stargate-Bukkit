@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.migration;
 
 import org.jetbrains.annotations.NotNull;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLQuery;
@@ -15,6 +16,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
+import java.util.logging.Level;
 
 public class SQLDatabaseMigrator {
 
@@ -44,12 +46,12 @@ public class SQLDatabaseMigrator {
         String path = sqlFilesPath + "/" + type.toString().toLowerCase();
         int count = 0;
         while (true) {
-            boolean fallible = false;
+            boolean failAble = false;
             try {
                 InputStream stream = FileHelper.getInputStreamForInternalFile(path + "/step" + count + ".sql");
                 if (stream == null) {
-                    fallible = true;
-                    stream = FileHelper.getInputStreamForInternalFile(path + "/fallibleStep" + count + ".sql");
+                    failAble = true;
+                    stream = FileHelper.getInputStreamForInternalFile(path + "/failAbleStep" + count + ".sql");
                 }
                 if (stream == null) {
                     break;
@@ -62,7 +64,7 @@ public class SQLDatabaseMigrator {
                 }
                 count++;
             } catch (SQLException | IOException e) {
-                if (!fallible) {
+                if (!failAble) {
                     throw e;
                 }
             }

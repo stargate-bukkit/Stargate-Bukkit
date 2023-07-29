@@ -113,7 +113,7 @@ public interface GateAPI {
      * @param location <p> The location of the position </p>
      * @param type     <p> The type of position </p>
      */
-    void addPortalPosition(Location location, PositionType type);
+    void addPortalPosition(Location location, PositionType type, String pluginName);
 
     /**
      * Add a position specific to this Gate
