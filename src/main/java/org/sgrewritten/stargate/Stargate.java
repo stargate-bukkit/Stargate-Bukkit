@@ -152,6 +152,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private PropertiesDatabase storedProperties;
 
     private static final FileConfiguration staticConfig = new StargateYamlConfiguration();
+    private MaterialHandlerResolver materialHandlerResolver;
 
     @Override
     public void onEnable() {
@@ -171,6 +172,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             bungeeManager = new StargateBungeeManager(this.getRegistry(), this.getLanguageManager());
             blockLogger = new CoreProtectManager();
             storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(DATA_FOLDER, INTERNAL_FOLDER, INTERNAL_PROPERTIES_FILE));
+            materialHandlerResolver = new MaterialHandlerResolver(registry,storageAPI);
             try {
                 this.migrateConfigurationAndData();
             } catch (IOException | InvalidConfigurationException | SQLException e) {
@@ -210,7 +212,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
     @Override
     public MaterialHandlerResolver getMaterialHandlerResolver() {
-        return null;
+        return this.materialHandlerResolver;
     }
 
     /**

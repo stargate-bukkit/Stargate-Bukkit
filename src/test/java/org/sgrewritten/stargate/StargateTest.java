@@ -174,6 +174,11 @@ class StargateTest {
         assertNotNull(Stargate.getServerUUID());
     }
 
+    @Test
+    void getMaterialResolver(){
+        Assertions.assertNotNull(plugin.getMaterialHandlerResolver());
+    }
+
     private void setInterServerEnabled() {
         plugin.setConfigurationOptionValue(ConfigurationOption.USING_BUNGEE, true);
         plugin.setConfigurationOptionValue(ConfigurationOption.USING_REMOTE_DATABASE, true);
