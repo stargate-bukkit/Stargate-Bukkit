@@ -26,7 +26,6 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
@@ -35,7 +34,7 @@ import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.action.SimpleAction;
-import org.sgrewritten.stargate.api.MaterialHandlerResolver;
+import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.command.CommandStargate;
 import org.sgrewritten.stargate.command.StargateTabCompleter;
@@ -152,7 +151,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private PropertiesDatabase storedProperties;
 
     private static final FileConfiguration staticConfig = new StargateYamlConfiguration();
-    private MaterialHandlerResolver materialHandlerResolver;
+    private BlockHandlerResolver blockHandlerResolver;
 
     @Override
     public void onEnable() {
@@ -172,7 +171,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             bungeeManager = new StargateBungeeManager(this.getRegistry(), this.getLanguageManager());
             blockLogger = new CoreProtectManager();
             storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(DATA_FOLDER, INTERNAL_FOLDER, INTERNAL_PROPERTIES_FILE));
-            materialHandlerResolver = new MaterialHandlerResolver(registry,storageAPI);
+            blockHandlerResolver = new BlockHandlerResolver(registry,storageAPI);
             try {
                 this.migrateConfigurationAndData();
             } catch (IOException | InvalidConfigurationException | SQLException e) {
@@ -211,8 +210,8 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     }
 
     @Override
-    public MaterialHandlerResolver getMaterialHandlerResolver() {
-        return this.materialHandlerResolver;
+    public BlockHandlerResolver getMaterialHandlerResolver() {
+        return this.blockHandlerResolver;
     }
 
     /**

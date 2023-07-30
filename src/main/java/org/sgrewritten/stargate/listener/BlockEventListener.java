@@ -34,8 +34,7 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.BlockHandlerInterface;
-import org.sgrewritten.stargate.api.MaterialHandlerResolver;
+import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
@@ -52,7 +51,6 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.BlockEventType;
 import org.sgrewritten.stargate.util.BlockEventHelper;
@@ -74,7 +72,7 @@ public class BlockEventListener implements Listener {
     private final @NotNull RegistryAPI registry;
     private final @NotNull LanguageManager languageManager;
     private final @NotNull StargateEconomyAPI economyManager;
-    private final @NotNull MaterialHandlerResolver addonRegistry;
+    private final @NotNull BlockHandlerResolver addonRegistry;
     private final @NotNull StargateAPI stargateAPI;
 
     /**

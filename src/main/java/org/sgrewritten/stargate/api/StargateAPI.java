@@ -69,5 +69,5 @@ public interface StargateAPI {
      *
      * @return <p> The material handler resolver used by stargate addons</p>
      */
-    MaterialHandlerResolver getMaterialHandlerResolver();
+    BlockHandlerResolver getMaterialHandlerResolver();
 }

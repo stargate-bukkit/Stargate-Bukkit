@@ -1,7 +1,7 @@
 package org.sgrewritten.stargate;
 
 import org.bukkit.entity.Entity;
-import org.sgrewritten.stargate.api.MaterialHandlerResolver;
+import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
@@ -24,7 +24,7 @@ public class StargateAPIMock implements StargateAPI {
     private LanguageManager languageManager;
     private BungeeManager bungeeManager;
     private StorageAPI storageAPI;
-    private MaterialHandlerResolver materialHandlerResolver;
+    private BlockHandlerResolver blockHandlerResolver;
     private StargateEconomyAPI economyManager;
 
     /**
@@ -47,8 +47,8 @@ public class StargateAPIMock implements StargateAPI {
             else if(aManager instanceof  BungeeManager bungeeManager){
                 this.bungeeManager = bungeeManager;
             }
-            else if(aManager instanceof MaterialHandlerResolver materialHandlerResolver){
-                this.materialHandlerResolver = materialHandlerResolver;
+            else if(aManager instanceof BlockHandlerResolver blockHandlerResolver){
+                this.blockHandlerResolver = blockHandlerResolver;
             }
             else if(aManager instanceof StargateEconomyAPI economyManager){
                 this.economyManager = economyManager;
@@ -69,8 +69,8 @@ public class StargateAPIMock implements StargateAPI {
         if(this.bungeeManager == null){
             this.bungeeManager = new StargateBungeeManager(registry,languageManager);
         }
-        if(this.materialHandlerResolver == null){
-            this.materialHandlerResolver = new MaterialHandlerResolver(registry,storageAPI);
+        if(this.blockHandlerResolver == null){
+            this.blockHandlerResolver = new BlockHandlerResolver(registry,storageAPI);
         }
         if(this.economyManager == null) {
             this.economyManager = new StargateEconomyManagerMock();
@@ -112,7 +112,7 @@ public class StargateAPIMock implements StargateAPI {
     }
 
     @Override
-    public MaterialHandlerResolver getMaterialHandlerResolver() {
-        return materialHandlerResolver;
+    public BlockHandlerResolver getMaterialHandlerResolver() {
+        return blockHandlerResolver;
     }
 }

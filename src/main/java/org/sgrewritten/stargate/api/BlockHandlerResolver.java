@@ -7,7 +7,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.BlockHandlerInterface;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
@@ -17,15 +16,14 @@ import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
 
 import java.util.*;
-import java.util.logging.Level;
 
-public class MaterialHandlerResolver {
+public class BlockHandlerResolver {
     private final Map<Material,List<BlockHandlerInterface>> blockHandlerMap = new HashMap<>();
     private final Map<BlockLocation,BlockHandlerInterface> blockBlockHandlerMap = new HashMap<>();
     private final RegistryAPI registry;
     private final StorageAPI storageAPI;
 
-    public MaterialHandlerResolver(@NotNull RegistryAPI registry, @NotNull StorageAPI storageAPI){
+    public BlockHandlerResolver(@NotNull RegistryAPI registry, @NotNull StorageAPI storageAPI){
         this.registry = Objects.requireNonNull(registry);
         this.storageAPI = Objects.requireNonNull(storageAPI);
     }
