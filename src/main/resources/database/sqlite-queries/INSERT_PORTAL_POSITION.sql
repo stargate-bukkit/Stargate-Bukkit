@@ -16,14 +16,14 @@ VALUES
    ?,
    ?,
    ?,
+      (
+         SELECT
+            {PositionType}.id
+         FROM
+            {PositionType}
+         WHERE
+            {PositionType}.positionName = ?
+      ),
    ?,
-   ?,
-   (
-      SELECT
-         {PositionType}.id
-      FROM
-         {PositionType}
-      WHERE
-         {PositionType}.positionName = ?
-   )
+   ?
 );

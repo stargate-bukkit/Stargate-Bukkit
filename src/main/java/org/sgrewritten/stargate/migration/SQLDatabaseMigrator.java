@@ -62,11 +62,12 @@ public class SQLDatabaseMigrator {
                     String queryString = queriesStringList[i];
                     processQuery(queryString, connection);
                 }
-                count++;
             } catch (SQLException | IOException e) {
                 if (!failAble) {
                     throw e;
                 }
+            } finally {
+                count++;
             }
         }
     }

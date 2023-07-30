@@ -118,18 +118,17 @@ public class SQLDatabase implements StorageAPI {
             connection = database.getConnection();
             connection.setAutoCommit(false);
 
-            PreparedStatement savePortalStatement = sqlQueryGenerator.generateAddPortalStatement(connection, portal, portalType);
-            savePortalStatement.execute();
-            savePortalStatement.close();
+            try(PreparedStatement savePortalStatement = sqlQueryGenerator.generateAddPortalStatement(connection, portal, portalType)) {
+                savePortalStatement.execute();
+            }
 
-            PreparedStatement addFlagStatement = sqlQueryGenerator.generateAddPortalFlagRelationStatement(connection, portalType);
-            addFlags(addFlagStatement, portal);
-            addFlagStatement.close();
+            try(PreparedStatement addFlagStatement = sqlQueryGenerator.generateAddPortalFlagRelationStatement(connection, portalType)) {
+                addFlags(addFlagStatement, portal);
+            }
 
-            PreparedStatement addPositionStatement = sqlQueryGenerator.generateAddPortalPositionStatement(connection, portalType);
-            addPortalPositions(addPositionStatement, portal);
-            addPositionStatement.close();
-
+            try(PreparedStatement addPositionStatement = sqlQueryGenerator.generateAddPortalPositionStatement(connection, portalType)) {
+                addPortalPositions(addPositionStatement, portal);
+            }
             connection.commit();
             connection.setAutoCommit(true);
             connection.close();
