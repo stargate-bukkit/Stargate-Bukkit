@@ -344,11 +344,10 @@ public class SQLQueryGenerator {
         } else {
             stringStatement = getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATIONS);
         }
-        try(PreparedStatement removeFlagsStatement = prepareQuery(connection, stringStatement)) {
-            removeFlagsStatement.setString(1, portal.getName());
-            removeFlagsStatement.setString(2, portal.getNetwork().getId());
-            return removeFlagsStatement;
-        }
+        PreparedStatement removeFlagsStatement = prepareQuery(connection, stringStatement);
+        removeFlagsStatement.setString(1, portal.getName());
+        removeFlagsStatement.setString(2, portal.getNetwork().getId());
+        return removeFlagsStatement;
     }
 
     /**
@@ -370,12 +369,11 @@ public class SQLQueryGenerator {
             stringStatement = getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATION);
         }
 
-        try(PreparedStatement removeFlagsStatement = prepareQuery(connection, stringStatement) ) {
-            removeFlagsStatement.setString(1, portal.getName());
-            removeFlagsStatement.setString(2, portal.getNetwork().getName());
-            removeFlagsStatement.setString(3, String.valueOf(flagChar));
-            return removeFlagsStatement;
-        }
+        PreparedStatement removeFlagsStatement = prepareQuery(connection, stringStatement);
+        removeFlagsStatement.setString(1, portal.getName());
+        removeFlagsStatement.setString(2, portal.getNetwork().getName());
+        removeFlagsStatement.setString(3, String.valueOf(flagChar));
+        return removeFlagsStatement;
     }
 
     /**

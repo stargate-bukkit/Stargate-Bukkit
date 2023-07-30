@@ -149,7 +149,6 @@ public final class FileHelper {
         while (line != null) {
             lines.append(line).append("\n");
             line = reader.readLine();
-            Stargate.log(Level.SEVERE,line);
         }
         return lines.toString();
     }
