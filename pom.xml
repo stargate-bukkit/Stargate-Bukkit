@@ -117,6 +117,13 @@
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parsers</artifactId>
             <version>1.28.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>5.2.3</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
     <build>
@@ -144,6 +151,7 @@
                             <include>com.github.cryptomorin:XSeries</include>
                             <include>org.slf4j:slf4j-api</include>
                             <include>org.apache.tika:tika-parsers</include>
+                            <include>org.apache.poi:poi</include>
                         </includes>
                     </artifactSet>
                     <relocations>
@@ -180,6 +188,13 @@
                             <artifact>org.apache.tika:tika-parsers</artifact>
                             <includes>
                                 <include>org/apache/tika/parser/txt/*</include>
+                            </includes>
+                        </filter>
+                        <filter>
+                            <artifact>org.apache.poi:poi</artifact>
+                            <includes>
+                                <include>org/apache/poi/util/*</include>
+                                <include>org/apache/poi/EmptyFileException*</include>
                             </includes>
                         </filter>
                     </filters>
