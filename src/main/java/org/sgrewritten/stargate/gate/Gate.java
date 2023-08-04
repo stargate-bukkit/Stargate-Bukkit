@@ -133,10 +133,7 @@ public class Gate implements GateAPI {
      * @param signLines <p>The lines to draw on the sign</p>
      */
     private void drawSigns(String[] signLines) {
-        for (PortalPosition portalPosition : portalPositions) {
-            if (portalPosition.getPositionType() != PositionType.SIGN) {
-                continue;
-            }
+        for (PortalPosition portalPosition : getActivePortalPositions(PositionType.SIGN)) {
             Location signLocation = getLocation(portalPosition.getPositionLocation());
             BlockState signState = signLocation.getBlock().getState();
             if (!(signState instanceof Sign sign)) {
@@ -155,11 +152,7 @@ public class Gate implements GateAPI {
      * Draws this gate's button
      */
     private void drawButtons() {
-        for (PortalPosition portalPosition : portalPositions) {
-            if (portalPosition.getPositionType() != PositionType.BUTTON) {
-                continue;
-            }
-
+        for (PortalPosition portalPosition : getActivePortalPositions(PositionType.BUTTON)) {
             Location buttonLocation = getLocation(portalPosition.getPositionLocation());
             Material blockType = buttonLocation.getBlock().getType();
             if (ButtonHelper.isButton(blockType)) {
@@ -172,6 +165,23 @@ public class Gate implements GateAPI {
 
             buttonLocation.getBlock().setBlockData(buttonData);
         }
+    }
+
+    /**
+     * @param type <p> The type of portal position</p>
+     * @return <p>Portal positions of specified type controlled by this plugin</p>
+     */
+    private List<PortalPosition> getActivePortalPositions(PositionType type){
+        List<PortalPosition> output = new ArrayList<>();
+        for(PortalPosition portalPosition : getPortalPositions()){
+            if(portalPosition.getPositionType() != type || !portalPosition.isActive()){
+                continue;
+            }
+            if(portalPosition.getPluginName().equals("Stargate")){
+                output.add(portalPosition);
+            }
+        }
+        return output;
     }
 
     @Override

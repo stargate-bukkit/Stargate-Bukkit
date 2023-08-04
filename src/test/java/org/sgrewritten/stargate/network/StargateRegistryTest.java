@@ -30,7 +30,6 @@ class StargateRegistryTest {
     private Network personalNetwork;
     private WorldMock world;
     private PlayerMock player;
-    private StorageMock storage;
 
     @BeforeEach
     void setUp() throws NameLengthException, NameConflictException, InvalidNameException, UnimplementedFlagException {
@@ -38,8 +37,7 @@ class StargateRegistryTest {
         GateTestHelper.setUpGates();
         this.world = server.addSimpleWorld("world");
         this.player = server.addPlayer();
-        this.storage = new StorageMock();
-        registry = new StargateRegistry(storage);
+        registry = new RegistryMock();
         network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
         personalNetwork = registry.createNetwork(player.getUniqueId().toString(), NetworkType.PERSONAL, false, false);
     }

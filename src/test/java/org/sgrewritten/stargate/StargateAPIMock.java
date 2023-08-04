@@ -57,8 +57,11 @@ public class StargateAPIMock implements StargateAPI {
         if(storageAPI == null){
             this.storageAPI = new StorageMock();
         }
+        if(this.blockHandlerResolver == null){
+            this.blockHandlerResolver = new BlockHandlerResolver(storageAPI);
+        }
         if(registry == null){
-            this.registry = new StargateRegistry(this.storageAPI);
+            this.registry = new StargateRegistry(this.storageAPI, this.blockHandlerResolver);
         }
         if(this.configurationAPI == null){
             this.configurationAPI = new ConfigurationAPIMock();
@@ -68,9 +71,6 @@ public class StargateAPIMock implements StargateAPI {
         }
         if(this.bungeeManager == null){
             this.bungeeManager = new StargateBungeeManager(registry,languageManager);
-        }
-        if(this.blockHandlerResolver == null){
-            this.blockHandlerResolver = new BlockHandlerResolver(registry,storageAPI);
         }
         if(this.economyManager == null) {
             this.economyManager = new StargateEconomyManagerMock();

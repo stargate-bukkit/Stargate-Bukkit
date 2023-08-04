@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.network;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.Nullable;
+import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
@@ -26,7 +27,7 @@ public class RegistryMock extends StargateRegistry {
     Stack<ThreeTuple<GateStructureType, BlockLocation, RealPortal>> previousRegisteredLocations = new Stack<>();
 
     public RegistryMock() {
-        super(new StorageMock());
+        super(new StorageMock(), new BlockHandlerResolver(new StorageMock()));
     }
 
     @Override

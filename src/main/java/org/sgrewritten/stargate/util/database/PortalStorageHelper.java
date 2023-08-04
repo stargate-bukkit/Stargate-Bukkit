@@ -70,7 +70,8 @@ public class PortalStorageHelper {
         BlockVector positionVector = new BlockVector(xCoordinate, yCoordinate, zCoordinate);
         PositionType positionType = PositionType.valueOf(resultSet.getString("positionName"));
         String pluginName = resultSet.getString("pluginName");
-        return new PortalPosition(positionType, positionVector, pluginName);
+        // Let the Stargate registered portal positions be active at startup, so that controls can be defaulted if an addon does not assign itself a position
+        return new PortalPosition(positionType, positionVector, pluginName, pluginName.equals("Stargate"));
     }
 
 

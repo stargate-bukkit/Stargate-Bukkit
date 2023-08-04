@@ -49,7 +49,7 @@ public class MaterialHandlerResolverTest {
         GateTestHelper.setUpGates();
         this.storage = new StorageMock();
         this.registry = new RegistryMock();
-        this.blockHandlerResolver = new BlockHandlerResolver(registry,storage);
+        this.blockHandlerResolver = new BlockHandlerResolver(storage);
         this.player = server.addPlayer();
         this.world = server.addSimpleWorld("world");
         this.network = registry.createNetwork("network", NetworkType.CUSTOM,false,false);
@@ -75,11 +75,11 @@ public class MaterialHandlerResolverTest {
                 plugin, priority, testFlag);
         BlockVector positionVector = portal.getGate().getRelativeVector(location).toBlockVector();
         blockHandlerResolver.addBlockHandlerInterface(blockHandler);
-        blockHandlerResolver.registerPlacement(location, List.of(portal), testMaterial, player);
+        blockHandlerResolver.registerPlacement(registry,location, List.of(portal), testMaterial, player);
         Assertions.assertTrue(blockHandler.blockIsRegistered(location, player, portal));
         Assertions.assertEquals(registry.getNextRegisteredLocation().getSecondValue(),new BlockLocation(location));
         Assertions.assertEquals(storage.getNextAddedPortalPosition().getThirdValue().getPositionLocation(),positionVector);
-        blockHandlerResolver.registerRemoval(location, portal, testMaterial, player);
+        blockHandlerResolver.registerRemoval(registry,location, portal);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
         Assertions.assertEquals(new BlockLocation(registry.getNextUnregisteredLocation().getSecondValue().getLocation()),new BlockLocation(location));
         Assertions.assertEquals(storage.getNextRemovedPortalPosition().getThirdValue().getPositionLocation(),positionVector);
@@ -100,7 +100,7 @@ public class MaterialHandlerResolverTest {
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
                 plugin, priority, testFlag);
         blockHandlerResolver.addBlockHandlerInterface(blockHandler);
-        blockHandlerResolver.registerPlacement(location, List.of(portal), placedMaterial, player);
+        blockHandlerResolver.registerPlacement(registry,location, List.of(portal), placedMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
         Assertions.assertNull(registry.getNextRegisteredLocation());
         Assertions.assertNull(storage.getNextAddedPortalPosition());
@@ -122,7 +122,7 @@ public class MaterialHandlerResolverTest {
                 plugin, Priority.LOWEST, testFlag);
         blockHandlerResolver.addBlockHandlerInterface(highPriority);
         blockHandlerResolver.addBlockHandlerInterface(lowPriority);
-        blockHandlerResolver.registerPlacement(location, List.of(portal), placedMaterial, player);
+        blockHandlerResolver.registerPlacement(registry, location, List.of(portal), placedMaterial, player);
         Assertions.assertTrue(highPriority.blockIsRegistered(location, player, portal));
         Assertions.assertFalse(lowPriority.blockIsRegistered(location, player, portal));
         Assertions.assertNotNull(registry.getNextRegisteredLocation());
@@ -143,7 +143,7 @@ public class MaterialHandlerResolverTest {
                 plugin, priority, testFlag);
         BlockVector positionVector = portal.getGate().getRelativeVector(location).toBlockVector();
         blockHandlerResolver.addBlockHandlerInterface(blockHandler);
-        blockHandlerResolver.registerPlacement(location, List.of(portal), handlerMaterial, player);
+        blockHandlerResolver.registerPlacement(registry, location, List.of(portal), handlerMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
         Assertions.assertNull(registry.getNextRegisteredLocation());
         Assertions.assertNull(storage.getNextAddedPortalPosition());
@@ -166,7 +166,7 @@ public class MaterialHandlerResolverTest {
         blockHandlerResolver.addBlockHandlerInterface(highPriority);
         blockHandlerResolver.addBlockHandlerInterface(lowPriority);
         highPriority.setRegisterPlacedBlock(false);
-        blockHandlerResolver.registerPlacement(location, List.of(portal), placedMaterial, player);
+        blockHandlerResolver.registerPlacement(registry, location, List.of(portal), placedMaterial, player);
         Assertions.assertFalse(highPriority.blockIsRegistered(location, player, portal));
         Assertions.assertTrue(lowPriority.blockIsRegistered(location, player, portal));
         Assertions.assertNotNull(registry.getNextRegisteredLocation());

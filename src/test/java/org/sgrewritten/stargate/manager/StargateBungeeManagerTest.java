@@ -19,6 +19,7 @@ import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
@@ -60,7 +61,7 @@ class StargateBungeeManagerTest {
         GateFormatHandler.setFormats(
                 Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
         Stargate.setServerName(SERVER);
-        registry = new StargateRegistry(new StorageMock());
+        registry = new RegistryMock();
         world = server.addSimpleWorld("world");
         Network network2 = registry.createNetwork(NETWORK2, NetworkType.CUSTOM, true, false);
         realPortal = new PortalFactory().generateFakePortal(world, network2, REGISTERED_PORTAL, true);

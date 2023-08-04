@@ -25,6 +25,7 @@ import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
@@ -56,7 +57,7 @@ class NetworkCreationHelperTest {
         permissionManager = new StargatePermissionManager(player, new LanguageManagerMock());
         server.addPlayer(player);
         server.addPlayer("central");
-        registry = new StargateRegistry(new StorageMock());
+        registry = new RegistryMock();
         emptyNames = new String[]{"", " ", "  "};
     }
 

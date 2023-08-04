@@ -184,7 +184,7 @@ public final class PortalCreationHelper {
         //Save the portal and inform the user
         selectedNetwork.addPortal(portal, true);
         //Make sure that the portal sign text formats according the default sign dye color
-        getLocationsAdjacentToPortal(gate).forEach((position) -> stargateAPI.getMaterialHandlerResolver().registerPlacement(position,List.of(portal),position.getBlock().getType(),player));
+        getLocationsAdjacentToPortal(gate).forEach((position) -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(),position,List.of(portal),position.getBlock().getType(),player));
         Sign sign = (Sign) signLocation.getState();
         sign.setColor(Stargate.getDefaultSignDyeColor(signLocation.getType()));
         sign.update();

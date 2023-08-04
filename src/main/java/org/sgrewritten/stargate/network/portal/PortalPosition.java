@@ -18,9 +18,10 @@ public class PortalPosition {
     private final PositionType positionType;
     private final BlockVector positionLocation;
     private final String pluginName;
+    private boolean active;
 
     /**
-     * Instantiates a new portal position
+     * Instantiates a new active portal position
      *
      * @param positionType     <p>The type of this portal position</p>
      * @param positionLocation <p>The location of this portal position</p>
@@ -30,6 +31,22 @@ public class PortalPosition {
         this.positionType = Objects.requireNonNull(positionType);
         this.positionLocation = Objects.requireNonNull(positionLocation);
         this.pluginName = Objects.requireNonNull(pluginName);
+        this.active = false;
+    }
+
+    /**
+     * Instantiates a new active portal position
+     *
+     * @param positionType     <p>The type of this portal position</p>
+     * @param positionLocation <p>The location of this portal position</p>
+     * @param pluginName <p> The name of the plugin this position relates to</p>
+     * @param active <p> If the position is active </p>
+     */
+    public PortalPosition(@NotNull PositionType positionType, @NotNull BlockVector positionLocation, @NotNull String pluginName, boolean active) {
+        this.positionType = Objects.requireNonNull(positionType);
+        this.positionLocation = Objects.requireNonNull(positionLocation);
+        this.pluginName = Objects.requireNonNull(pluginName);
+        this.active = active;
     }
 
     /**
@@ -87,4 +104,11 @@ public class PortalPosition {
         return String.format("{x=%d,y=%d,z=%d,%s}", positionLocation.getBlockX(), positionLocation.getBlockY(), positionLocation.getBlockZ(), positionType);
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }

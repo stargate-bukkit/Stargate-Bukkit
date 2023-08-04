@@ -148,7 +148,7 @@ public class BlockEventListener implements Listener {
         if(portals.isEmpty()) {
             return;
         }
-        addonRegistry.registerPlacement(event.getBlock().getLocation(), portals, event.getBlock().getType(), event.getPlayer());
+        addonRegistry.registerPlacement(registry, event.getBlock().getLocation(), portals, event.getBlock().getType(), event.getPlayer());
     }
 
     /**

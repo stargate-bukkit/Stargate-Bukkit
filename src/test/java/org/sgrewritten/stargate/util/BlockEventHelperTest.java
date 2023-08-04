@@ -23,6 +23,7 @@ import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
@@ -51,7 +52,7 @@ class BlockEventHelperTest {
 
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         stargateAPI = new StargateAPIMock();
-        registry = new StargateRegistry(new StorageMock());
+        registry = new RegistryMock();
         GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         Network network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
 

@@ -20,11 +20,9 @@ import java.util.*;
 public class BlockHandlerResolver {
     private final Map<Material,List<BlockHandlerInterface>> blockHandlerMap = new HashMap<>();
     private final Map<BlockLocation,BlockHandlerInterface> blockBlockHandlerMap = new HashMap<>();
-    private final RegistryAPI registry;
     private final StorageAPI storageAPI;
 
-    public BlockHandlerResolver(@NotNull RegistryAPI registry, @NotNull StorageAPI storageAPI){
-        this.registry = Objects.requireNonNull(registry);
+    public BlockHandlerResolver(@NotNull StorageAPI storageAPI){
         this.storageAPI = Objects.requireNonNull(storageAPI);
     }
 
@@ -71,7 +69,7 @@ public class BlockHandlerResolver {
      * @param material The material of the block
      * @param player The player that placed the block
      */
-    public void registerPlacement(Location location, List<RealPortal> portals, Material material, Player player) {
+    public void registerPlacement(RegistryAPI registry, Location location, List<RealPortal> portals, Material material, Player player) {
         if(!blockHandlerMap.containsKey(material)){
             return;
         }
@@ -100,18 +98,13 @@ public class BlockHandlerResolver {
      *
      * @param location The location of the block that is being removed
      * @param portal The portal to try removal on
-     * @param material The material of the block that is being removed
-     * @param player The player that removed the block
      */
-    public void registerRemoval(Location location, RealPortal portal,  Material material, Player player) {
-        if(!blockHandlerMap.containsKey(material)){
-            return;
-        }
+    public void registerRemoval(RegistryAPI registry, Location location, RealPortal portal) {
         BlockHandlerInterface blockHandlerInterface = this.blockBlockHandlerMap.get(new BlockLocation(location));
         if(blockHandlerInterface == null){
             return;
         }
-        blockHandlerInterface.unRegisterPlacedBlock(location,player,portal);
+        blockHandlerInterface.unRegisterPlacedBlock(location,portal);
         PortalPosition portalPosition = portal.getGate().removePortalPosition(location);
         registry.unRegisterLocation(GateStructureType.CONTROL_BLOCK,new BlockLocation(location));
         try {
@@ -125,7 +118,7 @@ public class BlockHandlerResolver {
      * Method used for performance
      * @param material The material
      * @return Whether there exists a BlockHandlerInterface that
-     * has registed for the material
+     * has registered for the material
      */
     public boolean hasRegisteredBlockHandler(Material material) {
         return blockHandlerMap.containsKey(material);

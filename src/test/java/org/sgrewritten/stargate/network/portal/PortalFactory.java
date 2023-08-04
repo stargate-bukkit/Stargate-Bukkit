@@ -18,6 +18,7 @@ import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
@@ -104,7 +105,7 @@ public class PortalFactory {
         Location topLeft = new Location(world, 0, 10, 0);
         NetworkType.removeNetworkTypeRelatedFlags(flags);
         flags.add(portalNetwork.getType().getRelatedFlag());
-        return generateFakePortal(topLeft, portalNetwork, name, createInterServerPortal, flags, new HashSet<>(), new StargateRegistry(new StorageMock()));
+        return generateFakePortal(topLeft, portalNetwork, name, createInterServerPortal, flags, new HashSet<>(), new RegistryMock());
     }
 
     /**

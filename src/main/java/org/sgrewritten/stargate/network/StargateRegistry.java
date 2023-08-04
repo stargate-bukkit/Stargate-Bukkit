@@ -10,6 +10,8 @@ import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.BlockHandlerInterface;
+import org.sgrewritten.stargate.api.BlockHandlerResolver;
+import org.sgrewritten.stargate.api.GateAPI;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
@@ -22,6 +24,7 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.api.structure.GateStructureType;
+import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
@@ -34,6 +37,7 @@ import org.sgrewritten.stargate.vectorlogic.VectorUtils;
 
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 /**
  * Register of all portals and networks
@@ -43,6 +47,7 @@ import java.util.logging.Level;
 public class StargateRegistry implements RegistryAPI {
 
     private final StorageAPI storageAPI;
+    private final BlockHandlerResolver blockHandlerResolver;
     private final HashMap<String, Network> networkMap = new HashMap<>();
     private final HashMap<String, Network> bungeeNetworkMap = new HashMap<>();
     private final Map<GateStructureType, Map<BlockLocation, RealPortal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
@@ -52,8 +57,9 @@ public class StargateRegistry implements RegistryAPI {
      *
      * @param storageAPI <p>The database API to use for interfacing with the database</p>
      */
-    public StargateRegistry(StorageAPI storageAPI) {
+    public StargateRegistry(StorageAPI storageAPI, BlockHandlerResolver blockHandlerResolver) {
         this.storageAPI = storageAPI;
+        this.blockHandlerResolver = blockHandlerResolver;
     }
 
     @Override
@@ -71,9 +77,17 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void removePortal(Portal portal, StorageType portalType) {
+    public void removePortal(Portal portal, StorageType storageType) {
         try {
-            storageAPI.removePortalFromStorage(portal, portalType);
+            if(portal instanceof RealPortal realPortal) {
+                GateAPI gate = realPortal.getGate();
+                Stream<PortalPosition> nonStargatePortalPositions = gate.getPortalPositions().stream().filter((portalPosition) -> !portalPosition.getPluginName().equals("Stargate"));
+                nonStargatePortalPositions.forEach((portalPosition) -> {
+                    Location location = gate.getLocation(portalPosition.getPositionLocation());
+                    blockHandlerResolver.registerRemoval(this, location, realPortal);
+                });
+            }
+            storageAPI.removePortalFromStorage(portal, storageType);
         } catch (StorageWriteException e) {
             Stargate.log(e);
         }

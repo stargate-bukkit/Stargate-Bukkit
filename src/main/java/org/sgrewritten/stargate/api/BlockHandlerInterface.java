@@ -50,9 +50,8 @@ public interface BlockHandlerInterface {
     /**
      * Called if a Stargate is removed, and the add-on has registered this location
      * @param blockLocation The location of the block that is removed
-     * @param player The player that removed the block
      * @param portal The affected portal
      */
-    void unRegisterPlacedBlock(Location blockLocation, @Nullable Player player, Portal portal);
+    void unRegisterPlacedBlock(Location blockLocation, Portal portal);
 
 }

@@ -66,7 +66,7 @@ public class BlockHandlerInterfaceMock implements BlockHandlerInterface{
     }
 
     @Override
-    public void unRegisterPlacedBlock(Location blockLocation, @Nullable Player player, Portal portal) {
+    public void unRegisterPlacedBlock(Location blockLocation, Portal portal) {
         registeredBlocks.remove(new BlockLocation(blockLocation));
     }
     

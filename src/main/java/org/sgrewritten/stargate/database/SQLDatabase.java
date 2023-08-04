@@ -154,7 +154,6 @@ public class SQLDatabase implements StorageAPI {
         try {
             conn = database.getConnection();
             conn.setAutoCommit(false);
-
             DatabaseHelper.runStatement(sqlQueryGenerator.generateRemoveFlagsStatement(conn, portalType, portal));
             DatabaseHelper.runStatement(sqlQueryGenerator.generateRemovePortalPositionsStatement(conn, portalType, portal));
             DatabaseHelper.runStatement(sqlQueryGenerator.generateRemovePortalStatement(conn, portal, portalType));

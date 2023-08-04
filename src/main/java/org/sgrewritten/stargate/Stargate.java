@@ -167,11 +167,12 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             economyManager = new VaultEconomyManager(languageManager);
             SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
             storageAPI = new SQLDatabase(database);
-            registry = new StargateRegistry(storageAPI);
+            blockHandlerResolver = new BlockHandlerResolver(storageAPI);
+            registry = new StargateRegistry(storageAPI,blockHandlerResolver);
             bungeeManager = new StargateBungeeManager(this.getRegistry(), this.getLanguageManager());
             blockLogger = new CoreProtectManager();
             storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(DATA_FOLDER, INTERNAL_FOLDER, INTERNAL_PROPERTIES_FILE));
-            blockHandlerResolver = new BlockHandlerResolver(registry,storageAPI);
+
             try {
                 this.migrateConfigurationAndData();
             } catch (IOException | InvalidConfigurationException | SQLException e) {
@@ -456,7 +457,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         File databaseFile = new File(this.getDataFolder(), "stargate.db");
         SQLDatabaseAPI database = new SQLiteDatabase(databaseFile);
         StorageAPI storageAPI = new SQLDatabase(database, false, false);
-        RegistryAPI migrationRegistry = new StargateRegistry(storageAPI);
+        RegistryAPI migrationRegistry = new StargateRegistry(storageAPI, new BlockHandlerResolver(storageAPI));
 
         DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), CONFIG_FILE),
                 this.getServer(), migrationRegistry, this, this.getStoredPropertiesAPI());
