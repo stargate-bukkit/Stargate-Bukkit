@@ -20,6 +20,7 @@ import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
@@ -84,7 +85,7 @@ public class DataMigratorTest {
         sqlDatabaseFile = new File("src/test/resources", "migrate-test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);
         StorageAPI storageAPI = new SQLDatabase(sqlDatabase, false, false);
-        registry = new RegistryMock();
+        registry = new StargateRegistry(storageAPI,new BlockHandlerResolver(storageAPI));
         stargateAPI = new StargateAPIMock(storageAPI,registry);
 
         defaultConfigFile = new File("src/main/resources", "config.yml");
@@ -241,7 +242,7 @@ public class DataMigratorTest {
     }
 
     @Test
-    @Order(4)
+    @Order(3)
     public void portalPrintCheck() throws SQLException {
         Connection conn = sqlDatabase.getConnection();
         PreparedStatement statement = conn.prepareStatement("SELECT * FROM Portal;");
