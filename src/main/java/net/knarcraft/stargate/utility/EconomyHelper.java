@@ -182,7 +182,11 @@ public final class EconomyHelper {
             if (!economy.has(player, amount)) {
                 return false;
             }
-            economy.withdrawPlayer(player, amount);
+            if (amount > 0) {
+                economy.withdrawPlayer(player, amount);
+            } else {
+                economy.depositPlayer(player, -amount);
+            }
         }
         return true;
     }
