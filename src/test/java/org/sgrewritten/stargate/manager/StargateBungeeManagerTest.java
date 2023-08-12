@@ -64,13 +64,13 @@ class StargateBungeeManagerTest {
         registry = new RegistryMock();
         world = server.addSimpleWorld("world");
         Network network2 = registry.createNetwork(NETWORK2, NetworkType.CUSTOM, true, false);
-        realPortal = new PortalFactory().generateFakePortal(world, network2, REGISTERED_PORTAL, true);
+        realPortal = PortalFactory.generateFakePortal(world, network2, REGISTERED_PORTAL, true);
         network2.addPortal(realPortal, false);
 
         Network bungeeNetwork = registry.createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false,
                 false);
         Set<PortalFlag> bungeePortalFlags = new HashSet<>();
-        bungeePortal = new PortalFactory().generateFakePortal(new Location(world, 0, 10, 0), bungeeNetwork,
+        bungeePortal = PortalFactory.generateFakePortal(new Location(world, 0, 10, 0), bungeeNetwork,
                 NETWORK, false, bungeePortalFlags, new HashSet<>(), registry);
         bungeeNetwork.addPortal(bungeePortal, false);
 
@@ -86,8 +86,8 @@ class StargateBungeeManagerTest {
     void updateNetwork() throws TranslatableException, InvalidStructureException {
         //A network not assigned to a registry
         Network network = new InterServerNetwork(NETWORK, NetworkType.CUSTOM);
-        RealPortal portal = new PortalFactory().generateFakePortal(world, network, PORTAL, true);
-        RealPortal portal2 = new PortalFactory().generateFakePortal(world, network, PORTAL2, true);
+        RealPortal portal = PortalFactory.generateFakePortal(world, network, PORTAL, true);
+        RealPortal portal2 = PortalFactory.generateFakePortal(world, network, PORTAL2, true);
 
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal2, StargateProtocolRequestType.PORTAL_ADD));

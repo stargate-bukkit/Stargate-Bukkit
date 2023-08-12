@@ -58,7 +58,7 @@ public class BlockHandlerInterfaceMock implements BlockHandlerInterface{
     }
     
     @Override
-    public boolean registerPlacedBlock(Location blockLocation, @Nullable Player player, Portal portal) {
+    public boolean registerBlock(Location blockLocation, @Nullable Player player, Portal portal) {
         if(isRegisterPlacedBlock) {
             registeredBlocks.put(new BlockLocation(blockLocation), new TwoTuple<>(player,portal));
         }
@@ -66,7 +66,7 @@ public class BlockHandlerInterfaceMock implements BlockHandlerInterface{
     }
 
     @Override
-    public void unRegisterPlacedBlock(Location blockLocation, Portal portal) {
+    public void unRegisterBlock(Location blockLocation, Portal portal) {
         registeredBlocks.remove(new BlockLocation(blockLocation));
     }
     

@@ -75,7 +75,7 @@ public class BlockHandlerResolver {
         }
         for(RealPortal portal : portals) {
             for(BlockHandlerInterface blockHandlerInterface : blockHandlerMap.get(material)){
-                if(portal.hasFlag(blockHandlerInterface.getFlag()) && blockHandlerInterface.registerPlacedBlock(location,player,portal)){
+                if(portal.hasFlag(blockHandlerInterface.getFlag()) && blockHandlerInterface.registerBlock(location,player,portal)){
                     BlockVector relativeVector = portal.getGate().getRelativeVector(location).toBlockVector();
                     PortalPosition portalPosition = new PortalPosition(blockHandlerInterface.getInterfaceType(),relativeVector,blockHandlerInterface.getPlugin().getName());
                     portal.getGate().addPortalPosition(portalPosition);
@@ -104,7 +104,7 @@ public class BlockHandlerResolver {
         if(blockHandlerInterface == null){
             return;
         }
-        blockHandlerInterface.unRegisterPlacedBlock(location,portal);
+        blockHandlerInterface.unRegisterBlock(location,portal);
         PortalPosition portalPosition = portal.getGate().removePortalPosition(location);
         registry.unRegisterLocation(GateStructureType.CONTROL_BLOCK,new BlockLocation(location));
         try {

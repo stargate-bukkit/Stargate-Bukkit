@@ -37,21 +37,25 @@ public interface BlockHandlerInterface {
     @Nullable Character getFlag();
 
     /**
-     * Called if a Stargate is created or a block is placed, and the result of
-     * getHandledMaterial matches with the detected location
+     * <p>Called if a Stargate is created or a block is placed, and the result of
+     * getHandledMaterial matches with the detected location</p>
+     *
+     * <p></p>
      *
      * @param blockLocation The location of the block that is placed
      * @param player The player that placed the block
      * @param portal The affected portal
      * @return Whether to claim the block
      */
-    boolean registerPlacedBlock(Location blockLocation, @Nullable Player player, Portal portal);
+    boolean registerBlock(Location blockLocation, @Nullable Player player, Portal portal);
+
+
 
     /**
      * Called if a Stargate is removed, and the add-on has registered this location
      * @param blockLocation The location of the block that is removed
      * @param portal The affected portal
      */
-    void unRegisterPlacedBlock(Location blockLocation, Portal portal);
+    void unRegisterBlock(Location blockLocation, Portal portal);
 
 }
