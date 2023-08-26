@@ -4,16 +4,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.structure.GateStructureType;
-import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
 
 import java.util.*;
 
@@ -76,18 +71,8 @@ public class BlockHandlerResolver {
         for(RealPortal portal : portals) {
             for(BlockHandlerInterface blockHandlerInterface : blockHandlerMap.get(material)){
                 if(portal.hasFlag(blockHandlerInterface.getFlag()) && blockHandlerInterface.registerBlock(location,player,portal)){
-                    BlockVector relativeVector = portal.getGate().getRelativeVector(location).toBlockVector();
-                    PortalPosition portalPosition = new PortalPosition(blockHandlerInterface.getInterfaceType(),relativeVector,blockHandlerInterface.getPlugin().getName());
-                    portal.getGate().addPortalPosition(portalPosition);
+                    registry.savePortalPosition(portal,location,blockHandlerInterface.getInterfaceType(),blockHandlerInterface.getPlugin());
                     blockBlockHandlerMap.put(new BlockLocation(location),blockHandlerInterface);
-                    registry.registerLocation(GateStructureType.CONTROL_BLOCK,new BlockLocation(location),portal);
-                    try {
-                        storageAPI.addPortalPosition(portal,portal.getStorageType(),portalPosition);
-                    } catch (StorageWriteException e) {
-                        Stargate.log(e);
-                        return;
-                    }
-                    return;
                 }
             }
         }
@@ -105,13 +90,7 @@ public class BlockHandlerResolver {
             return;
         }
         blockHandlerInterface.unRegisterBlock(location,portal);
-        PortalPosition portalPosition = portal.getGate().removePortalPosition(location);
-        registry.unRegisterLocation(GateStructureType.CONTROL_BLOCK,new BlockLocation(location));
-        try {
-            storageAPI.removePortalPosition(portal,portal.getStorageType(),portalPosition);
-        } catch (StorageWriteException e) {
-            Stargate.log(e);
-        }
+        registry.removePortalPosition(location);
     }
 
     /**

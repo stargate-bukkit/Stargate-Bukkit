@@ -9,7 +9,7 @@ import org.sgrewritten.stargate.gate.structure.GateControlBlock;
 import org.sgrewritten.stargate.gate.structure.GateFrame;
 import org.sgrewritten.stargate.gate.structure.GateIris;
 import org.sgrewritten.stargate.gate.structure.GateStructure;
-import org.sgrewritten.stargate.api.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.vectorlogic.VectorOperation;
 
 import java.util.EnumMap;

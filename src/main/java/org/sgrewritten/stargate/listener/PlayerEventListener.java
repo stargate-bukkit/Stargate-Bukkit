@@ -21,7 +21,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
-import org.sgrewritten.stargate.api.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.manager.BlockLoggingManager;
 import org.sgrewritten.stargate.api.manager.BungeeManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;

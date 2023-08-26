@@ -8,6 +8,7 @@ import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
+import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.Network;
@@ -19,7 +20,7 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
@@ -32,7 +33,6 @@ import org.sgrewritten.stargate.vectorlogic.VectorUtils;
 
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Stream;
 
 /**
  * Register of all portals and networks
@@ -43,9 +43,12 @@ public class StargateRegistry implements RegistryAPI {
 
     private final StorageAPI storageAPI;
     private final BlockHandlerResolver blockHandlerResolver;
-    private final HashMap<String, Network> networkMap = new HashMap<>();
-    private final HashMap<String, Network> bungeeNetworkMap = new HashMap<>();
+    private final Map<String, Network> networkMap = new HashMap<>();
+    private final Map<String, Network> bungeeNetworkMap = new HashMap<>();
     private final Map<GateStructureType, Map<BlockLocation, RealPortal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
+    private final Map<BlockLocation,PortalPosition> portalPositionMap = new HashMap<>();
+    private final Map<String,Map<BlockLocation,PortalPosition>> portalPositionPluginNameMap = new HashMap<>();
+    private final Map<PortalPosition,RealPortal> portalPositionPortalRelation = new HashMap<>();
 
     /**
      * Instantiates a new Stargate registry
@@ -74,14 +77,6 @@ public class StargateRegistry implements RegistryAPI {
     @Override
     public void removePortal(Portal portal, StorageType storageType) {
         try {
-            if(portal instanceof RealPortal realPortal) {
-                GateAPI gate = realPortal.getGate();
-                Stream<PortalPosition> nonStargatePortalPositions = gate.getPortalPositions().stream().filter((portalPosition) -> !portalPosition.getPluginName().equals("Stargate"));
-                nonStargatePortalPositions.forEach((portalPosition) -> {
-                    Location location = gate.getLocation(portalPosition.getPositionLocation());
-                    blockHandlerResolver.registerRemoval(this, location, realPortal);
-                });
-            }
             storageAPI.removePortalFromStorage(portal, storageType);
         } catch (StorageWriteException e) {
             Stargate.log(e);
@@ -92,6 +87,18 @@ public class StargateRegistry implements RegistryAPI {
                 for (BlockLocation loc : realPortal.getGate().getLocations(formatType)) {
                     Stargate.log(Level.FINEST, "Unregistering type: " + formatType + " location, at: " + loc);
                     this.unRegisterLocation(formatType, loc);
+                }
+            }
+            GateAPI gate = realPortal.getGate();
+            List<PortalPosition> portalPositions = gate.getPortalPositions();
+            for (PortalPosition portalPosition : portalPositions){
+                Location location = gate.getLocation(portalPosition.getRelativePositionLocation());
+                if(!portalPosition.getPluginName().equals("Stargate")) {
+                    Stargate.log(Level.FINEST, "Unregistering non-Stargate portal position on location " + location.toString());
+                    blockHandlerResolver.registerRemoval(this, location, realPortal);
+                } else {
+                    Stargate.log(Level.FINEST, "Unregistering portal position on location " + location.toString());
+                    this.removePortalPosition(location);
                 }
             }
         }
@@ -105,6 +112,38 @@ public class StargateRegistry implements RegistryAPI {
             Stargate.log(e);
         }
     }
+
+    @Override
+    public void registerPortal(RealPortal portal){
+        GateAPI gate = portal.getGate();
+        for (GateStructureType key : GateStructureType.values()) {
+            List<BlockLocation> locations = gate.getLocations(key);
+            if (locations == null) {
+                continue;
+            }
+            this.registerLocations(key, generateLocationMap(locations, portal));
+        }
+        for(PortalPosition portalPosition : gate.getPortalPositions()){
+            Location location = gate.getLocation(portalPosition.getRelativePositionLocation());
+            this.registerPortalPosition(portalPosition,location, portal);
+        }
+    }
+
+    /**
+     * Gets a map between the given block locations and the given portal
+     *
+     * @param locations <p>The locations related to the portal</p>
+     * @param portal    <p>The portal with blocks at the given locations</p>
+     * @return <p>The resulting location to portal mapping</p>
+     */
+    private Map<BlockLocation, RealPortal> generateLocationMap(List<BlockLocation> locations, RealPortal portal) {
+        Map<BlockLocation, RealPortal> output = new HashMap<>();
+        for (BlockLocation location : locations) {
+            output.put(location, portal);
+        }
+        return output;
+    }
+
 
     @Override
     public Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced)
@@ -262,12 +301,12 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public HashMap<String, Network> getBungeeNetworkMap() {
+    public Map<String, Network> getBungeeNetworkMap() {
         return bungeeNetworkMap;
     }
 
     @Override
-    public HashMap<String, Network> getNetworkMap() {
+    public Map<String, Network> getNetworkMap() {
         return networkMap;
     }
 
@@ -346,8 +385,52 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public Map<Location, RealPortal> getControlBLocksOwnedByPlugin(Plugin plugin) {
+    public Map<BlockLocation, RealPortal> getPortalPositions() {
         return null;
+    }
+
+    @Override
+    public Map<BlockLocation, RealPortal> getPortalPositionsOwnedByPlugin(Plugin plugin) {
+        return null;
+    }
+
+    @Override
+    public void savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin) {
+        BlockVector relativeVector = portal.getGate().getRelativeVector(location).toBlockVector();
+        PortalPosition portalPosition = new PortalPosition(type,relativeVector,plugin.getName());
+        portal.getGate().addPortalPosition(portalPosition);
+        registerPortalPosition(portalPosition,location,portal);
+        try {
+            storageAPI.addPortalPosition(portal,portal.getStorageType(),portalPosition);
+        } catch (StorageWriteException e) {
+            Stargate.log(e);
+        }
+    }
+
+    @Override
+    public void removePortalPosition(Location location) {
+        BlockLocation blockLocation = new BlockLocation(location);
+        PortalPosition portalPosition = portalPositionMap.get(blockLocation);
+        if(portalPosition == null){
+            return;
+        }
+        portalPositionMap.remove(blockLocation);
+        portalPositionPluginNameMap.get(portalPosition.getPluginName()).remove(blockLocation);
+        RealPortal portal = portalPositionPortalRelation.remove(portalPosition);
+        try {
+            storageAPI.removePortalPosition(portal, portal.getStorageType(),portalPosition);
+        } catch (StorageWriteException e) {
+            Stargate.log(e);
+        }
+    }
+
+    @Override
+    public void registerPortalPosition(PortalPosition portalPosition, Location location, RealPortal portal) {
+        BlockLocation blockLocation = new BlockLocation(location);
+        portalPositionMap.put(blockLocation,portalPosition);
+        portalPositionPluginNameMap.putIfAbsent(portalPosition.getPluginName(),new HashMap<>());
+        portalPositionPluginNameMap.get(portalPosition.getPluginName()).put(blockLocation,portalPosition);
+        portalPositionPortalRelation.put(portalPosition,portal);
     }
 
 

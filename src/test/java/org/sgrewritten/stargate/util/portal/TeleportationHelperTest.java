@@ -16,15 +16,13 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.api.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryMock;
-import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.database.StorageMock;
 
 import java.io.File;
 import java.util.ArrayList;

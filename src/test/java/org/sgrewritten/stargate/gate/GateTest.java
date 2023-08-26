@@ -17,11 +17,9 @@ import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.RegistryMock;
-import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.network.portal.PortalPosition;
-import org.sgrewritten.stargate.database.StorageMock;
 
 import java.io.File;
 import java.util.List;
@@ -96,7 +94,7 @@ class GateTest {
     boolean gatePositionIsAdded(Location location, Gate gate) {
         BlockVector vector = gate.getRelativeVector(location).toBlockVector();
         for(PortalPosition portalPosition : gate.getPortalPositions()){
-            if(portalPosition.getPositionLocation().equals(vector)) {
+            if(portalPosition.getRelativePositionLocation().equals(vector)) {
                 return true;
             }
         }

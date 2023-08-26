@@ -24,7 +24,7 @@ import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.api.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
@@ -133,7 +133,7 @@ public class Gate implements GateAPI {
      */
     private void drawSigns(String[] signLines) {
         for (PortalPosition portalPosition : getActivePortalPositions(PositionType.SIGN)) {
-            Location signLocation = getLocation(portalPosition.getPositionLocation());
+            Location signLocation = getLocation(portalPosition.getRelativePositionLocation());
             BlockState signState = signLocation.getBlock().getState();
             if (!(signState instanceof Sign sign)) {
                 Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
@@ -152,7 +152,7 @@ public class Gate implements GateAPI {
      */
     private void drawButtons() {
         for (PortalPosition portalPosition : getActivePortalPositions(PositionType.BUTTON)) {
-            Location buttonLocation = getLocation(portalPosition.getPositionLocation());
+            Location buttonLocation = getLocation(portalPosition.getRelativePositionLocation());
             Material blockType = buttonLocation.getBlock().getType();
             if (ButtonHelper.isButton(blockType)) {
                 continue;
@@ -190,7 +190,7 @@ public class Gate implements GateAPI {
         if (structureType == GateStructureType.CONTROL_BLOCK) {
             //Only give the locations of control-blocks in use
             for (PortalPosition position : portalPositions) {
-                output.add(new BlockLocation(getLocation(position.getPositionLocation())));
+                output.add(new BlockLocation(getLocation(position.getRelativePositionLocation())));
             }
         } else {
             //Get all locations from the format
@@ -434,7 +434,7 @@ public class Gate implements GateAPI {
         //TODO: If we allow add-ons to add new controls after creation, this should be expanded to all control blocks
         List<PortalPosition> portalPositions = this.getPortalPositions();
         for (PortalPosition portalPosition : portalPositions) {
-            BlockLocation positionLocation = new BlockLocation(getLocation(portalPosition.getPositionLocation()));
+            BlockLocation positionLocation = new BlockLocation(getLocation(portalPosition.getRelativePositionLocation()));
             if (registry.getPortal(positionLocation, GateStructureType.CONTROL_BLOCK) != null) {
                 return true;
             }
@@ -467,7 +467,7 @@ public class Gate implements GateAPI {
 
     @Override
     public void addPortalPosition(PortalPosition portalPosition) {
-        Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position %s", portalPosition.getPositionType().toString(), portalPosition.getPositionLocation()));
+        Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position %s", portalPosition.getPositionType().toString(), portalPosition.getRelativePositionLocation()));
         this.portalPositions.add(portalPosition);
     }
 
@@ -475,7 +475,7 @@ public class Gate implements GateAPI {
     public @Nullable PortalPosition removePortalPosition(Location location) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
         for(PortalPosition portalPosition : this.portalPositions){
-            if(portalPosition.getPositionLocation().equals(relativeBlockVector)){
+            if(portalPosition.getRelativePositionLocation().equals(relativeBlockVector)){
                 this.portalPositions.remove(portalPosition);
                 return portalPosition;
             }

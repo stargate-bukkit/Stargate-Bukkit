@@ -4,18 +4,20 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
+import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.network.portal.PortalPosition;
 
 import java.util.HashMap;
 import java.util.List;
@@ -159,6 +161,11 @@ public interface RegistryAPI {
      */
     void unRegisterLocation(GateStructureType structureType, BlockLocation blockLocation);
 
+    /**
+     * Register a portal to this registry
+     * @param portal <p> The portal to register</p>
+     */
+    void registerPortal(RealPortal portal);
 
     /**
      * Creates a new network assigned to this registry
@@ -212,14 +219,14 @@ public interface RegistryAPI {
      *
      * @return <p>All BungeeCord networks</p>
      */
-    HashMap<String, Network> getBungeeNetworkMap();
+    Map<String, Network> getBungeeNetworkMap();
 
     /**
      * Gets the map storing all non-BungeeCord networks
      *
      * @return <p>All non-BungeeCord networks</p>
      */
-    HashMap<String, Network> getNetworkMap();
+    Map<String, Network> getNetworkMap();
 
     /**
      * Rename the network to specified name
@@ -248,8 +255,37 @@ public interface RegistryAPI {
     void rename(Network network) throws InvalidNameException;
 
     /**
-     * @param plugin <p> The plugin owning the blocks</p>
-     * @return <p> Data on the control block owned by specified plugin</p>
+     * Get all portal positions
+     * @return  <p> Data on all portal positions</p>
      */
-    Map<Location,RealPortal> getControlBLocksOwnedByPlugin(Plugin plugin);
+    Map<BlockLocation,RealPortal> getPortalPositions();
+
+    /**
+     * @param plugin <p> The plugin owning the positions</p>
+     * @return <p> Data on the portal positions owned by specified plugin</p>
+     */
+    Map<BlockLocation,RealPortal> getPortalPositionsOwnedByPlugin(Plugin plugin);
+
+    /**
+     * Save given portal position to storage and register it to the registry
+     * @param portal <p>The portal the position is linked to</p>
+     * @param location <p> The location of the position</p>
+     * @param type <p>The type of the position</p>
+     * @param plugin <p> The plugin this position relates to</p>
+     */
+    void savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin);
+
+    /**
+     * Remove portal position from registry and storage
+     * @param location
+     */
+    void removePortalPosition(Location location);
+
+    /**
+     * Register given portal position to registry
+     * @param portalPosition <p> The portal position</p>
+     * @param location <p> The location of the position</p>
+     * @param portal <p>The portal of the position</p>
+     */
+    void registerPortalPosition(PortalPosition portalPosition, Location location, RealPortal portal);
 }

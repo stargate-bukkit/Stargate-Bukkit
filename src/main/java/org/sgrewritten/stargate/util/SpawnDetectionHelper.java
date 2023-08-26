@@ -52,7 +52,7 @@ public final class SpawnDetectionHelper {
         //TODO: Might want to change this to test all control blocks if we allow add-ons to add new controls after 
         // creation
         for (PortalPosition position : gate.getPortalPositions()) {
-            if (areIntersecting(gate.getLocation(position.getPositionLocation()), spawnMinLocation, spawnMaxLocation)) {
+            if (areIntersecting(gate.getLocation(position.getRelativePositionLocation()), spawnMinLocation, spawnMaxLocation)) {
                 return true;
             }
         }

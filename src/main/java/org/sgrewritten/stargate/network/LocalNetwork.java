@@ -13,7 +13,7 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
@@ -146,13 +146,7 @@ public class LocalNetwork implements Network {
             throw new NameConflictException("portal of name '" + portal.getName() + "' already exist in network '" + this.getId() + "'", false);
         }
         if (portal instanceof RealPortal realPortal) {
-            for (GateStructureType key : GateStructureType.values()) {
-                List<BlockLocation> locations = realPortal.getGate().getLocations(key);
-                if (locations == null) {
-                    continue;
-                }
-                registry.registerLocations(key, generateLocationMap(locations, (RealPortal) portal));
-            }
+            registry.registerPortal(realPortal);
             if (saveToDatabase) {
                 savePortal((RealPortal) portal);
             }
@@ -236,21 +230,6 @@ public class LocalNetwork implements Network {
      */
     protected void savePortal(RealPortal portal) {
         registry.savePortal(portal, StorageType.LOCAL);
-    }
-
-    /**
-     * Gets a map between the given block locations and the given portal
-     *
-     * @param locations <p>The locations related to the portal</p>
-     * @param portal    <p>The portal with blocks at the given locations</p>
-     * @return <p>The resulting location to portal mapping</p>
-     */
-    private Map<BlockLocation, RealPortal> generateLocationMap(List<BlockLocation> locations, RealPortal portal) {
-        Map<BlockLocation, RealPortal> output = new HashMap<>();
-        for (BlockLocation location : locations) {
-            output.put(location, portal);
-        }
-        return output;
     }
 
     @Override

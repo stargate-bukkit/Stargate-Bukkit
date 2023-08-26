@@ -6,7 +6,7 @@ import org.bukkit.WorldBorder;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-import org.sgrewritten.stargate.api.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
 import java.util.ArrayList;

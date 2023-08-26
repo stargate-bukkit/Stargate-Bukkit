@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.network.portal;
 
+import org.bukkit.Location;
 import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
@@ -16,7 +17,7 @@ import java.util.Objects;
 public class PortalPosition {
 
     private final PositionType positionType;
-    private final BlockVector positionLocation;
+    private final BlockVector relativePositionLocation;
     private final String pluginName;
     private boolean active;
 
@@ -24,27 +25,24 @@ public class PortalPosition {
      * Instantiates a new active portal position
      *
      * @param positionType     <p>The type of this portal position</p>
-     * @param positionLocation <p>The location of this portal position</p>
+     * @param relativePositionLocation <p> The relative location of this portal to that of the gate</p>
      * @param pluginName <p> The name of the plugin this position relates to</p>
      */
-    public PortalPosition(@NotNull PositionType positionType, @NotNull BlockVector positionLocation, @NotNull String pluginName) {
-        this.positionType = Objects.requireNonNull(positionType);
-        this.positionLocation = Objects.requireNonNull(positionLocation);
-        this.pluginName = Objects.requireNonNull(pluginName);
-        this.active = false;
+    public PortalPosition(@NotNull PositionType positionType, @NotNull BlockVector relativePositionLocation, @NotNull String pluginName) {
+        this(positionType,relativePositionLocation,pluginName,false);
     }
 
     /**
      * Instantiates a new active portal position
      *
      * @param positionType     <p>The type of this portal position</p>
-     * @param positionLocation <p>The location of this portal position</p>
+     * @param relativePositionLocation <p> The relative location of this portal to that of the gate</p>
      * @param pluginName <p> The name of the plugin this position relates to</p>
      * @param active <p> If the position is active </p>
      */
-    public PortalPosition(@NotNull PositionType positionType, @NotNull BlockVector positionLocation, @NotNull String pluginName, boolean active) {
+    public PortalPosition(@NotNull PositionType positionType, @NotNull BlockVector relativePositionLocation, @NotNull String pluginName, boolean active) {
         this.positionType = Objects.requireNonNull(positionType);
-        this.positionLocation = Objects.requireNonNull(positionLocation);
+        this.relativePositionLocation = Objects.requireNonNull(relativePositionLocation);
         this.pluginName = Objects.requireNonNull(pluginName);
         this.active = active;
     }
@@ -59,12 +57,12 @@ public class PortalPosition {
     }
 
     /**
-     * Gets this portal position's location
+     * Gets this portal position's relative location to that of the gate
      *
-     * @return <p>This portal position's location</p>
+     * @return <p>This portal position's relative location</p>
      */
-    public BlockVector getPositionLocation() {
-        return this.positionLocation;
+    public BlockVector getRelativePositionLocation() {
+        return this.relativePositionLocation;
     }
 
     /**
@@ -96,12 +94,12 @@ public class PortalPosition {
         if (!(other instanceof PortalPosition otherPortalPosition)) {
             return false;
         }
-        return otherPortalPosition.getPositionLocation().equals(this.getPositionLocation());
+        return otherPortalPosition.getRelativePositionLocation().equals(this.getRelativePositionLocation());
     }
 
     @Override
     public String toString() {
-        return String.format("{x=%d,y=%d,z=%d,%s}", positionLocation.getBlockX(), positionLocation.getBlockY(), positionLocation.getBlockZ(), positionType);
+        return String.format("{x=%d,y=%d,z=%d,%s}", relativePositionLocation.getBlockX(), relativePositionLocation.getBlockY(), relativePositionLocation.getBlockZ(), positionType);
     }
 
     public boolean isActive() {

@@ -207,7 +207,7 @@ public class SQLQueryGenerator {
         }
         removePositionsStatement.setString(1, portal.getName());
         removePositionsStatement.setString(2, portal.getNetwork().getId());
-        BlockVector positionLocation = portalPosition.getPositionLocation();
+        BlockVector positionLocation = portalPosition.getRelativePositionLocation();
         removePositionsStatement.setInt(3, positionLocation.getBlockX());
         removePositionsStatement.setInt(4, positionLocation.getBlockY());
         removePositionsStatement.setInt(5, -positionLocation.getBlockZ());
@@ -559,7 +559,7 @@ public class SQLQueryGenerator {
         statement.setString(1, meta);
         statement.setString(2, portal.getName());
         statement.setString(3, portal.getNetwork().getId());
-        BlockVector vector = portalPosition.getPositionLocation();
+        BlockVector vector = portalPosition.getRelativePositionLocation();
         statement.setInt(4, vector.getBlockX());
         statement.setInt(5, vector.getBlockY());
         statement.setInt(6, -vector.getBlockZ());
@@ -576,7 +576,7 @@ public class SQLQueryGenerator {
         }
         statement.setString(1, portal.getName());
         statement.setString(2, portal.getNetwork().getId());
-        BlockVector vector = portalPosition.getPositionLocation();
+        BlockVector vector = portalPosition.getRelativePositionLocation();
         statement.setInt(3, vector.getBlockX());
         statement.setInt(4, vector.getBlockY());
         statement.setInt(5, -vector.getBlockZ());
