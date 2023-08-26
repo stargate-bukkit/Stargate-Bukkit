@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.GateFormatAPI;
+import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.gate.structure.GateControlBlock;
 import org.sgrewritten.stargate.gate.structure.GateFrame;
 import org.sgrewritten.stargate.gate.structure.GateIris;

@@ -2,21 +2,17 @@ package org.sgrewritten.stargate.network;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.SupplierAction;
-import org.sgrewritten.stargate.api.BlockHandlerInterface;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
-import org.sgrewritten.stargate.api.GateAPI;
+import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
-import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -24,7 +20,6 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.api.structure.GateStructureType;
-import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
@@ -349,5 +344,11 @@ public class StargateRegistry implements RegistryAPI {
             Stargate.log(e);
         }
     }
+
+    @Override
+    public Map<Location, RealPortal> getControlBLocksOwnedByPlugin(Plugin plugin) {
+        return null;
+    }
+
 
 }

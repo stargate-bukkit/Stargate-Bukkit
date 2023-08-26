@@ -10,7 +10,7 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.GateAPI;
+import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.structure.GateStructureType;
 import org.sgrewritten.stargate.config.ConfigurationHelper;

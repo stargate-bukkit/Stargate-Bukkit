@@ -1,14 +1,10 @@
 package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
-import org.sgrewritten.stargate.api.BlockHandlerInterface;
 import org.sgrewritten.stargate.api.StargateAPI;
-import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
@@ -250,4 +246,10 @@ public interface RegistryAPI {
      * @throws InvalidNameException <p> If the name is a uuid </p>
      */
     void rename(Network network) throws InvalidNameException;
+
+    /**
+     * @param plugin <p> The plugin owning the blocks</p>
+     * @return <p> Data on the control block owned by specified plugin</p>
+     */
+    Map<Location,RealPortal> getControlBLocksOwnedByPlugin(Plugin plugin);
 }
