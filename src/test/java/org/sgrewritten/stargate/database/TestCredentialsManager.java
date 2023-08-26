@@ -73,7 +73,7 @@ public class TestCredentialsManager {
         try (InputStream stream = new FileInputStream(location)) {
             properties.load(stream);
         } catch (IOException ignored) {
-            Stargate.log(Level.WARNING, "Unable to load test credentials. Defaults will be used!");
+            Stargate.log(Level.WARNING, "Unable to load test credentials from file '" + propertyFile + "'. Defaults will be used!");
         }
     }
 

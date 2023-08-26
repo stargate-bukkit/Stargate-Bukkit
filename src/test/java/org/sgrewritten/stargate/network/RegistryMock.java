@@ -1,21 +1,33 @@
 package org.sgrewritten.stargate.network;
 
+import org.bukkit.Location;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
+import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
 import org.sgrewritten.stargate.container.ThreeTuple;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.StorageMock;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
+import org.sgrewritten.stargate.network.portal.PortalPosition;
 
+import javax.sound.sampled.Port;
 import java.util.*;
 
 public class RegistryMock extends StargateRegistry {
     Stack<TwoTuple<GateStructureType, BlockLocation>> previousUnregisteredLocations = new Stack<>();
     Stack<ThreeTuple<GateStructureType, BlockLocation, RealPortal>> previousRegisteredLocations = new Stack<>();
 
+    Stack<PortalPosition> nextRegisteredPortalPosition = new Stack<>();
+    Stack<BlockLocation> nextUnRegisteredPortalPosition = new Stack<>();
+
     public RegistryMock() {
         super(new StorageMock(), new BlockHandlerResolver(new StorageMock()));
+    }
+
+    public RegistryMock(StorageAPI storage, BlockHandlerResolver resolver) {
+        super(storage, resolver);
     }
 
     @Override
@@ -50,5 +62,31 @@ public class RegistryMock extends StargateRegistry {
             return null;
         }
         return previousUnregisteredLocations.pop();
+    }
+
+    @Override
+    public void registerPortalPosition(PortalPosition portalPosition, Location location, RealPortal portal){
+        super.registerPortalPosition(portalPosition,location,portal);
+        nextRegisteredPortalPosition.push(portalPosition);
+    }
+
+    public @Nullable PortalPosition getNextRegisteredPortalPosition() {
+        if(nextRegisteredPortalPosition.isEmpty()){
+            return null;
+        }
+        return nextRegisteredPortalPosition.pop();
+    }
+
+    @Override
+    public void removePortalPosition(Location location) {
+        super.removePortalPosition(location);
+        nextUnRegisteredPortalPosition.push(new BlockLocation(location));
+    }
+
+    public @Nullable BlockLocation getNextRemovedPortalPosition(){
+        if(nextUnRegisteredPortalPosition.isEmpty()){
+            return null;
+        }
+        return nextUnRegisteredPortalPosition.pop();
     }
 }

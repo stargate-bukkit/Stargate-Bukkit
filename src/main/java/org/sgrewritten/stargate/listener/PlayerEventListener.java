@@ -28,6 +28,7 @@ import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.util.colors.ColorConverter;
@@ -74,13 +75,12 @@ public class PlayerEventListener implements Listener {
             return;
         }
 
-        // TODO material optimisation?
-        RealPortal portal = registry.getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
-        if (portal == null) {
+        PortalPosition portalPosition = registry.getPortalPosition(block.getLocation());
+        if (portalPosition == null) {
             return;
         }
 
-        handleRelevantClickEvent(block, portal, event);
+        handleRelevantClickEvent(block, portalPosition, event);
     }
 
     /**
@@ -90,9 +90,14 @@ public class PlayerEventListener implements Listener {
      * @param portal <p>The portal the block belongs to</p>
      * @param event  <p>The player interact event to handle</p>
      */
-    private void handleRelevantClickEvent(Block block, RealPortal portal, PlayerInteractEvent event) {
+    private void handleRelevantClickEvent(Block block, PortalPosition portalPosition, PlayerInteractEvent event) {
         Material blockMaterial = block.getType();
         Player player = event.getPlayer();
+        RealPortal portal = registry.getPortalFromPortalPosition(portalPosition);
+        if(portal == null){
+            Stargate.log(Level.WARNING,"Improper use of unregistered PortalPositions");
+            return;
+        }
 
         if (Tag.WALL_SIGNS.isTagged(blockMaterial)) {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK && dyePortalSignText(event, portal)) {

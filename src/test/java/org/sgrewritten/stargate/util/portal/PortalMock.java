@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.gate.GateMock;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
@@ -157,7 +158,7 @@ public class PortalMock implements RealPortal {
 
     @Override
     public GateAPI getGate() {
-        return null;
+        return new GateMock();
     }
 
     @Override

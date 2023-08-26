@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.database;
 
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.container.ThreeTuple;
@@ -19,6 +20,7 @@ import org.sgrewritten.stargate.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
 import java.util.Stack;
+import java.util.logging.Level;
 
 public class StorageMock implements StorageAPI {
 

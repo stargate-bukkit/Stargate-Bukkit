@@ -258,13 +258,13 @@ public interface RegistryAPI {
      * Get all portal positions
      * @return  <p> Data on all portal positions</p>
      */
-    Map<BlockLocation,RealPortal> getPortalPositions();
+    Map<BlockLocation,PortalPosition> getPortalPositions();
 
     /**
      * @param plugin <p> The plugin owning the positions</p>
      * @return <p> Data on the portal positions owned by specified plugin</p>
      */
-    Map<BlockLocation,RealPortal> getPortalPositionsOwnedByPlugin(Plugin plugin);
+    Map<BlockLocation,PortalPosition> getPortalPositionsOwnedByPlugin(Plugin plugin);
 
     /**
      * Save given portal position to storage and register it to the registry
@@ -288,4 +288,18 @@ public interface RegistryAPI {
      * @param portal <p>The portal of the position</p>
      */
     void registerPortalPosition(PortalPosition portalPosition, Location location, RealPortal portal);
+
+    /**
+     * Gets the portal position at given location
+     * @param location <p> The location of the portal position</p>
+     * @return <p>The portal position, or null if none was found</p>
+     */
+    @Nullable PortalPosition getPortalPosition(Location location);
+
+    /**
+     * Get the portal the given portal position belong to
+     * @param portalPosition <p> A portal position</p>
+     * @return <p> The portal that owns the portal position (or null if the portal position is not registered)</p>
+     */
+    @Nullable RealPortal getPortalFromPortalPosition(PortalPosition portalPosition);
 }

@@ -8,7 +8,7 @@ public enum GateStructureType {
     /**
      * Represents the control blocks of a gate
      */
-    // CONTROL_BLOCK,
+    CONTROL_BLOCK,
 
     /**
      * Represents the frame of a gate

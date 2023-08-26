@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BlockVector;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
@@ -385,13 +386,14 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public Map<BlockLocation, RealPortal> getPortalPositions() {
-        return null;
+    public Map<BlockLocation, PortalPosition> getPortalPositions() {
+        return this.portalPositionMap;
     }
 
     @Override
-    public Map<BlockLocation, RealPortal> getPortalPositionsOwnedByPlugin(Plugin plugin) {
-        return null;
+    public Map<BlockLocation, PortalPosition> getPortalPositionsOwnedByPlugin(Plugin plugin) {
+        this.portalPositionPluginNameMap.putIfAbsent(plugin.getName(),new HashMap<>());
+        return this.portalPositionPluginNameMap.get(plugin.getName());
     }
 
     @Override
@@ -433,5 +435,14 @@ public class StargateRegistry implements RegistryAPI {
         portalPositionPortalRelation.put(portalPosition,portal);
     }
 
+    @Override
+    public PortalPosition getPortalPosition(Location location) {
+        return portalPositionMap.get(new BlockLocation(location));
+    }
+
+    @Override
+    public @Nullable RealPortal getPortalFromPortalPosition(PortalPosition portalPosition) {
+        return portalPositionPortalRelation.get(portalPosition);
+    }
 
 }

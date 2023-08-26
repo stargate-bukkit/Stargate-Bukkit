@@ -186,18 +186,9 @@ public class Gate implements GateAPI {
     @Override
     public List<BlockLocation> getLocations(GateStructureType structureType) {
         List<BlockLocation> output = new ArrayList<>();
-
-        if (structureType == GateStructureType.CONTROL_BLOCK) {
-            //Only give the locations of control-blocks in use
-            for (PortalPosition position : portalPositions) {
-                output.add(new BlockLocation(getLocation(position.getRelativePositionLocation())));
-            }
-        } else {
-            //Get all locations from the format
-            for (BlockVector structurePositionVector : getFormat().getStructure(structureType).getStructureTypePositions()) {
-                Location structureLocation = getLocation(structurePositionVector);
-                output.add(new BlockLocation(structureLocation));
-            }
+        for (BlockVector structurePositionVector : getFormat().getStructure(structureType).getStructureTypePositions()) {
+            Location structureLocation = getLocation(structurePositionVector);
+            output.add(new BlockLocation(structureLocation));
         }
         return output;
     }
@@ -434,8 +425,8 @@ public class Gate implements GateAPI {
         //TODO: If we allow add-ons to add new controls after creation, this should be expanded to all control blocks
         List<PortalPosition> portalPositions = this.getPortalPositions();
         for (PortalPosition portalPosition : portalPositions) {
-            BlockLocation positionLocation = new BlockLocation(getLocation(portalPosition.getRelativePositionLocation()));
-            if (registry.getPortal(positionLocation, GateStructureType.CONTROL_BLOCK) != null) {
+            Location location = getLocation(portalPosition.getRelativePositionLocation());
+            if (registry.getPortalPosition(location) != null) {
                 return true;
             }
         }

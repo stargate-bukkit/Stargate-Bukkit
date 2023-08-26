@@ -115,7 +115,7 @@ public class BlockEventListener implements Listener {
             }
             return;
         }
-        if (registry.getPortal(location, GateStructureType.CONTROL_BLOCK) != null) {
+        if (registry.getPortalPosition(location) != null) {
             event.setCancelled(true);
             return;
         }

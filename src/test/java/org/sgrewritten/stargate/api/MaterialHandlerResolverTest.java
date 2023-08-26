@@ -48,8 +48,8 @@ public class MaterialHandlerResolverTest {
         this.server = MockBukkit.mock();
         GateTestHelper.setUpGates();
         this.storage = new StorageMock();
-        this.registry = new RegistryMock();
         this.blockHandlerResolver = new BlockHandlerResolver(storage);
+        this.registry = new RegistryMock(storage,blockHandlerResolver);
         this.player = server.addPlayer();
         this.world = server.addSimpleWorld("world");
         this.network = registry.createNetwork("network", NetworkType.CUSTOM,false,false);
@@ -77,11 +77,11 @@ public class MaterialHandlerResolverTest {
         blockHandlerResolver.addBlockHandlerInterface(blockHandler);
         blockHandlerResolver.registerPlacement(registry,location, List.of(portal), testMaterial, player);
         Assertions.assertTrue(blockHandler.blockIsRegistered(location, player, portal));
-        Assertions.assertEquals(registry.getNextRegisteredLocation().getSecondValue(),new BlockLocation(location));
+        Assertions.assertNotNull(registry.getNextRegisteredPortalPosition());
         Assertions.assertEquals(storage.getNextAddedPortalPosition().getThirdValue().getRelativePositionLocation(),positionVector);
         blockHandlerResolver.registerRemoval(registry,location, portal);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
-        Assertions.assertEquals(new BlockLocation(registry.getNextUnregisteredLocation().getSecondValue().getLocation()),new BlockLocation(location));
+        Assertions.assertEquals(registry.getNextRemovedPortalPosition(),new BlockLocation(location));
         Assertions.assertEquals(storage.getNextRemovedPortalPosition().getThirdValue().getRelativePositionLocation(),positionVector);
     }
 
@@ -102,7 +102,7 @@ public class MaterialHandlerResolverTest {
         blockHandlerResolver.addBlockHandlerInterface(blockHandler);
         blockHandlerResolver.registerPlacement(registry,location, List.of(portal), placedMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
-        Assertions.assertNull(registry.getNextRegisteredLocation());
+        Assertions.assertNull(registry.getNextRegisteredPortalPosition());
         Assertions.assertNull(storage.getNextAddedPortalPosition());
     }
 
@@ -125,7 +125,7 @@ public class MaterialHandlerResolverTest {
         blockHandlerResolver.registerPlacement(registry, location, List.of(portal), placedMaterial, player);
         Assertions.assertTrue(highPriority.blockIsRegistered(location, player, portal));
         Assertions.assertFalse(lowPriority.blockIsRegistered(location, player, portal));
-        Assertions.assertNotNull(registry.getNextRegisteredLocation());
+        Assertions.assertNotNull(registry.getNextRegisteredPortalPosition());
     }
 
     @ParameterizedTest
@@ -145,7 +145,7 @@ public class MaterialHandlerResolverTest {
         blockHandlerResolver.addBlockHandlerInterface(blockHandler);
         blockHandlerResolver.registerPlacement(registry, location, List.of(portal), handlerMaterial, player);
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
-        Assertions.assertNull(registry.getNextRegisteredLocation());
+        Assertions.assertNull(registry.getNextRegisteredPortalPosition());
         Assertions.assertNull(storage.getNextAddedPortalPosition());
     }
 
@@ -169,7 +169,7 @@ public class MaterialHandlerResolverTest {
         blockHandlerResolver.registerPlacement(registry, location, List.of(portal), placedMaterial, player);
         Assertions.assertFalse(highPriority.blockIsRegistered(location, player, portal));
         Assertions.assertTrue(lowPriority.blockIsRegistered(location, player, portal));
-        Assertions.assertNotNull(registry.getNextRegisteredLocation());
+        Assertions.assertNotNull(registry.getNextRegisteredPortalPosition());
         Assertions.assertEquals(storage.getNextAddedPortalPosition().getThirdValue().getRelativePositionLocation(),positionVector);
     }
 }
