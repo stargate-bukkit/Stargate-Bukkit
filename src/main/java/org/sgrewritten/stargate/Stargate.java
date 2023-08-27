@@ -368,7 +368,11 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
      */
     public static DyeColor getDefaultSignDyeColor(Material signMaterial) {
         try {
-            return Stargate.defaultSignDyeColors.get(signMaterial);
+            if(!Stargate.defaultSignDyeColors.isEmpty()) {
+                return Stargate.defaultSignDyeColors.get(signMaterial);
+            }else {
+                return DyeColor.WHITE;
+            }
         } catch (NullPointerException e) {
             return DyeColor.WHITE;
         }
@@ -401,6 +405,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
                         signMaterial, defaultSignColorHue, false)));
             }
         } catch (IllegalArgumentException | NullPointerException e) {
+            Stargate.log(e);
             Stargate.log(Level.WARNING, "Invalid colors for sign text. Using default colors instead...");
         }
     }
