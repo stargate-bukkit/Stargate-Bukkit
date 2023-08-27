@@ -106,7 +106,6 @@ public class ColorProperty {
      * @return <p> A brightness </p>
      */
     private static short getBrightnessFromSignMaterial(Material signMaterial, boolean isHighlight) {
-        Stargate.log(Level.FINEST,"Sign material of " + signMaterial);
         if (isHighlight) {
             return signBrightnessMap.get(signMaterial).getSecondValue();
         }

@@ -22,13 +22,14 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.vectorlogic.MatrixVectorOperation;
@@ -186,7 +187,7 @@ public class Gate implements GateAPI {
     @Override
     public List<BlockLocation> getLocations(GateStructureType structureType) {
         List<BlockLocation> output = new ArrayList<>();
-        for (BlockVector structurePositionVector : getFormat().getStructure(structureType).getStructureTypePositions()) {
+        for (BlockVector structurePositionVector : getFormat().getStructure(structureType.getGateFormatEquivalent()).getStructureTypePositions()) {
             Location structureLocation = getLocation(structurePositionVector);
             output.add(new BlockLocation(structureLocation));
         }
@@ -253,8 +254,7 @@ public class Gate implements GateAPI {
      * @param material <p>The new material to use for the iris</p>
      */
     private void setIrisMaterial(Material material) {
-        GateStructureType targetType = GateStructureType.IRIS;
-        List<BlockLocation> locations = getLocations(targetType);
+        List<BlockLocation> locations = getLocations(GateStructureType.IRIS);
         BlockData blockData = Bukkit.createBlockData(material);
 
         if (blockData instanceof Orientable orientation) {
@@ -422,11 +422,11 @@ public class Gate implements GateAPI {
      * @return <p>True if there is a conflict</p>
      */
     private boolean hasGateControlConflict() {
-        //TODO: If we allow add-ons to add new controls after creation, this should be expanded to all control blocks
         List<PortalPosition> portalPositions = this.getPortalPositions();
         for (PortalPosition portalPosition : portalPositions) {
             Location location = getLocation(portalPosition.getRelativePositionLocation());
-            if (registry.getPortalPosition(location) != null) {
+            PortalPosition conflictingPortalPosition = registry.getPortalPosition(location);
+            if (conflictingPortalPosition != null) {
                 return true;
             }
         }

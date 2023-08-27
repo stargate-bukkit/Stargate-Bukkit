@@ -5,14 +5,12 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class BlockHandlerResolver {
     private final Map<Material,List<BlockHandlerInterface>> blockHandlerMap = new HashMap<>();

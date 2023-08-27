@@ -1,11 +1,9 @@
-package org.sgrewritten.stargate.network.portal;
+package org.sgrewritten.stargate.api.network.portal;
 
-import org.bukkit.Location;
 import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.PositionType;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 
@@ -29,7 +27,7 @@ public class PortalPosition {
      * @param pluginName <p> The name of the plugin this position relates to</p>
      */
     public PortalPosition(@NotNull PositionType positionType, @NotNull BlockVector relativePositionLocation, @NotNull String pluginName) {
-        this(positionType,relativePositionLocation,pluginName,false);
+        this(positionType,relativePositionLocation,pluginName,true);
     }
 
     /**

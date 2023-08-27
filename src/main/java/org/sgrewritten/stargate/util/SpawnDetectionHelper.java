@@ -6,7 +6,7 @@ import org.bukkit.World;
 import org.bukkit.util.Vector;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.gate.GateFormat;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 
 import java.util.ArrayList;

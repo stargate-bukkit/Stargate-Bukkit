@@ -9,7 +9,7 @@ import org.sgrewritten.stargate.gate.structure.GateControlBlock;
 import org.sgrewritten.stargate.gate.structure.GateFrame;
 import org.sgrewritten.stargate.gate.structure.GateIris;
 import org.sgrewritten.stargate.gate.structure.GateStructure;
-import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.vectorlogic.VectorOperation;
 
 import java.util.EnumMap;
@@ -24,7 +24,7 @@ import java.util.logging.Level;
 public class GateFormat implements GateFormatAPI {
 
     private final Set<Material> controlMaterials;
-    private final Map<GateStructureType, GateStructure> portalParts;
+    private final Map<GateFormatStructureType, GateStructure> portalParts;
     private final String name;
     private final boolean isIronDoorBlockable;
     private final int height;
@@ -44,10 +44,10 @@ public class GateFormat implements GateFormatAPI {
      */
     public GateFormat(GateIris iris, GateFrame frame, GateControlBlock controlBlocks, String name,
                       boolean isIronDoorBlockable, Set<Material> controlMaterials, int height, int width) {
-        portalParts = new EnumMap<>(GateStructureType.class);
-        portalParts.put(GateStructureType.IRIS, iris);
-        portalParts.put(GateStructureType.FRAME, frame);
-        portalParts.put(GateStructureType.CONTROL_BLOCK, controlBlocks);
+        portalParts = new EnumMap<>(GateFormatStructureType.class);
+        portalParts.put(GateFormatStructureType.IRIS, iris);
+        portalParts.put(GateFormatStructureType.FRAME, frame);
+        portalParts.put(GateFormatStructureType.CONTROL_BLOCK, controlBlocks);
         this.name = name;
         this.isIronDoorBlockable = isIronDoorBlockable;
         this.controlMaterials = controlMaterials;
@@ -93,7 +93,7 @@ public class GateFormat implements GateFormatAPI {
      * @return <p>True if the stargate matches this format</p>
      */
     public boolean matches(VectorOperation converter, Location topLeft) {
-        for (GateStructureType structureType : portalParts.keySet()) {
+        for (GateFormatStructureType structureType : portalParts.keySet()) {
             Stargate.log(Level.FINER, "---Validating " + structureType);
             if (!(portalParts.get(structureType).isValidState(converter, topLeft))) {
                 Stargate.log(Level.FINER, structureType + " returned negative");
@@ -109,13 +109,13 @@ public class GateFormat implements GateFormatAPI {
      * @return <p>The locations of this gate format's control blocks</p>
      */
     public List<BlockVector> getControlBlocks() {
-        GateControlBlock controlBlocks = (GateControlBlock) portalParts.get(GateStructureType.CONTROL_BLOCK);
+        GateControlBlock controlBlocks = (GateControlBlock) portalParts.get(GateFormatStructureType.CONTROL_BLOCK);
         return controlBlocks.getStructureTypePositions();
     }
 
     @Override
     public Material getIrisMaterial(boolean getOpenMaterial) {
-        return ((GateIris) portalParts.get(GateStructureType.IRIS)).getMaterial(getOpenMaterial);
+        return ((GateIris) portalParts.get(GateFormatStructureType.IRIS)).getMaterial(getOpenMaterial);
     }
 
     /**
@@ -124,7 +124,7 @@ public class GateFormat implements GateFormatAPI {
      * @return <p>This gate format's exit block</p>
      */
     public BlockVector getExit() {
-        return ((GateIris) portalParts.get(GateStructureType.IRIS)).getExit();
+        return ((GateIris) portalParts.get(GateFormatStructureType.IRIS)).getExit();
     }
 
     @Override
@@ -145,7 +145,7 @@ public class GateFormat implements GateFormatAPI {
      * @param type <p>The specified type of {@link GateStructure}</p>
      * @return <p>The {@link GateStructure} of the specified type</p>
      */
-    public GateStructure getStructure(GateStructureType type) {
+    public GateStructure getStructure(GateFormatStructureType type) {
         return this.portalParts.get(type);
     }
 

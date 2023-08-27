@@ -19,7 +19,7 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 
 import java.io.File;
 import java.util.List;

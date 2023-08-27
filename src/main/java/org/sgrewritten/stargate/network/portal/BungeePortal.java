@@ -12,10 +12,10 @@ import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
-import org.sgrewritten.stargate.network.LocalNetwork;
-import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.network.LocalNetwork;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.util.NameHelper;
 
 import java.util.EnumSet;

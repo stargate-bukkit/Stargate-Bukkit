@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
@@ -21,12 +22,12 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
@@ -227,6 +228,10 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public RealPortal getPortal(Location location) {
+        PortalPosition portalPosition = this.getPortalPosition(location);
+        if(portalPosition != null){
+            return this.getPortalFromPortalPosition(portalPosition);
+        }
         return getPortal(location, GateStructureType.values());
     }
 
@@ -314,6 +319,9 @@ public class StargateRegistry implements RegistryAPI {
     public void load(StargateAPI stargateAPI) {
         networkMap.clear();
         bungeeNetworkMap.clear();
+        portalFromStructureTypeMap.clear();
+        portalPositionMap.clear();
+        portalPositionPluginNameMap.clear();
         portalFromStructureTypeMap.clear();
         this.loadPortals(stargateAPI);
     }

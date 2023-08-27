@@ -23,7 +23,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
-import org.sgrewritten.stargate.api.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -139,11 +140,13 @@ class BlockEventListenerTest {
     void cancelBlockBreakTest() {
 
         Location bottomLeft = new Location(world, 0, 14, 0);
+        // Generate blocks for portal
         Block signBlock = PortalBlockGenerator.generatePortal(bottomLeft);
         Block irisBlock = new Location(world, 1, 16, 0).getBlock();
+        // generate the portal by modifying the sign.
         blockEventListener.onSignChange(new SignChangeEvent(signBlock, player, new String[]{"test", "", CUSTOM_NETNAME,
                 ""}));
-
+        Assertions.assertNotNull(registry.getPortalPosition(signBlock.getLocation()));
         BlockBreakEvent controlBreakEvent = new BlockBreakEvent(signBlock, player);
         blockEventListener.onBlockBreak(controlBreakEvent);
         Assertions.assertTrue(controlBreakEvent.isCancelled());

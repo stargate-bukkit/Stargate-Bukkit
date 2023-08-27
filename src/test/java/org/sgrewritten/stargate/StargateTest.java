@@ -124,7 +124,7 @@ class StargateTest {
     }
 
     @Test
-    public void reloadStupidDefaultNetworkNameUUID() {
+    public void reload_StupidDefaultNetworkNameUUID() {
         Stargate.setLogLevel(Level.OFF);
         plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, UUID.randomUUID().toString());
         plugin.reload();
@@ -136,6 +136,15 @@ class StargateTest {
     public void reload_StupidDefaultNetworkNameTooLong() {
         Stargate.setLogLevel(Level.OFF);
         plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "thisNameIsWayTooLong");
+        plugin.reload();
+        Stargate.setLogLevel(Level.INFO);
+        Assertions.assertFalse(plugin.isEnabled());
+    }
+
+    @Test
+    public void reload_StupidDefaultNetworkNameEmpty() {
+        Stargate.setLogLevel(Level.OFF);
+        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "");
         plugin.reload();
         Stargate.setLogLevel(Level.INFO);
         Assertions.assertFalse(plugin.isEnabled());
