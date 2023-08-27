@@ -151,6 +151,15 @@ class StargateTest {
     }
 
     @Test
+    public void reload_StupidDefaultNetworkNameNewlines() {
+        Stargate.setLogLevel(Level.OFF);
+        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "Test1\nTest2");
+        plugin.reload();
+        Stargate.setLogLevel(Level.INFO);
+        Assertions.assertFalse(plugin.isEnabled());
+    }
+
+    @Test
     public void reloadInterServer() {
         setInterServerEnabled();
         plugin.reload();

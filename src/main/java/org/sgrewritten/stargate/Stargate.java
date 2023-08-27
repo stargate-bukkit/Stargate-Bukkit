@@ -562,6 +562,9 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         if (defaultNetwork.isBlank()) {
             throw new StargateInitializationException("Invalid configuration name for default network, name can not be empty");
         }
+        if(defaultNetwork.contains("\n")){
+            throw new StargateInitializationException("Invalid configuration name for default network, name can not contain newlines");
+        }
         languageManager.setLanguage(ConfigurationHelper.getString(ConfigurationOption.LANGUAGE));
         loadConfigLevel();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
