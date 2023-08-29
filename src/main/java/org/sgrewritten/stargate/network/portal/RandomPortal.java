@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.network.portal;
 import org.bukkit.entity.Entity;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;

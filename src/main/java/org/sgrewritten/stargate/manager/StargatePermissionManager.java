@@ -14,7 +14,7 @@ import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.property.BypassPermission;

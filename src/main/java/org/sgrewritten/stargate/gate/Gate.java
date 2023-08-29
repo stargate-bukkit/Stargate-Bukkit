@@ -25,12 +25,11 @@ import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
-import org.sgrewritten.stargate.api.PositionType;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.vectorlogic.MatrixVectorOperation;
 import org.sgrewritten.stargate.vectorlogic.VectorOperation;
@@ -175,9 +174,11 @@ public class Gate implements GateAPI {
         List<PortalPosition> output = new ArrayList<>();
         for(PortalPosition portalPosition : getPortalPositions()){
             if(portalPosition.getPositionType() != type || !portalPosition.isActive()){
+                Stargate.log(Level.INFO,"Ping 1, " + type.name() + ":" + portalPosition.getPositionType() +", " + String.valueOf(portalPosition.isActive()));
                 continue;
             }
             if(portalPosition.getPluginName().equals("Stargate")){
+                Stargate.log(Level.INFO,"Ping 2, " + type.name());
                 output.add(portalPosition);
             }
         }
@@ -360,6 +361,7 @@ public class Gate implements GateAPI {
             if (registeredControls.contains(buttonVector)) {
                 continue;
             }
+            Stargate.log(Level.FINEST, "Adding a button portal position");
             portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector, "Stargate"));
             break;
         }
@@ -450,10 +452,10 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public void addPortalPosition(Location location, PositionType type, String pluginName) {
+    public PortalPosition addPortalPosition(Location location, PositionType type, String pluginName) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
         Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position %s", type.toString(), relativeBlockVector));
-        this.addPortalPosition(relativeBlockVector, type, pluginName);
+        return this.addPortalPosition(relativeBlockVector, type, pluginName);
     }
 
     @Override
@@ -474,15 +476,21 @@ public class Gate implements GateAPI {
         return null;
     }
 
+    @Override
+    public void removePortalPosition(PortalPosition portalPosition) {
+        this.portalPositions.remove(portalPosition);
+    }
+
     /**
      * Add a position specific for this Gate
      *
      * @param relativeBlockVector <p> The relative position in format space</p>
      * @param type                <p> The type of position </p>
      */
-    public void addPortalPosition(BlockVector relativeBlockVector, PositionType type, String pluginName) {
+    public PortalPosition addPortalPosition(BlockVector relativeBlockVector, PositionType type, String pluginName) {
         PortalPosition pos = new PortalPosition(type, relativeBlockVector, pluginName);
         this.portalPositions.add(pos);
+        return pos;
     }
 
     /**

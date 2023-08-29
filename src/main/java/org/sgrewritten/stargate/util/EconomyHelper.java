@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.property.BypassPermission;
 
 /**

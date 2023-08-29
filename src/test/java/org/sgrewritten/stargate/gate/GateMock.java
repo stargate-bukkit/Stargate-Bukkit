@@ -6,11 +6,10 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.sgrewritten.stargate.api.PositionType;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
-import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 
@@ -83,8 +82,8 @@ public class GateMock implements GateAPI {
     }
 
     @Override
-    public void addPortalPosition(Location location, PositionType type, String pluginName) {
-
+    public PortalPosition addPortalPosition(Location location, PositionType type, String pluginName) {
+        return new PortalPosition(PositionType.BUTTON,new BlockVector(0,0,0),"Stargate");
     }
 
     @Override
@@ -95,5 +94,10 @@ public class GateMock implements GateAPI {
     @Override
     public @Nullable PortalPosition removePortalPosition(Location location) {
         return null;
+    }
+
+    @Override
+    public void removePortalPosition(PortalPosition portalPosition) {
+
     }
 }

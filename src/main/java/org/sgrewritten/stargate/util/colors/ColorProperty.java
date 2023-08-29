@@ -7,7 +7,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.container.TwoTuple;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.util.FileHelper;
 
 import java.util.EnumMap;

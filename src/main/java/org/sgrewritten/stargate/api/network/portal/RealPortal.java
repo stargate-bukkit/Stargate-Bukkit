@@ -6,7 +6,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
-import org.sgrewritten.stargate.api.PositionType;
 
 import java.util.List;
 

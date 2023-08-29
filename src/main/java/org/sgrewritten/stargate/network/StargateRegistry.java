@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
-import org.sgrewritten.stargate.api.PositionType;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
@@ -22,10 +22,9 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.util.ExceptionHelper;
@@ -436,6 +435,7 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public void registerPortalPosition(PortalPosition portalPosition, Location location, RealPortal portal) {
+        Stargate.log(Level.FINEST, String.format("Registering portal position at %s for portal %s", location.toString(),portal.getName()));
         BlockLocation blockLocation = new BlockLocation(location);
         portalPositionMap.put(blockLocation,portalPosition);
         portalPositionPluginNameMap.putIfAbsent(portalPosition.getPluginName(),new HashMap<>());

@@ -15,7 +15,7 @@ import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;

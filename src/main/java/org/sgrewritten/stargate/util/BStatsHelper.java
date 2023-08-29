@@ -16,7 +16,7 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.AbstractPortal;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
 import java.util.Collection;

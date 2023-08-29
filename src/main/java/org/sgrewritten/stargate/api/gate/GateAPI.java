@@ -5,7 +5,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.sgrewritten.stargate.api.PositionType;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 
@@ -112,8 +112,9 @@ public interface GateAPI {
      *
      * @param location <p> The location of the position </p>
      * @param type     <p> The type of position </p>
+     * @return <p>The added portal position</p>
      */
-    void addPortalPosition(Location location, PositionType type, String pluginName);
+    PortalPosition addPortalPosition(Location location, PositionType type, String pluginName);
 
     /**
      * Add a position specific to this Gate
@@ -129,4 +130,6 @@ public interface GateAPI {
      * @return <p> The removed portal position</p>
      */
     @Nullable PortalPosition removePortalPosition(Location location);
+
+    void removePortalPosition(PortalPosition portalPosition);
 }

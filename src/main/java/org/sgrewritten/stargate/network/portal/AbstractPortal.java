@@ -13,11 +13,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.DelayedAction;
 import org.sgrewritten.stargate.action.SupplierAction;
-import org.sgrewritten.stargate.api.PositionType;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
@@ -87,6 +89,7 @@ public abstract class AbstractPortal implements RealPortal {
     protected final LanguageManager languageManager;
     private final StargateEconomyAPI economyManager;
     private static final int ACTIVE_DELAY = 15;
+    private @Nullable String metaData;
 
     /**
      * Instantiates a new abstract portal
@@ -537,6 +540,7 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void setMetaData(String data) {
         try {
+            this.metaData = data;
             Stargate.getStorageAPIStatic().setPortalMetaData(this, data, getStorageType());
         } catch (StorageWriteException e) {
             Stargate.log(e);
@@ -545,8 +549,12 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public String getMetaData() {
+        if(this.metaData != null){
+            return this.metaData;
+        }
         try {
-            return Stargate.getStorageAPIStatic().getPortalMetaData(this, getStorageType());
+            this.metaData = Stargate.getStorageAPIStatic().getPortalMetaData(this, getStorageType());
+            return this.metaData;
         } catch (StorageReadException e) {
             Stargate.log(e);
             return null;

@@ -1,7 +1,7 @@
 package org.sgrewritten.stargate.network.portal.portaldata;
 
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 
 import java.util.Set;
 import java.util.UUID;

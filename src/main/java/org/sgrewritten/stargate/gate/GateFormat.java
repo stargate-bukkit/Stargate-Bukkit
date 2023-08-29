@@ -108,6 +108,7 @@ public class GateFormat implements GateFormatAPI {
      *
      * @return <p>The locations of this gate format's control blocks</p>
      */
+    @Override
     public List<BlockVector> getControlBlocks() {
         GateControlBlock controlBlocks = (GateControlBlock) portalParts.get(GateFormatStructureType.CONTROL_BLOCK);
         return controlBlocks.getStructureTypePositions();

@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api;
+package org.sgrewritten.stargate.api.network.portal;
 
 /**
  * An enum containing the different types a portal position can have

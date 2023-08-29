@@ -11,8 +11,8 @@ import org.sgrewritten.stargate.database.SQLQueryGenerator;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.PositionType;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
 
 import java.io.File;
 import java.sql.Connection;

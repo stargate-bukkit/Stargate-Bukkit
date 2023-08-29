@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.PluginChannel;

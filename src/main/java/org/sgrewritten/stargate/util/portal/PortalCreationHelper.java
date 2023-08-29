@@ -13,7 +13,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
-import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.event.StargateCreateEvent;
@@ -186,9 +186,11 @@ public final class PortalCreationHelper {
         selectedNetwork.addPortal(portal, true);
         //Make sure that the portal sign text formats according the default sign dye color
         getLocationsAdjacentToPortal(gate).forEach((position) -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(),position,List.of(portal),position.getBlock().getType(),player));
-        Sign sign = (Sign) signLocation.getState();
-        sign.setColor(Stargate.getDefaultSignDyeColor(signLocation.getType()));
-        sign.update();
+        if(Tag.WALL_SIGNS.isTagged(signLocation.getType())) {
+            Sign sign = (Sign) signLocation.getState();
+            sign.setColor(Stargate.getDefaultSignDyeColor(signLocation.getType()));
+            sign.update();
+        }
         selectedNetwork.updatePortals();
         Stargate.log(Level.FINE, "Successfully created a new portal");
         String msg;

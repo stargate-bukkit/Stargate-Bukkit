@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.network.portal;
+package org.sgrewritten.stargate.api.network.portal;
 
 import org.sgrewritten.stargate.util.ExceptionHelper;
 

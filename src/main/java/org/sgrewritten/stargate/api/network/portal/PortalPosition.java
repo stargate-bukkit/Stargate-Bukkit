@@ -2,8 +2,8 @@ package org.sgrewritten.stargate.api.network.portal;
 
 import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.PositionType;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 
@@ -18,7 +18,7 @@ public class PortalPosition {
     private final BlockVector relativePositionLocation;
     private final String pluginName;
     private boolean active;
-
+    private @Nullable String metaData = null;
     /**
      * Instantiates a new active portal position
      *
@@ -68,8 +68,12 @@ public class PortalPosition {
      * @return
      */
     public String getMetaData(RealPortal portal) {
+        if(metaData != null){
+            return metaData;
+        }
         try {
-            return Stargate.getStorageAPIStatic().getPortalPositionMetaData(portal, this, portal.getStorageType());
+            metaData = Stargate.getStorageAPIStatic().getPortalPositionMetaData(portal, this, portal.getStorageType());
+            return metaData;
         } catch (StorageReadException e) {
             Stargate.log(e);
             return null;
@@ -78,6 +82,7 @@ public class PortalPosition {
 
     public void setMetaData(RealPortal portal, String data) {
         try {
+            this.metaData = data;
             Stargate.getStorageAPIStatic().setPortalPositionMetaData(portal, this, data, portal.getStorageType());
         } catch (StorageWriteException e) {
             Stargate.log(e);

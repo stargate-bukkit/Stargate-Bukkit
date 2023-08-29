@@ -5,12 +5,16 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.portal.MetaData;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.portal.BlockLocation;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class BlockHandlerResolver {
     private final Map<Material,List<BlockHandlerInterface>> blockHandlerMap = new HashMap<>();
@@ -70,9 +74,18 @@ public class BlockHandlerResolver {
         }
         for(RealPortal portal : portals) {
             for(BlockHandlerInterface blockHandlerInterface : blockHandlerMap.get(material)){
-                if(portal.hasFlag(blockHandlerInterface.getFlag()) && blockHandlerInterface.registerBlock(location,player,portal)){
+                MetaData metaData = new MetaData("");
+                if(portal.hasFlag(blockHandlerInterface.getFlag()) && blockHandlerInterface.registerBlock(location,player,portal,metaData)){
                     registry.savePortalPosition(portal,location,blockHandlerInterface.getInterfaceType(),blockHandlerInterface.getPlugin());
                     blockBlockHandlerMap.put(new BlockLocation(location),blockHandlerInterface);
+                    PortalPosition portalPosition = registry.getPortalPosition(location);
+                    if(portalPosition == null){
+                        Stargate.log(Level.WARNING,"A portal position was not registered when it should be, contact developers");
+                        return;
+                    }
+                    if(!metaData.getMetaDataString().isEmpty()) {
+                        portalPosition.setMetaData(portal, metaData.getMetaDataString());
+                    }
                     return;
                 }
             }
