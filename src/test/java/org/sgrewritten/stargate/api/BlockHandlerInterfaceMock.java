@@ -13,7 +13,7 @@ import org.sgrewritten.stargate.api.network.portal.MetaData;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.container.TwoTuple;
-import org.sgrewritten.stargate.network.portal.BlockLocation;
+import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 
 public class BlockHandlerInterfaceMock implements BlockHandlerInterface{
 

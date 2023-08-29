@@ -11,7 +11,7 @@ import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.MetaData;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.network.portal.BlockLocation;
+import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 
 import java.util.*;
 import java.util.logging.Level;

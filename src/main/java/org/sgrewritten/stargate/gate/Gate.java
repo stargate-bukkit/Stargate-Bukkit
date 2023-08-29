@@ -26,7 +26,7 @@ import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
-import org.sgrewritten.stargate.network.portal.BlockLocation;
+import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
@@ -354,6 +354,7 @@ public class Gate implements GateAPI {
         //Return if a button has already been registered
         for (PortalPosition portalPosition : portalPositions) {
             if (portalPosition.getPositionType() == PositionType.BUTTON) {
+                Stargate.log(Level.FINEST,"A portal position of type BUTTON has already been registered; no generation of a button is necessary");
                 return;
             }
         }
@@ -386,8 +387,10 @@ public class Gate implements GateAPI {
 
             if (Tag.WALL_SIGNS.isTagged(material)) {
                 portalPositions.add(new PortalPosition(PositionType.SIGN, blockVector, "Stargate"));
+                Stargate.log(Level.FINEST,"Adding a SIGN at " + blockVector);
             } else if (!alwaysOn && ButtonHelper.isButton(material)) {
                 portalPositions.add(new PortalPosition(PositionType.BUTTON, blockVector, "Stargate"));
+                Stargate.log(Level.FINEST,"Adding a BUTTON at " + blockVector);
             }
             foundVectors.add(blockVector);
         }

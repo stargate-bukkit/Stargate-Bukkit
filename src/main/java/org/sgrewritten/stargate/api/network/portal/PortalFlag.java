@@ -65,7 +65,8 @@ public enum PortalFlag {
     SILENT('Q', true),
 
     /**
-     * A stargate without a sign
+     * A stargate without a sign.
+     * <p>This is used by an official module, no implementation in Stargate-Core has been done </p>
      */
     NO_SIGN('V', true),
 

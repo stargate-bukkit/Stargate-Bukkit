@@ -6,11 +6,10 @@ import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.container.ThreeTuple;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.StorageMock;
-import org.sgrewritten.stargate.network.portal.BlockLocation;
+import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 
 import java.util.*;

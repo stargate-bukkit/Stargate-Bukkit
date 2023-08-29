@@ -22,7 +22,7 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.network.portal.BlockLocation;
+import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
@@ -407,7 +407,6 @@ public class StargateRegistry implements RegistryAPI {
     public void savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin) {
         BlockVector relativeVector = portal.getGate().getRelativeVector(location).toBlockVector();
         PortalPosition portalPosition = new PortalPosition(type,relativeVector,plugin.getName());
-        portal.getGate().addPortalPosition(portalPosition);
         registerPortalPosition(portalPosition,location,portal);
         try {
             storageAPI.addPortalPosition(portal,portal.getStorageType(),portalPosition);
