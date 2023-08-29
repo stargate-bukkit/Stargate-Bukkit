@@ -441,6 +441,7 @@ public class StargateRegistry implements RegistryAPI {
         portalPositionPluginNameMap.putIfAbsent(portalPosition.getPluginName(),new HashMap<>());
         portalPositionPluginNameMap.get(portalPosition.getPluginName()).put(blockLocation,portalPosition);
         portalPositionPortalRelation.put(portalPosition,portal);
+        portal.getGate().addPortalPosition(portalPosition);
     }
 
     @Override

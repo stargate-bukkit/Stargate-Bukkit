@@ -172,13 +172,14 @@ public class Gate implements GateAPI {
      */
     private List<PortalPosition> getActivePortalPositions(PositionType type){
         List<PortalPosition> output = new ArrayList<>();
+        Stargate.log(Level.FINEST, "Checking active portal positions");
         for(PortalPosition portalPosition : getPortalPositions()){
             if(portalPosition.getPositionType() != type || !portalPosition.isActive()){
-                Stargate.log(Level.INFO,"Ping 1, " + type.name() + ":" + portalPosition.getPositionType() +", " + portalPosition.isActive() + ", " + portalPosition.getRelativePositionLocation());
+                Stargate.log(Level.FINEST,type.name() + ":" + portalPosition.getPositionType() +", " + portalPosition.isActive() + ", " + portalPosition.getRelativePositionLocation());
                 continue;
             }
             if(portalPosition.getPluginName().equals("Stargate")){
-                Stargate.log(Level.INFO,"Ping 2, " + type.name());
+                Stargate.log(Level.FINEST,"Found, " + type.name() + " at " + portalPosition.getRelativePositionLocation());
                 output.add(portalPosition);
             }
         }
