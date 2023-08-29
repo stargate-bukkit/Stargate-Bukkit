@@ -174,7 +174,7 @@ public class Gate implements GateAPI {
         List<PortalPosition> output = new ArrayList<>();
         for(PortalPosition portalPosition : getPortalPositions()){
             if(portalPosition.getPositionType() != type || !portalPosition.isActive()){
-                Stargate.log(Level.INFO,"Ping 1, " + type.name() + ":" + portalPosition.getPositionType() +", " + String.valueOf(portalPosition.isActive()));
+                Stargate.log(Level.INFO,"Ping 1, " + type.name() + ":" + portalPosition.getPositionType() +", " + portalPosition.isActive() + ", " + portalPosition.getRelativePositionLocation());
                 continue;
             }
             if(portalPosition.getPluginName().equals("Stargate")){
@@ -304,6 +304,10 @@ public class Gate implements GateAPI {
              * hypothetical sign position in format space.
              */
             topLeft = location.clone().subtract(converter.performToRealSpaceOperation(controlBlock));
+            // Clear all portal positions
+            portalPositions.clear();
+            //Calculate all relevant portal positions
+            calculatePortalPositions(alwaysOn);
             if (isValid(alwaysOn)) {
                 return true;
             }
@@ -323,9 +327,6 @@ public class Gate implements GateAPI {
             if (hasGateFrameConflict(registry)) {
                 throw new GateConflictException();
             }
-
-            //Calculate all relevant portal positions
-            calculatePortalPositions(alwaysOn);
 
             //Make sure no controls conflict with existing controls
             if (hasGateControlConflict()) {
@@ -361,7 +362,6 @@ public class Gate implements GateAPI {
             if (registeredControls.contains(buttonVector)) {
                 continue;
             }
-            Stargate.log(Level.FINEST, "Adding a button portal position");
             portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector, "Stargate"));
             break;
         }
