@@ -76,9 +76,9 @@ public class BlockHandlerResolver {
             for(BlockHandlerInterface blockHandlerInterface : blockHandlerMap.get(material)){
                 MetaData metaData = new MetaData("");
                 if(portal.hasFlag(blockHandlerInterface.getFlag()) && blockHandlerInterface.registerBlock(location,player,portal,metaData)){
-                    registry.savePortalPosition(portal,location,blockHandlerInterface.getInterfaceType(),blockHandlerInterface.getPlugin());
+                    PortalPosition portalPosition = registry.savePortalPosition(portal,location,blockHandlerInterface.getInterfaceType(),blockHandlerInterface.getPlugin());
+                    registry.registerPortalPosition(portalPosition,location,portal);
                     blockBlockHandlerMap.put(new BlockLocation(location),blockHandlerInterface);
-                    PortalPosition portalPosition = registry.getPortalPosition(location);
                     if(portalPosition == null){
                         Stargate.log(Level.WARNING,"A portal position was not registered when it should be, contact developers");
                         return;

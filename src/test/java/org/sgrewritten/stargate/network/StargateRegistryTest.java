@@ -93,7 +93,8 @@ class StargateRegistryTest {
         Location location = new Location(world,0,0,0);
         PortalMock portal = new PortalMock();
         Plugin plugin = MockBukkit.createMockPlugin("Stargate");
-        registry.savePortalPosition(portal,location,type,plugin);
+        PortalPosition portalPosition = registry.savePortalPosition(portal,location,type,plugin);
+        registry.registerPortalPosition(portalPosition,location,portal);
         Assertions.assertNotNull(storageMock.getNextAddedPortalPosition());
         registry.removePortalPosition(location);
         Assertions.assertNotNull(storageMock.getNextRemovedPortalPosition());

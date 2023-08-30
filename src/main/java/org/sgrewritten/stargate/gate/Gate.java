@@ -34,9 +34,7 @@ import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.vectorlogic.MatrixVectorOperation;
 import org.sgrewritten.stargate.vectorlogic.VectorOperation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -49,7 +47,7 @@ public class Gate implements GateAPI {
     private final @NotNull GateFormat format;
     private final VectorOperation converter;
     private Location topLeft;
-    private final List<PortalPosition> portalPositions = new ArrayList<>();
+    private final Set<PortalPosition> portalPositions = new HashSet<>();
     private final BlockFace facing;
     private boolean isOpen = false;
     private boolean flipped;
@@ -458,13 +456,13 @@ public class Gate implements GateAPI {
     @Override
     public PortalPosition addPortalPosition(Location location, PositionType type, String pluginName) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
-        Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position %s", type.toString(), relativeBlockVector));
+        Stargate.log(Level.WARNING, String.format("Adding portal position %s with relative position %s", type.toString(), relativeBlockVector));
         return this.addPortalPosition(relativeBlockVector, type, pluginName);
     }
 
     @Override
     public void addPortalPosition(PortalPosition portalPosition) {
-        Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position %s", portalPosition.getPositionType().toString(), portalPosition.getRelativePositionLocation()));
+        Stargate.log(Level.WARNING, String.format("Adding portal position %s with relative position %s", portalPosition.getPositionType().toString(), portalPosition.getRelativePositionLocation()));
         this.portalPositions.add(portalPosition);
     }
 

@@ -404,15 +404,15 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin) {
+    public PortalPosition savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin) {
         BlockVector relativeVector = portal.getGate().getRelativeVector(location).toBlockVector();
         PortalPosition portalPosition = new PortalPosition(type,relativeVector,plugin.getName());
-        registerPortalPosition(portalPosition,location,portal);
         try {
             storageAPI.addPortalPosition(portal,portal.getStorageType(),portalPosition);
         } catch (StorageWriteException e) {
             Stargate.log(e);
         }
+        return portalPosition;
     }
 
     @Override

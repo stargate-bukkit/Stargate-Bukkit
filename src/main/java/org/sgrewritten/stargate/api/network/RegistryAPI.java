@@ -272,7 +272,7 @@ public interface RegistryAPI {
      * @param type <p>The type of the position</p>
      * @param plugin <p> The plugin this position relates to</p>
      */
-    void savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin);
+    PortalPosition savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin);
 
     /**
      * Remove portal position from registry and storage
