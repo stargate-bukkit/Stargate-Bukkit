@@ -456,13 +456,13 @@ public class Gate implements GateAPI {
     @Override
     public PortalPosition addPortalPosition(Location location, PositionType type, String pluginName) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
-        Stargate.log(Level.WARNING, String.format("Adding portal position %s with relative position %s", type.toString(), relativeBlockVector));
+        Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position %s", type.toString(), relativeBlockVector));
         return this.addPortalPosition(relativeBlockVector, type, pluginName);
     }
 
     @Override
     public void addPortalPosition(PortalPosition portalPosition) {
-        Stargate.log(Level.WARNING, String.format("Adding portal position %s with relative position %s", portalPosition.getPositionType().toString(), portalPosition.getRelativePositionLocation()));
+        Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position %s", portalPosition.getPositionType().toString(), portalPosition.getRelativePositionLocation()));
         this.portalPositions.add(portalPosition);
     }
 

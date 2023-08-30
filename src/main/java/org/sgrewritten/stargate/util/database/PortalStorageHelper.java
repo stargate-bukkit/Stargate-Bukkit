@@ -76,7 +76,7 @@ public class PortalStorageHelper {
 
 
     public static void addPortalPosition(PreparedStatement addPositionStatement, RealPortal portal, PortalPosition portalPosition) throws SQLException {
-        Stargate.log(Level.WARNING,"Saving portal position, " + portalPosition + " for portal " + portal.getName() + ":" + portal.getNetwork().getName());
+        Stargate.log(Level.FINEST,"Saving portal position, " + portalPosition + " for portal " + portal.getName() + ":" + portal.getNetwork().getName());
         addPositionStatement.setString(1, portal.getName());
         addPositionStatement.setString(2, portal.getNetwork().getId());
         addPositionStatement.setString(3, String.valueOf(portalPosition.getRelativePositionLocation().getBlockX()));
