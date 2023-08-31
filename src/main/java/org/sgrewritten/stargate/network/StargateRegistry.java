@@ -97,10 +97,9 @@ public class StargateRegistry implements RegistryAPI {
                 if(!portalPosition.getPluginName().equals("Stargate")) {
                     Stargate.log(Level.FINEST, "Unregistering non-Stargate portal position on location " + location.toString());
                     blockHandlerResolver.registerRemoval(this, location, realPortal);
-                } else {
-                    Stargate.log(Level.FINEST, "Unregistering portal position on location " + location.toString());
-                    this.removePortalPosition(location);
                 }
+                Stargate.log(Level.FINEST, "Unregistering portal position on location " + location.toString());
+                this.removePortalPosition(location);
             }
         }
     }
@@ -126,7 +125,7 @@ public class StargateRegistry implements RegistryAPI {
         }
         for(PortalPosition portalPosition : gate.getPortalPositions()){
             Location location = gate.getLocation(portalPosition.getRelativePositionLocation());
-            this.registerPortalPosition(portalPosition,location, portal);
+            this.registerPortalPosition(portalPosition, location, portal);
         }
     }
 
