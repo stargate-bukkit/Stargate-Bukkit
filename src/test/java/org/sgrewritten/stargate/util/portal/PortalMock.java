@@ -137,6 +137,11 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
+    public void activate(Player player) {
+
+    }
+
+    @Override
     public void drawControlMechanisms() {
 
     }
