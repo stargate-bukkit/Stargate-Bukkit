@@ -425,6 +425,7 @@ public class StargateRegistry implements RegistryAPI {
         portalPositionMap.remove(blockLocation);
         portalPositionPluginNameMap.get(portalPosition.getPluginName()).remove(blockLocation);
         RealPortal portal = portalPositionPortalRelation.remove(portalPosition);
+        portal.getGate().removePortalPosition(portalPosition);
         try {
             storageAPI.removePortalPosition(portal, portal.getStorageType(),portalPosition);
         } catch (StorageWriteException e) {
