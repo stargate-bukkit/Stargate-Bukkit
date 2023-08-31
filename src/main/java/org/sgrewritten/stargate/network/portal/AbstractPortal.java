@@ -487,13 +487,8 @@ public abstract class AbstractPortal implements RealPortal {
         activate(event.getPlayer());
     }
 
-
-    /**
-     * Activates this portal for the given player
-     *
-     * @param player <p>The player to activate this portal for</p>
-     */
-    protected void activate(Player player) {
+    @Override
+    public void activate(Player player) {
         this.activator = player.getUniqueId();
         long activationTime = System.currentTimeMillis();
         this.activatedTime = activationTime;

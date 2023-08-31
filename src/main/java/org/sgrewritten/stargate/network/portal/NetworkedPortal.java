@@ -323,7 +323,7 @@ public class NetworkedPortal extends AbstractPortal {
     }
 
     @Override
-    protected void activate(Player player) {
+    public void activate(Player player) {
         super.activate(player);
         this.destinations = getDestinations(player);
         if (this.isActive) {

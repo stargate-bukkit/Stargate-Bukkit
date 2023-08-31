@@ -227,4 +227,9 @@ public class VirtualPortal implements Portal {
     public void setName(String newName) {
         this.name = newName;
     }
+
+    @Override
+    public void activate(Player player) {
+
+    }
 }

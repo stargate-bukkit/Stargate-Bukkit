@@ -185,4 +185,11 @@ public interface Portal {
      */
     void setName(String newName);
 
+    /**
+     * Activates this portal for the given player during internally specified time
+     *
+     * @param player <p>The player to activate this portal for</p>
+     */
+    void activate(Player player);
+
 }
