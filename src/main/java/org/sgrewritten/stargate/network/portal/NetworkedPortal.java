@@ -143,7 +143,7 @@ public class NetworkedPortal extends AbstractPortal {
      * @return <p> The position of the selected portal in the destinations list</p>
      */
     private int reloadSelectedDestination() {
-        if (!this.isActive) {
+        if (!this.isActive || super.activator == null) {
             return NO_DESTINATION_SELECTED;
         }
 
@@ -169,7 +169,7 @@ public class NetworkedPortal extends AbstractPortal {
     public void drawControlMechanisms() {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN);
-        if (!this.isActive) {
+        if (!this.isActive || this.selectedDestination == NO_DESTINATION_SELECTED) {
             lines[1] = super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.RIGHT_CLICK));
             lines[2] = super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.TO_USE));
             lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()) : "";

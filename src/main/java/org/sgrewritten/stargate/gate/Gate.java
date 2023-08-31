@@ -132,10 +132,11 @@ public class Gate implements GateAPI {
     private void drawSigns(String[] signLines) {
         for (PortalPosition portalPosition : getActivePortalPositions(PositionType.SIGN)) {
             Location signLocation = getLocation(portalPosition.getRelativePositionLocation());
+            Stargate.log(Level.FINER, "Drawing sign at location " + signLocation);
             BlockState signState = signLocation.getBlock().getState();
             if (!(signState instanceof Sign sign)) {
                 Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
-                return;
+                continue;
             }
 
             for (int i = 0; i < 4; i++) {
