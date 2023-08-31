@@ -50,7 +50,7 @@ public class PortalPosition {
      *
      * @return <p>This portal position's type</p>
      */
-    public PositionType getPositionType() {
+    @NotNull public PositionType getPositionType() {
         return this.positionType;
     }
 
@@ -59,7 +59,7 @@ public class PortalPosition {
      *
      * @return <p>This portal position's relative location</p>
      */
-    public BlockVector getRelativePositionLocation() {
+    @NotNull public BlockVector getRelativePositionLocation() {
         return this.relativePositionLocation;
     }
 
@@ -67,7 +67,7 @@ public class PortalPosition {
      * @param portal <p> The portal which this position belongs to </p>
      * @return
      */
-    public String getMetaData(RealPortal portal) {
+    @Nullable public String getMetaData(RealPortal portal) {
         if(metaData != null){
             return metaData;
         }
@@ -80,16 +80,16 @@ public class PortalPosition {
         }
     }
 
-    public void setMetaData(RealPortal portal, String data) {
+    public void setMetaData(@NotNull RealPortal portal, @NotNull String data) {
         try {
-            this.metaData = data;
+            this.metaData = Objects.requireNonNull(data);
             Stargate.getStorageAPIStatic().setPortalPositionMetaData(portal, this, data, portal.getStorageType());
         } catch (StorageWriteException e) {
             Stargate.log(e);
         }
     }
 
-    public String getPluginName() {
+    public @NotNull String getPluginName() {
         return this.pluginName;
     }
     @Override
