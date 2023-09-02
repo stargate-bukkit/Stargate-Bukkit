@@ -31,7 +31,7 @@ public class NoLineColorFormatter implements LineFormatter {
     }
 
     @Override
-    public String formatStringWithHiglighting(String aString, HighlightingStyle highlightingStyle) {
+    public String formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle) {
         return highlightingStyle.getHighlightedName(aString);
     }
 

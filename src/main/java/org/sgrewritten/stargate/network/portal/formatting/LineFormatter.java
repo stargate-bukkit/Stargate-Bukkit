@@ -33,7 +33,7 @@ public interface LineFormatter {
      * @param highlightingStyle <p>The highlighting style to use when formatting</p>
      * @return <p>The formatted string</p>
      */
-    String formatStringWithHiglighting(String aString, HighlightingStyle highlightingStyle);
+    String formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle);
 
     /**
      * Formats a line using the default behaviour

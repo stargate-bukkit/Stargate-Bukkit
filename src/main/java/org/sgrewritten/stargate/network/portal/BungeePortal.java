@@ -100,7 +100,7 @@ public class BungeePortal extends AbstractPortal {
         String[] lines = new String[4];
         lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN);
         lines[1] = super.colorDrawer.formatPortalName(getDestination(), HighlightingStyle.LESSER_GREATER_THAN);
-        lines[2] = super.colorDrawer.formatStringWithHiglighting(serverDestination, HighlightingStyle.SQUARE_BRACKETS);
+        lines[2] = super.colorDrawer.formatStringWithHighlighting(serverDestination, HighlightingStyle.SQUARE_BRACKETS);
         lines[3] = super.colorDrawer.formatLine(bungeeString);
         getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
     }

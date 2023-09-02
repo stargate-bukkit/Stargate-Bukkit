@@ -62,7 +62,7 @@ public class LineColorFormatter implements LineFormatter {
     }
 
     @Override
-    public String formatStringWithHiglighting(String aString, HighlightingStyle highlightingStyle) {
+    public String formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle) {
         return pointerColor + highlightingStyle.getHighlightedName(color + aString + pointerColor);
     }
 
