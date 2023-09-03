@@ -146,6 +146,7 @@ public class BlockEventListener implements Listener {
         }
         List<RealPortal> portals = registry.getPortalsFromTouchingBlock(event.getBlock().getLocation(), GateStructureType.FRAME);
         if(portals.isEmpty()) {
+            Stargate.log(Level.FINEST, "Could not find any portals next to placed block");
             return;
         }
         addonRegistry.registerPlacement(registry, event.getBlock().getLocation(), portals, event.getBlock().getType(), event.getPlayer());

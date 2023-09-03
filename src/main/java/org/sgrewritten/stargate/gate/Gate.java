@@ -109,11 +109,13 @@ public class Gate implements GateAPI {
 
     @Override
     public void drawControlMechanisms(String[] signLines, boolean drawButton) {
+        /*
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            drawSigns(signLines);
+
             return true;
         }));
-
+        */
+        drawSigns(signLines);
         if (drawButton) {
             drawButtons();
         }
@@ -130,6 +132,12 @@ public class Gate implements GateAPI {
      * @param signLines <p>The lines to draw on the sign</p>
      */
     private void drawSigns(String[] signLines) {
+        StringBuilder builder = new StringBuilder("Drawing signs with lines:");
+        for(String line : signLines){
+            builder.append("\n");
+            builder.append(line);
+        }
+        Stargate.log(Level.FINEST, builder.toString());
         for (PortalPosition portalPosition : getActivePortalPositions(PositionType.SIGN)) {
             Location signLocation = getLocation(portalPosition.getRelativePositionLocation());
             Stargate.log(Level.FINER, "Drawing sign at location " + signLocation);
@@ -142,7 +150,7 @@ public class Gate implements GateAPI {
             for (int i = 0; i < 4; i++) {
                 sign.setLine(i, signLines[i]);
             }
-            Stargate.addSynchronousTickAction(new BlockSetAction(sign, true));
+            Stargate.addSynchronousTickAction(new BlockSetAction(sign, false));
         }
     }
 
