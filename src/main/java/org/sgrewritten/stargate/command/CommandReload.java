@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
-import org.sgrewritten.stargate.event.StargateReloadEvent;
+import org.sgrewritten.stargate.api.event.StargateReloadEvent;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.property.CommandPermission;
 

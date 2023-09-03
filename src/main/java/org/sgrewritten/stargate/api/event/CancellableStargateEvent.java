@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.event;
+package org.sgrewritten.stargate.api.event;
 
 import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;

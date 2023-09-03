@@ -17,7 +17,7 @@ import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.event.StargateCreateEvent;
+import org.sgrewritten.stargate.api.event.StargateCreateEvent;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;

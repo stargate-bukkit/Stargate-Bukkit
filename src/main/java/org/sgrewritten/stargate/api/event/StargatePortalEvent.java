@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.event;
+package org.sgrewritten.stargate.api.event;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;

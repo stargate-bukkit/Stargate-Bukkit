@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.event.StargateDestroyEvent;
+import org.sgrewritten.stargate.api.event.StargateDestroyEvent;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
