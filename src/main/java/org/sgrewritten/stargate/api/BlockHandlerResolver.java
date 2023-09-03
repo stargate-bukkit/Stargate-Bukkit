@@ -8,11 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
-import org.sgrewritten.stargate.api.network.portal.MetaData;
-import org.sgrewritten.stargate.api.network.portal.PortalPosition;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.network.portal.BlockLocation;
+import org.sgrewritten.stargate.api.network.portal.*;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 
+import javax.sound.sampled.Port;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -20,6 +19,7 @@ public class BlockHandlerResolver {
     private final Map<Material,List<BlockHandlerInterface>> blockHandlerMap = new HashMap<>();
     private final Map<BlockLocation,BlockHandlerInterface> blockBlockHandlerMap = new HashMap<>();
     private final StorageAPI storageAPI;
+    private final Set<Character> customFlags = new HashSet<>();
 
     public BlockHandlerResolver(@NotNull StorageAPI storageAPI){
         this.storageAPI = Objects.requireNonNull(storageAPI);
@@ -111,5 +111,33 @@ public class BlockHandlerResolver {
      */
     public boolean hasRegisteredBlockHandler(Material material) {
         return blockHandlerMap.containsKey(material);
+    }
+
+    /**
+     * Register a custom flag to stargate.
+     *
+     * @param flagCharacter <p> The character of the custom flag</p>
+     */
+    public void registerCustomFlag(char flagCharacter) throws IllegalArgumentException{
+        if(Character.isLowerCase(flagCharacter)){
+            throw new IllegalArgumentException("Character can't be lowercase");
+        }
+
+        for(PortalFlag flag : PortalFlag.values()){
+            if(flagCharacter == flag.getCharacterRepresentation()){
+                throw new IllegalArgumentException("Flag conflict with core flags");
+            }
+        }
+
+        for(Character character : customFlags){
+            if(flagCharacter == character){
+                throw new IllegalArgumentException("Custom flag conflicts with another custom flag");
+            }
+        }
+
+        try {
+            storageAPI.addFlagType(flagCharacter);
+            customFlags.add(flagCharacter);
+        } catch (StorageWriteException ignored) {}
     }
 }

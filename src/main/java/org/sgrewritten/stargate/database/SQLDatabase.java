@@ -433,9 +433,7 @@ public class SQLDatabase implements StorageAPI {
 
     @Override
     public void addFlag(Character flagChar, Portal portal, StorageType portalType) throws StorageWriteException {
-        Connection connection;
-        try {
-            connection = database.getConnection();
+        try(Connection connection = database.getConnection()) {
             PreparedStatement statement = sqlQueryGenerator.generateGetAllFlagsStatement(connection);
             ResultSet resultSet = statement.executeQuery();
             List<String> knownFlags = new ArrayList<>();

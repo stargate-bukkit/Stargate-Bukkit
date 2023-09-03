@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
@@ -29,6 +30,7 @@ import org.sgrewritten.stargate.gate.GateTestHelper;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 class NetworkedPortalTest {
 
