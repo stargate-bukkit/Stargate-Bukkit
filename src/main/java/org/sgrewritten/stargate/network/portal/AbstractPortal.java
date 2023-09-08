@@ -387,7 +387,7 @@ public abstract class AbstractPortal implements RealPortal {
             //TODO: The StargateSignFormatEvent should be called each time a sign is formatted. This implementation 
             // will only update the formatter when run on startup, or if changed with a dye. Instead, this should either
             // be called every time a color formatting happens, or be replaced with an API method
-            StargateSignFormatEvent formatEvent = new StargateSignFormatEvent(this, colorDrawer, color);
+            StargateSignFormatEvent formatEvent = new StargateSignFormatEvent(this, colorDrawer, color, sign);
             Bukkit.getPluginManager().callEvent(formatEvent);
             this.colorDrawer = formatEvent.getLineFormatter();
         }

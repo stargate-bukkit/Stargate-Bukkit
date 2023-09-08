@@ -10,4 +10,13 @@ public class StargateReloadEvent extends Event {
     public @NotNull HandlerList getHandlers() {
         return handlers;
     }
+
+    /**
+     * Gets a handler-list containing all event handlers
+     *
+     * @return <p>A handler-list with all event handlers</p>
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 }
