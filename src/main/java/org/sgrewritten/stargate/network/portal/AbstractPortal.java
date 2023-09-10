@@ -356,7 +356,7 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public void setSignColor(DyeColor color) {
+    public void setSignColor(@Nullable DyeColor changedColor) {
 
         /* NoLineColorFormatter should only be used during startup, this means
          * that if it has already been changed, and if there's no color to change to,
@@ -364,7 +364,7 @@ public abstract class AbstractPortal implements RealPortal {
          *
          * Just avoids some unnecessary minute lag
          */
-        if (!(colorDrawer instanceof NoLineColorFormatter) && color == null) {
+        if (!(colorDrawer instanceof NoLineColorFormatter) && changedColor == null) {
             return;
         }
 
@@ -375,8 +375,11 @@ public abstract class AbstractPortal implements RealPortal {
                         this.name, this.network.getName()));
                 continue;
             }
-            if (color == null) {
+            DyeColor color;
+            if (changedColor == null) {
                 color = sign.getColor();
+            } else {
+                color = changedColor;
             }
 
             if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
@@ -387,7 +390,7 @@ public abstract class AbstractPortal implements RealPortal {
             //TODO: The StargateSignFormatEvent should be called each time a sign is formatted. This implementation 
             // will only update the formatter when run on startup, or if changed with a dye. Instead, this should either
             // be called every time a color formatting happens, or be replaced with an API method
-            StargateSignFormatEvent formatEvent = new StargateSignFormatEvent(this, colorDrawer, color, sign);
+            StargateSignFormatEvent formatEvent = new StargateSignFormatEvent(this, colorDrawer, color, changedColor, sign);
             Bukkit.getPluginManager().callEvent(formatEvent);
             this.colorDrawer = formatEvent.getLineFormatter();
         }

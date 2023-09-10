@@ -1,24 +1,26 @@
 package org.sgrewritten.stargate.api.event;
 
 import org.bukkit.DyeColor;
-import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.portal.formatting.LineFormatter;
 
 public class StargateSignFormatEvent extends StargateEvent {
     private static final HandlerList handlers = new HandlerList();
     private final Sign sign;
+    private final @Nullable DyeColor changedColor;
     private LineFormatter formatter;
     private final DyeColor signColor;
 
-    public StargateSignFormatEvent(@NotNull RealPortal portal, LineFormatter formatter, DyeColor signColor, Sign sign) {
+    public StargateSignFormatEvent(@NotNull RealPortal portal, LineFormatter formatter, DyeColor signColor, @Nullable DyeColor changedColor, Sign sign) {
         super(portal);
         this.formatter = formatter;
         this.signColor = signColor;
         this.sign = sign;
+        this.changedColor = changedColor;
     }
 
     public LineFormatter getLineFormatter() {
@@ -31,6 +33,10 @@ public class StargateSignFormatEvent extends StargateEvent {
 
     public DyeColor getSignColor() {
         return signColor;
+    }
+
+    public DyeColor getChangedSignColor(){
+        return changedColor;
     }
 
     public Sign getSign(){
