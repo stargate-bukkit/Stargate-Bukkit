@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.action.SupplierAction;
+import org.sgrewritten.stargate.api.event.gate.StargateSignFormatGateEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
@@ -146,7 +147,9 @@ public class Gate implements GateAPI {
                 Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
                 continue;
             }
-
+            StargateSignFormatGateEvent event = new StargateSignFormatGateEvent(this,signLines,portalPosition,signLocation);
+            Bukkit.getPluginManager().callEvent(event);
+            signLines = event.getLines();
             for (int i = 0; i < 4; i++) {
                 if(NonLegacyMethod.COMPONENT.isImplemented()){
                     Component line = StargateComponentDeserialiser.getComponent(signLines[i]);
