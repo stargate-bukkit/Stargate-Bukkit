@@ -394,7 +394,8 @@ public abstract class AbstractPortal implements RealPortal {
         }
         // Has to be done one tick later to avoid a bukkit bug
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            this.getDrawnControlLines();
+            SignLine[] lines = this.getDrawnControlLines();
+            getGate().drawControlMechanisms(lines,!hasFlag(PortalFlag.ALWAYS_ON));
             return true;
         }));
     }
