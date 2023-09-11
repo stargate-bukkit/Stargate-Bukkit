@@ -5,11 +5,15 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.event.portal.StargatePortalEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+
+import java.util.logging.Level;
 
 public class StargateSignFormatGateEvent extends StargateGateEvent {
     private static final HandlerList handlers = new HandlerList();
@@ -35,10 +39,10 @@ public class StargateSignFormatGateEvent extends StargateGateEvent {
      */
     public Sign getSign(){
         Block block = location.getBlock();
-        if(block instanceof Sign sign){
+        if(block.getState() instanceof Sign sign){
             return sign;
         }
-        throw new IllegalStateException("Could not find any sign at specified location");
+        throw new IllegalStateException("Could not find any sign at " + location + ", found " + block.getType());
     }
 
     public PortalPosition getPortalPosition(){

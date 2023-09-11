@@ -195,8 +195,9 @@ public class NetworkedPortal extends AbstractPortal {
         int maxLength = destinations.size();
         for (int lineIndex = 0; lineIndex < 3; lineIndex++) {
             int destination = lineIndex + firstDestination;
-            if (destination == maxLength) {
-                break;
+            if (destination >= maxLength) {
+                lines[lineIndex+1] = new TextLine();
+                continue;
             }
             drawDestination(lineIndex, destination, destinationIndex, lines);
         }

@@ -33,4 +33,8 @@ public class PortalLine extends AbstractSignLine {
     public SignLineType getType() {
         return this.type;
     }
+
+    public Portal getPortal(){
+        return this.portal;
+    }
 }

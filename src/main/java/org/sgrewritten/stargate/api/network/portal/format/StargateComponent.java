@@ -29,4 +29,18 @@ public class StargateComponent {
         }
         return legacyText;
     }
+
+    public void setText(Component text){
+        if(legacyText != null){
+            legacyText = null;
+        }
+        this.text = text;
+    }
+
+    public void setLegacyText(String legacyText){
+        if(text != null){
+            text = null;
+        }
+        this.legacyText = legacyText;
+    }
 }
