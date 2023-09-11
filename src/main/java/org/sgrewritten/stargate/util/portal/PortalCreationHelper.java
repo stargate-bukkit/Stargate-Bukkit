@@ -17,7 +17,7 @@ import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.api.event.StargateCreateEvent;
+import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
@@ -133,18 +133,18 @@ public final class PortalCreationHelper {
 
 
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
-        StargateCreateEvent stargateCreateEvent = new StargateCreateEvent(player, portal, lines, !hasPermission,
+        StargateCreatePortalEvent portalCreateEvent = new StargateCreatePortalEvent(player, portal, lines, !hasPermission,
                 permissionManager.getDenyMessage(), cost);
-        Bukkit.getPluginManager().callEvent(stargateCreateEvent);
+        Bukkit.getPluginManager().callEvent(portalCreateEvent);
         Stargate.log(Level.CONFIG, " player has permission = " + hasPermission);
 
         //If the create event has been denied, tell the user and abort
-        if (stargateCreateEvent.getDeny()) {
+        if (portalCreateEvent.getDeny()) {
             Stargate.log(Level.CONFIG, " Event was denied due to lack of permission or an add-on");
-            if (stargateCreateEvent.getDenyReason() == null) {
+            if (portalCreateEvent.getDenyReason() == null) {
                 player.sendMessage(stargateAPI.getLanguageManager().getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
-            } else if (!stargateCreateEvent.getDenyReason().isEmpty()) {
-                player.sendMessage(stargateCreateEvent.getDenyReason());
+            } else if (!portalCreateEvent.getDenyReason().isEmpty()) {
+                player.sendMessage(portalCreateEvent.getDenyReason());
             }
             return;
         }
@@ -168,7 +168,7 @@ public final class PortalCreationHelper {
 
         //Charge the player as necessary for the portal creation
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_CREATE) &&
-                !stargateAPI.getEconomyManager().chargePlayer(player, null, stargateCreateEvent.getCost())) {
+                !stargateAPI.getEconomyManager().chargePlayer(player, null, portalCreateEvent.getCost())) {
             player.sendMessage(stargateAPI.getLanguageManager().getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return;
         }

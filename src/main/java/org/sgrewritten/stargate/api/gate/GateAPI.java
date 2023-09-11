@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
 
 import java.util.List;
 
@@ -22,7 +24,7 @@ public interface GateAPI {
      * @param signLines  <p>an array with 4 elements, representing each line of a sign</p>
      * @param drawButton <p>whether or not include a button.</p>
      */
-    void drawControlMechanisms(String[] signLines, boolean drawButton);
+    void drawControlMechanisms(SignLine[] signLines, boolean drawButton);
 
     /**
      * Gets a copy of this gate's portal positions

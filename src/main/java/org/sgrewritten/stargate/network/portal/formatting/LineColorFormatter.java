@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.network.InterServerNetwork;
@@ -14,7 +15,9 @@ import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.util.colors.ColorConverter;
 import org.sgrewritten.stargate.util.colors.ColorProperty;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -45,35 +48,52 @@ public class LineColorFormatter implements LineFormatter {
     }
 
     @Override
-    public String formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
+    public List<StargateComponent> formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
         ChatColor pointerColor = this.pointerColor;
         if (ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 2 && getFlagColor(portal) != null) {
             pointerColor = getFlagColor(portal);
         }
         String portalName = (portal != null) ? portal.getName() : "null";
-        return pointerColor + highlightingStyle.getHighlightedName(color + portalName + pointerColor);
+        return new ArrayList<>(List.of(
+                new StargateComponent(pointerColor + highlightingStyle.getPrefix()),
+                new StargateComponent(color + portalName),
+                new StargateComponent(pointerColor + highlightingStyle.getSuffix())
+        ));
     }
 
     @Override
-    public String formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
+    public List<StargateComponent> formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
         String networkName = (network != null) ? network.getName() : "null";
         String bold = (network instanceof InterServerNetwork) ? ChatColor.BOLD.toString() : "";
-        return pointerColor + bold + highlightingStyle.getHighlightedName(color + bold + networkName + pointerColor + bold);
+
+        return new ArrayList<>(List.of(
+                new StargateComponent(pointerColor + bold + highlightingStyle.getPrefix()),
+                new StargateComponent(color + bold + networkName),
+                new StargateComponent(pointerColor + bold + highlightingStyle.getSuffix())
+        ));
     }
 
     @Override
-    public String formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle) {
-        return pointerColor + highlightingStyle.getHighlightedName(color + aString + pointerColor);
+    public List<StargateComponent> formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle) {
+        return new ArrayList<>(List.of(
+                new StargateComponent(pointerColor  + highlightingStyle.getPrefix()),
+                new StargateComponent(color + aString),
+                new StargateComponent(pointerColor + highlightingStyle.getSuffix())
+        ));
     }
 
     @Override
-    public String formatLine(String line) {
-        return color + line;
+    public List<StargateComponent> formatLine(String line) {
+        return new ArrayList<>(List.of(new StargateComponent(color + line)));
     }
 
     @Override
-    public String formatErrorLine(String error, HighlightingStyle highlightingStyle) {
-        return ERROR_COLOR + highlightingStyle.getHighlightedName(error);
+    public List<StargateComponent> formatErrorLine(String error, HighlightingStyle highlightingStyle) {
+        return new ArrayList<>(List.of(
+                new StargateComponent(ERROR_COLOR  + highlightingStyle.getPrefix()),
+                new StargateComponent(ERROR_COLOR + error),
+                new StargateComponent(ERROR_COLOR + highlightingStyle.getSuffix())
+        ));
     }
 
     /**

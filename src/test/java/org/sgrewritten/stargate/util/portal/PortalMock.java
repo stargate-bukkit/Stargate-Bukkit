@@ -142,7 +142,7 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
-    public void drawControlMechanisms() {
+    public void getDrawnControlLines() {
 
     }
 

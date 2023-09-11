@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.network.portal;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.format.*;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -19,10 +20,7 @@ import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.util.NameHelper;
 
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -94,15 +92,15 @@ public class BungeePortal extends AbstractPortal {
     }
 
     @Override
-    public void drawControlMechanisms() {
+    public SignLine[] getDrawnControlLines() {
         Stargate.log(Level.FINEST, "serverDestination = " + serverDestination);
 
-        String[] lines = new String[4];
-        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN);
-        lines[1] = super.colorDrawer.formatPortalName(getDestination(), HighlightingStyle.LESSER_GREATER_THAN);
-        lines[2] = super.colorDrawer.formatStringWithHighlighting(serverDestination, HighlightingStyle.SQUARE_BRACKETS);
-        lines[3] = super.colorDrawer.formatLine(bungeeString);
-        getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+        return new SignLine[]{
+                new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN), this, SignLineType.THIS_PORTAL),
+                new PortalLine(super.colorDrawer.formatPortalName(getDestination(), HighlightingStyle.LESSER_GREATER_THAN), getDestination(), SignLineType.DESTINATION_PORTAL),
+                new TextLine(super.colorDrawer.formatStringWithHighlighting(serverDestination, HighlightingStyle.SQUARE_BRACKETS), SignLineType.TEXT),
+                new TextLine(bungeeString)
+        };
     }
 
     @Override

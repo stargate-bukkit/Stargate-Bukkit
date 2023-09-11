@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.event;
+package org.sgrewritten.stargate.api.event.portal;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -12,7 +12,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
  * <p>This event can be used to overwrite whether the stargate should be forced to open, even if it's already open.</p>
  */
 @SuppressWarnings({"unused"})
-public class StargateOpenEvent extends StargateEntityEvent implements Cancellable {
+public class StargateOpenPortalEvent extends StargateEntityPortalEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
     private boolean force;
@@ -25,7 +25,7 @@ public class StargateOpenEvent extends StargateEntityEvent implements Cancellabl
      * @param portal <p>The opened portal</p>
      * @param force  <p>Whether to force the portal open</p>
      */
-    public StargateOpenEvent(Player player, @NotNull Portal portal, boolean force) {
+    public StargateOpenPortalEvent(Player player, @NotNull Portal portal, boolean force) {
         super(portal, player);
 
         this.force = force;

@@ -20,7 +20,7 @@ import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.api.event.StargatePortalEvent;
+import org.sgrewritten.stargate.api.event.portal.StargateTeleportPortalEvent;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
@@ -408,7 +408,7 @@ public class Teleporter {
             return true;
         }
         boolean hasPermission = permissionManager.hasTeleportPermissions(origin);
-        StargatePortalEvent event = new StargatePortalEvent(target, origin, destination, exit);
+        StargateTeleportPortalEvent event = new StargateTeleportPortalEvent(target, origin, destination, exit);
         Bukkit.getPluginManager().callEvent(event);
         return hasPermission;
     }

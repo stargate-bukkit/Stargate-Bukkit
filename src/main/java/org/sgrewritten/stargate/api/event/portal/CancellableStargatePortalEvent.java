@@ -1,13 +1,14 @@
-package org.sgrewritten.stargate.api.event;
+package org.sgrewritten.stargate.api.event.portal;
 
 import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;
+import org.sgrewritten.stargate.api.event.portal.StargatePortalEvent;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 
 /**
  * A Stargate event which can be cancelled
  */
-public abstract class CancellableStargateEvent extends StargateEvent implements Cancellable {
+public abstract class CancellableStargatePortalEvent extends StargatePortalEvent implements Cancellable {
 
     private boolean cancelled;
 
@@ -16,7 +17,7 @@ public abstract class CancellableStargateEvent extends StargateEvent implements 
      *
      * @param portal <p>The portal involved in this stargate event</p>
      */
-    CancellableStargateEvent(@NotNull Portal portal) {
+    CancellableStargatePortalEvent(@NotNull Portal portal) {
         super(portal);
 
         this.cancelled = false;

@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.event;
+package org.sgrewritten.stargate.api.event.portal;
 
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
@@ -8,7 +8,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
  * An abstract event describing any stargate event
  */
 @SuppressWarnings("unused")
-public abstract class StargateEvent extends Event {
+public abstract class StargatePortalEvent extends Event {
 
     private final Portal portal;
 
@@ -17,7 +17,7 @@ public abstract class StargateEvent extends Event {
      *
      * @param portal <p>The portal involved in this stargate event</p>
      */
-    StargateEvent(@NotNull Portal portal) {
+    StargatePortalEvent(@NotNull Portal portal) {
         this.portal = portal;
     }
 

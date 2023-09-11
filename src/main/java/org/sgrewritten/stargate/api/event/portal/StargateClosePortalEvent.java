@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.event;
+package org.sgrewritten.stargate.api.event.portal;
 
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +11,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
  * always-on.</p>
  */
 @SuppressWarnings("unused")
-public class StargateCloseEvent extends CancellableStargateEvent {
+public class StargateClosePortalEvent extends CancellableStargatePortalEvent {
 
     private static final HandlerList handlers = new HandlerList();
     private boolean force;
@@ -22,7 +22,7 @@ public class StargateCloseEvent extends CancellableStargateEvent {
      * @param portal <p>The portal to close</p>
      * @param force  <p>Whether to force the gate to close, even if set as always-on</p>
      */
-    public StargateCloseEvent(@NotNull Portal portal, boolean force) {
+    public StargateClosePortalEvent(@NotNull Portal portal, boolean force) {
         super(portal);
 
         this.force = force;

@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.event;
+package org.sgrewritten.stargate.api.event.portal;
 
 import org.bukkit.entity.Entity;
 import org.sgrewritten.stargate.api.network.portal.Portal;
@@ -7,7 +7,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
  * An abstract event describing any stargate event where a player is involved
  */
 @SuppressWarnings("unused")
-public abstract class StargateEntityEvent extends StargateEvent {
+public abstract class StargateEntityPortalEvent extends StargatePortalEvent {
 
     private final Entity travellingEntity;
 
@@ -17,7 +17,7 @@ public abstract class StargateEntityEvent extends StargateEvent {
      * @param portal           <p>The portal involved in this stargate event</p>
      * @param travellingEntity <p>The entity travelling through a portal</p>
      */
-    StargateEntityEvent(Portal portal, Entity travellingEntity) {
+    StargateEntityPortalEvent(Portal portal, Entity travellingEntity) {
         super(portal);
 
         this.travellingEntity = travellingEntity;

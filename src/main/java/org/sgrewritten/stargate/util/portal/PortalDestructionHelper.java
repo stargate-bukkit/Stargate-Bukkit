@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.api.event.StargateDestroyEvent;
+import org.sgrewritten.stargate.api.event.portal.StargateDestroyPortalEvent;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
@@ -36,17 +36,17 @@ public final class PortalDestructionHelper {
         StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
 
         boolean hasPermission = permissionManager.hasDestroyPermissions((RealPortal) portal);
-        StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, player, !hasPermission,
+        StargateDestroyPortalEvent portalDestroyEvent = new StargateDestroyPortalEvent(portal, player, !hasPermission,
                 permissionManager.getDenyMessage(), cost);
-        Bukkit.getPluginManager().callEvent(stargateDestroyEvent);
+        Bukkit.getPluginManager().callEvent(portalDestroyEvent);
 
         // Inform the player why the destruction was denied
-        if (stargateDestroyEvent.getDeny()) {
-            if (stargateDestroyEvent.getDenyReason() == null) {
+        if (portalDestroyEvent.getDeny()) {
+            if (portalDestroyEvent.getDenyReason() == null) {
                 player.sendMessage(
                         languageManager.getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
-            } else if (!stargateDestroyEvent.getDenyReason().isEmpty()) {
-                player.sendMessage(stargateDestroyEvent.getDenyReason());
+            } else if (!portalDestroyEvent.getDenyReason().isEmpty()) {
+                player.sendMessage(portalDestroyEvent.getDenyReason());
             }
             return true;
         }
@@ -57,7 +57,7 @@ public final class PortalDestructionHelper {
          * permission, do not collect money
          */
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_DESTROY)
-                && !economyManager.chargePlayer(player, null, stargateDestroyEvent.getCost())) {
+                && !economyManager.chargePlayer(player, null, portalDestroyEvent.getCost())) {
             player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
             return true;
         }

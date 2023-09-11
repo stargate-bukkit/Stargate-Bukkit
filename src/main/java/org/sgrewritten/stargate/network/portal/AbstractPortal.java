@@ -17,18 +17,14 @@ import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.DelayedAction;
 import org.sgrewritten.stargate.action.SupplierAction;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
-import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.event.portal.*;
+import org.sgrewritten.stargate.api.network.portal.*;
+import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.format.SignLineType;
+import org.sgrewritten.stargate.api.network.portal.format.TextLine;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.api.event.StargateAccessEvent;
-import org.sgrewritten.stargate.api.event.StargateCloseEvent;
-import org.sgrewritten.stargate.api.event.StargateDeactivateEvent;
-import org.sgrewritten.stargate.api.event.StargateOpenEvent;
-import org.sgrewritten.stargate.api.event.StargateSignFormatEvent;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
@@ -159,7 +155,8 @@ public abstract class AbstractPortal implements RealPortal {
         if (isOpen() && currentDestination == null) {
             close(true);
         }
-        drawControlMechanisms();
+        SignLine[] lines = getDrawnControlLines();
+        this.getGate().drawControlMechanisms(lines, !this.hasFlag(PortalFlag.ALWAYS_ON));
     }
 
     @Override
@@ -190,7 +187,7 @@ public abstract class AbstractPortal implements RealPortal {
         if (!isOpen() || (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose) || this.isDestroyed) {
             return;
         }
-        StargateCloseEvent closeEvent = new StargateCloseEvent(this, forceClose);
+        StargateClosePortalEvent closeEvent = new StargateClosePortalEvent(this, forceClose);
         Bukkit.getPluginManager().callEvent(closeEvent);
         if (closeEvent.isCancelled()) {
             Stargate.log(Level.FINE, "Closing event for portal " + getName() + " in network " + getNetwork().getName() + " was canceled");
@@ -199,7 +196,7 @@ public abstract class AbstractPortal implements RealPortal {
 
         Stargate.log(Level.FINE, "Closing the portal");
         getGate().close();
-        drawControlMechanisms();
+        getDrawnControlLines();
         openFor = null;
     }
 
@@ -227,7 +224,7 @@ public abstract class AbstractPortal implements RealPortal {
         }
         this.network = targetNetwork;
         //TODO: update network in database
-        this.drawControlMechanisms();
+        this.getDrawnControlLines();
     }
 
     @Override
@@ -276,7 +273,7 @@ public abstract class AbstractPortal implements RealPortal {
             return;
         }
 
-        StargateAccessEvent accessEvent = new StargateAccessEvent(target, this, false, null);
+        StargateAccessPortalEvent accessEvent = new StargateAccessPortalEvent(target, this, false, null);
         Bukkit.getPluginManager().callEvent(accessEvent);
         if (accessEvent.getDeny()) {
             Stargate.log(Level.CONFIG, " Access event was canceled by an external plugin");
@@ -340,7 +337,7 @@ public abstract class AbstractPortal implements RealPortal {
             return;
         }
         StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
-        StargateOpenEvent stargateOpenEvent = new StargateOpenEvent(player, this, false);
+        StargateOpenPortalEvent stargateOpenEvent = new StargateOpenPortalEvent(player, this, false);
         Bukkit.getPluginManager().callEvent(stargateOpenEvent);
         if (!permissionManager.hasOpenPermissions(this, destination)) {
             event.getPlayer().sendMessage(permissionManager.getDenyMessage());
@@ -368,7 +365,12 @@ public abstract class AbstractPortal implements RealPortal {
             return;
         }
 
-        for (Location location : this.getPortalPosition(PositionType.SIGN)) {
+        for (PortalPosition portalPosition : gate.getPortalPositions()) {
+            if(portalPosition.getPositionType() != PositionType.SIGN){
+                continue;
+            }
+            Location location = gate.getLocation(portalPosition.getRelativePositionLocation());
+
             if (!(location.getBlock().getState() instanceof Sign sign)) {
                 Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s %n"
                                 + "This is most likely caused from a bug // please contact developers (use ''sg about'' for github repo)",
@@ -379,6 +381,8 @@ public abstract class AbstractPortal implements RealPortal {
             if (changedColor == null) {
                 color = sign.getColor();
             } else {
+                StargateSignDyeChangePortalEvent event = new StargateSignDyeChangePortalEvent(this,changedColor,location,portalPosition);
+                Bukkit.getPluginManager().callEvent(event);
                 color = changedColor;
             }
 
@@ -387,16 +391,10 @@ public abstract class AbstractPortal implements RealPortal {
             } else {
                 colorDrawer = new LegacyLineColorFormatter();
             }
-            //TODO: The StargateSignFormatEvent should be called each time a sign is formatted. This implementation 
-            // will only update the formatter when run on startup, or if changed with a dye. Instead, this should either
-            // be called every time a color formatting happens, or be replaced with an API method
-            StargateSignFormatEvent formatEvent = new StargateSignFormatEvent(this, colorDrawer, color, changedColor, sign);
-            Bukkit.getPluginManager().callEvent(formatEvent);
-            this.colorDrawer = formatEvent.getLineFormatter();
         }
         // Has to be done one tick later to avoid a bukkit bug
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            this.drawControlMechanisms();
+            this.getDrawnControlLines();
             return true;
         }));
     }
@@ -409,7 +407,7 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void destroy() {
         // drawing the sign first is necessary, as the portal positions gets unregistered from the gate later on
-        String[] lines = new String[]{this.getName(), "", "", ""};
+        SignLine[] lines = new SignLine[]{new TextLine(getName(), SignLineType.TEXT), new TextLine(), new TextLine(), new TextLine()};
         getGate().drawControlMechanisms(lines, false);
         this.network.removePortal(this, true);
         this.close(true);
@@ -471,26 +469,28 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         if (!event.getPlayer().isSneaking()) {
-            this.drawControlMechanisms();
+            this.getDrawnControlLines();
             return;
         }
         PermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(), languageManager);
-        StargateAccessEvent accessEvent = new StargateAccessEvent(event.getPlayer(), this, !permissionManager.hasAccessPermission(this),
+        StargateAccessPortalEvent accessEvent = new StargateAccessPortalEvent(event.getPlayer(), this, !permissionManager.hasAccessPermission(this),
                 permissionManager.getDenyMessage());
         Bukkit.getPluginManager().callEvent(accessEvent);
         if (accessEvent.getDeny()) {
             event.getPlayer().sendMessage(accessEvent.getDenyReason());
             return;
         }
-        String[] signText = {
-                this.colorDrawer.formatLine(languageManager.getString(TranslatableMessage.PREFIX).trim()),
-                this.colorDrawer
-                        .formatLine(languageManager.getString(TranslatableMessage.GATE_OWNED_BY)),
-                this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName()),
-                this.colorDrawer.formatLine(getAllFlagsString().replaceAll("[0-9]", ""))};
+
+        SignLine[] lines = new SignLine[]{
+                new TextLine(this.colorDrawer.formatLine(languageManager.getString(TranslatableMessage.PREFIX).trim())),
+                new TextLine(this.colorDrawer
+                        .formatLine(languageManager.getString(TranslatableMessage.GATE_OWNED_BY))),
+                new TextLine(this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName())),
+                new TextLine(this.colorDrawer.formatLine(getAllFlagsString().replaceAll("[0-9]", "")))
+        };
 
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            gate.drawControlMechanisms(signText, false);
+            gate.drawControlMechanisms(lines, false);
             return true;
         }));
         activate(event.getPlayer());
@@ -534,11 +534,11 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         //Call the deactivate event to notify add-ons
-        StargateDeactivateEvent event = new StargateDeactivateEvent(this);
+        StargateDeactivatePortalEvent event = new StargateDeactivatePortalEvent(this);
         Bukkit.getPluginManager().callEvent(event);
 
         this.activator = null;
-        drawControlMechanisms();
+        getDrawnControlLines();
     }
 
     @Override

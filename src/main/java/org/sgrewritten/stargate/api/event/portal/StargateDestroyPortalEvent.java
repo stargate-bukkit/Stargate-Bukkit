@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.event;
+package org.sgrewritten.stargate.api.event.portal;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -11,7 +11,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
  * <p>This event can be used to deny or change the cost of a stargate destruction.</p>
  */
 @SuppressWarnings("unused")
-public class StargateDestroyEvent extends DeniableStargateEvent {
+public class StargateDestroyPortalEvent extends DeniableStargatePortalEvent {
 
     private static final HandlerList handlers = new HandlerList();
     private int cost;
@@ -25,8 +25,8 @@ public class StargateDestroyEvent extends DeniableStargateEvent {
      * @param denyReason <p>The message to display if the event is denied</p>
      * @param cost       <p>The cost of destroying the portal</p>
      */
-    public StargateDestroyEvent(@NotNull Portal portal, @NotNull Player player, boolean deny, String denyReason,
-                                int cost) {
+    public StargateDestroyPortalEvent(@NotNull Portal portal, @NotNull Player player, boolean deny, String denyReason,
+                                      int cost) {
         super(portal, player, deny, denyReason);
 
         //TODO: Perhaps alter or add an event for a stargate destroyed by an explosion?

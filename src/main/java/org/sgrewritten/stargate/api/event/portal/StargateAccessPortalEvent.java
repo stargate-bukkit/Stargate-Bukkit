@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.event;
+package org.sgrewritten.stargate.api.event.portal;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
@@ -12,7 +12,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
  * whether the player should be allowed to access the stargate.</p>
  */
 @SuppressWarnings("unused")
-public class StargateAccessEvent extends DeniableStargateEvent {
+public class StargateAccessPortalEvent extends DeniableStargatePortalEvent {
 
     private static final HandlerList handlers = new HandlerList();
     private String denyReason;
@@ -26,7 +26,7 @@ public class StargateAccessEvent extends DeniableStargateEvent {
      * @param deny             <p>Whether the stargate access should be denied</p>
      * @param denyReason       <p>The reason stargate access was denied</p>
      */
-    public StargateAccessEvent(Entity travellingEntity, Portal portal, boolean deny, String denyReason) {
+    public StargateAccessPortalEvent(Entity travellingEntity, Portal portal, boolean deny, String denyReason) {
         super(portal, travellingEntity, deny, denyReason);
     }
 

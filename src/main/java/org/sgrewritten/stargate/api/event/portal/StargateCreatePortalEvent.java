@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.event;
+package org.sgrewritten.stargate.api.event.portal;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -11,7 +11,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
  * <p>This event can be used to deny or change the cost of a stargate creation.</p>
  */
 @SuppressWarnings("unused")
-public class StargateCreateEvent extends DeniableStargateEvent {
+public class StargateCreatePortalEvent extends DeniableStargatePortalEvent {
 
     private static final HandlerList handlers = new HandlerList();
     private final String[] lines;
@@ -27,8 +27,8 @@ public class StargateCreateEvent extends DeniableStargateEvent {
      * @param denyReason <p>The reason stargate creation was denied</p>
      * @param cost       <p>The cost of creating the new star gate</p>
      */
-    public StargateCreateEvent(@NotNull Player player, @NotNull Portal portal, @NotNull String[] lines, boolean deny,
-                               String denyReason, int cost) {
+    public StargateCreatePortalEvent(@NotNull Player player, @NotNull Portal portal, @NotNull String[] lines, boolean deny,
+                                     String denyReason, int cost) {
         super(portal, player, deny, denyReason);
 
         this.lines = lines;

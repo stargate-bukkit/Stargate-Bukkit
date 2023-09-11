@@ -2,6 +2,9 @@ package org.sgrewritten.stargate.network.portal.formatting;
 
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+
+import java.util.List;
 
 /**
  * A formatter for formatting a line on a sign
@@ -15,7 +18,7 @@ public interface LineFormatter {
      * @param highlightingStyle <p>The highlighting style to use when formatting</p>
      * @return <p>The formatted name</p>
      */
-    String formatPortalName(Portal portal, HighlightingStyle highlightingStyle);
+    List<StargateComponent> formatPortalName(Portal portal, HighlightingStyle highlightingStyle);
 
     /**
      * Formats the name of a portal
@@ -24,7 +27,7 @@ public interface LineFormatter {
      * @param highlightingStyle <p>The highlighting style to use when formatting</p>
      * @return <p>The formatted name</p>
      */
-    String formatNetworkName(Network network, HighlightingStyle highlightingStyle);
+    List<StargateComponent> formatNetworkName(Network network, HighlightingStyle highlightingStyle);
 
     /**
      * Formats the name of a portal
@@ -33,7 +36,7 @@ public interface LineFormatter {
      * @param highlightingStyle <p>The highlighting style to use when formatting</p>
      * @return <p>The formatted string</p>
      */
-    String formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle);
+    List<StargateComponent> formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle);
 
     /**
      * Formats a line using the default behaviour
@@ -41,7 +44,7 @@ public interface LineFormatter {
      * @param line <p>The line to format</p>
      * @return <p>The formatted line</p>
      */
-    String formatLine(String line);
+    List<StargateComponent> formatLine(String line);
 
     /**
      * Formats an error line to display on a sign
@@ -50,6 +53,6 @@ public interface LineFormatter {
      * @param highlightingStyle <p>The highlighting style to use when formatting</p>
      * @return <p>The formatted error</p>
      */
-    String formatErrorLine(String error, HighlightingStyle highlightingStyle);
+    List<StargateComponent> formatErrorLine(String error, HighlightingStyle highlightingStyle);
 
 }

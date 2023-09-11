@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.event;
+package org.sgrewritten.stargate.api.event.portal;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -12,10 +12,9 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
  * <p>This event can be used to overwrite the location the entity is teleported to.</p>
  */
 @SuppressWarnings("unused")
-public class StargatePortalEvent extends StargateEvent {
+public class StargateTeleportPortalEvent extends StargateEntityPortalEvent {
 
     private static final HandlerList handlers = new HandlerList();
-    final Entity travellingEntity;
     private final Portal destination;
     private Location exit;
 
@@ -27,22 +26,11 @@ public class StargatePortalEvent extends StargateEvent {
      * @param destination      <p>The destination the entity should exit from</p>
      * @param exit             <p>The exit location of the destination portal the entity will be teleported to</p>
      */
-    public StargatePortalEvent(@NotNull Entity travellingEntity, @NotNull Portal portal, Portal destination,
-                               @NotNull Location exit) {
-        super(portal);
-
-        this.travellingEntity = travellingEntity;
+    public StargateTeleportPortalEvent(@NotNull Entity travellingEntity, @NotNull Portal portal, Portal destination,
+                                       @NotNull Location exit) {
+        super(portal,travellingEntity);
         this.destination = destination;
         this.exit = exit;
-    }
-
-    /**
-     * Gets the teleported entity
-     *
-     * @return <p>The teleported entity</p>
-     */
-    public Entity getEntity() {
-        return travellingEntity;
     }
 
     /**

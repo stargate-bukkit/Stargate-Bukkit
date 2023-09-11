@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.event;
+package org.sgrewritten.stargate.api.event.portal;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
@@ -14,7 +14,7 @@ import java.util.List;
  * This event can be used to overwrite the selected destination, and all destinations the player can see.</p>
  */
 @SuppressWarnings("unused")
-public class StargateActivateEvent extends StargateEntityEvent {
+public class StargateActivatePortalEvent extends StargateEntityPortalEvent {
 
     private static final HandlerList handlers = new HandlerList();
     private List<String> destinations;
@@ -28,8 +28,8 @@ public class StargateActivateEvent extends StargateEntityEvent {
      * @param destinations <p>The destinations available to the player using the portal</p>
      * @param destination  <p>The currently selected destination</p>
      */
-    public StargateActivateEvent(@NotNull Portal portal, @NotNull Entity entity, @NotNull List<String> destinations,
-                                 String destination) {
+    public StargateActivatePortalEvent(@NotNull Portal portal, @NotNull Entity entity, @NotNull List<String> destinations,
+                                       String destination) {
         super(portal, entity);
 
         this.destinations = destinations;

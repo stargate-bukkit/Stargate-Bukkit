@@ -65,7 +65,11 @@ public enum NonLegacyMethod {
      *
      * <p>This was added to Paper to change a powered minecart's z-push</p>
      */
-    GET_FUEL("org.bukkit.entity.minecart.PoweredMinecart", "getFuel");
+    GET_FUEL("org.bukkit.entity.minecart.PoweredMinecart", "getFuel"),
+
+    COMPONENT("net.kyori.adventure.text.Component", "equals", Object.class),
+
+    TWO_SIDED_SIGNS(" org.bukkit.block.sign.SignSide", "equals", Object.class);
 
     private String classToCheckFor;
     private String methodInClassToCheckFor;

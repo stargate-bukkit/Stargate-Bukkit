@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.event;
+package org.sgrewritten.stargate.api.event.portal;
 
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +11,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
  * This event can only be used to listen for de-activation events.</p>
  */
 @SuppressWarnings("unused")
-public class StargateDeactivateEvent extends StargateEvent {
+public class StargateDeactivatePortalEvent extends StargatePortalEvent {
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -20,7 +20,7 @@ public class StargateDeactivateEvent extends StargateEvent {
      *
      * @param portal <p>The portal which was deactivated</p>
      */
-    public StargateDeactivateEvent(Portal portal) {
+    public StargateDeactivatePortalEvent(Portal portal) {
         super(portal);
     }
 

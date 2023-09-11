@@ -6,6 +6,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.network.portal.format.SignLine;
 
 import java.util.List;
 
@@ -16,11 +17,11 @@ import java.util.List;
 public interface RealPortal extends Portal {
 
     /**
-     * Draws any control mechanisms belonging to this portal
+     * Gets the line to be drawn for the signs
      *
-     * <p>This basically just re-draws the portal's sign or whichever other mechanisms the portal may use.</p>
+     * @return <p> Lines to be drawn for the gate owned by this portal</p>
      */
-    void drawControlMechanisms();
+    SignLine[] getDrawnControlLines();
 
     /**
      * Updates the color of this portal's sign

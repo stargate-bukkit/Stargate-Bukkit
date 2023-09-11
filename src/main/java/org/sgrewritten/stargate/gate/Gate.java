@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.gate;
 
 import com.google.common.base.Preconditions;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,6 +15,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Orientable;
+import org.bukkit.block.sign.Side;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +25,9 @@ import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+import org.sgrewritten.stargate.api.network.portal.format.StargateComponentDeserialiser;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
@@ -30,6 +35,7 @@ import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
+import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.vectorlogic.MatrixVectorOperation;
 import org.sgrewritten.stargate.vectorlogic.VectorOperation;
@@ -108,13 +114,7 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public void drawControlMechanisms(String[] signLines, boolean drawButton) {
-        /*
-        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-
-            return true;
-        }));
-        */
+    public void drawControlMechanisms(SignLine[] signLines, boolean drawButton) {
         drawSigns(signLines);
         if (drawButton) {
             drawButtons();
@@ -131,11 +131,11 @@ public class Gate implements GateAPI {
      *
      * @param signLines <p>The lines to draw on the sign</p>
      */
-    private void drawSigns(String[] signLines) {
+    private void drawSigns(SignLine[] signLines) {
         StringBuilder builder = new StringBuilder("Drawing signs with lines:");
-        for(String line : signLines){
+        for(SignLine line : signLines){
             builder.append("\n");
-            builder.append(line);
+            builder.append(StargateComponentDeserialiser.getLegacyText(line));
         }
         Stargate.log(Level.FINEST, builder.toString());
         for (PortalPosition portalPosition : getActivePortalPositions(PositionType.SIGN)) {
@@ -148,7 +148,13 @@ public class Gate implements GateAPI {
             }
 
             for (int i = 0; i < 4; i++) {
-                sign.setLine(i, signLines[i]);
+                if(NonLegacyMethod.COMPONENT.isImplemented()){
+                    Component line = StargateComponentDeserialiser.getComponent(signLines[i]);
+                    sign.line(i, line);
+                } else {
+                    String line = StargateComponentDeserialiser.getLegacyText(signLines[i]);
+                    sign.setLine(i,line);
+                }
             }
             Stargate.addSynchronousTickAction(new BlockSetAction(sign, false));
         }
