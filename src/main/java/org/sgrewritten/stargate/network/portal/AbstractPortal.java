@@ -196,7 +196,8 @@ public abstract class AbstractPortal implements RealPortal {
 
         Stargate.log(Level.FINE, "Closing the portal");
         getGate().close();
-        getDrawnControlLines();
+        SignLine[] lines = getDrawnControlLines();
+        gate.drawControlMechanisms(lines,this.hasFlag(PortalFlag.ALWAYS_ON));
         openFor = null;
     }
 

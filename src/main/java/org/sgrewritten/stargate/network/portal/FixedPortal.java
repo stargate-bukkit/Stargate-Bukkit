@@ -46,6 +46,7 @@ public class FixedPortal extends AbstractPortal {
         Portal destination = getDestination();
         if (destination != null) {
             lines[1] = new PortalLine(super.colorDrawer.formatPortalName(destination, HighlightingStyle.LESSER_GREATER_THAN),getDestination(),SignLineType.DESTINATION_PORTAL);
+            lines[3] = new TextLine();
         } else {
             lines[1] = new TextLine(super.colorDrawer.formatLine(destinationName),SignLineType.DESTINATION_PORTAL);
             lines[3] = new TextLine(super.colorDrawer.formatErrorLine(super.languageManager.getString(
