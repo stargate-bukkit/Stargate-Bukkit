@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.ConditionalDelayedAction;
 import org.sgrewritten.stargate.action.ConditionalRepeatedTask;
+import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -30,6 +31,7 @@ import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.util.ButtonHelper;
+import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.colors.ColorConverter;
 
 import java.io.ByteArrayOutputStream;
@@ -136,7 +138,8 @@ public class PlayerEventListener implements Listener {
         StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(), languageManager);
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         if (!hasPermission) {
-            event.getPlayer().sendMessage(permissionManager.getDenyMessage());
+            String message = permissionManager.getDenyMessage();
+            MessageUtils.sendMessageFromPortal(portal,event.getPlayer(),message,StargateSendMessagePortalEvent.MessageType.DENY);
         }
         return hasPermission;
     }

@@ -10,6 +10,7 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
@@ -35,11 +36,7 @@ import org.sgrewritten.stargate.network.portal.*;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
-import org.sgrewritten.stargate.util.EconomyHelper;
-import org.sgrewritten.stargate.util.NameHelper;
-import org.sgrewritten.stargate.util.NetworkCreationHelper;
-import org.sgrewritten.stargate.util.SpawnDetectionHelper;
-import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
+import org.sgrewritten.stargate.util.*;
 import org.sgrewritten.stargate.vectorlogic.VectorUtils;
 
 import java.util.*;
@@ -141,11 +138,13 @@ public final class PortalCreationHelper {
         //If the create event has been denied, tell the user and abort
         if (portalCreateEvent.getDeny()) {
             Stargate.log(Level.CONFIG, " Event was denied due to lack of permission or an add-on");
+            String message = null;
             if (portalCreateEvent.getDenyReason() == null) {
-                player.sendMessage(stargateAPI.getLanguageManager().getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
+                message = stargateAPI.getLanguageManager().getErrorMessage(TranslatableMessage.ADDON_INTERFERE);
             } else if (!portalCreateEvent.getDenyReason().isEmpty()) {
-                player.sendMessage(portalCreateEvent.getDenyReason());
+                message = portalCreateEvent.getDenyReason();
             }
+            MessageUtils.sendMessageFromPortal(portal,player,message, StargateSendMessagePortalEvent.MessageType.DENY);
             return;
         }
 

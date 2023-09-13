@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.listener;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Directional;
@@ -36,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
@@ -54,6 +56,7 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.BlockEventType;
 import org.sgrewritten.stargate.util.BlockEventHelper;
+import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
@@ -103,7 +106,7 @@ public class BlockEventListener implements Listener {
         if (portal != null) {
             Runnable destroyAction = () -> {
                 String msg = languageManager.getErrorMessage(TranslatableMessage.DESTROY);
-                event.getPlayer().sendMessage(msg);
+                MessageUtils.sendMessageFromPortal(portal,event.getPlayer(),msg,StargateSendMessagePortalEvent.MessageType.DESTROY);
 
                 portal.destroy();
                 Stargate.log(Level.FINE, "Broke portal " + portal.getName());
@@ -123,6 +126,8 @@ public class BlockEventListener implements Listener {
         if (portalFromIris != null) {
             if (BlockEventType.BLOCK_BREAK.canDestroyPortal()) {
                 String msg = languageManager.getErrorMessage(TranslatableMessage.DESTROY);
+                MessageUtils.sendMessageFromPortal(portalFromIris,event.getPlayer(),msg,StargateSendMessagePortalEvent.MessageType.DESTROY);
+
                 event.getPlayer().sendMessage(msg);
                 portalFromIris.destroy();
                 return;

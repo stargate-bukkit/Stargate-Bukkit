@@ -44,6 +44,7 @@ import org.sgrewritten.stargate.network.portal.formatting.NoLineColorFormatter;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.util.ExceptionHelper;
+import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
@@ -367,14 +368,15 @@ public abstract class AbstractPortal implements RealPortal {
 
         Portal destination = getDestination();
         if (destination == null) {
-            player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.INVALID));
+            String message = languageManager.getErrorMessage(TranslatableMessage.INVALID);
+            MessageUtils.sendMessageFromPortal(this,event.getPlayer(),message,StargateSendMessagePortalEvent.MessageType.DESTINATION_EMPTY);
             return;
         }
         StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
         StargateOpenPortalEvent stargateOpenEvent = new StargateOpenPortalEvent(player, this, false);
         Bukkit.getPluginManager().callEvent(stargateOpenEvent);
         if (!permissionManager.hasOpenPermissions(this, destination)) {
-            event.getPlayer().sendMessage(permissionManager.getDenyMessage());
+            MessageUtils.sendMessageFromPortal(this,player,permissionManager.getDenyMessage(),StargateSendMessagePortalEvent.MessageType.DENY);
             return;
         }
         if (stargateOpenEvent.isCancelled()) {
@@ -512,7 +514,7 @@ public abstract class AbstractPortal implements RealPortal {
                 permissionManager.getDenyMessage());
         Bukkit.getPluginManager().callEvent(accessEvent);
         if (accessEvent.getDeny()) {
-            event.getPlayer().sendMessage(accessEvent.getDenyReason());
+            MessageUtils.sendMessageFromPortal(this,event.getPlayer(),accessEvent.getDenyReason(),StargateSendMessagePortalEvent.MessageType.DENY);
             return;
         }
 

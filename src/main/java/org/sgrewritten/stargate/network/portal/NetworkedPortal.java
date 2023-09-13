@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.format.*;
@@ -20,6 +21,7 @@ import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.util.MessageUtils;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -75,7 +77,8 @@ public class NetworkedPortal extends AbstractPortal {
         activate(actor);
         if (destinations.size() < 1) {
             String message = super.languageManager.getErrorMessage(TranslatableMessage.DESTINATION_EMPTY);
-            event.getPlayer().sendMessage(message);
+            MessageUtils.sendMessageFromPortal(this,event.getPlayer(),message,StargateSendMessagePortalEvent.MessageType.DESTINATION_EMPTY);
+
             this.isActive = false;
             return;
         }
@@ -275,11 +278,13 @@ public class NetworkedPortal extends AbstractPortal {
                 permissionManager.getDenyMessage());
         Bukkit.getPluginManager().callEvent(accessEvent);
         if (accessEvent.getDeny()) {
+            String message = null;
             if (accessEvent.getDenyReason() == null) {
-                player.sendMessage(super.languageManager.getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
+                message = super.languageManager.getErrorMessage(TranslatableMessage.ADDON_INTERFERE);
             } else if (!accessEvent.getDenyReason().isEmpty()) {
-                player.sendMessage(accessEvent.getDenyReason());
+                message = accessEvent.getDenyReason();
             }
+            MessageUtils.sendMessageFromPortal(this,player,message,StargateSendMessagePortalEvent.MessageType.DENY);
             if (hasPermission) {
                 Stargate.log(Level.CONFIG, " Access event was denied externally");
             }

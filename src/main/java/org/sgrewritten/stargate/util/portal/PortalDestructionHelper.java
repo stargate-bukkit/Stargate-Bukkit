@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.util.portal;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -13,6 +14,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.util.EconomyHelper;
+import org.sgrewritten.stargate.util.MessageUtils;
 
 /**
  * A helper class for removing an existing portal
@@ -42,12 +44,13 @@ public final class PortalDestructionHelper {
 
         // Inform the player why the destruction was denied
         if (portalDestroyEvent.getDeny()) {
+            String message = null;
             if (portalDestroyEvent.getDenyReason() == null) {
-                player.sendMessage(
-                        languageManager.getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
+                message = languageManager.getErrorMessage(TranslatableMessage.ADDON_INTERFERE);
             } else if (!portalDestroyEvent.getDenyReason().isEmpty()) {
-                player.sendMessage(portalDestroyEvent.getDenyReason());
+                message = portalDestroyEvent.getDenyReason();
             }
+            MessageUtils.sendMessageFromPortal(portal,player,message, StargateSendMessagePortalEvent.MessageType.DENY);
             return true;
         }
 

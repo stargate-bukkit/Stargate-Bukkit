@@ -15,6 +15,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.DelayedAction;
 import org.sgrewritten.stargate.action.SimpleAction;
 import org.sgrewritten.stargate.action.SupplierAction;
+import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
@@ -25,6 +26,7 @@ import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
+import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.portal.TeleportationHelper;
 import org.sgrewritten.stargate.vectorlogic.VectorUtils;
 
@@ -389,8 +391,7 @@ public class Teleporter {
         target.teleport(exitPoint);
         boatsTeleporting.remove(target);
         if (origin != null && !origin.hasFlag(PortalFlag.SILENT)) {
-            Stargate.log(Level.FINE, "Sending player teleport message" + teleportMessage);
-            target.sendMessage(teleportMessage);
+            MessageUtils.sendMessageFromPortal(origin,target,teleportMessage,StargateSendMessagePortalEvent.MessageType.DENY);
         }
     }
 
