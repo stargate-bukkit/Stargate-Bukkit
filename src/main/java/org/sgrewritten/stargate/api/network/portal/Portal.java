@@ -123,13 +123,13 @@ public interface Portal {
      * Temporary add a flag, does not save to storage
      * @param flag
      */
-    void addFlag(Character flag);
+    void addFlag(Character flag) throws UnsupportedOperationException;
 
     /**
      * Temporary remove a flag, does not save to storage
      * @param flag
      */
-    void removeFlag(Character flag);
+    void removeFlag(Character flag) throws UnsupportedOperationException;
 
     /**
      * Gets all of this portal's portal flags in the form of a string

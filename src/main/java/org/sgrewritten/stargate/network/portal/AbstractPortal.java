@@ -308,7 +308,7 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public void addFlag(Character flag){
+    public void addFlag(Character flag) throws UnsupportedOperationException{
         try {
             PortalFlag portalFlag = PortalFlag.valueOf(flag);
             if(portalFlag.isSelectorTypeFlag()){
@@ -324,7 +324,7 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public void removeFlag(Character flag){
+    public void removeFlag(Character flag) throws UnsupportedOperationException{
         try {
             PortalFlag portalFlag = PortalFlag.valueOf(flag);
             if(portalFlag.isSelectorTypeFlag()){
