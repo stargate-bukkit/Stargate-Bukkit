@@ -11,7 +11,7 @@ import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.property.BypassPermission;
+import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.util.EconomyHelper;
 
 /**

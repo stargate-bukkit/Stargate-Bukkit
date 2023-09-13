@@ -10,7 +10,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
-import org.sgrewritten.stargate.property.BypassPermission;
+import org.sgrewritten.stargate.api.permission.BypassPermission;
 
 import java.util.ArrayList;
 import java.util.List;

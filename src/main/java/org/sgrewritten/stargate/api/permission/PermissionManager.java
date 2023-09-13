@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.manager;
+package org.sgrewritten.stargate.api.permission;
 
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.portal.Portal;

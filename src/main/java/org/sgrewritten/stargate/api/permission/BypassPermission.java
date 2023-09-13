@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.property;
+package org.sgrewritten.stargate.api.permission;
 
 /**
  * This enum represents the different permissions used to bypass various protections

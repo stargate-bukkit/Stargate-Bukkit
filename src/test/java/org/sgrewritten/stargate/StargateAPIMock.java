@@ -7,7 +7,7 @@ import org.sgrewritten.stargate.api.config.ConfigurationAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.manager.BungeeManager;
-import org.sgrewritten.stargate.api.manager.PermissionManager;
+import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.config.ConfigurationAPIMock;
 import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;

@@ -65,7 +65,7 @@ import org.sgrewritten.stargate.listener.StargateBungeePluginMessageListener;
 import org.sgrewritten.stargate.manager.BlockLoggingManager;
 import org.sgrewritten.stargate.api.manager.BungeeManager;
 import org.sgrewritten.stargate.manager.CoreProtectManager;
-import org.sgrewritten.stargate.api.manager.PermissionManager;
+import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.migration.DataMigrator;

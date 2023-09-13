@@ -18,7 +18,7 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.property.BypassPermission;
+import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 
@@ -180,11 +180,6 @@ public class LocalNetwork implements Network {
         }
         output.removeAll(removeList);
         return output;
-    }
-
-    private boolean playerCanSeeHiddenPortal(Portal portalToSee, Player player) {
-        return player != null && (player.hasPermission(BypassPermission.HIDDEN.getPermissionString())
-                || portalToSee.getOwnerUUID().equals(player.getUniqueId()));
     }
 
     private boolean playerCanSeePrivatePortal(Portal portalToSee, Player player) {
