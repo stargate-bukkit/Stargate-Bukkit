@@ -40,6 +40,6 @@ public class StargateSendMessagePortalEvent extends CancellableStargatePortalEve
     }
 
     public enum MessageType {
-        DESTROY, DESTINATION_EMPTY, DENY, TELEPORT
+        DESTROY, DESTINATION_EMPTY, DENY, CREATE, TELEPORT
     }
 }

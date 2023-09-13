@@ -61,7 +61,8 @@ public final class PortalDestructionHelper {
          */
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_DESTROY)
                 && !economyManager.chargePlayer(player, null, portalDestroyEvent.getCost())) {
-            player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
+            String message = languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
+            MessageUtils.sendMessageFromPortal(portal,player,message, StargateSendMessagePortalEvent.MessageType.DENY);
             return true;
         }
         destroyAction.run();

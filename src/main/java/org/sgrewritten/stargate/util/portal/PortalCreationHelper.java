@@ -168,7 +168,8 @@ public final class PortalCreationHelper {
         //Charge the player as necessary for the portal creation
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_CREATE) &&
                 !stargateAPI.getEconomyManager().chargePlayer(player, null, portalCreateEvent.getCost())) {
-            player.sendMessage(stargateAPI.getLanguageManager().getErrorMessage(TranslatableMessage.LACKING_FUNDS));
+            String message = stargateAPI.getLanguageManager().getErrorMessage(TranslatableMessage.LACKING_FUNDS);
+            MessageUtils.sendMessageFromPortal(portal,player,message, StargateSendMessagePortalEvent.MessageType.DENY);
             return;
         }
 
@@ -203,7 +204,7 @@ public final class PortalCreationHelper {
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             msg = msg + " " + stargateAPI.getLanguageManager().getString(TranslatableMessage.UNIMPLEMENTED_INTER_SERVER);
         }
-        player.sendMessage(msg);
+        MessageUtils.sendMessageFromPortal(portal,player,msg, StargateSendMessagePortalEvent.MessageType.CREATE);
     }
 
     /**
