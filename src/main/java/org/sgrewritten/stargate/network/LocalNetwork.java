@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.event.portal.StargateListPortalEvent;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
@@ -165,22 +166,20 @@ public class LocalNetwork implements Network {
 
     @Override
     public Set<String> getAvailablePortals(Player player, Portal requester) {
-        Set<String> tempPortalList = new HashSet<>(nameToPortalMap.keySet());
-        tempPortalList.remove(requester.getId());
-        if (!requester.hasFlag(PortalFlag.FORCE_SHOW)) {
-            Set<String> removeList = new HashSet<>();
-            for (String portalName : tempPortalList) {
-                Portal target = getPortal(portalName);
-                if (target.hasFlag(PortalFlag.HIDDEN) && !playerCanSeeHiddenPortal(target, player)) {
-                    removeList.add(portalName);
-                }
-                if (target.hasFlag(PortalFlag.PRIVATE) && !playerCanSeePrivatePortal(target, player)) {
-                    removeList.add(portalName);
-                }
+        Set<String> output = new HashSet<>(nameToPortalMap.keySet());
+        output.remove(requester.getId());
+        Set<String> removeList = new HashSet<>();
+        for (String portalName : output) {
+            Portal target = getPortal(portalName);
+            boolean deny = (target.hasFlag(PortalFlag.PRIVATE) && !playerCanSeePrivatePortal(target, player));
+            StargateListPortalEvent event = new StargateListPortalEvent(requester,player,target,deny);
+            Bukkit.getPluginManager().callEvent(event);
+            if(event.getDeny()) {
+                removeList.add(portalName);
             }
-            tempPortalList.removeAll(removeList);
         }
-        return tempPortalList;
+        output.removeAll(removeList);
+        return output;
     }
 
     private boolean playerCanSeeHiddenPortal(Portal portalToSee, Player player) {
