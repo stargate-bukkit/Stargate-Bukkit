@@ -71,4 +71,5 @@ public abstract class GateStructure {
      */
     protected abstract boolean isValidBlock(BlockVector blockVector, Material material);
 
+    public abstract void generateStructure(VectorOperation converter, Location topLeft);
 }

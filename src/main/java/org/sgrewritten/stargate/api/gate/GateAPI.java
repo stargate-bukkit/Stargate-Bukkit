@@ -134,4 +134,6 @@ public interface GateAPI {
     @Nullable PortalPosition removePortalPosition(Location location);
 
     void removePortalPosition(PortalPosition portalPosition);
+
+    void forceGenerateStructure();
 }

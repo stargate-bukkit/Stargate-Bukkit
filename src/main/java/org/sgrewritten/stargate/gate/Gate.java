@@ -26,6 +26,7 @@ import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.event.gate.StargateSignFormatGateEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
 import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
 import org.sgrewritten.stargate.api.network.portal.format.StargateComponentDeserialiser;
@@ -33,6 +34,7 @@ import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
+import org.sgrewritten.stargate.gate.structure.GateStructure;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
@@ -499,6 +501,14 @@ public class Gate implements GateAPI {
     @Override
     public void removePortalPosition(PortalPosition portalPosition) {
         this.portalPositions.remove(portalPosition);
+    }
+
+    @Override
+    public void forceGenerateStructure() {
+        for(GateFormatStructureType type : GateFormatStructureType.values()){
+            GateStructure structure = getFormat().getStructure(type);
+            structure.generateStructure(converter, topLeft);
+        }
     }
 
     /**

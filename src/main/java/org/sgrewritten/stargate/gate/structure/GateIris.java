@@ -1,7 +1,9 @@
 package org.sgrewritten.stargate.gate.structure;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
+import org.sgrewritten.stargate.vectorlogic.VectorOperation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +58,11 @@ public class GateIris extends GateStructure {
     @Override
     protected boolean isValidBlock(BlockVector blockVector, Material material) {
         return irisClosed.contains(material) || irisOpen.contains(material);
+    }
+
+    @Override
+    public void generateStructure(VectorOperation converter, Location topLeft) {
+
     }
 
     /**
