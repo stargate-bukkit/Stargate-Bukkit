@@ -6,6 +6,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.Network;
@@ -91,6 +92,16 @@ public class PortalMock implements RealPortal {
     @Override
     public boolean hasFlag(Character flag) {
         return false;
+    }
+
+    @Override
+    public void addFlag(Character flag) {
+
+    }
+
+    @Override
+    public void removeFlag(Character flag) {
+
     }
 
     @Override

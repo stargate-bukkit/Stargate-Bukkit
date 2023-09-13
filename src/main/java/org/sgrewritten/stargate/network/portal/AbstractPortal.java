@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.DelayedAction;
 import org.sgrewritten.stargate.action.SupplierAction;
+import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.event.portal.*;
 import org.sgrewritten.stargate.api.network.portal.*;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
@@ -33,6 +34,7 @@ import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.api.manager.PermissionManager;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.api.network.Network;
@@ -46,6 +48,7 @@ import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
+import java.text.ParseException;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -302,6 +305,38 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public boolean hasFlag(Character flag) {
         return unrecognisedFlags.contains(flag) || ( ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)) && flags.contains(PortalFlag.valueOf(flag)) );
+    }
+
+    @Override
+    public void addFlag(Character flag){
+        try {
+            PortalFlag portalFlag = PortalFlag.valueOf(flag);
+            if(portalFlag.isSelectorTypeFlag()){
+                throw new UnsupportedOperationException("Adding selector type flags is not currently implemented");
+            }
+            if(NetworkType.isNetworkTypeFlag(portalFlag)){
+                throw new UnsupportedOperationException("Network deciding flags change is not currently implemented");
+            }
+            this.flags.add(portalFlag);
+        } catch (IllegalArgumentException e){
+            unrecognisedFlags.add(flag);
+        }
+    }
+
+    @Override
+    public void removeFlag(Character flag){
+        try {
+            PortalFlag portalFlag = PortalFlag.valueOf(flag);
+            if(portalFlag.isSelectorTypeFlag()){
+                throw new UnsupportedOperationException("Removing selector type flags is not currently implemented");
+            }
+            if(NetworkType.isNetworkTypeFlag(portalFlag)){
+                throw new UnsupportedOperationException("Network deciding flags change is not currently implemented");
+            }
+            flags.remove(portalFlag);
+        } catch (IllegalArgumentException e){
+            unrecognisedFlags.remove(flag);
+        }
     }
 
     @Override

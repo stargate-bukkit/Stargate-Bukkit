@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.api.network.portal;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.StorageType;
@@ -117,6 +118,19 @@ public interface Portal {
      * @return <p>True if this portal has the given portal flag enabled</p>
      */
     boolean hasFlag(Character flag);
+
+    /**
+     * Temporary add a flag, does not save to storage
+     * @param flag
+     */
+    void addFlag(Character flag);
+
+    /**
+     * Temporary remove a flag, does not save to storage
+     * @param flag
+     */
+    void removeFlag(Character flag);
+
     /**
      * Gets all of this portal's portal flags in the form of a string
      *

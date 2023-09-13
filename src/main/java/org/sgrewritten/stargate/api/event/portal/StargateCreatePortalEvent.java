@@ -46,6 +46,14 @@ public class StargateCreatePortalEvent extends DeniableStargatePortalEvent {
         return lines[index];
     }
 
+    public void addFlag(Character flag){
+        this.getPortal().addFlag(flag);
+    }
+
+    public void removeFlag(Character flag){
+        this.getPortal().removeFlag(flag);
+    }
+
     /**
      * Gets the cost of creating the stargate
      *

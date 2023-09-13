@@ -4,10 +4,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.util.BungeeHelper;
@@ -113,6 +115,16 @@ public class VirtualPortal implements Portal {
     @Override
     public boolean hasFlag(Character flag) {
         return unrecognisedFlags.contains(flag) || ( ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)) && flags.contains(PortalFlag.valueOf(flag)) );
+    }
+
+    @Override
+    public void addFlag(Character flag) {
+
+    }
+
+    @Override
+    public void removeFlag(Character flag) {
+
     }
 
     @Override

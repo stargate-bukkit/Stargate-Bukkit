@@ -124,4 +124,12 @@ public enum NetworkType {
         return null;
     }
 
+    public static boolean isNetworkTypeFlag(PortalFlag flag){
+        for (NetworkType type : NetworkType.values()) {
+            if (flag == type.getRelatedFlag()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
