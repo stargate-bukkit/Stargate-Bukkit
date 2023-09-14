@@ -327,7 +327,7 @@ public class Gate implements GateAPI {
             portalPositions.clear();
             //Calculate all relevant portal positions
             calculatePortalPositions(alwaysOn);
-            if (isValid(alwaysOn)) {
+            if (isValid()) {
                 return true;
             }
         }
@@ -337,11 +337,10 @@ public class Gate implements GateAPI {
     /**
      * Check if this gate with the current settings is valid
      *
-     * @param alwaysOn <p>Whether this gate is always on</p>
      * @return <p>True if this gate is valid</p>
      * @throws GateConflictException <p>If this gate conflicts with another gate</p>
      */
-    public boolean isValid(boolean alwaysOn) throws GateConflictException {
+    public boolean isValid() throws GateConflictException {
         if (getFormat().matches(converter, topLeft)) {
             if (hasGateFrameConflict(registry)) {
                 throw new GateConflictException();

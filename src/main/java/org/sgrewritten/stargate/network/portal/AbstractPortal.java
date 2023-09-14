@@ -367,25 +367,36 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         Portal destination = getDestination();
+        String message = null;
+        StargateSendMessagePortalEvent.MessageType messageType = null;
+        boolean cancelled = false;
+
         if (destination == null) {
-            String message = languageManager.getErrorMessage(TranslatableMessage.INVALID);
-            MessageUtils.sendMessageFromPortal(this,event.getPlayer(),message,StargateSendMessagePortalEvent.MessageType.DESTINATION_EMPTY);
-            return;
+            message = languageManager.getErrorMessage(TranslatableMessage.INVALID);
+            messageType = StargateSendMessagePortalEvent.MessageType.DESTINATION_EMPTY;
+            cancelled = true;
         }
         StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
-        StargateOpenPortalEvent stargateOpenEvent = new StargateOpenPortalEvent(player, this, false);
-        Bukkit.getPluginManager().callEvent(stargateOpenEvent);
         if (!permissionManager.hasOpenPermissions(this, destination)) {
-            MessageUtils.sendMessageFromPortal(this,player,permissionManager.getDenyMessage(),StargateSendMessagePortalEvent.MessageType.DENY);
-            return;
+            message = permissionManager.getDenyMessage();
+            messageType = StargateSendMessagePortalEvent.MessageType.DENY;
+            cancelled = true;
         }
+        StargateOpenPortalEvent stargateOpenEvent = new StargateOpenPortalEvent(player, this, destination,cancelled,false);
+        Bukkit.getPluginManager().callEvent(stargateOpenEvent);
+
         if (stargateOpenEvent.isCancelled()) {
+            if(message != null){
+                MessageUtils.sendMessageFromPortal(this,player,message,messageType);
+            }
             return;
         }
 
-        this.destination = destination;
+        this.destination = stargateOpenEvent.getDestination();
         open(player);
-        destination.open(player);
+        if(this.destination != null) {
+            this.destination.open(player);
+        }
     }
 
     @Override

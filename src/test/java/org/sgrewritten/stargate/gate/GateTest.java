@@ -57,12 +57,12 @@ class GateTest {
 
     @Test
     void isValid_LoadedGate() throws GateConflictException, InvalidStructureException {
-        Assertions.assertTrue(createLoadedGate(gateData).isValid(false));
+        Assertions.assertTrue(createLoadedGate(gateData).isValid());
     }
 
     @Test
     void isValid_CreatedGate() throws GateConflictException, InvalidStructureException {
-        Assertions.assertTrue(createCreatedGate(gateData).isValid(false));
+        Assertions.assertTrue(createCreatedGate(gateData).isValid());
     }
     
     @Test
@@ -92,7 +92,7 @@ class GateTest {
         new GateData(gateFileName, topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ(), topLeft.getWorld().getName(),false,topLeft,facing);
         Gate gate = createLoadedGate(gateData);
         gate.forceGenerateStructure();
-        Assertions.assertTrue(gate.isValid(true), "Gate was not created on a valid structure");
+        Assertions.assertTrue(gate.isValid(), "Gate was not created on a valid structure");
     }
     
     Gate createLoadedGate(GateData gateData) throws InvalidStructureException {

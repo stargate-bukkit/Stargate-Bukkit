@@ -250,7 +250,7 @@ public class SQLDatabase implements StorageAPI {
         List<PortalPosition> portalPositions = getPortalPositions(portalData);
         Gate gate = new Gate(portalData.gateData(), stargateAPI.getRegistry());
         if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
-                && !gate.isValid(portalData.flags().contains(PortalFlag.ALWAYS_ON))) {
+                && !gate.isValid()) {
             throw new InvalidStructureException();
         }
         gate.addPortalPositions(portalPositions);

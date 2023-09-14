@@ -4,7 +4,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+
+import java.util.Objects;
 
 /**
  * This event should be called whenever a player opens a stargate
@@ -15,6 +18,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 public class StargateOpenPortalEvent extends StargateEntityPortalEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
+    private Portal destination;
     private boolean force;
     private boolean cancelled;
 
@@ -25,11 +29,12 @@ public class StargateOpenPortalEvent extends StargateEntityPortalEvent implement
      * @param portal <p>The opened portal</p>
      * @param force  <p>Whether to force the portal open</p>
      */
-    public StargateOpenPortalEvent(Player player, @NotNull Portal portal, boolean force) {
+    public StargateOpenPortalEvent(Player player, @NotNull Portal portal, @Nullable Portal destination, boolean cancelled, boolean force) {
         super(portal, player);
 
         this.force = force;
-        this.cancelled = false;
+        this.cancelled = cancelled;
+        this.destination = destination;
     }
 
     /**
@@ -73,6 +78,14 @@ public class StargateOpenPortalEvent extends StargateEntityPortalEvent implement
     @Override
     public void setCancelled(boolean cancelled) {
         this.cancelled = cancelled;
+    }
+
+    public @Nullable Portal getDestination(){
+        return this.destination;
+    }
+
+    public void setDestination(Portal destination){
+        this.destination = destination;
     }
 
 }
