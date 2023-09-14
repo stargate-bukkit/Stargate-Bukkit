@@ -101,4 +101,9 @@ public class GateMock implements GateAPI {
     public void removePortalPosition(PortalPosition portalPosition) {
 
     }
+
+    @Override
+    public void forceGenerateStructure() {
+
+    }
 }

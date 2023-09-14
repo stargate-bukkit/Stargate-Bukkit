@@ -13,6 +13,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
@@ -30,6 +32,7 @@ class GateTest {
     private @NotNull WorldMock world;
     private GateData gateData;
     private Block signBlock;
+    private String gateFileName;
 
     @BeforeEach
     void setUp() throws InvalidStructureException, GateConflictException {
@@ -37,7 +40,7 @@ class GateTest {
         this.world = server.addSimpleWorld("world");
         Location topLeft = new Location(world, 0, 6, 0);
         BlockFace facing = BlockFace.SOUTH;
-        String gateFileName = "nether.gate";
+        this.gateFileName = "nether.gate";
         this.gateData = new GateData(gateFileName, topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ(), topLeft.getWorld().getName(),false,topLeft,facing);
         this.signBlock = PortalBlockGenerator.generatePortal(gateData.topLeft().clone().subtract(new Vector(0, 4, 0)));
         List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(testGatesDir);
@@ -80,6 +83,16 @@ class GateTest {
         Assertions.assertTrue(gatePositionIsAdded(location, createdGate),"A gate position was not added");
         createdGate.removePortalPosition(location);
         Assertions.assertFalse(gatePositionIsAdded(location, createdGate),"A gate position was not added");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = BlockFace.class, names = {"EAST", "WEST", "SOUTH", "NORTH"})
+    void createGateStructure(BlockFace facing) throws InvalidStructureException, GateConflictException {
+        Location topLeft = new Location(world, 100,10,100);
+        new GateData(gateFileName, topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ(), topLeft.getWorld().getName(),false,topLeft,facing);
+        Gate gate = createLoadedGate(gateData);
+        gate.forceGenerateStructure();
+        Assertions.assertTrue(gate.isValid(true), "Gate was not created on a valid structure");
     }
     
     Gate createLoadedGate(GateData gateData) throws InvalidStructureException {
