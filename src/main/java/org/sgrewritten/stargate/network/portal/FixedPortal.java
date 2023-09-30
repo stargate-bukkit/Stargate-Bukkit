@@ -42,7 +42,7 @@ public class FixedPortal extends AbstractPortal {
     public SignLine[] getDrawnControlLines() {
         SignLine[] lines = new SignLine[4];
         lines[0] =  new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN),this, SignLineType.THIS_PORTAL);
-        lines[2] = new NetworkLine(super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()),getNetwork());
+        lines[2] = new NetworkLine(super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()),network);
         Portal destination = getDestination();
         if (destination != null) {
             lines[1] = new PortalLine(super.colorDrawer.formatPortalName(destination, HighlightingStyle.LESSER_GREATER_THAN),getDestination(),SignLineType.DESTINATION_PORTAL);

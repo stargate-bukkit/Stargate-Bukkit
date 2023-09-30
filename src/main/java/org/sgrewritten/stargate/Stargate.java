@@ -160,7 +160,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             if (!new File(this.getDataFolder(), CONFIG_FILE).exists()) {
                 super.saveDefaultConfig();
             }
-
             fetchServerId();
             String LANGUAGE_FOLDER = "lang";
             languageManager = new StargateLanguageManager(new File(DATA_FOLDER, LANGUAGE_FOLDER));

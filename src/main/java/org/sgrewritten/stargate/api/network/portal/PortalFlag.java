@@ -3,6 +3,8 @@ package org.sgrewritten.stargate.api.network.portal;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Represents a portal flag which defines an enabled behavior for a stargate
@@ -115,6 +117,8 @@ public enum PortalFlag {
     private final static Map<Character, PortalFlag> map = new HashMap<>();
     private final boolean isSelector;
 
+    private static Pattern NON_FLAG_STRING = Pattern.compile("(\\{.*?\\})");
+
     /**
      * Instantiates a new portal flag
      *
@@ -154,9 +158,10 @@ public enum PortalFlag {
      * @param line <p>The string to search for portal flags</p>
      * @return <p>A set of all found portal flags</p>
      */
-    public static Set<PortalFlag> parseFlags(String line) {
+    public static Set<PortalFlag> parseFlags(String flagString) {
         Set<PortalFlag> foundFlags = EnumSet.noneOf(PortalFlag.class);
-        char[] charArray = line.toUpperCase().toCharArray();
+        Matcher matcher = NON_FLAG_STRING.matcher(flagString.toUpperCase());
+        char[] charArray = matcher.replaceAll("").toCharArray();
         for (char character : charArray) {
             try {
                 foundFlags.add(PortalFlag.valueOf(character));
@@ -190,7 +195,8 @@ public enum PortalFlag {
 
     public static Set<Character> getUnrecognisedFlags(String flagString){
         Set<Character> unrecognisedFlags = new HashSet<>();
-        for(char flag : flagString.toCharArray()){
+        Matcher matcher = NON_FLAG_STRING.matcher(flagString.toUpperCase());
+        for(char flag : matcher.replaceAll("").toCharArray()){
             if(!ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)) ) {
                 unrecognisedFlags.add(flag);
             }
