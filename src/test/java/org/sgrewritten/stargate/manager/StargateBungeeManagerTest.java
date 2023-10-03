@@ -13,6 +13,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
@@ -57,7 +58,7 @@ class StargateBungeeManagerTest {
     @BeforeEach
     void setUp() throws TranslatableException, InvalidStructureException {
         server = MockBukkit.mock();
-        GateFormatHandler.setFormats(
+        GateFormatRegistry.setFormats(
                 Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
         Stargate.setServerName(SERVER);
         registry = new RegistryMock();

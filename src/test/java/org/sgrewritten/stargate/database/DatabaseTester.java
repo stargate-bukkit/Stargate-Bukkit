@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
@@ -108,7 +109,7 @@ public class DatabaseTester {
             Stargate.log(e);
             fail();
         }
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
+        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
         portalGenerator = new PortalFactory(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
 
         this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength);

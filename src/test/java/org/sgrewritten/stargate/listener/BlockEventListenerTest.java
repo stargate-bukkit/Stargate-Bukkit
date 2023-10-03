@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
@@ -67,7 +68,7 @@ class BlockEventListenerTest {
 
         world = new WorldMock(Material.GRASS, 0);
         server.addWorld(world);
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
+        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         this.stargateAPI = new StargateAPIMock();
         registry = stargateAPI.getRegistry();
         Stargate.setServerUUID(UUID.randomUUID());

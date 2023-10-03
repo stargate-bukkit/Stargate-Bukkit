@@ -13,6 +13,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
@@ -38,7 +39,7 @@ class TeleporterTest {
     @BeforeAll
     public static void setup() throws TranslatableException, InvalidStructureException {
         @NotNull ServerMock server = MockBukkit.mock();
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
+        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
         @NotNull WorldMock world = server.addSimpleWorld("world");
         @NotNull PlayerMock player = server.addPlayer();
         PortalFactory fakePortalGenerator = new PortalFactory("Portal", "iPortal");

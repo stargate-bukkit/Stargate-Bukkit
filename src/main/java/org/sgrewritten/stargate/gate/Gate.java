@@ -25,6 +25,7 @@ import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.event.gate.StargateSignFormatGateEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
@@ -101,7 +102,7 @@ public class Gate implements GateAPI {
      * @throws InvalidStructureException <p>If the facing is invalid or if no format could be found</p>
      */
     public Gate(GateData gateData, @NotNull RegistryAPI registry) throws InvalidStructureException {
-        GateFormat format = GateFormatHandler.getFormat(gateData.gateFileName());
+        GateFormat format = GateFormatRegistry.getFormat(gateData.gateFileName());
         if (format == null) {
             Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
                     "log for more information", gateData.gateFileName()));

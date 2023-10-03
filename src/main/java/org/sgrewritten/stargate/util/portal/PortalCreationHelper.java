@@ -13,6 +13,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
@@ -239,7 +240,7 @@ public final class PortalCreationHelper {
         //Get the block behind the sign; the material of that block is stored in a register with available gateFormats
         Directional signDirection = (Directional) sign.getBlockData();
         Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
-        List<GateFormat> gateFormats = GateFormatHandler.getPossibleGateFormatsFromControlBlockMaterial(behind.getType());
+        List<GateFormat> gateFormats = GateFormatRegistry.getPossibleGateFormatsFromControlBlockMaterial(behind.getType());
         return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), alwaysOn, registry);
     }
 

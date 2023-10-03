@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
@@ -47,7 +48,7 @@ class GateTest {
         if (gateFormats == null) {
             throw new IllegalStateException("Cannot get gate formats required for testing");
         }
-        GateFormatHandler.setFormats(gateFormats);
+        GateFormatRegistry.setFormats(gateFormats);
     }
 
     @AfterEach
@@ -100,7 +101,7 @@ class GateTest {
     }
     
     Gate createCreatedGate(GateData gateData) throws InvalidStructureException, GateConflictException {
-        GateFormat format = GateFormatHandler.getFormat(gateData.gateFileName());
+        GateFormat format = GateFormatRegistry.getFormat(gateData.gateFileName());
         return new Gate(format, signBlock.getLocation(), gateData.facing(), false, new RegistryMock());
     }
     

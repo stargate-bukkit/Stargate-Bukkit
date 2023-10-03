@@ -22,6 +22,7 @@ import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabase;
@@ -95,7 +96,7 @@ public class DataMigratorTest {
         server.addPlayer(new PlayerMock(server, "Thorinwasher", UUID.fromString("d2b440c3-edde-4443-899e-6825c31d0919")));
         Stargate.getFileConfiguration().load(defaultConfigFile);
 
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
+        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
     }
 
     private static Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> getSettingTestMaps() {

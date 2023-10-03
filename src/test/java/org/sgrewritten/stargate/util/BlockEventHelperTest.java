@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
@@ -52,7 +53,7 @@ class BlockEventHelperTest {
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         stargateAPI = new StargateAPIMock();
         registry = new RegistryMock();
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
+        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         Network network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
 
         portal = PortalFactory.generateFakePortal(signBlock, network, new HashSet<>(), "name", stargateAPI);

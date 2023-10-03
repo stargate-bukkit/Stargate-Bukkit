@@ -36,6 +36,7 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.action.SimpleAction;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.command.CommandStargate;
 import org.sgrewritten.stargate.command.StargateTabCompleter;
 import org.sgrewritten.stargate.api.config.ConfigurationAPI;
@@ -510,9 +511,9 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(new File(this.getDataFolder(), this.getGateFolder()));
         if (gateFormats == null) {
             log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
-            GateFormatHandler.setFormats(new ArrayList<>());
+            GateFormatRegistry.setFormats(new ArrayList<>());
         } else {
-            GateFormatHandler.setFormats(gateFormats);
+            GateFormatRegistry.setFormats(gateFormats);
         }
     }
 
