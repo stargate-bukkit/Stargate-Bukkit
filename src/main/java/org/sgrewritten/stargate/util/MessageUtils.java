@@ -17,4 +17,8 @@ public class MessageUtils {
             receiver.sendMessage(message);
         }
     }
+
+    public static void sendMessage(Entity receiver, String message){
+        receiver.sendMessage(message);
+    }
 }

@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.vectorlogic;
+package org.sgrewritten.stargate.api.vectorlogic;
 
 import org.bukkit.Axis;
 import org.bukkit.block.BlockFace;

@@ -28,7 +28,7 @@ import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.portal.TeleportationHelper;
-import org.sgrewritten.stargate.vectorlogic.VectorUtils;
+import org.sgrewritten.stargate.util.VectorUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;

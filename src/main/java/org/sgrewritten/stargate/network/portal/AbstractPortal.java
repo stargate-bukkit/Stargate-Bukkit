@@ -18,6 +18,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.DelayedAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.event.portal.*;
+import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.portal.*;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
 import org.sgrewritten.stargate.api.network.portal.format.SignLineType;
@@ -78,7 +79,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     private long openTime = -1;
     private UUID ownerUUID;
-    private final Gate gate;
+    private final GateAPI gate;
     private final Set<PortalFlag> flags;
     private final Set<Character> unrecognisedFlags;
     protected long activatedTime;
@@ -98,7 +99,7 @@ public abstract class AbstractPortal implements RealPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameLengthException <p>If the portal name is invalid</p>
      */
-    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, Gate gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyManager)
+    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyManager)
             throws NameLengthException {
         this.ownerUUID = Objects.requireNonNull(ownerUUID);
         this.network = Objects.requireNonNull(network);
@@ -448,7 +449,7 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public Gate getGate() {
+    public GateAPI getGate() {
         return gate;
     }
 

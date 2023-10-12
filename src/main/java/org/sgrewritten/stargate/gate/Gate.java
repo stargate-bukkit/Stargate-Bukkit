@@ -15,21 +15,18 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Orientable;
-import org.bukkit.block.sign.Side;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.BlockSetAction;
-import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.event.gate.StargateSignFormatGateEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
-import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
-import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
 import org.sgrewritten.stargate.api.network.portal.format.StargateComponentDeserialiser;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
@@ -41,8 +38,8 @@ import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.util.ButtonHelper;
-import org.sgrewritten.stargate.vectorlogic.MatrixVectorOperation;
-import org.sgrewritten.stargate.vectorlogic.VectorOperation;
+import org.sgrewritten.stargate.api.vectorlogic.MatrixVectorOperation;
+import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -54,7 +51,7 @@ import java.util.logging.Level;
  */
 public class Gate implements GateAPI {
 
-    private final @NotNull GateFormat format;
+    private final @NotNull GateFormatAPI format;
     private final VectorOperation converter;
     private Location topLeft;
     private final Set<PortalPosition> portalPositions = new HashSet<>();
@@ -74,7 +71,7 @@ public class Gate implements GateAPI {
      * @throws InvalidStructureException <p>If the physical stargate at the given location does not match the given format</p>
      * @throws GateConflictException     <p>If this gate is in conflict with an existing one</p>
      */
-    public Gate(@NotNull GateFormat format, @NotNull Location signLocation, BlockFace signFace, boolean alwaysOn, @NotNull RegistryAPI registry)
+    public Gate(@NotNull GateFormatAPI format, @NotNull Location signLocation, BlockFace signFace, boolean alwaysOn, @NotNull RegistryAPI registry)
             throws InvalidStructureException, GateConflictException {
         Objects.requireNonNull(signLocation);
         this.format = Objects.requireNonNull(format);
@@ -102,16 +99,10 @@ public class Gate implements GateAPI {
      * @throws InvalidStructureException <p>If the facing is invalid or if no format could be found</p>
      */
     public Gate(GateData gateData, @NotNull RegistryAPI registry) throws InvalidStructureException {
-        GateFormat format = GateFormatRegistry.getFormat(gateData.gateFileName());
-        if (format == null) {
-            Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
-                    "log for more information", gateData.gateFileName()));
-            throw new InvalidStructureException("Could not find a matching gateformat");
-        }
         this.topLeft = gateData.topLeft();
         this.converter = new MatrixVectorOperation(gateData.facing());
         this.converter.setFlipZAxis(gateData.flipZ());
-        this.format = format;
+        this.format = Objects.requireNonNull(gateData.gateFormat());
         this.facing = gateData.facing();
         this.flipped = gateData.flipZ();
         this.registry = Preconditions.checkNotNull(registry);
@@ -246,7 +237,7 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public @NotNull GateFormat getFormat() {
+    public @NotNull GateFormatAPI getFormat() {
         return format;
     }
 

@@ -37,6 +37,7 @@ import org.sgrewritten.stargate.action.SimpleAction;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.command.CommandStargate;
 import org.sgrewritten.stargate.command.StargateTabCompleter;
 import org.sgrewritten.stargate.api.config.ConfigurationAPI;
@@ -213,6 +214,11 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     @Override
     public BlockHandlerResolver getMaterialHandlerResolver() {
         return this.blockHandlerResolver;
+    }
+
+    @Override
+    public NetworkManager getNetworkManager() {
+        return null;
     }
 
     /**

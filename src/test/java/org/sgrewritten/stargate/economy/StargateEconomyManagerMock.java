@@ -13,12 +13,12 @@ public class StargateEconomyManagerMock implements StargateEconomyAPI {
     }
 
     @Override
-    public boolean chargePlayer(OfflinePlayer player, Portal origin, int amount) {
+    public boolean chargePlayer(OfflinePlayer player, Portal origin, double amount) {
         return true;
     }
 
     @Override
-    public boolean refundPlayer(OfflinePlayer player, Portal origin, int amount) {
+    public boolean refundPlayer(OfflinePlayer player, Portal origin, double amount) {
         return true;
     }
 

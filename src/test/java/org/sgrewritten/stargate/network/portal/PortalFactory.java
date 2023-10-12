@@ -5,6 +5,10 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
+import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.gate.GateBuilder;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
@@ -145,7 +149,7 @@ public class PortalFactory {
         BlockFace facing = BlockFace.EAST;
         String gateFileName = "nether.gate";
         StorageType portalType = createInterServerPortal ? StorageType.INTER_SERVER : StorageType.LOCAL;
-        GateData gateData = new GateData(gateFileName, topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ(), topLeft.getWorld().getName(),false, topLeft, facing);
+        GateData gateData = new GateData(GateFormatRegistry.getFormat(gateFileName),false, topLeft, facing);
 
         Gate gate = new Gate(gateData, registry);
 
@@ -156,7 +160,7 @@ public class PortalFactory {
 
     public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,
                                                 StargateAPI stargateAPI) throws NoFormatFoundException, GateConflictException, TranslatableException {
-        Gate gate = PortalCreationHelper.createGate(signBlock, false, stargateAPI.getRegistry());
+        GateAPI gate = new ImplicitGateBuilder(signBlock.getLocation(),stargateAPI.getRegistry()).build();
         flags.add(network.getType().getRelatedFlag());
 
 

@@ -7,18 +7,21 @@ import org.sgrewritten.stargate.api.config.ConfigurationAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.manager.BungeeManager;
+import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.config.ConfigurationAPIMock;
 import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
+import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
 import org.sgrewritten.stargate.database.StorageMock;
 
 public class StargateAPIMock implements StargateAPI {
 
+    private NetworkManager networkManager;
     private RegistryAPI registry;
     private ConfigurationAPI configurationAPI;
     private LanguageManager languageManager;
@@ -52,6 +55,8 @@ public class StargateAPIMock implements StargateAPI {
             }
             else if(aManager instanceof StargateEconomyAPI economyManager){
                 this.economyManager = economyManager;
+            } else if (aManager instanceof NetworkManager networkManager) {
+                this.networkManager = networkManager;
             }
         }
         if(storageAPI == null){
@@ -74,6 +79,9 @@ public class StargateAPIMock implements StargateAPI {
         }
         if(this.economyManager == null) {
             this.economyManager = new StargateEconomyManagerMock();
+        }
+        if(this.networkManager == null){
+            this.networkManager = new StargateNetworkManager(registry);
         }
     }
     @Override
@@ -114,5 +122,10 @@ public class StargateAPIMock implements StargateAPI {
     @Override
     public BlockHandlerResolver getMaterialHandlerResolver() {
         return blockHandlerResolver;
+    }
+
+    @Override
+    public NetworkManager getNetworkManager() {
+        return this.networkManager;
     }
 }

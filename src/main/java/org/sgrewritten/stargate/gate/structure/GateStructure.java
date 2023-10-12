@@ -7,7 +7,7 @@ import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.vectorlogic.VectorOperation;
+import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 
 import java.util.List;
 import java.util.logging.Level;

@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.vectorlogic;
+package org.sgrewritten.stargate.util;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;

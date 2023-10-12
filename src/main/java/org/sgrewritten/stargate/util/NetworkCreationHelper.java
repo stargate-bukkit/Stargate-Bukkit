@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
@@ -55,7 +56,7 @@ public final class NetworkCreationHelper {
      * @return <p>The network the portal should be connected to</p>
      * @throws TranslatableException <p>If invalid input is given</p>
      */
-    public static Network selectNetwork(String name, PermissionManager permissionManager, Player player, Set<PortalFlag> flags, RegistryAPI registry) throws TranslatableException {
+    public static Network selectNetwork(String name, PermissionManager permissionManager, OfflinePlayer player, Set<PortalFlag> flags, RegistryAPI registry) throws TranslatableException {
 
         Stargate.log(Level.FINER, "....Choosing network name....");
         Stargate.log(Level.FINER, "initial name is '" + name + "'");
@@ -110,7 +111,7 @@ public final class NetworkCreationHelper {
         return network;
     }
 
-    private static TwoTuple<NetworkType, String> getNetworkDataFromImplicitDefinition(String name, Player player,
+    private static TwoTuple<NetworkType, String> getNetworkDataFromImplicitDefinition(String name, OfflinePlayer player,
                                                                                       PermissionManager permissionManager, boolean isInterserver, RegistryAPI registry) {
         if (name.equals(player.getName()) && permissionManager.canCreateInNetwork(name, NetworkType.PERSONAL)) {
             return new TwoTuple<>(NetworkType.PERSONAL, name);
@@ -145,7 +146,7 @@ public final class NetworkCreationHelper {
         return new TwoTuple<>(type, nameToTestFor);
     }
 
-    private static TwoTuple<NetworkType, String> getNetworkDataFromEmptyDefinition(Player player,
+    private static TwoTuple<NetworkType, String> getNetworkDataFromEmptyDefinition(OfflinePlayer player,
                                                                                    PermissionManager permissionManager) {
         if (permissionManager.canCreateInNetwork("", NetworkType.DEFAULT)) {
             return new TwoTuple<>(NetworkType.DEFAULT, LocalNetwork.DEFAULT_NETWORK_ID);
@@ -163,6 +164,12 @@ public final class NetworkCreationHelper {
         return Bukkit.getOfflinePlayer(playerName).getUniqueId();
     }
 
+    /**
+     * Get a network that is conflicting with the
+     * @param network
+     * @param registry
+     * @return
+     */
     public static Network getInterserverLocalConflict(Network network, RegistryAPI registry) {
         String[] idsToCompare = {network.getName(), getPlayerUUID(network.getName()).toString()};
 

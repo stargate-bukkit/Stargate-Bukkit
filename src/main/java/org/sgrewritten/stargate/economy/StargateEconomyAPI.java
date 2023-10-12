@@ -21,7 +21,7 @@ public interface StargateEconomyAPI {
      * @param amount <p>The amount to charge the player</p>
      * @return <p>True if there were no problems in processing the payment</p>
      */
-    boolean chargePlayer(OfflinePlayer player, Portal origin, int amount);
+    boolean chargePlayer(OfflinePlayer player, Portal origin, double amount);
 
     /**
      * Refunds a player's payment for using a portal
@@ -31,6 +31,6 @@ public interface StargateEconomyAPI {
      * @param amount <p>The amount to refund the player</p>
      * @return <p>True if the player was successfully refunded</p>
      */
-    boolean refundPlayer(OfflinePlayer player, Portal origin, int amount);
+    boolean refundPlayer(OfflinePlayer player, Portal origin, double amount);
 
 }

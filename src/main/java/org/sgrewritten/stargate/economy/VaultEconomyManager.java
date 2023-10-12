@@ -31,7 +31,7 @@ public class VaultEconomyManager extends EconomyManager {
     }
 
     @Override
-    public boolean has(OfflinePlayer target, int amount) {
+    public boolean has(OfflinePlayer target, double amount) {
         if (!this.hasVault) {
             return true;
         }
@@ -39,7 +39,7 @@ public class VaultEconomyManager extends EconomyManager {
     }
 
     @Override
-    public boolean chargePlayer(OfflinePlayer offlinePlayer, int amount) {
+    public boolean chargePlayer(OfflinePlayer offlinePlayer, double amount) {
         //Skip if no payment is necessary
         if (amount == 0) {
             return true;
@@ -61,7 +61,7 @@ public class VaultEconomyManager extends EconomyManager {
     }
 
     @Override
-    public boolean depositPlayer(OfflinePlayer player, int amount) {
+    public boolean depositPlayer(OfflinePlayer player, double amount) {
         //Skip if no payment is necessary
         if (amount == 0) {
             return true;

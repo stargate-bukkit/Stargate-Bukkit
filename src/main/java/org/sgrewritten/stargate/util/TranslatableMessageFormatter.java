@@ -36,7 +36,7 @@ public final class TranslatableMessageFormatter {
      * @param cost               <p>The cost to insert</p>
      * @return <p>The message with the cost placeholder replaced with the given cost</p>
      */
-    public static String formatCost(String unformattedMessage, int cost) {
+    public static String formatCost(String unformattedMessage, double cost) {
         return unformattedMessage.replace(COST_INSERTION_IDENTIFIER, String.valueOf(cost));
     }
 

@@ -29,7 +29,7 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
     }
 
     @Override
-    public boolean chargePlayer(OfflinePlayer player, Portal origin, int amount) {
+    public boolean chargePlayer(OfflinePlayer player, Portal origin, double amount) {
         //Skip if no payment is necessary
         if (amount == 0) {
             return true;
@@ -59,7 +59,7 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
     }
 
     @Override
-    public boolean refundPlayer(OfflinePlayer player, Portal origin, int amount) {
+    public boolean refundPlayer(OfflinePlayer player, Portal origin, double amount) {
         //Skip if no payment is necessary
         if (amount == 0) {
             return true;
@@ -87,7 +87,7 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
      * @param amount            <p>The amount the player should be charged</p>
      * @return <p>True if there was no problems with the payment</p>
      */
-    protected boolean chargeAndDepositPlayer(OfflinePlayer player, OfflinePlayer transactionTarget, int amount) {
+    protected boolean chargeAndDepositPlayer(OfflinePlayer player, OfflinePlayer transactionTarget, double amount) {
         //Skip if there is no charge, or if the transaction wouldn't change anything
         if (amount == 0 || player.equals(transactionTarget)) {
             return true;
@@ -105,7 +105,7 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
      * @param offlinePlayer <p>The player to send the message to</p>
      * @param amount        <p>The amount the player was charged</p>
      */
-    protected void sendChargeSuccessMessage(OfflinePlayer offlinePlayer, int amount) {
+    protected void sendChargeSuccessMessage(OfflinePlayer offlinePlayer, double amount) {
         Player player = offlinePlayer.getPlayer();
         if (player == null) {
             return;
@@ -123,7 +123,7 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
      * @param amount        <p>The amount the player received</p>
      * @param portalName    <p>The portal used by another player</p>
      */
-    protected void sendObtainSuccessMessage(OfflinePlayer offlinePlayer, int amount, String portalName) {
+    protected void sendObtainSuccessMessage(OfflinePlayer offlinePlayer, double amount, String portalName) {
         Player player = offlinePlayer.getPlayer();
         if (player == null) {
             return;

@@ -42,7 +42,7 @@ class GateTest {
         Location topLeft = new Location(world, 0, 6, 0);
         BlockFace facing = BlockFace.SOUTH;
         this.gateFileName = "nether.gate";
-        this.gateData = new GateData(gateFileName, topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ(), topLeft.getWorld().getName(),false,topLeft,facing);
+        this.gateData = new GateData(GateFormatRegistry.getFormat(gateFileName),false,topLeft,facing);
         this.signBlock = PortalBlockGenerator.generatePortal(gateData.topLeft().clone().subtract(new Vector(0, 4, 0)));
         List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(testGatesDir);
         if (gateFormats == null) {
@@ -90,7 +90,7 @@ class GateTest {
     @EnumSource(value = BlockFace.class, names = {"EAST", "WEST", "SOUTH", "NORTH"})
     void createGateStructure(BlockFace facing) throws InvalidStructureException, GateConflictException {
         Location topLeft = new Location(world, 100,10,100);
-        new GateData(gateFileName, topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ(), topLeft.getWorld().getName(),false,topLeft,facing);
+        new GateData(GateFormatRegistry.getFormat("nether.gate"),false,topLeft,facing);
         Gate gate = createLoadedGate(gateData);
         gate.forceGenerateStructure();
         Assertions.assertTrue(gate.isValid(), "Gate was not created on a valid structure");
@@ -101,8 +101,7 @@ class GateTest {
     }
     
     Gate createCreatedGate(GateData gateData) throws InvalidStructureException, GateConflictException {
-        GateFormat format = GateFormatRegistry.getFormat(gateData.gateFileName());
-        return new Gate(format, signBlock.getLocation(), gateData.facing(), false, new RegistryMock());
+        return new Gate(gateData.gateFormat(), signBlock.getLocation(), gateData.facing(), false, new RegistryMock());
     }
     
     boolean gatePositionIsAdded(Location location, Gate gate) {

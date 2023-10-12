@@ -4,6 +4,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.sgrewritten.stargate.api.vectorlogic.MatrixVectorOperation;
+import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 
 import java.util.ArrayList;

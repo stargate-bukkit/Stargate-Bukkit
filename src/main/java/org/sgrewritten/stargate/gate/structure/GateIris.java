@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.gate.structure;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
-import org.sgrewritten.stargate.vectorlogic.VectorOperation;
+import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 
 import java.util.ArrayList;
 import java.util.List;

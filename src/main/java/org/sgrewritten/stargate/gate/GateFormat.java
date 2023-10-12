@@ -10,7 +10,7 @@ import org.sgrewritten.stargate.gate.structure.GateFrame;
 import org.sgrewritten.stargate.gate.structure.GateIris;
 import org.sgrewritten.stargate.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
-import org.sgrewritten.stargate.vectorlogic.VectorOperation;
+import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -73,14 +73,7 @@ public class GateFormat implements GateFormatAPI {
         return width;
     }
 
-    /**
-     * Gets whether this gate format is iron door blockable
-     *
-     * <p>Iron door block-ability is defined as such: Can the Stargate's entrance be fully blocked by a single iron
-     * door?</p>
-     *
-     * @return <p>True if iron door blockable</p>
-     */
+    @Override
     public boolean isIronDoorBlockable() {
         return isIronDoorBlockable;
     }

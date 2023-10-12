@@ -5,6 +5,7 @@ import org.sgrewritten.stargate.api.config.ConfigurationAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.manager.BungeeManager;
+import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -70,4 +71,10 @@ public interface StargateAPI {
      * @return <p> The material handler resolver used by stargate addons</p>
      */
     BlockHandlerResolver getMaterialHandlerResolver();
+
+    /**
+     *
+     * @return <p> The network manager used to fetch networks from strings</p>
+     */
+    NetworkManager getNetworkManager();
 }

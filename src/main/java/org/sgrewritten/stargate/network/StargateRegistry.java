@@ -30,7 +30,7 @@ import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
-import org.sgrewritten.stargate.vectorlogic.VectorUtils;
+import org.sgrewritten.stargate.util.VectorUtils;
 
 import java.util.*;
 import java.util.logging.Level;

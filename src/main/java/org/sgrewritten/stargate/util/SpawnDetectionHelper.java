@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
+import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.gate.GateFormat;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
@@ -28,18 +30,18 @@ public final class SpawnDetectionHelper {
      * Checks whether the given gate has any block inside the spawn protection area
      *
      * @param gate         <p>The gate to check for interference</p>
-     * @param someLocation <p>Some location of the gate (used to get the world)</p>
      * @return <p>True if the gate has at least one block inside the spawn protection area</p>
      */
-    public static boolean isInterferingWithSpawnProtection(Gate gate, Location someLocation) {
-        Location spawnLocation = Objects.requireNonNull(someLocation.getWorld()).getSpawnLocation();
+    public static boolean isInterferingWithSpawnProtection(GateAPI gate) {
+        World world = gate.getTopLeft().getWorld();
+        Location spawnLocation = Objects.requireNonNull(world).getSpawnLocation();
         int spawnRadius = Bukkit.getSpawnRadius();
 
         Location spawnMinLocation = new Location(spawnLocation.getWorld(), spawnLocation.getBlockX() - spawnRadius,
-                getWorldMinHeight(someLocation.getWorld()), spawnLocation.getBlockZ() - spawnRadius);
+                getWorldMinHeight(world), spawnLocation.getBlockZ() - spawnRadius);
         Location spawnMaxLocation = new Location(spawnLocation.getWorld(), spawnLocation.getBlockX() + spawnRadius,
-                getWorldMaxHeight(someLocation.getWorld()), spawnLocation.getBlockZ() + spawnRadius);
-        GateFormat format = gate.getFormat();
+                getWorldMaxHeight(world), spawnLocation.getBlockZ() + spawnRadius);
+        GateFormatAPI format = gate.getFormat();
         //TODO: Once 3D gates are implemented, set depth to the depth of the Stargate
         Location gateMinLocation = getStargateMinCorner(gate, format.getHeight(), format.getWidth(), 0);
         Location gateMaxLocation = getStargateMaxCorner(gate, format.getWidth(), 0);
@@ -119,7 +121,7 @@ public final class SpawnDetectionHelper {
      * @return <p>The minimum corner of the gate</p>
      */
     @SuppressWarnings("SameParameterValue") //Depth will be used for 3D gates
-    private static Location getStargateMinCorner(Gate gate, int stargateHeight, int stargateWidth, int depth) {
+    private static Location getStargateMinCorner(GateAPI gate, int stargateHeight, int stargateWidth, int depth) {
         Location minLocation = null;
         List<Vector> stargateCorners = new ArrayList<>();
         stargateCorners.add(new Vector(0, -stargateHeight, 0));
@@ -151,7 +153,7 @@ public final class SpawnDetectionHelper {
      * @return <p>The maximum corner of the gate</p>
      */
     @SuppressWarnings("SameParameterValue") //Depth will be used for 3D gates
-    private static Location getStargateMaxCorner(Gate gate, int stargateWidth, int depth) {
+    private static Location getStargateMaxCorner(GateAPI gate, int stargateWidth, int depth) {
         Location maxLocation = null;
         List<Vector> stargateCorners = new ArrayList<>();
         stargateCorners.add(new Vector(0, 0, 0));

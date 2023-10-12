@@ -15,7 +15,7 @@ public class StargateCreatePortalEvent extends DeniableStargatePortalEvent {
 
     private static final HandlerList handlers = new HandlerList();
     private final String[] lines;
-    private int cost;
+    private double cost;
 
     /**
      * Instantiates a new stargate creation event
@@ -28,7 +28,7 @@ public class StargateCreatePortalEvent extends DeniableStargatePortalEvent {
      * @param cost       <p>The cost of creating the new star gate</p>
      */
     public StargateCreatePortalEvent(@NotNull Player player, @NotNull Portal portal, @NotNull String[] lines, boolean deny,
-                                     String denyReason, int cost) {
+                                     String denyReason, double cost) {
         super(portal, player, deny, denyReason);
 
         this.lines = lines;
@@ -67,7 +67,7 @@ public class StargateCreatePortalEvent extends DeniableStargatePortalEvent {
      *
      * @return <p>The cost of creating the stargate</p>
      */
-    public int getCost() {
+    public double getCost() {
         return cost;
     }
 

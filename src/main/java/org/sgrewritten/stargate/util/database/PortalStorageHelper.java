@@ -6,6 +6,9 @@ import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.gate.GateFormatAPI;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
@@ -59,7 +62,13 @@ public class PortalStorageHelper {
                 serverName = resultSet.getString("serverName");
             }
         }
-        GateData gateData = new GateData(gateFileName,topLeft.getBlockX(),topLeft.getBlockY(),topLeft.getBlockZ(),world.getName(),flipZ,topLeft,facing);
+        GateFormatAPI format = GateFormatRegistry.getFormat(gateFileName);
+        if (format == null) {
+            Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
+                    "log for more information", gateFileName));
+            throw new IllegalArgumentException("Could not find gate format");
+        }
+        GateData gateData = new GateData(format,flipZ,topLeft,facing);
         return new PortalData(gateData,name,networkName,destination,flags,unrecognisedFlags,ownerUUID,serverUUID,serverName,portalType);
     }
 
@@ -136,7 +145,13 @@ public class PortalStorageHelper {
         } else {
             flags.add(PortalFlag.CUSTOM_NETWORK);
         }
-        GateData gateData = new GateData(gateFileName,topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ(), world.getName(),false,topLeft,facing);
+        GateFormatAPI format = GateFormatRegistry.getFormat(gateFileName);
+        if (format == null) {
+            Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
+                    "log for more information", gateFileName));
+            throw new IllegalArgumentException("Could not find gate format");
+        }
+        GateData gateData = new GateData(format,false,topLeft,facing);
         return new PortalData(gateData,name,networkName,destination,flags,unrecognisedFlags,ownerUUID,null,null,StorageType.LOCAL);
     }
 
