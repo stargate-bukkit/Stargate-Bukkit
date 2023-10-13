@@ -352,7 +352,7 @@ public class Gate implements GateAPI {
      *
      * @param alwaysOn <p>Whether this gate is always on</p>
      */
-    private void calculatePortalPositions(boolean alwaysOn) {
+    public void calculatePortalPositions(boolean alwaysOn) {
         //First find buttons and signs on the Stargate
         List<BlockVector> registeredControls = getExistingControlPositions(alwaysOn);
 

@@ -17,11 +17,17 @@ public class ExplicitGateBuilder implements GateBuilder{
     private boolean generateButtonPositions;
     private boolean flipGate;
     private BlockFace facing = BlockFace.NORTH;
+    private boolean calculatePortalPositions = false;
 
     public ExplicitGateBuilder(RegistryAPI registryAPI, Location topLeft, GateFormatAPI gateFormatAPI){
-        this.registryAPI = registryAPI;
-        this.topLeft = topLeft;
-        this.gateFormatAPI = gateFormatAPI;
+        this.registryAPI = Objects.requireNonNull(registryAPI);
+        this.topLeft = Objects.requireNonNull(topLeft);
+        this.gateFormatAPI = Objects.requireNonNull(gateFormatAPI);
+    }
+
+    public ExplicitGateBuilder setCalculatePortalPositions(boolean calculatePortalPositions){
+        this.calculatePortalPositions = calculatePortalPositions;
+        return this;
     }
 
     @Override
@@ -42,8 +48,11 @@ public class ExplicitGateBuilder implements GateBuilder{
 
     @Override
     public GateAPI build() throws InvalidStructureException {
-        GateData data = new GateData(Objects.requireNonNull(gateFormatAPI), Objects.requireNonNull(flipGate),
-                Objects.requireNonNull(topLeft), facing);
-        return new Gate(data, registryAPI);
+        GateData data = new GateData(gateFormatAPI, flipGate, topLeft, facing);
+        Gate gate = new Gate(data, registryAPI);
+        if(calculatePortalPositions){
+            gate.calculatePortalPositions(!generateButtonPositions);
+        }
+        return gate;
     }
 }
