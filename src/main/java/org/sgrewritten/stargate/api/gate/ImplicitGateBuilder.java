@@ -48,7 +48,7 @@ public class ImplicitGateBuilder implements GateBuilder{
         Directional signDirection = (Directional) sign.getBlockData();
         Block behind = sign.getRelative(signDirection.getFacing().getOppositeFace());
         List<GateFormat> gateFormats = GateFormatRegistry.getPossibleGateFormatsFromControlBlockMaterial(behind.getType());
-        return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), generateButtonPositions, registryAPI);
+        return findMatchingGate(gateFormats, sign.getLocation(), signDirection.getFacing(), !generateButtonPositions, registryAPI);
     }
 
     /**

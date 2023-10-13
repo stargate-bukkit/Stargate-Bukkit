@@ -156,7 +156,7 @@ public class BlockEventListener implements Listener {
     public void onSignChange(SignChangeEvent event) {
         try {
             Player player = event.getPlayer();
-            GateBuilder gateBuilder = new ImplicitGateBuilder(event.getBlock().getLocation(),registry);
+            GateBuilder gateBuilder = new ImplicitGateBuilder(event.getBlock().getLocation(), registry);
             PortalBuilder portalBuilder = new PortalBuilder(stargateAPI,gateBuilder,player,event.getLine(3),event.getLine(0),event.getLine(2));
             portalBuilder.addEventHandling(player).addMessageReceiver(player).addPermissionCheck(player).setCost(ConfigurationHelper.getDouble(ConfigurationOption.CREATION_COST), player);
             portalBuilder.setDestination(event.getLine(1)).setAdaptiveGatePositionGeneration(true).setDestinationServerName(event.getLine(2));
