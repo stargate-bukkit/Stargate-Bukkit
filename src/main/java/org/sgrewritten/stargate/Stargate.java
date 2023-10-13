@@ -36,42 +36,37 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.action.SimpleAction;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.config.ConfigurationAPI;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.api.manager.BungeeManager;
 import org.sgrewritten.stargate.api.network.NetworkManager;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.command.CommandStargate;
 import org.sgrewritten.stargate.command.StargateTabCompleter;
-import org.sgrewritten.stargate.api.config.ConfigurationAPI;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
 import org.sgrewritten.stargate.database.SQLDatabase;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
-import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.database.property.PropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.economy.VaultEconomyManager;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
-import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.StargateLanguageManager;
 import org.sgrewritten.stargate.gate.GateFormat;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.listener.BlockEventListener;
-import org.sgrewritten.stargate.listener.EntityInsideBlockEventListener;
-import org.sgrewritten.stargate.listener.MoveEventListener;
-import org.sgrewritten.stargate.listener.PlayerAdvancementListener;
-import org.sgrewritten.stargate.listener.PlayerEventListener;
-import org.sgrewritten.stargate.listener.PluginEventListener;
-import org.sgrewritten.stargate.listener.StargateBungeePluginMessageListener;
+import org.sgrewritten.stargate.listener.*;
 import org.sgrewritten.stargate.manager.BlockLoggingManager;
-import org.sgrewritten.stargate.api.manager.BungeeManager;
 import org.sgrewritten.stargate.manager.CoreProtectManager;
-import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.migration.DataMigrator;
-import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.property.PluginChannel;
@@ -90,11 +85,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -154,6 +145,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
     private static final FileConfiguration staticConfig = new StargateYamlConfiguration();
     private BlockHandlerResolver blockHandlerResolver;
+    private NetworkManager networkManager;
 
     @Override
     public void onEnable() {
@@ -169,11 +161,11 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
             storageAPI = new SQLDatabase(database);
             blockHandlerResolver = new BlockHandlerResolver(storageAPI);
-            registry = new StargateRegistry(storageAPI,blockHandlerResolver);
+            registry = new StargateRegistry(storageAPI, blockHandlerResolver);
             bungeeManager = new StargateBungeeManager(this.getRegistry(), this.getLanguageManager());
             blockLogger = new CoreProtectManager();
             storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(DATA_FOLDER, INTERNAL_FOLDER, INTERNAL_PROPERTIES_FILE));
-
+            networkManager = new StargateNetworkManager(registry);
             try {
                 this.migrateConfigurationAndData();
             } catch (IOException | InvalidConfigurationException | SQLException e) {
@@ -218,7 +210,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
     @Override
     public NetworkManager getNetworkManager() {
-        return null;
+        return this.networkManager;
     }
 
     /**
@@ -374,9 +366,9 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
      */
     public static DyeColor getDefaultSignDyeColor(Material signMaterial) {
         try {
-            if(!Stargate.defaultSignDyeColors.isEmpty()) {
+            if (!Stargate.defaultSignDyeColors.isEmpty()) {
                 return Stargate.defaultSignDyeColors.get(signMaterial);
-            }else {
+            } else {
                 return DyeColor.WHITE;
             }
         } catch (NullPointerException e) {
@@ -568,7 +560,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         if (defaultNetwork.isBlank()) {
             throw new StargateInitializationException("Invalid configuration name for default network, name can not be empty");
         }
-        if(defaultNetwork.contains("\n")){
+        if (defaultNetwork.contains("\n")) {
             throw new StargateInitializationException("Invalid configuration name for default network, name can not contain newlines");
         }
         languageManager.setLanguage(ConfigurationHelper.getString(ConfigurationOption.LANGUAGE));

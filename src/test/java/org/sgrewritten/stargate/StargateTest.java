@@ -197,6 +197,11 @@ class StargateTest {
         Assertions.assertNotNull(plugin.getMaterialHandlerResolver());
     }
 
+    @Test
+    void getNetworkManager_notNull() {
+        Assertions.assertNotNull(plugin.getNetworkManager());
+    }
+
     private void setInterServerEnabled() {
         plugin.setConfigurationOptionValue(ConfigurationOption.USING_BUNGEE, true);
         plugin.setConfigurationOptionValue(ConfigurationOption.USING_REMOTE_DATABASE, true);
