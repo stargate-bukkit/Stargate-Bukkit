@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.gate.structure;
+package org.sgrewritten.stargate.api.gate.structure;
 
 import org.bukkit.Location;
 import org.bukkit.Material;

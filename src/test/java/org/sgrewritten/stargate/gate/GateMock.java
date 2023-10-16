@@ -78,6 +78,11 @@ public class GateMock implements GateAPI {
     }
 
     @Override
+    public void calculatePortalPositions(boolean alwaysOn) {
+
+    }
+
+    @Override
     public Location getTopLeft() {
         return null;
     }

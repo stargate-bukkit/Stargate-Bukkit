@@ -103,6 +103,13 @@ public interface GateAPI {
     Location getLocation(@NotNull Vector vector);
 
     /**
+     * Calculates all portal positions for this gate
+     *
+     * @param alwaysOn <p>Whether this gate is always on</p>
+     */
+    void calculatePortalPositions(boolean alwaysOn);
+
+    /**
      * Gets this gate's top-left location
      *
      * @return <p>This gate's top-left location</p>

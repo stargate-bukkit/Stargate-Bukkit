@@ -32,7 +32,7 @@ import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
-import org.sgrewritten.stargate.gate.structure.GateStructure;
+import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
@@ -346,12 +346,8 @@ public class Gate implements GateAPI {
         }
         return false;
     }
-
-    /**
-     * Calculates all portal positions for this gate
-     *
-     * @param alwaysOn <p>Whether this gate is always on</p>
-     */
+    
+    @Override
     public void calculatePortalPositions(boolean alwaysOn) {
         //First find buttons and signs on the Stargate
         List<BlockVector> registeredControls = getExistingControlPositions(alwaysOn);
