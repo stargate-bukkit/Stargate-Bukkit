@@ -53,6 +53,7 @@ public class PortalStorageHelper {
         String gateFileName = resultSet.getString("gateFileName");
         boolean flipZ = resultSet.getBoolean("flipZ");
         BlockFace facing = getBlockFaceFromOrdinal(Integer.parseInt(resultSet.getString("facing")));
+        String metadata = resultSet.getString("metaData");
         String serverUUID = null;
         String serverName = null;
         if (portalType == StorageType.INTER_SERVER) {
@@ -69,7 +70,7 @@ public class PortalStorageHelper {
             throw new IllegalArgumentException("Could not find gate format");
         }
         GateData gateData = new GateData(format,flipZ,topLeft,facing);
-        return new PortalData(gateData,name,networkName,destination,flags,unrecognisedFlags,ownerUUID,serverUUID,serverName,portalType);
+        return new PortalData(gateData,name,networkName,destination,flags,unrecognisedFlags,ownerUUID,serverUUID,serverName,portalType,metadata);
     }
 
     public static PortalPosition loadPortalPosition(ResultSet resultSet) throws NumberFormatException, SQLException {
@@ -152,7 +153,7 @@ public class PortalStorageHelper {
             throw new IllegalArgumentException("Could not find gate format");
         }
         GateData gateData = new GateData(format,false,topLeft,facing);
-        return new PortalData(gateData,name,networkName,destination,flags,unrecognisedFlags,ownerUUID,null,null,StorageType.LOCAL);
+        return new PortalData(gateData,name,networkName,destination,flags,unrecognisedFlags,ownerUUID,null,null,StorageType.LOCAL,null);
     }
 
     /**

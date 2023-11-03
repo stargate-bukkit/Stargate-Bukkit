@@ -53,6 +53,7 @@ public class PortalBuilder {
     private @Nullable Entity messageTarget;
     private @Nullable Player economyTarget;
     private boolean adaptiveGatePositionGeneration = false;
+    private String metaData;
 
     public PortalBuilder(StargateAPI stargateAPI, GateAPI gateAPI, OfflinePlayer owner, String flagsString, String portalName, String network) {
         this.stargateAPI = Objects.requireNonNull(stargateAPI);
@@ -103,6 +104,11 @@ public class PortalBuilder {
         return this;
     }
 
+    public PortalBuilder setMetaData(String metaData){
+        this.metaData = metaData;
+        return this;
+    }
+
     /**
      * Set the name of the server this portal should point to (only relevant for bungee portals)
      *
@@ -148,7 +154,7 @@ public class PortalBuilder {
             gateAPI = gateBuilder.build();
         }
         UUID ownerUUID = network.getType() == NetworkType.PERSONAL ? UUID.fromString(network.getId()) : owner.getUniqueId();
-        RealPortal portal = PortalCreationHelper.createPortal(network, portalName, destinationName, serverName, flags, unrecognisedFlags, gateAPI,ownerUUID , stargateAPI);
+        RealPortal portal = PortalCreationHelper.createPortal(network, portalName, destinationName, serverName, flags, unrecognisedFlags, gateAPI,ownerUUID , stargateAPI, metaData);
         permissionAndEventHandling(portal, network);
 
         flagChecks(flags);

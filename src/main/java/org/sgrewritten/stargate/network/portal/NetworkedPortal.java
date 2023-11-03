@@ -52,8 +52,8 @@ public class NetworkedPortal extends AbstractPortal {
      * @throws NameLengthException
      */
     public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID,
-                           LanguageManager languageManager, StargateEconomyAPI economyAPI) throws NameLengthException {
-        super(network, name, flags, unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI);
+                           LanguageManager languageManager, StargateEconomyAPI economyAPI, String metaData) throws NameLengthException {
+        super(network, name, flags, unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI, metaData);
     }
 
     @Override

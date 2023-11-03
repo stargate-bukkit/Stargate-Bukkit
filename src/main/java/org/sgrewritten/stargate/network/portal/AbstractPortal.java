@@ -100,7 +100,7 @@ public abstract class AbstractPortal implements RealPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameLengthException <p>If the portal name is invalid</p>
      */
-    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyManager)
+    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyManager, String metaData)
             throws NameLengthException {
         this.ownerUUID = Objects.requireNonNull(ownerUUID);
         this.network = Objects.requireNonNull(network);
@@ -110,6 +110,7 @@ public abstract class AbstractPortal implements RealPortal {
         this.gate = Objects.requireNonNull(gate);
         this.languageManager = Objects.requireNonNull(languageManager);
         this.economyManager = Objects.requireNonNull(economyManager);
+        this.metaData = metaData;
 
         name = NameHelper.getTrimmedName(name);
         if (NameHelper.isInvalidName(name)) {

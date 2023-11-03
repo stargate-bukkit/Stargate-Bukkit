@@ -155,7 +155,7 @@ public class PortalFactory {
 
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON, "Stargate");
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN, "Stargate");
-        return new FixedPortal(network, name, "", flags, unknownFlags, gate, UUID.randomUUID(), new LanguageManagerMock(), new StargateEconomyManagerMock());
+        return new FixedPortal(network, name, "", flags, unknownFlags, gate, UUID.randomUUID(), new LanguageManagerMock(), new StargateEconomyManagerMock(), null);
     }
 
     public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,
@@ -164,7 +164,7 @@ public class PortalFactory {
         flags.add(network.getType().getRelatedFlag());
 
 
-        RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, new HashSet<>(), gate, UUID.randomUUID(), stargateAPI);
+        RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, new HashSet<>(), gate, UUID.randomUUID(), stargateAPI, null);
         network.addPortal(portal, true);
         return portal;
     }

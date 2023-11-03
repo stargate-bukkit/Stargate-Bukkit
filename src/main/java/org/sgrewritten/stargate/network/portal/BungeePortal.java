@@ -52,8 +52,8 @@ public class BungeePortal extends AbstractPortal {
      * @throws UnimplementedFlagException
      */
     public BungeePortal(Network network, String name, String destination, String destinationServer,
-                        Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyAPI) throws InvalidNameException, BungeeNameException, NameLengthException, UnimplementedFlagException {
-        super(network, name, flags, unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI);
+                        Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyAPI, String metaData) throws InvalidNameException, BungeeNameException, NameLengthException, UnimplementedFlagException {
+        super(network, name, flags, unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI, metaData);
 
 
         destination = NameHelper.getTrimmedName(destination);

@@ -58,20 +58,20 @@ public final class PortalCreationHelper {
      */
     public static RealPortal createPortal(Network network, String name, String destination, String targetServer,
                                           Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID,
-                                          StargateAPI stargateAPI) throws TranslatableException {
+                                          StargateAPI stargateAPI, String metaData) throws TranslatableException {
         name = NameHelper.getTrimmedName(name);
 
         if (flags.contains(PortalFlag.BUNGEE)) {
             flags.add(PortalFlag.FIXED);
             Network bungeeNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, stargateAPI.getRegistry());
-            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags,unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager());
+            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags,unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(), metaData);
         } else if (flags.contains(PortalFlag.RANDOM)) {
-            return new RandomPortal(network, name, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager());
+            return new RandomPortal(network, name, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(), metaData);
         } else if (flags.contains(PortalFlag.NETWORKED)) {
-            return new NetworkedPortal(network, name, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager());
+            return new NetworkedPortal(network, name, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(), metaData);
         } else {
             flags.add(PortalFlag.FIXED);
-            return new FixedPortal(network, name, destination, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager());
+            return new FixedPortal(network, name, destination, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(), metaData);
         }
     }
 
@@ -86,7 +86,7 @@ public final class PortalCreationHelper {
      */
     public static RealPortal createPortal(Network network, PortalData portalData, Gate gate,
                                           StargateAPI stargateAPI) throws TranslatableException {
-        return createPortal(network, portalData.name(), portalData.destination(), portalData.networkName(), portalData.flags(), portalData.unrecognisedFlags(), gate, portalData.ownerUUID(), stargateAPI);
+        return createPortal(network, portalData.name(), portalData.destination(), portalData.networkName(), portalData.flags(), portalData.unrecognisedFlags(), gate, portalData.ownerUUID(), stargateAPI, portalData.metaData());
     }
 
     /**
@@ -102,7 +102,7 @@ public final class PortalCreationHelper {
      */
     private static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, Gate gate,
                                                    UUID ownerUUID, StargateAPI stargateAPI) throws TranslatableException {
-        return createPortal(network, lines[0], lines[1], lines[2], flags, unrecognisedFlags, gate, ownerUUID, stargateAPI);
+        return createPortal(network, lines[0], lines[1], lines[2], flags, unrecognisedFlags, gate, ownerUUID, stargateAPI,null);
     }
 
 
