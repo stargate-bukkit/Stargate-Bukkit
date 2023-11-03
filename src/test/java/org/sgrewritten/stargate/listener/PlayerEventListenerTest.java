@@ -17,6 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.database.StorageMock;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.manager.BlockLoggerMock;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
@@ -41,7 +42,7 @@ class PlayerEventListenerTest {
         player = server.addPlayer();
         RegistryAPI registry = new RegistryMock();
         GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
-        listener = new PlayerEventListener(new LanguageManagerMock(), registry, new StargateBungeeManager(registry, new LanguageManagerMock()), new BlockLoggerMock());
+        listener = new PlayerEventListener(new LanguageManagerMock(), registry, new StargateBungeeManager(registry, new LanguageManagerMock()), new BlockLoggerMock(), new StorageMock());
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
     }
 

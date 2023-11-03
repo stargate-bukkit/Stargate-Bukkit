@@ -23,6 +23,7 @@ import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.network.LocalNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.AbstractPortal;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
@@ -125,6 +126,9 @@ public class SQLDatabase implements StorageAPI {
             connection.commit();
             connection.setAutoCommit(true);
             connection.close();
+            if(portal instanceof AbstractPortal abstractPortal){
+                abstractPortal.setSavedToStorage();
+            }
             return true;
         } catch (SQLException exception) {
             try {
@@ -250,7 +254,7 @@ public class SQLDatabase implements StorageAPI {
             throw new InvalidStructureException();
         }
         gate.addPortalPositions(portalPositions);
-        Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, stargateAPI);
+        RealPortal portal = PortalCreationHelper.createPortal(network, portalData, gate, stargateAPI);
         network.addPortal(portal, false);
         Stargate.log(Level.FINEST, "Added as normal portal");
     }

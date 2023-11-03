@@ -147,6 +147,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private BlockHandlerResolver blockHandlerResolver;
     private NetworkManager networkManager;
 
+
     @Override
     public void onEnable() {
         try {
@@ -414,7 +415,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private void registerListeners() {
         pluginManager.registerEvents(new BlockEventListener(this), this);
         pluginManager.registerEvents(new MoveEventListener(getRegistry()), this);
-        pluginManager.registerEvents(new PlayerEventListener(this.getLanguageManager(), getRegistry(), this.getBungeeManager(), this.getBlockLoggerManager()), this);
+        pluginManager.registerEvents(new PlayerEventListener(this.getLanguageManager(), getRegistry(), this.getBungeeManager(), this.getBlockLoggerManager(), this.getStorageAPI()), this);
         pluginManager.registerEvents(new PluginEventListener(getEconomyManager(), getBlockLoggerManager()), this);
         if (NonLegacyMethod.PLAYER_ADVANCEMENT_CRITERION_EVENT.isImplemented()) {
             pluginManager.registerEvents(new PlayerAdvancementListener(getRegistry()), this);
@@ -698,7 +699,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     public static StorageAPI getStorageAPIStatic() {
         return instance.storageAPI;
     }
-
     @SuppressWarnings("unused")
     public static ConfigurationAPI getConfigAPIStatic() {
         return instance;

@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.ConditionalDelayedAction;
 import org.sgrewritten.stargate.action.ConditionalRepeatedTask;
+import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
@@ -52,12 +53,14 @@ public class PlayerEventListener implements Listener {
     private final @NotNull BungeeManager bungeeManager;
     private final @NotNull RegistryAPI registry;
     private final @NotNull BlockLoggingManager loggingCompatability;
+    private final StorageAPI storageAPI;
 
-    public PlayerEventListener(@NotNull LanguageManager languageManager, @NotNull RegistryAPI registry, @NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatability) {
+    public PlayerEventListener(@NotNull LanguageManager languageManager, @NotNull RegistryAPI registry, @NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatability, StorageAPI storageAPI) {
         this.languageManager = Objects.requireNonNull(languageManager);
         this.bungeeManager = Objects.requireNonNull(bungeeManager);
         this.registry = Objects.requireNonNull(registry);
         this.loggingCompatability = Objects.requireNonNull(loggingCompatability);
+        this.storageAPI = storageAPI;
     }
 
     /**
@@ -225,7 +228,7 @@ public class PlayerEventListener implements Listener {
     private void updateServerName() {
         ConditionalDelayedAction action = new ConditionalDelayedAction(() -> {
             try {
-                Stargate.getStorageAPIStatic().startInterServerConnection();
+                storageAPI.startInterServerConnection();
             } catch (StorageWriteException e) {
                 Stargate.log(e);
             }

@@ -89,6 +89,7 @@ public abstract class AbstractPortal implements RealPortal {
     private final StargateEconomyAPI economyManager;
     private static final int ACTIVE_DELAY = 15;
     private @Nullable String metaData;
+    private boolean savedToStorage = false;
 
     /**
      * Instantiates a new abstract portal
@@ -112,7 +113,7 @@ public abstract class AbstractPortal implements RealPortal {
 
         name = NameHelper.getTrimmedName(name);
         if (NameHelper.isInvalidName(name)) {
-            throw new NameLengthException("Invalid length of name '" + name + "' , namelength must be above 0 and under " + Stargate.getMaxTextLength());
+            throw new NameLengthException("Invalid length of name '" + name + "' , name length must be above 0 and under " + Stargate.getMaxTextLength());
         }
 
         colorDrawer = new NoLineColorFormatter();
@@ -594,7 +595,9 @@ public abstract class AbstractPortal implements RealPortal {
     public void setMetaData(String data) {
         try {
             this.metaData = data;
-            Stargate.getStorageAPIStatic().setPortalMetaData(this, data, getStorageType());
+            if(this.savedToStorage) {
+                Stargate.getStorageAPIStatic().setPortalMetaData(this, data, getStorageType());
+            }
         } catch (StorageWriteException e) {
             Stargate.log(e);
         }
@@ -602,7 +605,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public String getMetaData() {
-        if(this.metaData != null){
+        if(this.metaData != null || !this.savedToStorage){
             return this.metaData;
         }
         try {
@@ -626,6 +629,10 @@ public abstract class AbstractPortal implements RealPortal {
 
     public BlockFace getExitFacing() {
         return flags.contains(PortalFlag.BACKWARDS) ? getGate().getFacing() : getGate().getFacing().getOppositeFace();
+    }
+
+    public void setSavedToStorage(){
+        this.savedToStorage = true;
     }
 
 }
