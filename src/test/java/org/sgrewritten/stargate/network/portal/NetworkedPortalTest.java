@@ -56,7 +56,7 @@ class NetworkedPortalTest {
         sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.NETWORKED);
-        network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
+        network = stargateAPI.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, false, false);
         portal = (NetworkedPortal) PortalFactory.generateFakePortal(sign, network, flags, "networked", stargateAPI);
     }
 

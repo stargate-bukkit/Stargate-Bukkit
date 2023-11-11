@@ -104,7 +104,7 @@ public class VirtualPortal implements Portal {
 
     @Override
     public void destroy() {
-        network.removePortal(this, false);
+        network.removePortal(this);
     }
 
     @Override
@@ -197,17 +197,10 @@ public class VirtualPortal implements Portal {
      */
     private void sendTeleportMessage(Stargate plugin, Player player) throws IOException {
         try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-            dataOutputStream.writeUTF(PluginChannel.FORWARD.getChannel());
-            dataOutputStream.writeUTF(server);
-            dataOutputStream.writeUTF(PluginChannel.PLAYER_TELEPORT.getChannel());
             String dataMsg = BungeeHelper.generateTeleportJsonMessage(player.getName(), this);
-            dataOutputStream.writeUTF(dataMsg);
-            Stargate.log(Level.FINEST, byteArrayOutputStream.toString());
-            player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
+            BungeeHelper.sendMessageFromChannel(dataMsg, PluginChannel.PLAYER_TELEPORT, plugin);
         } catch (IOException exception) {
-            Stargate.log(Level.WARNING, "[Stargate] Error sending BungeeCord teleport packet");
+            Stargate.log(Level.WARNING, "Error sending BungeeCord teleport packet");
             throw exception;
         }
     }

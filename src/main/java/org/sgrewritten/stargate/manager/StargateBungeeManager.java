@@ -7,15 +7,16 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.manager.BungeeManager;
+import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
@@ -32,10 +33,12 @@ public class StargateBungeeManager implements BungeeManager {
     private final RegistryAPI registry;
     private final @NotNull LanguageManager languageManager;
     private final HashMap<String, Portal> bungeeQueue = new HashMap<>();
+    private final NetworkManager networkManager;
 
-    public StargateBungeeManager(@NotNull RegistryAPI registry, @NotNull LanguageManager languageManager) {
+    public StargateBungeeManager(@NotNull RegistryAPI registry, @NotNull LanguageManager languageManager, @NotNull NetworkManager networkManager) {
         this.registry = Objects.requireNonNull(registry);
         this.languageManager = Objects.requireNonNull(languageManager);
+        this.networkManager = Objects.requireNonNull(networkManager);
     }
 
     @Override
@@ -56,14 +59,13 @@ public class StargateBungeeManager implements BungeeManager {
         UUID ownerUUID = UUID.fromString(json.get(StargateProtocolProperty.OWNER.toString()).getAsString());
 
         try {
-            registry.createNetwork(network, flags, false);
-        } catch (NameConflictException ignored) {
-
-        } catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
+            networkManager.createNetwork(network, flags, false);
+        } catch (NameConflictException ignored) {}
+        catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
             Stargate.log(e);
         }
         try {
-            InterServerNetwork targetNetwork = (InterServerNetwork) registry.getNetwork(network, true);
+            Network targetNetwork = registry.getNetwork(network, true);
             if (targetNetwork == null) {
                 Stargate.log(Level.WARNING, "Unable to get inter-server network " + network);
                 return;
@@ -71,12 +73,12 @@ public class StargateBungeeManager implements BungeeManager {
             VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, unrecognisedFlags, ownerUUID);
             switch (requestType) {
                 case PORTAL_ADD -> {
-                    targetNetwork.addPortal(portal, false);
+                    targetNetwork.addPortal(portal);
                     Stargate.log(Level.FINE, String.format("Adding virtual portal %s in inter-server network %s", portalName, network));
                 }
                 case PORTAL_REMOVE -> {
                     Stargate.log(Level.FINE, String.format("Removing virtual portal %s in inter-server network %s", portalName, network));
-                    targetNetwork.removePortal(portal, false);
+                    targetNetwork.removePortal(portal);
                 }
             }
             targetNetwork.updatePortals();
@@ -136,7 +138,7 @@ public class StargateBungeeManager implements BungeeManager {
         } else {
             Network network;
             try {
-                network = BungeeHelper.getLegacyBungeeNetwork(registry, bungeeNetworkName);
+                network = BungeeHelper.getLegacyBungeeNetwork(registry, networkManager, bungeeNetworkName);
             } catch (UnimplementedFlagException e) {
                 Stargate.log(e);
                 return;

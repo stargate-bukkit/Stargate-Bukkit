@@ -19,9 +19,10 @@ import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.network.LocalNetwork;
+import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
 
@@ -47,7 +48,7 @@ class TeleporterTest {
 
         horse = (HorseMock) world.spawnEntity(new Location(world, 0, 0, 0), EntityType.HORSE);
         horse.addPassenger(player);
-        Network network = new LocalNetwork("custom", NetworkType.CUSTOM);
+        Network network = new StargateNetwork("custom", NetworkType.CUSTOM, StorageType.LOCAL);
         RealPortal origin = fakePortalGenerator.generateFakePortal(world, network, "origin", false);
         RealPortal destination = fakePortalGenerator.generateFakePortal(world, network, "destination", false);
         populator = new SynchronousPopulator();

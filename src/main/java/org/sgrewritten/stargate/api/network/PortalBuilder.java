@@ -26,6 +26,7 @@ import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.exception.*;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.NetworkType;
@@ -161,7 +162,12 @@ public class PortalBuilder {
         economyCheck(portal);
         finalChecks(portal, network);
         //Save the portal and inform the user
-        network.addPortal(portal, true);
+        network.addPortal(portal);
+        try {
+            stargateAPI.getStorageAPI().savePortalToStorage(portal);
+        } catch (StorageWriteException e) {
+            Stargate.log(e);
+        }
         //Make sure that the portal sign text formats according the default sign dye color
         getLocationsAdjacentToPortal(gateAPI).forEach((position) -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(),position, List.of(portal),position.getBlock().getType(),eventTarget));
 
@@ -197,7 +203,7 @@ public class PortalBuilder {
         }
 
         if (portal.hasFlag(PortalFlag.FANCY_INTER_SERVER) && messageTarget != null) {
-            Network inflictingNetwork = NetworkCreationHelper.getInterserverLocalConflict(network, stargateAPI.getRegistry());
+            Network inflictingNetwork = NetworkCreationHelper.getInterServerLocalConflict(network, stargateAPI.getRegistry());
             messageTarget.sendMessage(TranslatableMessageFormatter.formatUnimplementedConflictMessage(network,
                     inflictingNetwork, stargateAPI.getLanguageManager()));
         }

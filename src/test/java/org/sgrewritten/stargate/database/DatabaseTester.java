@@ -16,7 +16,7 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.network.LocalNetwork;
+import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
@@ -104,7 +104,7 @@ public class DatabaseTester {
 
         Network testNetwork = null;
         try {
-            testNetwork = new LocalNetwork("test", NetworkType.CUSTOM);
+            testNetwork = new StargateNetwork("test", NetworkType.CUSTOM, StorageType.LOCAL);
         } catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
             Stargate.log(e);
             fail();
@@ -209,7 +209,7 @@ public class DatabaseTester {
     void addPortalTest() {
         for (RealPortal portal : localPortals.values()) {
             try {
-                Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, StorageType.LOCAL));
+                Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal));
             } catch (StorageWriteException e) {
                 fail();
             }
@@ -220,7 +220,7 @@ public class DatabaseTester {
         Stargate.log(Level.FINER, "InterServerTableName: " + nameConfig.getInterPortalTableName());
         for (RealPortal portal : interServerPortals.values()) {
             try {
-                Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, StorageType.INTER_SERVER));
+                Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal));
             } catch (StorageWriteException e) {
                 fail();
             }
@@ -466,7 +466,7 @@ public class DatabaseTester {
      */
     private void destroyPortal(Portal portal, StorageType portalType) throws SQLException {
         try {
-            this.portalDatabaseAPI.removePortalFromStorage(portal, portalType);
+            this.portalDatabaseAPI.removePortalFromStorage(portal);
         } catch (StorageWriteException e) {
             throw new RuntimeException(e);
         }
@@ -495,14 +495,14 @@ public class DatabaseTester {
         String flagRelationTable = portalType == StorageType.LOCAL ? nameConfig.getFlagRelationTableName() : nameConfig.getInterFlagRelationTableName();
         String portalPositionTable = portalType == StorageType.LOCAL ? nameConfig.getPortalPositionTableName() : nameConfig.getInterPortalPositionTableName();
         try {
-            testNetwork = new LocalNetwork(initialNetworkName, NetworkType.CUSTOM);
+            testNetwork = new StargateNetwork(initialNetworkName, NetworkType.CUSTOM, portalType);
         } catch (InvalidNameException e) {
             Stargate.log(e);
             fail();
         }
         RealPortal portal = portalGenerator.generateFakePortal(world, testNetwork, initialName, portalType == StorageType.INTER_SERVER);
         Stargate.log(Level.FINER, portal.getName() + ", " + portal.getNetwork().getId());
-        this.portalDatabaseAPI.savePortalToStorage(portal, portalType);
+        this.portalDatabaseAPI.savePortalToStorage(portal);
         SQLTestHelper.checkIfHas(table, initialName, initialNetworkName, connection);
         this.portalDatabaseAPI.updateNetworkName(newNetName, initialNetworkName, portalType);
         this.portalDatabaseAPI.updatePortalName(newName, new GlobalPortalId(initialName, newNetName), portalType);

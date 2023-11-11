@@ -7,8 +7,7 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.network.InterServerNetwork;
-import org.sgrewritten.stargate.network.LocalNetwork;
+import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
@@ -31,12 +30,12 @@ public class StorageMock implements StorageAPI {
     }
 
     @Override
-    public boolean savePortalToStorage(RealPortal portal, StorageType portalType) {
+    public boolean savePortalToStorage(RealPortal portal) {
         return false;
     }
 
     @Override
-    public void removePortalFromStorage(Portal portal, StorageType portalType) {
+    public void removePortalFromStorage(Portal portal) {
 
     }
 
@@ -64,11 +63,7 @@ public class StorageMock implements StorageAPI {
     @Override
     public Network createNetwork(String networkName, NetworkType type, boolean isInterServer)
             throws InvalidNameException, NameLengthException, UnimplementedFlagException {
-        if (isInterServer) {
-            return new InterServerNetwork(networkName, type);
-        } else {
-            return new LocalNetwork(networkName, type);
-        }
+        return new StargateNetwork(networkName, type, isInterServer ? StorageType.INTER_SERVER : StorageType.LOCAL);
     }
 
     @Override

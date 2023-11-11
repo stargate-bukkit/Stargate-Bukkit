@@ -165,13 +165,13 @@ public class PortalFactory {
 
 
         RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, new HashSet<>(), gate, UUID.randomUUID(), stargateAPI, null);
-        network.addPortal(portal, true);
+        network.addPortal(portal);
         return portal;
     }
 
     public static RealPortal generateFakePortal(Block signBlock, String networkName, Set<PortalFlag> flags, String name,
                                                 StargateAPI stargateAPI) throws TranslatableException, NoFormatFoundException, GateConflictException {
-        Network network = stargateAPI.getRegistry().createNetwork(networkName, NetworkType.CUSTOM, false, false);
+        Network network = stargateAPI.getNetworkManager().createNetwork(networkName, NetworkType.CUSTOM, false, false);
         return generateFakePortal(signBlock, network, flags, name, stargateAPI);
     }
 

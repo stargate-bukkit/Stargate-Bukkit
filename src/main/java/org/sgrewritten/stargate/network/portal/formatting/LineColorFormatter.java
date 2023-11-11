@@ -7,10 +7,10 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.network.InterServerNetwork;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.util.colors.ColorConverter;
 import org.sgrewritten.stargate.util.colors.ColorProperty;
@@ -63,9 +63,15 @@ public class LineColorFormatter implements LineFormatter {
 
     @Override
     public List<StargateComponent> formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
-        String networkName = (network != null) ? network.getName() : "null";
-        String bold = (network instanceof InterServerNetwork) ? ChatColor.BOLD.toString() : "";
-
+        String networkName;
+        String bold;
+        if(network == null) {
+            networkName = "null";
+            bold = "";
+        } else {
+            networkName = network.getName();
+            bold = (network.getStorageType() == StorageType.INTER_SERVER) ? ChatColor.BOLD.toString() : "";
+        }
         return new ArrayList<>(List.of(
                 new StargateComponent(pointerColor + bold + highlightingStyle.getPrefix()),
                 new StargateComponent(color + bold + networkName),

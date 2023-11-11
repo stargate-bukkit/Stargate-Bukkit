@@ -18,9 +18,10 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.network.LocalNetwork;
+import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryMock;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
@@ -37,14 +38,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class TeleportationHelperTest {
 
     private static WorldMock world;
-    private static LocalNetwork network;
+    private static StargateNetwork network;
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
 
     @BeforeAll
     public static void setUp() throws NameLengthException, InvalidNameException, UnimplementedFlagException {
         ServerMock server = MockBukkit.mock();
         world = server.addSimpleWorld("world");
-        network = new LocalNetwork("network", NetworkType.CUSTOM);
+        network = new StargateNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL);
         GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
     }
 

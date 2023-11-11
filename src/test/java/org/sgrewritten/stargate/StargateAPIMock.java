@@ -74,14 +74,14 @@ public class StargateAPIMock implements StargateAPI {
         if(this.languageManager == null){
             this.languageManager = new LanguageManagerMock();
         }
+        if(this.networkManager == null){
+            this.networkManager = new StargateNetworkManager(registry,storageAPI);
+        }
         if(this.bungeeManager == null){
-            this.bungeeManager = new StargateBungeeManager(registry,languageManager);
+            this.bungeeManager = new StargateBungeeManager(registry,languageManager, networkManager);
         }
         if(this.economyManager == null) {
             this.economyManager = new StargateEconomyManagerMock();
-        }
-        if(this.networkManager == null){
-            this.networkManager = new StargateNetworkManager(registry);
         }
     }
     @Override

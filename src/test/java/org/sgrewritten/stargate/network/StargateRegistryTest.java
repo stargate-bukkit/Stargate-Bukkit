@@ -36,6 +36,7 @@ class StargateRegistryTest {
     private WorldMock world;
     private PlayerMock player;
     private StorageMock storageMock;
+    private StargateNetworkManager networkManager;
 
     @BeforeEach
     void setUp() throws NameLengthException, NameConflictException, InvalidNameException, UnimplementedFlagException {
@@ -45,8 +46,9 @@ class StargateRegistryTest {
         this.player = server.addPlayer();
         this.storageMock = new StorageMock();
         registry = new StargateRegistry(storageMock, new BlockHandlerResolver(storageMock));
-        network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
-        personalNetwork = registry.createNetwork(player.getUniqueId().toString(), NetworkType.PERSONAL, false, false);
+        this.networkManager = new StargateNetworkManager(registry, storageMock);
+        network = networkManager.createNetwork("network", NetworkType.CUSTOM, false, false);
+        personalNetwork = networkManager.createNetwork(player.getUniqueId().toString(), NetworkType.PERSONAL, false, false);
     }
 
     @AfterEach
@@ -55,14 +57,13 @@ class StargateRegistryTest {
     }
 
     @Test
-    void rename_Custom() throws InvalidNameException {
-        registry.rename(network);
-        Assertions.assertEquals("network1", network.getId());
+    void getValidNewName() throws InvalidNameException {
+        Assertions.assertEquals("network1", registry.getValidNewName(network));
     }
 
     @Test
     void rename_Personal() {
-        Assertions.assertThrows(InvalidNameException.class, () -> registry.rename(personalNetwork));
+        Assertions.assertThrows(InvalidNameException.class, () -> registry.getValidNewName(personalNetwork));
     }
 
     @ParameterizedTest

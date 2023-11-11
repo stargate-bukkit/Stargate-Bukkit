@@ -53,20 +53,18 @@ class StargateTest {
         Block signBlock1 = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         Block signBlock2 = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
 
-        Network network = plugin.getRegistry().createNetwork("network", NetworkType.CUSTOM, false, false);
+        Network network = plugin.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, false, false);
 
         String PORTAL1 = "name1";
         portal = PortalFactory.generateFakePortal(signBlock1, network, new HashSet<>(), PORTAL1, plugin);
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.BUNGEE);
-        Network bungeeNetwork = plugin.getRegistry().createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, false);
+        Network bungeeNetwork = plugin.getNetworkManager().createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, false);
         bungeePortal = PortalFactory.generateFakePortal(signBlock2, bungeeNetwork, flags, PORTAL2, plugin);
     }
 
     @AfterEach
     public void tearDown() {
-        portal.destroy();
-        bungeePortal.destroy();
         MockBukkit.unmock();
     }
 

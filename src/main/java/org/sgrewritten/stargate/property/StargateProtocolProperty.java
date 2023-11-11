@@ -40,6 +40,16 @@ public enum StargateProtocolProperty {
     /**
      * The portal owner property of a request
      */
-    OWNER
+    OWNER,
+
+    /**
+     * The new name of the network
+     */
+    NEW_NETWORK_NAME,
+
+    /**
+     * The new name of the portal
+     */
+    NEW_PORTAL_NAME
 
 }

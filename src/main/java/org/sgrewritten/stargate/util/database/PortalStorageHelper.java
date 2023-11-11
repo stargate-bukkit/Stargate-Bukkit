@@ -8,8 +8,7 @@ import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
-import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.network.LocalNetwork;
+import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
@@ -107,7 +106,7 @@ public class PortalStorageHelper {
      */
     public static PortalData loadPortalData(String[] portalProperties, World world, String defaultNetworkName) {
         String name = portalProperties[0];
-        String networkName = (portalProperties.length > 9) ? portalProperties[9] : LocalNetwork.DEFAULT_NETWORK_ID;
+        String networkName = (portalProperties.length > 9) ? portalProperties[9] : StargateNetwork.DEFAULT_NETWORK_ID;
 
         Stargate.log(Level.FINEST, String.format("-----------------Loading portal %s in network %s--------------" +
                 "--------", name, networkName));
@@ -134,7 +133,7 @@ public class PortalStorageHelper {
 
         if (portalProperties.length <= 9 || networkName.equalsIgnoreCase(defaultNetworkName)) {
             flags.add(PortalFlag.DEFAULT_NETWORK);
-            networkName = LocalNetwork.DEFAULT_NETWORK_ID;
+            networkName = StargateNetwork.DEFAULT_NETWORK_ID;
         } else if (!ownerString.isEmpty()) {
             String playerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
             if (playerName != null && playerName.equals(networkName)) {

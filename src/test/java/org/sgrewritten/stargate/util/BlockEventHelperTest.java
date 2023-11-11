@@ -52,9 +52,9 @@ class BlockEventHelperTest {
 
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         stargateAPI = new StargateAPIMock();
-        registry = new RegistryMock();
+        registry = stargateAPI.getRegistry();
         GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
-        Network network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
+        Network network = stargateAPI.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, false, false);
 
         portal = PortalFactory.generateFakePortal(signBlock, network, new HashSet<>(), "name", stargateAPI);
 

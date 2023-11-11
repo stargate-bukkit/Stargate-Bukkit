@@ -45,6 +45,7 @@ import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.*;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
@@ -99,6 +100,11 @@ public class BlockEventListener implements Listener {
                 MessageUtils.sendMessageFromPortal(portal,event.getPlayer(),msg,StargateSendMessagePortalEvent.MessageType.DESTROY);
 
                 portal.destroy();
+                try {
+                    stargateAPI.getStorageAPI().removePortalFromStorage(portal);
+                } catch (StorageWriteException e) {
+                    Stargate.log(e);
+                }
                 Stargate.log(Level.FINE, "Broke portal " + portal.getName());
             };
 
@@ -120,6 +126,11 @@ public class BlockEventListener implements Listener {
 
                 event.getPlayer().sendMessage(msg);
                 portalFromIris.destroy();
+                try {
+                    stargateAPI.getStorageAPI().removePortalFromStorage(portal);
+                } catch (StorageWriteException e) {
+                    Stargate.log(e);
+                }
                 return;
             }
             event.setCancelled(true);

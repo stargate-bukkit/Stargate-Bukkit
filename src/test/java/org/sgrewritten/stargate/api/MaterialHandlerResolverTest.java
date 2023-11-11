@@ -27,6 +27,7 @@ import org.sgrewritten.stargate.gate.GateTestHelper;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
+import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.database.StorageMock;
 
@@ -43,6 +44,7 @@ public class MaterialHandlerResolverTest {
     private PlayerMock player;
     private WorldMock world;
     private Network network;
+    private StargateNetworkManager networkManager;
 
     @BeforeEach
     void setUp() throws InvalidNameException, UnimplementedFlagException, NameLengthException, NameConflictException {
@@ -51,9 +53,10 @@ public class MaterialHandlerResolverTest {
         this.storage = new StorageMock();
         this.blockHandlerResolver = new BlockHandlerResolver(storage);
         this.registry = new RegistryMock(storage,blockHandlerResolver);
+        this.networkManager = new StargateNetworkManager(registry,storage);
         this.player = server.addPlayer();
         this.world = server.addSimpleWorld("world");
-        this.network = registry.createNetwork("network", NetworkType.CUSTOM,false,false);
+        this.network = networkManager.createNetwork("network", NetworkType.CUSTOM,false,false);
     }
 
     @AfterEach

@@ -19,6 +19,9 @@ import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
+import org.sgrewritten.stargate.api.network.proxy.PluginMessageSender;
+import org.sgrewritten.stargate.network.proxy.InterServerMessageSender;
+import org.sgrewritten.stargate.network.proxy.LocalNetworkMessageSender;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 
@@ -34,16 +37,17 @@ import java.util.logging.Level;
 /**
  * A network of portals
  */
-public class LocalNetwork implements Network {
+public class StargateNetwork implements Network {
 
     public static final String DEFAULT_NETWORK_ID = "<@default@>";
+    private final PluginMessageSender messageSender;
+    private final StorageType storageType;
 
-    protected Map<String, Portal> nameToPortalMap;
-    protected SQLDatabaseAPI database;
-    protected String name;
-    protected String id;
-    protected RegistryAPI registry;
-
+    private Map<String, Portal> nameToPortalMap;
+    private SQLDatabaseAPI database;
+    private String name;
+    private String id;
+    private RegistryAPI registry;
     private NetworkType networkType;
 
     /**
@@ -55,12 +59,14 @@ public class LocalNetwork implements Network {
      * @throws NameLengthException
      * @throws UnimplementedFlagException
      */
-    public LocalNetwork(String name, Set<PortalFlag> flags) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
-        this(name, NetworkType.getNetworkTypeFromFlags(flags));
+    public StargateNetwork(String name, Set<PortalFlag> flags, StorageType storageType) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
+        this(name, NetworkType.getNetworkTypeFromFlags(flags), storageType);
     }
 
-    public LocalNetwork(String name, NetworkType type) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
+    public StargateNetwork(String name, NetworkType type, StorageType storageType) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
         load(name, type);
+        this.storageType = storageType;
+        this.messageSender = storageType == StorageType.INTER_SERVER ? new InterServerMessageSender() : new LocalNetworkMessageSender();
     }
 
     private void load(String name, NetworkType type) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
@@ -130,24 +136,17 @@ public class LocalNetwork implements Network {
     }
 
     @Override
-    public void removePortal(Portal portal, boolean removeFromDatabase) {
+    public void removePortal(Portal portal) {
         nameToPortalMap.remove(portal.getId());
-        if (!removeFromDatabase) {
-            return;
-        }
-        registry.removePortal(portal, StorageType.LOCAL);
     }
 
     @Override
-    public void addPortal(Portal portal, boolean saveToDatabase) throws NameConflictException {
+    public void addPortal(Portal portal) throws NameConflictException {
         if (isPortalNameTaken(portal.getName())) {
             throw new NameConflictException("portal of name '" + portal.getName() + "' already exist in network '" + this.getId() + "'", false);
         }
         if (portal instanceof RealPortal realPortal) {
             registry.registerPortal(realPortal);
-            if (saveToDatabase) {
-                savePortal((RealPortal) portal);
-            }
         }
         nameToPortalMap.put(portal.getId(), portal);
     }
@@ -214,15 +213,6 @@ public class LocalNetwork implements Network {
         return this.getAllPortals().size();
     }
 
-    /**
-     * Saves the given portal to the database
-     *
-     * @param portal <p>The portal to save</p>
-     */
-    protected void savePortal(RealPortal portal) {
-        registry.savePortal(portal, StorageType.LOCAL);
-    }
-
     @Override
     public void assignToRegistry(RegistryAPI registry) {
         this.registry = registry;
@@ -242,5 +232,11 @@ public class LocalNetwork implements Network {
     public void setID(String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
         load(newName, this.getType());
     }
+
+    @Override
+    public PluginMessageSender getPluginMessageSender() {
+        return null;
+    }
+
 
 }

@@ -92,7 +92,7 @@ public final class LegacyPortalStorageLoader {
         String[] portalProperties = line.split(":");
         PortalData portalData = PortalStorageHelper.loadPortalData(portalProperties, world, defaultNetworkName);
         try {
-            registry.createNetwork(portalData.networkName(), portalData.flags(), false);
+            stargateAPI.getNetworkManager().createNetwork(portalData.networkName(), portalData.flags(), false);
         } catch (InvalidNameException | NameLengthException | NameConflictException ignored) {
         }
         if (portalData.gateData().topLeft() == null) {
@@ -125,7 +125,7 @@ public final class LegacyPortalStorageLoader {
         // Add the portal to its network and store it to the database
         Stargate.log(Level.FINE, String.format("Saving portal %s in network %s from old storage... ",
                 portalData.name(), portalData.networkName()));
-        network.addPortal(portal, true);
+        network.addPortal(portal);
 
         return portal;
     }

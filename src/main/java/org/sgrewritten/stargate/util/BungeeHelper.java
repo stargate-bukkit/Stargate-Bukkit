@@ -2,7 +2,11 @@ package org.sgrewritten.stargate.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
@@ -11,11 +15,14 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -81,12 +88,12 @@ public final class BungeeHelper {
      * @return <p>The legacy bungee network, or null if unobtainable</p>
      * @throws UnimplementedFlagException
      */
-    public static Network getLegacyBungeeNetwork(RegistryAPI registry, String bungeeNetwork) throws UnimplementedFlagException {
+    public static @Nullable Network getLegacyBungeeNetwork(RegistryAPI registry, NetworkManager networkManager, String bungeeNetwork) throws UnimplementedFlagException {
         Network network = registry.getNetwork(bungeeNetwork, false);
         //Create the legacy network if it doesn't already exist
         try {
             if (network == null) {
-                registry.createNetwork(bungeeNetwork, NetworkType.CUSTOM, false, false);
+                networkManager.createNetwork(bungeeNetwork, NetworkType.CUSTOM, false, false);
                 network = registry.getNetwork(bungeeNetwork, false);
             }
         } catch (InvalidNameException | NameLengthException | NameConflictException e) {
@@ -109,6 +116,23 @@ public final class BungeeHelper {
         return jsonData.toString();
     }
 
+    public static String generateRenamePortalMessage(String newId, String oldId){
+        JsonObject jsonData = new JsonObject();
+        jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(StargateProtocolRequestType.NETWORK_RENAME.toString()));
+        jsonData.add(StargateProtocolProperty.NEW_NETWORK_NAME.toString(), new JsonPrimitive(newId));
+        jsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(oldId));
+        return jsonData.toString();
+    }
+
+    public static String generateRenamePortalMessage(String newName, String oldName, Network network){
+        JsonObject jsonData = new JsonObject();
+        jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(StargateProtocolRequestType.NETWORK_RENAME.toString()));
+        jsonData.add(StargateProtocolProperty.NEW_PORTAL_NAME.toString(), new JsonPrimitive(newName));
+        jsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(network.getId()));
+        jsonData.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(oldName));
+        return jsonData.toString();
+    }
+
     public static String generateTeleportJsonMessage(String player, Portal portal) {
         JsonObject JsonData = new JsonObject();
         JsonData.add(StargateProtocolProperty.PLAYER.toString(), new JsonPrimitive(player));
@@ -119,5 +143,17 @@ public final class BungeeHelper {
 
     public static String generateLegacyTeleportMessage(String player, Portal portal) {
         return player + "#@#" + portal.getName();
+    }
+
+    public static void sendMessageFromChannel(String message, PluginChannel channel, Plugin masterPlugin) throws IOException {
+        try(ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+            dataOutputStream.writeUTF(PluginChannel.FORWARD.getChannel());
+            dataOutputStream.writeUTF("ALL");
+            dataOutputStream.writeUTF(channel.getChannel());
+            Stargate.log(Level.FINER, String.format("Sending bungee message:%n%s", message));
+            dataOutputStream.writeUTF(message);
+            Bukkit.getServer().sendPluginMessage(masterPlugin, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
+        }
     }
 }

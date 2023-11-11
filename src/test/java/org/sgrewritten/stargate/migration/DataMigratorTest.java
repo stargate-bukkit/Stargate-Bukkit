@@ -33,7 +33,7 @@ import org.sgrewritten.stargate.database.property.FakePropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.network.LocalNetwork;
+import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.api.network.portal.Portal;
@@ -106,9 +106,9 @@ public class DataMigratorTest {
         knarvikConfigChecks.put("defaultGateNetwork", "knarvik");
         knarvikConfigChecks.put("handleVehicles", false);
         Map<String, String> knarvikPortalChecks = new HashMap<>();
-        knarvikPortalChecks.put("§6knarvik1", LocalNetwork.DEFAULT_NETWORK_ID);
-        knarvikPortalChecks.put("knarvik2", LocalNetwork.DEFAULT_NETWORK_ID);
-        knarvikPortalChecks.put("knarvik3", LocalNetwork.DEFAULT_NETWORK_ID);
+        knarvikPortalChecks.put("§6knarvik1", StargateNetwork.DEFAULT_NETWORK_ID);
+        knarvikPortalChecks.put("knarvik2", StargateNetwork.DEFAULT_NETWORK_ID);
+        knarvikPortalChecks.put("knarvik3", StargateNetwork.DEFAULT_NETWORK_ID);
         TwoTuple<Map<String, Object>, Map<String, String>> knarvikChecks = new TwoTuple<>(knarvikConfigChecks,
                 knarvikPortalChecks);
         output.put("config-epicknarvik.yml", knarvikChecks);

@@ -2,9 +2,15 @@ package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.NetworkType;
 
 import java.util.Set;
@@ -34,4 +40,56 @@ public interface NetworkManager {
      */
     Network selectNetwork(String name, NetworkType type, boolean isInterServer) throws TranslatableException;
 
+    /**
+     * Creates a new network assigned to this registry
+     *
+     * @param name   <p>The name of the new network</p>
+     * @param type          <p>The type of network to create</p>
+     * @param isInterServer <p>Whether to create it as a BungeeCord network</p>
+     * @param isForced      <p>The authority for the creation </p>
+     * @return <p> The network created </p>
+     * @throws InvalidNameException       <p>If the given network name is invalid</p>
+     * @throws NameLengthException
+     * @throws NameConflictException
+     * @throws UnimplementedFlagException
+     */
+    Network createNetwork(String name, NetworkType type, boolean isInterServer, boolean isForced) throws InvalidNameException, UnimplementedFlagException, NameLengthException, NameConflictException;
+
+    /**
+     * Creates a new network assigned to this registry
+     *
+     * @param targetNetwork <p>The this network will attempt creation under</p>
+     * @param flags         <p>The flags containing the network's enabled options</p>
+     * @param isForced      <p>The authority for the creation </p>
+     * @return <p> The network created </p>
+     * @throws InvalidNameException       <p>If the given network name is invalid</p>
+     * @throws NameLengthException
+     * @throws NameConflictException
+     * @throws UnimplementedFlagException
+     */
+    Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException;
+
+    /**
+     * Rename the network to specified name, saves to storage
+     *
+     * @param network <p> The network to rename </p>
+     * @param newName <p> The new name of the network </p>
+     * @throws InvalidNameException
+     * @throws NameLengthException
+     * @throws UnimplementedFlagException
+     */
+    void rename(Network network, String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
+
+
+    /**
+     * Loads all portals from storage
+     * @param stargateAPI <p>The stargate api</p>
+     */
+    void loadPortals(StargateAPI stargateAPI);
+
+    /**
+     * @param portal  <p> The portal to rename</p>
+     * @param newName <p> The new name of the portal </p>
+     */
+    void rename(Portal portal, String newName) throws NameConflictException;
 }

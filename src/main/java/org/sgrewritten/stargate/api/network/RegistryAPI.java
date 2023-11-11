@@ -5,23 +5,17 @@ import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
-import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
-import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -31,11 +25,6 @@ import java.util.Set;
  */
 @SuppressWarnings("unused")
 public interface RegistryAPI {
-    /**
-     * Loads all portals from storage
-     * @param stargateAPI <p>The stargate api</p>
-     */
-    void loadPortals(StargateAPI stargateAPI);
 
     /**
      * Removes the given portal from storage
@@ -43,16 +32,7 @@ public interface RegistryAPI {
      * @param portal     <p>The portal to remove</p>
      * @param portalType <p>The type of portal to be removed</p>
      */
-    void removePortal(Portal portal, StorageType portalType);
-
-    /**
-     * Saves the given portal to the database
-     *
-     * @param portal     <p>The portal to save</p>
-     * @param portalType <p>The type of portal to save</p>
-     */
-    void savePortal(RealPortal portal, StorageType portalType);
-
+    void unregisterPortal(Portal portal);
 
     /**
      * Update all portals handled by this registry
@@ -167,35 +147,6 @@ public interface RegistryAPI {
     void registerPortal(RealPortal portal);
 
     /**
-     * Creates a new network assigned to this registry
-     *
-     * @param networkName   <p>The name of the new network</p>
-     * @param type          <p>The type of network to create</p>
-     * @param isInterserver <p>Whether to create it as a BungeeCord network</p>
-     * @param isForced      <p>The authority for the creation </p>
-     * @return <p> The network created </p>
-     * @throws InvalidNameException       <p>If the given network name is invalid</p>
-     * @throws NameLengthException
-     * @throws NameConflictException
-     * @throws UnimplementedFlagException
-     */
-    Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException;
-
-    /**
-     * Creates a new network assigned to this registry
-     *
-     * @param targetNetwork <p>The this network will attempt creation under</p>
-     * @param flags         <p>The flags containing the network's enabled options</p>
-     * @param isForced      <p>The authority for the creation </p>
-     * @return <p> The network created </p>
-     * @throws InvalidNameException       <p>If the given network name is invalid</p>
-     * @throws NameLengthException
-     * @throws NameConflictException
-     * @throws UnimplementedFlagException
-     */
-    Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException;
-
-    /**
      * Checks whether the given network name exists
      *
      * @param networkName <p>The network name to check</p>
@@ -236,22 +187,15 @@ public interface RegistryAPI {
      * @throws NameLengthException
      * @throws UnimplementedFlagException
      */
-    void rename(Network network, String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
+    void updateName(Network network, String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
 
     /**
-     * @param portal  <p> The portal to rename</p>
-     * @param newName <p> The new name of the portal </p>
-     */
-    void rename(Portal portal, String newName);
-
-
-    /**
-     * Rename the network to a non-clashing name
+     * Get a non-clashing name close to the current name of the network.
      *
      * @param network <p>The network to rename </p>
      * @throws InvalidNameException <p> If the name is a uuid </p>
      */
-    void rename(Network network) throws InvalidNameException;
+    String getValidNewName(Network network) throws InvalidNameException;
 
     /**
      * Get all portal positions
@@ -301,4 +245,6 @@ public interface RegistryAPI {
      * @return <p> The portal that owns the portal position (or null if the portal position is not registered)</p>
      */
     @Nullable RealPortal getPortalFromPortalPosition(PortalPosition portalPosition);
+
+    void registerNetwork(Network network);
 }

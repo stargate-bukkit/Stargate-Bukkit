@@ -25,13 +25,14 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.network.LocalNetwork;
+import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.BlockHandlerInterfaceMock;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
@@ -39,6 +40,7 @@ import org.sgrewritten.stargate.api.Priority;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 
@@ -59,6 +61,7 @@ class BlockEventListenerTest {
     private static final String PLAYER_NAME = "player";
     private static final String CUSTOM_NETNAME = "custom";
     private StargateAPIMock stargateAPI;
+    private NetworkManager networkManager;
 
     @BeforeEach
     void setUp() {
@@ -71,6 +74,7 @@ class BlockEventListenerTest {
         GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         this.stargateAPI = new StargateAPIMock();
         registry = stargateAPI.getRegistry();
+        this.networkManager = stargateAPI.getNetworkManager();
         Stargate.setServerUUID(UUID.randomUUID());
         blockEventListener = new BlockEventListener(stargateAPI);
 
@@ -98,7 +102,7 @@ class BlockEventListenerTest {
 
 
             String netId = switch (networkName) {
-                case "" -> LocalNetwork.DEFAULT_NETWORK_ID;
+                case "" -> StargateNetwork.DEFAULT_NETWORK_ID;
                 case CUSTOM_NETNAME -> CUSTOM_NETNAME;
                 case PLAYER_NAME -> player.getUniqueId().toString();
                 default -> null;
@@ -165,12 +169,12 @@ class BlockEventListenerTest {
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
                 MockBukkit.createMockPlugin(), Priority.HIGH, flag);
         stargateAPI.getMaterialHandlerResolver().addBlockHandlerInterface(blockHandler);
-        Location locaton = new Location(world, 0, 5, 0);
-        Network network = registry.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, false, false);
-        RealPortal portal = PortalFactory.generateFakePortal(locaton,
+        Location location = new Location(world, 0, 5, 0);
+        Network network = networkManager.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, false, false);
+        RealPortal portal = PortalFactory.generateFakePortal(location,
                 network, "test", true, new HashSet<>(), Set.of(flag),
                 registry);
-        network.addPortal(portal, false);
+        network.addPortal(portal);
         Assertions.assertNotNull(registry.getPortal(portal.getGate().getLocations(GateStructureType.FRAME).get(0).getLocation()), "Portal not assigned to registry");
 
         Location locationNextToPortal = portal.getGate().getLocation(new BlockVector(1, -3, 0));

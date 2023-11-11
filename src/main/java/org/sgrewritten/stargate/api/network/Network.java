@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.entity.Player;
+import org.sgrewritten.stargate.api.network.proxy.PluginMessageSender;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
@@ -38,18 +39,16 @@ public interface Network {
      * Removes the given portal from this network
      *
      * @param portal             <p>The portal to remove</p>
-     * @param removeFromDatabase <p>Whether to also remove the portal from the database</p>
      */
-    void removePortal(Portal portal, boolean removeFromDatabase);
+    void removePortal(Portal portal);
 
     /**
      * Adds the given portal to this network
      *
      * @param portal         <p>The portal to add</p>
-     * @param saveToDatabase <p>Whether to also save the portal to the database, only instances of RealPortal can be saved</p>
      * @throws NameConflictException <p> if portal a portal with that name already exist in the network </p>
      */
-    void addPortal(Portal portal, boolean saveToDatabase) throws NameConflictException;
+    void addPortal(Portal portal) throws NameConflictException;
 
     /**
      * Checks whether there is already a portal in this network with the given name
@@ -140,4 +139,10 @@ public interface Network {
      * @throws UnimplementedFlagException
      */
     void setID(String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
+
+    /**
+     * 
+     * @return
+     */
+    PluginMessageSender getPluginMessageSender();
 }

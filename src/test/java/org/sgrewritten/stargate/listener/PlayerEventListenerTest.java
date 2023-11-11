@@ -22,6 +22,7 @@ import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.manager.BlockLoggerMock;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.network.RegistryMock;
+import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
 
@@ -42,7 +43,7 @@ class PlayerEventListenerTest {
         player = server.addPlayer();
         RegistryAPI registry = new RegistryMock();
         GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
-        listener = new PlayerEventListener(new LanguageManagerMock(), registry, new StargateBungeeManager(registry, new LanguageManagerMock()), new BlockLoggerMock(), new StorageMock());
+        listener = new PlayerEventListener(new LanguageManagerMock(), registry, new StargateBungeeManager(registry, new LanguageManagerMock(), new StargateNetworkManager(registry, new StorageMock())), new BlockLoggerMock(), new StorageMock());
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
     }
 

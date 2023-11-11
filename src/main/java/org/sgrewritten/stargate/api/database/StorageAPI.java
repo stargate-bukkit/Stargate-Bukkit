@@ -38,7 +38,7 @@ public interface StorageAPI {
      * @return <p>Whether or not the portal was successfully saved</p>
      * @throws StorageWriteException <p>If unable to write to storage</p>
      */
-    boolean savePortalToStorage(RealPortal portal, StorageType portalType) throws StorageWriteException;
+    boolean savePortalToStorage(RealPortal portal) throws StorageWriteException;
 
     /**
      * Removes a portal and its associated data from storage
@@ -47,7 +47,7 @@ public interface StorageAPI {
      * @param portalType <p>The type of portal to remove</p>
      * @throws StorageWriteException <p>If unable to write to storage</p>
      */
-    void removePortalFromStorage(Portal portal, StorageType portalType) throws StorageWriteException;
+    void removePortalFromStorage(Portal portal) throws StorageWriteException;
 
     /**
      * Set misc data of a portal
