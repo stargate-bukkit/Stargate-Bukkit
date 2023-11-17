@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.formatting;
 import org.bukkit.ChatColor;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.util.FileHelper;
 
 import java.io.BufferedReader;
@@ -25,9 +26,6 @@ public class StargateLanguageManager implements LanguageManager {
     private String language;
     private Map<TranslatableMessage, String> translatedStrings;
     private final Map<TranslatableMessage, String> backupStrings;
-
-    private final StargateLogger logger;
-
     private static final Map<String, String> LANGUAGE_SHORTHANDS = new HashMap<>();
 
     static {
@@ -37,13 +35,11 @@ public class StargateLanguageManager implements LanguageManager {
     /**
      * Instantiates a new language manager
      *
-     * @param stargate       <p>A reference to an instance of the main Stargate class</p>
      * @param languageFolder <p>The folder containing all language files</p>
      */
-    public StargateLanguageManager(Stargate stargate, File languageFolder) {
+    public StargateLanguageManager(File languageFolder) {
         this.languageFolder = languageFolder;
 
-        this.logger = stargate;
         backupStrings = loadBackupLanguage();
     }
 
@@ -88,7 +84,7 @@ public class StargateLanguageManager implements LanguageManager {
             translatedMessage = backupStrings.get(translatableMessage);
         }
         if (translatedMessage == null) {
-            logger.logMessage(Level.WARNING, String.format("Unable to find %s in the backup language file", translatableMessage));
+            Stargate.log(Level.WARNING, String.format("Unable to find %s in the backup language file", translatableMessage));
             return translatableMessage.getMessageKey();
         }
         return translatedMessage;
@@ -106,7 +102,7 @@ public class StargateLanguageManager implements LanguageManager {
         //Find the specified language if possible
         Language language = getLanguage(languageSpecification);
         if (language != null) {
-            logger.logMessage(Level.FINE, String.format("Found supported language %s", language.getLanguageCode()));
+            Stargate.log(Level.FINE, String.format("Found supported language %s", language.getLanguageCode()));
             languageSpecification = language.getLanguageCode();
         }
 
@@ -133,10 +129,10 @@ public class StargateLanguageManager implements LanguageManager {
             return loadLanguageFile(language, languageSpecification);
         } catch (IOException exception) {
             if (language == null) {
-                logger.logMessage(Level.WARNING, String.format("Unable to load the language file for %s",
+                Stargate.log(Level.WARNING, String.format("Unable to load the language file for %s",
                         languageSpecification));
             } else {
-                logger.logMessage(Level.FINER, String.format("Unable to load the language file for %s. This is " +
+                Stargate.log(Level.FINER, String.format("Unable to load the language file for %s. This is " +
                         "expected if the file has not been copied to disk yet", languageSpecification));
             }
             return new EnumMap<>(TranslatableMessage.class);
@@ -172,7 +168,7 @@ public class StargateLanguageManager implements LanguageManager {
     private String formatMessage(TranslatableMessage translatableMessage, ChatColor prefixColor) {
         String prefix = prefixColor + getString(TranslatableMessage.PREFIX);
         String message = getString(translatableMessage).replaceAll("(&([a-f0-9]))", "\u00A7$2");
-        logger.logMessage(Level.FINE, String.format("Formatted TranslatableMessage '%s' to '%s'",
+        Stargate.log(Level.FINE, String.format("Formatted TranslatableMessage '%s' to '%s'",
                 translatableMessage.toString(), message));
         return prefix + ChatColor.WHITE + message;
     }
@@ -190,12 +186,12 @@ public class StargateLanguageManager implements LanguageManager {
         if (language != null) {
             //For a known language file, we know the correct path
             languageFile = getLanguageFile(this.languageFolder, language);
-            logger.logMessage(Level.FINER, String.format("Loading known language %s from file %s",
+            Stargate.log(Level.FINER, String.format("Loading known language %s from file %s",
                     language.getLanguageCode(), languageFile));
         } else {
             //For a custom language file, try all possible paths
             languageFile = findCustomLanguageFile(languageSpecification);
-            logger.logMessage(Level.FINER, String.format("Loading custom language %s from file %s",
+            Stargate.log(Level.FINER, String.format("Loading custom language %s from file %s",
                     languageSpecification, languageFile));
         }
 
@@ -229,7 +225,7 @@ public class StargateLanguageManager implements LanguageManager {
         }
 
         if (foundMatchingFile == null) {
-            logger.logMessage(Level.WARNING, String.format("The selected language, \"%s\", is not supported, and no "
+            Stargate.log(Level.WARNING, String.format("The selected language, \"%s\", is not supported, and no "
                     + "custom language file exists. Falling back to English.", languageSpecification));
         }
         return foundMatchingFile;
@@ -281,7 +277,7 @@ public class StargateLanguageManager implements LanguageManager {
         for (String key : translations.keySet()) {
             TranslatableMessage translatableMessage = TranslatableMessage.parse(key);
             if (translatableMessage == null) {
-                logger.logMessage(Level.FINER, String.format("Skipping language prompt: %s = %s", key,
+                Stargate.log(Level.FINER, String.format("Skipping language prompt: %s = %s", key,
                         translations.get(key)));
                 continue;
             }
@@ -316,9 +312,9 @@ public class StargateLanguageManager implements LanguageManager {
 
         FileHelper.readInternalFileToMap("/" + internalFile.getPath().replace("\\", "/"),
                 internalFileTranslations);
-        logger.logMessage(Level.FINE, String.format("Checking internal language file '%s'", internalFile.getPath()));
+        Stargate.log(Level.FINE, String.format("Checking internal language file '%s'", internalFile.getPath()));
         if (internalFileTranslations.isEmpty()) {
-            logger.logMessage(Level.FINE, "Could not find any strings in the internal language file. It could" +
+            Stargate.log(Level.FINE, "Could not find any strings in the internal language file. It could" +
                     " be that it's missing or that it has no translations");
             return;
         }
@@ -350,7 +346,7 @@ public class StargateLanguageManager implements LanguageManager {
                                                 Map<TranslatableMessage, String> internalTranslatedValues) {
         File languageFolder = languageFile.getParentFile();
         if (languageFolder != null && !languageFolder.exists() && !languageFolder.mkdirs()) {
-            logger.logMessage(Level.WARNING, "Unable to create folders required for copying language file");
+            Stargate.log(Level.WARNING, "Unable to create folders required for copying language file");
             return;
         }
         try {
@@ -360,7 +356,7 @@ public class StargateLanguageManager implements LanguageManager {
                     continue;
                 }
                 translatedStrings.put(key, internalTranslatedValues.get(key));
-                logger.logMessage(Level.FINE, String.format("%n Adding a line of translations of key %s to language file '%s'",
+                Stargate.log(Level.FINE, String.format("%n Adding a line of translations of key %s to language file '%s'",
                         key.toString(), languageFile));
                 writer.newLine();
                 writer.write(String.format("%s=%s", key.getMessageKey(), internalTranslatedValues.get(key)));

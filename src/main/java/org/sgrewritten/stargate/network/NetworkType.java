@@ -1,7 +1,7 @@
 package org.sgrewritten.stargate.network;
 
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.Set;
@@ -124,4 +124,12 @@ public enum NetworkType {
         return null;
     }
 
+    public static boolean isNetworkTypeFlag(PortalFlag flag){
+        for (NetworkType type : NetworkType.values()) {
+            if (flag == type.getRelatedFlag()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

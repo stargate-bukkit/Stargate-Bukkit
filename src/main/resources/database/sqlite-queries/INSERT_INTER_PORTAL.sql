@@ -11,10 +11,12 @@ INSERT INTO {InterPortal}
    gateFileName,
    facing,
    flipZ,
-   homeServerId
+   homeServerId,
+   metaData
 )
 VALUES
 (
+   ?,
    ?,
    ?,
    ?,

@@ -1,7 +1,11 @@
 package org.sgrewritten.stargate.network.portal.formatting;
 
-import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A line formatter used for backwards compatibility before ChatColor was a thing
@@ -11,28 +15,44 @@ import org.sgrewritten.stargate.network.portal.Portal;
 public class NoLineColorFormatter implements LineFormatter {
 
     @Override
-    public String formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
-        return highlightingStyle.getHighlightedName((portal != null) ? portal.getName() : "null");
+    public List<StargateComponent> formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
+        return new ArrayList<>(List.of(
+                new StargateComponent(highlightingStyle.getPrefix()),
+                new StargateComponent((portal != null) ? portal.getName() : "null"),
+                new StargateComponent(highlightingStyle.getSuffix())
+        ));
     }
 
     @Override
-    public String formatLine(String line) {
-        return line;
+    public List<StargateComponent> formatLine(String line) {
+        return new ArrayList<>(List.of(new StargateComponent(line)));
     }
 
     @Override
-    public String formatErrorLine(String error, HighlightingStyle highlightingStyle) {
-        return highlightingStyle.getHighlightedName(error);
+    public List<StargateComponent> formatErrorLine(String error, HighlightingStyle highlightingStyle) {
+        return new ArrayList<>(List.of(
+                new StargateComponent(highlightingStyle.getPrefix()),
+                new StargateComponent(error),
+                new StargateComponent(highlightingStyle.getSuffix())
+        ));
     }
 
     @Override
-    public String formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
-        return highlightingStyle.getHighlightedName((network != null) ? network.getName() : "null");
+    public List<StargateComponent> formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
+        return new ArrayList<>(List.of(
+                new StargateComponent(highlightingStyle.getPrefix()),
+                new StargateComponent((network != null) ? network.getName() : "null"),
+                new StargateComponent(highlightingStyle.getSuffix())
+        ));
     }
 
     @Override
-    public String formatStringWithHiglighting(String aString, HighlightingStyle highlightingStyle) {
-        return highlightingStyle.getHighlightedName(aString);
+    public List<StargateComponent> formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle) {
+        return new ArrayList<>(List.of(
+                new StargateComponent(highlightingStyle.getPrefix()),
+                new StargateComponent(aString),
+                new StargateComponent(highlightingStyle.getSuffix())
+        ));
     }
 
 }

@@ -5,24 +5,26 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
+import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.format.*;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.event.StargateAccessEvent;
-import org.sgrewritten.stargate.event.StargateActivateEvent;
+import org.sgrewritten.stargate.api.event.portal.StargateAccessPortalEvent;
+import org.sgrewritten.stargate.api.event.portal.StargateActivatePortalEvent;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
-import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.util.MessageUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -49,9 +51,9 @@ public class NetworkedPortal extends AbstractPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameLengthException
      */
-    public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Gate gate, UUID ownerUUID,
-                           LanguageManager languageManager, StargateEconomyAPI economyAPI) throws NameLengthException {
-        super(network, name, flags, gate, ownerUUID, languageManager, economyAPI);
+    public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID,
+                           LanguageManager languageManager, StargateEconomyAPI economyAPI, String metaData) throws NameLengthException {
+        super(network, name, flags, unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI, metaData);
     }
 
     @Override
@@ -76,7 +78,8 @@ public class NetworkedPortal extends AbstractPortal {
         activate(actor);
         if (destinations.size() < 1) {
             String message = super.languageManager.getErrorMessage(TranslatableMessage.DESTINATION_EMPTY);
-            event.getPlayer().sendMessage(message);
+            MessageUtils.sendMessageFromPortal(this,event.getPlayer(),message,StargateSendMessagePortalEvent.MessageType.DESTINATION_EMPTY);
+
             this.isActive = false;
             return;
         }
@@ -141,7 +144,7 @@ public class NetworkedPortal extends AbstractPortal {
      * @return <p> The position of the selected portal in the destinations list</p>
      */
     private int reloadSelectedDestination() {
-        if (!this.isActive) {
+        if (!this.isActive || super.activator == null) {
             return NO_DESTINATION_SELECTED;
         }
 
@@ -164,17 +167,17 @@ public class NetworkedPortal extends AbstractPortal {
     }
 
     @Override
-    public void drawControlMechanisms() {
-        String[] lines = new String[4];
-        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN);
-        if (!this.isActive) {
-            lines[1] = super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.RIGHT_CLICK));
-            lines[2] = super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.TO_USE));
-            lines[3] = !this.hasFlag(PortalFlag.HIDE_NETWORK) ? super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()) : "";
+    public SignLine[] getDrawnControlLines() {
+        SignLine[] lines = new SignLine[4];
+        lines[0] = new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN),this, SignLineType.THIS_PORTAL);
+        if (!this.isActive || this.selectedDestination == NO_DESTINATION_SELECTED) {
+            lines[1] = new TextLine(super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.RIGHT_CLICK)));
+            lines[2] = new TextLine(super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.TO_USE)));
+            lines[3] = new NetworkLine(super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()),getNetwork());
         } else {
             drawActiveSign(lines);
         }
-        getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+        return lines;
     }
 
     @Override
@@ -190,14 +193,15 @@ public class NetworkedPortal extends AbstractPortal {
      *
      * @param lines <p>The sign lines to update</p>
      */
-    private void drawActiveSign(String[] lines) {
+    private void drawActiveSign(SignLine[] lines) {
         int destinationIndex = selectedDestination % 3;
         int firstDestination = selectedDestination - destinationIndex;
         int maxLength = destinations.size();
         for (int lineIndex = 0; lineIndex < 3; lineIndex++) {
             int destination = lineIndex + firstDestination;
-            if (destination == maxLength) {
-                break;
+            if (destination >= maxLength) {
+                lines[lineIndex+1] = new TextLine();
+                continue;
             }
             drawDestination(lineIndex, destination, destinationIndex, lines);
         }
@@ -211,10 +215,12 @@ public class NetworkedPortal extends AbstractPortal {
      * @param destinationIndex <p>The modulo of the selected destination</p>
      * @param lines            <p>The sign lines to update</p>
      */
-    private void drawDestination(int lineIndex, int destination, int destinationIndex, String[] lines) {
-        HighlightingStyle highlightingStyle = (destinationIndex == lineIndex) ? HighlightingStyle.LESSER_GREATER_THAN
+    private void drawDestination(int lineIndex, int destination, int destinationIndex, SignLine[] lines) {
+        boolean isSelectedPortal = (destinationIndex == lineIndex);
+        HighlightingStyle highlightingStyle = isSelectedPortal ? HighlightingStyle.LESSER_GREATER_THAN
                 : HighlightingStyle.NOTHING;
-        lines[lineIndex + 1] = super.colorDrawer.formatPortalName(destinations.get(destination), highlightingStyle);
+        Portal destinationPortal = destinations.get(destination);
+        lines[lineIndex + 1] = new PortalLine(super.colorDrawer.formatPortalName(destinationPortal, highlightingStyle),destinationPortal,isSelectedPortal ? SignLineType.DESTINATION_PORTAL : SignLineType.PORTAL);
     }
 
     /**
@@ -269,15 +275,17 @@ public class NetworkedPortal extends AbstractPortal {
      */
     private boolean hasActivatePermissions(Player player, StargatePermissionManager permissionManager) {
         boolean hasPermission = permissionManager.hasAccessPermission(this);
-        StargateAccessEvent accessEvent = new StargateAccessEvent(player, this, !hasPermission,
+        StargateAccessPortalEvent accessEvent = new StargateAccessPortalEvent(player, this, !hasPermission,
                 permissionManager.getDenyMessage());
         Bukkit.getPluginManager().callEvent(accessEvent);
         if (accessEvent.getDeny()) {
+            String message = null;
             if (accessEvent.getDenyReason() == null) {
-                player.sendMessage(super.languageManager.getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
+                message = super.languageManager.getErrorMessage(TranslatableMessage.ADDON_INTERFERE);
             } else if (!accessEvent.getDenyReason().isEmpty()) {
-                player.sendMessage(accessEvent.getDenyReason());
+                message = accessEvent.getDenyReason();
             }
+            MessageUtils.sendMessageFromPortal(this,player,message,StargateSendMessagePortalEvent.MessageType.DENY);
             if (hasPermission) {
                 Stargate.log(Level.CONFIG, " Access event was denied externally");
             }
@@ -285,14 +293,14 @@ public class NetworkedPortal extends AbstractPortal {
         }
 
         //Call the activate event to notify add-ons
-        StargateActivateEvent event = new StargateActivateEvent(this, player, getPortalNames(destinations),
+        StargateActivatePortalEvent event = new StargateActivatePortalEvent(this, player, getPortalNames(destinations),
                 this.getDestinationName());
         Bukkit.getPluginManager().callEvent(event);
 
         //Update this sign's displayed destinations
         destinations = getPortals(event.getDestinations());
         destination = network.getPortal(event.getDestination());
-        drawControlMechanisms();
+        getDrawnControlLines();
         return true;
     }
 
@@ -321,7 +329,7 @@ public class NetworkedPortal extends AbstractPortal {
     }
 
     @Override
-    protected void activate(Player player) {
+    public void activate(Player player) {
         super.activate(player);
         this.destinations = getDestinations(player);
         if (this.isActive) {

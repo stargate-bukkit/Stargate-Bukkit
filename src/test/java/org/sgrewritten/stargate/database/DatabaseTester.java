@@ -5,9 +5,9 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
-import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
@@ -16,17 +16,17 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.network.LocalNetwork;
-import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.StargateNetwork;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
-import org.sgrewritten.stargate.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalData;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
-import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.util.SQLTestHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
@@ -55,7 +55,7 @@ public class DatabaseTester {
 
     static Connection connection;
     private static SQLQueryGenerator generator;
-    private static FakePortalGenerator portalGenerator;
+    private static PortalFactory portalGenerator;
     private static WorldMock world;
     private static SQLDatabaseAPI database;
 
@@ -100,18 +100,17 @@ public class DatabaseTester {
         DatabaseTester.serverName = "aServerName";
         DatabaseTester.serverUUID = UUID.randomUUID();
         Stargate.setServerUUID(serverUUID);
-        StargateLogger logger = new FakeStargateLogger();
-        this.portalDatabaseAPI = new SQLDatabase(database, false, isMySQL, logger, nameConfig);
+        this.portalDatabaseAPI = new SQLDatabase(database, false, isMySQL, nameConfig);
 
         Network testNetwork = null;
         try {
-            testNetwork = new LocalNetwork("test", NetworkType.CUSTOM);
+            testNetwork = new StargateNetwork("test", NetworkType.CUSTOM, StorageType.LOCAL);
         } catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
             Stargate.log(e);
             fail();
         }
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
-        portalGenerator = new FakePortalGenerator(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
+        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
+        portalGenerator = new PortalFactory(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
 
         this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength);
         this.localPortals = portalGenerator.generateFakePortals(world, testNetwork, false, localPortalTestLength);
@@ -210,7 +209,7 @@ public class DatabaseTester {
     void addPortalTest() {
         for (RealPortal portal : localPortals.values()) {
             try {
-                Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, StorageType.LOCAL));
+                Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal));
             } catch (StorageWriteException e) {
                 fail();
             }
@@ -221,7 +220,7 @@ public class DatabaseTester {
         Stargate.log(Level.FINER, "InterServerTableName: " + nameConfig.getInterPortalTableName());
         for (RealPortal portal : interServerPortals.values()) {
             try {
-                Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal, StorageType.INTER_SERVER));
+                Assertions.assertTrue(this.portalDatabaseAPI.savePortalToStorage(portal));
             } catch (StorageWriteException e) {
                 fail();
             }
@@ -356,14 +355,14 @@ public class DatabaseTester {
             addFlagStatement.execute();
             // This for loop is just a lazy search algorithm
             for (PortalData data : getKnownPortalData(type)) {
-                if (data.name.equals(portal.getName()) && data.networkName.equals(portal.getNetwork().getName())) {
-                    Assertions.assertTrue(data.flagString.contains("G"), "No flag was added to the portal " + portal.getName());
+                if (data.name().equals(portal.getName()) && data.networkName().equals(portal.getNetwork().getName())) {
+                    Assertions.assertTrue(data.flagString().contains("G"), "No flag was added to the portal " + portal.getName());
                 }
             }
             DatabaseHelper.runStatement(generator.generateRemoveFlagStatement(connection, type, portal, 'G'));
             for (PortalData data : getKnownPortalData(type)) {
-                if (data.name.equals(portal.getName()) && data.networkName.equals(portal.getNetwork().getName())) {
-                    Assertions.assertFalse(data.flagString.contains("G"), "No flag was removed from the portal " + portal.getName());
+                if (data.name().equals(portal.getName()) && data.networkName().equals(portal.getNetwork().getName())) {
+                    Assertions.assertFalse(data.flagString().contains("G"), "No flag was removed from the portal " + portal.getName());
                 }
             }
         }
@@ -467,7 +466,7 @@ public class DatabaseTester {
      */
     private void destroyPortal(Portal portal, StorageType portalType) throws SQLException {
         try {
-            this.portalDatabaseAPI.removePortalFromStorage(portal, portalType);
+            this.portalDatabaseAPI.removePortalFromStorage(portal);
         } catch (StorageWriteException e) {
             throw new RuntimeException(e);
         }
@@ -496,14 +495,14 @@ public class DatabaseTester {
         String flagRelationTable = portalType == StorageType.LOCAL ? nameConfig.getFlagRelationTableName() : nameConfig.getInterFlagRelationTableName();
         String portalPositionTable = portalType == StorageType.LOCAL ? nameConfig.getPortalPositionTableName() : nameConfig.getInterPortalPositionTableName();
         try {
-            testNetwork = new LocalNetwork(initialNetworkName, NetworkType.CUSTOM);
+            testNetwork = new StargateNetwork(initialNetworkName, NetworkType.CUSTOM, portalType);
         } catch (InvalidNameException e) {
             Stargate.log(e);
             fail();
         }
         RealPortal portal = portalGenerator.generateFakePortal(world, testNetwork, initialName, portalType == StorageType.INTER_SERVER);
         Stargate.log(Level.FINER, portal.getName() + ", " + portal.getNetwork().getId());
-        this.portalDatabaseAPI.savePortalToStorage(portal, portalType);
+        this.portalDatabaseAPI.savePortalToStorage(portal);
         SQLTestHelper.checkIfHas(table, initialName, initialNetworkName, connection);
         this.portalDatabaseAPI.updateNetworkName(newNetName, initialNetworkName, portalType);
         this.portalDatabaseAPI.updatePortalName(newName, new GlobalPortalId(initialName, newNetName), portalType);

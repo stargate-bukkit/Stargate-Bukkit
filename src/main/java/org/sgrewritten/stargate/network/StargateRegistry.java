@@ -1,34 +1,38 @@
 package org.sgrewritten.stargate.network;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BlockVector;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.SupplierAction;
-import org.sgrewritten.stargate.database.StorageAPI;
-import org.sgrewritten.stargate.economy.StargateEconomyAPI;
+import org.sgrewritten.stargate.api.BlockHandlerResolver;
+import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.portal.BlockLocation;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.gate.structure.GateStructureType;
-import org.sgrewritten.stargate.network.portal.BlockLocation;
-import org.sgrewritten.stargate.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
-import org.sgrewritten.stargate.network.portal.RealPortal;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
-import org.sgrewritten.stargate.util.NetworkCreationHelper;
-import org.sgrewritten.stargate.vectorlogic.VectorUtils;
+import org.sgrewritten.stargate.util.VectorUtils;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -40,41 +44,26 @@ import java.util.logging.Level;
 public class StargateRegistry implements RegistryAPI {
 
     private final StorageAPI storageAPI;
-    private final HashMap<String, Network> networkMap = new HashMap<>();
-    private final HashMap<String, Network> bungeeNetworkMap = new HashMap<>();
+    private final BlockHandlerResolver blockHandlerResolver;
+    private final Map<String, Network> networkMap = new HashMap<>();
+    private final Map<String, Network> bungeeNetworkMap = new HashMap<>();
     private final Map<GateStructureType, Map<BlockLocation, RealPortal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
+    private final Map<BlockLocation, PortalPosition> portalPositionMap = new HashMap<>();
+    private final Map<String, Map<BlockLocation, PortalPosition>> portalPositionPluginNameMap = new HashMap<>();
+    private final Map<PortalPosition, RealPortal> portalPositionPortalRelation = new HashMap<>();
 
     /**
      * Instantiates a new Stargate registry
      *
      * @param storageAPI <p>The database API to use for interfacing with the database</p>
      */
-    public StargateRegistry(StorageAPI storageAPI) {
+    public StargateRegistry(StorageAPI storageAPI, BlockHandlerResolver blockHandlerResolver) {
         this.storageAPI = storageAPI;
+        this.blockHandlerResolver = blockHandlerResolver;
     }
 
     @Override
-    public void loadPortals(StargateEconomyAPI economyManager) {
-        try {
-            storageAPI.loadFromStorage(this, economyManager);
-        } catch (StorageReadException e) {
-            Stargate.log(e);
-            return;
-        }
-        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            updateAllPortals();
-            return true;
-        }));
-    }
-
-    @Override
-    public void removePortal(Portal portal, StorageType portalType) {
-        try {
-            storageAPI.removePortalFromStorage(portal, portalType);
-        } catch (StorageWriteException e) {
-            Stargate.log(e);
-        }
-
+    public void unregisterPortal(Portal portal) {
         if (portal instanceof RealPortal realPortal) {
             for (GateStructureType formatType : GateStructureType.values()) {
                 for (BlockLocation loc : realPortal.getGate().getLocations(formatType)) {
@@ -82,42 +71,49 @@ public class StargateRegistry implements RegistryAPI {
                     this.unRegisterLocation(formatType, loc);
                 }
             }
-        }
-    }
-
-    @Override
-    public void savePortal(RealPortal portal, StorageType portalType) {
-        try {
-            storageAPI.savePortalToStorage(portal, portalType);
-        } catch (StorageWriteException e) {
-            Stargate.log(e);
-        }
-    }
-
-    @Override
-    public Network createNetwork(String networkName, NetworkType type, boolean isInterserver, boolean isForced)
-            throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException {
-        if (this.networkExists(networkName, isInterserver)
-                || this.networkExists(NetworkCreationHelper.getPlayerUUID(networkName).toString(), isInterserver)) {
-            if (isForced && type == NetworkType.DEFAULT) {
-                Network network = this.getNetwork(networkName, isInterserver);
-                if (network != null && network.getType() != type) {
-                    this.rename(network);
+            GateAPI gate = realPortal.getGate();
+            List<PortalPosition> portalPositions = gate.getPortalPositions();
+            for (PortalPosition portalPosition : portalPositions) {
+                Location location = gate.getLocation(portalPosition.getRelativePositionLocation());
+                if (!portalPosition.getPluginName().equals("Stargate")) {
+                    Stargate.log(Level.FINEST, "Unregistering non-Stargate portal position on location " + location.toString());
+                    blockHandlerResolver.registerRemoval(this, location, realPortal);
                 }
+                Stargate.log(Level.FINEST, "Unregistering portal position on location " + location.toString());
+                this.removePortalPosition(location);
             }
-            throw new NameConflictException("network of id '" + networkName + "' already exists", true);
         }
-        Network network = storageAPI.createNetwork(networkName, type, isInterserver);
-        network.assignToRegistry(this);
-        getNetworkMap(isInterserver).put(network.getId(), network);
-        Stargate.log(
-                Level.FINEST, String.format("Adding networkid %s to interServer = %b", network.getId(), isInterserver));
-        return network;
     }
 
     @Override
-    public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException {
-        return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags), flags.contains(PortalFlag.FANCY_INTER_SERVER), isForced);
+    public void registerPortal(RealPortal portal) {
+        GateAPI gate = portal.getGate();
+        for (GateStructureType key : GateStructureType.values()) {
+            List<BlockLocation> locations = gate.getLocations(key);
+            if (locations == null) {
+                continue;
+            }
+            this.registerLocations(key, generateLocationMap(locations, portal));
+        }
+        for (PortalPosition portalPosition : gate.getPortalPositions()) {
+            Location location = gate.getLocation(portalPosition.getRelativePositionLocation());
+            this.registerPortalPosition(portalPosition, location, portal);
+        }
+    }
+
+    /**
+     * Gets a map between the given block locations and the given portal
+     *
+     * @param locations <p>The locations related to the portal</p>
+     * @param portal    <p>The portal with blocks at the given locations</p>
+     * @return <p>The resulting location to portal mapping</p>
+     */
+    private Map<BlockLocation, RealPortal> generateLocationMap(List<BlockLocation> locations, RealPortal portal) {
+        Map<BlockLocation, RealPortal> output = new HashMap<>();
+        for (BlockLocation location : locations) {
+            output.put(location, portal);
+        }
+        return output;
     }
 
     @Override
@@ -175,6 +171,10 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public RealPortal getPortal(Location location) {
+        PortalPosition portalPosition = this.getPortalPosition(location);
+        if (portalPosition != null) {
+            return this.getPortalFromPortalPosition(portalPosition);
+        }
         return getPortal(location, GateStructureType.values());
     }
 
@@ -192,13 +192,20 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public boolean isNextToPortal(Location location, GateStructureType structureType) {
+        return !getPortalsFromTouchingBlock(location, structureType).isEmpty();
+    }
+
+    @Override
+    public List<RealPortal> getPortalsFromTouchingBlock(Location location, GateStructureType structureType) {
+        List<RealPortal> portals = new ArrayList<>();
         for (BlockVector adjacentVector : VectorUtils.getAdjacentRelativePositions()) {
             Location adjacentLocation = location.clone().add(adjacentVector);
-            if (getPortal(adjacentLocation, structureType) != null) {
-                return true;
+            RealPortal portal = getPortal(adjacentLocation, structureType);
+            if (portal != null) {
+                portals.add(portal);
             }
         }
-        return false;
+        return portals;
     }
 
 
@@ -208,6 +215,14 @@ public class StargateRegistry implements RegistryAPI {
             portalFromStructureTypeMap.put(structureType, new HashMap<>());
         }
         portalFromStructureTypeMap.get(structureType).putAll(locationsMap);
+    }
+
+    @Override
+    public void registerLocation(GateStructureType structureType, BlockLocation location, RealPortal portal) {
+        if (!portalFromStructureTypeMap.containsKey(structureType)) {
+            portalFromStructureTypeMap.put(structureType, new HashMap<>());
+        }
+        portalFromStructureTypeMap.get(structureType).put(location, portal);
     }
 
     @Override
@@ -235,55 +250,40 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public HashMap<String, Network> getBungeeNetworkMap() {
+    public Map<String, Network> getBungeeNetworkMap() {
         return bungeeNetworkMap;
     }
 
     @Override
-    public HashMap<String, Network> getNetworkMap() {
+    public Map<String, Network> getNetworkMap() {
         return networkMap;
     }
 
-    public void load(StargateEconomyAPI economyManager) {
+    public void clear(StargateAPI stargateAPI) {
         networkMap.clear();
         bungeeNetworkMap.clear();
         portalFromStructureTypeMap.clear();
-        this.loadPortals(economyManager);
+        portalPositionMap.clear();
+        portalPositionPluginNameMap.clear();
+        portalFromStructureTypeMap.clear();
     }
 
     @Override
-    public void rename(Network network, String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
-        //noinspection ResultOfMethodCallIgnored
-        if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(newName))) {
+    public void updateName(Network network, String newId) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
+        if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(newId))) {
             throw new InvalidNameException("Can not rename the network to an UUID.");
         }
-
-        Bukkit.getScheduler().runTaskAsynchronously(Stargate.getInstance(), () -> {
-            try {
-                storageAPI.updateNetworkName(newName, newName, network.getStorageType());
-            } catch (StorageWriteException e) {
-                Stargate.log(e);
-            }
-        });
-
-        Stargate.log(Level.FINE, String.format("Renaming network %s to %s", network.getName(), newName));
-        network.setID(newName);
+        Stargate.log(Level.FINE, String.format("Renaming network %s to %s", network.getName(), newId));
+        // The network is stored in a map with its name as a key; this key needs to be updated properly.
+        Map<String, Network> map = (network.getStorageType() == StorageType.INTER_SERVER) ? this.bungeeNetworkMap : this.networkMap;
+        map.remove(network.getId());
+        network.setID(newId);
+        map.put(network.getId(), network);
         network.updatePortals();
     }
 
     @Override
-    public void rename(Portal portal, String newName) {
-        try {
-            storageAPI.updatePortalName(newName, portal.getGlobalId(), portal.getStorageType());
-        } catch (StorageWriteException e) {
-            Stargate.log(e);
-        }
-        portal.setName(newName);
-        portal.getNetwork().updatePortals();
-    }
-
-    @Override
-    public void rename(Network network) throws InvalidNameException {
+    public String getValidNewName(Network network) throws InvalidNameException {
         //noinspection ResultOfMethodCallIgnored
         if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(network.getId()))) {
             throw new InvalidNameException("Can not rename the network as it's name is an UUID.");
@@ -291,30 +291,94 @@ public class StargateRegistry implements RegistryAPI {
         String newName = network.getId();
         int i = 1;
         try {
-            boolean isInterServer = (network instanceof InterServerNetwork);
+            boolean isInterServer = (network.getStorageType() == StorageType.INTER_SERVER);
             while (networkExists(newName, isInterServer) || storageAPI.netWorkExists(newName, network.getStorageType())) {
                 newName = network.getId() + i;
                 i++;
             }
-            try {
-                rename(network, newName);
-            } catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
-                String annoyinglyOverThoughtName = network.getId();
-                int n = 1;
-                while (networkExists(annoyinglyOverThoughtName, isInterServer) || storageAPI.netWorkExists(newName, network.getStorageType())) {
-                    String number = String.valueOf(n);
-                    annoyinglyOverThoughtName = network.getId().substring(0, network.getId().length() - number.length())
-                            + number;
-                }
-                try {
-                    rename(network, annoyinglyOverThoughtName);
-                } catch (InvalidNameException | NameLengthException | UnimplementedFlagException impossible) {
-                    Stargate.log(Level.SEVERE,
-                            "Could not rename the network, do /sg trace and show the data in an new issue in sgrewritten.org/report");
-                }
+            if (newName.length() < Stargate.getMaxTextLength()) {
+                return newName;
             }
+            String annoyinglyOverThoughtName = network.getId();
+            int n = 1;
+            while (networkExists(annoyinglyOverThoughtName, isInterServer) || storageAPI.netWorkExists(newName, network.getStorageType())) {
+                String number = String.valueOf(n);
+                annoyinglyOverThoughtName = network.getId().substring(0, network.getId().length() - number.length())
+                        + number;
+            }
+            return annoyinglyOverThoughtName;
         } catch (StorageReadException e) {
             Stargate.log(e);
         }
+        throw new InvalidNameException("Unable to find a valid name");
     }
+
+    @Override
+    public Map<BlockLocation, PortalPosition> getPortalPositions() {
+        return this.portalPositionMap;
+    }
+
+    @Override
+    public Map<BlockLocation, PortalPosition> getPortalPositionsOwnedByPlugin(Plugin plugin) {
+        this.portalPositionPluginNameMap.putIfAbsent(plugin.getName(), new HashMap<>());
+        return this.portalPositionPluginNameMap.get(plugin.getName());
+    }
+
+    @Override
+    public PortalPosition savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin) {
+        BlockVector relativeVector = portal.getGate().getRelativeVector(location).toBlockVector();
+        PortalPosition portalPosition = new PortalPosition(type, relativeVector, plugin.getName());
+        try {
+            storageAPI.addPortalPosition(portal, portal.getStorageType(), portalPosition);
+        } catch (StorageWriteException e) {
+            Stargate.log(e);
+        }
+        return portalPosition;
+    }
+
+    @Override
+    public void removePortalPosition(Location location) {
+        BlockLocation blockLocation = new BlockLocation(location);
+        PortalPosition portalPosition = portalPositionMap.get(blockLocation);
+        if (portalPosition == null) {
+            return;
+        }
+        portalPositionMap.remove(blockLocation);
+        portalPositionPluginNameMap.get(portalPosition.getPluginName()).remove(blockLocation);
+        RealPortal portal = portalPositionPortalRelation.remove(portalPosition);
+        portal.getGate().removePortalPosition(portalPosition);
+        try {
+            storageAPI.removePortalPosition(portal, portal.getStorageType(), portalPosition);
+        } catch (StorageWriteException e) {
+            Stargate.log(e);
+        }
+    }
+
+    @Override
+    public void registerPortalPosition(PortalPosition portalPosition, Location location, RealPortal portal) {
+        Stargate.log(Level.FINEST, String.format("Registering portal position at %s for portal %s", location.toString(), portal.getName()));
+        BlockLocation blockLocation = new BlockLocation(location);
+        portalPositionMap.put(blockLocation, portalPosition);
+        portalPositionPluginNameMap.putIfAbsent(portalPosition.getPluginName(), new HashMap<>());
+        portalPositionPluginNameMap.get(portalPosition.getPluginName()).put(blockLocation, portalPosition);
+        portalPositionPortalRelation.put(portalPosition, portal);
+        portal.getGate().addPortalPosition(portalPosition);
+    }
+
+    @Override
+    public PortalPosition getPortalPosition(Location location) {
+        return portalPositionMap.get(new BlockLocation(location));
+    }
+
+    @Override
+    public @Nullable RealPortal getPortalFromPortalPosition(PortalPosition portalPosition) {
+        return portalPositionPortalRelation.get(portalPosition);
+    }
+
+    @Override
+    public void registerNetwork(Network network) {
+        network.assignToRegistry(this);
+        getNetworkMap(network.getStorageType() == StorageType.INTER_SERVER).put(network.getId(), network);
+    }
+
 }

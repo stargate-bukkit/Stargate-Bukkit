@@ -1,17 +1,15 @@
 package org.sgrewritten.stargate.database;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
-import org.sgrewritten.stargate.gate.GateAPI;
+import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalPosition;
-import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,8 +20,6 @@ import java.util.logging.Level;
  * The SQL query generator is responsible for generating prepared statements for various queries
  */
 public class SQLQueryGenerator {
-
-    private final StargateLogger logger;
     private final TableNameConfiguration tableNameConfiguration;
     private final DatabaseDriver databaseDriver;
 
@@ -31,12 +27,10 @@ public class SQLQueryGenerator {
      * Instantiates a new SQL query generator
      *
      * @param tableNameConfiguration <p>The config to use for table names</p>
-     * @param logger                 <p>The logger to use for logging error messages</p>
      * @param databaseDriver         <p>The currently used database driver (for syntax variations)</p>
      */
-    public SQLQueryGenerator(TableNameConfiguration tableNameConfiguration, StargateLogger logger, DatabaseDriver databaseDriver) {
+    public SQLQueryGenerator(TableNameConfiguration tableNameConfiguration, DatabaseDriver databaseDriver) {
         this.tableNameConfiguration = tableNameConfiguration;
-        this.logger = logger;
         this.databaseDriver = databaseDriver;
     }
 
@@ -213,7 +207,7 @@ public class SQLQueryGenerator {
         }
         removePositionsStatement.setString(1, portal.getName());
         removePositionsStatement.setString(2, portal.getNetwork().getId());
-        BlockVector positionLocation = portalPosition.getPositionLocation();
+        BlockVector positionLocation = portalPosition.getRelativePositionLocation();
         removePositionsStatement.setInt(3, positionLocation.getBlockX());
         removePositionsStatement.setInt(4, positionLocation.getBlockY());
         removePositionsStatement.setInt(5, -positionLocation.getBlockZ());
@@ -342,12 +336,13 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateRemoveFlagsStatement(Connection connection,
                                                           StorageType portalType, Portal portal) throws SQLException {
-        PreparedStatement removeFlagsStatement;
+        String stringStatement;
         if (portalType == StorageType.LOCAL) {
-            removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATIONS));
+            stringStatement = getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATIONS);
         } else {
-            removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATIONS));
+            stringStatement = getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATIONS);
         }
+        PreparedStatement removeFlagsStatement = prepareQuery(connection, stringStatement);
         removeFlagsStatement.setString(1, portal.getName());
         removeFlagsStatement.setString(2, portal.getNetwork().getId());
         return removeFlagsStatement;
@@ -365,12 +360,14 @@ public class SQLQueryGenerator {
      */
     public PreparedStatement generateRemoveFlagStatement(Connection connection,
                                                          StorageType portalType, Portal portal, Character flagChar) throws SQLException {
-        PreparedStatement removeFlagsStatement;
+        String stringStatement;
         if (portalType == StorageType.LOCAL) {
-            removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATION));
+            stringStatement = getQuery(SQLQuery.DELETE_PORTAL_FLAG_RELATION);
         } else {
-            removeFlagsStatement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATION));
+            stringStatement = getQuery(SQLQuery.DELETE_INTER_PORTAL_FLAG_RELATION);
         }
+
+        PreparedStatement removeFlagsStatement = prepareQuery(connection, stringStatement);
         removeFlagsStatement.setString(1, portal.getName());
         removeFlagsStatement.setString(2, portal.getNetwork().getName());
         removeFlagsStatement.setString(3, String.valueOf(flagChar));
@@ -422,9 +419,12 @@ public class SQLQueryGenerator {
 
         if (isInterServer) {
             statement.setString(12, Stargate.getServerUUID());
+            statement.setString(13, portal.getMetaData());
+        } else {
+            statement.setString(12, portal.getMetaData());
         }
 
-        log(Level.FINEST, "sql query: " + statementMessage);
+        Stargate.log(Level.FINEST, "sql query: " + statementMessage);
         return statement;
     }
 
@@ -450,7 +450,7 @@ public class SQLQueryGenerator {
         PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, portal.getName());
         statement.setString(2, portal.getNetwork().getId());
-        log(Level.FINEST, "sql query: " + statementMessage);
+        Stargate.log(Level.FINEST, "sql query: " + statementMessage);
         return statement;
     }
 
@@ -466,7 +466,7 @@ public class SQLQueryGenerator {
     public PreparedStatement generateUpdateServerInfoStatus(Connection connection, String serverUUID, String serverName) throws SQLException {
         String statementString = getQuery(SQLQuery.REPLACE_SERVER_INFO);
         String statementMessage = tableNameConfiguration.replaceKnownTableNames(statementString);
-        log(Level.FINEST, statementMessage);
+        Stargate.log(Level.FINEST, statementMessage);
         PreparedStatement statement = connection.prepareStatement(statementMessage);
         statement.setString(1, serverUUID);
         statement.setString(2, serverName);
@@ -522,7 +522,7 @@ public class SQLQueryGenerator {
      */
     private PreparedStatement prepareQuery(Connection connection, String query) throws SQLException {
         query = tableNameConfiguration.replaceKnownTableNames(query);
-        log(Level.FINEST, query);
+        Stargate.log(Level.FINEST, query);
         return connection.prepareStatement(query);
     }
 
@@ -562,7 +562,7 @@ public class SQLQueryGenerator {
         statement.setString(1, meta);
         statement.setString(2, portal.getName());
         statement.setString(3, portal.getNetwork().getId());
-        BlockVector vector = portalPosition.getPositionLocation();
+        BlockVector vector = portalPosition.getRelativePositionLocation();
         statement.setInt(4, vector.getBlockX());
         statement.setInt(5, vector.getBlockY());
         statement.setInt(6, -vector.getBlockZ());
@@ -579,7 +579,7 @@ public class SQLQueryGenerator {
         }
         statement.setString(1, portal.getName());
         statement.setString(2, portal.getNetwork().getId());
-        BlockVector vector = portalPosition.getPositionLocation();
+        BlockVector vector = portalPosition.getRelativePositionLocation();
         statement.setInt(3, vector.getBlockX());
         statement.setInt(4, vector.getBlockY());
         statement.setInt(5, -vector.getBlockZ());
@@ -623,19 +623,6 @@ public class SQLQueryGenerator {
         }
         statement.setString(1, netName);
         return statement;
-    }
-
-    /**
-     * Logs a message at the finest log level
-     *
-     * @param message <p>The message to log</p>
-     */
-    public void log(Level level, String message) {
-        if (logger != null) {
-            logger.logMessage(level, message);
-        } else {
-            Bukkit.getLogger().log(level, message);
-        }
     }
 
 }

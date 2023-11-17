@@ -2,17 +2,19 @@ package org.sgrewritten.stargate.util.portal;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.event.StargateDestroyEvent;
-import org.sgrewritten.stargate.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.event.portal.StargateDestroyPortalEvent;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
-import org.sgrewritten.stargate.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.RealPortal;
-import org.sgrewritten.stargate.property.BypassPermission;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.util.EconomyHelper;
+import org.sgrewritten.stargate.util.MessageUtils;
 
 /**
  * A helper class for removing an existing portal
@@ -36,18 +38,19 @@ public final class PortalDestructionHelper {
         StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
 
         boolean hasPermission = permissionManager.hasDestroyPermissions((RealPortal) portal);
-        StargateDestroyEvent stargateDestroyEvent = new StargateDestroyEvent(portal, player, !hasPermission,
+        StargateDestroyPortalEvent portalDestroyEvent = new StargateDestroyPortalEvent(portal, player, !hasPermission,
                 permissionManager.getDenyMessage(), cost);
-        Bukkit.getPluginManager().callEvent(stargateDestroyEvent);
+        Bukkit.getPluginManager().callEvent(portalDestroyEvent);
 
         // Inform the player why the destruction was denied
-        if (stargateDestroyEvent.getDeny()) {
-            if (stargateDestroyEvent.getDenyReason() == null) {
-                player.sendMessage(
-                        languageManager.getErrorMessage(TranslatableMessage.ADDON_INTERFERE));
-            } else if (!stargateDestroyEvent.getDenyReason().isEmpty()) {
-                player.sendMessage(stargateDestroyEvent.getDenyReason());
+        if (portalDestroyEvent.getDeny()) {
+            String message = null;
+            if (portalDestroyEvent.getDenyReason() == null) {
+                message = languageManager.getErrorMessage(TranslatableMessage.ADDON_INTERFERE);
+            } else if (!portalDestroyEvent.getDenyReason().isEmpty()) {
+                message = portalDestroyEvent.getDenyReason();
             }
+            MessageUtils.sendMessageFromPortal(portal,player,message, StargateSendMessagePortalEvent.MessageType.DENY);
             return true;
         }
 
@@ -57,8 +60,9 @@ public final class PortalDestructionHelper {
          * permission, do not collect money
          */
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_DESTROY)
-                && !economyManager.chargePlayer(player, null, stargateDestroyEvent.getCost())) {
-            player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS));
+                && !economyManager.chargePlayer(player, null, portalDestroyEvent.getCost())) {
+            String message = languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
+            MessageUtils.sendMessageFromPortal(portal,player,message, StargateSendMessagePortalEvent.MessageType.DENY);
             return true;
         }
         destroyAction.run();

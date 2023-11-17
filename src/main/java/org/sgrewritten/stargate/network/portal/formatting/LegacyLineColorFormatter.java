@@ -2,24 +2,38 @@ package org.sgrewritten.stargate.network.portal.formatting;
 
 import org.bukkit.ChatColor;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LegacyLineColorFormatter implements LineFormatter {
 
     @Override
-    public String formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
-        return getColor() + highlightingStyle.getHighlightedName((portal != null) ? portal.getName() : "null");
+    public List<StargateComponent> formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
+        return new ArrayList<>(List.of(
+                new StargateComponent(getColor() + highlightingStyle.getPrefix()),
+                new StargateComponent(getColor()+(portal != null ? portal.getName() : "null")),
+                new StargateComponent(getColor() + highlightingStyle.getSuffix())
+        ));
     }
 
     @Override
-    public String formatLine(String line) {
-        return getColor() + line;
+    public List<StargateComponent> formatLine(String line) {
+        List<StargateComponent> output = new ArrayList<>();
+        output.add(new StargateComponent(getColor() + line));
+        return output;
     }
 
     @Override
-    public String formatErrorLine(String error, HighlightingStyle highlightingStyle) {
-        return getColor() + highlightingStyle.getHighlightedName(error);
+    public List<StargateComponent> formatErrorLine(String error, HighlightingStyle highlightingStyle) {
+        return new ArrayList<>(List.of(
+                new StargateComponent(getColor() + highlightingStyle.getPrefix()),
+                new StargateComponent(getColor()+ error),
+                new StargateComponent(getColor() + highlightingStyle.getSuffix())
+        ));
     }
 
     private ChatColor getColor() {
@@ -27,13 +41,21 @@ public class LegacyLineColorFormatter implements LineFormatter {
     }
 
     @Override
-    public String formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
-        return getColor() + highlightingStyle.getHighlightedName((network != null) ? network.getName() : "null");
+    public List<StargateComponent> formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
+        return new ArrayList<>(List.of(
+                new StargateComponent(getColor() + highlightingStyle.getPrefix()),
+                new StargateComponent(getColor()+ (network == null ? "null" : network.getName())),
+                new StargateComponent(getColor() + highlightingStyle.getSuffix())
+        ));
     }
 
     @Override
-    public String formatStringWithHiglighting(String aString, HighlightingStyle highlightingStyle) {
-        return getColor() + highlightingStyle.getHighlightedName(aString);
+    public List<StargateComponent> formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle) {
+        return new ArrayList<>(List.of(
+                new StargateComponent(getColor() + highlightingStyle.getPrefix()),
+                new StargateComponent(getColor()+ aString),
+                new StargateComponent(getColor() + highlightingStyle.getSuffix())
+        ));
     }
 
 }

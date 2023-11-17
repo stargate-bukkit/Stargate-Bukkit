@@ -12,24 +12,27 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.database.StorageMock;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.network.InterServerNetwork;
-import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.RegistryMock;
+import org.sgrewritten.stargate.network.StargateNetwork;
+import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
-import org.sgrewritten.stargate.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
-import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import org.sgrewritten.stargate.util.BungeeHelper;
-import org.sgrewritten.stargate.util.FakeLanguageManager;
-import org.sgrewritten.stargate.util.FakeStorage;
+import org.sgrewritten.stargate.util.LanguageManagerMock;
 
 import java.io.File;
 import java.util.HashSet;
@@ -54,27 +57,29 @@ class StargateBungeeManagerTest {
     private static final String PORTAL2 = "portal2";
     private static final String PLAYER = "player";
     private static final String REGISTERED_PORTAL = "rPortal";
+    private StargateNetworkManager networkManager;
 
     @BeforeEach
     void setUp() throws TranslatableException, InvalidStructureException {
         server = MockBukkit.mock();
-        GateFormatHandler.setFormats(
-                Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, new FakeStargateLogger())));
+        GateFormatRegistry.setFormats(
+                Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
         Stargate.setServerName(SERVER);
-        registry = new StargateRegistry(new FakeStorage());
+        registry = new RegistryMock();
+        this.networkManager = new StargateNetworkManager(registry, new StorageMock());
         world = server.addSimpleWorld("world");
-        Network network2 = registry.createNetwork(NETWORK2, NetworkType.CUSTOM, true, false);
-        realPortal = new FakePortalGenerator().generateFakePortal(world, network2, REGISTERED_PORTAL, true);
-        network2.addPortal(realPortal, false);
+        Network network2 = networkManager.createNetwork(NETWORK2, NetworkType.CUSTOM, true, false);
+        realPortal = PortalFactory.generateFakePortal(world, network2, REGISTERED_PORTAL, true);
+        network2.addPortal(realPortal);
 
-        Network bungeeNetwork = registry.createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false,
+        Network bungeeNetwork = networkManager.createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false,
                 false);
         Set<PortalFlag> bungeePortalFlags = new HashSet<>();
-        bungeePortal = new FakePortalGenerator().generateFakePortal(new Location(world, 0, 10, 0), bungeeNetwork,
-                NETWORK, false, bungeePortalFlags, registry);
-        bungeeNetwork.addPortal(bungeePortal, false);
+        bungeePortal = PortalFactory.generateFakePortal(new Location(world, 0, 10, 0), bungeeNetwork,
+                NETWORK, false, bungeePortalFlags, new HashSet<>(), registry);
+        bungeeNetwork.addPortal(bungeePortal);
 
-        bungeeManager = new StargateBungeeManager(registry, new FakeLanguageManager());
+        bungeeManager = new StargateBungeeManager(registry, new LanguageManagerMock(),networkManager);
     }
 
     @AfterEach
@@ -85,12 +90,12 @@ class StargateBungeeManagerTest {
     @Test
     void updateNetwork() throws TranslatableException, InvalidStructureException {
         //A network not assigned to a registry
-        Network network = new InterServerNetwork(NETWORK, NetworkType.CUSTOM);
-        RealPortal portal = new FakePortalGenerator().generateFakePortal(world, network, PORTAL, true);
-        RealPortal portal2 = new FakePortalGenerator().generateFakePortal(world, network, PORTAL2, true);
+        Network network = new StargateNetwork(NETWORK, NetworkType.CUSTOM, StorageType.INTER_SERVER);
+        RealPortal portal = PortalFactory.generateFakePortal(world, network, PORTAL, true);
+        RealPortal portal2 = PortalFactory.generateFakePortal(world, network, PORTAL2, true);
 
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
-        bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal2, StargateProtocolRequestType.PORTAL_ADD));
+        bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal2,StargateProtocolRequestType.PORTAL_ADD));
         Network network1 = registry.getNetwork(NETWORK, true);
         Assertions.assertNotNull(network1);
         Assertions.assertNotNull(network1.getPortal(PORTAL));
@@ -103,7 +108,7 @@ class StargateBungeeManagerTest {
 
         bungeeManager.playerConnect(BungeeHelper.generateTeleportJsonMessage(PLAYER, realPortal));
         Component componentMessage = player.nextComponentMessage();
-        Assertions.assertFalse(componentMessage != null && componentMessage.toString().contains("[ERROR]"), "A error message was sent to the player '" + componentMessage + "'");
+        Assertions.assertFalse(componentMessage != null && componentMessage.toString().contains("[ERROR]"), "An error message was sent to the player '" + componentMessage + "'");
     }
 
     @Test
@@ -120,7 +125,7 @@ class StargateBungeeManagerTest {
 
         bungeeManager.legacyPlayerConnect(BungeeHelper.generateLegacyTeleportMessage(PLAYER, bungeePortal));
         Component componentMessage = player.nextComponentMessage();
-        Assertions.assertFalse(componentMessage != null && componentMessage.toString().contains("[ERROR]"), "A error message was sent to the player '" + componentMessage + "'");
+        Assertions.assertFalse(componentMessage != null && componentMessage.toString().contains("[ERROR]"), "An error message was sent to the player '" + componentMessage + "'");
     }
 
     @Test

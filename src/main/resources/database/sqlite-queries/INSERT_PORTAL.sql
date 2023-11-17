@@ -10,10 +10,12 @@ INSERT INTO {Portal}
    ownerUUID,
    gateFileName,
    facing,
-   flipZ
+   flipZ,
+   metaData
 )
 VALUES
 (
+   ?,
    ?,
    ?,
    ?,

@@ -5,6 +5,7 @@ import org.bukkit.Server;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
@@ -12,9 +13,9 @@ import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.formatting.LanguageManager;
-import org.sgrewritten.stargate.network.RegistryAPI;
-import org.sgrewritten.stargate.network.portal.Portal;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.LegacyDataHandler;
 import org.sgrewritten.stargate.util.LegacyPortalStorageLoader;
@@ -35,30 +36,24 @@ public class DataMigration_1_0_0 extends DataMigration {
     private static HashMap<String, String> CONFIG_CONVERSIONS;
     private final Server server;
     private final RegistryAPI registry;
+    private final StargateAPI stargateAPI;
+    private final StoredPropertiesAPI properties;
     private Map<String, Object> oldConfig;
-    private final StargateLogger logger;
-    private final LanguageManager languageManager;
-    private final StargateEconomyAPI economyManager;
-    private final @NotNull StoredPropertiesAPI properties;
 
     /**
      * Instantiates a new Ret-Com 1.0.0
      *
      * @param server   <p>The server to use for loading legacy portals</p>
      * @param registry <p>The stargate registry to register loaded portals to</p>
-     * @param logger   <p>The logger to use for logging any messages</p>
+     * @param stargateAPI   <p>The stargate API</p>
      */
-    public DataMigration_1_0_0(@NotNull Server server, @NotNull RegistryAPI registry, @NotNull StargateLogger logger,
-                               @NotNull LanguageManager languageManager, @NotNull StargateEconomyAPI economyManager,
-                               @NotNull StoredPropertiesAPI properties) {
+    public DataMigration_1_0_0(@NotNull Server server, @NotNull RegistryAPI registry, @NotNull StargateAPI stargateAPI, @NotNull StoredPropertiesAPI properties) {
         if (CONFIG_CONVERSIONS == null) {
             loadConfigConversions();
         }
         this.server = Objects.requireNonNull(server);
         this.registry = Objects.requireNonNull(registry);
-        this.logger = Objects.requireNonNull(logger);
-        this.languageManager = Objects.requireNonNull(languageManager);
-        this.economyManager = Objects.requireNonNull(economyManager);
+        this.stargateAPI = Objects.requireNonNull(stargateAPI);
         this.properties = Objects.requireNonNull(properties);
     }
 
@@ -104,7 +99,7 @@ public class DataMigration_1_0_0 extends DataMigration {
                     .findConfigKey(new String[]{"portal-folder", "folders.portalFolder"}, oldConfig));
             String defaultName = (String) oldConfig.get(LegacyDataHandler
                     .findConfigKey(new String[]{"gates.defaultGateNetwork", "default-gate-network"}, oldConfig));
-            migratePortals(portalFolderName, defaultName, languageManager, economyManager);
+            migratePortals(portalFolderName, defaultName);
             moveFilesToDebugDirectory(portalFolderName);
         } catch (IOException | InvalidStructureException | TranslatableException e) {
             Stargate.log(e);
@@ -152,14 +147,14 @@ public class DataMigration_1_0_0 extends DataMigration {
      * @throws IOException               <p>If unable to load previous portals</p>
      * @throws TranslatableException     <p>If some use input was invalid</p>
      */
-    private void migratePortals(String portalFolder, String defaultNetworkName, LanguageManager languageManager, StargateEconomyAPI economyManager) throws InvalidStructureException, IOException, TranslatableException {
-        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, registry, logger, defaultNetworkName, languageManager, economyManager);
+    private void migratePortals(String portalFolder, String defaultNetworkName) throws InvalidStructureException, IOException, TranslatableException {
+        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, defaultNetworkName, registry, stargateAPI);
         if (portals == null) {
-            logger.logMessage(Level.WARNING, "No portals migrated!");
+            Stargate.log(Level.WARNING, "No portals migrated!");
         } else {
-            logger.logMessage(Level.INFO, "The following portals have been migrated:");
+            Stargate.log(Level.INFO, "The following portals have been migrated:");
             for (Portal portal : portals) {
-                logger.logMessage(Level.INFO, String.format("Name: %s, Network: %s, Owner: %s, Flags: %s",
+                Stargate.log(Level.INFO, String.format("Name: %s, Network: %s, Owner: %s, Flags: %s",
                         portal.getName(), portal.getNetwork().getName(), portal.getOwnerUUID(),
                         portal.getAllFlagsString()));
             }
@@ -187,13 +182,13 @@ public class DataMigration_1_0_0 extends DataMigration {
         }
         File debugGateDirectory = new File((instance != null) ? instance.getGateFolder() : "", "debug/invalidGates");
         if (!debugGateDirectory.exists() && !debugGateDirectory.mkdirs()) {
-            logger.logMessage(Level.WARNING, "Unable to create the directory for invalid gates");
+            Stargate.log(Level.WARNING, "Unable to create the directory for invalid gates");
             return;
         }
         File[] gateFiles = gateDirectory.listFiles((directory, fileName) -> fileName.endsWith(".gate.invalid"));
         //Gate files being null probably happens if missing read permissions for the folder
         if (gateFiles == null) {
-            logger.logMessage(Level.WARNING, "Unable to list files in " + gateDirectory + ". Make sure you " +
+            Stargate.log(Level.WARNING, "Unable to list files in " + gateDirectory + ". Make sure you " +
                     "have read permission for the folder.");
             return;
         }
@@ -221,14 +216,14 @@ public class DataMigration_1_0_0 extends DataMigration {
             return;
         }
         if (!targetDirectory.exists() && !targetDirectory.mkdirs()) {
-            logger.logMessage(Level.WARNING, "Unable to create necessary directory before moving legacy " +
+            Stargate.log(Level.WARNING, "Unable to create necessary directory before moving legacy " +
                     "data. Files in " + targetDirectory + " have not been moved.");
             return;
         }
         File[] files = directory.listFiles();
         //Files being null probably happens if missing read permissions for the folder
         if (files == null) {
-            logger.logMessage(Level.WARNING, "Unable to list files in " + directory + ". Make sure you " +
+            Stargate.log(Level.WARNING, "Unable to list files in " + directory + ". Make sure you " +
                     "have read permission for the folder.");
             return;
         }
@@ -236,14 +231,14 @@ public class DataMigration_1_0_0 extends DataMigration {
         for (File file : files) {
             File targetFile = new File(targetDirectory, file.getName());
             if (!file.renameTo(targetFile)) {
-                logger.logMessage(Level.WARNING, "Unable to move the file " + file.getPath() + " to " +
+                Stargate.log(Level.WARNING, "Unable to move the file " + file.getPath() + " to " +
                         targetFile.getPath());
                 renameSuccessful = false;
             }
         }
         if (renameSuccessful) {
             if (!directory.delete()) {
-                logger.logMessage(Level.WARNING, "Unable to remove folder " + directory.getPath() + ". " +
+                Stargate.log(Level.WARNING, "Unable to remove folder " + directory.getPath() + ". " +
                         "Make sure you have write permissions for the folder.");
             }
         }

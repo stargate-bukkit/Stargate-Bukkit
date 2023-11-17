@@ -18,16 +18,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.gate.structure.GateStructureType;
-import org.sgrewritten.stargate.network.StargateRegistry;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.network.portal.RealPortal;
-import org.sgrewritten.stargate.util.FakeStorage;
-import org.sgrewritten.stargate.util.portal.GateTestHelper;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.gate.GateTestHelper;
 
 import java.util.HashSet;
 
@@ -54,9 +55,9 @@ class MoveEventListenerTest {
         player = server.addPlayer();
         vehicle = (PoweredMinecartMock) theEnd.spawnEntity(from, EntityType.MINECART_FURNACE);
         Block sign = PortalBlockGenerator.generatePortal(new Location(theEnd, 0, 10, 0));
-        StargateRegistry registry = new StargateRegistry(new FakeStorage());
-        portal = FakePortalGenerator.generateFakePortal(sign, "network", new HashSet<>(), "portal", registry);
-        listener = new MoveEventListener(registry);
+        StargateAPI stargateAPI = new StargateAPIMock();
+        portal = PortalFactory.generateFakePortal(sign, "network", new HashSet<>(), "portal", stargateAPI);
+        listener = new MoveEventListener(stargateAPI.getRegistry());
 
         iris = portal.getGate().getLocations(GateStructureType.IRIS).get(0).getLocation();
         outsideIris = iris.clone().add(portal.getGate().getFacing().getDirection());

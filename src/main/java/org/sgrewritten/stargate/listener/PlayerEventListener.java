@@ -17,19 +17,22 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.ConditionalDelayedAction;
 import org.sgrewritten.stargate.action.ConditionalRepeatedTask;
+import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
-import org.sgrewritten.stargate.formatting.LanguageManager;
-import org.sgrewritten.stargate.gate.structure.GateStructureType;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.manager.BlockLoggingManager;
-import org.sgrewritten.stargate.manager.BungeeManager;
+import org.sgrewritten.stargate.api.manager.BungeeManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
-import org.sgrewritten.stargate.network.RegistryAPI;
-import org.sgrewritten.stargate.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.util.ButtonHelper;
+import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.colors.ColorConverter;
 
 import java.io.ByteArrayOutputStream;
@@ -50,12 +53,14 @@ public class PlayerEventListener implements Listener {
     private final @NotNull BungeeManager bungeeManager;
     private final @NotNull RegistryAPI registry;
     private final @NotNull BlockLoggingManager loggingCompatability;
+    private final StorageAPI storageAPI;
 
-    public PlayerEventListener(@NotNull LanguageManager languageManager, @NotNull RegistryAPI registry, @NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatability) {
+    public PlayerEventListener(@NotNull LanguageManager languageManager, @NotNull RegistryAPI registry, @NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatability, StorageAPI storageAPI) {
         this.languageManager = Objects.requireNonNull(languageManager);
         this.bungeeManager = Objects.requireNonNull(bungeeManager);
         this.registry = Objects.requireNonNull(registry);
         this.loggingCompatability = Objects.requireNonNull(loggingCompatability);
+        this.storageAPI = storageAPI;
     }
 
     /**
@@ -74,13 +79,12 @@ public class PlayerEventListener implements Listener {
             return;
         }
 
-        // TODO material optimisation?
-        RealPortal portal = registry.getPortal(block.getLocation(), GateStructureType.CONTROL_BLOCK);
-        if (portal == null) {
+        PortalPosition portalPosition = registry.getPortalPosition(block.getLocation());
+        if (portalPosition == null) {
             return;
         }
 
-        handleRelevantClickEvent(block, portal, event);
+        handleRelevantClickEvent(block, portalPosition, event);
     }
 
     /**
@@ -90,9 +94,14 @@ public class PlayerEventListener implements Listener {
      * @param portal <p>The portal the block belongs to</p>
      * @param event  <p>The player interact event to handle</p>
      */
-    private void handleRelevantClickEvent(Block block, RealPortal portal, PlayerInteractEvent event) {
+    private void handleRelevantClickEvent(Block block, PortalPosition portalPosition, PlayerInteractEvent event) {
         Material blockMaterial = block.getType();
         Player player = event.getPlayer();
+        RealPortal portal = registry.getPortalFromPortalPosition(portalPosition);
+        if(portal == null){
+            Stargate.log(Level.WARNING,"Improper use of unregistered PortalPositions");
+            return;
+        }
 
         if (Tag.WALL_SIGNS.isTagged(blockMaterial)) {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK && dyePortalSignText(event, portal)) {
@@ -132,7 +141,8 @@ public class PlayerEventListener implements Listener {
         StargatePermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(), languageManager);
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         if (!hasPermission) {
-            event.getPlayer().sendMessage(permissionManager.getDenyMessage());
+            String message = permissionManager.getDenyMessage();
+            MessageUtils.sendMessageFromPortal(portal,event.getPlayer(),message,StargateSendMessagePortalEvent.MessageType.DENY);
         }
         return hasPermission;
     }
@@ -218,7 +228,7 @@ public class PlayerEventListener implements Listener {
     private void updateServerName() {
         ConditionalDelayedAction action = new ConditionalDelayedAction(() -> {
             try {
-                Stargate.getStorageAPIStatic().startInterServerConnection();
+                storageAPI.startInterServerConnection();
             } catch (StorageWriteException e) {
                 Stargate.log(e);
             }

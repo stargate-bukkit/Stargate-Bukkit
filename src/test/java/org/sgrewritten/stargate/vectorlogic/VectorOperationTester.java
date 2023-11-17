@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.vectorlogic;
 
 import org.bukkit.util.Vector;
 import org.junit.jupiter.api.Assertions;
+import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 
 import java.util.List;
 

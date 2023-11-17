@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
-import org.sgrewritten.stargate.network.LocalNetwork;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.network.StargateNetwork;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ class DataMigration1014Test {
         migration.run(database);
         Assertions.assertTrue(portalHasFlag(PortalFlag.CUSTOM_NETWORK, "portal", "network"));
         Assertions.assertTrue(portalHasFlag(PortalFlag.PERSONAL_NETWORK, "portal1", UUID_STRING));
-        Assertions.assertTrue(portalHasFlag(PortalFlag.DEFAULT_NETWORK, "portal2", LocalNetwork.DEFAULT_NETWORK_ID));
+        Assertions.assertTrue(portalHasFlag(PortalFlag.DEFAULT_NETWORK, "portal2", StargateNetwork.DEFAULT_NETWORK_ID));
     }
 
     private boolean portalHasFlag(PortalFlag flag, String portalName, String networkName) throws SQLException {

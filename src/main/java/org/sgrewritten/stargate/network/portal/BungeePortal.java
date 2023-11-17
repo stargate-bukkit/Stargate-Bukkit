@@ -1,25 +1,27 @@
 package org.sgrewritten.stargate.network.portal;
 
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.format.*;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.gate.Gate;
-import org.sgrewritten.stargate.network.LocalNetwork;
-import org.sgrewritten.stargate.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.network.StargateNetwork;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.util.NameHelper;
 
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -50,8 +52,8 @@ public class BungeePortal extends AbstractPortal {
      * @throws UnimplementedFlagException
      */
     public BungeePortal(Network network, String name, String destination, String destinationServer,
-                        Set<PortalFlag> flags, Gate gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyAPI) throws InvalidNameException, BungeeNameException, NameLengthException, UnimplementedFlagException {
-        super(network, name, flags, gate, ownerUUID, languageManager, economyAPI);
+                        Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyAPI, String metaData) throws InvalidNameException, BungeeNameException, NameLengthException, UnimplementedFlagException {
+        super(network, name, flags, unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI, metaData);
 
 
         destination = NameHelper.getTrimmedName(destination);
@@ -70,13 +72,13 @@ public class BungeePortal extends AbstractPortal {
          * and can not be found (should not) in any network anywhere.
          */
         targetPortal = new LegacyVirtualPortal(destinationServer, destination, network,
-                EnumSet.noneOf(PortalFlag.class), ownerUUID);
+                EnumSet.noneOf(PortalFlag.class), new HashSet<>(), ownerUUID);
         this.serverDestination = destinationServer;
         /*
          * CHEATS! we love cheats. This one helps to save the legacy bungee gate into sql table so that the
          * target server is stored as a replacement to network.
          */
-        fakeNetwork = new LocalNetwork(destinationServer, NetworkType.CUSTOM);
+        fakeNetwork = new StargateNetwork(destinationServer, NetworkType.CUSTOM, StorageType.LOCAL);
         String possibleBungeeString = super.languageManager.getString(TranslatableMessage.BUNGEE_SIGN_LINE_4);
         bungeeString = (possibleBungeeString == null) ? "[PlaceHolder]" : possibleBungeeString;
     }
@@ -91,15 +93,15 @@ public class BungeePortal extends AbstractPortal {
     }
 
     @Override
-    public void drawControlMechanisms() {
+    public SignLine[] getDrawnControlLines() {
         Stargate.log(Level.FINEST, "serverDestination = " + serverDestination);
 
-        String[] lines = new String[4];
-        lines[0] = super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN);
-        lines[1] = super.colorDrawer.formatPortalName(getDestination(), HighlightingStyle.LESSER_GREATER_THAN);
-        lines[2] = super.colorDrawer.formatStringWithHiglighting(serverDestination, HighlightingStyle.SQUARE_BRACKETS);
-        lines[3] = super.colorDrawer.formatLine(bungeeString);
-        getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+        return new SignLine[]{
+                new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN), this, SignLineType.THIS_PORTAL),
+                new PortalLine(super.colorDrawer.formatPortalName(getDestination(), HighlightingStyle.LESSER_GREATER_THAN), getDestination(), SignLineType.DESTINATION_PORTAL),
+                new TextLine(super.colorDrawer.formatStringWithHighlighting(serverDestination, HighlightingStyle.SQUARE_BRACKETS), SignLineType.TEXT),
+                new TextLine(bungeeString)
+        };
     }
 
     @Override

@@ -69,6 +69,14 @@ public enum HighlightingStyle {
         return prefix + name + suffix;
     }
 
+    public String getPrefix(){
+        return this.prefix;
+    }
+
+    public String getSuffix(){
+        return this.suffix;
+    }
+
     public static HighlightingStyle getHighlightType(String highlightedText) {
         for (HighlightingStyle highlight : HighlightingStyle.values()) {
             if (highlight == HighlightingStyle.NOTHING) {
@@ -93,5 +101,4 @@ public enum HighlightingStyle {
         return highlightedName.substring(highlight.prefix.length(),
                 highlightedName.length() - highlight.suffix.length());
     }
-
 }

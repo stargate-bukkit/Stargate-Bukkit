@@ -13,19 +13,21 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.sgrewritten.stargate.FakeStargateLogger;
+import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.gate.structure.GateStructureType;
-import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.RegistryAPI;
-import org.sgrewritten.stargate.network.StargateRegistry;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.network.RegistryMock;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.BlockEventType;
 
 import java.io.File;
@@ -40,6 +42,7 @@ class BlockEventHelperTest {
     private static PlayerMock player;
 
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
+    private static StargateAPIMock stargateAPI;
 
     @BeforeAll
     static void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException {
@@ -48,11 +51,12 @@ class BlockEventHelperTest {
         WorldMock world = server.addSimpleWorld("world");
 
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
-        registry = new StargateRegistry(new FakeStorage());
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
-        Network network = registry.createNetwork("network", NetworkType.CUSTOM, false, false);
+        stargateAPI = new StargateAPIMock();
+        registry = stargateAPI.getRegistry();
+        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
+        Network network = stargateAPI.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, false, false);
 
-        portal = FakePortalGenerator.generateFakePortal(signBlock, network, new HashSet<>(), "name", registry);
+        portal = PortalFactory.generateFakePortal(signBlock, network, new HashSet<>(), "name", stargateAPI);
 
     }
 

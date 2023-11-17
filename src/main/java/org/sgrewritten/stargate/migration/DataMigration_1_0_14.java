@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.migration;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
@@ -11,11 +11,11 @@ import org.sgrewritten.stargate.database.SQLQuery;
 import org.sgrewritten.stargate.database.SQLQueryExecutor;
 import org.sgrewritten.stargate.database.SQLQueryGenerator;
 import org.sgrewritten.stargate.database.SQLQueryHandler;
-import org.sgrewritten.stargate.network.LocalNetwork;
+import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
@@ -101,7 +101,7 @@ public class DataMigration_1_0_14 extends DataMigration {
             String queryString = nameConfiguration.replaceKnownTableNames(SQLQueryHandler.getQuery(query,
                     database.getDriver()));
             try (PreparedStatement statement = connection.prepareStatement(queryString)) {
-                statement.setString(1, LocalNetwork.DEFAULT_NETWORK_ID);
+                statement.setString(1, StargateNetwork.DEFAULT_NETWORK_ID);
                 statement.setString(2, ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK));
                 statement.execute();
             }
@@ -123,7 +123,7 @@ public class DataMigration_1_0_14 extends DataMigration {
      */
     private void addNetworkTypeFlags(@NotNull SQLDatabaseAPI database, StorageType storageType,
                                      TableNameConfiguration nameConfiguration) throws SQLException {
-        SQLQueryGenerator queryGenerator = new SQLQueryGenerator(nameConfiguration, Stargate.getInstance(),
+        SQLQueryGenerator queryGenerator = new SQLQueryGenerator(nameConfiguration,
                 database.getDriver());
         try (Connection connection = database.getConnection()) {
             Map<GlobalPortalId, PortalFlag> portalNetworkTypeFlags = getNetworkTypeFlags(queryGenerator, connection,

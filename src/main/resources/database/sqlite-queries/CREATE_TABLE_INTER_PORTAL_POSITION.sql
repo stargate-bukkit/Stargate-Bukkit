@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS {InterPortalPosition}
    zCoordinate INTEGER NOT NULL,
    positionType INTEGER NOT NULL,
    metaData TEXT,
+   pluginName VARCHAR(255) DEFAULT "Stargate",
    PRIMARY KEY
    (
       portalName,

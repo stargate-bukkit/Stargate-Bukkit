@@ -5,7 +5,9 @@ INSERT INTO {PortalPosition}
    xCoordinate,
    yCoordinate,
    zCoordinate,
-   positionType
+   positionType,
+   metaData,
+   pluginName
 )
 VALUES
 (
@@ -14,13 +16,14 @@ VALUES
    ?,
    ?,
    ?,
-
-   (
-      SELECT
-         {PositionType}.id
-      FROM
-         {PositionType}
-      WHERE
-         {PositionType}.positionName = ?
-   )
+      (
+         SELECT
+            {PositionType}.id
+         FROM
+            {PositionType}
+         WHERE
+            {PositionType}.positionName = ?
+      ),
+   ?,
+   ?
 );

@@ -1,10 +1,10 @@
 package org.sgrewritten.stargate.util;
 
-import org.sgrewritten.stargate.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public final class TranslatableMessageFormatter {
      * @param cost               <p>The cost to insert</p>
      * @return <p>The message with the cost placeholder replaced with the given cost</p>
      */
-    public static String formatCost(String unformattedMessage, int cost) {
+    public static String formatCost(String unformattedMessage, double cost) {
         return unformattedMessage.replace(COST_INSERTION_IDENTIFIER, String.valueOf(cost));
     }
 

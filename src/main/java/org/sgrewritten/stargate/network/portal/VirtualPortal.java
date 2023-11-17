@@ -4,10 +4,16 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.util.BungeeHelper;
+import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 
 import java.io.ByteArrayOutputStream;
@@ -28,6 +34,7 @@ import java.util.logging.Level;
 public class VirtualPortal implements Portal {
 
     protected final String server;
+    private final Set<Character> unrecognisedFlags;
     private String name;
     private Network network;
     private final Set<PortalFlag> flags;
@@ -42,11 +49,12 @@ public class VirtualPortal implements Portal {
      * @param flags     <p>The portal flags enabled for this virtual portal</p>
      * @param ownerUUID <p>The UUID of this virtual portal's owner</p>
      */
-    public VirtualPortal(String server, String name, Network network, Set<PortalFlag> flags, UUID ownerUUID) {
+    public VirtualPortal(String server, String name, Network network, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, UUID ownerUUID) {
         this.server = server;
         this.name = name;
         this.network = network;
         this.flags = flags;
+        this.unrecognisedFlags = unrecognisedFlags;
         this.ownerUUID = ownerUUID;
     }
 
@@ -96,12 +104,27 @@ public class VirtualPortal implements Portal {
 
     @Override
     public void destroy() {
-        network.removePortal(this, false);
+        network.removePortal(this);
     }
 
     @Override
     public boolean hasFlag(PortalFlag flag) {
         return flags.contains(flag);
+    }
+
+    @Override
+    public boolean hasFlag(Character flag) {
+        return unrecognisedFlags.contains(flag) || ( ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)) && flags.contains(PortalFlag.valueOf(flag)) );
+    }
+
+    @Override
+    public void addFlag(Character flag) {
+
+    }
+
+    @Override
+    public void removeFlag(Character flag) {
+
     }
 
     @Override
@@ -174,17 +197,10 @@ public class VirtualPortal implements Portal {
      */
     private void sendTeleportMessage(Stargate plugin, Player player) throws IOException {
         try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-            dataOutputStream.writeUTF(PluginChannel.FORWARD.getChannel());
-            dataOutputStream.writeUTF(server);
-            dataOutputStream.writeUTF(PluginChannel.PLAYER_TELEPORT.getChannel());
             String dataMsg = BungeeHelper.generateTeleportJsonMessage(player.getName(), this);
-            dataOutputStream.writeUTF(dataMsg);
-            Stargate.log(Level.FINEST, byteArrayOutputStream.toString());
-            player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
+            BungeeHelper.sendMessageFromChannel(dataMsg, PluginChannel.PLAYER_TELEPORT, plugin);
         } catch (IOException exception) {
-            Stargate.log(Level.WARNING, "[Stargate] Error sending BungeeCord teleport packet");
+            Stargate.log(Level.WARNING, "Error sending BungeeCord teleport packet");
             throw exception;
         }
     }
@@ -215,5 +231,10 @@ public class VirtualPortal implements Portal {
     @Override
     public void setName(String newName) {
         this.name = newName;
+    }
+
+    @Override
+    public void activate(Player player) {
+
     }
 }

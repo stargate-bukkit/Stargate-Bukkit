@@ -11,20 +11,20 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.sgrewritten.stargate.FakeStargateLogger;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.gate.structure.GateStructureType;
-import org.sgrewritten.stargate.network.LocalNetwork;
+import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.StargateRegistry;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
-import org.sgrewritten.stargate.network.portal.RealPortal;
-import org.sgrewritten.stargate.util.FakeStorage;
+import org.sgrewritten.stargate.network.RegistryMock;
+import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,17 +38,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class TeleportationHelperTest {
 
     private static WorldMock world;
-    private static FakePortalGenerator fakePortalGenerator;
-    private static LocalNetwork network;
+    private static StargateNetwork network;
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
 
     @BeforeAll
     public static void setUp() throws NameLengthException, InvalidNameException, UnimplementedFlagException {
         ServerMock server = MockBukkit.mock();
         world = server.addSimpleWorld("world");
-        fakePortalGenerator = new FakePortalGenerator();
-        network = new LocalNetwork("network", NetworkType.CUSTOM);
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR, new FakeStargateLogger())));
+        network = new StargateNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL);
+        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
     }
 
     @AfterAll
@@ -118,7 +116,7 @@ class TeleportationHelperTest {
     @Test
     public void getDirectionalConeLayerTest() throws NameLengthException, InvalidStructureException {
         Location topLeft = new Location(world, -0, 7, -3);
-        RealPortal fakePortal = fakePortalGenerator.generateFakePortal(topLeft, network, "aName", false, new HashSet<>(), new StargateRegistry(new FakeStorage()));
+        RealPortal fakePortal = PortalFactory.generateFakePortal(topLeft, network, "aName", false, new HashSet<>(), new HashSet<>(), new RegistryMock());
         List<Location> irisLocations = new ArrayList<>();
         fakePortal.getGate().getLocations(GateStructureType.IRIS).forEach(
                 (blockLocation) -> irisLocations.add(blockLocation.getLocation()));
@@ -148,7 +146,7 @@ class TeleportationHelperTest {
     @Test
     public void findViableSpawnLocationTest_NotViable() throws NameLengthException, InvalidStructureException {
         Location topLeft = new Location(world, -1, 20, -3);
-        RealPortal fakePortal = fakePortalGenerator.generateFakePortal(topLeft, network, "aName", false, new HashSet<>(), new StargateRegistry(new FakeStorage()));
+        RealPortal fakePortal = PortalFactory.generateFakePortal(topLeft, network, "aName", false, new HashSet<>(), new HashSet<>(), new RegistryMock());
         Location location = TeleportationHelper.findViableSpawnLocation(world.spawnEntity(topLeft, EntityType.BAT), fakePortal);
         Assertions.assertNull(location);
     }
@@ -156,7 +154,7 @@ class TeleportationHelperTest {
     @Test
     public void findViableSpawnLocationTest_Viable() throws NameLengthException, InvalidStructureException {
         Location topLeft = new Location(world, -1, 5, -3);
-        RealPortal fakePortal = fakePortalGenerator.generateFakePortal(topLeft, network, "aName", false, new HashSet<>(), new StargateRegistry(new FakeStorage()));
+        RealPortal fakePortal = PortalFactory.generateFakePortal(topLeft, network, "aName", false, new HashSet<>(), new HashSet<>(), new RegistryMock());
         Location location = TeleportationHelper.findViableSpawnLocation(world.spawnEntity(topLeft, EntityType.BAT), fakePortal);
         assertNotNull(location);
     }
@@ -166,7 +164,7 @@ class TeleportationHelperTest {
         Location topLeft = new Location(world, -1, 5, -3);
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.BACKWARDS);
-        RealPortal fakePortal = fakePortalGenerator.generateFakePortal(topLeft, network, "aName", false, flags, new StargateRegistry(new FakeStorage()));
+        RealPortal fakePortal = PortalFactory.generateFakePortal(topLeft, network, "aName", false, flags, new HashSet<>(), new RegistryMock());
         Location location = TeleportationHelper.findViableSpawnLocation(world.spawnEntity(topLeft, EntityType.BAT), fakePortal);
         assertNotNull(location);
         Assertions.assertTrue(topLeft.getX() < location.getX());

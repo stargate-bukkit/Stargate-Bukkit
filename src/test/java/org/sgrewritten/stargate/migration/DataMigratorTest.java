@@ -18,24 +18,26 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sgrewritten.stargate.FakeStargateLogger;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.StargateLogger;
-import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.BlockHandlerResolver;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabase;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
-import org.sgrewritten.stargate.database.StorageAPI;
+import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.database.property.FakePropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
-import org.sgrewritten.stargate.economy.FakeEconomyManager;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.network.LocalNetwork;
-import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.network.StargateNetwork;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.StargateRegistry;
-import org.sgrewritten.stargate.network.portal.Portal;
-import org.sgrewritten.stargate.util.FakeLanguageManager;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,6 +68,8 @@ public class DataMigratorTest {
 
     static private ServerMock server;
     private static StargateRegistry registry;
+    private static StargateAPIMock stargateAPI;
+    private static NetworkManager networkManager;
 
     @BeforeAll
     public static void setUp() throws IOException, InvalidConfigurationException, SQLException {
@@ -82,9 +86,10 @@ public class DataMigratorTest {
         defaultConfigFile = new File("src/main/resources", "config.yml");
         sqlDatabaseFile = new File("src/test/resources", "migrate-test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);
-        StorageAPI storageAPI = new SQLDatabase(sqlDatabase, false, false, logger, new FakeLanguageManager());
-        registry = new StargateRegistry(storageAPI);
-
+        StorageAPI storageAPI = new SQLDatabase(sqlDatabase, false, false);
+        registry = new StargateRegistry(storageAPI,new BlockHandlerResolver(storageAPI));
+        stargateAPI = new StargateAPIMock(storageAPI,registry);
+        networkManager = stargateAPI.getNetworkManager();
 
         defaultConfigFile = new File("src/main/resources", "config.yml");
         server = MockBukkit.mock();
@@ -94,7 +99,7 @@ public class DataMigratorTest {
         server.addPlayer(new PlayerMock(server, "Thorinwasher", UUID.fromString("d2b440c3-edde-4443-899e-6825c31d0919")));
         Stargate.getFileConfiguration().load(defaultConfigFile);
 
-        GateFormatHandler.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir, logger)));
+        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
     }
 
     private static Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> getSettingTestMaps() {
@@ -104,9 +109,9 @@ public class DataMigratorTest {
         knarvikConfigChecks.put("defaultGateNetwork", "knarvik");
         knarvikConfigChecks.put("handleVehicles", false);
         Map<String, String> knarvikPortalChecks = new HashMap<>();
-        knarvikPortalChecks.put("§6knarvik1", LocalNetwork.DEFAULT_NETWORK_ID);
-        knarvikPortalChecks.put("knarvik2", LocalNetwork.DEFAULT_NETWORK_ID);
-        knarvikPortalChecks.put("knarvik3", LocalNetwork.DEFAULT_NETWORK_ID);
+        knarvikPortalChecks.put("§6knarvik1", StargateNetwork.DEFAULT_NETWORK_ID);
+        knarvikPortalChecks.put("knarvik2", StargateNetwork.DEFAULT_NETWORK_ID);
+        knarvikPortalChecks.put("knarvik3", StargateNetwork.DEFAULT_NETWORK_ID);
         TwoTuple<Map<String, Object>, Map<String, String>> knarvikChecks = new TwoTuple<>(knarvikConfigChecks,
                 knarvikPortalChecks);
         output.put("config-epicknarvik.yml", knarvikChecks);
@@ -183,7 +188,7 @@ public class DataMigratorTest {
                 throw new IOException("Unable to delete old config file");
             }
             FakePropertiesDatabase properties = new FakePropertiesDatabase();
-            DataMigrator dataMigrator = new DataMigrator(configFile, logger, server, registry, new FakeLanguageManager(), new FakeEconomyManager(), properties);
+            DataMigrator dataMigrator = new DataMigrator(configFile, server, registry ,stargateAPI, properties);
             if (!configFile.renameTo(oldConfigFile)) {
                 throw new IOException("Unable to rename existing config for backup");
             }

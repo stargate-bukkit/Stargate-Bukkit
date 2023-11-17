@@ -3,8 +3,9 @@ package org.sgrewritten.stargate.listener;
 import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.sgrewritten.stargate.gate.structure.GateStructureType;
-import org.sgrewritten.stargate.network.RegistryAPI;
+import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
 
 /**
  * A listener for the PlayerAdvancementCriterionEvent event

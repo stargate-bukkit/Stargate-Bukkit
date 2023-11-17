@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.gate;
 
 import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.exception.ParsingErrorException;
 import org.sgrewritten.stargate.gate.structure.GateControlBlock;
@@ -24,7 +25,6 @@ import java.util.logging.Level;
 public class GateFormatParser {
 
     private final Scanner scanner;
-    private final StargateLogger logger;
     private final String filename;
     private final Map<Character, Set<Material>> frameMaterials;
 
@@ -48,9 +48,8 @@ public class GateFormatParser {
      *
      * @param scanner  <p>The scanner to read the gate file from</p>
      * @param filename <p>The name of the parsed gate file</p>
-     * @param logger   <p>The logger used for logging</p>
      */
-    public GateFormatParser(Scanner scanner, String filename, StargateLogger logger) {
+    public GateFormatParser(Scanner scanner, String filename) {
         frameMaterials = new HashMap<>();
         // Set default materials in case any config keys are missing
         irisOpen = new HashSet<>();
@@ -59,7 +58,6 @@ public class GateFormatParser {
         irisClosed.add(Material.AIR);
         this.scanner = scanner;
         this.filename = filename;
-        this.logger = logger;
     }
 
     /**
@@ -156,7 +154,7 @@ public class GateFormatParser {
             List<Character> row = design.get(rowIndex);
             for (int columnIndex = 0; columnIndex < row.size(); columnIndex++) {
                 parseDesignCharacter(row.get(columnIndex), new BlockVector(0, -rowIndex, -columnIndex));
-                logger.logMessage(Level.FINEST, "Loading design location: C:" + row.get(columnIndex) + " V: " +
+                Stargate.log(Level.FINEST, "Loading design location: C:" + row.get(columnIndex) + " V: " +
                         0 + "," + -rowIndex + "," + -columnIndex);
             }
         }

@@ -3,7 +3,6 @@ package org.sgrewritten.stargate.listener;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Directional;
-import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,31 +33,29 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.BlockHandlerResolver;
+import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
+import org.sgrewritten.stargate.api.gate.GateBuilder;
+import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
+import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.exception.GateConflictException;
-import org.sgrewritten.stargate.exception.NoFormatFoundException;
-import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.formatting.LanguageManager;
+import org.sgrewritten.stargate.exception.*;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.gate.structure.GateStructureType;
-import org.sgrewritten.stargate.manager.StargatePermissionManager;
-import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.RegistryAPI;
-import org.sgrewritten.stargate.network.portal.BungeePortal;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
-import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.BlockEventType;
 import org.sgrewritten.stargate.util.BlockEventHelper;
-import org.sgrewritten.stargate.util.NetworkCreationHelper;
-import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
-import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
+import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.portal.PortalDestructionHelper;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -69,16 +66,20 @@ public class BlockEventListener implements Listener {
     private final @NotNull RegistryAPI registry;
     private final @NotNull LanguageManager languageManager;
     private final @NotNull StargateEconomyAPI economyManager;
+    private final @NotNull BlockHandlerResolver addonRegistry;
+    private final @NotNull StargateAPI stargateAPI;
 
     /**
      * Instantiates a new block event listener
      *
-     * @param registry <p>The registry to use for looking up portals</p>
+     * @param stargateAPI <p>The stargate API</p>
      */
-    public BlockEventListener(@NotNull RegistryAPI registry, @NotNull LanguageManager languageManager, @NotNull StargateEconomyAPI economyManager) {
-        this.registry = Objects.requireNonNull(registry);
-        this.languageManager = Objects.requireNonNull(languageManager);
-        this.economyManager = Objects.requireNonNull(economyManager);
+    public BlockEventListener(@NotNull StargateAPI stargateAPI) {
+        this.stargateAPI = Objects.requireNonNull(stargateAPI);
+        this.registry = stargateAPI.getRegistry();
+        this.languageManager = stargateAPI.getLanguageManager();
+        this.economyManager = stargateAPI.getEconomyManager();
+        this.addonRegistry = stargateAPI.getMaterialHandlerResolver();
     }
 
     /**
@@ -96,9 +97,14 @@ public class BlockEventListener implements Listener {
         if (portal != null) {
             Runnable destroyAction = () -> {
                 String msg = languageManager.getErrorMessage(TranslatableMessage.DESTROY);
-                event.getPlayer().sendMessage(msg);
+                MessageUtils.sendMessageFromPortal(portal,event.getPlayer(),msg,StargateSendMessagePortalEvent.MessageType.DESTROY);
 
-                portal.destroy();
+                stargateAPI.getNetworkManager().destroyPortal(portal);
+                try {
+                    stargateAPI.getStorageAPI().removePortalFromStorage(portal);
+                } catch (StorageWriteException e) {
+                    Stargate.log(e);
+                }
                 Stargate.log(Level.FINE, "Broke portal " + portal.getName());
             };
 
@@ -108,7 +114,7 @@ public class BlockEventListener implements Listener {
             }
             return;
         }
-        if (registry.getPortal(location, GateStructureType.CONTROL_BLOCK) != null) {
+        if (registry.getPortalPosition(location) != null) {
             event.setCancelled(true);
             return;
         }
@@ -116,8 +122,15 @@ public class BlockEventListener implements Listener {
         if (portalFromIris != null) {
             if (BlockEventType.BLOCK_BREAK.canDestroyPortal()) {
                 String msg = languageManager.getErrorMessage(TranslatableMessage.DESTROY);
+                MessageUtils.sendMessageFromPortal(portalFromIris,event.getPlayer(),msg,StargateSendMessagePortalEvent.MessageType.DESTROY);
+
                 event.getPlayer().sendMessage(msg);
                 portalFromIris.destroy();
+                try {
+                    stargateAPI.getStorageAPI().removePortalFromStorage(portal);
+                } catch (StorageWriteException e) {
+                    Stargate.log(e);
+                }
                 return;
             }
             event.setCancelled(true);
@@ -134,6 +147,15 @@ public class BlockEventListener implements Listener {
         BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PLACE, event.getBlock().getLocation(),
                 registry,
                 () -> event.getPlayer().sendMessage(languageManager.getErrorMessage(TranslatableMessage.DESTROY)));
+        if(event.isCancelled() || !addonRegistry.hasRegisteredBlockHandler(event.getBlock().getType())) {
+            return;
+        }
+        List<RealPortal> portals = registry.getPortalsFromTouchingBlock(event.getBlock().getLocation(), GateStructureType.FRAME);
+        if(portals.isEmpty()) {
+            Stargate.log(Level.FINEST, "Could not find any portals next to placed block");
+            return;
+        }
+        addonRegistry.registerPlacement(registry, event.getBlock().getLocation(), portals, event.getBlock().getType(), event.getPlayer());
     }
 
     /**
@@ -143,56 +165,27 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSignChange(SignChangeEvent event) {
-        Block block = event.getBlock();
-        if (!(block.getBlockData() instanceof WallSign)) {
-            return;
-        }
-
-        String[] lines = event.getLines();
-        String network = lines[2];
-        int cost = ConfigurationHelper.getInteger(ConfigurationOption.CREATION_COST);
-        Player player = event.getPlayer();
-        Set<PortalFlag> flags = PortalFlag.parseFlags(lines[3]);
-        //Prevent the player from explicitly setting any internal flags
-        flags.removeIf(PortalFlag::isInternalFlag);
-
-        StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
-        String errorMessage = null;
-
-        if (lines[1].trim().isEmpty()) {
-            flags.add(PortalFlag.NETWORKED);
-        }
-
-        Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
-
-        if (disallowedFlags.size() > 0) {
-            String unformattedMessage = languageManager.getWarningMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
-            player.sendMessage(TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
-        }
-        flags.removeAll(disallowedFlags);
-
-        Network selectedNetwork = null;
         try {
-            if (flags.contains(PortalFlag.BUNGEE)) {
-                selectedNetwork = NetworkCreationHelper.selectNetwork(BungeePortal.getLegacyNetworkName(), permissionManager, player, flags, registry);
-            } else {
-                selectedNetwork = NetworkCreationHelper.selectNetwork(network, permissionManager, player, flags, registry);
-            }
-            //NetworkType-flags are incompatible with each other, this makes sure that only the flag of the portals network is in use
-            NetworkType.removeNetworkTypeRelatedFlags(flags);
-            flags.add(selectedNetwork.getType().getRelatedFlag());
-        } catch (TranslatableException e) {
-            errorMessage = e.getLocalisedMessage(languageManager);
-        }
-        try {
-            PortalCreationHelper.tryPortalCreation(selectedNetwork, lines, block, flags, event.getPlayer(), cost,
-                    permissionManager, errorMessage, registry, languageManager, economyManager);
+            Player player = event.getPlayer();
+            GateBuilder gateBuilder = new ImplicitGateBuilder(event.getBlock().getLocation(), registry);
+            PortalBuilder portalBuilder = new PortalBuilder(stargateAPI,gateBuilder,player,event.getLine(3),event.getLine(0),event.getLine(2));
+            portalBuilder.addEventHandling(player).addMessageReceiver(player).addPermissionCheck(player).setCost(ConfigurationHelper.getDouble(ConfigurationOption.CREATION_COST), player);
+            portalBuilder.setDestination(event.getLine(1)).setAdaptiveGatePositionGeneration(true).setDestinationServerName(event.getLine(2));
+            portalBuilder.build();
         } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINER, "No Gate format matches");
         } catch (GateConflictException gateConflictException) {
-            player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
+            event.getPlayer().sendMessage(languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
+        } catch (LocalisedMessageException e){
+            if(e.getPortal() != null){
+                MessageUtils.sendMessageFromPortal(e.getPortal(), event.getPlayer(), e.getLocalisedMessage(languageManager), e.getMessageType());
+            } else  {
+                MessageUtils.sendMessage(event.getPlayer(), e.getLocalisedMessage(languageManager));
+            }
         } catch (TranslatableException e) {
-            player.sendMessage(e.getLocalisedMessage(languageManager));
+            event.getPlayer().sendMessage(e.getLocalisedMessage(languageManager));
+        } catch (InvalidStructureException e) {
+            throw new RuntimeException(e);
         }
     }
 

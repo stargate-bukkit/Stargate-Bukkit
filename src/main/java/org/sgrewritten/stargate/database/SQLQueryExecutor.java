@@ -1,8 +1,9 @@
 package org.sgrewritten.stargate.database;
 
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,7 +42,7 @@ public class SQLQueryExecutor {
         PreparedStatement flagStatement = queryGenerator.generateAddPortalFlagRelationStatement(connection, type);
         for (PortalFlag flag : flags) {
             char flagCharacter = flag.getCharacterRepresentation();
-            queryGenerator.log(Level.FINER, "Adding flag " + flagCharacter + " to portal: " + globalPortalId);
+            Stargate.log(Level.FINER, "Adding flag " + flagCharacter + " to portal: " + globalPortalId);
             flagStatement.setString(1, globalPortalId.portalId());
             flagStatement.setString(2, globalPortalId.networkId());
             flagStatement.setString(3, String.valueOf(flagCharacter));

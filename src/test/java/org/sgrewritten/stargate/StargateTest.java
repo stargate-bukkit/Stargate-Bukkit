@@ -11,19 +11,19 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.action.SupplierAction;
-import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.database.TestCredential;
 import org.sgrewritten.stargate.database.TestCredentialsManager;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.network.Network;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
-import org.sgrewritten.stargate.network.portal.FakePortalGenerator;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
-import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -53,20 +53,18 @@ class StargateTest {
         Block signBlock1 = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         Block signBlock2 = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
 
-        Network network = plugin.getRegistry().createNetwork("network", NetworkType.CUSTOM, false, false);
+        Network network = plugin.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, false, false);
 
         String PORTAL1 = "name1";
-        portal = FakePortalGenerator.generateFakePortal(signBlock1, network, new HashSet<>(), PORTAL1, plugin.getRegistry());
+        portal = PortalFactory.generateFakePortal(signBlock1, network, new HashSet<>(), PORTAL1, plugin);
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.BUNGEE);
-        Network bungeeNetwork = plugin.getRegistry().createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, false);
-        bungeePortal = FakePortalGenerator.generateFakePortal(signBlock2, bungeeNetwork, flags, PORTAL2, plugin.getRegistry());
+        Network bungeeNetwork = plugin.getNetworkManager().createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, false);
+        bungeePortal = PortalFactory.generateFakePortal(signBlock2, bungeeNetwork, flags, PORTAL2, plugin);
     }
 
     @AfterEach
     public void tearDown() {
-        portal.destroy();
-        bungeePortal.destroy();
         MockBukkit.unmock();
     }
 
@@ -124,7 +122,7 @@ class StargateTest {
     }
 
     @Test
-    public void reloadStupidDefaultNetworkNameUUID() {
+    public void reload_StupidDefaultNetworkNameUUID() {
         Stargate.setLogLevel(Level.OFF);
         plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, UUID.randomUUID().toString());
         plugin.reload();
@@ -136,6 +134,24 @@ class StargateTest {
     public void reload_StupidDefaultNetworkNameTooLong() {
         Stargate.setLogLevel(Level.OFF);
         plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "thisNameIsWayTooLong");
+        plugin.reload();
+        Stargate.setLogLevel(Level.INFO);
+        Assertions.assertFalse(plugin.isEnabled());
+    }
+
+    @Test
+    public void reload_StupidDefaultNetworkNameEmpty() {
+        Stargate.setLogLevel(Level.OFF);
+        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "");
+        plugin.reload();
+        Stargate.setLogLevel(Level.INFO);
+        Assertions.assertFalse(plugin.isEnabled());
+    }
+
+    @Test
+    public void reload_StupidDefaultNetworkNameNewlines() {
+        Stargate.setLogLevel(Level.OFF);
+        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "Test1\nTest2");
         plugin.reload();
         Stargate.setLogLevel(Level.INFO);
         Assertions.assertFalse(plugin.isEnabled());
@@ -160,6 +176,9 @@ class StargateTest {
         server.getPluginManager().enablePlugin(plugin);
         Assertions.assertTrue(plugin.isEnabled());
         Network network = plugin.getRegistry().getNetwork(BungeePortal.getLegacyNetworkName(), false);
+        for(String networkName : plugin.getRegistry().getNetworkMap().keySet()){
+            Stargate.log(Level.INFO,networkName);
+        }
         assertNotNull(network);
         assertNotNull(network.getPortal(PORTAL2));
     }
@@ -172,6 +191,16 @@ class StargateTest {
         server.getPluginManager().enablePlugin(plugin);
         Assertions.assertTrue(plugin.isEnabled());
         assertNotNull(Stargate.getServerUUID());
+    }
+
+    @Test
+    void getMaterialResolver(){
+        Assertions.assertNotNull(plugin.getMaterialHandlerResolver());
+    }
+
+    @Test
+    void getNetworkManager_notNull() {
+        Assertions.assertNotNull(plugin.getNetworkManager());
     }
 
     private void setInterServerEnabled() {

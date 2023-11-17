@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.config;
 
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 
 import java.util.List;
 

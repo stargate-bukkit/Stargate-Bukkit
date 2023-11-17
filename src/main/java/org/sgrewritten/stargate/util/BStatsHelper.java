@@ -9,15 +9,16 @@ import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.network.Network;
-import org.sgrewritten.stargate.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.portal.AbstractPortal;
-import org.sgrewritten.stargate.network.portal.Portal;
-import org.sgrewritten.stargate.network.portal.PortalFlag;
-import org.sgrewritten.stargate.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public final class BStatsHelper {
     public static void registerMetrics(int pluginId, JavaPlugin plugin, RegistryAPI registry) {
         Metrics metrics = new Metrics(plugin, pluginId);
 
-        metrics.addCustomChart(new SimplePie("gateformats", () -> String.valueOf(GateFormatHandler.formatsStored())));
+        metrics.addCustomChart(new SimplePie("gateformats", () -> String.valueOf(GateFormatRegistry.formatsStored())));
 
         metrics.addCustomChart(new SingleLineChart("totalPortals", () -> AbstractPortal.portalCount));
 

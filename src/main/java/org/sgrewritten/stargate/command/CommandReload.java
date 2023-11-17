@@ -1,11 +1,13 @@
 package org.sgrewritten.stargate.command;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.event.StargateReloadEvent;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.property.CommandPermission;
 
@@ -39,6 +41,7 @@ public class CommandReload implements CommandExecutor {
         stargate.reload();
         Stargate.log(Level.INFO, "Reloaded stargate.");
         commandSender.sendMessage(languageManager.getMessage(TranslatableMessage.COMMAND_RELOAD));
+        Bukkit.getPluginManager().callEvent(new StargateReloadEvent());
         return true;
     }
 

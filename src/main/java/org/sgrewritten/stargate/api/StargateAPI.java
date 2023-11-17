@@ -1,12 +1,14 @@
 package org.sgrewritten.stargate.api;
 
 import org.bukkit.entity.Entity;
-import org.sgrewritten.stargate.config.ConfigurationAPI;
-import org.sgrewritten.stargate.database.StorageAPI;
-import org.sgrewritten.stargate.formatting.LanguageManager;
-import org.sgrewritten.stargate.manager.BungeeManager;
-import org.sgrewritten.stargate.manager.PermissionManager;
-import org.sgrewritten.stargate.network.RegistryAPI;
+import org.sgrewritten.stargate.api.config.ConfigurationAPI;
+import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.manager.BungeeManager;
+import org.sgrewritten.stargate.api.network.NetworkManager;
+import org.sgrewritten.stargate.api.permission.PermissionManager;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 
 /**
  * An API to facilitate addons and integrations
@@ -59,5 +61,20 @@ public interface StargateAPI {
      */
     BungeeManager getBungeeManager();
 
+    /**
+     * @return <p> The economy manager used by Stargate</p>
+     */
+    StargateEconomyAPI getEconomyManager();
 
+    /**
+     *
+     * @return <p> The material handler resolver used by stargate addons</p>
+     */
+    BlockHandlerResolver getMaterialHandlerResolver();
+
+    /**
+     *
+     * @return <p> The network manager used to fetch networks from strings</p>
+     */
+    NetworkManager getNetworkManager();
 }
