@@ -16,6 +16,7 @@ import java.util.logging.Level;
 public class GateFrame extends GateStructure {
 
     final Map<BlockVector, Set<Material>> parts;
+    final static Random RANDOM = new Random();
 
     /**
      * Instantiates a new gate frame
@@ -51,11 +52,10 @@ public class GateFrame extends GateStructure {
 
     @Override
     public void generateStructure(VectorOperation converter, Location topLeft) {
-        Random random = new Random();
         for(BlockVector position : parts.keySet()){
             Location location = topLeft.clone().add(converter.performToRealSpaceOperation(position));
             Set<Material> materialsAtPosition = parts.get(position);
-            Material material = materialsAtPosition.toArray(new Material[0])[random.nextInt(materialsAtPosition.size())];
+            Material material = materialsAtPosition.toArray(new Material[0])[RANDOM.nextInt(materialsAtPosition.size())];
             location.getBlock().setType(material);
         }
     }
