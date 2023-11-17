@@ -163,10 +163,10 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             storageAPI = new SQLDatabase(database);
             blockHandlerResolver = new BlockHandlerResolver(storageAPI);
             registry = new StargateRegistry(storageAPI, blockHandlerResolver);
+            networkManager = new StargateNetworkManager(registry, storageAPI);
             bungeeManager = new StargateBungeeManager(this.getRegistry(), this.getLanguageManager(), this.getNetworkManager());
             blockLogger = new CoreProtectManager();
             storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(DATA_FOLDER, INTERNAL_FOLDER, INTERNAL_PROPERTIES_FILE));
-            networkManager = new StargateNetworkManager(registry, storageAPI);
             try {
                 this.migrateConfigurationAndData();
             } catch (IOException | InvalidConfigurationException | SQLException e) {

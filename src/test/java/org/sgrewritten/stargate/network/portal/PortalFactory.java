@@ -145,6 +145,8 @@ public class PortalFactory {
             throws InvalidStructureException, NameLengthException {
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
+        } else {
+            flags.remove(PortalFlag.FANCY_INTER_SERVER);
         }
         BlockFace facing = BlockFace.EAST;
         String gateFileName = "nether.gate";
@@ -165,7 +167,7 @@ public class PortalFactory {
 
 
         RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, new HashSet<>(), gate, UUID.randomUUID(), stargateAPI, null);
-        network.addPortal(portal);
+        stargateAPI.getNetworkManager().savePortal(portal,network);
         return portal;
     }
 

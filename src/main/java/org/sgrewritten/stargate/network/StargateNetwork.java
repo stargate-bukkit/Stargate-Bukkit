@@ -225,7 +225,7 @@ public class StargateNetwork implements Network {
 
     @Override
     public StorageType getStorageType() {
-        return StorageType.LOCAL;
+        return this.storageType;
     }
 
     @Override

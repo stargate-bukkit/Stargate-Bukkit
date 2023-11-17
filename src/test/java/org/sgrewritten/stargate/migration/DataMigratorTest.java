@@ -23,6 +23,7 @@ import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabase;
@@ -68,6 +69,7 @@ public class DataMigratorTest {
     static private ServerMock server;
     private static StargateRegistry registry;
     private static StargateAPIMock stargateAPI;
+    private static NetworkManager networkManager;
 
     @BeforeAll
     public static void setUp() throws IOException, InvalidConfigurationException, SQLException {
@@ -87,6 +89,7 @@ public class DataMigratorTest {
         StorageAPI storageAPI = new SQLDatabase(sqlDatabase, false, false);
         registry = new StargateRegistry(storageAPI,new BlockHandlerResolver(storageAPI));
         stargateAPI = new StargateAPIMock(storageAPI,registry);
+        networkManager = stargateAPI.getNetworkManager();
 
         defaultConfigFile = new File("src/main/resources", "config.yml");
         server = MockBukkit.mock();

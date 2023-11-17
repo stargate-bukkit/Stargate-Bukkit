@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.container.TwoTuple;
@@ -153,7 +154,7 @@ public class StargateNetworkManager implements NetworkManager {
         Network network = storageAPI.createNetwork(name, type, isInterServer);
         registry.registerNetwork(network);
         Stargate.log(
-                Level.FINEST, String.format("Adding networkid %s to interServer = %b", network.getId(), isInterServer));
+                Level.FINEST, String.format("Adding network id %s to interServer = %b", network.getId(), isInterServer));
         return network;
     }
 
@@ -207,6 +208,28 @@ public class StargateNetworkManager implements NetworkManager {
         portal.setName(newName);
         network.addPortal(portal);
         portal.getNetwork().updatePortals();
+    }
+
+    @Override
+    public void savePortal(RealPortal portal, Network network) throws NameConflictException {
+        network.addPortal(portal);
+        try {
+            storageAPI.savePortalToStorage(portal);
+        } catch (StorageWriteException e) {
+            Stargate.log(e);
+        }
+    }
+
+    @Override
+    public void destroyPortal(RealPortal portal) {
+        portal.getNetwork().removePortal(portal);
+        registry.unregisterPortal(portal);
+        portal.destroy();
+        try {
+            storageAPI.removePortalFromStorage(portal);
+        } catch (StorageWriteException e) {
+            Stargate.log(e);
+        }
     }
 
 }

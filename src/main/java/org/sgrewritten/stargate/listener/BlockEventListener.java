@@ -99,7 +99,7 @@ public class BlockEventListener implements Listener {
                 String msg = languageManager.getErrorMessage(TranslatableMessage.DESTROY);
                 MessageUtils.sendMessageFromPortal(portal,event.getPlayer(),msg,StargateSendMessagePortalEvent.MessageType.DESTROY);
 
-                portal.destroy();
+                stargateAPI.getNetworkManager().destroyPortal(portal);
                 try {
                     stargateAPI.getStorageAPI().removePortalFromStorage(portal);
                 } catch (StorageWriteException e) {

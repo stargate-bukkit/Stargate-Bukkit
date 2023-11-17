@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
@@ -92,4 +93,13 @@ public interface NetworkManager {
      * @param newName <p> The new name of the portal </p>
      */
     void rename(Portal portal, String newName) throws NameConflictException;
+
+    /**
+     * Add portal to network and save to storage
+     * @param portal
+     * @param network
+     */
+    void savePortal(RealPortal portal, Network network) throws NameConflictException;
+
+    void destroyPortal(RealPortal portal);
 }

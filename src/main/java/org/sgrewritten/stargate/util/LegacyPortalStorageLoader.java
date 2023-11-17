@@ -5,8 +5,10 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -62,9 +64,7 @@ public final class LegacyPortalStorageLoader {
             String worldName = file.getName().replaceAll("\\.db$", "");
 
             BufferedReader reader = FileHelper.getBufferedReader(file);
-            // Fix encoding issue / can't convert properly from ansi to utf8
             String line = reader.readLine();
-            // Convert to utf-8 if ansi is used
             while (line != null) {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
@@ -120,13 +120,11 @@ public final class LegacyPortalStorageLoader {
             gate.addPortalPosition(buttonLocation, PositionType.BUTTON, "Stargate");
         }
 
-        Portal portal = PortalCreationHelper.createPortal(network, portalData, gate, stargateAPI);
+        RealPortal portal = PortalCreationHelper.createPortal(network, portalData, gate, stargateAPI);
 
-        // Add the portal to its network and store it to the database
         Stargate.log(Level.FINE, String.format("Saving portal %s in network %s from old storage... ",
                 portalData.name(), portalData.networkName()));
-        network.addPortal(portal);
-
+        stargateAPI.getNetworkManager().savePortal(portal, network);
         return portal;
     }
 

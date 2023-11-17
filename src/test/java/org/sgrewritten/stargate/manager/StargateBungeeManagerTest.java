@@ -95,7 +95,7 @@ class StargateBungeeManagerTest {
         RealPortal portal2 = PortalFactory.generateFakePortal(world, network, PORTAL2, true);
 
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
-        bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal2, StargateProtocolRequestType.PORTAL_ADD));
+        bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal2,StargateProtocolRequestType.PORTAL_ADD));
         Network network1 = registry.getNetwork(NETWORK, true);
         Assertions.assertNotNull(network1);
         Assertions.assertNotNull(network1.getPortal(PORTAL));
@@ -108,7 +108,7 @@ class StargateBungeeManagerTest {
 
         bungeeManager.playerConnect(BungeeHelper.generateTeleportJsonMessage(PLAYER, realPortal));
         Component componentMessage = player.nextComponentMessage();
-        Assertions.assertFalse(componentMessage != null && componentMessage.toString().contains("[ERROR]"), "A error message was sent to the player '" + componentMessage + "'");
+        Assertions.assertFalse(componentMessage != null && componentMessage.toString().contains("[ERROR]"), "An error message was sent to the player '" + componentMessage + "'");
     }
 
     @Test
@@ -125,7 +125,7 @@ class StargateBungeeManagerTest {
 
         bungeeManager.legacyPlayerConnect(BungeeHelper.generateLegacyTeleportMessage(PLAYER, bungeePortal));
         Component componentMessage = player.nextComponentMessage();
-        Assertions.assertFalse(componentMessage != null && componentMessage.toString().contains("[ERROR]"), "A error message was sent to the player '" + componentMessage + "'");
+        Assertions.assertFalse(componentMessage != null && componentMessage.toString().contains("[ERROR]"), "An error message was sent to the player '" + componentMessage + "'");
     }
 
     @Test
