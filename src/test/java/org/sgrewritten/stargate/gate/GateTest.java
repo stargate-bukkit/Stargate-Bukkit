@@ -37,6 +37,11 @@ class GateTest {
 
     @BeforeEach
     void setUp() throws InvalidStructureException, GateConflictException {
+        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(testGatesDir);
+        if (gateFormats == null) {
+            throw new IllegalStateException("Cannot get gate formats required for testing");
+        }
+        GateFormatRegistry.setFormats(gateFormats);
         ServerMock server = MockBukkit.mock();
         this.world = server.addSimpleWorld("world");
         Location topLeft = new Location(world, 0, 6, 0);
@@ -44,11 +49,6 @@ class GateTest {
         this.gateFileName = "nether.gate";
         this.gateData = new GateData(GateFormatRegistry.getFormat(gateFileName),false,topLeft,facing);
         this.signBlock = PortalBlockGenerator.generatePortal(gateData.topLeft().clone().subtract(new Vector(0, 4, 0)));
-        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(testGatesDir);
-        if (gateFormats == null) {
-            throw new IllegalStateException("Cannot get gate formats required for testing");
-        }
-        GateFormatRegistry.setFormats(gateFormats);
     }
 
     @AfterEach

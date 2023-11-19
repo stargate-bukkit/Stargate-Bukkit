@@ -53,17 +53,17 @@ public enum ConfigurationOption {
     /**
      * The cost of creating a new stargate
      */
-    CREATION_COST("creationCost", "The cost of creating a new stargate", 0, OptionDataType.INTEGER, false),
+    CREATION_COST("creationCost", "The cost of creating a new stargate", 0.0, OptionDataType.INTEGER, false),
 
     /**
      * The cost of destroying a stargate
      */
-    DESTROY_COST("destructionCost", "The cost of destroying a stargate", 0, OptionDataType.INTEGER, false),
+    DESTROY_COST("destructionCost", "The cost of destroying a stargate", 0.0, OptionDataType.INTEGER, false),
 
     /**
      * The cost of using (teleporting through) a stargate
      */
-    USE_COST("usageCost", "The cost of using (teleporting through) a stargate", 0, OptionDataType.INTEGER, false),
+    USE_COST("usageCost", "The cost of using (teleporting through) a stargate", 0.0, OptionDataType.INTEGER, false),
 
     /**
      * Whether to send any transaction fees to the gate owner's balance
