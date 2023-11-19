@@ -37,12 +37,12 @@ class GateTest {
 
     @BeforeEach
     void setUp() throws InvalidStructureException, GateConflictException {
+        ServerMock server = MockBukkit.mock();
         List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(testGatesDir);
         if (gateFormats == null) {
             throw new IllegalStateException("Cannot get gate formats required for testing");
         }
         GateFormatRegistry.setFormats(gateFormats);
-        ServerMock server = MockBukkit.mock();
         this.world = server.addSimpleWorld("world");
         Location topLeft = new Location(world, 0, 6, 0);
         BlockFace facing = BlockFace.SOUTH;
