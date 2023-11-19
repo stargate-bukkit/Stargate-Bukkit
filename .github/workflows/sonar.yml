@@ -35,7 +35,7 @@ jobs:
       - name: Create credentials file
         uses: "finnp/create-file-action@master"
         env:
-          FILE_NAME: "~/project/src/test/resources/mysql_credentials.secret"
+          FILE_NAME: "/home/runner/work/Stargate-Bukkit/Stargate-Bukkit/src/test/resources/mysql_credentials.secret"
           FILE_DATA: |-
             MYSQL_DB_PASSWORD=root
             MYSQL_DB_USER=root
