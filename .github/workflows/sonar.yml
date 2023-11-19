@@ -37,6 +37,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=stargate-rewritten_Stargate-Bukkit
+      - name: Create credentials file
+        uses: "finnp/create-file-action@master"
+        env:
+          FILE_NAME: "\src\test\resources\mysql_credentials.secret"
+          FILE_DATA: |-
+            MYSQL_DB_PASSWORD=root
+            MYSQL_DB_USER=root
+            MYSQL_DB_PORT=3306
+            MYSQL_DB_NAME=stargate
+            MYSQL_DB_ADDRESS=localhost
     services:
       mysql:
         image: mysql:5.7.22
