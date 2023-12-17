@@ -27,7 +27,7 @@ public class InterServerMessageSender implements PluginMessageSender {
 
     @Override
     public void sendRenameNetwork(String newId, String oldId) {
-        String message = BungeeHelper.generateRenamePortalMessage(newId,oldId);
+        String message = BungeeHelper.generateRenameNetworkMessage(newId,oldId);
         updateInterServerNetwork(message);
     }
 

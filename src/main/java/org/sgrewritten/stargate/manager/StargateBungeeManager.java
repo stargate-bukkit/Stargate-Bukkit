@@ -49,6 +49,38 @@ public class StargateBungeeManager implements BungeeManager {
 
         String requestTypeString = json.get(StargateProtocolProperty.REQUEST_TYPE.toString()).getAsString();
         StargateProtocolRequestType requestType = StargateProtocolRequestType.valueOf(requestTypeString);
+        switch (requestType){
+            case PORTAL_ADD, PORTAL_REMOVE-> {
+                portalAddOrRemove(json, requestType);
+            }
+            case NETWORK_RENAME -> {
+                String oldId = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
+                String newId = json.get(StargateProtocolProperty.NEW_NETWORK_NAME.toString()).getAsString();
+                try {
+                    registry.renameNetwork(newId, oldId, true);
+                } catch (InvalidNameException | UnimplementedFlagException | NameLengthException e) {
+                    Stargate.log(e);
+                }
+            }
+            case PORTAL_RENAME -> {
+                String oldName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
+                String newName = json.get(StargateProtocolProperty.NEW_PORTAL_NAME.toString()).getAsString();
+                String networkId = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
+                Network network = registry.getNetwork(networkId,true);
+                if(network == null){
+                    Stargate.log(Level.WARNING, "Could not rename cross server portal, as network did not exist");
+                    return;
+                }
+                try {
+                    network.renamePortal(newName,oldName);
+                } catch (InvalidNameException e) {
+                    Stargate.log(e);
+                }
+            }
+        }
+    }
+
+    private void portalAddOrRemove(JsonObject json, StargateProtocolRequestType requestType){
 
         String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
         String network = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();

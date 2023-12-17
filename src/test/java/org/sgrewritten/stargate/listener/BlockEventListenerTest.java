@@ -69,7 +69,7 @@ class BlockEventListenerTest {
 
         player = server.addPlayer(PLAYER_NAME);
 
-        world = new WorldMock(Material.GRASS, 0);
+        world = new WorldMock(Material.GRASS_BLOCK, 0);
         server.addWorld(world);
         GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         this.stargateAPI = new StargateAPIMock();

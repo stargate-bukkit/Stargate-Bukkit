@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.sgrewritten.stargate.api.network.proxy.PluginMessageSender;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -131,18 +132,27 @@ public interface Network {
     /**
      * Change the name of the network
      * <p>
-     * Does not save to database
+     * Does not save to database. Use {@link NetworkManager#rename(Network, String)} instead.
      *
      * @param newName
      * @throws InvalidNameException
      * @throws NameLengthException
      * @throws UnimplementedFlagException
      */
+    @ApiStatus.Internal
     void setID(String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
 
     /**
-     * 
-     * @return
+     *
      */
     PluginMessageSender getPluginMessageSender();
+
+    /**
+     * Renames the portal, does not save to database and is also not cross server compatible.
+     * Instead use {@link org.sgrewritten.stargate.api.network.NetworkManager#rename(Portal, String)}
+     * @param newName
+     * @param oldName
+     */
+    @ApiStatus.Internal
+    void renamePortal(String newName, String oldName) throws InvalidNameException;
 }

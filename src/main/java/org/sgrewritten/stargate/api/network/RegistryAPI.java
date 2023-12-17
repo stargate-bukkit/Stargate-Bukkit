@@ -3,16 +3,17 @@ package org.sgrewritten.stargate.api.network;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 
 import java.util.List;
 import java.util.Map;
@@ -27,11 +28,12 @@ import java.util.Map;
 public interface RegistryAPI {
 
     /**
-     * Removes the given portal from storage
+     * Removes the given portal from registry. Only modifies this registry, use
+     * {@link NetworkManager#destroyPortal(RealPortal)} instead
      *
      * @param portal     <p>The portal to remove</p>
-     * @param portalType <p>The type of portal to be removed</p>
      */
+    @ApiStatus.Internal
     void unregisterPortal(Portal portal);
 
     /**
@@ -113,16 +115,17 @@ public interface RegistryAPI {
     /**
      * Get portal from block next to portal, will randomly chose one portal if block is
      * next to two portals
-     * @param location 
-     * @param structureType 
+     *
+     * @param location
+     * @param structureType
      * @return
      */
     List<RealPortal> getPortalsFromTouchingBlock(Location location, GateStructureType structureType);
-    
+
     /**
      * Registers the existence of the given structure type in the given locations
      *
-     * <p>Basically stores the portals that exist at the given locations, but using the structure type as the key to be
+     * <p>Stores the portals that exist at the given locations, but using the structure type as the key to be
      * able to check locations for the given structure type.</p>
      *
      * @param structureType <p>The structure type to register</p>
@@ -142,6 +145,7 @@ public interface RegistryAPI {
 
     /**
      * Register a portal to this registry
+     *
      * @param portal <p> The portal to register</p>
      */
     void registerPortal(RealPortal portal);
@@ -199,41 +203,47 @@ public interface RegistryAPI {
 
     /**
      * Get all portal positions
-     * @return  <p> Data on all portal positions</p>
+     *
+     * @return <p> Data on all portal positions</p>
      */
-    Map<BlockLocation,PortalPosition> getPortalPositions();
+    Map<BlockLocation, PortalPosition> getPortalPositions();
 
     /**
      * @param plugin <p> The plugin owning the positions</p>
      * @return <p> Data on the portal positions owned by specified plugin</p>
      */
-    Map<BlockLocation,PortalPosition> getPortalPositionsOwnedByPlugin(Plugin plugin);
+    Map<BlockLocation, PortalPosition> getPortalPositionsOwnedByPlugin(Plugin plugin);
 
     /**
      * Save given portal position to storage and register it to the registry
-     * @param portal <p>The portal the position is linked to</p>
+     *
+     * @param portal   <p>The portal the position is linked to</p>
      * @param location <p> The location of the position</p>
-     * @param type <p>The type of the position</p>
-     * @param plugin <p> The plugin this position relates to</p>
+     * @param type     <p>The type of the position</p>
+     * @param plugin   <p> The plugin this position relates to</p>
      */
     PortalPosition savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin);
 
     /**
      * Remove portal position from registry and storage
+     *
      * @param location
      */
     void removePortalPosition(Location location);
 
     /**
-     * Register given portal position to registry
+     * Register given portal position to registry. Does not save to database, therefore internal
+     *
      * @param portalPosition <p> The portal position</p>
-     * @param location <p> The location of the position</p>
-     * @param portal <p>The portal of the position</p>
+     * @param location       <p> The location of the position</p>
+     * @param portal         <p>The portal of the position</p>
      */
+    @ApiStatus.Internal
     void registerPortalPosition(PortalPosition portalPosition, Location location, RealPortal portal);
 
     /**
      * Gets the portal position at given location
+     *
      * @param location <p> The location of the portal position</p>
      * @return <p>The portal position, or null if none was found</p>
      */
@@ -241,10 +251,26 @@ public interface RegistryAPI {
 
     /**
      * Get the portal the given portal position belong to
+     *
      * @param portalPosition <p> A portal position</p>
      * @return <p> The portal that owns the portal position (or null if the portal position is not registered)</p>
      */
     @Nullable RealPortal getPortalFromPortalPosition(PortalPosition portalPosition);
 
+    /**
+     * Use {@link NetworkManager} instead. This does not save to database, and is not cross server compatible
+     *
+     * @param network
+     */
+    @ApiStatus.Internal
     void registerNetwork(Network network);
+
+    /**
+     * Use {@link NetworkManager} instead. This does not save to database, and is not cross server compatible
+     *
+     * @param newId
+     * @param oldId
+     */
+    @ApiStatus.Internal
+    void renameNetwork(String newId, String oldId, boolean isInterServer) throws InvalidNameException, UnimplementedFlagException, NameLengthException;
 }

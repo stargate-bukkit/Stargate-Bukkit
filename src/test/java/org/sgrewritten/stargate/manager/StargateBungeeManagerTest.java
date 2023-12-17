@@ -17,6 +17,9 @@ import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.database.StorageMock;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.UnimplementedFlagException;
+import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
@@ -101,6 +104,36 @@ class StargateBungeeManagerTest {
         Assertions.assertNotNull(network1.getPortal(PORTAL));
         Assertions.assertNotNull(network1.getPortal(PORTAL2));
     }
+
+    @Test
+    void updateNetwork_renamePortal() throws TranslatableException, InvalidStructureException {
+        //A network not assigned to a registry
+        Network network = new StargateNetwork(NETWORK, NetworkType.CUSTOM, StorageType.INTER_SERVER);
+        RealPortal portal = PortalFactory.generateFakePortal(world, network, PORTAL, true);
+        String newName = "new_portal";
+        bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
+        bungeeManager.updateNetwork(BungeeHelper.generateRenamePortalMessage(newName,portal.getName(),network));
+        Network network1 = registry.getNetwork(NETWORK, true);
+        Assertions.assertNotNull(network1);
+        Assertions.assertNull(network1.getPortal(PORTAL));
+        Assertions.assertNotNull(network1.getPortal(newName));
+    }
+    @Test
+    void updateNetwork_renameNetwork() throws TranslatableException, InvalidStructureException {
+        //A network not assigned to a registry
+        Network network = new StargateNetwork(NETWORK, NetworkType.CUSTOM, StorageType.INTER_SERVER);
+        RealPortal portal = PortalFactory.generateFakePortal(world, network, PORTAL, true);
+        String newName = "new_network";
+        bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
+        Network preRenameNetwork = registry.getNetwork(NETWORK, true);
+        bungeeManager.updateNetwork(BungeeHelper.generateRenameNetworkMessage(newName,NETWORK));
+        Network renamedNetwork = registry.getNetwork(newName, true);
+        Assertions.assertEquals(preRenameNetwork, renamedNetwork);
+        Assertions.assertNotNull(renamedNetwork);
+        Assertions.assertNull(registry.getNetwork(NETWORK, true));
+        Assertions.assertNotNull(renamedNetwork.getPortal(PORTAL));
+    }
+
 
     @Test
     void playerConnectOnline() {

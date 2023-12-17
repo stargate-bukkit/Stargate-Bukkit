@@ -381,4 +381,15 @@ public class StargateRegistry implements RegistryAPI {
         getNetworkMap(network.getStorageType() == StorageType.INTER_SERVER).put(network.getId(), network);
     }
 
+    @Override
+    public void renameNetwork(String newId, String oldId, boolean isInterServer) throws InvalidNameException, UnimplementedFlagException, NameLengthException {
+        Map<String,Network> networks = getNetworkMap(isInterServer);
+        Network network = networks.remove(oldId);
+        if(network == null){
+            throw new InvalidNameException("Name does not exist, can not rename: " + oldId);
+        }
+        network.setID(NameHelper.getNormalizedName(newId));
+        networks.put(network.getId(), network);
+    }
+
 }

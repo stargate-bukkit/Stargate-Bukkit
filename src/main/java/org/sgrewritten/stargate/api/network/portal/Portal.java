@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.api.network.portal;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.api.network.Network;
@@ -192,11 +193,12 @@ public interface Portal {
     StorageType getStorageType();
 
     /**
-     * Changes the name of the portal
-     * <p>TODO: DOES NOT CURRENTLY SAVE TO DATABASE</p>
+     * Changes the name of the portal. Use {@link org.sgrewritten.stargate.api.network.NetworkManager#rename(Portal, String)} 
+     * instead, as this does not save to database, nor update its name to the portal network.
      *
      * @param newName <p>The new name of the portal</p>
      */
+    @ApiStatus.Internal
     void setName(String newName);
 
     /**

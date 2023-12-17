@@ -72,6 +72,11 @@ public class StargateNetwork implements Network {
     private void load(String name, NetworkType type) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
         Objects.requireNonNull(name);
         this.networkType = Objects.requireNonNull(type);
+        setId(name, type);
+        nameToPortalMap = new HashMap<>();
+    }
+
+    private void setId(String name, NetworkType type) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
         switch (type) {
             case DEFAULT -> loadAsDefault(name);
             case PERSONAL -> loadAsPersonalNetwork(name);
@@ -79,7 +84,6 @@ public class StargateNetwork implements Network {
             case TERMINAL ->
                     throw new UnimplementedFlagException("Terminal networks are not implemented yet", type.getRelatedFlag());
         }
-        nameToPortalMap = new HashMap<>();
     }
 
     private void loadAsDefault(String name) throws InvalidNameException {
@@ -230,12 +234,22 @@ public class StargateNetwork implements Network {
 
     @Override
     public void setID(String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
-        load(newName, this.getType());
+        setId(newName, this.getType());
     }
 
     @Override
     public PluginMessageSender getPluginMessageSender() {
         return null;
+    }
+
+    @Override
+    public void renamePortal(String newName, String oldName) throws InvalidNameException {
+        Portal portal = nameToPortalMap.remove(oldName);
+        if(portal == null){
+            throw new InvalidNameException("Name does not exist, can not rename: " + oldName);
+        }
+        portal.setName(NameHelper.getNormalizedName(newName));
+        nameToPortalMap.put(portal.getName(), portal);
     }
 
 

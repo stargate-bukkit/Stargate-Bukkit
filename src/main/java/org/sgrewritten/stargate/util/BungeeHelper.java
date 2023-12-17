@@ -116,7 +116,7 @@ public final class BungeeHelper {
         return jsonData.toString();
     }
 
-    public static String generateRenamePortalMessage(String newId, String oldId){
+    public static String generateRenameNetworkMessage(String newId, String oldId){
         JsonObject jsonData = new JsonObject();
         jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(StargateProtocolRequestType.NETWORK_RENAME.toString()));
         jsonData.add(StargateProtocolProperty.NEW_NETWORK_NAME.toString(), new JsonPrimitive(newId));
@@ -126,7 +126,7 @@ public final class BungeeHelper {
 
     public static String generateRenamePortalMessage(String newName, String oldName, Network network){
         JsonObject jsonData = new JsonObject();
-        jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(StargateProtocolRequestType.NETWORK_RENAME.toString()));
+        jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(StargateProtocolRequestType.PORTAL_RENAME.toString()));
         jsonData.add(StargateProtocolProperty.NEW_PORTAL_NAME.toString(), new JsonPrimitive(newName));
         jsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(network.getId()));
         jsonData.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(oldName));
