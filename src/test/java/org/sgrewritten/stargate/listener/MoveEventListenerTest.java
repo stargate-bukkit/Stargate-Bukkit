@@ -24,11 +24,10 @@ import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.gate.GateTestHelper;
+import org.sgrewritten.stargate.gate.StargateTestHelper;
 
 import java.util.HashSet;
 
@@ -48,7 +47,7 @@ class MoveEventListenerTest {
         System.setProperty("bstats.relocatecheck", "false");
         server = MockBukkit.mock();
         plugin = MockBukkit.load(Stargate.class);
-        GateTestHelper.setUpGates();
+        StargateTestHelper.setup();
         @NotNull WorldMock theEnd = server.addSimpleWorld("world");
         theEnd.setEnvironment(Environment.THE_END);
         Location from = new Location(theEnd, 0, 0, 0);

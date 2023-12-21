@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.network;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.StargateAPI;
@@ -42,7 +43,7 @@ public class StargateNetworkManager implements NetworkManager {
     }
 
     @Override
-    public Network selectNetwork(String name, PermissionManager permissionManager, OfflinePlayer player, Set<PortalFlag> flags) throws TranslatableException {
+    public @NotNull Network selectNetwork(String name, PermissionManager permissionManager, OfflinePlayer player, Set<PortalFlag> flags) throws TranslatableException {
 
         Stargate.log(Level.FINER, "....Choosing network name....");
         Stargate.log(Level.FINER, "initial name is '" + name + "'");
@@ -75,7 +76,7 @@ public class StargateNetworkManager implements NetworkManager {
     }
 
     @Override
-    public Network selectNetwork(String name, NetworkType type, boolean isInterServer) throws TranslatableException {
+    public @NotNull Network selectNetwork(String name, NetworkType type, boolean isInterServer) throws TranslatableException {
         name = NameHelper.getTrimmedName(name);
         try {
             this.createNetwork(name, type, isInterServer, false);
@@ -218,6 +219,7 @@ public class StargateNetworkManager implements NetworkManager {
         } catch (StorageWriteException e) {
             Stargate.log(e);
         }
+        network.getPluginMessageSender().sendCreatePortal(portal);
     }
 
     @Override
@@ -230,6 +232,7 @@ public class StargateNetworkManager implements NetworkManager {
         } catch (StorageWriteException e) {
             Stargate.log(e);
         }
+        portal.getNetwork().getPluginMessageSender().sendDeletePortal(portal);
     }
 
 }

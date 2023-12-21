@@ -21,28 +21,29 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.api.BlockHandlerInterfaceMock;
+import org.sgrewritten.stargate.api.Priority;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.api.BlockHandlerInterfaceMock;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
-import org.sgrewritten.stargate.api.Priority;
-import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.RegistryAPI;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.network.StargateNetworkManager;
-import org.sgrewritten.stargate.network.portal.PortalFactory;
+import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
 
 import java.io.File;
 import java.util.HashSet;
@@ -73,7 +74,7 @@ class BlockEventListenerTest {
         server.addWorld(world);
         GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         this.stargateAPI = new StargateAPIMock();
-        registry = stargateAPI.getRegistry();
+        this.registry = stargateAPI.getRegistry();
         this.networkManager = stargateAPI.getNetworkManager();
         Stargate.setServerUUID(UUID.randomUUID());
         blockEventListener = new BlockEventListener(stargateAPI);
@@ -88,36 +89,30 @@ class BlockEventListenerTest {
         MockBukkit.unmock();
     }
 
-    @Test
-    void portalCreationDestuctionTest() {
+    @ParameterizedTest
+    @ValueSource(strings = {"", CUSTOM_NETNAME, PLAYER_NAME})
+    void portalCreationDestuctionTest(String networkName) {
         Location bottomLeft = new Location(world, 0, 1, 0);
         Location insidePortal = new Location(world, 0, 2, 0);
         Block signBlock = PortalBlockGenerator.generatePortal(bottomLeft);
+        blockEventListener.onSignChange(new SignChangeEvent(signBlock, player, new String[]{"test", "", networkName,
+                ""}));
 
 
-        String[] networkNames = {"", CUSTOM_NETNAME, player.getName()};
-        for (String networkName : networkNames) {
-            blockEventListener.onSignChange(new SignChangeEvent(signBlock, player, new String[]{"test", "", networkName,
-                    ""}));
+        String netId = switch (networkName) {
+            case "" -> StargateNetwork.DEFAULT_NETWORK_ID;
+            case CUSTOM_NETNAME -> CUSTOM_NETNAME;
+            case PLAYER_NAME -> player.getUniqueId().toString();
+            default -> null;
+        };
 
-
-            String netId = switch (networkName) {
-                case "" -> StargateNetwork.DEFAULT_NETWORK_ID;
-                case CUSTOM_NETNAME -> CUSTOM_NETNAME;
-                case PLAYER_NAME -> player.getUniqueId().toString();
-                default -> null;
-            };
-
-
-            ((Directional) signBlock.getBlockData()).setFacing(BlockFace.SOUTH); //TODO Why does this need to be done?
-            Network network = registry.getNetwork(netId, false);
-            Assertions.assertNotNull(network);
-            Assertions.assertNotNull(network.getPortal("test"));
-            Assertions.assertNotNull(registry.getPortal(insidePortal));
-            blockEventListener.onBlockBreak(new BlockBreakEvent(insidePortal.getBlock(), player));
-            Assertions.assertNull(network.getPortal("test"));
-            Assertions.assertNull(registry.getPortal(insidePortal));
-        }
+        Network network = registry.getNetwork(netId, false);
+        Assertions.assertNotNull(network);
+        Assertions.assertNotNull(network.getPortal("test"));
+        Assertions.assertNotNull(registry.getPortal(insidePortal));
+        blockEventListener.onBlockBreak(new BlockBreakEvent(insidePortal.getBlock(), player));
+        Assertions.assertNull(network.getPortal("test"));
+        Assertions.assertNull(registry.getPortal(insidePortal));
     }
 
     @SuppressWarnings("deprecation")

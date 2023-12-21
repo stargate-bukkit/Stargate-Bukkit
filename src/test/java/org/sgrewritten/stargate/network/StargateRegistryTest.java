@@ -24,7 +24,7 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
-import org.sgrewritten.stargate.gate.GateTestHelper;
+import org.sgrewritten.stargate.gate.StargateTestHelper;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.util.portal.PortalMock;
 
@@ -41,7 +41,7 @@ class StargateRegistryTest {
     @BeforeEach
     void setUp() throws NameLengthException, NameConflictException, InvalidNameException, UnimplementedFlagException {
         ServerMock server = MockBukkit.mock();
-        GateTestHelper.setUpGates();
+        StargateTestHelper.setup();
         this.world = server.addSimpleWorld("world");
         this.player = server.addPlayer();
         this.storageMock = new StorageMock();

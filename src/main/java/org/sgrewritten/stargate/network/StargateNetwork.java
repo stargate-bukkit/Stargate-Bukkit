@@ -44,7 +44,6 @@ public class StargateNetwork implements Network {
     private final StorageType storageType;
 
     private Map<String, Portal> nameToPortalMap;
-    private SQLDatabaseAPI database;
     private String name;
     private String id;
     private RegistryAPI registry;
@@ -239,7 +238,7 @@ public class StargateNetwork implements Network {
 
     @Override
     public PluginMessageSender getPluginMessageSender() {
-        return null;
+        return this.messageSender;
     }
 
     @Override

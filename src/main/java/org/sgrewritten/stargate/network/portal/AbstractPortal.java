@@ -457,15 +457,12 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void destroy() {
+        this.isDestroyed = true;
         // drawing the sign first is necessary, as the portal positions gets unregistered from the gate later on
         SignLine[] lines = new SignLine[]{new TextLine(getName(), SignLineType.TEXT), new TextLine(), new TextLine(), new TextLine()};
         getGate().drawControlMechanisms(lines, false);
         this.network.removePortal(this);
         this.close(true);
-
-
-
-        this.isDestroyed = true;
 
         Supplier<Boolean> destroyAction = () -> {
             network.updatePortals();

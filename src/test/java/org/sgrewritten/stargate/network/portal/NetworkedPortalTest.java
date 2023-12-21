@@ -17,7 +17,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
@@ -26,11 +25,10 @@ import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.gate.GateTestHelper;
+import org.sgrewritten.stargate.gate.StargateTestHelper;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 
 class NetworkedPortalTest {
 
@@ -47,7 +45,7 @@ class NetworkedPortalTest {
     void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException {
         @NotNull ServerMock server = MockBukkit.mock();
         plugin = MockBukkit.createMockPlugin("Stargate");
-        GateTestHelper.setUpGates();
+        StargateTestHelper.setup();
         world = server.addSimpleWorld("world");
         this.stargateAPI = new StargateAPIMock();
         registry = stargateAPI.getRegistry();

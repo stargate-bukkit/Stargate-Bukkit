@@ -13,6 +13,17 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 public class InterServerMessageSender implements PluginMessageSender {
+
+    private final PluginMessageInterface pluginMessageInterface;
+
+    public InterServerMessageSender(){
+        this.pluginMessageInterface = new BukkitPluginMessageInterface();
+    }
+
+    public InterServerMessageSender(PluginMessageInterface pluginMessageInterface){
+        this.pluginMessageInterface = pluginMessageInterface;
+    }
+
     @Override
     public void sendCreatePortal(RealPortal realPortal) {
         String message = BungeeHelper.generateJsonMessage(realPortal, StargateProtocolRequestType.PORTAL_ADD);
@@ -38,27 +49,11 @@ public class InterServerMessageSender implements PluginMessageSender {
     }
 
     /**
-     * Tries to update a portal the inter-server network globally on every connected server
-     *
-     * <p>Basically tells all connected servers to either add or remove the given portal.</p>
-     *
+     * Send messages to all servers connected to the BungeeCoord proxy. (requires a player
+     * to be online on both ends does not need to be simultaneously)
      * @param message     <p>The message to send</p>
      */
     private void updateInterServerNetwork(String message) {
-        Stargate stargate = Stargate.getPlugin(Stargate.class);
-
-        Stargate.addSynchronousSecAction(new ForcibleFunctionAction((forceEnd) -> {
-            if (stargate.getServer().getOnlinePlayers().size() > 0 || forceEnd) {
-                try {
-                    BungeeHelper.sendMessageFromChannel(message, PluginChannel.NETWORK_CHANGED, stargate);
-                    return true;
-                } catch (IOException e) {
-                    Stargate.log(Level.WARNING, "Error sending BungeeCord connect packet");
-                    Stargate.log(e);
-                }
-            }
-            return false;
-
-        }), true);
+        this.pluginMessageInterface.scheduleSendMessage(message, PluginChannel.NETWORK_CHANGED);
     }
 }

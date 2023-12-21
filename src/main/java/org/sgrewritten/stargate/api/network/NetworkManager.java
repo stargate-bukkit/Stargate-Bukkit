@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
@@ -28,7 +29,7 @@ public interface NetworkManager {
      * @return <p>The network the portal should be connected to</p>
      * @throws TranslatableException <p>If invalid input is given</p>
      */
-    Network selectNetwork(String name, PermissionManager permissionManager, OfflinePlayer player, Set<PortalFlag> flags) throws TranslatableException;
+    @NotNull Network selectNetwork(String name, PermissionManager permissionManager, OfflinePlayer player, Set<PortalFlag> flags) throws TranslatableException;
 
     /**
      * Gets the network with the given name, and creates it if it doesn't already exist
@@ -39,7 +40,7 @@ public interface NetworkManager {
      * @return <p>The network the portal should be connected to</p>
      * @throws TranslatableException <p>If the network name is invalid</p>
      */
-    Network selectNetwork(String name, NetworkType type, boolean isInterServer) throws TranslatableException;
+    @NotNull Network selectNetwork(String name, NetworkType type, boolean isInterServer) throws TranslatableException;
 
     /**
      * Creates a new network assigned to this registry

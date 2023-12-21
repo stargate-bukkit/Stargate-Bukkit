@@ -144,16 +144,4 @@ public final class BungeeHelper {
     public static String generateLegacyTeleportMessage(String player, Portal portal) {
         return player + "#@#" + portal.getName();
     }
-
-    public static void sendMessageFromChannel(String message, PluginChannel channel, Plugin masterPlugin) throws IOException {
-        try(ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-            dataOutputStream.writeUTF(PluginChannel.FORWARD.getChannel());
-            dataOutputStream.writeUTF("ALL");
-            dataOutputStream.writeUTF(channel.getChannel());
-            Stargate.log(Level.FINER, String.format("Sending bungee message:%n%s", message));
-            dataOutputStream.writeUTF(message);
-            Bukkit.getServer().sendPluginMessage(masterPlugin, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
-        }
-    }
 }
