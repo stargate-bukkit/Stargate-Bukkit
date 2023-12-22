@@ -251,7 +251,7 @@ public enum TranslatableMessage {
     /**
      * The name of a cross server network
      */
-    FANCY_INTER_SERVER("interServer"),
+    FANCY_INTERSERVER("interserver"),
 
     /**
      * The name of the default network
