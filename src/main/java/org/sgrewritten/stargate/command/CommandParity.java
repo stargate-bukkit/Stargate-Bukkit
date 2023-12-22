@@ -7,8 +7,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
+import org.sgrewritten.stargate.formatting.TranslatableMessage;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,20 +35,22 @@ public class CommandParity implements CommandExecutor {
     private static final String MAPPER_NAME = "StargateMapper";
     private static final File OLD_CONFIG_LOCATION = new File("");
     private final File pluginFolder;
+    private final LanguageManager languageManager;
     private URL mapper;
     private URL mechanics;
     private URL interfaces;
     private URL customizations;
 
-    CommandParity(@NotNull StoredPropertiesAPI properties, boolean doParityUpgrades, File pluginFolder) {
-        this(properties, doParityUpgrades, pluginFolder, MECHANICS_URL, INTERFACES_URL, CUSTOMIZATIONS_URL, MAPPER_URL, OLD_CONFIG_LOCATION);
+    CommandParity(@NotNull StoredPropertiesAPI properties, boolean doParityUpgrades, File pluginFolder, LanguageManager languageManager) {
+        this(properties, doParityUpgrades, pluginFolder, MECHANICS_URL, INTERFACES_URL, CUSTOMIZATIONS_URL, MAPPER_URL, OLD_CONFIG_LOCATION, languageManager);
     }
 
     CommandParity(@NotNull StoredPropertiesAPI properties, boolean doParityUpgrades, File pluginFolder, String mechanics, String interfaces
-            , String customizations, String mapper, File oldConfig) {
+            , String customizations, String mapper, File oldConfig, LanguageManager languageManager) {
         this.properties = Objects.requireNonNull(properties);
         this.doParityUpgrades = doParityUpgrades;
         this.pluginFolder = pluginFolder;
+        this.languageManager = languageManager;
         try {
             this.mechanics = new URL(mechanics);
             this.interfaces = new URL(interfaces);
@@ -69,6 +73,7 @@ public class CommandParity implements CommandExecutor {
             Stargate.log(Level.INFO, " Rejected parity upgrades.");
             return true;
         }
+        sender.sendMessage(languageManager.getWarningMessage(TranslatableMessage.PARITY_UPGRADE));
         File pluginsFolder = pluginFolder.getParentFile();
         File mechanicsFile = determineDestinationJarName(mechanics, MECHANICS_NAME, pluginsFolder);
         File interfacesFile = determineDestinationJarName(interfaces, INTERFACES_NAME, pluginsFolder);

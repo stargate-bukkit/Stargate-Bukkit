@@ -271,7 +271,9 @@ public enum TranslatableMessage {
     /**
      * The name of a custom network
      */
-    CUSTOM_NETWORK("custom");
+    CUSTOM_NETWORK("custom"),
+
+    PARITY_UPGRADE("parityCommand");
 
     /*
      * Available additional strings:

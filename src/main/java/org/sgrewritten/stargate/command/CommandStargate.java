@@ -40,9 +40,9 @@ public class CommandStargate implements CommandExecutor {
                 case "version":
                     break;
                 case "parityconfirm":
-                    return new CommandParity(stargate.getStoredPropertiesAPI(), true, stargate.getDataFolder()).onCommand(commandSender, command, s, args);
+                    return new CommandParity(stargate.getStoredPropertiesAPI(), true, stargate.getDataFolder(), this.languageManager).onCommand(commandSender, command, s, args);
                 case "parityreject":
-                    return new CommandParity(stargate.getStoredPropertiesAPI(), false, stargate.getDataFolder()).onCommand(commandSender, command, s, args);
+                    return new CommandParity(stargate.getStoredPropertiesAPI(), false, stargate.getDataFolder(), this.languageManager).onCommand(commandSender, command, s, args);
                 default:
                     return false;
             }

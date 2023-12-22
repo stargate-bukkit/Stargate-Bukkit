@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.database.property.PropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredProperty;
+import org.sgrewritten.stargate.util.LanguageManagerMock;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +37,7 @@ class CommandParityTest {
         properties = new PropertiesDatabase(new File(plugin.getDataFolder(), "test.properties"));
         File testPluginFile = new File(new File("").getAbsolutePath(),"/src/test/resources/TestPlugin-1.0-SNAPSHOT.jar");
         String testPluginPath = "file://" + testPluginFile.toURI().toURL().getFile();
-        command = new CommandParity(properties, true, plugin.getDataFolder(), testPluginPath, testPluginPath, testPluginPath, testPluginPath, new File(""));
+        command = new CommandParity(properties, true, plugin.getDataFolder(), testPluginPath, testPluginPath, testPluginPath, testPluginPath, new File(""), new LanguageManagerMock());
     }
 
     @AfterEach
