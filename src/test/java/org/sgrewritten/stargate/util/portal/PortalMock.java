@@ -155,6 +155,11 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
+    public boolean isDestroyed() {
+        return false;
+    }
+
+    @Override
     public SignLine[] getDrawnControlLines() {
         return null;
     }
