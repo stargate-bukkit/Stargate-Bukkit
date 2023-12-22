@@ -25,15 +25,18 @@ class CommandParityTest {
     private PropertiesDatabase properties;
     private @NotNull ConsoleCommandSenderMock console;
     private final Command fakeCommand = new VersionCommand("fake");
+    private MockPlugin plugin;
 
     @BeforeEach
     void setUp() throws IOException {
         @NotNull ServerMock server = MockBukkit.mock();
-        @NotNull MockPlugin plugin = MockBukkit.createMockPlugin();
+        this.plugin = MockBukkit.createMockPlugin();
         console = server.getConsoleSender();
         player = server.addPlayer();
         properties = new PropertiesDatabase(new File(plugin.getDataFolder(), "test.properties"));
-        command = new CommandParity(properties, true);
+        File testPluginFile = new File(new File("").getAbsolutePath(),"/src/test/resources/TestPlugin-1.0-SNAPSHOT.jar");
+        String testPluginPath = "file://" + testPluginFile.toURI().toURL().getFile();
+        command = new CommandParity(properties, true, plugin.getDataFolder(), testPluginPath, testPluginPath, testPluginPath, testPluginPath);
     }
 
     @AfterEach
@@ -55,12 +58,18 @@ class CommandParityTest {
     void onCommandParityFalse() {
         properties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, "false");
         Assertions.assertFalse(command.onCommand(console, fakeCommand, "", new String[]{""}));
+
     }
 
     @Test
     void onCommandParityTrue() {
         properties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, "true");
         Assertions.assertTrue(command.onCommand(console, fakeCommand, "", new String[]{""}));
+        File pluginsFolder = plugin.getDataFolder().getParentFile();
+        Assertions.assertTrue(new File(pluginsFolder,"StargateMechanics-1.0-SNAPSHOT.jar").exists());
+        Assertions.assertTrue(new File(pluginsFolder,"StargateInterfaces-1.0-SNAPSHOT.jar").exists());
+        Assertions.assertTrue(new File(pluginsFolder,"StargateCustomizations-1.0-SNAPSHOT.jar").exists());
+        Assertions.assertTrue(new File(pluginsFolder,"StargateMapper-1.0-SNAPSHOT.jar").exists());
     }
 
 }
