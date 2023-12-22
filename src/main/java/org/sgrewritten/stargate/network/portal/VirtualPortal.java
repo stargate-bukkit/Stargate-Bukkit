@@ -239,4 +239,9 @@ public class VirtualPortal implements Portal {
     public void activate(Player player) {
 
     }
+
+    @Override
+    public boolean isDestroyed() {
+        return false;
+    }
 }

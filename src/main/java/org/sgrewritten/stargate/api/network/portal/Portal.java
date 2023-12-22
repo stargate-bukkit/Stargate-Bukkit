@@ -208,4 +208,10 @@ public interface Portal {
      */
     void activate(Player player);
 
+    /**
+     *
+     * @return <p>True if this portal has been destroyed</p>
+     */
+    boolean isDestroyed();
+
 }

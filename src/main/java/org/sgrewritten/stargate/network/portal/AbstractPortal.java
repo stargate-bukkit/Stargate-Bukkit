@@ -627,4 +627,9 @@ public abstract class AbstractPortal implements RealPortal {
         this.savedToStorage = true;
     }
 
+    @Override
+    public boolean isDestroyed(){
+        return this.isDestroyed;
+    }
+
 }
