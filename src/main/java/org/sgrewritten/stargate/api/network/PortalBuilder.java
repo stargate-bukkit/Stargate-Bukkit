@@ -181,10 +181,9 @@ public class PortalBuilder {
         flagChecks(flags);
         economyCheck(portal);
         finalChecks(portal, network);
+        getLocationsAdjacentToPortal(gateAPI).forEach((position) -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(), position, List.of(portal), position.getBlock().getType(), eventTarget));
         //Save the portal and inform the user
         stargateAPI.getNetworkManager().savePortal(portal, network);
-        //Make sure that the portal sign text formats according the default sign dye color
-        getLocationsAdjacentToPortal(gateAPI).forEach((position) -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(), position, List.of(portal), position.getBlock().getType(), eventTarget));
 
         gateAPI.getPortalPositions().stream().filter((portalPosition) -> portalPosition.getPositionType() == PositionType.SIGN).forEach((portalPosition) -> {
             Block signBlock = gateAPI.getLocation(portalPosition.getRelativePositionLocation()).getBlock();
@@ -194,7 +193,6 @@ public class PortalBuilder {
                 sign.update();
             }
         });
-        network.updatePortals();
         Stargate.log(Level.FINE, "Successfully created a new portal");
         String msg;
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {

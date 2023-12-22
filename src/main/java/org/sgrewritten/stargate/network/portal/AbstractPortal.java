@@ -461,14 +461,7 @@ public abstract class AbstractPortal implements RealPortal {
         // drawing the sign first is necessary, as the portal positions gets unregistered from the gate later on
         SignLine[] lines = new SignLine[]{new TextLine(getName(), SignLineType.TEXT), new TextLine(), new TextLine(), new TextLine()};
         getGate().drawControlMechanisms(lines, false);
-        this.network.removePortal(this);
         this.close(true);
-
-        Supplier<Boolean> destroyAction = () -> {
-            network.updatePortals();
-            return true;
-        };
-        Stargate.addSynchronousTickAction(new SupplierAction(destroyAction));
     }
 
     @Override
@@ -586,7 +579,8 @@ public abstract class AbstractPortal implements RealPortal {
         Bukkit.getPluginManager().callEvent(event);
 
         this.activator = null;
-        getDrawnControlLines();
+        SignLine[] lines = getDrawnControlLines();
+        gate.drawControlMechanisms(lines, !flags.contains(PortalFlag.ALWAYS_ON));
     }
 
     @Override

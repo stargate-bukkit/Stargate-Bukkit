@@ -4,14 +4,13 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.gate.StargateTestHelper;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 import org.sgrewritten.stargate.network.proxy.InterServerMessageSender;
 import org.sgrewritten.stargate.network.proxy.LocalNetworkMessageSender;
 

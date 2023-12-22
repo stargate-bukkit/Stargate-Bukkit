@@ -1,7 +1,8 @@
-package org.sgrewritten.stargate.gate;
+package org.sgrewritten.stargate.util;
 
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.gate.GateFormatHandler;
 
 import java.io.File;
 import java.util.Objects;

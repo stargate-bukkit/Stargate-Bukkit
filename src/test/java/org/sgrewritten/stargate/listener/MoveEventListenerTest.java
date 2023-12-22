@@ -27,7 +27,7 @@ import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.gate.StargateTestHelper;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.HashSet;
 

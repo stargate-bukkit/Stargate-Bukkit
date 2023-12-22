@@ -3,13 +3,17 @@ package org.sgrewritten.stargate.listener;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
+import be.seeseemelk.mockbukkit.block.BlockMock;
 import be.seeseemelk.mockbukkit.block.data.BlockDataMock;
+import be.seeseemelk.mockbukkit.block.state.SignMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -24,9 +28,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.BlockHandlerInterfaceMock;
 import org.sgrewritten.stargate.api.Priority;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.Network;
@@ -44,6 +48,7 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
+import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.io.File;
 import java.util.HashSet;
@@ -61,19 +66,21 @@ class BlockEventListenerTest {
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
     private static final String PLAYER_NAME = "player";
     private static final String CUSTOM_NETNAME = "custom";
-    private StargateAPIMock stargateAPI;
+    private StargateAPI stargateAPI;
     private NetworkManager networkManager;
+    private Stargate plugin;
 
     @BeforeEach
     void setUp() {
         server = MockBukkit.mock();
-
+        System.setProperty("bstats.relocatecheck", "false");
+        plugin = MockBukkit.load(Stargate.class);
         player = server.addPlayer(PLAYER_NAME);
 
         world = new WorldMock(Material.GRASS_BLOCK, 0);
         server.addWorld(world);
         GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
-        this.stargateAPI = new StargateAPIMock();
+        this.stargateAPI = plugin;
         this.registry = stargateAPI.getRegistry();
         this.networkManager = stargateAPI.getNetworkManager();
         Stargate.setServerUUID(UUID.randomUUID());
@@ -91,11 +98,12 @@ class BlockEventListenerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"", CUSTOM_NETNAME, PLAYER_NAME})
-    void portalCreationDestuctionTest(String networkName) {
+    void portalCreationDestructionTest(String networkName) {
+        String portalName = "test";
         Location bottomLeft = new Location(world, 0, 1, 0);
         Location insidePortal = new Location(world, 0, 2, 0);
-        Block signBlock = PortalBlockGenerator.generatePortal(bottomLeft);
-        blockEventListener.onSignChange(new SignChangeEvent(signBlock, player, new String[]{"test", "", networkName,
+        BlockMock signBlock = (BlockMock) PortalBlockGenerator.generatePortal(bottomLeft);
+        blockEventListener.onSignChange(new SignChangeEvent(signBlock, player, new String[]{portalName, "", networkName,
                 ""}));
 
 
@@ -108,11 +116,26 @@ class BlockEventListenerTest {
 
         Network network = registry.getNetwork(netId, false);
         Assertions.assertNotNull(network);
-        Assertions.assertNotNull(network.getPortal("test"));
+        Assertions.assertNotNull(network.getPortal(portalName));
         Assertions.assertNotNull(registry.getPortal(insidePortal));
+        Assertions.assertFalse(((RealPortal) network.getPortal(portalName)).getGate().getPortalPositions().isEmpty());
+        server.getScheduler().performTicks(100);
+        SignMock signState1 = (SignMock) signBlock.getState();
+        checkLines(signState1,new String[]{HighlightingStyle.MINUS_SIGN.getHighlightedName(portalName),
+                "Right click" , "to use gate", network.getHighlightingStyle().getHighlightedName(network.getName())});
         blockEventListener.onBlockBreak(new BlockBreakEvent(insidePortal.getBlock(), player));
-        Assertions.assertNull(network.getPortal("test"));
+        Assertions.assertNull(network.getPortal(portalName));
         Assertions.assertNull(registry.getPortal(insidePortal));
+        server.getScheduler().performTicks(1);
+        SignMock signState2 = (SignMock) signBlock.getState();
+        checkLines(signState2, new String[]{portalName, "","",""});
+    }
+
+
+    private void checkLines(Sign state, String[] expectedLines){
+        for (int i = 0; i < 4; i++) {
+            Assertions.assertEquals(expectedLines[i], ChatColor.stripColor(state.getLine(i)));
+        }
     }
 
     @SuppressWarnings("deprecation")

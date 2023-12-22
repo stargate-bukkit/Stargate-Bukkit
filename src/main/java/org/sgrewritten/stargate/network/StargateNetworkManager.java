@@ -220,13 +220,16 @@ public class StargateNetworkManager implements NetworkManager {
             Stargate.log(e);
         }
         network.getPluginMessageSender().sendCreatePortal(portal);
+        network.updatePortals();
     }
 
     @Override
     public void destroyPortal(RealPortal portal) {
-        portal.getNetwork().removePortal(portal);
-        registry.unregisterPortal(portal);
+        Network network = portal.getNetwork();
+        network.removePortal(portal);
         portal.destroy();
+        registry.unregisterPortal(portal);
+        network.updatePortals();
         try {
             storageAPI.removePortalFromStorage(portal);
         } catch (StorageWriteException e) {
