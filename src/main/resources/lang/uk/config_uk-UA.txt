@@ -1,14 +1,121 @@
 # Headers
+headerVersion=Версія: %version%
+headerDocumentation=Документація: %link%
+headerReports=Звіти про помилки: %link%
+headerPreferences=Загальні налаштування
+headerBehaviour=Поведінка шлюзів
+headerEconomy=Економіка
+headerAesthetic=Естетичні налаштування
+headerTechnical=Технічний
+subheaderCompat=Сумісність
+subheaderLogging=Журналювання
+subheaderDebug=Налагодження
+descriptionCompatibility=Ці налаштування надаються для покращення взаємодії SG з іншими плагінами.
+descriptionLogging=Скільки інформації Stargate має надсилати на консоль?     
+descriptionDebug=Ці налаштування надаються, щоб допомогти розробникам діагностувати проблеми з цим плагіном. 
+tagNote=ВАЖЛИВО
 
 # General Preferences
+languageL1=Якою мовою Stargate буде спілкуватися з вашими користувачами?
+languageL2=Підтримувані значення: %values%
+languageL4=Якщо SG ще не доступний вашою мовою, подумайте про те, щоб стати перекладачем:
+bungee.UsingBungeeL1=Ви підключені до проксі-сервера, сумісного з Bungee?
+bungee.usingBungeeL2=Встановіть значення true, якщо ви збираєтеся створювати шлюз з позначкою «u».
+bungee.useRemoteDatabaseL1=За замовчуванням StarGate використовує локальну базу даних SQLite для зберігання своїх даних.
+bungee.useRemoteDatabaseL3=Якщо ви використовуєте великий сервер, ми рекомендуємо використовувати віддалену базу даних.
+bungee.useRemoteDatabaseL4=Зауважте, що така база даних потрібна, якщо ви збираєтеся створювати шлюзи з позначкою «i».
+bungee.remoteDatabaseSettings.L1=Застосовується, лише якщо useRemoteDatabase має значення true.
+bungee.remoteDatabaseSettings.driverL1=Який драйвер має використовувати Stargate для підключення до вашої бази даних?
+bungee.remoteDatabaseSettings.driverL2=Наразі підтримується: %values%
+bungee.remoteDatabaseSettings.addressL1=Де Stargate може знайти вашу базу даних?
+bungee.remoteDatabaseSettings.useSSLL1=Чи повинно Stargate використовувати SSL під час підключення до вашої бази даних?
+bungee.remoteDatabaseSettings.databaseL1=Назва бази даних, яку StarGate використовуватиме для зберігання своїх даних. Має вже існувати.
+bungee.remoteDatabaseSettings.databaseL2=Якщо ви використовуєте Bungee, це має бути спільно для всіх екземплярів StarGate.
+bungee.remoteDatabaseSettings.usernameL1=Облікові дані для підключення:
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL1=Чи маємо ми створити файл конфігурації бази даних ('hikari.properties') у вашій папці Stargate?
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL2=Це призведе до ігнорування всіх наведених вище параметрів remoteDatabaseSettings на користь нового файлу!
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL4=Це дозволяє використовувати розширені функції RDMS, такі як обмеження пулу, розміри кешу тощо.
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL5=Список доступних налаштувань можна знайти за цим посиланням: %link%.
+defaultGateNetworkL1=Яка мережа використовуватиметься, якщо жодна не вказана? (Макс. довжина 12 символів)
+defaultGateNetworkL3=Зауважте, що це в першу чергу стосується користувачів із вузлом stargate.create.network.
+defaultGateNetworkL4=Як правило, цей вузол надається персоналу (ми рекомендуємо stargate.create.personal для користувачів).
+defaultTerminalNetworkL1=Яку мережу StarGate зарезервує для порталів термінала ('T')?
+defaultTerminalNetworkL3=Як правило, ця функція використовується для створення групи порталів у спавні, відомої як «Термінал».
+defaultTerminalNetworkL4=Використовуючи цю мережу, гравці можуть платити за підключення своїх міст/баз/магазинів тощо до термінала.
+defaultTerminalNetworkL6=Ще не реалізовано!
+defaultTerminalNetworkL7=Підтримка терміналів передбачена для %version%!
 
 # Gate Behaviour
+networkLimitL1=Яку максимальну кількість шлюзів може містити одна мережа? (-1 для необмеженого)
+handleVehiclesL1=Чи зможуть транспорти та їхні пасажири подорожувати через портали StarGate?
+handleVehiclesL2=вагонетки, човни та моби з сідлом = транспорти | гравці та моби = пасажири
+handleLeashedCreaturesL1=Якщо гравець телепортується, бувши на сутності, чи повинен SG також телепортувати сутність?
+CheckPortalValidityL1=Чи буде сервер повторно перевіряти всі наявні портали під час запуску?
+CheckPortalValidityL3=Це перевіряє наявність очікуваних шлюзів і використання правильного макета.
+CheckPortalValidityL4=Призначений для виявлення змін у файлі .gate, змін у світі та регенерації рельєфу.
+destroyOnExplosionL1=Чи можна зламати StarGates через вибух?
+destroyOnExplosionL2=[вибухівка, кріпери тощо]
+gateExitSpeedMultiplierL1=З якою швидкістю потрібно виводити гравців із порталів?
+gateExitSpeedMultiplierL2=При виході зі шлюзу гравці зберігають початкову швидкість руху, помножену на це значення.
 
 # Economy
+useEconomyL1=Чи взаємодіятиме StarGate з економікою вашого сервера?
+useEconomyL3=Для цих функцій StarGate залежить від плагіна Vault.
+taxAccountL1=Чи є у вашого сервера податковий рахунок (закрита економіка)?
+taxAccountL2=Якщо так, будь ласка, вкажіть назву свого податкового рахунку (на нього будуть перераховані зібрані гроші).
+taxAccountL3=Якщо ні, залиште цей розділ порожнім (зібрані гроші будуть видалені).
+TaxAccountL5=Зауважте, що гроші usageCost виключаються з цієї системи, якщо параметр gateOwnerRevenue має значення true.
+creationCostL1=Скільки буде списано з рахунків гравців при створенні нових шлюзів?
+destructionCostL1=Скільки буде списано з рахунків гравців при знищенні наявних шлюзів?
+usageCostL1=Скільки буде списано з рахунків гравців при використанні Stargate для телепортації?
+usageCostL2=Це не стосується Stargates з позначкою «f».
+gateOwnerRevenueL1=Чи буде сплачено плату за «корисність використання» тому, хто створив (володіє) відповідним stargate?
+gateOnwerRevenueL2=Якщо false, зібрані кошти будуть видалені (або відправлені на податковий рахунок).
+chargeFreeDestinationL1=Чи стягуватиметься «creationCost», якщо пунктом призначення нових шлюзів є шлюз з прапорцем «f»?
+chargeFreeDestinationL2=Зверніть увагу, що це стосується лише стаціонарних шлюзів.
 
 # Aesthetic Tweaks
+signFormattingL1=Ці налаштування використовуються для налаштування кольорів і стилів, що використовуються SG при форматуванні знаків.
+signFormattingL2=Для більш розширених можливостей стилізації, будь ласка, використовуйте https://sgrewritten.org/extraColours
+signFormatting.color.L1=Стандартний колір тексту на всіх табличках зоряної брами (яскравість змінюється залежно від матеріалу таблички)
+signFormatting.color.L2=Список допустимих кольорів можна знайти на https://sgrewritten.org/colourTypes
+signFormatting.pointerBehaviourL1=Під час прокрутки SG підсвічує обрані гравцями пункти призначення символом вказівника.
+signFormatting.pointerBehaviourL2=Як SG має стилізувати свій символ вказівника? (https://sgrewritten.org/pointerStyles)
+signFormatting.pointerBehaviourL3=Параметри:
+signFormatting.pointerBehaviourL4=1: Без стилізації (вказівник буде того ж стандартного кольору, що і текст знаку).
+signFormatting.pointerBehaviourL5=2: Тип пункту призначення (покажчик змінить колір залежно від обраного пункту призначення)
+signFormatting.pointerBehaviourL6=3: Акцентований (яскравість вказівника буде контрастною до стандартного кольору знака)
+disableCustomColoredNamesL1=За стандартом SG дозволяє користувачам задавати кольорові назви для своїх шлюзів за допомогою зовнішніх плагінів.
+disableCustomColoredNamesL2=Такі назви перевизначають кольори, вказані для signStyle (вище).
+disableCustomColoredNamesL4=Чи варто SG вимкнути таку поведінку, змусивши гру відображати саме те, що було написано?
+rememberLastDestinationL1=Чи буде пункт призначення, до якого мережевий портал під’єднався востаннє, першим у меню прокрутки?
 
 #Technical
+portalFileL1=Якщо useRemoteDatabase має значення false, Stargate зберігає всі свої дані порталу в flat файлі.
+portalFileL2=Як має бути названий цей flat файл?
+gateFolderL1=Наразі під час запуску перевіряється тека на наявність макетів шлюзів, збережених у вигляді файлів '.gate'.
+gateFolderL2=Де та тека?
+gateFolderL4=Цей параметр надається як виправлення, щоб дозволити імпортувати дані з деяких старих форків.
+customRemoteDatabasePrefixL1=За замовчуванням SG перед таблицями віддаленої бази даних вказує `SG_`.
+customRemoteDatabasePrefixL2=Якщо це конфліктує з іншим плагіном, ви можете змінити цей префікс тут.
+loggingLevelL1=Можливі значення:
+loggingLevelL2=Не рекомендовано
+loggingLevelL3=Приховати все. Виводити на консоль лише у випадку фатального падіння плагіна.
+loggingLevelL4=Рекомендується для великих і добре перевірених виробництв
+loggingLevelL5=Приховати нормальну поведінку. Друкувати лише потенційні проблеми.
+loggingLevelL6=Рекомендується для більшості виробництв
+loggingLevelL7=Друкувати нормальну поведінку. Друкує події порталу (використання, створення, знищення тощо).
+loggingLevelL8=Корисно для налаштування попередніх екземплярів
+loggingLevelL9=Друкувати перевірки дозволів. Виводить перевірки, зроблені для того, щоб визначити, чи можуть гравці виконати ту чи іншу дію.
+loggingLevelL10=Рекомендується для базового усунення несправностей
+loggingLevelL11=Друкувати обмежену налагоджувальну інформацію. Друкує загальні події плагіна (завантаження, вимкнення, з’єднання тощо).
+loggingLevelL12=Рекомендовано для деяких розробників аддонів.
+loggingLevelL13=Виводити більшість налагоджувальної інформації. Виводить повідомлення з детальним описом логіки та поведінки плагіна.
+LoggingLevelL14=Використовується лише основною командою розробників StarGate
+LoggingLevelL15=Друкує все. Друкує буквально все, включно з численними слідами стека.
+configVersionL1=Внутрішнє значення, яке використовується плагіном для визначення того, скільки років вашій конфігурації.
+configVersionL2=Будь ласка, не змінюйте це.
 
 
 #Admin
+translatedBy=Veydzher

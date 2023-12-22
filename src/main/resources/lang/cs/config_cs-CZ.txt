@@ -1,4 +1,16 @@
 # Headers
+headerVersion=Verze: %version%
+headerDocumentation=Dokumentace: %link%
+headerReports=Hlášení chyb: %link%
+headerPreferences=Všeobecné nastavení
+headerBehaviour=Chování brány
+headerEconomy=Ekonomika
+headerAesthetic=Estetické vylepšení
+headerTechnical=Technické
+subheaderCompat=Kompatibilita
+subheaderLogging=Logování
+subheaderDebug=Ladění
+tagNote=POZN.:
 
 # General Preferences
 

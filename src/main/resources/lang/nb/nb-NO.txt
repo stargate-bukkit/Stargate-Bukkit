@@ -59,6 +59,8 @@ ecoInsolvent=Manglende midler!
 
 #Temporary
 
+#Parity
+
 #Admin
 adminReload=Konfigurasjonen ble lastet inn på nytt!
 adminInfo=Kjører versjon %version%. Endringslogg: https://git.io/JD4Qo

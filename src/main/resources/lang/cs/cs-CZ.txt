@@ -8,6 +8,7 @@ signNonFixedL3=k použití brány
 signRandom=Náhodná
 signDisconnected=Odpojeno
 signTerminalL2=Na prodej
+signPortalOwner=Vlastněno
 
 # Gate Actions
 gateDestroy=Brána zničena!
@@ -15,6 +16,7 @@ gateCreateSpecified=Brána vytvořena v síti %network%!
 gateCreatePersonal=Vytváření brány v osobní síti.
 gateTerminalSold=Zakoupena brána %gateName% v %terminalName% za %cost%.
 gateTerminalSale=Seznam bran %gateName% k prodeji v %terminalName% za %cost%.
+gateCreateFallback=Nepodařilo se vytvořit bránu v síti %network% ; místo toho se vyzkouší Vaše osobní síť!
 
 # Gate Construction Problems
 faultNetwork=Nemáte přístup k této síti!
@@ -26,6 +28,7 @@ faultWorldDeny=Nemáte přístup k světu %world%!
 faultConflict=Tato brána je v konfliktu s existující branou.
 faultFlag=Nemáte oprávnění používat flagy %flags% . Váš portál byl vytvořen bez nich!
 faultControls=Tato definice brány má příliš málo ovládacích bloků na to, aby vyhovovala navoleným parametrům!
+faultAddon=Doplněk brání v provedení této akce!
 
 # Bungee Problems
 bungeePerms=Nemáte oprávnění vytvářet bungee brány!
@@ -41,6 +44,8 @@ bungeeTargetOffline=Proxy server je momentálně vypnut; portály bungee jsou do
 tpSuccess=Teleportován!
 tpDestInvalid=Neplatný cíl!
 tpEmptyNet=Seznam cílů je prázdný!
+tpOccupied=Jiný hráč právě používá tento portál; zkuste to znovu za pár minut!
+tpPastBorder=Cíl je mimo hranice světa!
 
 # Access
 conflictPerms=Přístup zamítnut!
@@ -52,8 +57,21 @@ ecoObtain=Získáno %cost% od Hvězdné brány %portal%.!
 ecoInsolvent=Nedostatek prostředků!
 
 #Terminology
+gate=Brána
+network=Síť
+interserver=Meziserverová
+default=Výchozí
+terminal=Terminál
+personal=Osobní
+custom=Volitelné
+local=Místní
 
 #Temporary
+unimplementedInterserver=Meziserverové bráný jsou stále v aktivním vývoji a byly implementovány pouze částečně.
+unimplementedIConflict=Místní a meziserverové sítě %name% jsou v současné době odpojeny; v budoucnu budou sloučeny. \nJakékoliv stargáty aktuálně na meziserverové síti %name% budou přesunuty do místní sítě se stejným názvem.
+unimplementedFlag=Příznaky %flags% ještě nebyly implementovány.
+
+#Parity
 
 #Admin
 adminReload=Konfigurace obnovena!

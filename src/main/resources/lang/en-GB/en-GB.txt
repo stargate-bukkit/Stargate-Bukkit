@@ -20,10 +20,8 @@ gateCreateFallback=Unable to create your gate on the %network% network; trying y
 
 # Gate Construction Problems
 faultNetwork=You do not have access to that network!
-faultNetworkConflict=Network conflicts with a network of different type!
 faultLayout=You do not have access to that gate layout!
 faultLength=Name too short or too long!
-faultName=Invalid name for the specified network type!
 faultExists=A gate by that name already exists!
 faultFull=That network is full!
 faultWorldDeny=You do not have access to world %world%!
@@ -61,16 +59,20 @@ ecoInsolvent=Insufficient funds!
 #Terminology
 gate=Gate
 network=Network
-interServer=Inter-server
+interserver=Interserver
 default=Default
 terminal=Terminal
 personal=Personal
 custom=Custom
+local=Local
 
 #Temporary
-unimplementedInterServer=Interserver gates are still in active development and have only partially been implemented.
+unimplementedInterserver=Interserver gates are still in active development and have only partially been implemented.
 unimplementedIConflict=The %name% %type1% network has been temporarily separated from the %name% %type2% network, but will soon be merged.
 unimplementedFlag=The %flags% flags have not yet been implemented.
+
+#Parity
+parityCommand=Automatically installing the %modules% module(s)! This may take a few minutes.
 
 #Admin
 adminReload=Configuration reloaded!

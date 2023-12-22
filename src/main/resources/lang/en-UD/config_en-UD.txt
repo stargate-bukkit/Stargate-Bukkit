@@ -85,10 +85,17 @@ signFormatting.pointerBehaviourL3=:suoıʇdo
 signFormatting.pointerBehaviourL4=˙(ʇxǝʇ s,uƃıs ǝɥʇ ʎq pǝsn ɹnoloɔ ʇlnɐɟǝp ǝɯɐs ǝɥʇ ǝq llıʍ ɹǝʇuıod ǝɥʇ) ƃuılʎʇs ou :1
 signFormatting.pointerBehaviourL5=(uoıʇɐuıʇsǝp pǝʇɔǝlǝs ǝɥʇ uo pǝsɐq ǝpoɔ-ɹnoloɔ llıʍ ɹǝʇuıod ǝɥʇ) ǝdʎʇ uoıʇɐuıʇsǝp :2
 signFormatting.pointerBehaviourL6=(ɹnoloɔ ʇlnɐɟǝp s,uƃıs ǝɥʇ ɥʇıʍ ʇsɐɹʇuoɔ oʇ ʇɟıɥs llıʍ ssǝuʇɥƃıɹq ɹǝʇuıod) pǝʇuǝɔɔɐ :3
+disableCustomColoredNamesL1=˙suıƃnld lɐuɹǝʇxǝ ɐıʌ sǝʇɐƃ ɹıǝɥʇ ɹoɟ sǝɯɐu pǝɹnoloɔ ʎɟıɔǝds oʇ sɹǝsn sʍollɐ ƃs 'ʇlnɐɟǝp ʎq
+disableCustomColoredNamesL2=˙(ǝʌoqɐ) ǝlʎʇsuƃıs ɹoɟ pǝıɟıɔǝds sɹnoloɔ ǝɥʇ ǝpıɹɹǝʌo sǝɯɐu ɥɔns
+disableCustomColoredNamesL4=¿uǝʇʇıɹʍ sɐʍ ʇɐɥʍ ʎlʇɔɐxǝ ʎɐldsıp oʇ ǝɯɐƃ ǝɥʇ ƃuıɔɹoɟ ʎq ɹnoıʌɐɥǝq sıɥʇ ǝlqɐsıp ƃs plnoɥs
+rememberLastDestinationL1=¿nuǝɯ lloɹɔs sʇı uı ʇsɹıɟ pǝʇsıl ǝq oʇ pǝʇɔǝuuoɔ ʇsɐl lɐʇɹod pǝʞɹoʍʇǝu ɐ uoıʇɐuıʇsǝp ǝɥʇ llıʍ
 
 #Technical
 portalFileL1=˙ǝlıɟʇɐlɟ ɐ uı ɐʇɐp lɐʇɹod sʇı ɟo llɐ sǝɹoʇs ǝʇɐƃɹɐʇs 'ǝslɐɟ sı ǝsɐqɐʇɐpǝʇoɯǝɹǝsn uǝɥʍ
 portalFileL2=¿pǝɯɐu ǝq ǝlıɟʇɐlɟ sıɥʇ plnoɥs ʇɐɥʍ
+gateFolderL1=˙sǝlıɟ ’ǝʇɐƃ˙‘ sɐ pǝɹoʇs sʇnoʎɐl ǝʇɐƃ ɹoɟ pǝʞɔǝɥɔ sı ɹǝploɟ ɐ 'dnʇɹɐʇs uo 'ʎlʇuǝɹɹnɔ
+gateFolderL2=¿ɹǝploɟ ʇɐɥʇ sı ǝɹǝɥʍ
+gateFolderL4=˙sʞɹoɟ ɹǝplo ǝɯos ɯoɹɟ pǝʇɹodɯı ǝq oʇ ɐʇɐp ʍollɐ oʇ ɥɔʇɐd ɐ sɐ pǝpıʌoɹd sı uoıʇdo sıɥʇ
 customRemoteDatabasePrefixL1=˙`‾ƃs` ɥʇıʍ sǝlqɐʇ ǝsɐqɐʇɐp ǝʇoɯǝɹ sʇı ǝɔɐɟǝɹd llıʍ ƃs 'ʇlnɐɟǝp ʎq
 customRemoteDatabasePrefixL2=˙ǝɹǝɥ xıɟǝɹd ʇɐɥʇ ǝƃuɐɥɔ uɐɔ noʎ 'uıƃnld ɹǝɥʇouɐ ɥʇıʍ sʇɔılɟuoɔ sıɥʇ ɟı
 loggingLevelL1=:sǝnlɐʌ ǝlqıssod

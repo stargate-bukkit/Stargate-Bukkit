@@ -59,16 +59,20 @@ ecoInsolvent=¡spunℲ ʇuǝᴉɔᴉɟɟnsuI
 #Terminology
 gate=ǝʇɐƃ
 network=ʞɹoʍʇǝu
-interServer=ɹǝʌɹǝsɹǝʇuı
+interserver=ɹǝʌɹǝsɹǝʇuı
 default=ʇןnɐɟǝᗡ
 terminal=lɐuıɯɹǝʇ
 personal=lɐuosɹǝd
 custom=ɯoʇsnɔ
+local=lɐɔol
 
 #Temporary
-unimplementedInterServer=˙pǝʇuǝɯǝldɯı uǝǝq ʎllɐıʇɹɐd ʎluo ǝʌɐɥ puɐ ʇuǝɯdolǝʌǝp ǝʌıʇɔɐ uı llıʇs ǝɹɐ sǝʇɐƃ ɹǝʌɹǝsɹǝʇuı
+unimplementedInterserver=˙pǝʇuǝɯǝldɯı uǝǝq ʎllɐıʇɹɐd ʎluo ǝʌɐɥ puɐ ʇuǝɯdolǝʌǝp ǝʌıʇɔɐ uı llıʇs ǝɹɐ sǝʇɐƃ ɹǝʌɹǝsɹǝʇuı
 unimplementedIConflict=˙pǝƃɹǝɯ ǝq uoos llıʍ ʇnq 'ʞɹoʍʇǝu %type2% %name% ǝɥʇ ɯoɹɟ pǝʇɐɹɐdǝs ʎlıɹɐɹodɯǝʇ uǝǝq sɐɥ ʞɹoʍʇǝu %type1% %name% ǝɥʇ
 unimplementedFlag=˙pǝʇuǝɯǝldɯı uǝǝq ʇǝʎ ʇou ǝʌɐɥ sƃɐlɟ %flags% ǝɥʇ
+
+#Parity
+parityCommand=˙sǝʇnuᴉɯ ʍǝɟ ɐ ǝʞɐʇ ʎɐɯ sᴉɥ┴ ¡(s)ǝlnpoɯ %modules% ǝɥʇ ƃuᴉllɐʇsuᴉ ʎllɐɔᴉʇɐɯoʇn∀
 
 #Admin
 adminReload=¡pǝpɐolǝɹ uoᴉʇɐɹnƃᴉɟuoƆ
