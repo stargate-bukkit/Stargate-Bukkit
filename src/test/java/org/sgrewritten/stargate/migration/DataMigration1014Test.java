@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
@@ -28,12 +29,14 @@ class DataMigration1014Test {
     private static final File sqlDatabaseFile = new File("src/test/resources", "alpha-1_0_0_11.db");
     private static final File oldSqlDatabaseFile = new File("src/test/resources", "alpha-1_0_0_11.old");
     private static final String UUID_STRING = "9a091c5a-b320-4123-8e5c-867edebc455b";
+    private StargateAPIMock stargateAPI;
 
     @BeforeEach
     void setUp() throws IOException, SQLException {
         migration = new DataMigration_1_0_14();
         Files.copy(sqlDatabaseFile, oldSqlDatabaseFile);
         database = new SQLiteDatabase(sqlDatabaseFile);
+        this.stargateAPI = new StargateAPIMock();
 
         @NotNull ServerMock server = MockBukkit.mock();
         PlayerMock player = new PlayerMock(server, "player", UUID.fromString(UUID_STRING));
@@ -49,7 +52,7 @@ class DataMigration1014Test {
 
     @Test
     void run_CheckFlagFix() throws SQLException {
-        migration.run(database);
+        migration.run(database, stargateAPI);
         Assertions.assertTrue(portalHasFlag(PortalFlag.CUSTOM_NETWORK, "portal", "network"));
         Assertions.assertTrue(portalHasFlag(PortalFlag.PERSONAL_NETWORK, "portal1", UUID_STRING));
         Assertions.assertTrue(portalHasFlag(PortalFlag.DEFAULT_NETWORK, "portal2", StargateNetwork.DEFAULT_NETWORK_ID));

@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.migration;
 
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
@@ -44,10 +45,9 @@ public class DataMigration_1_0_14 extends DataMigration {
     }
 
     @Override
-    public void run(@NotNull SQLDatabaseAPI database) {
+    public void run(@NotNull SQLDatabaseAPI database, StargateAPI stargateAPI) {
         boolean isInterServer = ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)
                 && ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE);
-        Stargate.log(Level.INFO, "Running database migration 1.0.0.11 -> 1.0.0.14");
         TableNameConfiguration nameConfiguration = DatabaseHelper.getTableNameConfiguration(ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE));
         try {
             new SQLDatabaseMigrator(database, nameConfiguration, "/migration/database/alpha-1_0_0_14", isInterServer).run();
@@ -213,6 +213,16 @@ public class DataMigration_1_0_14 extends DataMigration {
         }
 
         return new TwoTuple<>(newKey, oldPair.getSecondValue());
+    }
+
+    @Override
+    public String getVersionFrom() {
+        return "1.0.0.11";
+    }
+
+    @Override
+    public String getVersionTo() {
+        return "1.0.0.14";
     }
 
     /**

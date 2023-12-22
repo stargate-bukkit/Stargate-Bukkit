@@ -36,7 +36,7 @@ class CommandParityTest {
         properties = new PropertiesDatabase(new File(plugin.getDataFolder(), "test.properties"));
         File testPluginFile = new File(new File("").getAbsolutePath(),"/src/test/resources/TestPlugin-1.0-SNAPSHOT.jar");
         String testPluginPath = "file://" + testPluginFile.toURI().toURL().getFile();
-        command = new CommandParity(properties, true, plugin.getDataFolder(), testPluginPath, testPluginPath, testPluginPath, testPluginPath);
+        command = new CommandParity(properties, true, plugin.getDataFolder(), testPluginPath, testPluginPath, testPluginPath, testPluginPath, new File(""));
     }
 
     @AfterEach

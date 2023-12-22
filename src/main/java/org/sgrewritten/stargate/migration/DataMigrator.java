@@ -17,6 +17,7 @@ import org.sgrewritten.stargate.api.network.RegistryAPI;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * A migrator for migrating legacy data to new formats
@@ -38,13 +39,12 @@ public class DataMigrator {
      * @throws IOException                   <p>If unable to read or write to a file</p>
      * @throws InvalidConfigurationException <p>If unable to load the given configuration file</p>
      */
-    public DataMigrator(@NotNull File configurationFile, @NotNull Server server,
-                        @NotNull RegistryAPI registry, @NotNull StargateAPI stargateAPI, @NotNull StoredPropertiesAPI properties)
+    public DataMigrator(@NotNull File configurationFile, @NotNull Server server, StoredPropertiesAPI storedProperties)
             throws IOException, InvalidConfigurationException {
         // WARNING: Migrators must be defined from oldest to newest to prevent partial
         // migration
         MIGRATIONS = new DataMigration[]{
-                new DataMigration_1_0_0(server, registry, stargateAPI,properties),
+                new DataMigration_1_0_0(server,storedProperties),
                 new DataMigration_1_0_14()
         };
 
@@ -90,10 +90,11 @@ public class DataMigrator {
     /**
      * Runs all relevant config migrations
      */
-    public void run(@NotNull SQLDatabaseAPI database) {
+    public void run(@NotNull SQLDatabaseAPI database, StargateAPI stargateAPI) {
         for (DataMigration migration : MIGRATIONS) {
             if (isMigrationNecessary(migration)) {
-                migration.run(database);
+                Stargate.log(Level.INFO, String.format("Running database migration %s -> %s", migration.getVersionFrom(), migration.getVersionTo()));
+                migration.run(database, stargateAPI);
                 configVersion = migration.getConfigVersion();
             }
         }

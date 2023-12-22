@@ -51,7 +51,7 @@ public final class LegacyPortalStorageLoader {
      * @throws TranslatableException
      */
     public static List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server,
-                                                      String defaultNetworkName, RegistryAPI registry, StargateAPI stargateAPI)
+                                                      String defaultNetworkName, StargateAPI stargateAPI)
             throws IOException, InvalidStructureException, TranslatableException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
@@ -69,7 +69,7 @@ public final class LegacyPortalStorageLoader {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
-                portals.add(readPortal(line, server.getWorld(worldName),stargateAPI, registry, defaultNetworkName));
+                portals.add(readPortal(line, server.getWorld(worldName),stargateAPI, defaultNetworkName));
 
                 line = reader.readLine();
             }
@@ -87,20 +87,22 @@ public final class LegacyPortalStorageLoader {
      * @throws InvalidStructureException <p>If the portal's structure is invalid</p>
      * @throws TranslatableException     <p>If the portal's name is invalid</p>
      */
-    private static Portal readPortal(String line, World world, StargateAPI stargateAPI, RegistryAPI registry,
+    private static Portal readPortal(String line, World world, StargateAPI stargateAPI,
                                      String defaultNetworkName) throws InvalidStructureException, TranslatableException {
         String[] portalProperties = line.split(":");
         PortalData portalData = PortalStorageHelper.loadPortalData(portalProperties, world, defaultNetworkName);
         try {
-            stargateAPI.getNetworkManager().createNetwork(portalData.networkName(), portalData.flags(), false);
+            Network network = stargateAPI.getNetworkManager().createNetwork(portalData.networkName(), portalData.flags(), false);
+            Stargate.log(Level.INFO, "Created network with id: " + network.getId());
         } catch (InvalidNameException | NameLengthException | NameConflictException ignored) {
         }
         if (portalData.gateData().topLeft() == null) {
             throw new InvalidStructureException();
         }
 
-        Network network = registry.getNetwork(portalData.networkName(),
+        Network network = stargateAPI.getRegistry().getNetwork(portalData.networkName(),
                 portalData.flags().contains(PortalFlag.FANCY_INTER_SERVER));
+        Stargate.log(Level.INFO, "fetched networkName: " +  portalData.networkName());
 
         if (network == null) {
             Stargate.log(Level.SEVERE, "Unable to get network " + portalData.networkName() + " during legacy" +
@@ -108,7 +110,7 @@ public final class LegacyPortalStorageLoader {
             return null;
         }
 
-        Gate gate = new Gate(portalData.gateData(), registry);
+        Gate gate = new Gate(portalData.gateData(), stargateAPI.getRegistry());
         Location signLocation = LegacyDataHandler.loadLocation(world, portalProperties[1]);
         Location buttonLocation = LegacyDataHandler.loadLocation(world, portalProperties[2]);
         if (signLocation != null) {

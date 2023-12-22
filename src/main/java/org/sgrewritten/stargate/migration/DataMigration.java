@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.migration;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 
@@ -45,7 +46,7 @@ public abstract class DataMigration {
      * <p>This may alter files such as portal and gate files to perform the appropriate changes necessary for
      * compatibility. This does not modify the config file itself.</p>
      */
-    public abstract void run(@NotNull SQLDatabaseAPI base);
+    public abstract void run(@NotNull SQLDatabaseAPI base, StargateAPI stargateAPI);
 
     /**
      * Gets the configuration version this modifier will update the configuration to
@@ -64,4 +65,7 @@ public abstract class DataMigration {
      */
     protected abstract TwoTuple<String, Object> getNewConfigPair(TwoTuple<String, Object> oldPair);
 
+    public abstract String getVersionFrom();
+
+    public abstract String getVersionTo();
 }

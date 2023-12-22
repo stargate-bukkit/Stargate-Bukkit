@@ -22,6 +22,7 @@ import org.sgrewritten.stargate.util.LegacyPortalStorageLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,26 +36,21 @@ public class DataMigration_1_0_0 extends DataMigration {
 
     private static HashMap<String, String> CONFIG_CONVERSIONS;
     private final Server server;
-    private final RegistryAPI registry;
-    private final StargateAPI stargateAPI;
-    private final StoredPropertiesAPI properties;
+    private final StoredPropertiesAPI storedProperties;
+    private String versionFrom;
     private Map<String, Object> oldConfig;
 
     /**
      * Instantiates a new Ret-Com 1.0.0
      *
      * @param server   <p>The server to use for loading legacy portals</p>
-     * @param registry <p>The stargate registry to register loaded portals to</p>
-     * @param stargateAPI   <p>The stargate API</p>
      */
-    public DataMigration_1_0_0(@NotNull Server server, @NotNull RegistryAPI registry, @NotNull StargateAPI stargateAPI, @NotNull StoredPropertiesAPI properties) {
+    public DataMigration_1_0_0(@NotNull Server server, StoredPropertiesAPI storedProperties) {
         if (CONFIG_CONVERSIONS == null) {
             loadConfigConversions();
         }
         this.server = Objects.requireNonNull(server);
-        this.registry = Objects.requireNonNull(registry);
-        this.stargateAPI = Objects.requireNonNull(stargateAPI);
-        this.properties = Objects.requireNonNull(properties);
+        this.storedProperties = storedProperties;
     }
 
     @Override
@@ -67,14 +63,22 @@ public class DataMigration_1_0_0 extends DataMigration {
                 if ((int) oldConfig.get(oldMaxGatesSetting) == 0) {
                     newConfig.put("networkLimit", -1);
                 } else {
-                    newConfig.put("networkLimit", (int) oldConfig.get(oldMaxGatesSetting) == 0);
+                    newConfig.put("networkLimit", oldConfig.get(oldMaxGatesSetting));
                 }
             }
         }
 
 
         if (oldConfig.get("debugging.permissionDebug") != null) {
-            properties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, true);
+            storedProperties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, true);
+            this.versionFrom = "0.11.5.5";
+            try(InputStream inputStream = Stargate.class.getResourceAsStream("/migration/paritymessage.txt")) {
+                Stargate.log(Level.WARNING, "\n" + FileHelper.readStreamToString(inputStream));
+            } catch (IOException e){
+                Stargate.log(e);
+            }
+        } else {
+            this.versionFrom = "~0.10.0.0";
         }
 
         String[] permissionDebug = {"permdebug", "debugging.permdebug", "debugging.permissionDebug"};
@@ -93,13 +97,13 @@ public class DataMigration_1_0_0 extends DataMigration {
     }
 
     @Override
-    public void run(@NotNull SQLDatabaseAPI database) {
+    public void run(@NotNull SQLDatabaseAPI database, StargateAPI stargateAPI) {
         try {
             String portalFolderName = (String) oldConfig.get(LegacyDataHandler
                     .findConfigKey(new String[]{"portal-folder", "folders.portalFolder"}, oldConfig));
             String defaultName = (String) oldConfig.get(LegacyDataHandler
                     .findConfigKey(new String[]{"gates.defaultGateNetwork", "default-gate-network"}, oldConfig));
-            migratePortals(portalFolderName, defaultName);
+            migratePortals(portalFolderName, defaultName, stargateAPI);
             moveFilesToDebugDirectory(portalFolderName);
         } catch (IOException | InvalidStructureException | TranslatableException e) {
             Stargate.log(e);
@@ -135,6 +139,16 @@ public class DataMigration_1_0_0 extends DataMigration {
     }
 
     @Override
+    public String getVersionFrom() {
+        return this.versionFrom;
+    }
+
+    @Override
+    public String getVersionTo() {
+        return "1.0.0.11";
+    }
+
+    @Override
     public int getConfigVersion() {
         return 6;
     }
@@ -147,8 +161,8 @@ public class DataMigration_1_0_0 extends DataMigration {
      * @throws IOException               <p>If unable to load previous portals</p>
      * @throws TranslatableException     <p>If some use input was invalid</p>
      */
-    private void migratePortals(String portalFolder, String defaultNetworkName) throws InvalidStructureException, IOException, TranslatableException {
-        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, defaultNetworkName, registry, stargateAPI);
+    private void migratePortals(String portalFolder, String defaultNetworkName, StargateAPI stargateAPI) throws InvalidStructureException, IOException, TranslatableException {
+        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, defaultNetworkName,stargateAPI);
         if (portals == null) {
             Stargate.log(Level.WARNING, "No portals migrated!");
         } else {

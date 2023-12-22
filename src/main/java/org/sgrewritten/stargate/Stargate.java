@@ -146,6 +146,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private static final FileConfiguration staticConfig = new StargateYamlConfiguration();
     private BlockHandlerResolver blockHandlerResolver;
     private NetworkManager networkManager;
+    private SQLDatabaseAPI database;
 
 
     @Override
@@ -156,26 +157,19 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
                 super.saveDefaultConfig();
             }
             fetchServerId();
-            String LANGUAGE_FOLDER = "lang";
-            languageManager = new StargateLanguageManager(new File(DATA_FOLDER, LANGUAGE_FOLDER));
-            economyManager = new VaultEconomyManager(languageManager);
-            SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
-            storageAPI = new SQLDatabase(database);
-            blockHandlerResolver = new BlockHandlerResolver(storageAPI);
-            registry = new StargateRegistry(storageAPI, blockHandlerResolver);
-            networkManager = new StargateNetworkManager(registry, storageAPI);
-            bungeeManager = new StargateBungeeManager(this.getRegistry(), this.getLanguageManager(), this.getNetworkManager());
-            blockLogger = new CoreProtectManager();
             storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(DATA_FOLDER, INTERNAL_FOLDER, INTERNAL_PROPERTIES_FILE));
+            this.setupManagers();
+            boolean hasMigrated = false;
             try {
-                this.migrateConfigurationAndData();
+                hasMigrated = this.migrateConfigurationAndData();
             } catch (IOException | InvalidConfigurationException | SQLException e) {
                 Stargate.log(e);
             }
 
-            loadGateFormats();
             load();
-            networkManager.loadPortals(this);
+            if(!hasMigrated) {
+                networkManager.loadPortals(this);
+            }
 
             pluginManager = getServer().getPluginManager();
             registerListeners();
@@ -193,6 +187,20 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             Stargate.log(e);
             getServer().getPluginManager().disablePlugin(this);
         }
+    }
+
+    private void setupManagers() throws StargateInitializationException, SQLException, IOException {
+        String LANGUAGE_FOLDER = "lang";
+        languageManager = new StargateLanguageManager(new File(DATA_FOLDER, LANGUAGE_FOLDER));
+        economyManager = new VaultEconomyManager(languageManager);
+        database = DatabaseHelper.loadDatabase(this);
+        storageAPI = new SQLDatabase(database);
+        blockHandlerResolver = new BlockHandlerResolver(storageAPI);
+        registry = new StargateRegistry(storageAPI, blockHandlerResolver);
+        networkManager = new StargateNetworkManager(registry, storageAPI);
+        bungeeManager = new StargateBungeeManager(this.getRegistry(), this.getLanguageManager(), this.getNetworkManager());
+        blockLogger = new CoreProtectManager();
+        loadGateFormats();
     }
 
     /**
@@ -457,14 +465,9 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
      * @throws InvalidConfigurationException <p>If unable to save the new configuration</p>
      * @throws SQLException                  <p>If unable to initialize the Portal Database API</p>
      */
-    private void migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException {
-        File databaseFile = new File(this.getDataFolder(), "stargate.db");
-        SQLDatabaseAPI database = new SQLiteDatabase(databaseFile);
-        StorageAPI storageAPI = new SQLDatabase(database, false, false);
-        RegistryAPI migrationRegistry = new StargateRegistry(storageAPI, new BlockHandlerResolver(storageAPI));
-
+    private boolean migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException, StargateInitializationException {
         DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), CONFIG_FILE),
-                this.getServer(), migrationRegistry, this, this.getStoredPropertiesAPI());
+                this.getServer(), this.getStoredPropertiesAPI());
 
         if (dataMigrator.isMigrationNecessary()) {
             Map<String, Object> updatedConfig = dataMigrator.getUpdatedConfig();
@@ -473,8 +476,11 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             dataMigrator.updateFileConfiguration(getConfig(), updatedConfig);
             this.reloadConfig();
             this.loadGateFormats();
-            dataMigrator.run(database);
+            this.setupManagers();
+            dataMigrator.run(database, this);
+            return true;
         }
+        return false;
     }
 
     @Override

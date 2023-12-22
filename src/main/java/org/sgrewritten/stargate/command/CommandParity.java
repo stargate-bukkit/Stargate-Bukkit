@@ -30,6 +30,7 @@ public class CommandParity implements CommandExecutor {
     private static final String CUSTOMIZATIONS_NAME = "StargateCustomizations";
     private static final String MAPPER_URL = "";
     private static final String MAPPER_NAME = "StargateMapper";
+    private static final File OLD_CONFIG_LOCATION = new File("");
     private final File pluginFolder;
     private URL mapper;
     private URL mechanics;
@@ -37,11 +38,11 @@ public class CommandParity implements CommandExecutor {
     private URL customizations;
 
     CommandParity(@NotNull StoredPropertiesAPI properties, boolean doParityUpgrades, File pluginFolder) {
-        this(properties,doParityUpgrades,pluginFolder,MECHANICS_URL,INTERFACES_URL,CUSTOMIZATIONS_URL,MAPPER_URL);
+        this(properties, doParityUpgrades, pluginFolder, MECHANICS_URL, INTERFACES_URL, CUSTOMIZATIONS_URL, MAPPER_URL, OLD_CONFIG_LOCATION);
     }
 
     CommandParity(@NotNull StoredPropertiesAPI properties, boolean doParityUpgrades, File pluginFolder, String mechanics, String interfaces
-    , String customizations, String mapper) {
+            , String customizations, String mapper, File oldConfig) {
         this.properties = Objects.requireNonNull(properties);
         this.doParityUpgrades = doParityUpgrades;
         this.pluginFolder = pluginFolder;
@@ -68,10 +69,10 @@ public class CommandParity implements CommandExecutor {
             return true;
         }
         File pluginsFolder = pluginFolder.getParentFile();
-        File mechanicsFile = determineDestinationJarName(mechanics,MECHANICS_NAME,pluginsFolder);
-        File interfacesFile = determineDestinationJarName(interfaces,INTERFACES_NAME,pluginsFolder);
-        File customizationsFile = determineDestinationJarName(customizations,CUSTOMIZATIONS_NAME,pluginsFolder);
-        File mapperFile = determineDestinationJarName(mapper,MAPPER_NAME,pluginsFolder);
+        File mechanicsFile = determineDestinationJarName(mechanics, MECHANICS_NAME, pluginsFolder);
+        File interfacesFile = determineDestinationJarName(interfaces, INTERFACES_NAME, pluginsFolder);
+        File customizationsFile = determineDestinationJarName(customizations, CUSTOMIZATIONS_NAME, pluginsFolder);
+        File mapperFile = determineDestinationJarName(mapper, MAPPER_NAME, pluginsFolder);
         try {
             downloadPlugin(mechanics, mechanicsFile);
             downloadPlugin(interfaces, interfacesFile);
@@ -83,31 +84,35 @@ public class CommandParity implements CommandExecutor {
         return true;
     }
 
+    private void migrateOldConfig() {
+
+    }
+
     private void downloadPlugin(URL source, File destination) throws IOException {
-        if(destination.exists()){
+        if (destination.exists()) {
             return;
         }
-        if(!destination.createNewFile()){
+        if (!destination.createNewFile()) {
             throw new IOException("Could not create new file: " + destination);
         }
-        try (InputStream inputStream = source.openStream()){
-            try(FileOutputStream outputStream = new FileOutputStream(destination)){
+        try (InputStream inputStream = source.openStream()) {
+            try (FileOutputStream outputStream = new FileOutputStream(destination)) {
                 inputStream.transferTo(outputStream);
             }
         }
     }
 
-    private File determineDestinationJarName(URL url, String pluginName, File pluginsFolder){
+    private File determineDestinationJarName(URL url, String pluginName, File pluginsFolder) {
         String urlPath = url.getPath();
-        String[] urlPathSplit = urlPath.split("-",0);
+        String[] urlPathSplit = urlPath.split("-", 0);
         String fileName;
         int urlPathSplitLength = urlPathSplit.length;
-        if(urlPathSplitLength > 2){
-            fileName =  pluginName + "-" + urlPathSplit[urlPathSplitLength-2] + "-" + urlPathSplit[urlPathSplitLength-1];
+        if (urlPathSplitLength > 2) {
+            fileName = pluginName + "-" + urlPathSplit[urlPathSplitLength - 2] + "-" + urlPathSplit[urlPathSplitLength - 1];
         } else {
             fileName = pluginName + ".jar";
         }
-        if(!fileName.endsWith(".jar")){
+        if (!fileName.endsWith(".jar")) {
             fileName = fileName + ".jar";
         }
         return new File(pluginsFolder, fileName);

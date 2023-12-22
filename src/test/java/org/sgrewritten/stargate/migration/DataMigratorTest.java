@@ -169,7 +169,7 @@ public class DataMigratorTest {
             File destination = new File(fileMovements.get(fileToMoveName));
             Stargate.log(Level.FINER, destination.getAbsolutePath());
             if (!destination.getParentFile().mkdirs() || !fileToMove.renameTo(destination)) {
-                throw new IOException("Unable to move test files");
+                throw new IOException("Unable to move test file: " + fileToMove);
             }
         }
 
@@ -188,7 +188,7 @@ public class DataMigratorTest {
                 throw new IOException("Unable to delete old config file");
             }
             FakePropertiesDatabase properties = new FakePropertiesDatabase();
-            DataMigrator dataMigrator = new DataMigrator(configFile, server, registry ,stargateAPI, properties);
+            DataMigrator dataMigrator = new DataMigrator(configFile, server, properties);
             if (!configFile.renameTo(oldConfigFile)) {
                 throw new IOException("Unable to rename existing config for backup");
             }
@@ -227,7 +227,7 @@ public class DataMigratorTest {
         DataMigrator dataMigrator = migratorMap.get(key);
         Connection connection = sqlDatabase.getConnection();
         connection.close();
-        dataMigrator.run(sqlDatabase);
+        dataMigrator.run(sqlDatabase, stargateAPI);
     }
 
     @Test
