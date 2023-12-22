@@ -59,6 +59,8 @@ ecoInsolvent=Manglande midlar!
 
 #Temporary
 
+#Parity
+
 #Admin
 adminReload=Konfigurasjonen vart lasta inn på nytt!
 adminInfo=Køyrer versjon %version%. Endringslogg: https://git.io/JD4Qo

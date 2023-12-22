@@ -1,21 +1,80 @@
 # General Styling
+prefix=[Stargate] 
 
 # Sign Formatting
+signLegacyBungee=Eredità Bungee
+signNonFixedL2=Click destro
+signNonFixedL3=usare portale
+signRandom=Casuale
+signDisconnected=Disconnesso
+signTerminalL2=In Vendita
+signPortalOwner=Posseduto Da:
 
 # Gate Actions
+gateDestroy=Portale distrutto!
+gateCreateSpecified=Portale creato sulla rete %network%!
+gateCreatePersonal=Creazione del portale sulla rete personale.
+gateTerminalSold=Portale %gateName% acquistato in %terminalName% per %cost%.
+gateTerminalSale=Portale %gateName% elencato in vendita su %terminalName% per %cost%.
+gateCreateFallback=Impossibile creare il tuo portale sulla rete %network%; tentando sulla tua rete personale!
 
 # Gate Construction Problems
+faultNetwork=Non hai accesso a quella rete!
+faultLayout=Non hai accesso a quella disposizione del portale!
+faultLength=Nome troppo breve o troppo lungo!
+faultExists=Un portale con quel nome esiste già!
+faultFull=Quella rete è al completo!
+faultWorldDeny=Non hai accesso al mondo %world%!
+faultConflict=Questo portale è in conflitto con un portale esistente.
+faultFlag=Non sei autorizzato a utilizzare i flag %flags%; il tuo portale è stato creato senza utilizzarli!
+faultControls=Il design di questo portale contiene troppi blocchi di controllo per accomodare i flag selezionati!
+faultAddon=Un addon ti ha impedito di farlo!
 
 # Bungee Problems
+bungeePerms=Non sei autorizzato a creare portali Bungee!
+bungeeDisabled=Il supporto a Bungeecord non è abilitato.
+bungeeLocal=I portali Bungee moderni non sono abilitati.
+bungeeLegacySyntax=I portali Bungee ereditari ti richiedono di specificare un portale e server di destinazione.
+bungeeInvalidExitNetwork=La rete di questo portale non esiste più sul server di destinazione.
+bungeeInvalidExitGate=L'uscita di questo portale non esiste più sul server di destinazione.
+bungeeProxyOffline=L'uscita di questo portale è su un server correntemente non disponibile.
+bungeeTargetOffline=Il proxy è temporaneamente offline; i portali di Bungee sono temporaneamente disabilitati.
 
 # Gate Usage
+tpSuccess=Teletrasportato!
+tpDestInvalid=Destinazione non valida!
+tpEmptyNet=Elenco delle destinazioni vuoto!
+tpOccupied=Un altro giocatore sta correntemente utilizzando questo portale; riprova tra un attimo!
+tpPastBorder=La destinazione è al di fuori del confine del mondo!
 
 # Access
+conflictPerms=Accesso negato!
+conflictSpawn=I chunk di generazione stanno interferendo con questo portale!
 
 # Economy
+ecoDeduct=%cost% detratto.
+ecoObtain=%cost% ottenuto dallo StarGate %portal%!
+ecoInsolvent=Fondi Insufficienti!
 
 #Terminology
+gate=Portale
+network=Rete
+interserver=Tra server
+default=Predefinito
+terminal=Terminale
+personal=Personale
+custom=Personalizzato
+local=Locale
 
 #Temporary
+unimplementedInterserver=I portali tra server sono ancora in via di sviluppo attivo e sono stati implementati soltanto parzialmente.
+unimplementedIConflict=Le reti locali e tra server %name% sono correntemente separate; in un aggiornamento futuro, saranno unite. \nQualsiasi StarGate correntemente sulla rete tra server %name% sarà spostato alla rete locale con lo stesso nome.
+unimplementedFlag=I flag %flags% non sono ancora stati implementati.
+
+#Parity
 
 #Admin
+adminReload=Configurazione ricaricata!
+adminInfo=Eseguendo la versione %version%. Changelog: https://git.io/JD4Qo
+adminHelp=La documentazione di StarGate si può trovare su https://git.io/JDclf
+translatedBy=Giorgio Arbato

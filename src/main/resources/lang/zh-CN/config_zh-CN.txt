@@ -1,4 +1,13 @@
 # Headers
+headerVersion=版本：%version%
+headerDocumentation=相关文档链接：%link%
+headerReports=错误报告： %link%
+headerPreferences=常规设置
+headerEconomy=经济
+headerAesthetic=外观调整
+subheaderCompat=兼容性
+subheaderLogging=日志
+subheaderDebug=Debug
 
 # General Preferences
 

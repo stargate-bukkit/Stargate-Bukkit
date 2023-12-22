@@ -1,21 +1,80 @@
 # General Styling
+prefix=[スターゲイト]
 
 # Sign Formatting
+signLegacyBungee=レガシーバンジー
+signNonFixedL2=右クリック
+signNonFixedL3=ゲートの使用方法
+signRandom=ランダム
+signDisconnected=切断
+signTerminalL2=販売中
+signPortalOwner=所有者: 
 
 # Gate Actions
+gateDestroy=ゲートが破壊されました！
+gateCreateSpecified=ゲートが%network%ネットワークで作成されました！
+gateCreatePersonal=パーソナルネットワーク上にゲートを作成します。
+gateTerminalSold=%terminalName%の%gateName%ゲートを%cost%で購入しました。
+gateTerminalSale=リスト上の%gateName%ゲートは、%terminalName%で%cost%で販売されています。
+gateCreateFallback=%network%ネットワークでゲートを作成できません。パーソナルネットワークを試してみてください！
 
 # Gate Construction Problems
+faultNetwork=そのネットワークへのアクセス権を持っていません！
+faultLayout=そのゲートレイアウトへのアクセス権を持っていません！
+faultLength=名前が短すぎるか、長すぎます！
+faultExists=その名前のゲートはすでに存在しています！
+faultFull=ネットワークがいっぱいです！
+faultWorldDeny=%world%世界へのアクセス権がありません！
+faultConflict=このゲートは既存のゲートと競合します。
+faultFlag=%flags%フラグを使用する権限がありません。ポータルはフラグなしで作成されました！
+faultControls=このゲートのデザインは、選択したフラグを収容するためのコントロールブロックが少なすぎます！
+faultAddon=アドオンがそれを行うのを妨げています！
 
 # Bungee Problems
+bungeePerms=バンジーゲートを作る権限がありません！
+bungeeDisabled=Bungeecordサポートが有効になっていません。
+bungeeLocal=現代のバンジーゲートが有効になっていません。
+bungeeLegacySyntax=従来のバンジーゲートでは、宛先ゲートとサーバーを指定する必要があります。
+bungeeInvalidExitNetwork=このポータルのネットワークは、すでにターゲットサーバー上に存在しません。
+bungeeInvalidExitGate=このポータルの出口は、すでにターゲットサーバー上に存在しません。
+bungeeProxyOffline=このポータルは、現在利用できないサーバー上から出ます。
+bungeeTargetOffline=プロキシは現在ダウンしています。バンジーポータルは一時的に無効になっています。
 
 # Gate Usage
+tpSuccess=瞬間移動しました！
+tpDestInvalid=目的地が無効です！
+tpEmptyNet=目的地リストが空です！
+tpOccupied=他のプレイヤーが現在このポータルを使用しています。しばらくしてからもう一度お試しください！
+tpPastBorder=目的地は世界の境界線の外にあります！
 
 # Access
+conflictPerms=アクセスが拒否されました！
+conflictSpawn=スポーンチャンクがこのポータルを妨害しています！
 
 # Economy
+ecoDeduct=%cost%を差し引きました。
+ecoObtain=StarGate%portal%から%cost%を入手しました！
+ecoInsolvent=お金が足りません！
 
 #Terminology
+gate=ゲート
+network=ネットワーク
+interserver=サーバー間
+default=デフォルト
+terminal=ターミナル
+personal=パーソナル
+custom=カスタム
+local=ローカル
 
 #Temporary
+unimplementedInterserver=サーバー間ゲートは現在開発中で、部分的にしか実装されていません。
+unimplementedIConflict=ローカルネットワークとインターサーバーの%name%ネットワークは、現在分離しています。今後のアップデートでマージされます。現在サーバー間ネットワーク%name%上にあるスターゲートは、同じ名前のローカルネットワークに移動されます。
+unimplementedFlag=%flags%フラグはまだ実装されていません。
+
+#Parity
 
 #Admin
+adminReload=設定をリロードしました！
+adminInfo=%version%バージョンを実行しています。変更履歴: https://git.io/JD4Qo
+adminHelp=StarGateのドキュメントは: https://git.io/JDclfにあります。
+translatedBy=Translated s.r.l.
