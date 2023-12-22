@@ -18,6 +18,7 @@
 package org.sgrewritten.stargate;
 
 import net.md_5.bungee.api.ChatColor;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -51,7 +52,6 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
 import org.sgrewritten.stargate.database.SQLDatabase;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
-import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.database.property.PropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -60,7 +60,13 @@ import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.formatting.StargateLanguageManager;
 import org.sgrewritten.stargate.gate.GateFormat;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.listener.*;
+import org.sgrewritten.stargate.listener.BlockEventListener;
+import org.sgrewritten.stargate.listener.EntityInsideBlockEventListener;
+import org.sgrewritten.stargate.listener.MoveEventListener;
+import org.sgrewritten.stargate.listener.PlayerAdvancementListener;
+import org.sgrewritten.stargate.listener.PlayerEventListener;
+import org.sgrewritten.stargate.listener.PluginEventListener;
+import org.sgrewritten.stargate.listener.StargateBungeePluginMessageListener;
 import org.sgrewritten.stargate.manager.BlockLoggingManager;
 import org.sgrewritten.stargate.manager.CoreProtectManager;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
@@ -85,7 +91,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -167,7 +177,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             }
 
             load();
-            if(!hasMigrated) {
+            if (!hasMigrated) {
                 networkManager.loadPortals(this);
             }
 
@@ -470,6 +480,11 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
                 this.getServer(), this.getStoredPropertiesAPI());
 
         if (dataMigrator.isMigrationNecessary()) {
+            File debugDirectory = new File(this.getDataFolder(), "debug");
+            if(!debugDirectory.isDirectory() && !debugDirectory.mkdir()){
+                throw new IOException("Could not create directory: " + debugDirectory);
+            }
+            FileUtils.copyFile(new File(this.getDataFolder(),CONFIG_FILE), new File(debugDirectory, CONFIG_FILE + ".old"));
             Map<String, Object> updatedConfig = dataMigrator.getUpdatedConfig();
             this.saveResource(CONFIG_FILE, true);
             this.reloadConfig();
@@ -706,6 +721,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     public static StorageAPI getStorageAPIStatic() {
         return instance.storageAPI;
     }
+
     @SuppressWarnings("unused")
     public static ConfigurationAPI getConfigAPIStatic() {
         return instance;

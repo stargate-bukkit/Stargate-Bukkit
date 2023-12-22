@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.command;
 
+import org.apache.commons.io.FileUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -78,6 +79,15 @@ public class CommandParity implements CommandExecutor {
             downloadPlugin(interfaces, interfacesFile);
             downloadPlugin(customizations, customizationsFile);
             downloadPlugin(mapper, mapperFile);
+            File debugDirectory = new File(this.pluginFolder, "debug");
+            File oldConfig = new File(debugDirectory, "config.yml.old");
+            if(oldConfig.exists()){
+                File targetDir = new File(pluginsFolder, "StargateCustomizations");
+                if(!targetDir.exists() && !targetDir.mkdir()){
+                    throw new IOException("Could not create directory: " + targetDir);
+                }
+                FileUtils.copyFile(oldConfig, new File(targetDir, "old_stargate_config.yml"));
+            }
         } catch (IOException e) {
             Stargate.log(e);
         }
