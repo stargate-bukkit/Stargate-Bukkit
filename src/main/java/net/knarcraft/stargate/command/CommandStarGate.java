@@ -5,6 +5,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -16,6 +17,11 @@ import java.util.Arrays;
  * the plugin itself, not commands for functions of the plugin.</p>
  */
 public class CommandStarGate implements CommandExecutor {
+    private final Plugin stargate;
+
+    public CommandStarGate(Plugin stargate) {
+        this.stargate = stargate;
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
@@ -28,6 +34,8 @@ public class CommandStarGate implements CommandExecutor {
             } else if (args[0].equalsIgnoreCase("config")) {
                 String[] subArgs = Arrays.copyOfRange(args, 1, args.length);
                 return new CommandConfig().onCommand(commandSender, command, s, subArgs);
+            } else if (args[0].equalsIgnoreCase("debug")) {
+                return new CommandDebug(this.stargate).onCommand(commandSender, command, s, args);
             }
             return false;
         } else {
