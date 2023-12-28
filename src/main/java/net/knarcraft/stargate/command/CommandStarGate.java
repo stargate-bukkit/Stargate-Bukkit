@@ -2,6 +2,7 @@ package net.knarcraft.stargate.command;
 
 import net.knarcraft.stargate.Stargate;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -34,13 +35,11 @@ public class CommandStarGate implements CommandExecutor {
             } else if (args[0].equalsIgnoreCase("config")) {
                 String[] subArgs = Arrays.copyOfRange(args, 1, args.length);
                 return new CommandConfig().onCommand(commandSender, command, s, subArgs);
-            } else if (args[0].equalsIgnoreCase("debug")) {
-                return new CommandDebug(this.stargate).onCommand(commandSender, command, s, args);
             }
             return false;
         } else {
-            commandSender.sendMessage(ChatColor.GOLD + "Stargate version " +
-                    ChatColor.GREEN + Stargate.getPluginVersion());
+            commandSender.sendMessage(ChatColor.GREEN + "Stargate version " + ChatColor.GOLD + stargate.getDescription().getVersion()
+                    + ChatColor.GREEN + " running on " + ChatColor.GOLD + Bukkit.getServer().getVersion());
             return true;
         }
     }
