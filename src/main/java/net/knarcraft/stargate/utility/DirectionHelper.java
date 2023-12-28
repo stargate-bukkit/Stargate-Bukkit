@@ -113,6 +113,9 @@ public final class DirectionHelper {
      * @return <p>A normal vector</p>
      */
     public static Vector getCoordinateVectorFromRelativeVector(double right, double down, double out, double yaw) {
+        //Make sure the yaw is between 0 and 360
+        yaw = normalizeYaw(yaw);
+
         if (yaw == 0) {
             //South
             return new Vector(right, -down, out);
