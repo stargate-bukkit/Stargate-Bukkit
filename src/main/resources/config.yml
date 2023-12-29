@@ -1,7 +1,7 @@
 ################################################################################## Version: @version@
-# +--------------▄▄▄-- ‚——. -▄--▄-▄--▄-▄-▄▄▄▄▄---------------------------------------------------+ #
-# |              █▄▄▀ (“‡‡”) █▄▄▀ █▄▄▀ █   █         Support available at: discord.gg/mTaHuK6BVa | #
-# |              █▄▄█  \__/  █  █ █  █ █   █                    ‚-.                              | #
+# +----------▄▄▄-- ‚——. -▄--▄-▄--▄-▄-▄▄▄▄▄-------------------------------------------------------+ #
+# |          █▄▄▀ (“‡‡”) █▄▄▀ █▄▄▀ █   █   Support available at: https://sgrewritten.org/discord | #
+# |          █▄▄█  \__/  █  █ █  █ █   █                        ‚-.                              | #
 # |         —————————————————————————————————————————————————— ((_)) ——————————————————          | #
 # |                                                             ‘-’                              | #
 # |         .|'''.|  |''||''|     |     '||''|.    ..|'''.|      |     |''||''| '||''''|         | #
@@ -10,7 +10,7 @@
 # |        .     '||    ||     .''''|.   ||   |.  '|.    ||   ;’   |.     ||     ||              | #
 # |         '....|'    .||.   .|.  .||. .||.  '|'  ''|...'|  .|.  .||.   .||.   .||.....|        | #
 # +----------------------------------------------------------------------------------------------+ #
-# |                        https://spigotmc.org/resources/stargate.87978/                        | #
+# |                                   https://sgrewritten.org                                    | #
 # +----------------------------------------------+-----------------------------------------------+ #
 # |      Documentation: https://git.io/JDclf     |       Bug Reports: https://git.io/Jc6jW       | #
 # +----------------------------------------------+-----------------------------------------------+ #
@@ -22,14 +22,14 @@
 # +----------------------------------------------------------------------------------------------+ #
 
 # What language will stargate use when communicating with your users?
-# Supported values: [en,de,nl,no,nn,sv,zh,cs,fr,tr]
+# Supported language values: https://sgrewritten.org/languages.
 #
 # If SG isn't yet available in your language, please consider becoming a translator:
 # https://crowdin.com/project/stargate-bukkit
 language: en
 
 bungee:
-  # Are you connected to a bungee-compatible proxy?
+  # Are you connected to a bungee-compatible proxy? (Velocity is not yet supported).
   # Set this to true if you intend on building gates with the 'u' flag.
   usingBungee: false
 
@@ -155,13 +155,13 @@ chargeFreeDestination: true
 # +----------------------------------------------------------------------------------------------+ #
 
 # These settings are used to customise the colors and styles used by SG when formatting signs.
-# For more advanced styling options, please use https://sgrewritten.org/l/extraColours
+# For more advanced styling options, please use https://sgrewritten.org/customizations
 signFormatting:
   # The default text color on all stargate signs (brightness shifts based on sign material)
-  # A list of valid colors can be found at https://sgrewritten.org/l/colourTypes
+  # A list of valid colors can be found at https://sgrewritten.org/colorNames
   color: BLACK
   # SG highlights players' selected destinations with a pointer symbol as users scroll.
-  # How should SG style its pointer symbol? (https://sgrewritten.org/l/pointerStyles)
+  # How should SG style its pointer symbol? (https://sgrewritten.org/pointerInfo)
   #  Options:
   #    1: No styling (the pointer will be the same default colour used by the sign's text).
   #    2: Destination type (the pointer will colour-code based on the selected destination)
@@ -226,4 +226,4 @@ loggingLevel: INFO
 
 # An internal value used by the plugin to determine how old your config is.
 # Please do not change this.
-configVersion: 7
+configVersion: 8
