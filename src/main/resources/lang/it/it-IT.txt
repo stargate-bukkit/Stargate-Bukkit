@@ -72,6 +72,7 @@ unimplementedIConflict=Le reti locali e tra server %name% sono correntemente sep
 unimplementedFlag=I flag %flags% non sono ancora stati implementati.
 
 #Parity
+parityCommand=Installazione automatica dei moduli %modules%! Potrebbe richiedere qualche minuto.
 
 #Admin
 adminReload=Configurazione ricaricata!

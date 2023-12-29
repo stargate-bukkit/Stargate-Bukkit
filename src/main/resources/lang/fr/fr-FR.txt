@@ -72,6 +72,7 @@ unimplementedIConflict=Le réseau %name% %type1% a été temporairement séparé
 unimplementedFlag=Les option %flags% n'ont pas encore été implémentés.
 
 #Parity
+parityCommand=Installation automatique du(des) module(s) %modules% ! Cela peut prendre quelques minutes.
 
 #Admin
 adminReload=Configuration rechargée !

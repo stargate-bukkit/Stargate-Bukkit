@@ -72,6 +72,7 @@ unimplementedIConflict=Místní a meziserverové sítě %name% jsou v současné
 unimplementedFlag=Příznaky %flags% ještě nebyly implementovány.
 
 #Parity
+parityCommand=Automatická instalace %modules% modulů! Může to trvat pár minut.
 
 #Admin
 adminReload=Konfigurace obnovena!
