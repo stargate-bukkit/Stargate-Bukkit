@@ -460,7 +460,7 @@ public class Stargate extends JavaPlugin {
     private void registerCommands() {
         PluginCommand stargateCommand = this.getCommand("stargate");
         if (stargateCommand != null) {
-            stargateCommand.setExecutor(new CommandStarGate());
+            stargateCommand.setExecutor(new CommandStarGate(this));
             stargateCommand.setTabCompleter(new StarGateTabCompleter());
         }
     }

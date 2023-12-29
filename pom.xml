@@ -4,7 +4,7 @@
 
     <groupId>net.knarcraft</groupId>
     <artifactId>Stargate</artifactId>
-    <version>0.11.5.5</version>
+    <version>0.11.5.6</version>
 
     <licenses>
         <license>
@@ -38,6 +38,10 @@
         <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>minebench-repo</id>
+            <url>https://repo.minebench.de/</url>
         </repository>
     </repositories>
 
@@ -96,6 +100,18 @@
             <version>3.0.1</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-platform-bukkit</artifactId>
+            <version>4.3.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.themoep</groupId>
+            <artifactId>minedown</artifactId>
+            <version>1.7.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -120,6 +136,7 @@
                         <includes>
                             <include>org.bstats:*</include>
                             <include>net.knarcraft:knarlib</include>
+                            <include>de.themoep:minedown</include>
                         </includes>
                     </artifactSet>
                 </configuration>
@@ -138,6 +155,13 @@
                                 <relocation>
                                     <pattern>net.knarcraft</pattern>
                                     <shadedPattern>net.knarcraft</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.kyori</pattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>de.themoep.minedown</pattern>
+                                    <shadedPattern>net.knarcraft.stargate.minedown</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>

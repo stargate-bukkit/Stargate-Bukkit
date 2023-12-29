@@ -1,11 +1,17 @@
 package net.knarcraft.stargate.command;
 
+import de.themoep.minedown.MineDown;
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.utility.FileHelper;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * This command represents the plugin's about command
@@ -18,10 +24,14 @@ public class CommandAbout implements CommandExecutor {
 
         ChatColor textColor = ChatColor.GOLD;
         ChatColor highlightColor = ChatColor.GREEN;
-        commandSender.sendMessage(textColor + "Stargate Plugin originally created by " + highlightColor +
-                "Drakia" + textColor + ", and revived by " + highlightColor + "EpicKnarvik97");
-        commandSender.sendMessage(textColor + "Go to " + highlightColor +
-                "https://git.knarcraft.net/EpicKnarvik97/Stargate " + textColor + "for the official repository");
+
+        try(InputStream inputStream = Stargate.class.getResourceAsStream("/messages/about.md")){
+            String aboutMessageString = FileHelper.readStreamToString(inputStream);
+            BaseComponent[] component = MineDown.parse(aboutMessageString);
+            commandSender.spigot().sendMessage(component);
+        } catch (IOException ioException){
+            commandSender.sendMessage("Internal error");
+        }
         String author = Stargate.getStargateConfig().getLanguageLoader().getString("author");
         if (!author.isEmpty()) {
             commandSender.sendMessage(textColor + "Language created by " + highlightColor + author);
