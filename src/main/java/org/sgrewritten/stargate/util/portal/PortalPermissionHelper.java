@@ -158,16 +158,10 @@ public final class PortalPermissionHelper {
         Set<PortalFlag> flags = PortalFlag.parseFlags(portal.getAllFlagsString());
         for (PortalFlag flag : flags) {
             String identifier;
-            switch (flag) {
-                case FIXED:
-                case NETWORKED:
-                case PERSONAL_NETWORK:
-                case IRON_DOOR:
-                    continue;
-                default:
-                    identifier = String.valueOf(flag.getCharacterRepresentation()).toLowerCase();
-                    break;
+            if(flag.isInternalFlag()){
+                continue;
             }
+            identifier = String.valueOf(flag.getCharacterRepresentation()).toLowerCase();
             permissionList.add(permissionIdentifier + ".type." + identifier);
         }
         return permissionList;
