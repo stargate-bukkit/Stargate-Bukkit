@@ -22,8 +22,8 @@ jobs:
       - run:
           command: echo 127.0.0.1 devhost | sudo tee -a /etc/hosts
                 
-      - run:
-          command: mongodb && mongo --eval 'db.createUser({ user: "root", pwd: "password", roles: [ { role: "userAdminAnyDatabase", db: "admin" } ] })'
+      #- run:
+          #command: mongodb && mongo --eval 'db.createUser({ user: "root", pwd: "password", roles: [ { role: "userAdminAnyDatabase", db: "admin" } ] })'
 
       - run: |
           sudo -u root createuser -h localhost --superuser debian &&
