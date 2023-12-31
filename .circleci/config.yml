@@ -8,7 +8,6 @@ jobs:
         environment:
           MARIADB_ROOT_PASSWORD: password
           MARIADB_DATABASE: stargate
-          MARIADB_USER: root
           MARIADB_PASSWORD: password
 
     environment:
@@ -22,22 +21,24 @@ jobs:
       - run:
           name: Debug and Environment
           command: |
-            echo 127.0.0.1 devhost | echo ls | tee -a /etc/hosts
+            cd ~/my-projects/stargate/core
+            echo 127.0.0.1 devhost | tee -a /etc/hosts
             mkdir -p ~/my-projects/stargate/core
             cd ~/my-projects/stargate/core
             
       - run:
           name: Install Stuff
           command: |
+            cd ~/my-projects/stargate/core
             apt-get update && apt-get install -y mariadb-client
             apt-get install -y git
             apt-get install -y maven
-            
+      
       - run:
           name: Clone Repository
           command: |
+            cd ~/my-projects/stargate/core
             git clone https://github.com/stargate-rewritten/Stargate-Bukkit.git
-            echo ls ~/my-projects | echo ls ~my-projects/stargate | echo ls ~my-projects/stargate/core | echo ls ~my-projects/stargate/core/Stargate-Bukkit
             cd ~/my-projects/stargate/core/Stargate-Bukkit
             git checkout nightly
       
@@ -48,13 +49,14 @@ jobs:
       - run:
           name: Populate Secrets File
           command: |
+            cd ~/my-projects/stargate/core
             touch ~/my-projects/stargate/core/Stargate-Bukkit/src/test/resources/mysql_credentials.secret
             echo MYSQL_DB_PASSWORD=password >> ~/my-projects/stargate/core/Stargate-Bukkit/src/test/resources/mysql_credentials.secret
             echo MYSQL_DB_USER=root >> ~/my-projects/stargate/core/Stargate-Bukkit/src/test/resources/mysql_credentials.secret
-            
       - run:
           name: Attempt to Build
           command: |
+            cd ~/my-projects/stargate/core/Stargate-Bukkit
             mvn clean install
 
       - save_cache:
@@ -65,6 +67,7 @@ jobs:
       - run:
           name: Move valid files
           command: |
+            cd ~/my-projects/stargate/core/Stargate-Bukkit
             mkdir ~/my-projects/stargate/core/Stargate-Bukkit/target/export
             cd ~/my-projects/stargate/core/Stargate-Bukkit/target
             mv Stargate-*.jar export
