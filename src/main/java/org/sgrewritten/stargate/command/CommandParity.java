@@ -95,7 +95,7 @@ public class CommandParity implements CommandExecutor {
             }
         } catch (IOException e) {
             Stargate.log(e);
-            Stargate.log(Level.WARNING, "Unable to download modules. It could be that they are not finished yet");
+            Stargate.log(Level.WARNING, "Unable to download modules. It could be that they are not completed yet");
         }
         return true;
     }
