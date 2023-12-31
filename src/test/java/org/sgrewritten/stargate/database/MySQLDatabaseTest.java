@@ -36,7 +36,7 @@ public class MySQLDatabaseTest {
         TestCredentialsManager credentialsManager = new TestCredentialsManager("mysql_credentials.secret");
         String address = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_ADDRESS, "localhost");
         int port = credentialsManager.getCredentialInt(TestCredential.MYSQL_DB_PORT, 3306);
-        String databaseName = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_NAME, "Stargate");
+        String databaseName = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_NAME, "stargate");
         String username = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_USER);
         String password = credentialsManager.getCredentialString(TestCredential.MYSQL_DB_PASSWORD);
 

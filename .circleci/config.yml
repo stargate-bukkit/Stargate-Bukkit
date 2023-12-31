@@ -7,7 +7,7 @@ jobs:
       - image: cimg/mariadb:11.2.1
         environment:
           MARIADB_ROOT_PASSWORD: password
-          MARIADB_DATABASE: Stargate
+          MARIADB_DATABASE: stargate
           MARIADB_PASSWORD: password
 
     environment:
