@@ -25,24 +25,25 @@ public class CommandParity implements CommandExecutor {
 
     private final @NotNull StoredPropertiesAPI properties;
     private final boolean doParityUpgrades;
-    private static final String MECHANICS_URL = "";
+    private static final String MECHANICS_URL = "https://sgrewritten.org/download-sgm";
     private static final String MECHANICS_NAME = "StargateMechanics";
-    private static final String INTERFACES_URL = "";
+    private static final String INTERFACES_URL = "https://sgrewritten.org/download-sgi";
     private static final String INTERFACES_NAME = "StargateInterfaces";
-    private static final String CUSTOMIZATIONS_URL = "";
+    private static final String CUSTOMIZATIONS_URL = "https://sgrewritten.org/download-sgc";
     private static final String CUSTOMIZATIONS_NAME = "StargateCustomizations";
-    private static final String MAPPER_URL = "";
+    private static final String MAPPER_URL = "https://sgrewritten.org/download-sgmap";
     private static final String MAPPER_NAME = "StargateMapper";
-    private static final File OLD_CONFIG_LOCATION = new File("");
+    private static final String OLD_CONFIG_LOCATION = "debug/config.yml.old";
     private final File pluginFolder;
     private final LanguageManager languageManager;
+    private final File oldConfig;
     private URL mapper;
     private URL mechanics;
     private URL interfaces;
     private URL customizations;
 
     CommandParity(@NotNull StoredPropertiesAPI properties, boolean doParityUpgrades, File pluginFolder, LanguageManager languageManager) {
-        this(properties, doParityUpgrades, pluginFolder, MECHANICS_URL, INTERFACES_URL, CUSTOMIZATIONS_URL, MAPPER_URL, OLD_CONFIG_LOCATION, languageManager);
+        this(properties, doParityUpgrades, pluginFolder, MECHANICS_URL, INTERFACES_URL, CUSTOMIZATIONS_URL, MAPPER_URL, new File(pluginFolder, OLD_CONFIG_LOCATION), languageManager);
     }
 
     CommandParity(@NotNull StoredPropertiesAPI properties, boolean doParityUpgrades, File pluginFolder, String mechanics, String interfaces
@@ -51,6 +52,7 @@ public class CommandParity implements CommandExecutor {
         this.doParityUpgrades = doParityUpgrades;
         this.pluginFolder = pluginFolder;
         this.languageManager = languageManager;
+        this.oldConfig = oldConfig;
         try {
             this.mechanics = new URL(mechanics);
             this.interfaces = new URL(interfaces);
@@ -84,8 +86,6 @@ public class CommandParity implements CommandExecutor {
             downloadPlugin(interfaces, interfacesFile);
             downloadPlugin(customizations, customizationsFile);
             downloadPlugin(mapper, mapperFile);
-            File debugDirectory = new File(this.pluginFolder, "debug");
-            File oldConfig = new File(debugDirectory, "config.yml.old");
             if(oldConfig.exists()){
                 File targetDir = new File(pluginsFolder, "StargateCustomizations");
                 if(!targetDir.exists() && !targetDir.mkdir()){
@@ -95,6 +95,7 @@ public class CommandParity implements CommandExecutor {
             }
         } catch (IOException e) {
             Stargate.log(e);
+            Stargate.log(Level.WARNING, "Unable to download modules. It could be that they are not finished yet");
         }
         return true;
     }
