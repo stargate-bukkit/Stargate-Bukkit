@@ -21,7 +21,6 @@ jobs:
       - run:
           name: Debug and Environment
           command: |
-            cd ~/my-projects/stargate/core
             echo 127.0.0.1 devhost | tee -a /etc/hosts
             mkdir -p ~/my-projects/stargate/core
             cd ~/my-projects/stargate/core
