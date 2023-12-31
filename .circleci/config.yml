@@ -3,8 +3,6 @@ jobs:
   build-and-test:
     docker:
       - image: debian:12.4
-
-      - image: cimg/maven:1.4.1
             
       - image: cimg/mariadb:11.2.1
         environment:
