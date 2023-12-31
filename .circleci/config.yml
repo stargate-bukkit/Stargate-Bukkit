@@ -6,6 +6,7 @@ jobs:
             
       - image: cimg/mariadb:11.2.1
         environment:
+          MARIADB_ROOT_PASSWORD: password
           MARIADB_DATABASE: stargate
           MARIADB_USER: root
           MARIADB_PASSWORD: password
@@ -36,6 +37,7 @@ jobs:
           name: Clone Repository
           command: |
             git clone https://github.com/stargate-rewritten/Stargate-Bukkit.git
+            echo ls ~/my-projects | echo ls ~my-projects/stargate | echo ls ~my-projects/stargate/core | echo ls ~my-projects/stargate/core/Stargate-Bukkit
             cd ~/my-projects/stargate/core/Stargate-Bukkit
             git checkout nightly
       
