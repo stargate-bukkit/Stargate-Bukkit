@@ -1,94 +1,80 @@
 version: 2.1
 jobs:
-  build:
+  build-and-test:
     docker:
       - image: debian:12.4
 
-      - image: cimg/mysql:8.0
+      - image: cimg/maven:1.4.1
+            
+      - image: cimg/mariadb:11.2.1
         environment:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: stargate
-          MYSQL_USER: root
-          MYSQL_PASSWORD: password
+          MARIADB_DATABASE: stargate
+          MARIADB_USER: root
+          MARIADB_PASSWORD: password
 
     environment:
       TEST_REPORTS: /tmp/test-reports
 
-    working_directory: ~/my-project
+    working_directory: ~/my-project/stargate/core
 
     steps:
       - checkout
 
       - run:
-          command: echo 127.0.0.1 devhost | sudo tee -a /etc/hosts
-                
-      #- run:
-          #command: mongodb && mongo --eval 'db.createUser({ user: "root", pwd: "password", roles: [ { role: "userAdminAnyDatabase", db: "admin" } ] })'
-
-      - run: |
-          sudo -u root createuser -h localhost --superuser debian &&
-          sudo createdb -h localhost stargate
-          
-      - run: |
-          touch /test/resources/mysql_credentials.secret
-          echo MYSQL_DB_PASSWORD=password >> /test/resources/credentials.secret
-          echo MYSQL_DB_USER=root >> /test/resources/credentials.secret
-
+          name: Debug and Environment
+          command: |
+            echo 127.0.0.1 devhost | echo ls | tee -a /etc/hosts
+            mkdir -p ~/my-projects/stargate/core
+            cd ~/my-projects/stargate/core
+            
+      - run:
+          name: Install Stuff
+          command: |
+            apt-get update && apt-get install -y mariadb-client
+            apt-get install -y git
+            apt-get install -y maven
+            
+      - run:
+          name: Clone Repository
+          command: |
+            git clone https://github.com/stargate-rewritten/Stargate-Bukkit.git
+            cd ~/my-projects/stargate/core/Stargate-Bukkit
+            git checkout nightly
+      
       - restore_cache:
           keys:
-            - v1-my-project-{{ checksum "project.clj" }}
-            - v1-my-project-
-
+            - maven-data
+      
       - run:
-          environment:
-            SSH_TARGET: "localhost"
-            TEST_ENV: "linux"
+          name: Populate Secrets File
           command: |
-            set -xu
-            mkdir -p ${TEST_REPORTS}
-            run-tests.sh
-            cp out/tests/*.xml ${TEST_REPORTS}
-
-      - run: |
-          set -xu
-          mkdir -p /tmp/artifacts
-          create_jars.sh << pipeline.number >>
-          cp *.jar /tmp/artifacts
+            touch ~/my-projects/stargate/core/Stargate-Bukkit/src/test/resources/mysql_credentials.secret
+            echo MYSQL_DB_PASSWORD=password >> ~/my-projects/stargate/core/Stargate-Bukkit/src/test/resources/mysql_credentials.secret
+            echo MYSQL_DB_USER=root >> ~/my-projects/stargate/core/Stargate-Bukkit/src/test/resources/mysql_credentials.secret
+            
+      - run:
+          name: Attempt to Build
+          command: |
+            mvn clean install
 
       - save_cache:
-          key: v1-my-project-{{ checksum "project.clj" }}
+          key: maven-data
           paths:
-            - ~/.m2
+            - ~/my-projects/stargate/core/Stargate-Bukkit/target
 
-      # Save artifacts
+      - run:
+          name: Move valid files
+          command: |
+            mkdir ~/my-projects/stargate/core/Stargate-Bukkit/target/export
+            cd ~/my-projects/stargate/core/Stargate-Bukkit/target
+            mv Stargate-*.jar export
+
       - store_artifacts:
-          path: /tmp/artifacts
+          path: ~/my-projects/stargate/core/Stargate-Bukkit/target/export
           destination: build
 
-      # Upload test results
-      - store_test_results:
-          path: /tmp/test-reports
-
-  deploy-stage:
-    docker:
-      - image: debian:12.4
-    working_directory: /tmp/my-project
-    steps:
-      - run:
-          name: Deploy if tests pass and branch is Staging
-          command: ansible-playbook site.yml -i staging
-
-  deploy-prod:
-    docker:
-      - image: debian:12.4
-    working_directory: /tmp/my-project
-    steps:
-      - run:
-          name: Deploy if tests pass and branch is Main
-          command: ansible-playbook site.yml -i production
-
 workflows:
-  build-deploy:
+  build-test-deploy:
     jobs:
       - build:
           filters:
@@ -96,15 +82,3 @@ workflows:
               ignore:
                 - develop
                 - /feature-.*/
-      - deploy-stage:
-          requires:
-            - build
-          filters:
-            branches:
-              only: staging
-      - deploy-prod:
-          requires:
-            - build
-          filters:
-            branches:
-              only: main
