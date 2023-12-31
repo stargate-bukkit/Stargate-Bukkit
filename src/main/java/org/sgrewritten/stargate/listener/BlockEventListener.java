@@ -343,7 +343,7 @@ public class BlockEventListener implements Listener {
         BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.PLAYER_BUCKET_EMPTY, event.getBlock().getLocation(), registry);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockDispense(BlockDispenseEvent event) {
         if (!(event.getBlock().getBlockData() instanceof Directional dispenser)) {
             return;
