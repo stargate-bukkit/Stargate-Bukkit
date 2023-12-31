@@ -100,11 +100,6 @@ public class BlockEventListener implements Listener {
                 MessageUtils.sendMessageFromPortal(portal,event.getPlayer(),msg,StargateSendMessagePortalEvent.MessageType.DESTROY);
 
                 stargateAPI.getNetworkManager().destroyPortal(portal);
-                try {
-                    stargateAPI.getStorageAPI().removePortalFromStorage(portal);
-                } catch (StorageWriteException e) {
-                    Stargate.log(e);
-                }
                 Stargate.log(Level.FINE, "Broke portal " + portal.getName());
             };
 
