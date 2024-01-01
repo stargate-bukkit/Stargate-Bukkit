@@ -162,18 +162,17 @@ public class PortalBuilder {
             }
             flags.removeAll(disallowedFlags);
         }
-        if (network == null) {
-            network = stargateAPI.getNetworkManager().selectNetwork(networkString, permissionManager, owner, flags);
-        }
-        NetworkType.removeNetworkTypeRelatedFlags(flags);
-        flags.add(network.getType().getRelatedFlag());
-
         if (gateBuilder != null) {
             if (adaptiveGatePositionGeneration) {
                 gateBuilder.setGenerateButtonPositions(!flags.contains(PortalFlag.ALWAYS_ON));
             }
             gateAPI = gateBuilder.build();
         }
+        if (network == null) {
+            network = stargateAPI.getNetworkManager().selectNetwork(networkString, permissionManager, owner, flags);
+        }
+        NetworkType.removeNetworkTypeRelatedFlags(flags);
+        flags.add(network.getType().getRelatedFlag());
         UUID ownerUUID = network.getType() == NetworkType.PERSONAL ? UUID.fromString(network.getId()) : owner.getUniqueId();
         RealPortal portal = PortalCreationHelper.createPortal(network, portalName, destinationName, serverName, flags, unrecognisedFlags, gateAPI, ownerUUID, stargateAPI, metaData);
         permissionAndEventHandling(portal, network);
