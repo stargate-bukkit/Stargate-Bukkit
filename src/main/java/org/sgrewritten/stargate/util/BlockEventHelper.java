@@ -5,8 +5,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.Cancellable;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.BlockEventType;
 
 import java.util.ArrayList;
@@ -20,36 +22,23 @@ public class BlockEventHelper {
     /**
      * Does event handling for any event that changes one block
      *
-     * @param event    <p> The event to possibly cancel </p>
-     * @param type     <p> The type of event </p>
-     * @param location <p> The location of the block </p>
-     * @param registry <p> The registry in use </p>
-     */
-    public static void onAnyBlockChangeEvent(Cancellable event, BlockEventType type, Location location, RegistryAPI registry) {
-        onAnyBlockChangeEvent(event, type, location, registry, () -> {
-        });
-    }
-
-
-    /**
-     * Does event handling for any event that changes one block
-     *
      * @param event         <p> The event to possibly cancel </p>
      * @param type          <p> The type of event </p>
      * @param location      <p> The location of the block </p>
-     * @param registry      <p> The registry in use </p>
-     * @param destroyAction <p> What to do if the portal was destroyed </p>
+     * @param stargateAPI      <p> The stargate api </p>
      */
-    public static void onAnyBlockChangeEvent(Cancellable event, BlockEventType type, Location location, RegistryAPI registry, Runnable destroyAction) {
-        Portal portal = registry.getPortal(location);
+    public static boolean onAnyBlockChangeEvent(Cancellable event, BlockEventType type, Location location, StargateAPI stargateAPI) {
+        RealPortal portal = stargateAPI.getRegistry().getPortal(location);
         if (portal == null) {
-            return;
+            return false;
         }
         if (type.canDestroyPortal()) {
-            portal.destroy();
+            stargateAPI.getNetworkManager().destroyPortal(portal);
+            return true;
         } else {
             event.setCancelled(true);
         }
+        return false;
     }
 
     /**
@@ -73,8 +62,8 @@ public class BlockEventHelper {
      * @param type   <p> The type of event </p>
      * @param blocks <p> The blocks affected </p>
      */
-    public static void onAnyMultiBlockChangeEvent(Cancellable event, BlockEventType type, List<Block> blocks, RegistryAPI registry) {
-        onAnyMultiBlockChangeEvent(event, type.canDestroyPortal(), blocks, registry);
+    public static void onAnyMultiBlockChangeEvent(Cancellable event, BlockEventType type, List<Block> blocks, StargateAPI stargateAPI) {
+        onAnyMultiBlockChangeEvent(event, type.canDestroyPortal(), blocks, stargateAPI);
     }
 
     /**
@@ -84,11 +73,11 @@ public class BlockEventHelper {
      * @param canDestroy <p>If the event could destroy a portal</p>
      * @param blocks     <p>The blocks affected</p>
      */
-    public static void onAnyMultiBlockChangeEvent(Cancellable event, boolean canDestroy, List<Block> blocks, RegistryAPI registry) {
-        Set<Portal> affectedPortals = new HashSet<>();
+    public static void onAnyMultiBlockChangeEvent(Cancellable event, boolean canDestroy, List<Block> blocks, StargateAPI stargateAPI) {
+        Set<RealPortal> affectedPortals = new HashSet<>();
 
         for (Block block : blocks) {
-            Portal portal = registry.getPortal(block.getLocation());
+            RealPortal portal = stargateAPI.getRegistry().getPortal(block.getLocation());
             if (portal != null) {
                 if (!canDestroy) {
                     event.setCancelled(true);
@@ -98,8 +87,8 @@ public class BlockEventHelper {
             }
         }
 
-        for (Portal portal : affectedPortals) {
-            portal.destroy();
+        for (RealPortal portal : affectedPortals) {
+            stargateAPI.getNetworkManager().destroyPortal(portal);
             Stargate.log(Level.FINER, String.format("Broke portal %s in network %s from a multiple block change event",
                     portal.getName(), portal.getNetwork().getName()));
         }

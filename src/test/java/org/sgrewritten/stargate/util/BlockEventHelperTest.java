@@ -69,7 +69,7 @@ class BlockEventHelperTest {
     @EnumSource
     void onAnyBlockChangeEventTest_SignLocation(BlockEventType type) {
         Cancellable event = new BlockBreakEvent(signBlock, player);
-        BlockEventHelper.onAnyBlockChangeEvent(event, type, signBlock.getLocation(), registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, type, signBlock.getLocation(), stargateAPI);
         Assertions.assertTrue(event.isCancelled());
     }
 
@@ -78,7 +78,7 @@ class BlockEventHelperTest {
     void onAnyBlockChangeEventTest_FrameLocation(BlockEventType type) {
         Location frame = portal.getGate().getLocations(GateStructureType.FRAME).get(0).getLocation();
         Cancellable event = new BlockBreakEvent(frame.getBlock(), player);
-        BlockEventHelper.onAnyBlockChangeEvent(event, type, frame, registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, type, frame, stargateAPI);
         Assertions.assertTrue(event.isCancelled());
     }
 
@@ -87,7 +87,7 @@ class BlockEventHelperTest {
     void onAnyBlockChangeEventTest_IrisLocation(BlockEventType type) {
         Location iris = portal.getGate().getLocations(GateStructureType.IRIS).get(0).getLocation();
         Cancellable event = new BlockBreakEvent(iris.getBlock(), player);
-        BlockEventHelper.onAnyBlockChangeEvent(event, type, iris, registry);
+        BlockEventHelper.onAnyBlockChangeEvent(event, type, iris, stargateAPI);
         Assertions.assertTrue(event.isCancelled());
     }
 }
