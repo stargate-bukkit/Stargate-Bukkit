@@ -190,11 +190,24 @@ public class DataMigration_1_0_0 extends DataMigration {
         }
 
         Stargate instance = Stargate.getInstance();
-        File gateDirectory = new File((instance != null) ? instance.getDataFolder() : new File(""), (instance != null) ? instance.getGateFolder() : "");
+        File gateDirectory;
+        if(instance == null){
+            gateDirectory = new File("");
+        } else {
+            gateDirectory = new File(instance.getDataFolder(), instance.getGateFolder());
+        }
         if (!gateDirectory.exists()) {
             return;
         }
-        File debugGateDirectory = new File((instance != null) ? instance.getGateFolder() : "", "debug/invalidGates");
+        File debugGateDirectory;
+        if(instance == null){
+            debugGateDirectory = new File("");
+        } else {
+            debugGateDirectory = new File(instance.getDataFolder(), "debug/invalidGates");
+        }
+
+
+
         if (!debugGateDirectory.exists() && !debugGateDirectory.mkdirs()) {
             Stargate.log(Level.WARNING, "Unable to create the directory for invalid gates");
             return;
