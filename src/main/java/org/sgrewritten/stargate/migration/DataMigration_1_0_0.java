@@ -205,9 +205,6 @@ public class DataMigration_1_0_0 extends DataMigration {
         } else {
             debugGateDirectory = new File(instance.getDataFolder(), "debug/invalidGates");
         }
-
-
-
         if (!debugGateDirectory.exists() && !debugGateDirectory.mkdirs()) {
             Stargate.log(Level.WARNING, "Unable to create the directory for invalid gates");
             return;

@@ -32,8 +32,6 @@ import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
-import org.sgrewritten.stargate.network.proxy.InterServerMessageSender;
-import org.sgrewritten.stargate.network.proxy.LocalNetworkMessageSender;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
@@ -189,27 +187,29 @@ public class SQLDatabase implements StorageAPI {
      * @throws SQLException <p>If an SQL error occurs</p>
      */
     private void loadAllPortals(SQLDatabaseAPI database, StorageType portalType, StargateAPI stargateAPI) throws SQLException {
-        Connection connection = database.getConnection();
-        PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsStatement(connection, portalType);
+        List<PortalData> portalDataList;
+        try(Connection connection = database.getConnection()) {
+            PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsStatement(connection, portalType);
 
-        ResultSet resultSet = statement.executeQuery();
-        while (resultSet.next()) {
-            loadPortal(resultSet, portalType, stargateAPI);
+            ResultSet resultSet = statement.executeQuery();
+            portalDataList = new ArrayList<>();
+            while (resultSet.next()) {
+                portalDataList.add(PortalStorageHelper.loadPortalData(resultSet, portalType));
+            }
+            statement.close();
         }
-        statement.close();
-        connection.close();
+        for(PortalData portalData : portalDataList){
+            loadPortal(portalData, stargateAPI);
+        }
     }
 
     /**
      * Loads one portal from the given result set into the given registry
      *
-     * @param resultSet   <p>A query result with portal information</p>
-     * @param portalType  <p>The portal type to load</p>
      * @param stargateAPI <p>The stargate API</p>
      * @throws SQLException <p>If an SQL error occurs</p>
      */
-    private void loadPortal(ResultSet resultSet, StorageType portalType, StargateAPI stargateAPI) throws SQLException {
-        PortalData portalData = PortalStorageHelper.loadPortalData(resultSet, portalType);
+    private void loadPortal(PortalData portalData, StargateAPI stargateAPI) throws SQLException {
         if (portalData == null) {
             return;
         }
@@ -221,7 +221,7 @@ public class SQLDatabase implements StorageAPI {
         }
 
         //If the loaded portal is virtual, register it to the network, and not as a normal one
-        if (registerVirtualPortal(portalType, portalData, network)) {
+        if (registerVirtualPortal(portalData.portalType(), portalData, network)) {
             return;
         }
 
@@ -237,7 +237,7 @@ public class SQLDatabase implements StorageAPI {
         } catch (InvalidStructureException e) {
             Stargate.log(Level.WARNING, String.format(
                     "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
-                    portalData.name(), (portalType == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName(),
+                    portalData.name(), (portalData.portalType() == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName(),
                     portalData.gateData().topLeft()));
         }
     }
@@ -255,7 +255,7 @@ public class SQLDatabase implements StorageAPI {
      */
     private void registerPortalGate(PortalData portalData, Network network, StargateAPI stargateAPI) throws SQLException,
             InvalidStructureException, GateConflictException, TranslatableException {
-        List<PortalPosition> portalPositions = getPortalPositions(portalData);
+        List<PortalPosition> portalPositions = getPortalPositions(portalData, network.getId());
         Gate gate = new Gate(portalData.gateData(), stargateAPI.getRegistry());
         if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
                 && !gate.isValid()) {
@@ -312,10 +312,10 @@ public class SQLDatabase implements StorageAPI {
 
             if (NetworkCreationHelper.getDefaultNamesTaken().contains(network.getId().toLowerCase())) {
                 String newValidName = registry.getValidNewName(network);
+                targetNetwork = newValidName;
                 networkManager.rename(network, newValidName);
             }
         } catch (NameConflictException ignored) {
-
         } catch (TranslatableException e) {
             Stargate.log(e);
             return null;
@@ -327,13 +327,14 @@ public class SQLDatabase implements StorageAPI {
      * Gets all portal positions for the given portal
      *
      * @param portalData <p>The portal data to use for the query</p>
+     * @param id
      * @return <p>The portal positions belonging to the portal</p>
      * @throws SQLException <p>If the SQL query fails to successfully execute</p>
      */
-    private List<PortalPosition> getPortalPositions(PortalData portalData) throws SQLException {
+    private List<PortalPosition> getPortalPositions(PortalData portalData, String id) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement statement = sqlQueryGenerator.generateGetPortalPositionsStatement(connection, portalData.portalType());
-        statement.setString(1, portalData.networkName());
+        statement.setString(1, id);
         statement.setString(2, portalData.name());
 
         List<PortalPosition> portalPositions = new ArrayList<>();
