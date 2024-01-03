@@ -1,0 +1,26 @@
+[
+  {
+    "flag": "BACKWARDS",
+    "dyeColor": "MAGENTA"
+  },
+  {
+    "flag": "FORCE_SHOW",
+    "dyeColor": "CYAN"
+  },
+  {
+    "flag": "HIDDEN",
+    "dyeColor": "YELLOW"
+  },
+  {
+    "flag": "FREE",
+    "dyeColor": "GREEN"
+  },
+  {
+    "flag": "PRIVATE",
+    "dyeColor": "RED"
+  },
+  {
+    "flag": "FANCY_INTER_SERVER",
+    "dyeColor": "PURPLE"
+  }
+]

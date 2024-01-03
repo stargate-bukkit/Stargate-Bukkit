@@ -1,9 +1,10 @@
-package org.sgrewritten.stargate.util.colors;
+package org.sgrewritten.stargate.colors;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.sgrewritten.stargate.colors.ColorConverter;
 
 /**
  * @author Thorin

@@ -21,8 +21,6 @@ import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.Tag;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -80,9 +78,8 @@ import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.util.BStatsHelper;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.FileHelper;
-import org.sgrewritten.stargate.util.colors.ColorConverter;
-import org.sgrewritten.stargate.util.colors.ColorNameInterpreter;
-import org.sgrewritten.stargate.util.colors.ColorProperty;
+import org.sgrewritten.stargate.colors.ColorConverter;
+import org.sgrewritten.stargate.colors.ColorNameInterpreter;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
@@ -92,7 +89,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -142,9 +138,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
     private org.bukkit.ChatColor legacySignColor;
 
-    private static short defaultSignColorHue = 0;
-    private static Map<Material, DyeColor> defaultSignDyeColors;
-
     private FileConfiguration config;
 
     private StargateRegistry registry;
@@ -157,6 +150,9 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private BlockHandlerResolver blockHandlerResolver;
     private NetworkManager networkManager;
     private SQLDatabaseAPI database;
+    private ChatColor defaultTextColor;
+    private ChatColor defaultPointerColor;
+    private DyeColor defaultDyeColor;
 
 
     @Override
@@ -369,33 +365,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     }
 
     /**
-     * Gets the default hue used for signs
-     *
-     * @return <p>The default color used for light signs</p>
-     */
-    public static short getDefaultSignHue() {
-        return Stargate.defaultSignColorHue;
-    }
-
-    /**
-     * Get the dye-color that when applied to a sign gets the text converted into the default configuration
-     *
-     * @param signMaterial <p>A type of sign</p>
-     * @return <p>A color related to that sign</p>
-     */
-    public static DyeColor getDefaultSignDyeColor(Material signMaterial) {
-        try {
-            if (!Stargate.defaultSignDyeColors.isEmpty()) {
-                return Stargate.defaultSignDyeColors.get(signMaterial);
-            } else {
-                return DyeColor.WHITE;
-            }
-        } catch (NullPointerException e) {
-            return DyeColor.WHITE;
-        }
-    }
-
-    /**
      * Gets the default color used for light signs with legacy coloring
      *
      * @return <p>The default legacy color used for light signs</p>
@@ -404,23 +373,38 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         return this.legacySignColor;
     }
 
+    public static ChatColor getDefaultPointerColor(){
+        if(instance == null){
+            return ChatColor.WHITE;
+        }
+        return instance.defaultPointerColor;
+    }
+
+    public static ChatColor getDefaultTextColor(){
+        if(instance == null){
+            return ChatColor.BLACK;
+        }
+        return instance.defaultTextColor;
+    }
+
+    public static DyeColor getDefaultDyeColor(){
+        if(instance == null){
+            return DyeColor.BLACK;
+        }
+        return instance.defaultDyeColor;
+    }
+
     private void loadColors() {
         try {
             if (!NonLegacyMethod.CHAT_COLOR.isImplemented()) {
-                logMessage(Level.INFO,
-                        "Default stargate coloring is not supported on your current server implementation");
-                this.legacySignColor = org.bukkit.ChatColor.valueOf(ConfigurationHelper.getString(
-                        ConfigurationOption.DEFAULT_SIGN_COLOR).toUpperCase());
+                logMessage(Level.INFO, "Default stargate coloring is not supported on your current server implementation");
+                this.legacySignColor = org.bukkit.ChatColor.valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR).toUpperCase());
                 return;
             }
-            ChatColor color = ColorNameInterpreter.getColor(ConfigurationHelper.getString(
-                    ConfigurationOption.DEFAULT_SIGN_COLOR));
-            Stargate.defaultSignColorHue = ColorConverter.getHue(color);
-            Stargate.defaultSignDyeColors = new EnumMap<>(Material.class);
-            for (Material signMaterial : Tag.WALL_SIGNS.getValues()) {
-                defaultSignDyeColors.put(signMaterial, ColorConverter.getClosestDyeColor(ColorProperty.getColorFromHue(
-                        signMaterial, defaultSignColorHue, false)));
-            }
+            String defaultColorString = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR);
+            this.defaultTextColor = ColorNameInterpreter.getDefaultTextColor(defaultColorString);
+            this.defaultPointerColor = ColorNameInterpreter.getDefaultPointerColor(defaultColorString);
+            this.defaultDyeColor = ColorConverter.getClosestDyeColor(defaultTextColor);
         } catch (IllegalArgumentException | NullPointerException e) {
             Stargate.log(e);
             Stargate.log(Level.WARNING, "Invalid colors for sign text. Using default colors instead...");
@@ -476,15 +460,14 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
      * @throws SQLException                  <p>If unable to initialize the Portal Database API</p>
      */
     private boolean migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException, StargateInitializationException {
-        DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), CONFIG_FILE),
-                this.getServer(), this.getStoredPropertiesAPI());
+        DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), CONFIG_FILE), this.getServer(), this.getStoredPropertiesAPI());
 
         if (dataMigrator.isMigrationNecessary()) {
             File debugDirectory = new File(this.getDataFolder(), "debug");
-            if(!debugDirectory.isDirectory() && !debugDirectory.mkdir()){
+            if (!debugDirectory.isDirectory() && !debugDirectory.mkdir()) {
                 throw new IOException("Could not create directory: " + debugDirectory);
             }
-            FileUtils.copyFile(new File(this.getDataFolder(),CONFIG_FILE), new File(debugDirectory, CONFIG_FILE + ".old"));
+            FileUtils.copyFile(new File(this.getDataFolder(), CONFIG_FILE), new File(debugDirectory, CONFIG_FILE + ".old"));
             Map<String, Object> updatedConfig = dataMigrator.getUpdatedConfig();
             this.saveResource(CONFIG_FILE, true);
             this.reloadConfig();
@@ -592,8 +575,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             Messenger messenger = Bukkit.getMessenger();
 
             messenger.registerOutgoingPluginChannel(this, PluginChannel.BUNGEE.getChannel());
-            messenger.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(),
-                    new StargateBungeePluginMessageListener(getBungeeManager()));
+            messenger.registerIncomingPluginChannel(this, PluginChannel.BUNGEE.getChannel(), new StargateBungeePluginMessageListener(getBungeeManager()));
         }
     }
 

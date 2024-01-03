@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.util.colors;
+package org.sgrewritten.stargate.colors;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Color;

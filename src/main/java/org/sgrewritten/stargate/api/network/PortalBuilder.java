@@ -30,11 +30,9 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.LocalisedMessageException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.util.EconomyHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
@@ -188,7 +186,7 @@ public class PortalBuilder {
             Block signBlock = gateAPI.getLocation(portalPosition.getRelativePositionLocation()).getBlock();
             if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
                 Sign sign = (Sign) signBlock.getState();
-                sign.setColor(Stargate.getDefaultSignDyeColor(signBlock.getType()));
+                sign.setColor(Stargate.getDefaultDyeColor());
                 sign.update();
             }
         });

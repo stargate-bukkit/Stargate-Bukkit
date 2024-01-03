@@ -33,7 +33,7 @@ import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
-import org.sgrewritten.stargate.util.colors.ColorConverter;
+import org.sgrewritten.stargate.colors.ColorConverter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

@@ -1,13 +1,55 @@
-package org.sgrewritten.stargate.util.colors;
+package org.sgrewritten.stargate.colors;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.util.FileHelper;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ColorNameInterpreter {
+
+    public static ChatColor getDefaultPointerColor(String defaultString) {
+        try {
+            DyeColor dyeColor = DyeColor.valueOf(defaultString.toUpperCase());
+            return fetchDefaultColorFromDyeColor(dyeColor, true);
+        } catch (IllegalArgumentException e) {
+            ChatColor chatColor = getColor(defaultString);
+            return ColorConverter.getInvertedChatColor(chatColor);
+        } catch (IOException e) {
+            Stargate.log(e);
+        }
+        return null;
+    }
+
+    public static ChatColor getDefaultTextColor(String defaultString) {
+        try {
+            DyeColor dyeColor = DyeColor.valueOf(defaultString.toUpperCase());
+            return fetchDefaultColorFromDyeColor(dyeColor, false);
+        } catch (IllegalArgumentException e) {
+            return getColor(defaultString);
+        } catch (IOException e) {
+            Stargate.log(e);
+        }
+        return null;
+    }
+
+
+    private static ChatColor fetchDefaultColorFromDyeColor(DyeColor dyeColor, boolean isPointer) throws IOException {
+        ChatColor output;
+        if (isPointer) {
+            output = ColorRegistry.POINTER_COLORS.get(dyeColor);
+        } else {
+            output = ColorRegistry.TEXT_COLORS.get(dyeColor);
+        }
+        if(output == null) {
+            throw new UnsupportedOperationException("Unsupported dye color: " + dyeColor);
+        }
+        return output;
+    }
+
 
     /**
      * Determine a possible color based out of a string

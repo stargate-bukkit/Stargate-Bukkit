@@ -5,6 +5,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+import org.sgrewritten.stargate.colors.ColorRegistry;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.Network;
@@ -12,8 +13,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
-import org.sgrewritten.stargate.util.colors.ColorConverter;
-import org.sgrewritten.stargate.util.colors.ColorProperty;
+import org.sgrewritten.stargate.colors.ColorConverter;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -25,8 +25,6 @@ public class LineColorFormatter implements LineFormatter {
     private static final ChatColor ERROR_COLOR = ChatColor.RED;
     private final DyeColor dyeColor;
     private final Material signMaterial;
-    private final Map<PortalFlag, ChatColor> flagColors;
-
     private final ChatColor color;
     private final ChatColor pointerColor;
 
@@ -43,8 +41,6 @@ public class LineColorFormatter implements LineFormatter {
 
         color = this.getColor();
         pointerColor = this.getPointerColor();
-
-        flagColors = compileFlagColors();
     }
 
     @Override
@@ -111,7 +107,7 @@ public class LineColorFormatter implements LineFormatter {
         if (shouldUseDyeColor()) {
             return ColorConverter.getChatColorFromDyeColor(dyeColor);
         }
-        return ColorProperty.getColorFromHue(this.signMaterial, Stargate.getDefaultSignHue(), false);
+        return Stargate.getDefaultTextColor();
     }
 
     /**
@@ -127,16 +123,16 @@ public class LineColorFormatter implements LineFormatter {
             return ColorConverter.getChatColorFromDyeColor(dyeColor);
         }
         if (ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 3) {
-            return ColorProperty.getColorFromHue(this.signMaterial, Stargate.getDefaultSignHue(), true);
+            return Stargate.getDefaultPointerColor();
         }
-        return ColorProperty.getColorFromHue(this.signMaterial, Stargate.getDefaultSignHue(), false);
+        return Stargate.getDefaultTextColor();
     }
 
     /**
      * @return <p> If the default color should not be applied </p>
      */
     private boolean shouldUseDyeColor() {
-        return (dyeColor != null && dyeColor != Stargate.getDefaultSignDyeColor(signMaterial));
+        return (dyeColor != null && dyeColor != Stargate.getDefaultDyeColor());
     }
 
     /**
@@ -153,26 +149,13 @@ public class LineColorFormatter implements LineFormatter {
             return null;
         }
         if (portal instanceof VirtualPortal) {
-            return flagColors.get(PortalFlag.FANCY_INTER_SERVER);
+            return ColorRegistry.FLAG_COLORS.get(PortalFlag.FANCY_INTER_SERVER);
         }
         for (PortalFlag flag : flagPriority) {
             if (portal.hasFlag(flag)) {
-                return flagColors.get(flag);
+                return ColorRegistry.FLAG_COLORS.get(flag);
             }
         }
         return null;
-    }
-
-    /**
-     * Compile a map of all the flag-colors, good idea to use, as it avoids having to convert too much between hsb and rgb
-     *
-     * @return <p> A map of all the flag-colors </p>
-     */
-    private Map<PortalFlag, ChatColor> compileFlagColors() {
-        Map<PortalFlag, ChatColor> flagColors = new EnumMap<>(PortalFlag.class);
-        for (PortalFlag key : ColorProperty.getFlagColorHues().keySet()) {
-            flagColors.put(key, ColorProperty.getColorFromHue(this.signMaterial, ColorProperty.getFlagColorHues().get(key), false));
-        }
-        return flagColors;
     }
 }

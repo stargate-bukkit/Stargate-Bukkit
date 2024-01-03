@@ -1,0 +1,87 @@
+[
+  {
+    "color": "BROWN",
+    "text": "cfbc9d",
+    "pointer": "ce5204"
+  },
+  {
+    "color": "CYAN",
+    "text": "8edac0",
+    "pointer": "00a0a4"
+  },
+  {
+    "color": "BLUE",
+    "text": "8e9ada",
+    "pointer": "0022a4"
+  },
+  {
+    "color": "LIGHT_BLUE",
+    "text": "8ec0da",
+    "pointer": "007aa4"
+  },
+  {
+    "color": "GREEN",
+    "text": "6dec55",
+    "pointer": "00ec03"
+  },
+  {
+    "color": "LIME",
+    "text": "b9ffb0",
+    "pointer": "a6ff00"
+  },
+  {
+    "color": "YELLOW",
+    "text": "faf584",
+    "pointer": "bcd000"
+  },
+  {
+    "color": "ORANGE",
+    "text": "ffca88",
+    "pointer": "d03a00"
+  },
+  {
+    "color": "MAGENTA",
+    "text": "e077fa",
+    "pointer": "7b00a7"
+  },
+  {
+    "color": "PURPLE",
+    "text": "b395fd",
+    "pointer": "3000a7"
+  },
+  {
+    "color": "PINK",
+    "text": "fd96c0",
+    "pointer": "a70084"
+  },
+  {
+    "color": "BROWN",
+    "text": "cfbc9d",
+    "pointer": "ce5204"
+  },
+  {
+    "color": "RED",
+    "text": "ea6464",
+    "pointer": "a70000"
+  },
+  {
+    "color": "GRAY",
+    "text": "aeaeae",
+    "pointer": "000000"
+  },
+  {
+    "color": "LIGHT_GRAY",
+    "text": "e6e6e6",
+    "pointer": "575757"
+  },
+  {
+    "color": "BLACK",
+    "text": "000000",
+    "pointer" : "ffffff"
+  },
+  {
+    "color": "WHITE",
+    "text": "ffffff",
+    "pointer" : "7a7a7a"
+  }
+]
