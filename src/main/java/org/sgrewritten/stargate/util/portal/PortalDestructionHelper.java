@@ -14,6 +14,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
+import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.util.EconomyHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
 
@@ -66,7 +67,7 @@ public final class PortalDestructionHelper {
             MessageUtils.sendMessageFromPortal(portal, player, message, MessageType.DENY);
             return true;
         }
-        Bukkit.getScheduler().runTaskAsynchronously(Stargate.getInstance(), destroyAction);
+        ThreadHelper.callAsynchronously(destroyAction);
         return false;
     }
 

@@ -11,6 +11,7 @@ import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.BlockEventType;
+import org.sgrewritten.stargate.thread.ThreadHelper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,7 +35,7 @@ public class BlockEventHelper {
             return false;
         }
         if (type.canDestroyPortal()) {
-            stargateAPI.getNetworkManager().destroyPortal(portal);
+            ThreadHelper.callAsynchronously(() -> stargateAPI.getNetworkManager().destroyPortal(portal));
             return true;
         } else {
             event.setCancelled(true);
@@ -88,7 +89,7 @@ public class BlockEventHelper {
             }
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(Stargate.getInstance(), () -> {
+        ThreadHelper.callAsynchronously(() -> {
             for (RealPortal portal : affectedPortals) {
                 stargateAPI.getNetworkManager().destroyPortal(portal);
                 Stargate.log(Level.FINER, String.format("Broke portal %s in network %s from a multiple block change event",

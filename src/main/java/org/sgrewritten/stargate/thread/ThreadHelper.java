@@ -4,7 +4,12 @@ import org.bukkit.Bukkit;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.SupplierAction;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 public class ThreadHelper {
+    private static final BlockingQueue<Runnable> asyncQueue = new LinkedBlockingQueue<>();
+    private static boolean asyncQueueThreadIsEnabled;
 
     /**
      * Makes sure that the runnable is always called syncronously.
@@ -26,13 +31,45 @@ public class ThreadHelper {
 
     /**
      * Run the task in this thread if not in primary thread, otherwise start a new async thread
+     *
      * @param runnable <p>The runnable to run</p>
      */
-    public static void callAsynchronously(Runnable runnable){
+    public static void callAsynchronously(Runnable runnable) {
         if (!Bukkit.isPrimaryThread()) {
             runnable.run();
         } else {
-            Bukkit.getScheduler().runTaskAsynchronously(Stargate.getInstance(), runnable);
+            runAsyncTask(runnable);
         }
+    }
+
+    private static void runAsyncTask(Runnable runnable) {
+        try {
+            asyncQueue.put(runnable);
+        } catch (InterruptedException e) {
+            Stargate.log(e);
+        }
+    }
+
+    public static void cycleThroughAsyncQueue() {
+        asyncQueueThreadIsEnabled = true;
+        try {
+            while (asyncQueueThreadIsEnabled) {
+                try {
+                    Runnable runnable = asyncQueue.take();
+                    runnable.run();
+                } catch (InterruptedException e) {
+                    throw e;
+                } catch (Exception e) {
+                    Stargate.log(e);
+                }
+            }
+        } catch (InterruptedException ignored) {
+        }
+    }
+
+    public static void disableAsyncQueue() {
+        asyncQueueThreadIsEnabled = false;
+        // escape the BlockedQueue#take() waiting thread
+        runAsyncTask(()->{});
     }
 }

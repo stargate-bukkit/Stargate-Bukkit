@@ -31,6 +31,7 @@ import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.action.SimpleAction;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
@@ -75,6 +76,7 @@ import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
+import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.util.BStatsHelper;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.FileHelper;
@@ -153,6 +155,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private ChatColor defaultTextColor;
     private ChatColor defaultPointerColor;
     private DyeColor defaultDyeColor;
+    private BukkitTask asyncCycleThroughTask;
 
 
     @Override
@@ -182,6 +185,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             BukkitScheduler scheduler = getServer().getScheduler();
             scheduler.runTaskTimer(this, synchronousTickPopulator, 0L, 1L);
             scheduler.runTaskTimer(this, syncSecPopulator, 0L, 20L);
+            this.asyncCycleThroughTask = scheduler.runTaskAsynchronously(this, ThreadHelper::cycleThroughAsyncQueue);
             registerCommands();
 
             //Register bStats metrics
@@ -608,6 +612,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
          */
         synchronousTickPopulator.clear();
         syncSecPopulator.clear();
+        ThreadHelper.disableAsyncQueue();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             Messenger messenger = Bukkit.getMessenger();
             messenger.unregisterOutgoingPluginChannel(this);
