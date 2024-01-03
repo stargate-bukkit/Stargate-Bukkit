@@ -159,7 +159,7 @@ chargeFreeDestination: true
 signFormatting:
   # The default text color on all stargate signs (brightness shifts based on sign material)
   # A list of valid colors can be found at https://sgrewritten.org/colorNames
-  color: BLACK
+  color: BLUE
   # SG highlights players' selected destinations with a pointer symbol as users scroll.
   # How should SG style its pointer symbol? (https://sgrewritten.org/pointerInfo)
   #  Options:
