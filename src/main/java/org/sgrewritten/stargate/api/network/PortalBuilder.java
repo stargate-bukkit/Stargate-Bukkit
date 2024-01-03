@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Tag;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
@@ -41,6 +43,7 @@ import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
 import org.sgrewritten.stargate.util.VectorUtils;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -182,14 +185,7 @@ public class PortalBuilder {
         //Save the portal and inform the user
         stargateAPI.getNetworkManager().savePortal(portal, network);
 
-        gateAPI.getPortalPositions().stream().filter((portalPosition) -> portalPosition.getPositionType() == PositionType.SIGN).forEach((portalPosition) -> {
-            Block signBlock = gateAPI.getLocation(portalPosition.getRelativePositionLocation()).getBlock();
-            if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
-                Sign sign = (Sign) signBlock.getState();
-                sign.setColor(Stargate.getDefaultDyeColor());
-                sign.update();
-            }
-        });
+        portal.setSignColor(Stargate.getDefaultDyeColor());
         Stargate.log(Level.FINE, "Successfully created a new portal");
         String msg;
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {

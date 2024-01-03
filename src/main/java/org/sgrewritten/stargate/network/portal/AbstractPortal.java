@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -414,7 +415,6 @@ public abstract class AbstractPortal implements RealPortal {
         if (!(colorDrawer instanceof NoLineColorFormatter) && changedColor == null) {
             return;
         }
-
         for (PortalPosition portalPosition : gate.getPortalPositions()) {
             if(portalPosition.getPositionType() != PositionType.SIGN){
                 continue;
@@ -444,6 +444,14 @@ public abstract class AbstractPortal implements RealPortal {
         }
         // Has to be done one tick later to avoid a bukkit bug
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
+            gate.getPortalPositions().stream().filter((portalPosition) -> portalPosition.getPositionType() == PositionType.SIGN).forEach((portalPosition) -> {
+                Block signBlock = gate.getLocation(portalPosition.getRelativePositionLocation()).getBlock();
+                if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
+                    Sign sign = (Sign) signBlock.getState();
+                    sign.setColor(Stargate.getDefaultDyeColor());
+                    sign.update();
+                }
+            });
             SignLine[] lines = this.getDrawnControlLines();
             getGate().drawControlMechanisms(lines,!hasFlag(PortalFlag.ALWAYS_ON));
             return true;
