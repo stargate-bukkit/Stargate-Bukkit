@@ -1,28 +1,22 @@
 package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Tag;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.BlockSetAction;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
-import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
+import org.sgrewritten.stargate.api.event.portal.AsyncStargateCreatePortalEvent;
+import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateBuilder;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
@@ -43,7 +37,6 @@ import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
 import org.sgrewritten.stargate.util.VectorUtils;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -197,7 +190,7 @@ public class PortalBuilder {
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
             msg = msg + " " + stargateAPI.getLanguageManager().getString(TranslatableMessage.UNIMPLEMENTED_INTER_SERVER);
         }
-        MessageUtils.sendMessageFromPortal(portal, messageTarget, msg, StargateSendMessagePortalEvent.MessageType.CREATE);
+        MessageUtils.sendMessageFromPortal(portal, messageTarget, msg, MessageType.CREATE);
         return portal;
     }
 
@@ -219,7 +212,7 @@ public class PortalBuilder {
         if (economyTarget != null && EconomyHelper.shouldChargePlayer(economyTarget, portal, BypassPermission.COST_CREATE) &&
                 !stargateAPI.getEconomyManager().chargePlayer(economyTarget, null, cost)) {
             String message = stargateAPI.getLanguageManager().getErrorMessage(TranslatableMessage.LACKING_FUNDS);
-            throw new LocalisedMessageException(message, portal, StargateSendMessagePortalEvent.MessageType.DENY);
+            throw new LocalisedMessageException(message, portal, MessageType.DENY);
         }
     }
 
@@ -252,10 +245,10 @@ public class PortalBuilder {
             if (hasPermission) {
                 return;
             }
-            throw new LocalisedMessageException(permissionManager.getDenyMessage(), portal, StargateSendMessagePortalEvent.MessageType.DENY);
+            throw new LocalisedMessageException(permissionManager.getDenyMessage(), portal, MessageType.DENY);
         }
         String[] lines = new String[]{this.portalName, destinationName == null ? "" : destinationName, network.getName(), flagsString};
-        StargateCreatePortalEvent portalCreateEvent = new StargateCreatePortalEvent(eventTarget, portal, lines, !hasPermission, permissionManager == null ? "" : permissionManager.getDenyMessage(), cost);
+        AsyncStargateCreatePortalEvent portalCreateEvent = new AsyncStargateCreatePortalEvent(eventTarget, portal, lines, !hasPermission, permissionManager == null ? "" : permissionManager.getDenyMessage(), cost);
         Bukkit.getPluginManager().callEvent(portalCreateEvent);
         Stargate.log(Level.CONFIG, " player has permission = " + hasPermission);
 
@@ -268,7 +261,7 @@ public class PortalBuilder {
             } else if (!portalCreateEvent.getDenyReason().isEmpty()) {
                 message = portalCreateEvent.getDenyReason();
             }
-            throw new LocalisedMessageException(message, portal, StargateSendMessagePortalEvent.MessageType.DENY);
+            throw new LocalisedMessageException(message, portal, MessageType.DENY);
         }
     }
 

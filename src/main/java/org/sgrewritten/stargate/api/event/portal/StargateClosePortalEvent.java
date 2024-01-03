@@ -23,7 +23,7 @@ public class StargateClosePortalEvent extends CancellableStargatePortalEvent {
      * @param force  <p>Whether to force the gate to close, even if set as always-on</p>
      */
     public StargateClosePortalEvent(@NotNull Portal portal, boolean force) {
-        super(portal);
+        super(portal, false);
 
         this.force = force;
     }

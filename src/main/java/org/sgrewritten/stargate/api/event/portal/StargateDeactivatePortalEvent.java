@@ -21,7 +21,7 @@ public class StargateDeactivatePortalEvent extends StargatePortalEvent {
      * @param portal <p>The portal which was deactivated</p>
      */
     public StargateDeactivatePortalEvent(Portal portal) {
-        super(portal);
+        super(portal, false);
     }
 
     /**

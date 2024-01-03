@@ -15,20 +15,20 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.DelayedAction;
 import org.sgrewritten.stargate.action.SimpleAction;
 import org.sgrewritten.stargate.action.SupplierAction;
-import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.event.portal.StargateTeleportPortalEvent;
+import org.sgrewritten.stargate.api.event.portal.message.MessageType;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.api.event.portal.StargateTeleportPortalEvent;
-import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.util.MessageUtils;
-import org.sgrewritten.stargate.util.portal.TeleportationHelper;
 import org.sgrewritten.stargate.util.VectorUtils;
+import org.sgrewritten.stargate.util.portal.TeleportationHelper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -391,7 +391,7 @@ public class Teleporter {
         target.teleport(exitPoint);
         boatsTeleporting.remove(target);
         if (origin != null && !origin.hasFlag(PortalFlag.SILENT)) {
-            MessageUtils.sendMessageFromPortal(origin,target,teleportMessage,StargateSendMessagePortalEvent.MessageType.DENY);
+            MessageUtils.sendMessageFromPortal(origin, target, teleportMessage, MessageType.DENY);
         }
     }
 

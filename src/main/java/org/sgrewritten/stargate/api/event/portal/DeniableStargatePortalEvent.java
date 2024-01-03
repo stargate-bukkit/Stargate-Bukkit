@@ -21,8 +21,8 @@ public abstract class DeniableStargatePortalEvent extends StargateEntityPortalEv
      * @param deny             <p>Whether the stargate access should be denied</p>
      * @param denyReason       <p>The reason stargate access was denied</p>
      */
-    DeniableStargatePortalEvent(Portal portal, Entity travellingEntity, boolean deny, String denyReason) {
-        super(portal, travellingEntity);
+    DeniableStargatePortalEvent(Portal portal, Entity travellingEntity, boolean deny, String denyReason, boolean async) {
+        super(portal, travellingEntity, async);
         this.deny = deny;
         this.denyReason = denyReason;
     }

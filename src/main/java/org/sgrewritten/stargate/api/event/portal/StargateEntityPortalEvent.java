@@ -17,8 +17,8 @@ public abstract class StargateEntityPortalEvent extends StargatePortalEvent {
      * @param portal           <p>The portal involved in this stargate event</p>
      * @param travellingEntity <p>The entity travelling through a portal</p>
      */
-    StargateEntityPortalEvent(Portal portal, Entity travellingEntity) {
-        super(portal);
+    StargateEntityPortalEvent(Portal portal, Entity travellingEntity, boolean async) {
+        super(portal, async);
 
         this.travellingEntity = travellingEntity;
     }

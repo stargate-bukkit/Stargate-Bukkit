@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.util;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -87,10 +88,12 @@ public class BlockEventHelper {
             }
         }
 
-        for (RealPortal portal : affectedPortals) {
-            stargateAPI.getNetworkManager().destroyPortal(portal);
-            Stargate.log(Level.FINER, String.format("Broke portal %s in network %s from a multiple block change event",
-                    portal.getName(), portal.getNetwork().getName()));
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(Stargate.getInstance(), () -> {
+            for (RealPortal portal : affectedPortals) {
+                stargateAPI.getNetworkManager().destroyPortal(portal);
+                Stargate.log(Level.FINER, String.format("Broke portal %s in network %s from a multiple block change event",
+                        portal.getName(), portal.getNetwork().getName()));
+            }
+        });
     }
 }

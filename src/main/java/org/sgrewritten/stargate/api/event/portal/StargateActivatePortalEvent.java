@@ -30,7 +30,7 @@ public class StargateActivatePortalEvent extends StargateEntityPortalEvent {
      */
     public StargateActivatePortalEvent(@NotNull Portal portal, @NotNull Entity entity, @NotNull List<String> destinations,
                                        String destination) {
-        super(portal, entity);
+        super(portal, entity, false);
 
         this.destinations = destinations;
         this.destination = destination;

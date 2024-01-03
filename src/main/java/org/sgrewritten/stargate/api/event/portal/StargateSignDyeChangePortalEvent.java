@@ -19,7 +19,7 @@ public class StargateSignDyeChangePortalEvent extends StargatePortalEvent {
      * @param portal <p>The portal involved in this stargate event</p>
      */
     public StargateSignDyeChangePortalEvent(@NotNull Portal portal, DyeColor colorChange, Location location, PortalPosition portalPosition) {
-        super(portal);
+        super(portal, false);
         this.colorChange = colorChange;
         this.location = location;
         this.portalPosition = portalPosition;

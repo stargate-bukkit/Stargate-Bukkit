@@ -30,7 +30,7 @@ public class StargateOpenPortalEvent extends StargateEntityPortalEvent implement
      * @param force  <p>Whether to force the portal open</p>
      */
     public StargateOpenPortalEvent(Player player, @NotNull Portal portal, @Nullable Portal destination, boolean cancelled, boolean force) {
-        super(portal, player);
+        super(portal, player, false);
 
         this.force = force;
         this.cancelled = cancelled;

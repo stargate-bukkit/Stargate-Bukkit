@@ -19,6 +19,8 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.DelayedAction;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.event.portal.*;
+import org.sgrewritten.stargate.api.event.portal.message.AsyncStargateSendMessagePortalEvent;
+import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.portal.*;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
@@ -33,7 +35,6 @@ import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
@@ -45,13 +46,13 @@ import org.sgrewritten.stargate.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.NoLineColorFormatter;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
+import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 
 /**
@@ -372,18 +373,18 @@ public abstract class AbstractPortal implements RealPortal {
 
         Portal destination = getDestination();
         String message = null;
-        StargateSendMessagePortalEvent.MessageType messageType = null;
+        MessageType messageType = null;
         boolean cancelled = false;
 
         if (destination == null) {
             message = languageManager.getErrorMessage(TranslatableMessage.INVALID);
-            messageType = StargateSendMessagePortalEvent.MessageType.DESTINATION_EMPTY;
+            messageType = MessageType.DESTINATION_EMPTY;
             cancelled = true;
         }
         StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
         if (!permissionManager.hasOpenPermissions(this, destination)) {
             message = permissionManager.getDenyMessage();
-            messageType = StargateSendMessagePortalEvent.MessageType.DENY;
+            messageType = MessageType.DENY;
             cancelled = true;
         }
         StargateOpenPortalEvent stargateOpenEvent = new StargateOpenPortalEvent(player, this, destination,cancelled,false);
@@ -404,7 +405,15 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public void setSignColor(@Nullable DyeColor changedColor) {
+    public void setSignColor(@Nullable DyeColor changedColor){
+        ThreadHelper.callSynchronously(() -> setSignColorSync(changedColor));
+    }
+
+    /**
+     * Needs to be called synchronously
+     * @param changedColor <p>Color to change the sign text to. If null, then the default color will be used</p>
+     */
+    private void setSignColorSync(@Nullable DyeColor changedColor) {
 
         /* NoLineColorFormatter should only be used during startup, this means
          * that if it has already been changed, and if there's no color to change to,
@@ -444,14 +453,16 @@ public abstract class AbstractPortal implements RealPortal {
         }
         // Has to be done one tick later to avoid a bukkit bug
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            gate.getPortalPositions().stream().filter((portalPosition) -> portalPosition.getPositionType() == PositionType.SIGN).forEach((portalPosition) -> {
-                Block signBlock = gate.getLocation(portalPosition.getRelativePositionLocation()).getBlock();
-                if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
-                    Sign sign = (Sign) signBlock.getState();
-                    sign.setColor(Stargate.getDefaultDyeColor());
-                    sign.update();
-                }
-            });
+            if(changedColor != null) {
+                gate.getPortalPositions().stream().filter((portalPosition) -> portalPosition.getPositionType() == PositionType.SIGN).forEach((portalPosition) -> {
+                    Block signBlock = gate.getLocation(portalPosition.getRelativePositionLocation()).getBlock();
+                    if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
+                        Sign sign = (Sign) signBlock.getState();
+                        sign.setColor(Stargate.getDefaultDyeColor());
+                        sign.update();
+                    }
+                });
+            }
             SignLine[] lines = this.getDrawnControlLines();
             getGate().drawControlMechanisms(lines,!hasFlag(PortalFlag.ALWAYS_ON));
             return true;
@@ -526,7 +537,7 @@ public abstract class AbstractPortal implements RealPortal {
                 permissionManager.getDenyMessage());
         Bukkit.getPluginManager().callEvent(accessEvent);
         if (accessEvent.getDeny()) {
-            MessageUtils.sendMessageFromPortal(this,event.getPlayer(),accessEvent.getDenyReason(),StargateSendMessagePortalEvent.MessageType.DENY);
+            MessageUtils.sendMessageFromPortal(this,event.getPlayer(),accessEvent.getDenyReason(), MessageType.DENY);
             return;
         }
 

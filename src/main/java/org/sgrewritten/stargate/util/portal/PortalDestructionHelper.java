@@ -2,17 +2,18 @@ package org.sgrewritten.stargate.util.portal;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
-import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.api.event.portal.StargateDestroyPortalEvent;
+import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
+import org.sgrewritten.stargate.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.util.EconomyHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
 
@@ -50,7 +51,7 @@ public final class PortalDestructionHelper {
             } else if (!portalDestroyEvent.getDenyReason().isEmpty()) {
                 message = portalDestroyEvent.getDenyReason();
             }
-            MessageUtils.sendMessageFromPortal(portal,player,message, StargateSendMessagePortalEvent.MessageType.DENY);
+            MessageUtils.sendMessageFromPortal(portal, player, message, MessageType.DENY);
             return true;
         }
 
@@ -62,10 +63,10 @@ public final class PortalDestructionHelper {
         if (EconomyHelper.shouldChargePlayer(player, portal, BypassPermission.COST_DESTROY)
                 && !economyManager.chargePlayer(player, null, portalDestroyEvent.getCost())) {
             String message = languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
-            MessageUtils.sendMessageFromPortal(portal,player,message, StargateSendMessagePortalEvent.MessageType.DENY);
+            MessageUtils.sendMessageFromPortal(portal, player, message, MessageType.DENY);
             return true;
         }
-        destroyAction.run();
+        Bukkit.getScheduler().runTaskAsynchronously(Stargate.getInstance(), destroyAction);
         return false;
     }
 

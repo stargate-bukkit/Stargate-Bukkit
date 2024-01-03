@@ -1,10 +1,9 @@
 package org.sgrewritten.stargate.exception;
 
 import org.jetbrains.annotations.Nullable;
-import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
+import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 
 public class LocalisedMessageException extends TranslatableException {
@@ -12,13 +11,13 @@ public class LocalisedMessageException extends TranslatableException {
 
     private final String localizedMessage;
     private final Portal portal;
-    private final StargateSendMessagePortalEvent.MessageType messageType;
+    private final MessageType messageType;
 
     public LocalisedMessageException(String localizedMessage) {
         this(localizedMessage, null, null);
     }
 
-    public LocalisedMessageException(String localizedMessage, @Nullable Portal portal, @Nullable StargateSendMessagePortalEvent.MessageType messageType) {
+    public LocalisedMessageException(String localizedMessage, @Nullable Portal portal, @Nullable MessageType messageType) {
         super(localizedMessage);
         this.localizedMessage = localizedMessage;
         this.portal = portal;
@@ -35,11 +34,11 @@ public class LocalisedMessageException extends TranslatableException {
         return this.localizedMessage;
     }
 
-    public @Nullable Portal getPortal(){
+    public @Nullable Portal getPortal() {
         return this.portal;
     }
 
-    public @Nullable StargateSendMessagePortalEvent.MessageType getMessageType(){
+    public @Nullable MessageType getMessageType() {
         return this.messageType;
     }
 }

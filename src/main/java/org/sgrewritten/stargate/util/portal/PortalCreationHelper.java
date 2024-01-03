@@ -1,38 +1,19 @@
 package org.sgrewritten.stargate.util.portal;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Tag;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.util.BlockVector;
-import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.event.portal.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.StargateAPI;
-import org.sgrewritten.stargate.api.gate.GateStructureType;
-import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
 import org.sgrewritten.stargate.exception.*;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.gate.Gate;
-import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.*;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.util.*;
-import org.sgrewritten.stargate.util.VectorUtils;
 
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * A helper class for creating new portals

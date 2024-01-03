@@ -16,7 +16,7 @@ public class StargateListPortalEvent extends DeniableStargatePortalEvent {
      * @param portal <p>The portal involved in this stargate event</p>
      */
     public StargateListPortalEvent(@NotNull Portal portal, Entity entity, Portal listedPortal, boolean deny) {
-        super(portal,entity, deny, "");
+        super(portal,entity, deny, "", false);
         this.listedPortal = listedPortal;
     }
 

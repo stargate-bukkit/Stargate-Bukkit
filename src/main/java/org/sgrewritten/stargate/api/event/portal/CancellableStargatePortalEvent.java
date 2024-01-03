@@ -17,8 +17,8 @@ public abstract class CancellableStargatePortalEvent extends StargatePortalEvent
      *
      * @param portal <p>The portal involved in this stargate event</p>
      */
-    CancellableStargatePortalEvent(@NotNull Portal portal) {
-        super(portal);
+    protected CancellableStargatePortalEvent(@NotNull Portal portal, boolean async) {
+        super(portal, async);
 
         this.cancelled = false;
     }

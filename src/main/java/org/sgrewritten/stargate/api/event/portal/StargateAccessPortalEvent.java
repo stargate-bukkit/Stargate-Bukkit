@@ -27,7 +27,7 @@ public class StargateAccessPortalEvent extends DeniableStargatePortalEvent {
      * @param denyReason       <p>The reason stargate access was denied</p>
      */
     public StargateAccessPortalEvent(Entity travellingEntity, Portal portal, boolean deny, String denyReason) {
-        super(portal, travellingEntity, deny, denyReason);
+        super(portal, travellingEntity, deny, denyReason, false);
     }
 
     /**

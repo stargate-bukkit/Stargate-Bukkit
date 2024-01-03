@@ -17,7 +17,8 @@ public abstract class StargatePortalEvent extends Event {
      *
      * @param portal <p>The portal involved in this stargate event</p>
      */
-    StargatePortalEvent(@NotNull Portal portal) {
+    StargatePortalEvent(@NotNull Portal portal, boolean async) {
+        super(async);
         this.portal = portal;
     }
 
