@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.api.event.portal.AsyncStargateCreatePortalEvent;
+import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateBuilder;
@@ -29,6 +29,7 @@ import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.util.EconomyHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
@@ -177,7 +178,6 @@ public class PortalBuilder {
         getLocationsAdjacentToPortal(gateAPI).forEach((position) -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(), position, List.of(portal), position.getBlock().getType(), eventTarget));
         //Save the portal and inform the user
         stargateAPI.getNetworkManager().savePortal(portal, network);
-
         portal.setSignColor(Stargate.getDefaultDyeColor());
         Stargate.log(Level.FINE, "Successfully created a new portal");
         String msg;
@@ -195,16 +195,18 @@ public class PortalBuilder {
     }
 
     private void finalChecks(RealPortal portal, Network network) {
-        //Warn the player if their portal is interfering with spawn protection
+        // Warn the player if their portal is interfering with spawn protection
         if (SpawnDetectionHelper.isInterferingWithSpawnProtection(gateAPI)) {
             messageTarget.sendMessage(stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
-
-        if (portal.hasFlag(PortalFlag.FANCY_INTER_SERVER) && messageTarget != null) {
-            Network inflictingNetwork = NetworkCreationHelper.getInterServerLocalConflict(network, stargateAPI.getRegistry());
-            messageTarget.sendMessage(TranslatableMessageFormatter.formatUnimplementedConflictMessage(network,
-                    inflictingNetwork, stargateAPI.getLanguageManager()));
-        }
+        ThreadHelper.callAsynchronously(() -> {
+            // Does https request, might as well do it async
+            if (portal.hasFlag(PortalFlag.FANCY_INTER_SERVER) && messageTarget != null) {
+                Network inflictingNetwork = NetworkCreationHelper.getInterServerLocalConflict(network, stargateAPI.getRegistry());
+                messageTarget.sendMessage(TranslatableMessageFormatter.formatUnimplementedConflictMessage(network,
+                        inflictingNetwork, stargateAPI.getLanguageManager()));
+            }
+        });
     }
 
     private void economyCheck(RealPortal portal) throws LocalisedMessageException {
@@ -248,7 +250,7 @@ public class PortalBuilder {
             throw new LocalisedMessageException(permissionManager.getDenyMessage(), portal, MessageType.DENY);
         }
         String[] lines = new String[]{this.portalName, destinationName == null ? "" : destinationName, network.getName(), flagsString};
-        AsyncStargateCreatePortalEvent portalCreateEvent = new AsyncStargateCreatePortalEvent(eventTarget, portal, lines, !hasPermission, permissionManager == null ? "" : permissionManager.getDenyMessage(), cost);
+        StargateCreatePortalEvent portalCreateEvent = new StargateCreatePortalEvent(eventTarget, portal, lines, !hasPermission, permissionManager == null ? "" : permissionManager.getDenyMessage(), cost);
         Bukkit.getPluginManager().callEvent(portalCreateEvent);
         Stargate.log(Level.CONFIG, " player has permission = " + hasPermission);
 

@@ -11,7 +11,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
  * <p>This event can be used to deny or change the cost of a stargate creation.</p>
  */
 @SuppressWarnings("unused")
-public class AsyncStargateCreatePortalEvent extends DeniableStargatePortalEvent {
+public class StargateCreatePortalEvent extends DeniableStargatePortalEvent {
 
     private static final HandlerList handlers = new HandlerList();
     private final String[] lines;
@@ -29,9 +29,9 @@ public class AsyncStargateCreatePortalEvent extends DeniableStargatePortalEvent 
      * @param denyReason <p>The reason stargate creation was denied</p>
      * @param cost       <p>The cost of creating the new star gate</p>
      */
-    public AsyncStargateCreatePortalEvent(@NotNull Player player, @NotNull Portal portal, @NotNull String[] lines, boolean deny,
-                                          String denyReason, double cost) {
-        super(portal, player, deny, denyReason, true);
+    public StargateCreatePortalEvent(@NotNull Player player, @NotNull Portal portal, @NotNull String[] lines, boolean deny,
+                                     String denyReason, double cost) {
+        super(portal, player, deny, denyReason, false);
 
         this.lines = lines;
         this.cost = cost;

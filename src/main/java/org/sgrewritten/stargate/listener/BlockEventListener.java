@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.listener;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Directional;
@@ -166,31 +165,33 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSignChange(SignChangeEvent event) {
-        Bukkit.getScheduler().runTaskAsynchronously(Stargate.getInstance(), () -> {
-            try {
-                Player player = event.getPlayer();
-                GateBuilder gateBuilder = new ImplicitGateBuilder(event.getBlock().getLocation(), registry);
-                PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, player, event.getLine(3), event.getLine(0), gateBuilder);
-                portalBuilder.setNetwork(event.getLine(2));
-                portalBuilder.addEventHandling(player).addMessageReceiver(player).addPermissionCheck(player).setCost(ConfigurationHelper.getDouble(ConfigurationOption.CREATION_COST), player);
-                portalBuilder.setDestination(event.getLine(1)).setAdaptiveGatePositionGeneration(true).setDestinationServerName(event.getLine(2));
-                portalBuilder.build();
-            } catch (NoFormatFoundException noFormatFoundException) {
-                Stargate.log(Level.FINER, "No Gate format matches");
-            } catch (GateConflictException gateConflictException) {
-                event.getPlayer().sendMessage(languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
-            } catch (LocalisedMessageException e) {
-                if (e.getPortal() != null) {
-                    MessageUtils.sendMessageFromPortal(e.getPortal(), event.getPlayer(), e.getLocalisedMessage(languageManager), e.getMessageType());
-                } else {
-                    MessageUtils.sendMessage(event.getPlayer(), e.getLocalisedMessage(languageManager));
-                }
-            } catch (TranslatableException e) {
-                event.getPlayer().sendMessage(e.getLocalisedMessage(languageManager));
-            } catch (InvalidStructureException e) {
-                throw new RuntimeException(e);
+        Player player = event.getPlayer();
+        String line0 = event.getLine(0);
+        String line1 = event.getLine(1);
+        String line2 = event.getLine(2);
+        String line3 = event.getLine(3);
+        try {
+            GateBuilder gateBuilder = new ImplicitGateBuilder(event.getBlock().getLocation(), registry);
+            PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, player, line3, line0, gateBuilder);
+            portalBuilder.setNetwork(line2);
+            portalBuilder.addEventHandling(player).addMessageReceiver(player).addPermissionCheck(player).setCost(ConfigurationHelper.getDouble(ConfigurationOption.CREATION_COST), player);
+            portalBuilder.setDestination(line1).setAdaptiveGatePositionGeneration(true).setDestinationServerName(line2);
+            portalBuilder.build();
+        } catch (NoFormatFoundException noFormatFoundException) {
+            Stargate.log(Level.FINER, "No Gate format matches");
+        } catch (GateConflictException gateConflictException) {
+            event.getPlayer().sendMessage(languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
+        } catch (LocalisedMessageException e) {
+            if (e.getPortal() != null) {
+                MessageUtils.sendMessageFromPortal(e.getPortal(), event.getPlayer(), e.getLocalisedMessage(languageManager), e.getMessageType());
+            } else {
+                MessageUtils.sendMessage(event.getPlayer(), e.getLocalisedMessage(languageManager));
             }
-        });
+        } catch (TranslatableException e) {
+            event.getPlayer().sendMessage(e.getLocalisedMessage(languageManager));
+        } catch (InvalidStructureException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

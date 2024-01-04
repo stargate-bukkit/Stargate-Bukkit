@@ -25,6 +25,7 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 
@@ -214,11 +215,13 @@ public class StargateNetworkManager implements NetworkManager {
     @Override
     public void savePortal(RealPortal portal, Network network) throws NameConflictException {
         network.addPortal(portal);
-        try {
-            storageAPI.savePortalToStorage(portal);
-        } catch (StorageWriteException e) {
-            Stargate.log(e);
-        }
+        ThreadHelper.callAsynchronously(()-> {
+                    try {
+                        storageAPI.savePortalToStorage(portal);
+                    } catch (StorageWriteException e) {
+                        Stargate.log(e);
+                    }
+                });
         network.getPluginMessageSender().sendCreatePortal(portal);
         network.updatePortals();
     }
