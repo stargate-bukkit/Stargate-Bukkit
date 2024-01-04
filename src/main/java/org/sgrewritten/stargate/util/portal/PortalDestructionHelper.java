@@ -67,7 +67,7 @@ public final class PortalDestructionHelper {
             MessageUtils.sendMessageFromPortal(portal, player, message, MessageType.DENY);
             return true;
         }
-        ThreadHelper.callAsynchronously(destroyAction);
+        destroyAction.run();
         return false;
     }
 

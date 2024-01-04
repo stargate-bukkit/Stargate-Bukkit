@@ -173,7 +173,7 @@ public class StargateNetworkManager implements NetworkManager {
         registry.updateName(network, newName);
         network.getPluginMessageSender().sendRenameNetwork(newName, oldName);
         try {
-            storageAPI.updateNetworkName(newName,oldName,network.getStorageType());
+            storageAPI.updateNetworkName(newName, oldName, network.getStorageType());
         } catch (StorageWriteException e) {
             Stargate.log(e);
         }
@@ -196,7 +196,7 @@ public class StargateNetworkManager implements NetworkManager {
     @Override
     public void rename(Portal portal, String newName) throws NameConflictException {
         Network network = portal.getNetwork();
-        if(network.isPortalNameTaken(newName)){
+        if (network.isPortalNameTaken(newName)) {
             throw new NameConflictException(String.format("Portal name %s is already used by another portal", newName), false);
         }
         try {
@@ -215,13 +215,13 @@ public class StargateNetworkManager implements NetworkManager {
     @Override
     public void savePortal(RealPortal portal, Network network) throws NameConflictException {
         network.addPortal(portal);
-        ThreadHelper.callAsynchronously(()-> {
-                    try {
-                        storageAPI.savePortalToStorage(portal);
-                    } catch (StorageWriteException e) {
-                        Stargate.log(e);
-                    }
-                });
+        ThreadHelper.callAsynchronously(() -> {
+            try {
+                storageAPI.savePortalToStorage(portal);
+            } catch (StorageWriteException e) {
+                Stargate.log(e);
+            }
+        });
         network.getPluginMessageSender().sendCreatePortal(portal);
         network.updatePortals();
     }
@@ -233,11 +233,13 @@ public class StargateNetworkManager implements NetworkManager {
         portal.destroy();
         registry.unregisterPortal(portal);
         network.updatePortals();
-        try {
-            storageAPI.removePortalFromStorage(portal);
-        } catch (StorageWriteException e) {
-            Stargate.log(e);
-        }
+        ThreadHelper.callAsynchronously(() -> {
+            try {
+                storageAPI.removePortalFromStorage(portal);
+            } catch (StorageWriteException e) {
+                Stargate.log(e);
+            }
+        });
         portal.getNetwork().getPluginMessageSender().sendDeletePortal(portal);
     }
 
