@@ -126,7 +126,7 @@ public class BlockEventListener implements Listener {
                 event.getPlayer().sendMessage(msg);
                 portalFromIris.destroy();
                 try {
-                    stargateAPI.getStorageAPI().removePortalFromStorage(portal);
+                    stargateAPI.getStorageAPI().removePortalFromStorage(null);
                 } catch (StorageWriteException e) {
                     Stargate.log(e);
                 }
@@ -147,7 +147,7 @@ public class BlockEventListener implements Listener {
                 stargateAPI)) {
             event.getPlayer().sendMessage(languageManager.getErrorMessage(TranslatableMessage.DESTROY));
         }
-        if (event.isCancelled() || !addonRegistry.hasRegisteredBlockHandler(event.getBlock().getType())) {
+        if (!addonRegistry.hasRegisteredBlockHandler(event.getBlock().getType())) {
             return;
         }
         List<RealPortal> portals = registry.getPortalsFromTouchingBlock(event.getBlock().getLocation(), GateStructureType.FRAME);

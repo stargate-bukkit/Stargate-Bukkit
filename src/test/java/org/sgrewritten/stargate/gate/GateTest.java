@@ -36,7 +36,7 @@ class GateTest {
     private String gateFileName;
 
     @BeforeEach
-    void setUp() throws InvalidStructureException, GateConflictException {
+    void setUp() {
         ServerMock server = MockBukkit.mock();
         this.world = server.addSimpleWorld("world");
         Location topLeft = new Location(world, 0, 6, 0);

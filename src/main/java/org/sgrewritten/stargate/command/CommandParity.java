@@ -100,10 +100,6 @@ public class CommandParity implements CommandExecutor {
         return true;
     }
 
-    private void migrateOldConfig() {
-
-    }
-
     private void downloadPlugin(URL source, File destination) throws IOException {
         if (destination.exists()) {
             return;

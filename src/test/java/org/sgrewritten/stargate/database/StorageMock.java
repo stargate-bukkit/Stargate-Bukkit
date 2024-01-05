@@ -21,11 +21,11 @@ import java.util.Stack;
 
 public class StorageMock implements StorageAPI {
 
-    Stack<ThreeTuple<RealPortal, StorageType, PortalPosition>> nextAddedPortalPosition = new Stack<>();
-    Stack<ThreeTuple<RealPortal, StorageType, PortalPosition>> nextRemovedPortalPosition = new Stack<>();
+    final Stack<ThreeTuple<RealPortal, StorageType, PortalPosition>> nextAddedPortalPosition = new Stack<>();
+    final Stack<ThreeTuple<RealPortal, StorageType, PortalPosition>> nextRemovedPortalPosition = new Stack<>();
 
     @Override
-    public void loadFromStorage(RegistryAPI registry, StargateAPI stargateAPI) throws StorageReadException {
+    public void loadFromStorage(RegistryAPI registry, StargateAPI stargateAPI) {
 
     }
 

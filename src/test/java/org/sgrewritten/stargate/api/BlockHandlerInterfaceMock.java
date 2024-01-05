@@ -17,12 +17,12 @@ import java.util.Map;
 
 public class BlockHandlerInterfaceMock implements BlockHandlerInterface {
 
-    private PositionType interfaceType;
-    private Material handledMaterial;
-    private Plugin plugin;
-    private Priority priority;
-    private Character flag;
-    private Map<BlockLocation, TwoTuple<Player, Portal>> registeredBlocks = new HashMap<>();
+    private final PositionType interfaceType;
+    private final Material handledMaterial;
+    private final Plugin plugin;
+    private final Priority priority;
+    private final Character flag;
+    private final Map<BlockLocation, TwoTuple<Player, Portal>> registeredBlocks = new HashMap<>();
     private boolean isRegisterPlacedBlock = true;
 
     public BlockHandlerInterfaceMock(PositionType interfaceType, Material handledMaterial, Plugin plugin, Priority priority, Character flag) {

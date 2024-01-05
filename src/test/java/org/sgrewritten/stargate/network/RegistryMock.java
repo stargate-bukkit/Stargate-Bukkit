@@ -16,11 +16,11 @@ import java.util.Map;
 import java.util.Stack;
 
 public class RegistryMock extends StargateRegistry {
-    Stack<TwoTuple<GateStructureType, BlockLocation>> previousUnregisteredLocations = new Stack<>();
-    Stack<ThreeTuple<GateStructureType, BlockLocation, RealPortal>> previousRegisteredLocations = new Stack<>();
+    final Stack<TwoTuple<GateStructureType, BlockLocation>> previousUnregisteredLocations = new Stack<>();
+    final Stack<ThreeTuple<GateStructureType, BlockLocation, RealPortal>> previousRegisteredLocations = new Stack<>();
 
-    Stack<PortalPosition> nextRegisteredPortalPosition = new Stack<>();
-    Stack<BlockLocation> nextUnRegisteredPortalPosition = new Stack<>();
+    final Stack<PortalPosition> nextRegisteredPortalPosition = new Stack<>();
+    final Stack<BlockLocation> nextUnRegisteredPortalPosition = new Stack<>();
 
     public RegistryMock() {
         super(new StorageMock(), new BlockHandlerResolver(new StorageMock()));

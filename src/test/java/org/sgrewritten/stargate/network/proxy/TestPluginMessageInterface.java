@@ -12,19 +12,15 @@ import java.util.Queue;
 
 public class TestPluginMessageInterface implements PluginMessageInterface {
 
-    Queue<TwoTuple<String, PluginChannel>> sentMessagesQueue = new ArrayDeque<>();
+    final Queue<TwoTuple<String, PluginChannel>> sentMessagesQueue = new ArrayDeque<>();
 
     @Override
     public void scheduleSendMessage(String message, PluginChannel channel) {
-        try {
-            this.sendMessage(message, channel, Stargate.getInstance());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.sendMessage(message, channel, Stargate.getInstance());
     }
 
     @Override
-    public void sendMessage(String dataMsg, PluginChannel pluginChannel, Plugin plugin) throws IOException {
+    public void sendMessage(String dataMsg, PluginChannel pluginChannel, Plugin plugin) {
         sentMessagesQueue.add(new TwoTuple<>(dataMsg, pluginChannel));
     }
 

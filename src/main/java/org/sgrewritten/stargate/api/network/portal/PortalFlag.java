@@ -121,7 +121,7 @@ public enum PortalFlag {
     private final static Map<Character, PortalFlag> map = new HashMap<>();
     private final boolean isSelector;
 
-    private static Pattern NON_FLAG_STRING = Pattern.compile("(\\{.*?\\})");
+    private static final Pattern NON_FLAG_STRING = Pattern.compile("(\\{.*?\\})");
 
     /**
      * Instantiates a new portal flag
@@ -159,7 +159,6 @@ public enum PortalFlag {
     /**
      * Gets all portal flags present in the given string
      *
-     * @param line <p>The string to search for portal flags</p>
      * @return <p>A set of all found portal flags</p>
      */
     public static Set<PortalFlag> parseFlags(String flagString) {

@@ -13,7 +13,7 @@ public class StargateSignFormatGateEvent extends StargateGateEvent {
     private static final HandlerList handlers = new HandlerList();
     private final PortalPosition portalPosition;
     private final Location location;
-    private SignLine[] lines;
+    private final SignLine[] lines;
 
     public StargateSignFormatGateEvent(@NotNull GateAPI gate, SignLine[] signLines, PortalPosition portalPosition, Location location) {
         super(gate);

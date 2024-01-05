@@ -18,10 +18,7 @@ public class ColorNameInterpreter {
         } catch (IllegalArgumentException e) {
             ChatColor chatColor = getColor(defaultString);
             return ColorConverter.getInvertedChatColor(chatColor);
-        } catch (IOException e) {
-            Stargate.log(e);
         }
-        return null;
     }
 
     public static ChatColor getDefaultTextColor(String defaultString) {
@@ -30,14 +27,11 @@ public class ColorNameInterpreter {
             return fetchDefaultColorFromDyeColor(dyeColor, false);
         } catch (IllegalArgumentException e) {
             return getColor(defaultString);
-        } catch (IOException e) {
-            Stargate.log(e);
         }
-        return null;
     }
 
 
-    private static ChatColor fetchDefaultColorFromDyeColor(DyeColor dyeColor, boolean isPointer) throws IOException {
+    private static ChatColor fetchDefaultColorFromDyeColor(DyeColor dyeColor, boolean isPointer) {
         ChatColor output;
         if (isPointer) {
             output = ColorRegistry.POINTER_COLORS.get(dyeColor);

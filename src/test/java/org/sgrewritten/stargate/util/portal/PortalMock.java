@@ -73,7 +73,7 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
-    public void setNetwork(Network targetNetwork) throws NameConflictException {
+    public void setNetwork(Network targetNetwork) {
 
     }
 

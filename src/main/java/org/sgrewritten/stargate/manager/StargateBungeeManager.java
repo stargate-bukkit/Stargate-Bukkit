@@ -53,9 +53,7 @@ public class StargateBungeeManager implements BungeeManager {
         String requestTypeString = json.get(StargateProtocolProperty.REQUEST_TYPE.toString()).getAsString();
         StargateProtocolRequestType requestType = StargateProtocolRequestType.valueOf(requestTypeString);
         switch (requestType) {
-            case PORTAL_ADD, PORTAL_REMOVE -> {
-                portalAddOrRemove(json, requestType);
-            }
+            case PORTAL_ADD, PORTAL_REMOVE -> portalAddOrRemove(json, requestType);
             case NETWORK_RENAME -> {
                 String oldId = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
                 String newId = json.get(StargateProtocolProperty.NEW_NETWORK_NAME.toString()).getAsString();

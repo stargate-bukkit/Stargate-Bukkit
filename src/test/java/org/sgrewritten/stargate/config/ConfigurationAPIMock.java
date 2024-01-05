@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigurationAPIMock implements ConfigurationAPI {
-    private Map<ConfigurationOption, Object> configuration = loadDefaultConfiguration();
+    private final Map<ConfigurationOption, Object> configuration = loadDefaultConfiguration();
 
     private static Map<ConfigurationOption, Object> loadDefaultConfiguration() {
         Map<ConfigurationOption, Object> config = new HashMap<>();

@@ -22,7 +22,7 @@ public class ColorNameInterpreterTest {
 
     @ParameterizedTest
     @MethodSource("getExpectedHues")
-    void hueGetterTest(TwoTuple<String, String> twoTuple) throws IOException {
+    void hueGetterTest(TwoTuple<String, String> twoTuple) {
         String expected = twoTuple.getFirstValue();
         String testString = twoTuple.getSecondValue();
         short expectedValue = Short.parseShort(expected);

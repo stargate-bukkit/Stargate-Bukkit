@@ -107,7 +107,7 @@ public interface RegistryAPI {
     boolean isNextToPortal(Location location, GateStructureType structureType);
 
     /**
-     * Get portal from block next to portal, will randomly chose one portal if block is
+     * Get portal from block next to portal, will randomly choose one portal if block is
      * next to two portals
      *
      * @param location

@@ -31,7 +31,6 @@ public class DataMigrator {
      *
      * @param configurationFile <p>The configuration file to migrate to a newer format</p>
      * @param server            <p>A server object</p>
-     * @param registry          <p>The registry that manages all portals</p>
      * @throws IOException                   <p>If unable to read or write to a file</p>
      * @throws InvalidConfigurationException <p>If unable to load the given configuration file</p>
      */

@@ -18,6 +18,6 @@ public enum PositionType {
     /**
      * A custom position type meant for addon use
      */
-    CUSTOM;
+    CUSTOM,
 
 }

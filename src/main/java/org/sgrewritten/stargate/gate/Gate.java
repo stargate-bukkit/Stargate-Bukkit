@@ -480,7 +480,7 @@ public class Gate implements GateAPI {
 
     @Override
     public void addPortalPosition(PortalPosition portalPosition) {
-        Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position %s", portalPosition.getPositionType().toString(), portalPosition.getRelativePositionLocation()));
+        Stargate.log(Level.FINEST, String.format("Adding portal position %s with relative position %s", portalPosition.getPositionType(), portalPosition.getRelativePositionLocation()));
         this.portalPositions.add(portalPosition);
     }
 

@@ -91,7 +91,6 @@ public class PlayerEventListener implements Listener {
      * Handles a right-click event that is known to be relevant
      *
      * @param block  <p>The block that was interacted with</p>
-     * @param portal <p>The portal the block belongs to</p>
      * @param event  <p>The player interact event to handle</p>
      */
     private void handleRelevantClickEvent(Block block, PortalPosition portalPosition, PlayerInteractEvent event) {

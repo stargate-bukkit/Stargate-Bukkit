@@ -8,7 +8,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 
 public class StargateSignDyeChangePortalEvent extends StargatePortalEvent {
-    private static HandlerList handlers = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
     private final DyeColor colorChange;
     private final Location location;
     private final PortalPosition portalPosition;

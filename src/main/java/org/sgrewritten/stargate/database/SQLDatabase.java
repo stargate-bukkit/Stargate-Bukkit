@@ -498,7 +498,6 @@ public class SQLDatabase implements StorageAPI {
     public void removePortalPosition(RealPortal portal, StorageType portalType, PortalPosition portalPosition) throws StorageWriteException {
         try (Connection connection = database.getConnection()) {
             DatabaseHelper.runStatement(sqlQueryGenerator.generateRemovePortalPositionStatement(connection, portalType, portal, portalPosition));
-            connection.close();
         } catch (SQLException e) {
             throw new StorageWriteException(e);
         }
@@ -558,7 +557,6 @@ public class SQLDatabase implements StorageAPI {
     public void updateNetworkName(String newName, String networkName, StorageType portalType) throws StorageWriteException {
 
         try (Connection connection = database.getConnection()) {
-            ;
             DatabaseHelper.runStatement(sqlQueryGenerator.generateUpdateNetworkNameStatement(connection, newName, networkName, portalType));
         } catch (SQLException e) {
             throw new StorageWriteException(e);

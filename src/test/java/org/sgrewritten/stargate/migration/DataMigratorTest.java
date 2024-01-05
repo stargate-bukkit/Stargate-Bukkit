@@ -224,12 +224,13 @@ public class DataMigratorTest {
     @ParameterizedTest
     @MethodSource("getTestedConfigNames")
     @Order(2)
-    public void doOtherRefactorCheck(String key) throws SQLException {
+    public void doOtherRefactorCheck(String key) {
         Stargate.log(Level.FINE,
                 String.format("####### Performing misc. refactoring based on the config-file %s%n", key));
         DataMigrator dataMigrator = migratorMap.get(key);
 
         ThreadHelper.setAsyncQueueEnabled(true);
+        // TODO: Fix passing null to this @NotNull method
         BukkitTask task = server.getScheduler().runTaskAsynchronously(null, ThreadHelper::cycleThroughAsyncQueue);
         dataMigrator.run(sqlDatabase, stargateAPI);
         ThreadHelper.setAsyncQueueEnabled(false);

@@ -65,7 +65,8 @@ public class PortalBuilder {
     private boolean adaptiveGatePositionGeneration = false;
     private String metaData;
 
-    public PortalBuilder(StargateAPI stargateAPI, OfflinePlayer owner, String flagsString, String portalName, GateBuilder gateBuilder) {
+    public PortalBuilder(StargateAPI stargateAPI, OfflinePlayer owner, String flagsString, String portalName,
+                         @Nullable GateBuilder gateBuilder) {
         this.stargateAPI = Objects.requireNonNull(stargateAPI);
         this.flagsString = Objects.requireNonNull(flagsString);
         this.portalName = Objects.requireNonNull(portalName);
@@ -73,7 +74,8 @@ public class PortalBuilder {
         this.gateBuilder = gateBuilder;
     }
 
-    public PortalBuilder(StargateAPI stargateAPI, OfflinePlayer owner, String flagsString, String portalName, GateAPI gate) {
+    public PortalBuilder(StargateAPI stargateAPI, OfflinePlayer owner, String flagsString, String portalName,
+                         @Nullable GateAPI gate) {
         this.stargateAPI = Objects.requireNonNull(stargateAPI);
         this.flagsString = Objects.requireNonNull(flagsString);
         this.portalName = Objects.requireNonNull(portalName);

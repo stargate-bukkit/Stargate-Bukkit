@@ -114,7 +114,8 @@ public abstract class AbstractPortal implements RealPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameLengthException <p>If the portal name is invalid</p>
      */
-    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyManager, String metaData)
+    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate,
+                   UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyManager, @Nullable String metaData)
             throws NameLengthException {
         this.ownerUUID = Objects.requireNonNull(ownerUUID);
         this.network = Objects.requireNonNull(network);

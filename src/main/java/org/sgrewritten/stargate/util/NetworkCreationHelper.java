@@ -57,7 +57,6 @@ public final class NetworkCreationHelper {
             networkRegistry = registry.getNetworkRegistry(StorageType.INTER_SERVER);
         } else {
             networkRegistry = registry.getNetworkRegistry(StorageType.LOCAL);
-            ;
         }
         return networkRegistry.getFromName(network.getName());
     }

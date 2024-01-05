@@ -27,12 +27,12 @@ speaking_head: [Support](https://sgrewritten.org/discord)**
 
 ## Features
 
-|                        **Immersive**                         |                      **User-Oriented**                       |                         **Capable**                          |
-| :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+|                                                     **Immersive**                                                      |                                                                    **User-Oriented**                                                                    |                                                           **Capable**                                                           |
+|:----------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------:|
 | Stargate's interface is integrated within gameplay; players can create, use, and destroy portals without any commands! | All of StarGate's features are designed to allow for non-admin users to create and manage their own portal networks in a balanced and risk free manner. | By default, StarGate boasts a comprehensive network system, dozens of portal types (flags), and highly configurable behaviours. |
 
-|                       **Configurable**                       |                        **Expandable**                        |                       **Customizable**                       |
-| :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+|                                              **Configurable**                                               |                                                                                   **Expandable**                                                                                   |                                                     **Customizable**                                                      |
+|:-----------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------:|
 | Stargate has a comprehensive and intuitive config, highly granular permissions, and multi-language support! | The StarGate community has developed an ecosystem of [add-ons](https://sgrewritten.org/addons), which collectively add integration and design-philosophy expansions to the plugin. | Stargate supports numerous customizations; from sign formatting to gate designs, all user-facing details can be modified! |
 
 ------

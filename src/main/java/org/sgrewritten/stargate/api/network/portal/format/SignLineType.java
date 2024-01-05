@@ -30,5 +30,5 @@ public enum SignLineType {
     /**
      * Sign line with any portal
      */
-    PORTAL;
+    PORTAL,
 }

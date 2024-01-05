@@ -227,7 +227,7 @@ public enum SQLQuery {
     SET_PORTAL_META,
 
     /**
-     * The query for setting the metadata of a inter-server portal
+     * The query for setting the metadata of an inter-server portal
      */
     SET_INTER_PORTAL_META,
 
