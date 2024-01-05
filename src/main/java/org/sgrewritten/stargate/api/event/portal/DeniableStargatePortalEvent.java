@@ -1,7 +1,6 @@
 package org.sgrewritten.stargate.api.event.portal;
 
 import org.bukkit.entity.Entity;
-import org.sgrewritten.stargate.api.event.portal.StargateEntityPortalEvent;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 
 /**

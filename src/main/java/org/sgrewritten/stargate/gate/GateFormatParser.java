@@ -3,7 +3,6 @@ package org.sgrewritten.stargate.gate;
 import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.exception.ParsingErrorException;
 import org.sgrewritten.stargate.gate.structure.GateControlBlock;
 import org.sgrewritten.stargate.gate.structure.GateFrame;

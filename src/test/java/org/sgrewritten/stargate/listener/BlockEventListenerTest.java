@@ -122,18 +122,18 @@ class BlockEventListenerTest {
         Assertions.assertFalse(((RealPortal) network.getPortal(portalName)).getGate().getPortalPositions().isEmpty());
         server.getScheduler().performTicks(100);
         SignMock signState1 = (SignMock) signBlock.getState();
-        checkLines(signState1,new String[]{HighlightingStyle.MINUS_SIGN.getHighlightedName(portalName),
-                "Right click" , "to use gate", network.getHighlightingStyle().getHighlightedName(network.getName())});
+        checkLines(signState1, new String[]{HighlightingStyle.MINUS_SIGN.getHighlightedName(portalName),
+                "Right click", "to use gate", network.getHighlightingStyle().getHighlightedName(network.getName())});
         blockEventListener.onBlockBreak(new BlockBreakEvent(insidePortal.getBlock(), player));
         Assertions.assertNull(network.getPortal(portalName));
         Assertions.assertNull(registry.getPortal(insidePortal));
         server.getScheduler().performTicks(1);
         SignMock signState2 = (SignMock) signBlock.getState();
-        checkLines(signState2, new String[]{portalName, "","",""});
+        checkLines(signState2, new String[]{portalName, "", "", ""});
     }
 
 
-    private void checkLines(Sign state, String[] expectedLines){
+    private void checkLines(Sign state, String[] expectedLines) {
         for (int i = 0; i < 4; i++) {
             Assertions.assertEquals(expectedLines[i], ChatColor.stripColor(state.getLine(i)));
         }

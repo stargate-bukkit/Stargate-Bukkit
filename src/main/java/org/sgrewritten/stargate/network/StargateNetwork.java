@@ -4,22 +4,21 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.event.portal.StargateListPortalEvent;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.proxy.PluginMessageSender;
+import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
-import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.permission.BypassPermission;
-import org.sgrewritten.stargate.api.network.proxy.PluginMessageSender;
 import org.sgrewritten.stargate.network.proxy.InterServerMessageSender;
 import org.sgrewritten.stargate.network.proxy.LocalNetworkMessageSender;
 import org.sgrewritten.stargate.util.NameHelper;
@@ -174,9 +173,9 @@ public class StargateNetwork implements Network {
         for (String portalName : output) {
             Portal target = getPortal(portalName);
             boolean deny = (target.hasFlag(PortalFlag.PRIVATE) && !playerCanSeePrivatePortal(target, player));
-            StargateListPortalEvent event = new StargateListPortalEvent(requester,player,target,deny);
+            StargateListPortalEvent event = new StargateListPortalEvent(requester, player, target, deny);
             Bukkit.getPluginManager().callEvent(event);
-            if(event.getDeny()) {
+            if (event.getDeny()) {
                 removeList.add(portalName);
             }
         }
@@ -205,7 +204,7 @@ public class StargateNetwork implements Network {
 
     @Override
     public String getName() {
-        if (getType() == NetworkType.PERSONAL && registry != null &&  ( registry.networkExists(NameHelper.getNormalizedName(name), this.getStorageType()) )) {
+        if (getType() == NetworkType.PERSONAL && registry != null && (registry.networkExists(NameHelper.getNormalizedName(name), this.getStorageType()))) {
             return id.split("-")[0];
         }
         return name;
@@ -244,7 +243,7 @@ public class StargateNetwork implements Network {
     @Override
     public void renamePortal(String newName, String oldName) throws InvalidNameException {
         Portal portal = nameToPortalMap.remove(oldName);
-        if(portal == null){
+        if (portal == null) {
             throw new InvalidNameException("Name does not exist, can not rename: " + oldName);
         }
         portal.setName(NameHelper.getNormalizedName(newName));

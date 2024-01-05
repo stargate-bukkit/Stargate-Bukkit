@@ -3,7 +3,12 @@ package org.sgrewritten.stargate.api.gate;
 import org.bukkit.Material;
 import org.sgrewritten.stargate.gate.GateFormat;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class GateFormatRegistry {
 
@@ -71,6 +76,7 @@ public class GateFormatRegistry {
             controlToGateMap.get(controlMaterial).add(format);
         }
     }
+
     /**
      * Gets all gate format using the given control block material
      *

@@ -25,7 +25,6 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.util.ExceptionHelper;
-import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.VectorUtils;
 
 import java.util.ArrayList;
@@ -107,8 +106,8 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public NetworkRegistry getNetworkRegistry(StorageType storageType){
-        return (storageType == StorageType.LOCAL ? networkRegistry  : bungeeNetworkRegistry);
+    public NetworkRegistry getNetworkRegistry(StorageType storageType) {
+        return (storageType == StorageType.LOCAL ? networkRegistry : bungeeNetworkRegistry);
     }
 
     @Override
@@ -231,6 +230,7 @@ public class StargateRegistry implements RegistryAPI {
             map.remove(blockLocation);
         }
     }
+
     public void clear(StargateAPI stargateAPI) {
         portalFromStructureTypeMap.clear();
         portalPositionMap.clear();
@@ -341,7 +341,7 @@ public class StargateRegistry implements RegistryAPI {
     @Override
     public void renameNetwork(String newId, String oldId, StorageType storageType) throws InvalidNameException, UnimplementedFlagException, NameLengthException {
         NetworkRegistry networkRegistry = getNetworkRegistry(storageType);
-        networkRegistry.renameNetwork(newId,oldId);
+        networkRegistry.renameNetwork(newId, oldId);
     }
 
 }

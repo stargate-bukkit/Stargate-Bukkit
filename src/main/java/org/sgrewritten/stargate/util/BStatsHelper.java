@@ -20,7 +20,6 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.AbstractPortal;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -228,7 +227,7 @@ public final class BStatsHelper {
         metrics.addCustomChart(new SingleLineChart("underwaterCount", () -> {
             int count = 0;
             Iterator<Network> localNetworkIterator = registry.getNetworkRegistry(StorageType.LOCAL).iterator();
-            while(localNetworkIterator.hasNext()){
+            while (localNetworkIterator.hasNext()) {
                 for (Portal portal : localNetworkIterator.next().getAllPortals()) {
                     if (!(portal instanceof RealPortal realPortal)) {
                         continue;
@@ -239,7 +238,7 @@ public final class BStatsHelper {
                 }
             }
             Iterator<Network> interserverNetworkIterator = registry.getNetworkRegistry(StorageType.INTER_SERVER).iterator();
-            while(localNetworkIterator.hasNext()){
+            while (localNetworkIterator.hasNext()) {
                 for (Portal portal : localNetworkIterator.next().getAllPortals()) {
                     if (!(portal instanceof RealPortal realPortal)) {
                         continue;

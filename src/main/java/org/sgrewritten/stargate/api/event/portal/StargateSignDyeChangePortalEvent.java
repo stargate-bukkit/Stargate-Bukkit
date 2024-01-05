@@ -25,15 +25,15 @@ public class StargateSignDyeChangePortalEvent extends StargatePortalEvent {
         this.portalPosition = portalPosition;
     }
 
-    public Location getLocation(){
+    public Location getLocation() {
         return this.location;
     }
 
-    public DyeColor getColorChange(){
+    public DyeColor getColorChange() {
         return this.colorChange;
     }
 
-    public PortalPosition getPortalPosition(){
+    public PortalPosition getPortalPosition() {
         return this.portalPosition;
     }
 

@@ -6,13 +6,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
-import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.api.formatting.LanguageManager;
-import org.sgrewritten.stargate.api.network.RegistryAPI;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +40,7 @@ public class DataMigrator {
         // WARNING: Migrators must be defined from oldest to newest to prevent partial
         // migration
         MIGRATIONS = new DataMigration[]{
-                new DataMigration_1_0_0(server,storedProperties),
+                new DataMigration_1_0_0(server, storedProperties),
                 new DataMigration_1_0_14()
         };
 

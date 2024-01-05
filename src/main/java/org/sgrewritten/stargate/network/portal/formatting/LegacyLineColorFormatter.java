@@ -15,7 +15,7 @@ public class LegacyLineColorFormatter implements LineFormatter {
     public List<StargateComponent> formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
         return new ArrayList<>(List.of(
                 new StargateComponent(getColor() + highlightingStyle.getPrefix()),
-                new StargateComponent(getColor()+(portal != null ? portal.getName() : "null")),
+                new StargateComponent(getColor() + (portal != null ? portal.getName() : "null")),
                 new StargateComponent(getColor() + highlightingStyle.getSuffix())
         ));
     }
@@ -31,7 +31,7 @@ public class LegacyLineColorFormatter implements LineFormatter {
     public List<StargateComponent> formatErrorLine(String error, HighlightingStyle highlightingStyle) {
         return new ArrayList<>(List.of(
                 new StargateComponent(getColor() + highlightingStyle.getPrefix()),
-                new StargateComponent(getColor()+ error),
+                new StargateComponent(getColor() + error),
                 new StargateComponent(getColor() + highlightingStyle.getSuffix())
         ));
     }
@@ -44,7 +44,7 @@ public class LegacyLineColorFormatter implements LineFormatter {
     public List<StargateComponent> formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
         return new ArrayList<>(List.of(
                 new StargateComponent(getColor() + highlightingStyle.getPrefix()),
-                new StargateComponent(getColor()+ (network == null ? "null" : network.getName())),
+                new StargateComponent(getColor() + (network == null ? "null" : network.getName())),
                 new StargateComponent(getColor() + highlightingStyle.getSuffix())
         ));
     }
@@ -53,7 +53,7 @@ public class LegacyLineColorFormatter implements LineFormatter {
     public List<StargateComponent> formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle) {
         return new ArrayList<>(List.of(
                 new StargateComponent(getColor() + highlightingStyle.getPrefix()),
-                new StargateComponent(getColor()+ aString),
+                new StargateComponent(getColor() + aString),
                 new StargateComponent(getColor() + highlightingStyle.getSuffix())
         ));
     }

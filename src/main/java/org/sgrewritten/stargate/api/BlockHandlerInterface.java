@@ -23,7 +23,6 @@ public interface BlockHandlerInterface {
     @NotNull Material getHandledMaterial();
 
     /**
-     *
      * @return The plugin linked to this blockHandlerInterface
      */
     @NotNull Plugin getPlugin();
@@ -43,16 +42,17 @@ public interface BlockHandlerInterface {
      * getHandledMaterial matches with the detected location</p>
      *
      * @param blockLocation The location of the block that is placed
-     * @param player The player that placed the block
-     * @param portal The affected portal
+     * @param player        The player that placed the block
+     * @param portal        The affected portal
      * @return Whether to claim the block
      */
     boolean registerBlock(Location blockLocation, @Nullable Player player, Portal portal, MetaData metaData);
 
     /**
      * Called if a Stargate is removed, and the add-on has registered this location
+     *
      * @param blockLocation The location of the block that is removed
-     * @param portal The affected portal
+     * @param portal        The affected portal
      */
     void unRegisterBlock(Location blockLocation, Portal portal);
 

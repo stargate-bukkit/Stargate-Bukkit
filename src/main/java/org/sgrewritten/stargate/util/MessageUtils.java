@@ -11,23 +11,23 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 
 public class MessageUtils {
 
-    public static void sendMessageFromPortal(Portal portal, @Nullable Entity receiver, String message, MessageType type){
-        if(message == null || message.isBlank() || receiver == null){
+    public static void sendMessageFromPortal(Portal portal, @Nullable Entity receiver, String message, MessageType type) {
+        if (message == null || message.isBlank() || receiver == null) {
             return;
         }
         StargateSendMessagePortalEvent event;
-        if(Bukkit.isPrimaryThread()){
-            event = new SyncStargateSendMessagePortalEvent(portal,receiver,type);
+        if (Bukkit.isPrimaryThread()) {
+            event = new SyncStargateSendMessagePortalEvent(portal, receiver, type);
         } else {
-            event = new AsyncStargateSendMessagePortalEvent(portal,receiver,type);
+            event = new AsyncStargateSendMessagePortalEvent(portal, receiver, type);
         }
         Bukkit.getPluginManager().callEvent(event);
-        if(!event.isCancelled()){
+        if (!event.isCancelled()) {
             receiver.sendMessage(message);
         }
     }
 
-    public static void sendMessage(Entity receiver, String message){
+    public static void sendMessage(Entity receiver, String message) {
         receiver.sendMessage(message);
     }
 }

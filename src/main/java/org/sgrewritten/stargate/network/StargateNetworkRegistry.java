@@ -22,7 +22,7 @@ public class StargateNetworkRegistry implements NetworkRegistry {
     public void renameNetwork(String newId, String oldId) throws InvalidNameException, UnimplementedFlagException, NameLengthException {
         Network network = networkMap.remove(oldId);
         networkNameMap.remove(oldId);
-        if(network == null){
+        if (network == null) {
             throw new InvalidNameException("Network does not exist, can not rename: " + oldId);
         }
         network.setID(NameHelper.getNormalizedName(newId));
@@ -36,7 +36,7 @@ public class StargateNetworkRegistry implements NetworkRegistry {
         String networkName = NameHelper.getNormalizedName(network.getName());
         networkNameMap.remove(networkName);
         String personalNetworkName = personalNetworkNameConflicts.get(networkName);
-        if(personalNetworkName != null) {
+        if (personalNetworkName != null) {
             updateName(personalNetworkName);
             personalNetworkNameConflicts.remove(networkName);
         }
@@ -46,7 +46,7 @@ public class StargateNetworkRegistry implements NetworkRegistry {
     @Override
     public void registerNetwork(Network network) {
         networkMap.put(network.getId(), network);
-        if(networkNameMap.containsKey(network.getName())) {
+        if (networkNameMap.containsKey(network.getName())) {
             String newName = updateName(network.getName());
             personalNetworkNameConflicts.put(network.getName(), newName);
         }
@@ -55,14 +55,15 @@ public class StargateNetworkRegistry implements NetworkRegistry {
 
     /**
      * Update the name for the conflicting already registered network
+     *
      * @param name <p>The name of the networks that have conflicting names</p>
      * @return <p>The new name to apply to the conflicting network</p>
      */
-    private String updateName(String name){
+    private String updateName(String name) {
         // Name conflicts with a personal network (i.e. the name of the personal network will change)
         String normalizedName = NameHelper.getNormalizedName(name);
         Network network = networkNameMap.get(normalizedName);
-        if(network != null && network.getType() == NetworkType.PERSONAL){
+        if (network != null && network.getType() == NetworkType.PERSONAL) {
             networkNameMap.remove(normalizedName);
             networkNameMap.put(network.getName(), network);
         }
@@ -81,20 +82,20 @@ public class StargateNetworkRegistry implements NetworkRegistry {
     }
 
     @Override
-    public void clear(){
+    public void clear() {
         networkMap.clear();
         networkNameMap.clear();
     }
 
     @Override
-    public void updatePortals(){
-        for (Network network : networkMap.values()){
+    public void updatePortals() {
+        for (Network network : networkMap.values()) {
             network.updatePortals();
         }
     }
 
     @Override
-    public Stream<Network> stream(){
+    public Stream<Network> stream() {
         return networkMap.values().stream();
     }
 
@@ -109,14 +110,14 @@ public class StargateNetworkRegistry implements NetworkRegistry {
     }
 
     @Override
-    public Network getFromName(String name){
+    public Network getFromName(String name) {
         return networkNameMap.get(NameHelper.getNormalizedName(name));
     }
 
     @Override
     public void closeAllPortals() {
-        for(Network network : networkMap.values()){
-            for(Portal portal : network.getAllPortals()){
+        for (Network network : networkMap.values()) {
+            for (Portal portal : network.getAllPortals()) {
                 portal.close(true);
             }
         }

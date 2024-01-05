@@ -35,7 +35,7 @@ class CommandParityTest {
         console = server.getConsoleSender();
         player = server.addPlayer();
         properties = new PropertiesDatabase(new File(plugin.getDataFolder(), "test.properties"));
-        File testPluginFile = new File(new File("").getAbsolutePath(),"/src/test/resources/TestPlugin-1.0-SNAPSHOT.jar");
+        File testPluginFile = new File(new File("").getAbsolutePath(), "/src/test/resources/TestPlugin-1.0-SNAPSHOT.jar");
         String testPluginPath = "file://" + testPluginFile.toURI().toURL().getFile();
         command = new CommandParity(properties, true, plugin.getDataFolder(), testPluginPath, testPluginPath, testPluginPath, testPluginPath, new File(""), new LanguageManagerMock());
     }
@@ -67,10 +67,10 @@ class CommandParityTest {
         properties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, "true");
         Assertions.assertTrue(command.onCommand(console, fakeCommand, "", new String[]{""}));
         File pluginsFolder = plugin.getDataFolder().getParentFile();
-        Assertions.assertTrue(new File(pluginsFolder,"StargateMechanics-1.0-SNAPSHOT.jar").exists());
-        Assertions.assertTrue(new File(pluginsFolder,"StargateInterfaces-1.0-SNAPSHOT.jar").exists());
-        Assertions.assertTrue(new File(pluginsFolder,"StargateCustomizations-1.0-SNAPSHOT.jar").exists());
-        Assertions.assertTrue(new File(pluginsFolder,"StargateMapper-1.0-SNAPSHOT.jar").exists());
+        Assertions.assertTrue(new File(pluginsFolder, "StargateMechanics-1.0-SNAPSHOT.jar").exists());
+        Assertions.assertTrue(new File(pluginsFolder, "StargateInterfaces-1.0-SNAPSHOT.jar").exists());
+        Assertions.assertTrue(new File(pluginsFolder, "StargateCustomizations-1.0-SNAPSHOT.jar").exists());
+        Assertions.assertTrue(new File(pluginsFolder, "StargateMapper-1.0-SNAPSHOT.jar").exists());
     }
 
 }

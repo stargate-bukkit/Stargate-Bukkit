@@ -17,24 +17,23 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.ConditionalDelayedAction;
 import org.sgrewritten.stargate.action.ConditionalRepeatedTask;
-import org.sgrewritten.stargate.api.database.StorageAPI;
-import org.sgrewritten.stargate.api.event.portal.message.AsyncStargateSendMessagePortalEvent;
-import org.sgrewritten.stargate.api.event.portal.message.MessageType;
-import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.exception.database.StorageWriteException;
+import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
-import org.sgrewritten.stargate.manager.BlockLoggingManager;
 import org.sgrewritten.stargate.api.manager.BungeeManager;
-import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.colors.ColorConverter;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
+import org.sgrewritten.stargate.manager.BlockLoggingManager;
+import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
-import org.sgrewritten.stargate.colors.ColorConverter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -99,8 +98,8 @@ public class PlayerEventListener implements Listener {
         Material blockMaterial = block.getType();
         Player player = event.getPlayer();
         RealPortal portal = registry.getPortalFromPortalPosition(portalPosition);
-        if(portal == null){
-            Stargate.log(Level.WARNING,"Improper use of unregistered PortalPositions");
+        if (portal == null) {
+            Stargate.log(Level.WARNING, "Improper use of unregistered PortalPositions");
             return;
         }
 
@@ -143,7 +142,7 @@ public class PlayerEventListener implements Listener {
         boolean hasPermission = permissionManager.hasCreatePermissions(portal);
         if (!hasPermission) {
             String message = permissionManager.getDenyMessage();
-            MessageUtils.sendMessageFromPortal(portal,event.getPlayer(),message, MessageType.DENY);
+            MessageUtils.sendMessageFromPortal(portal, event.getPlayer(), message, MessageType.DENY);
         }
         return hasPermission;
     }

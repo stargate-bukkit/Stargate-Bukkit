@@ -28,7 +28,7 @@ public class StargateTeleportPortalEvent extends StargateEntityPortalEvent {
      */
     public StargateTeleportPortalEvent(@NotNull Entity travellingEntity, @NotNull Portal portal, Portal destination,
                                        @NotNull Location exit) {
-        super(portal,travellingEntity,false);
+        super(portal, travellingEntity, false);
         this.destination = destination;
         this.exit = exit;
     }

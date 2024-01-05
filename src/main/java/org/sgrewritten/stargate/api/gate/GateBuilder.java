@@ -4,7 +4,7 @@ import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 
-public interface GateBuilder{
+public interface GateBuilder {
 
     GateBuilder setGenerateButtonPositions(boolean generateButtonPositions);
 

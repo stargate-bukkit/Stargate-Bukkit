@@ -14,7 +14,7 @@ public enum GateStructureType {
         this.gateFormatEquivalent = gateFormatStructureType;
     }
 
-    public GateFormatStructureType getGateFormatEquivalent(){
+    public GateFormatStructureType getGateFormatEquivalent() {
         return this.gateFormatEquivalent;
     }
 }

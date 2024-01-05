@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.database;
 
-import org.bukkit.Bukkit;
 import org.sgrewritten.stargate.Stargate;
 
 import java.io.File;

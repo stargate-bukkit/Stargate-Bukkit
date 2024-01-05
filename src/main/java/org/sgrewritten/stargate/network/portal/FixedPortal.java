@@ -1,18 +1,22 @@
 package org.sgrewritten.stargate.network.portal;
 
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.format.*;
+import org.sgrewritten.stargate.api.network.portal.format.NetworkLine;
+import org.sgrewritten.stargate.api.network.portal.format.PortalLine;
+import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.format.SignLineType;
+import org.sgrewritten.stargate.api.network.portal.format.TextLine;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.gate.Gate;
-import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
-import java.util.*;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * A portal with a fixed destination
@@ -42,16 +46,16 @@ public class FixedPortal extends AbstractPortal {
     @Override
     public SignLine[] getDrawnControlLines() {
         SignLine[] lines = new SignLine[4];
-        lines[0] =  new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN),this, SignLineType.THIS_PORTAL);
-        lines[2] = new NetworkLine(super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()),network);
+        lines[0] = new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN), this, SignLineType.THIS_PORTAL);
+        lines[2] = new NetworkLine(super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()), network);
         Portal destination = getDestination();
         if (destination != null) {
-            lines[1] = new PortalLine(super.colorDrawer.formatPortalName(destination, HighlightingStyle.LESSER_GREATER_THAN),getDestination(),SignLineType.DESTINATION_PORTAL);
+            lines[1] = new PortalLine(super.colorDrawer.formatPortalName(destination, HighlightingStyle.LESSER_GREATER_THAN), getDestination(), SignLineType.DESTINATION_PORTAL);
             lines[3] = new TextLine();
         } else {
-            lines[1] = new TextLine(super.colorDrawer.formatLine(destinationName),SignLineType.DESTINATION_PORTAL);
+            lines[1] = new TextLine(super.colorDrawer.formatLine(destinationName), SignLineType.DESTINATION_PORTAL);
             lines[3] = new TextLine(super.colorDrawer.formatErrorLine(super.languageManager.getString(
-                    TranslatableMessage.DISCONNECTED), HighlightingStyle.SQUARE_BRACKETS),SignLineType.ERROR);
+                    TranslatableMessage.DISCONNECTED), HighlightingStyle.SQUARE_BRACKETS), SignLineType.ERROR);
         }
         return lines;
     }

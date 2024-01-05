@@ -6,27 +6,29 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.manager.BungeeManager;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.RegistryAPI;
-import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
-import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import org.sgrewritten.stargate.util.BungeeHelper;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class StargateBungeeManager implements BungeeManager {
@@ -50,8 +52,8 @@ public class StargateBungeeManager implements BungeeManager {
 
         String requestTypeString = json.get(StargateProtocolProperty.REQUEST_TYPE.toString()).getAsString();
         StargateProtocolRequestType requestType = StargateProtocolRequestType.valueOf(requestTypeString);
-        switch (requestType){
-            case PORTAL_ADD, PORTAL_REMOVE-> {
+        switch (requestType) {
+            case PORTAL_ADD, PORTAL_REMOVE -> {
                 portalAddOrRemove(json, requestType);
             }
             case NETWORK_RENAME -> {
@@ -67,13 +69,13 @@ public class StargateBungeeManager implements BungeeManager {
                 String oldName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
                 String newName = json.get(StargateProtocolProperty.NEW_PORTAL_NAME.toString()).getAsString();
                 String networkId = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
-                Network network = registry.getNetwork(networkId,StorageType.INTER_SERVER);
-                if(network == null){
+                Network network = registry.getNetwork(networkId, StorageType.INTER_SERVER);
+                if (network == null) {
                     Stargate.log(Level.WARNING, "Could not rename cross server portal, as network did not exist");
                     return;
                 }
                 try {
-                    network.renamePortal(newName,oldName);
+                    network.renamePortal(newName, oldName);
                 } catch (InvalidNameException e) {
                     Stargate.log(e);
                 }
@@ -81,7 +83,7 @@ public class StargateBungeeManager implements BungeeManager {
         }
     }
 
-    private void portalAddOrRemove(JsonObject json, StargateProtocolRequestType requestType){
+    private void portalAddOrRemove(JsonObject json, StargateProtocolRequestType requestType) {
 
         String portalName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
         String network = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
@@ -93,8 +95,8 @@ public class StargateBungeeManager implements BungeeManager {
 
         try {
             networkManager.createNetwork(network, flags, false);
-        } catch (NameConflictException ignored) {}
-        catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
+        } catch (NameConflictException ignored) {
+        } catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
             Stargate.log(e);
         }
         try {
@@ -195,9 +197,9 @@ public class StargateBungeeManager implements BungeeManager {
     /**
      * Adds a player to the BungeeCord teleportation queue
      *
-     * @param playerName    <p>The name of the player to add to the queue</p>
-     * @param portalName    <p>The name of the portal the player is teleporting to</p>
-     * @param networkName   <p>The name of the network the entry portal belongs to</p>
+     * @param playerName  <p>The name of the player to add to the queue</p>
+     * @param portalName  <p>The name of the portal the player is teleporting to</p>
+     * @param networkName <p>The name of the network the entry portal belongs to</p>
      * @param storageType <p>Whether the entry portal belongs to an inter-server network</p>
      */
     private void addToQueue(String playerName, String portalName, String networkName,

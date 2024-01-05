@@ -1,7 +1,6 @@
 package org.sgrewritten.stargate.migration;
 
 import com.google.common.io.Files;
-import com.healthmarketscience.jackcess.Database;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,7 +89,7 @@ class SQLDatabaseMigratorTest {
     @Test
     void portalPosition_checkPluginName() throws SQLException, IOException {
         databaseMigrator.run();
-        try(Connection connection = database.getConnection()) {
+        try (Connection connection = database.getConnection()) {
             SQLTestHelper.checkIfColumnIs(nameConfiguration.getPortalPositionTableName(), "pluginName", "portal", "network", "Stargate", connection);
         }
     }

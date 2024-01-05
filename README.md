@@ -16,9 +16,14 @@
 
 ## Description
 
-**The original, and still the best, transportation solution for the [Bukkit](https://docs.papermc.io/paper) ecosystem!**<br>A Minecraft [Spigot](https://www.spigotmc.org/wiki/spigot/)/[Paper](https://github.com/PaperMC/Paper) plugin facilitating player interactions through interconnection.
+**The original, and still the best, transportation solution for the [Bukkit](https://docs.papermc.io/paper)
+ecosystem!**<br>A Minecraft [Spigot](https://www.spigotmc.org/wiki/spigot/)/[Paper](https://github.com/PaperMC/Paper)
+plugin facilitating player interactions through interconnection.
 
-> **:desktop_computer: [Website](https://sgrewritten.org)**<br>**:arrow_down: [Downloads](https://sgrewritten.org/download)**<br>**:bookmark_tabs: [Documentation](https://sgrewritten.org/wiki)**<br>**:speaking_head: [Support](https://sgrewritten.org/discord)**
+> **:desktop_computer: [Website](https://sgrewritten.org)**<br>**:
+arrow_down: [Downloads](https://sgrewritten.org/download)**<br>**:
+bookmark_tabs: [Documentation](https://sgrewritten.org/wiki)**<br>**:
+speaking_head: [Support](https://sgrewritten.org/discord)**
 
 ## Features
 
@@ -34,6 +39,11 @@
 
 ## Context and Credits
 
-*The continuation of Minecraft's first portal plugin, Stargate, by [Sturmeh](https://github.com/sturmeh) and [Dinnerbone](https://github.com/dinnerbone).*<br>*Guided by [the original philosophy](https://sgrewritten.org/philosophy) and [rewritten](https://sgrewritten.org/rewrite) from the ground up for modern versions of MC.*<br>*With inspiration from [Drakia](https://github.com/drakiaxyz)'s [port](https://bukkit.org/threads/stargate-the-original-portal-plugin.3274/) and it's subsequent revivals (notably [SGRevived](https://github.com/epicknarvik97) and [SG10](https://github.com/thorinwasher))*.
+*The continuation of Minecraft's first portal plugin, Stargate, by [Sturmeh](https://github.com/sturmeh)
+and [Dinnerbone](https://github.com/dinnerbone).*<br>*Guided
+by [the original philosophy](https://sgrewritten.org/philosophy) and [rewritten](https://sgrewritten.org/rewrite) from
+the ground up for modern versions of MC.*<br>*With inspiration from [Drakia](https://github.com/drakiaxyz)'
+s [port](https://bukkit.org/threads/stargate-the-original-portal-plugin.3274/) and it's subsequent revivals (
+notably [SGRevived](https://github.com/epicknarvik97) and [SG10](https://github.com/thorinwasher))*.
 
 *:heart: [Credits](https://sgrewritten.org/credits)*

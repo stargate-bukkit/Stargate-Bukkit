@@ -3,7 +3,6 @@ package org.sgrewritten.stargate.container;
 public class ThreeTuple<K, T, G> {
 
 
-
     private final K value1;
     private final T value2;
     private final G value3;
@@ -43,12 +42,12 @@ public class ThreeTuple<K, T, G> {
      *
      * @return <p>The third value of this three-tuple</p>
      */
-    public G getThirdValue(){
+    public G getThirdValue() {
         return value3;
     }
 
     @Override
     public String toString() {
-        return String.format("ThreeTuple(%s,%s,%s)",value1.toString(),value2.toString(),value3.toString());
+        return String.format("ThreeTuple(%s,%s,%s)", value1.toString(), value2.toString(), value3.toString());
     }
 }

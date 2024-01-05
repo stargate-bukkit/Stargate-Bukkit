@@ -4,13 +4,13 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.network.portal.VirtualPortal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -158,7 +158,7 @@ public final class PortalPermissionHelper {
         Set<PortalFlag> flags = PortalFlag.parseFlags(portal.getAllFlagsString());
         for (PortalFlag flag : flags) {
             String identifier;
-            if(flag.isInternalFlag()){
+            if (flag.isInternalFlag()) {
                 continue;
             }
             identifier = String.valueOf(flag.getCharacterRepresentation()).toLowerCase();

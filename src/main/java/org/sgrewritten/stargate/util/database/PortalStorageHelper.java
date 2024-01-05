@@ -8,14 +8,14 @@ import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
-import org.sgrewritten.stargate.network.StargateNetwork;
-import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.portaldata.GateData;
-import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.network.StargateNetwork;
+import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.portaldata.GateData;
+import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.util.LegacyDataHandler;
 
 import java.sql.PreparedStatement;
@@ -68,8 +68,8 @@ public class PortalStorageHelper {
                     "log for more information", gateFileName));
             throw new IllegalArgumentException("Could not find gate format");
         }
-        GateData gateData = new GateData(format,flipZ,topLeft,facing);
-        return new PortalData(gateData,name,networkName,destination,flags,unrecognisedFlags,ownerUUID,serverUUID,serverName,portalType,metadata);
+        GateData gateData = new GateData(format, flipZ, topLeft, facing);
+        return new PortalData(gateData, name, networkName, destination, flags, unrecognisedFlags, ownerUUID, serverUUID, serverName, portalType, metadata);
     }
 
     public static PortalPosition loadPortalPosition(ResultSet resultSet) throws NumberFormatException, SQLException {
@@ -85,7 +85,7 @@ public class PortalStorageHelper {
 
 
     public static void addPortalPosition(PreparedStatement addPositionStatement, RealPortal portal, PortalPosition portalPosition) throws SQLException {
-        Stargate.log(Level.FINEST,"Saving portal position, " + portalPosition + " for portal " + portal.getName() + ":" + portal.getNetwork().getName());
+        Stargate.log(Level.FINEST, "Saving portal position, " + portalPosition + " for portal " + portal.getName() + ":" + portal.getNetwork().getName());
         addPositionStatement.setString(1, portal.getName());
         addPositionStatement.setString(2, portal.getNetwork().getId());
         addPositionStatement.setString(3, String.valueOf(portalPosition.getRelativePositionLocation().getBlockX()));
@@ -151,8 +151,8 @@ public class PortalStorageHelper {
                     "log for more information", gateFileName));
             throw new IllegalArgumentException("Could not find gate format");
         }
-        GateData gateData = new GateData(format,false,topLeft,facing);
-        return new PortalData(gateData,name,networkName,destination,flags,unrecognisedFlags,ownerUUID,null,null,StorageType.LOCAL,null);
+        GateData gateData = new GateData(format, false, topLeft, facing);
+        return new PortalData(gateData, name, networkName, destination, flags, unrecognisedFlags, ownerUUID, null, null, StorageType.LOCAL, null);
     }
 
     /**

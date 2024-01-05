@@ -12,19 +12,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.database.TestCredential;
 import org.sgrewritten.stargate.database.TestCredentialsManager;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
-import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.thread.ThreadHelper;
 
 import java.util.HashSet;
@@ -180,7 +180,7 @@ class StargateTest {
         server.getPluginManager().enablePlugin(plugin);
         Assertions.assertTrue(plugin.isEnabled());
         Network network = plugin.getRegistry().getNetwork(BungeePortal.getLegacyNetworkName(), StorageType.LOCAL);
-        plugin.getRegistry().getNetworkRegistry(StorageType.LOCAL).stream().forEach((aNetwork) -> Stargate.log(Level.INFO,aNetwork.getId()));
+        plugin.getRegistry().getNetworkRegistry(StorageType.LOCAL).stream().forEach((aNetwork) -> Stargate.log(Level.INFO, aNetwork.getId()));
         assertNotNull(network);
         assertNotNull(network.getPortal(PORTAL2));
     }
@@ -196,7 +196,7 @@ class StargateTest {
     }
 
     @Test
-    void getMaterialResolver(){
+    void getMaterialResolver() {
         Assertions.assertNotNull(plugin.getMaterialHandlerResolver());
     }
 

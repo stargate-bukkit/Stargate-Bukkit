@@ -2,28 +2,23 @@ package org.sgrewritten.stargate.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.api.network.RegistryAPI;
-import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -71,7 +66,7 @@ public final class BungeeHelper {
             }
         }
         try {
-            BufferedReader reader = FileHelper.getBufferedReader(file,"utf8");
+            BufferedReader reader = FileHelper.getBufferedReader(file, "utf8");
             Stargate.setServerUUID(UUID.fromString(reader.readLine()));
             reader.close();
         } catch (IOException e) {
@@ -117,7 +112,7 @@ public final class BungeeHelper {
         return jsonData.toString();
     }
 
-    public static String generateRenameNetworkMessage(String newId, String oldId){
+    public static String generateRenameNetworkMessage(String newId, String oldId) {
         JsonObject jsonData = new JsonObject();
         jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(StargateProtocolRequestType.NETWORK_RENAME.toString()));
         jsonData.add(StargateProtocolProperty.NEW_NETWORK_NAME.toString(), new JsonPrimitive(newId));
@@ -125,7 +120,7 @@ public final class BungeeHelper {
         return jsonData.toString();
     }
 
-    public static String generateRenamePortalMessage(String newName, String oldName, Network network){
+    public static String generateRenamePortalMessage(String newName, String oldName, Network network) {
         JsonObject jsonData = new JsonObject();
         jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(StargateProtocolRequestType.PORTAL_RENAME.toString()));
         jsonData.add(StargateProtocolProperty.NEW_PORTAL_NAME.toString(), new JsonPrimitive(newName));

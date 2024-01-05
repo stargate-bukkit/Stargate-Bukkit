@@ -77,11 +77,11 @@
   {
     "color": "BLACK",
     "text": "000000",
-    "pointer" : "ffffff"
+    "pointer": "ffffff"
   },
   {
     "color": "WHITE",
     "text": "ffffff",
-    "pointer" : "7a7a7a"
+    "pointer": "7a7a7a"
   }
 ]

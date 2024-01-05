@@ -21,29 +21,32 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.BlockSetAction;
-import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.event.gate.StargateSignFormatGateEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
-import org.sgrewritten.stargate.api.network.portal.format.StargateComponentDeserialiser;
-import org.sgrewritten.stargate.exception.GateConflictException;
-import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
-import org.sgrewritten.stargate.api.gate.structure.GateStructure;
-import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
+import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.format.StargateComponentDeserialiser;
+import org.sgrewritten.stargate.api.vectorlogic.MatrixVectorOperation;
+import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
+import org.sgrewritten.stargate.exception.GateConflictException;
+import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.util.ButtonHelper;
-import org.sgrewritten.stargate.api.vectorlogic.MatrixVectorOperation;
-import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -130,7 +133,7 @@ public class Gate implements GateAPI {
      */
     private void drawSigns(final SignLine[] signLines) {
         StringBuilder builder = new StringBuilder("Drawing signs with lines:");
-        for(SignLine line : signLines){
+        for (SignLine line : signLines) {
             builder.append("\n");
             builder.append(StargateComponentDeserialiser.getLegacyText(line));
         }
@@ -188,16 +191,16 @@ public class Gate implements GateAPI {
      * @param type <p> The type of portal position</p>
      * @return <p>Portal positions of specified type controlled by this plugin</p>
      */
-    private List<PortalPosition> getActivePortalPositions(PositionType type){
+    private List<PortalPosition> getActivePortalPositions(PositionType type) {
         List<PortalPosition> output = new ArrayList<>();
         Stargate.log(Level.FINEST, "Checking active portal positions");
-        for(PortalPosition portalPosition : getPortalPositions()){
-            if(portalPosition.getPositionType() != type || !portalPosition.isActive()){
-                Stargate.log(Level.FINEST,type.name() + ":" + portalPosition.getPositionType() +", " + portalPosition.isActive() + ", " + portalPosition.getRelativePositionLocation());
+        for (PortalPosition portalPosition : getPortalPositions()) {
+            if (portalPosition.getPositionType() != type || !portalPosition.isActive()) {
+                Stargate.log(Level.FINEST, type.name() + ":" + portalPosition.getPositionType() + ", " + portalPosition.isActive() + ", " + portalPosition.getRelativePositionLocation());
                 continue;
             }
-            if(portalPosition.getPluginName().equals("Stargate")){
-                Stargate.log(Level.FINEST,"Found, " + type.name() + " at " + portalPosition.getRelativePositionLocation());
+            if (portalPosition.getPluginName().equals("Stargate")) {
+                Stargate.log(Level.FINEST, "Found, " + type.name() + " at " + portalPosition.getRelativePositionLocation());
                 output.add(portalPosition);
             }
         }
@@ -354,7 +357,7 @@ public class Gate implements GateAPI {
         }
         return false;
     }
-    
+
     @Override
     public void calculatePortalPositions(boolean alwaysOn) {
         //First find buttons and signs on the Stargate
@@ -367,7 +370,7 @@ public class Gate implements GateAPI {
         //Return if a button has already been registered
         for (PortalPosition portalPosition : portalPositions) {
             if (portalPosition.getPositionType() == PositionType.BUTTON) {
-                Stargate.log(Level.FINEST,"A portal position of type BUTTON has already been registered; no generation of a button is necessary");
+                Stargate.log(Level.FINEST, "A portal position of type BUTTON has already been registered; no generation of a button is necessary");
                 return;
             }
         }
@@ -400,10 +403,10 @@ public class Gate implements GateAPI {
 
             if (Tag.WALL_SIGNS.isTagged(material)) {
                 portalPositions.add(new PortalPosition(PositionType.SIGN, blockVector, "Stargate"));
-                Stargate.log(Level.FINEST,"Adding a SIGN at " + blockVector);
+                Stargate.log(Level.FINEST, "Adding a SIGN at " + blockVector);
             } else if (!alwaysOn && ButtonHelper.isButton(material)) {
                 portalPositions.add(new PortalPosition(PositionType.BUTTON, blockVector, "Stargate"));
-                Stargate.log(Level.FINEST,"Adding a BUTTON at " + blockVector);
+                Stargate.log(Level.FINEST, "Adding a BUTTON at " + blockVector);
             }
             foundVectors.add(blockVector);
         }
@@ -484,8 +487,8 @@ public class Gate implements GateAPI {
     @Override
     public @Nullable PortalPosition removePortalPosition(Location location) {
         BlockVector relativeBlockVector = this.getRelativeVector(location).toBlockVector();
-        for(PortalPosition portalPosition : this.portalPositions){
-            if(portalPosition.getRelativePositionLocation().equals(relativeBlockVector)){
+        for (PortalPosition portalPosition : this.portalPositions) {
+            if (portalPosition.getRelativePositionLocation().equals(relativeBlockVector)) {
                 this.portalPositions.remove(portalPosition);
                 return portalPosition;
             }
@@ -500,7 +503,7 @@ public class Gate implements GateAPI {
 
     @Override
     public void forceGenerateStructure() {
-        for(GateFormatStructureType type : GateFormatStructureType.values()){
+        for (GateFormatStructureType type : GateFormatStructureType.values()) {
             GateStructure structure = getFormat().getStructure(type);
             structure.generateStructure(converter, topLeft);
         }

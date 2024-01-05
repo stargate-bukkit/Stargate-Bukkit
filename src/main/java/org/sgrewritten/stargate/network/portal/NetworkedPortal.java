@@ -5,26 +5,33 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.event.portal.message.AsyncStargateSendMessagePortalEvent;
-import org.sgrewritten.stargate.api.event.portal.message.MessageType;
-import org.sgrewritten.stargate.api.gate.GateAPI;
-import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.format.*;
-import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.api.event.portal.StargateAccessPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateActivatePortalEvent;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.format.NetworkLine;
+import org.sgrewritten.stargate.api.network.portal.format.PortalLine;
+import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.format.SignLineType;
+import org.sgrewritten.stargate.api.network.portal.format.TextLine;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.economy.StargateEconomyAPI;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
-import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.util.MessageUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -78,7 +85,7 @@ public class NetworkedPortal extends AbstractPortal {
         activate(actor);
         if (destinations.size() < 1) {
             String message = super.languageManager.getErrorMessage(TranslatableMessage.DESTINATION_EMPTY);
-            MessageUtils.sendMessageFromPortal(this,event.getPlayer(),message, MessageType.DESTINATION_EMPTY);
+            MessageUtils.sendMessageFromPortal(this, event.getPlayer(), message, MessageType.DESTINATION_EMPTY);
 
             this.isActive = false;
             return;
@@ -169,11 +176,11 @@ public class NetworkedPortal extends AbstractPortal {
     @Override
     public SignLine[] getDrawnControlLines() {
         SignLine[] lines = new SignLine[4];
-        lines[0] = new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN),this, SignLineType.THIS_PORTAL);
+        lines[0] = new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN), this, SignLineType.THIS_PORTAL);
         if (!this.isActive || this.selectedDestination == NO_DESTINATION_SELECTED) {
             lines[1] = new TextLine(super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.RIGHT_CLICK)));
             lines[2] = new TextLine(super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.TO_USE)));
-            lines[3] = new NetworkLine(super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()),getNetwork());
+            lines[3] = new NetworkLine(super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()), getNetwork());
         } else {
             drawActiveSign(lines);
         }
@@ -200,7 +207,7 @@ public class NetworkedPortal extends AbstractPortal {
         for (int lineIndex = 0; lineIndex < 3; lineIndex++) {
             int destination = lineIndex + firstDestination;
             if (destination >= maxLength) {
-                lines[lineIndex+1] = new TextLine();
+                lines[lineIndex + 1] = new TextLine();
                 continue;
             }
             drawDestination(lineIndex, destination, destinationIndex, lines);
@@ -220,7 +227,7 @@ public class NetworkedPortal extends AbstractPortal {
         HighlightingStyle highlightingStyle = isSelectedPortal ? HighlightingStyle.LESSER_GREATER_THAN
                 : HighlightingStyle.NOTHING;
         Portal destinationPortal = destinations.get(destination);
-        lines[lineIndex + 1] = new PortalLine(super.colorDrawer.formatPortalName(destinationPortal, highlightingStyle),destinationPortal,isSelectedPortal ? SignLineType.DESTINATION_PORTAL : SignLineType.PORTAL);
+        lines[lineIndex + 1] = new PortalLine(super.colorDrawer.formatPortalName(destinationPortal, highlightingStyle), destinationPortal, isSelectedPortal ? SignLineType.DESTINATION_PORTAL : SignLineType.PORTAL);
     }
 
     /**
@@ -285,7 +292,7 @@ public class NetworkedPortal extends AbstractPortal {
             } else if (!accessEvent.getDenyReason().isEmpty()) {
                 message = accessEvent.getDenyReason();
             }
-            MessageUtils.sendMessageFromPortal(this,player,message, MessageType.DENY);
+            MessageUtils.sendMessageFromPortal(this, player, message, MessageType.DENY);
             if (hasPermission) {
                 Stargate.log(Level.CONFIG, " Access event was denied externally");
             }

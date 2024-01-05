@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.proxy.PluginMessageSender;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -9,7 +10,6 @@ import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.Collection;
@@ -39,14 +39,14 @@ public interface Network {
     /**
      * Removes the given portal from this network
      *
-     * @param portal             <p>The portal to remove</p>
+     * @param portal <p>The portal to remove</p>
      */
     void removePortal(Portal portal);
 
     /**
      * Adds the given portal to this network
      *
-     * @param portal         <p>The portal to add</p>
+     * @param portal <p>The portal to add</p>
      * @throws NameConflictException <p> if portal a portal with that name already exist in the network </p>
      */
     void addPortal(Portal portal) throws NameConflictException;
@@ -150,6 +150,7 @@ public interface Network {
     /**
      * Renames the portal, does not save to database and is also not cross server compatible.
      * Instead use {@link org.sgrewritten.stargate.api.network.NetworkManager#rename(Portal, String)}
+     *
      * @param newName
      * @param oldName
      */

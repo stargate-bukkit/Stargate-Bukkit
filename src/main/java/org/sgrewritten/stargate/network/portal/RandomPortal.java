@@ -2,19 +2,24 @@ package org.sgrewritten.stargate.network.portal;
 
 import org.bukkit.entity.Entity;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.format.*;
+import org.sgrewritten.stargate.api.network.portal.format.NetworkLine;
+import org.sgrewritten.stargate.api.network.portal.format.PortalLine;
+import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.format.SignLineType;
+import org.sgrewritten.stargate.api.network.portal.format.TextLine;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.gate.Gate;
-import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
-import java.util.*;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -42,10 +47,10 @@ public class RandomPortal extends AbstractPortal {
     @Override
     public SignLine[] getDrawnControlLines() {
         return new SignLine[]{
-                new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN),this, SignLineType.THIS_PORTAL),
+                new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN), this, SignLineType.THIS_PORTAL),
                 new TextLine(super.colorDrawer.formatLine(HighlightingStyle.LESSER_GREATER_THAN.getHighlightedName(
                         super.languageManager.getString(TranslatableMessage.RANDOM)))),
-                new NetworkLine(super.colorDrawer.formatNetworkName(getNetwork(), getNetwork().getHighlightingStyle()),getNetwork()),
+                new NetworkLine(super.colorDrawer.formatNetworkName(getNetwork(), getNetwork().getHighlightingStyle()), getNetwork()),
                 new TextLine()
         };
     }

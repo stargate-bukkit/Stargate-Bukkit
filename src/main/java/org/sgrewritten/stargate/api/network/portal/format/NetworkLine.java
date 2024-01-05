@@ -17,7 +17,7 @@ public class NetworkLine extends AbstractSignLine {
         this.network = network;
     }
 
-    public NetworkLine(HighlightingStyle style, Network network, ChatColor textColor, ChatColor pointerColor){
+    public NetworkLine(HighlightingStyle style, Network network, ChatColor textColor, ChatColor pointerColor) {
         super(new ArrayList<>());
         List<StargateComponent> components = getComponents();
         components.add(new StargateComponent(pointerColor + style.getPrefix()));
@@ -26,7 +26,7 @@ public class NetworkLine extends AbstractSignLine {
         this.network = network;
     }
 
-    public Network getNetwork(){
+    public Network getNetwork() {
         return this.network;
     }
 

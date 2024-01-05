@@ -50,17 +50,19 @@ public class StargateCreatePortalEvent extends DeniableStargatePortalEvent {
 
     /**
      * Add flag to related portal and save to storage
+     *
      * @param flag <p>The flag to add</p>
      */
-    public void addFlag(Character flag) throws UnsupportedOperationException{
+    public void addFlag(Character flag) throws UnsupportedOperationException {
         this.getPortal().addFlag(flag);
     }
 
     /**
      * Remove flag to related portal and save to storage
+     *
      * @param flag
      */
-    public void removeFlag(Character flag) throws UnsupportedOperationException{
+    public void removeFlag(Character flag) throws UnsupportedOperationException {
         this.getPortal().removeFlag(flag);
     }
 

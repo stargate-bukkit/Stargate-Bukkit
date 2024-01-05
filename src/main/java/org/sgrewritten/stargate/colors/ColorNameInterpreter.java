@@ -44,7 +44,7 @@ public class ColorNameInterpreter {
         } else {
             output = ColorRegistry.TEXT_COLORS.get(dyeColor);
         }
-        if(output == null) {
+        if (output == null) {
             throw new UnsupportedOperationException("Unsupported dye color: " + dyeColor);
         }
         return output;

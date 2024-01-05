@@ -1,9 +1,9 @@
 package org.sgrewritten.stargate.api.permission;
 
-import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.network.NetworkType;
 
 import java.util.Set;
 

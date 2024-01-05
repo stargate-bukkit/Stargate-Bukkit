@@ -32,7 +32,7 @@ public interface RegistryAPI {
      * Removes the given portal from registry. Only modifies this registry, use
      * {@link NetworkManager#destroyPortal(RealPortal)} instead
      *
-     * @param portal     <p>The portal to remove</p>
+     * @param portal <p>The portal to remove</p>
      */
     @ApiStatus.Internal
     void unregisterPortal(Portal portal);
@@ -148,13 +148,14 @@ public interface RegistryAPI {
      * Checks whether the given network name exists
      *
      * @param networkName <p>The network name to check</p>
-     * @param storageType    <p>The storage type of the network</p>
+     * @param storageType <p>The storage type of the network</p>
      * @return <p>True if the network exists</p>
      */
     boolean networkExists(String networkName, StorageType storageType);
 
     /**
      * Get the network registry
+     *
      * @param storageType
      * @return
      */
@@ -163,7 +164,7 @@ public interface RegistryAPI {
     /**
      * Gets the network with the given
      *
-     * @param id     <p>The id of the network to get</p>
+     * @param id          <p>The id of the network to get</p>
      * @param storageType <p>Whether the network is a BungeeCord network</p>
      * @return <p>The network with the given name</p>
      */

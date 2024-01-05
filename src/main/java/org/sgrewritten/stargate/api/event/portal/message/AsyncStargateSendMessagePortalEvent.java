@@ -12,6 +12,7 @@ public class AsyncStargateSendMessagePortalEvent extends StargateSendMessagePort
      * Instantiates a new stargate player event
      *
      * <p>Called asynchronously with the bukkit primary thread</p>
+     *
      * @param portal <p>The portal involved in this stargate event</p>
      * @param entity <p>The entity receiving the message</p>
      * @param type   <p>The type of message being sent</p>

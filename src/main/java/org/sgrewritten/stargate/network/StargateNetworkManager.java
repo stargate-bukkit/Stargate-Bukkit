@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.network;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
@@ -67,7 +66,7 @@ public class StargateNetworkManager implements NetworkManager {
         NetworkType type = data.getFirstValue();
         String finalNetworkName = data.getSecondValue();
         if (type == NetworkType.PERSONAL) {
-            if(finalNetworkName.equals(player.getName())){
+            if (finalNetworkName.equals(player.getName())) {
                 finalNetworkName = player.getUniqueId().toString();
             } else {
                 finalNetworkName = NetworkCreationHelper.getPlayerUUID(finalNetworkName).toString();
@@ -84,7 +83,7 @@ public class StargateNetworkManager implements NetworkManager {
 
     @Override
     public @NotNull Network selectNetwork(String name, NetworkType type, StorageType storageType) throws TranslatableException {
-        if(type == NetworkType.TERMINAL){
+        if (type == NetworkType.TERMINAL) {
             throw new UnimplementedFlagException("Terminal networks aare not implemented", PortalFlag.TERMINAL_NETWORK);
         }
         name = NameHelper.getTrimmedName(name);
@@ -151,7 +150,7 @@ public class StargateNetworkManager implements NetworkManager {
                 Network network = registry.getNetwork(name, storageType);
                 if (network != null && network.getType() != type) {
                     String newId = registry.getValidNewName(network);
-                    registry.renameNetwork(newId,network.getId(),network.getStorageType());
+                    registry.renameNetwork(newId, network.getId(), network.getStorageType());
                     ThreadHelper.callAsynchronously(() -> {
                         try {
                             storageAPI.updateNetworkName(newId, network.getName(), network.getStorageType());

@@ -51,7 +51,7 @@ public class GateControlBlock extends GateStructure {
         BlockVector signPosition = parts.get(0);
         Block signLocation = topLeft.clone().add(converter.performToRealSpaceOperation(signPosition)).getBlock();
         boolean isWaterlogged = false;
-        if(signLocation.getBlockData() instanceof Waterlogged waterlogged){
+        if (signLocation.getBlockData() instanceof Waterlogged waterlogged) {
             isWaterlogged = waterlogged.isWaterlogged();
         }
         BlockState state = signLocation.getState();

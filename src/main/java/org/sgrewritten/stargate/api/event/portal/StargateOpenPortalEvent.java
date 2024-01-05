@@ -7,8 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 
-import java.util.Objects;
-
 /**
  * This event should be called whenever a player opens a stargate
  *
@@ -80,11 +78,11 @@ public class StargateOpenPortalEvent extends StargateEntityPortalEvent implement
         this.cancelled = cancelled;
     }
 
-    public @Nullable Portal getDestination(){
+    public @Nullable Portal getDestination() {
         return this.destination;
     }
 
-    public void setDestination(Portal destination){
+    public void setDestination(Portal destination) {
         this.destination = destination;
     }
 

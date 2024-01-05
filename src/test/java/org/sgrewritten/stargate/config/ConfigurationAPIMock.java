@@ -7,19 +7,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigurationAPIMock implements ConfigurationAPI {
-    private Map<ConfigurationOption,Object> configuration = loadDefaultConfiguration();
+    private Map<ConfigurationOption, Object> configuration = loadDefaultConfiguration();
 
     private static Map<ConfigurationOption, Object> loadDefaultConfiguration() {
-        Map<ConfigurationOption,Object> config = new HashMap<>();
-        for(ConfigurationOption configurationOption : ConfigurationOption.values()){
-            config.put(configurationOption,configurationOption.getDefaultValue());
+        Map<ConfigurationOption, Object> config = new HashMap<>();
+        for (ConfigurationOption configurationOption : ConfigurationOption.values()) {
+            config.put(configurationOption, configurationOption.getDefaultValue());
         }
         return config;
     }
 
     @Override
     public void setConfigurationOptionValue(ConfigurationOption configurationOption, Object newValue) {
-        configuration.put(configurationOption,newValue);
+        configuration.put(configurationOption, newValue);
     }
 
     @Override

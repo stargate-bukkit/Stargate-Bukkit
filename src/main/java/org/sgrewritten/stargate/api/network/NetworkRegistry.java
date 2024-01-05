@@ -7,7 +7,6 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.stream.Stream;
 
 public interface NetworkRegistry {
@@ -38,11 +37,10 @@ public interface NetworkRegistry {
     void unregisterNetwork(Network network);
 
 
-
     /**
      * Gets the network with the given
      *
-     * @param name     <p>The name of the network to get</p>
+     * @param name <p>The name of the network to get</p>
      * @return <p>The network with the given name</p>
      */
     @Nullable Network getNetwork(String name);

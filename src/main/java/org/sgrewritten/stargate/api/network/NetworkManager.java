@@ -1,7 +1,6 @@
 package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
@@ -35,8 +34,8 @@ public interface NetworkManager {
     /**
      * Gets the network with the given name, and creates it if it doesn't already exist
      *
-     * @param name          <p>The name of the network to get</p>
-     * @param type          <p>The type of network to get</p>
+     * @param name        <p>The name of the network to get</p>
+     * @param type        <p>The type of network to get</p>
      * @param storageType <p>Whether or not the network works (or will work) across instances.
      * @return <p>The network the portal should be connected to</p>
      * @throws TranslatableException <p>If the network name is invalid</p>
@@ -46,10 +45,10 @@ public interface NetworkManager {
     /**
      * Creates a new network assigned to this registry
      *
-     * @param name   <p>The name of the new network</p>
-     * @param type          <p>The type of network to create</p>
+     * @param name        <p>The name of the new network</p>
+     * @param type        <p>The type of network to create</p>
      * @param storageType <p>Whether to create it as a Interserver network</p>
-     * @param isForced      <p>The authority for the creation </p>
+     * @param isForced    <p>The authority for the creation </p>
      * @return <p> The network created </p>
      * @throws InvalidNameException       <p>If the given network name is invalid</p>
      * @throws NameLengthException
@@ -86,6 +85,7 @@ public interface NetworkManager {
 
     /**
      * Loads all portals from storage
+     *
      * @param stargateAPI <p>The stargate api</p>
      */
     void loadPortals(StargateAPI stargateAPI);
@@ -98,6 +98,7 @@ public interface NetworkManager {
 
     /**
      * Add portal to network and save to storage
+     *
      * @param portal
      * @param network
      */

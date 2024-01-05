@@ -42,21 +42,21 @@ public class SQLTestHelper {
      * @throws SQLException <p>If unable to get data from the database</p>
      */
     public static void checkIfHasNot(String table, String name, String network, Connection connection) throws SQLException {
-        try(PreparedStatement statement = getFetchStatement(table,name,network,connection)) {
+        try (PreparedStatement statement = getFetchStatement(table, name, network, connection)) {
             ResultSet set = statement.executeQuery();
             Assertions.assertFalse(set.next());
         }
     }
 
     public static void checkIfHas(String table, String name, String network, Connection connection) throws SQLException {
-        try(PreparedStatement statement = getFetchStatement(table,name,network,connection)) {
+        try (PreparedStatement statement = getFetchStatement(table, name, network, connection)) {
             ResultSet set = statement.executeQuery();
             Assertions.assertTrue(set.next());
         }
     }
 
-    public static void checkIfColumnIs(String table, String column, String name, String network, Object value ,Connection connection) throws SQLException {
-        try(PreparedStatement statement = getFetchStatement(table,name,network,connection)) {
+    public static void checkIfColumnIs(String table, String column, String name, String network, Object value, Connection connection) throws SQLException {
+        try (PreparedStatement statement = getFetchStatement(table, name, network, connection)) {
             ResultSet set = statement.executeQuery();
             Assertions.assertEquals(set.getObject(column), value);
         }

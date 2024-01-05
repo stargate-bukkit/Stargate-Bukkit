@@ -4,7 +4,6 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BlockVector;
@@ -15,17 +14,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.portal.BlockLocation;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.database.StorageMock;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.util.StargateTestHelper;
-import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.util.portal.PortalMock;
 
 class StargateRegistryTest {
@@ -68,21 +67,21 @@ class StargateRegistryTest {
 
     @ParameterizedTest
     @EnumSource
-    void registerUnregisterPosition(GateStructureType type){
+    void registerUnregisterPosition(GateStructureType type) {
         PortalMock portal = new PortalMock();
-        Location location = new Location(world,0,0,0);
+        Location location = new Location(world, 0, 0, 0);
         BlockLocation blockLocation = new BlockLocation(location);
-        registry.registerLocation(type,blockLocation, portal);
+        registry.registerLocation(type, blockLocation, portal);
         Assertions.assertEquals(registry.getPortal(location), portal);
-        registry.unRegisterLocation(type,blockLocation);
+        registry.unRegisterLocation(type, blockLocation);
         Assertions.assertNull(registry.getPortal(location));
     }
 
     @ParameterizedTest
     @EnumSource
-    void registerPortalPosition(PositionType type){
-        PortalPosition portalPosition = new PortalPosition(type,new BlockVector(1, 1, 1),"Stargate");
-        Location location= new Location(world,0,0,0);
+    void registerPortalPosition(PositionType type) {
+        PortalPosition portalPosition = new PortalPosition(type, new BlockVector(1, 1, 1), "Stargate");
+        Location location = new Location(world, 0, 0, 0);
         PortalMock portal = new PortalMock();
         this.registry.registerPortalPosition(portalPosition, location, portal);
         Assertions.assertNotNull(this.registry.getPortalPosition(location));
@@ -90,35 +89,35 @@ class StargateRegistryTest {
 
     @ParameterizedTest
     @EnumSource
-    void saveDeletePortalPosition(PositionType type){
-        Location location = new Location(world,0,0,0);
+    void saveDeletePortalPosition(PositionType type) {
+        Location location = new Location(world, 0, 0, 0);
         PortalMock portal = new PortalMock();
         Plugin plugin = MockBukkit.createMockPlugin("Stargate");
-        PortalPosition portalPosition = registry.savePortalPosition(portal,location,type,plugin);
-        registry.registerPortalPosition(portalPosition,location,portal);
+        PortalPosition portalPosition = registry.savePortalPosition(portal, location, type, plugin);
+        registry.registerPortalPosition(portalPosition, location, portal);
         Assertions.assertNotNull(storageMock.getNextAddedPortalPosition());
         registry.removePortalPosition(location);
         Assertions.assertNotNull(storageMock.getNextRemovedPortalPosition());
     }
 
     @Test
-    void getPortalPosition_notFound(){
-        Location location = new Location(world,0,0,0);
+    void getPortalPosition_notFound() {
+        Location location = new Location(world, 0, 0, 0);
         Assertions.assertNull(registry.getPortalPosition(location));
     }
 
     @Test
-    void removePortalPosition_doesNotExist(){
-        registry.removePortalPosition(new Location(world,0,0,0));
+    void removePortalPosition_doesNotExist() {
+        registry.removePortalPosition(new Location(world, 0, 0, 0));
     }
 
     @ParameterizedTest
     @EnumSource
-    void getPortalFromPortalPosition(PositionType type){
-        PortalPosition portalPosition = new PortalPosition(type,new BlockVector(1, 1, 1),"Stargate");
-        Location location= new Location(world,0,0,0);
+    void getPortalFromPortalPosition(PositionType type) {
+        PortalPosition portalPosition = new PortalPosition(type, new BlockVector(1, 1, 1), "Stargate");
+        Location location = new Location(world, 0, 0, 0);
         PortalMock portal = new PortalMock();
         this.registry.registerPortalPosition(portalPosition, location, portal);
-        Assertions.assertEquals(portal,this.registry.getPortalFromPortalPosition(portalPosition));
+        Assertions.assertEquals(portal, this.registry.getPortalFromPortalPosition(portalPosition));
     }
 }

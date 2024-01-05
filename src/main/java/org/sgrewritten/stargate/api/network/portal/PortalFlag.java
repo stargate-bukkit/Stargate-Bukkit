@@ -2,7 +2,11 @@ package org.sgrewritten.stargate.api.network.portal;
 
 import org.sgrewritten.stargate.util.ExceptionHelper;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -193,11 +197,11 @@ public enum PortalFlag {
         }
     }
 
-    public static Set<Character> getUnrecognisedFlags(String flagString){
+    public static Set<Character> getUnrecognisedFlags(String flagString) {
         Set<Character> unrecognisedFlags = new HashSet<>();
         Matcher matcher = NON_FLAG_STRING.matcher(flagString.toUpperCase());
-        for(char flag : matcher.replaceAll("").toCharArray()){
-            if(!ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)) ) {
+        for (char flag : matcher.replaceAll("").toCharArray()) {
+            if (!ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag))) {
                 unrecognisedFlags.add(flag);
             }
         }

@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 public class PriorityTest {
 
     @Test
-    void priorityOrderingTest(){
+    void priorityOrderingTest() {
         int latestPriority = Integer.MAX_VALUE;
-        for(Priority priority : Priority.getHighToLowPriority()) {
+        for (Priority priority : Priority.getHighToLowPriority()) {
             Assertions.assertTrue(latestPriority >= priority.getPriorityValue());
             latestPriority = priority.getPriorityValue();
         }

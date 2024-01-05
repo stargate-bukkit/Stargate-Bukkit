@@ -2,7 +2,6 @@ package org.sgrewritten.stargate.formatting;
 
 import org.bukkit.ChatColor;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.util.FileHelper;
 

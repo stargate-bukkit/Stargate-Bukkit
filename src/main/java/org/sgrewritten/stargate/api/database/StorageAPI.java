@@ -1,19 +1,19 @@
 package org.sgrewritten.stargate.api.database;
 
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
-import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalPosition;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
 /**
  * A generic API for Stargate's storage methods
@@ -25,7 +25,7 @@ public interface StorageAPI {
      * Loads all portals from storage and adds them to the portal registry
      *
      * @param stargateAPI <p> The stargate API </p>
-     * @param registry <p> The registry to insert the portals into</p>
+     * @param registry    <p> The registry to insert the portals into</p>
      * @throws StorageReadException <p>If unable to read from storage</p>
      */
     void loadFromStorage(RegistryAPI registry, StargateAPI stargateAPI) throws StorageReadException;
@@ -96,8 +96,8 @@ public interface StorageAPI {
     /**
      * Creates a new network unassigned to a registry
      *
-     * @param networkName   <p>The name of the new network</p>
-     * @param type          <p>The type of network to look for.</p>
+     * @param networkName <p>The name of the new network</p>
+     * @param type        <p>The type of network to look for.</p>
      * @param storageType <p>Whether or not the network works across servers (I flag)</p>
      * @return The network that was created
      * @throws InvalidNameException       <p>If the given network name is invalid</p>

@@ -6,8 +6,6 @@ import org.bukkit.World;
 import org.bukkit.util.Vector;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
-import org.sgrewritten.stargate.gate.Gate;
-import org.sgrewritten.stargate.gate.GateFormat;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 
@@ -29,7 +27,7 @@ public final class SpawnDetectionHelper {
     /**
      * Checks whether the given gate has any block inside the spawn protection area
      *
-     * @param gate         <p>The gate to check for interference</p>
+     * @param gate <p>The gate to check for interference</p>
      * @return <p>True if the gate has at least one block inside the spawn protection area</p>
      */
     public static boolean isInterferingWithSpawnProtection(GateAPI gate) {

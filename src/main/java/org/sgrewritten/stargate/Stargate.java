@@ -45,6 +45,8 @@ import org.sgrewritten.stargate.api.manager.BungeeManager;
 import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
+import org.sgrewritten.stargate.colors.ColorConverter;
+import org.sgrewritten.stargate.colors.ColorNameInterpreter;
 import org.sgrewritten.stargate.command.CommandStargate;
 import org.sgrewritten.stargate.command.StargateTabCompleter;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
@@ -81,8 +83,6 @@ import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.util.BStatsHelper;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.FileHelper;
-import org.sgrewritten.stargate.colors.ColorConverter;
-import org.sgrewritten.stargate.colors.ColorNameInterpreter;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 
 import java.io.File;
@@ -378,22 +378,22 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         return this.legacySignColor;
     }
 
-    public static ChatColor getDefaultPointerColor(){
-        if(instance == null){
+    public static ChatColor getDefaultPointerColor() {
+        if (instance == null) {
             return ChatColor.WHITE;
         }
         return instance.defaultPointerColor;
     }
 
-    public static ChatColor getDefaultTextColor(){
-        if(instance == null){
+    public static ChatColor getDefaultTextColor() {
+        if (instance == null) {
             return ChatColor.BLACK;
         }
         return instance.defaultTextColor;
     }
 
-    public static DyeColor getDefaultDyeColor(){
-        if(instance == null){
+    public static DyeColor getDefaultDyeColor() {
+        if (instance == null) {
             return DyeColor.BLACK;
         }
         return instance.defaultDyeColor;

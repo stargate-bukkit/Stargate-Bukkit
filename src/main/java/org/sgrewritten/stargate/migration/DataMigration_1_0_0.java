@@ -4,18 +4,14 @@ import com.google.common.io.Files;
 import org.bukkit.Server;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
-import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.api.formatting.LanguageManager;
-import org.sgrewritten.stargate.api.network.RegistryAPI;
-import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.LegacyDataHandler;
 import org.sgrewritten.stargate.util.LegacyPortalStorageLoader;
@@ -43,7 +39,7 @@ public class DataMigration_1_0_0 extends DataMigration {
     /**
      * Instantiates a new Ret-Com 1.0.0
      *
-     * @param server   <p>The server to use for loading legacy portals</p>
+     * @param server <p>The server to use for loading legacy portals</p>
      */
     public DataMigration_1_0_0(@NotNull Server server, StoredPropertiesAPI storedProperties) {
         if (CONFIG_CONVERSIONS == null) {
@@ -72,9 +68,9 @@ public class DataMigration_1_0_0 extends DataMigration {
         if (oldConfig.get("debugging.permissionDebug") != null) {
             storedProperties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, true);
             this.versionFrom = "0.11.5.5";
-            try(InputStream inputStream = Stargate.class.getResourceAsStream("/migration/paritymessage.txt")) {
+            try (InputStream inputStream = Stargate.class.getResourceAsStream("/migration/paritymessage.txt")) {
                 Stargate.log(Level.WARNING, "\n" + FileHelper.readStreamToString(inputStream));
-            } catch (IOException e){
+            } catch (IOException e) {
                 Stargate.log(e);
             }
         } else {
@@ -162,7 +158,7 @@ public class DataMigration_1_0_0 extends DataMigration {
      * @throws TranslatableException     <p>If some use input was invalid</p>
      */
     private void migratePortals(String portalFolder, String defaultNetworkName, StargateAPI stargateAPI) throws InvalidStructureException, IOException, TranslatableException {
-        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, defaultNetworkName,stargateAPI);
+        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, defaultNetworkName, stargateAPI);
         if (portals == null) {
             Stargate.log(Level.WARNING, "No portals migrated!");
         } else {
@@ -191,7 +187,7 @@ public class DataMigration_1_0_0 extends DataMigration {
 
         Stargate instance = Stargate.getInstance();
         File gateDirectory;
-        if(instance == null){
+        if (instance == null) {
             gateDirectory = new File("");
         } else {
             gateDirectory = new File(instance.getDataFolder(), instance.getGateFolder());
@@ -200,7 +196,7 @@ public class DataMigration_1_0_0 extends DataMigration {
             return;
         }
         File debugGateDirectory;
-        if(instance == null){
+        if (instance == null) {
             debugGateDirectory = new File("");
         } else {
             debugGateDirectory = new File(instance.getDataFolder(), "debug/invalidGates");

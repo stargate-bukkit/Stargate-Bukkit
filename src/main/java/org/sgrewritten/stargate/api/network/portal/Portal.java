@@ -3,9 +3,8 @@ package org.sgrewritten.stargate.api.network.portal;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
-import org.sgrewritten.stargate.api.database.StorageAPI;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 
@@ -122,12 +121,14 @@ public interface Portal {
 
     /**
      * Temporary add a flag, does not save to storage
+     *
      * @param flag
      */
     void addFlag(Character flag) throws UnsupportedOperationException;
 
     /**
      * Temporary remove a flag, does not save to storage
+     *
      * @param flag
      */
     void removeFlag(Character flag) throws UnsupportedOperationException;
@@ -193,7 +194,7 @@ public interface Portal {
     StorageType getStorageType();
 
     /**
-     * Changes the name of the portal. Use {@link org.sgrewritten.stargate.api.network.NetworkManager#rename(Portal, String)} 
+     * Changes the name of the portal. Use {@link org.sgrewritten.stargate.api.network.NetworkManager#rename(Portal, String)}
      * instead, as this does not save to database, nor update its name to the portal network.
      *
      * @param newName <p>The new name of the portal</p>
@@ -209,7 +210,6 @@ public interface Portal {
     void activate(Player player);
 
     /**
-     *
      * @return <p>True if this portal has been destroyed</p>
      */
     boolean isDestroyed();

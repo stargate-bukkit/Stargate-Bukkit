@@ -19,24 +19,25 @@ public class PortalPosition {
     private final String pluginName;
     private boolean active;
     private @Nullable String metaData = null;
+
     /**
      * Instantiates a new active portal position
      *
-     * @param positionType     <p>The type of this portal position</p>
+     * @param positionType             <p>The type of this portal position</p>
      * @param relativePositionLocation <p> The relative location of this portal to that of the gate</p>
-     * @param pluginName <p> The name of the plugin this position relates to</p>
+     * @param pluginName               <p> The name of the plugin this position relates to</p>
      */
     public PortalPosition(@NotNull PositionType positionType, @NotNull BlockVector relativePositionLocation, @NotNull String pluginName) {
-        this(positionType,relativePositionLocation,pluginName,true);
+        this(positionType, relativePositionLocation, pluginName, true);
     }
 
     /**
      * Instantiates a new active portal position
      *
-     * @param positionType     <p>The type of this portal position</p>
+     * @param positionType             <p>The type of this portal position</p>
      * @param relativePositionLocation <p> The relative location of this portal to that of the gate</p>
-     * @param pluginName <p> The name of the plugin this position relates to</p>
-     * @param active <p> If the position is active </p>
+     * @param pluginName               <p> The name of the plugin this position relates to</p>
+     * @param active                   <p> If the position is active </p>
      */
     public PortalPosition(@NotNull PositionType positionType, @NotNull BlockVector relativePositionLocation, @NotNull String pluginName, boolean active) {
         this.positionType = Objects.requireNonNull(positionType);
@@ -50,7 +51,8 @@ public class PortalPosition {
      *
      * @return <p>This portal position's type</p>
      */
-    @NotNull public PositionType getPositionType() {
+    @NotNull
+    public PositionType getPositionType() {
         return this.positionType;
     }
 
@@ -59,7 +61,8 @@ public class PortalPosition {
      *
      * @return <p>This portal position's relative location</p>
      */
-    @NotNull public BlockVector getRelativePositionLocation() {
+    @NotNull
+    public BlockVector getRelativePositionLocation() {
         return this.relativePositionLocation;
     }
 
@@ -67,8 +70,9 @@ public class PortalPosition {
      * @param portal <p> The portal which this position belongs to </p>
      * @return
      */
-    @Nullable public String getMetaData(RealPortal portal) {
-        if(metaData != null){
+    @Nullable
+    public String getMetaData(RealPortal portal) {
+        if (metaData != null) {
             return metaData;
         }
         try {
@@ -92,6 +96,7 @@ public class PortalPosition {
     public @NotNull String getPluginName() {
         return this.pluginName;
     }
+
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof PortalPosition otherPortalPosition)) {

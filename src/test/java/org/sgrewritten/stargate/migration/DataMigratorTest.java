@@ -23,22 +23,22 @@ import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabase;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
-import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.database.property.FakePropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.StargateNetwork;
-import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.StargateRegistry;
-import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.thread.ThreadHelper;
 
@@ -90,8 +90,8 @@ public class DataMigratorTest {
         sqlDatabaseFile = new File("src/test/resources", "migrate-test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);
         StorageAPI storageAPI = new SQLDatabase(sqlDatabase, false, false);
-        registry = new StargateRegistry(storageAPI,new BlockHandlerResolver(storageAPI));
-        stargateAPI = new StargateAPIMock(storageAPI,registry);
+        registry = new StargateRegistry(storageAPI, new BlockHandlerResolver(storageAPI));
+        stargateAPI = new StargateAPIMock(storageAPI, registry);
         networkManager = stargateAPI.getNetworkManager();
 
         defaultConfigFile = new File("src/main/resources", "config.yml");
@@ -253,7 +253,7 @@ public class DataMigratorTest {
     @Test
     @Order(3)
     public void portalPrintCheck() throws SQLException {
-        try(Connection conn = sqlDatabase.getConnection()) {
+        try (Connection conn = sqlDatabase.getConnection()) {
             PreparedStatement statement = conn.prepareStatement("SELECT * FROM Portal;");
             ResultSet set = statement.executeQuery();
             ResultSetMetaData meta = set.getMetaData();
@@ -266,7 +266,7 @@ public class DataMigratorTest {
                 }
                 Stargate.log(Level.FINE, msg.toString());
             }
-             Assertions.assertTrue(count > 0, "There was no portals loaded from old database");
+            Assertions.assertTrue(count > 0, "There was no portals loaded from old database");
         }
     }
 

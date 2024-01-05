@@ -7,7 +7,12 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -52,7 +57,7 @@ public class GateFrame extends GateStructure {
 
     @Override
     public void generateStructure(VectorOperation converter, Location topLeft) {
-        for(BlockVector position : parts.keySet()){
+        for (BlockVector position : parts.keySet()) {
             Location location = topLeft.clone().add(converter.performToRealSpaceOperation(position));
             Set<Material> materialsAtPosition = parts.get(position);
             Material material = materialsAtPosition.toArray(new Material[0])[RANDOM.nextInt(materialsAtPosition.size())];

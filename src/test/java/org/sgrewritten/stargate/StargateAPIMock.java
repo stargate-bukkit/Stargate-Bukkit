@@ -8,16 +8,16 @@ import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.manager.BungeeManager;
 import org.sgrewritten.stargate.api.network.NetworkManager;
-import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.config.ConfigurationAPIMock;
-import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
+import org.sgrewritten.stargate.database.StorageMock;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
+import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
-import org.sgrewritten.stargate.database.StorageMock;
 
 public class StargateAPIMock implements StargateAPI {
 
@@ -33,57 +33,52 @@ public class StargateAPIMock implements StargateAPI {
     /**
      * @param managers <p>A set of managers as listed in this class</p>
      */
-    public StargateAPIMock(Object... managers){
-        for(Object aManager : managers){
-            if(aManager instanceof StorageAPI storageAPI){
+    public StargateAPIMock(Object... managers) {
+        for (Object aManager : managers) {
+            if (aManager instanceof StorageAPI storageAPI) {
                 this.storageAPI = storageAPI;
-            }
-            else if(aManager instanceof RegistryAPI registryAPI){
+            } else if (aManager instanceof RegistryAPI registryAPI) {
                 this.registry = registryAPI;
-            }
-            else if(aManager instanceof ConfigurationAPI configurationAPI) {
+            } else if (aManager instanceof ConfigurationAPI configurationAPI) {
                 this.configurationAPI = configurationAPI;
-            }
-            else if(aManager instanceof LanguageManager languageManager){
+            } else if (aManager instanceof LanguageManager languageManager) {
                 this.languageManager = languageManager;
-            }
-            else if(aManager instanceof  BungeeManager bungeeManager){
+            } else if (aManager instanceof BungeeManager bungeeManager) {
                 this.bungeeManager = bungeeManager;
-            }
-            else if(aManager instanceof BlockHandlerResolver blockHandlerResolver){
+            } else if (aManager instanceof BlockHandlerResolver blockHandlerResolver) {
                 this.blockHandlerResolver = blockHandlerResolver;
-            }
-            else if(aManager instanceof StargateEconomyAPI economyManager){
+            } else if (aManager instanceof StargateEconomyAPI economyManager) {
                 this.economyManager = economyManager;
             } else if (aManager instanceof NetworkManager networkManager) {
                 this.networkManager = networkManager;
             }
         }
-        if(storageAPI == null){
+        if (storageAPI == null) {
             this.storageAPI = new StorageMock();
         }
-        if(this.blockHandlerResolver == null){
+        if (this.blockHandlerResolver == null) {
             this.blockHandlerResolver = new BlockHandlerResolver(storageAPI);
         }
-        if(registry == null){
+        if (registry == null) {
             this.registry = new StargateRegistry(this.storageAPI, this.blockHandlerResolver);
         }
-        if(this.configurationAPI == null){
+        if (this.configurationAPI == null) {
             this.configurationAPI = new ConfigurationAPIMock();
         }
-        if(this.languageManager == null){
+        if (this.languageManager == null) {
             this.languageManager = new LanguageManagerMock();
         }
-        if(this.networkManager == null){
-            this.networkManager = new StargateNetworkManager(registry,storageAPI);
+        if (this.networkManager == null) {
+            this.networkManager = new StargateNetworkManager(registry, storageAPI);
         }
-        if(this.bungeeManager == null){
-            this.bungeeManager = new StargateBungeeManager(registry,languageManager, networkManager);
+        if (this.bungeeManager == null) {
+            this.bungeeManager = new StargateBungeeManager(registry, languageManager, networkManager);
         }
-        if(this.economyManager == null) {
+        if (this.economyManager == null) {
             this.economyManager = new StargateEconomyManagerMock();
         }
     }
+
     @Override
     public RegistryAPI getRegistry() {
         return registry;

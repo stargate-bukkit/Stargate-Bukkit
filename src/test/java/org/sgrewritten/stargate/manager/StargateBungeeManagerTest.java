@@ -14,14 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.database.StorageMock;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateNetwork;
@@ -30,9 +30,6 @@ import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
-import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
@@ -82,7 +79,7 @@ class StargateBungeeManagerTest {
                 NETWORK, false, bungeePortalFlags, new HashSet<>(), registry);
         bungeeNetwork.addPortal(bungeePortal);
 
-        bungeeManager = new StargateBungeeManager(registry, new LanguageManagerMock(),networkManager);
+        bungeeManager = new StargateBungeeManager(registry, new LanguageManagerMock(), networkManager);
     }
 
     @AfterEach
@@ -98,7 +95,7 @@ class StargateBungeeManagerTest {
         RealPortal portal2 = PortalFactory.generateFakePortal(world, network, PORTAL2, true);
 
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
-        bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal2,StargateProtocolRequestType.PORTAL_ADD));
+        bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal2, StargateProtocolRequestType.PORTAL_ADD));
         Network network1 = registry.getNetwork(NETWORK, StorageType.INTER_SERVER);
         Assertions.assertNotNull(network1);
         Assertions.assertNotNull(network1.getPortal(PORTAL));
@@ -112,12 +109,13 @@ class StargateBungeeManagerTest {
         RealPortal portal = PortalFactory.generateFakePortal(world, network, PORTAL, true);
         String newName = "new_portal";
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
-        bungeeManager.updateNetwork(BungeeHelper.generateRenamePortalMessage(newName,portal.getName(),network));
+        bungeeManager.updateNetwork(BungeeHelper.generateRenamePortalMessage(newName, portal.getName(), network));
         Network network1 = registry.getNetwork(NETWORK, StorageType.INTER_SERVER);
         Assertions.assertNotNull(network1);
         Assertions.assertNull(network1.getPortal(PORTAL));
         Assertions.assertNotNull(network1.getPortal(newName));
     }
+
     @Test
     void updateNetwork_renameNetwork() throws TranslatableException, InvalidStructureException {
         //A network not assigned to a registry
@@ -126,7 +124,7 @@ class StargateBungeeManagerTest {
         String newName = "new_network";
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
         Network preRenameNetwork = registry.getNetwork(NETWORK, StorageType.INTER_SERVER);
-        bungeeManager.updateNetwork(BungeeHelper.generateRenameNetworkMessage(newName,NETWORK));
+        bungeeManager.updateNetwork(BungeeHelper.generateRenameNetworkMessage(newName, NETWORK));
         Network renamedNetwork = registry.getNetwork(newName, StorageType.INTER_SERVER);
         Assertions.assertEquals(preRenameNetwork, renamedNetwork);
         Assertions.assertNotNull(renamedNetwork);

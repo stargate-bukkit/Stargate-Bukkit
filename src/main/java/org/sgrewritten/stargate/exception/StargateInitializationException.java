@@ -14,7 +14,7 @@ public class StargateInitializationException extends Exception {
         super(message);
     }
 
-    public StargateInitializationException(Throwable exception){
+    public StargateInitializationException(Throwable exception) {
         super(exception);
     }
 

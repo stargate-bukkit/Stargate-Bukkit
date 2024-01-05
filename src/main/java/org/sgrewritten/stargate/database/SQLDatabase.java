@@ -188,7 +188,7 @@ public class SQLDatabase implements StorageAPI {
      */
     private void loadAllPortals(SQLDatabaseAPI database, StorageType portalType, StargateAPI stargateAPI) throws SQLException {
         List<PortalData> portalDataList;
-        try(Connection connection = database.getConnection()) {
+        try (Connection connection = database.getConnection()) {
             PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsStatement(connection, portalType);
 
             ResultSet resultSet = statement.executeQuery();
@@ -198,7 +198,7 @@ public class SQLDatabase implements StorageAPI {
             }
             statement.close();
         }
-        for(PortalData portalData : portalDataList){
+        for (PortalData portalData : portalDataList) {
             loadPortal(portalData, stargateAPI);
         }
     }

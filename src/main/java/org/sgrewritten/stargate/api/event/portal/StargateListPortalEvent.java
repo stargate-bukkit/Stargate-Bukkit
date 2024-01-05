@@ -16,15 +16,15 @@ public class StargateListPortalEvent extends DeniableStargatePortalEvent {
      * @param portal <p>The portal involved in this stargate event</p>
      */
     public StargateListPortalEvent(@NotNull Portal portal, Entity entity, Portal listedPortal, boolean deny) {
-        super(portal,entity, deny, "", false);
+        super(portal, entity, deny, "", false);
         this.listedPortal = listedPortal;
     }
 
-    public Portal getListedPortal(){
+    public Portal getListedPortal() {
         return listedPortal;
     }
 
-    public static HandlerList getHandlerList(){
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 

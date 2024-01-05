@@ -5,12 +5,12 @@ import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
+import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
+import org.sgrewritten.stargate.api.gate.structure.GateStructure;
+import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 import org.sgrewritten.stargate.gate.structure.GateControlBlock;
 import org.sgrewritten.stargate.gate.structure.GateFrame;
 import org.sgrewritten.stargate.gate.structure.GateIris;
-import org.sgrewritten.stargate.api.gate.structure.GateStructure;
-import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
-import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 
 import java.util.EnumMap;
 import java.util.List;

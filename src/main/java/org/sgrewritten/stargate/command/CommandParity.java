@@ -86,9 +86,9 @@ public class CommandParity implements CommandExecutor {
             downloadPlugin(interfaces, interfacesFile);
             downloadPlugin(customizations, customizationsFile);
             downloadPlugin(mapper, mapperFile);
-            if(oldConfig.exists()){
+            if (oldConfig.exists()) {
                 File targetDir = new File(pluginsFolder, "StargateCustomizations");
-                if(!targetDir.exists() && !targetDir.mkdir()){
+                if (!targetDir.exists() && !targetDir.mkdir()) {
                     throw new IOException("Could not create directory: " + targetDir);
                 }
                 FileUtils.copyFile(oldConfig, new File(targetDir, "old_stargate_config.yml"));

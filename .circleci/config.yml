@@ -3,7 +3,7 @@ jobs:
   build-and-test:
     docker:
       - image: debian:12.4
-            
+
       - image: cimg/mariadb:11.2.1
         environment:
           MARIADB_ROOT_PASSWORD: password
@@ -24,7 +24,7 @@ jobs:
             echo 127.0.0.1 devhost | tee -a /etc/hosts
             mkdir -p ~/my-projects/stargate/core
             cd ~/my-projects/stargate/core
-            
+
       - run:
           name: Install Stuff
           command: |
@@ -32,7 +32,7 @@ jobs:
             apt-get update && apt-get install -y mariadb-client
             apt-get install -y git
             apt-get install -y maven
-      
+
       - run:
           name: Clone Repository
           command: |
@@ -40,11 +40,11 @@ jobs:
             git clone https://github.com/stargate-rewritten/Stargate-Bukkit.git
             cd ~/my-projects/stargate/core/Stargate-Bukkit
             git checkout nightly
-      
+
       - restore_cache:
           keys:
             - maven-data
-      
+
       - run:
           name: Populate Secrets File
           command: |

@@ -5,14 +5,15 @@ import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.network.portal.BlockLocation;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.container.ThreeTuple;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.StorageMock;
-import org.sgrewritten.stargate.api.network.portal.BlockLocation;
-import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Stack;
 
 public class RegistryMock extends StargateRegistry {
     Stack<TwoTuple<GateStructureType, BlockLocation>> previousUnregisteredLocations = new Stack<>();
@@ -44,7 +45,7 @@ public class RegistryMock extends StargateRegistry {
     }
 
     public ThreeTuple<GateStructureType, BlockLocation, RealPortal> getNextRegisteredLocation() {
-        if(previousRegisteredLocations.isEmpty()){
+        if (previousRegisteredLocations.isEmpty()) {
             return null;
         }
         return previousRegisteredLocations.pop();
@@ -53,24 +54,24 @@ public class RegistryMock extends StargateRegistry {
     @Override
     public void unRegisterLocation(GateStructureType structureType, BlockLocation blockLocation) {
         previousUnregisteredLocations.push(new TwoTuple<>(structureType, blockLocation));
-        super.unRegisterLocation(structureType,blockLocation);
+        super.unRegisterLocation(structureType, blockLocation);
     }
 
     public TwoTuple<GateStructureType, BlockLocation> getNextUnregisteredLocation() {
-        if(previousUnregisteredLocations.isEmpty()){
+        if (previousUnregisteredLocations.isEmpty()) {
             return null;
         }
         return previousUnregisteredLocations.pop();
     }
 
     @Override
-    public void registerPortalPosition(PortalPosition portalPosition, Location location, RealPortal portal){
-        super.registerPortalPosition(portalPosition,location,portal);
+    public void registerPortalPosition(PortalPosition portalPosition, Location location, RealPortal portal) {
+        super.registerPortalPosition(portalPosition, location, portal);
         nextRegisteredPortalPosition.push(portalPosition);
     }
 
     public @Nullable PortalPosition getNextRegisteredPortalPosition() {
-        if(nextRegisteredPortalPosition.isEmpty()){
+        if (nextRegisteredPortalPosition.isEmpty()) {
             return null;
         }
         return nextRegisteredPortalPosition.pop();
@@ -82,8 +83,8 @@ public class RegistryMock extends StargateRegistry {
         nextUnRegisteredPortalPosition.push(new BlockLocation(location));
     }
 
-    public @Nullable BlockLocation getNextRemovedPortalPosition(){
-        if(nextUnRegisteredPortalPosition.isEmpty()){
+    public @Nullable BlockLocation getNextRemovedPortalPosition() {
+        if (nextUnRegisteredPortalPosition.isEmpty()) {
             return null;
         }
         return nextUnRegisteredPortalPosition.pop();

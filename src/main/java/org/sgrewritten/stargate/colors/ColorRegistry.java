@@ -48,7 +48,7 @@ public class ColorRegistry {
         }
     }
 
-    private static Map<PortalFlag, ChatColor> loadFlagColors(){
+    private static Map<PortalFlag, ChatColor> loadFlagColors() {
         String fileName = "/colors/flagColorTable.json";
         try (InputStream inputStream = Stargate.class.getResourceAsStream(fileName)) {
             if (inputStream == null) {

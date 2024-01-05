@@ -1,19 +1,13 @@
 package org.sgrewritten.stargate.gate;
 
-import org.bukkit.Material;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.exception.ParsingErrorException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -24,7 +18,7 @@ public class GateFormatHandler {
     /**
      * Loads all gate formats from the gate folder
      *
-     * @param dir    <p>The folder to load gates from</p>
+     * @param dir <p>The folder to load gates from</p>
      * @return <p>A map between a control block material and the corresponding gate format</p>
      */
     public static List<GateFormat> loadGateFormats(File dir) {
@@ -55,7 +49,7 @@ public class GateFormatHandler {
     /**
      * Loads the given gate format file
      *
-     * @param file   <p>The gate format file to load</p>
+     * @param file <p>The gate format file to load</p>
      * @throws ParsingErrorException <p>If unable to load the gate format</p>
      * @throws FileNotFoundException <p>If the gate file does not exist</p>
      */

@@ -5,7 +5,7 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 
-public class SyncStargateSendMessagePortalEvent extends StargateSendMessagePortalEvent{
+public class SyncStargateSendMessagePortalEvent extends StargateSendMessagePortalEvent {
     private static final HandlerList handlers = new HandlerList();
 
     /**
@@ -26,7 +26,7 @@ public class SyncStargateSendMessagePortalEvent extends StargateSendMessagePorta
         return handlers;
     }
 
-    public static HandlerList getHandlerList(){
+    public static HandlerList getHandlerList() {
         return SyncStargateSendMessagePortalEvent.handlers;
     }
 }

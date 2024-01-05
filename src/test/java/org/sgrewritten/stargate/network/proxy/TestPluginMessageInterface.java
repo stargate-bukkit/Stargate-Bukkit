@@ -8,14 +8,14 @@ import org.sgrewritten.stargate.property.PluginChannel;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
-import java.util.PriorityQueue;
 import java.util.Queue;
 
-public class TestPluginMessageInterface implements PluginMessageInterface{
+public class TestPluginMessageInterface implements PluginMessageInterface {
 
     Queue<TwoTuple<String, PluginChannel>> sentMessagesQueue = new ArrayDeque<>();
+
     @Override
-    public void scheduleSendMessage(String message, PluginChannel channel){
+    public void scheduleSendMessage(String message, PluginChannel channel) {
         try {
             this.sendMessage(message, channel, Stargate.getInstance());
         } catch (IOException e) {
@@ -25,10 +25,10 @@ public class TestPluginMessageInterface implements PluginMessageInterface{
 
     @Override
     public void sendMessage(String dataMsg, PluginChannel pluginChannel, Plugin plugin) throws IOException {
-        sentMessagesQueue.add(new TwoTuple<>(dataMsg,pluginChannel));
+        sentMessagesQueue.add(new TwoTuple<>(dataMsg, pluginChannel));
     }
 
-    public @Nullable TwoTuple<String,PluginChannel> getSentMessageFromQueue(){
+    public @Nullable TwoTuple<String, PluginChannel> getSentMessageFromQueue() {
         return sentMessagesQueue.poll();
     }
 }

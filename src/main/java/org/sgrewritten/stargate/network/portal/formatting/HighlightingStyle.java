@@ -69,11 +69,11 @@ public enum HighlightingStyle {
         return prefix + name + suffix;
     }
 
-    public String getPrefix(){
+    public String getPrefix() {
         return this.prefix;
     }
 
-    public String getSuffix(){
+    public String getSuffix() {
         return this.suffix;
     }
 

@@ -8,11 +8,11 @@ public abstract class StargateGateEvent extends Event {
 
     private final GateAPI gate;
 
-    StargateGateEvent(GateAPI gate){
+    StargateGateEvent(GateAPI gate) {
         this.gate = gate;
     }
 
-    public GateAPI getGate(){
+    public GateAPI getGate() {
         return this.gate;
     }
 }

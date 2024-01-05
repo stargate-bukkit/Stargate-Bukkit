@@ -6,12 +6,12 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
 
 import java.util.List;
@@ -64,7 +64,7 @@ public class GateMock implements GateAPI {
 
     @Override
     public Vector getRelativeVector(Location location) {
-        return new BlockVector(0,0,0);
+        return new BlockVector(0, 0, 0);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class GateMock implements GateAPI {
 
     @Override
     public PortalPosition addPortalPosition(Location location, PositionType type, String pluginName) {
-        return new PortalPosition(PositionType.BUTTON,new BlockVector(0,0,0),"Stargate");
+        return new PortalPosition(PositionType.BUTTON, new BlockVector(0, 0, 0), "Stargate");
     }
 
     @Override

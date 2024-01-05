@@ -16,17 +16,18 @@ import org.sgrewritten.stargate.gate.GateFormat;
 import java.util.List;
 import java.util.logging.Level;
 
-public class ImplicitGateBuilder implements GateBuilder{
+public class ImplicitGateBuilder implements GateBuilder {
 
     private final Location signLocation;
     private final RegistryAPI registryAPI;
     private boolean generateButtonPositions = false;
-    public ImplicitGateBuilder(Location signLocation, RegistryAPI registryAPI){
+
+    public ImplicitGateBuilder(Location signLocation, RegistryAPI registryAPI) {
         this.signLocation = signLocation;
         this.registryAPI = registryAPI;
     }
 
-    public ImplicitGateBuilder setGenerateButtonPositions(boolean generateButtonPositions){
+    public ImplicitGateBuilder setGenerateButtonPositions(boolean generateButtonPositions) {
         this.generateButtonPositions = generateButtonPositions;
         return this;
     }
@@ -63,7 +64,7 @@ public class ImplicitGateBuilder implements GateBuilder{
      * @throws GateConflictException  <p>If the found gate conflicts with another gate</p>
      */
     private Gate findMatchingGate(List<GateFormat> gateFormats, Location signLocation, BlockFace signFacing,
-                                         boolean alwaysOn, RegistryAPI registry)
+                                  boolean alwaysOn, RegistryAPI registry)
             throws NoFormatFoundException, GateConflictException {
         Stargate.log(Level.FINE, "Amount of GateFormats: " + gateFormats.size());
         for (GateFormat gateFormat : gateFormats) {

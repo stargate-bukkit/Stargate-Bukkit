@@ -4,21 +4,19 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
-import org.sgrewritten.stargate.colors.ColorRegistry;
-import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+import org.sgrewritten.stargate.colors.ColorConverter;
+import org.sgrewritten.stargate.colors.ColorRegistry;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
-import org.sgrewritten.stargate.colors.ColorConverter;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 public class LineColorFormatter implements LineFormatter {
@@ -61,7 +59,7 @@ public class LineColorFormatter implements LineFormatter {
     public List<StargateComponent> formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
         String networkName;
         String bold;
-        if(network == null) {
+        if (network == null) {
             networkName = "null";
             bold = "";
         } else {
@@ -78,7 +76,7 @@ public class LineColorFormatter implements LineFormatter {
     @Override
     public List<StargateComponent> formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle) {
         return new ArrayList<>(List.of(
-                new StargateComponent(pointerColor  + highlightingStyle.getPrefix()),
+                new StargateComponent(pointerColor + highlightingStyle.getPrefix()),
                 new StargateComponent(color + aString),
                 new StargateComponent(pointerColor + highlightingStyle.getSuffix())
         ));
@@ -92,7 +90,7 @@ public class LineColorFormatter implements LineFormatter {
     @Override
     public List<StargateComponent> formatErrorLine(String error, HighlightingStyle highlightingStyle) {
         return new ArrayList<>(List.of(
-                new StargateComponent(ERROR_COLOR  + highlightingStyle.getPrefix()),
+                new StargateComponent(ERROR_COLOR + highlightingStyle.getPrefix()),
                 new StargateComponent(ERROR_COLOR + error),
                 new StargateComponent(ERROR_COLOR + highlightingStyle.getSuffix())
         ));

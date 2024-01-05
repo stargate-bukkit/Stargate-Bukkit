@@ -11,7 +11,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 
-public class BukkitPluginMessageInterface implements PluginMessageInterface{
+public class BukkitPluginMessageInterface implements PluginMessageInterface {
 
     @Override
     public void scheduleSendMessage(String message, PluginChannel channel) {
@@ -35,7 +35,7 @@ public class BukkitPluginMessageInterface implements PluginMessageInterface{
 
     @Override
     public void sendMessage(String message, PluginChannel channel, Plugin plugin) throws IOException {
-        try(ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
             dataOutputStream.writeUTF(PluginChannel.FORWARD.getChannel());
             dataOutputStream.writeUTF("ALL");

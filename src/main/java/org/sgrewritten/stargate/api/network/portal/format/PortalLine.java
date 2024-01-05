@@ -15,26 +15,27 @@ public class PortalLine extends AbstractSignLine {
     private final Portal portal;
     private final SignLineType type;
 
-    public PortalLine(List<StargateComponent> components,@Nullable Portal portal, SignLineType type) {
+    public PortalLine(List<StargateComponent> components, @Nullable Portal portal, SignLineType type) {
         super(components);
         Preconditions.checkArgument(allowedSignLineTypes.contains(type), "Disallowed sign line type '" + type + "'");
         this.type = type;
         this.portal = portal;
     }
 
-    public PortalLine(HighlightingStyle style, @Nullable Portal portal, ChatColor textColor, ChatColor pointerColor, SignLineType type){
+    public PortalLine(HighlightingStyle style, @Nullable Portal portal, ChatColor textColor, ChatColor pointerColor, SignLineType type) {
         this(new ArrayList<>(), portal, type);
         List<StargateComponent> components = getComponents();
         components.add(new StargateComponent(pointerColor + style.getPrefix()));
         components.add(new StargateComponent(textColor + (portal == null ? "null" : portal.getName())));
         components.add(new StargateComponent(pointerColor + style.getSuffix()));
     }
+
     @Override
     public SignLineType getType() {
         return this.type;
     }
 
-    public Portal getPortal(){
+    public Portal getPortal() {
         return this.portal;
     }
 }

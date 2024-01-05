@@ -1,20 +1,24 @@
 package org.sgrewritten.stargate.util.portal;
 
 import org.bukkit.entity.Player;
-import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.StargateAPI;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.exception.*;
-import org.sgrewritten.stargate.gate.Gate;
+import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.*;
+import org.sgrewritten.stargate.network.portal.BungeePortal;
+import org.sgrewritten.stargate.network.portal.FixedPortal;
+import org.sgrewritten.stargate.network.portal.NetworkedPortal;
+import org.sgrewritten.stargate.network.portal.RandomPortal;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.util.*;
+import org.sgrewritten.stargate.util.NameHelper;
 
-import java.util.*;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * A helper class for creating new portals
@@ -46,7 +50,7 @@ public final class PortalCreationHelper {
         if (flags.contains(PortalFlag.BUNGEE)) {
             flags.add(PortalFlag.FIXED);
             Network bungeeNetwork = stargateAPI.getNetworkManager().selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, StorageType.LOCAL);
-            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags,unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(), metaData);
+            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(), metaData);
         } else if (flags.contains(PortalFlag.RANDOM)) {
             return new RandomPortal(network, name, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(), metaData);
         } else if (flags.contains(PortalFlag.NETWORKED)) {
@@ -84,9 +88,8 @@ public final class PortalCreationHelper {
      */
     private static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, Gate gate,
                                                    UUID ownerUUID, StargateAPI stargateAPI) throws TranslatableException {
-        return createPortal(network, lines[0], lines[1], lines[2], flags, unrecognisedFlags, gate, ownerUUID, stargateAPI,null);
+        return createPortal(network, lines[0], lines[1], lines[2], flags, unrecognisedFlags, gate, ownerUUID, stargateAPI, null);
     }
-
 
 
     /**

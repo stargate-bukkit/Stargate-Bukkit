@@ -2,7 +2,6 @@ package org.sgrewritten.stargate.util.portal;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.event.portal.StargateDestroyPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
@@ -14,7 +13,6 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
-import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.util.EconomyHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
 

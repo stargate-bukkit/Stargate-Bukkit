@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.colors.ColorConverter;
-import org.sgrewritten.stargate.colors.ColorNameInterpreter;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.util.FileHelper;
 
@@ -34,26 +32,26 @@ public class ColorNameInterpreterTest {
     }
 
     @Test
-    void dyeColorInterpretTextColorTest(){
+    void dyeColorInterpretTextColorTest() {
         ChatColor expected = ChatColor.of("#cfbc9d");
         ChatColor value = ColorNameInterpreter.getDefaultTextColor("BROWN");
         Assertions.assertEquals(expected, value);
     }
 
     @Test
-    void dyeColorInterpretPointerColorTest(){
+    void dyeColorInterpretPointerColorTest() {
         ChatColor expected = ChatColor.of("#ce5204");
         ChatColor value = ColorNameInterpreter.getDefaultPointerColor("BROWN");
         Assertions.assertEquals(expected, value);
     }
 
     @Test
-    void customTextColorNotNull(){
+    void customTextColorNotNull() {
         Assertions.assertNotNull(ColorNameInterpreter.getDefaultTextColor("#000000"));
     }
 
     @Test
-    void customPointerColorNotNull(){
+    void customPointerColorNotNull() {
         Assertions.assertNotNull(ColorNameInterpreter.getDefaultPointerColor("#000000"));
     }
 

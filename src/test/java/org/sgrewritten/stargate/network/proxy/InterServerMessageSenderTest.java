@@ -15,7 +15,6 @@ import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
@@ -23,6 +22,7 @@ import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 class InterServerMessageSenderTest {
 
@@ -42,7 +42,7 @@ class InterServerMessageSenderTest {
         this.messageSender = new InterServerMessageSender(pluginMessageInterface);
         this.network = new StargateNetwork(NETWORK_ID, NetworkType.CUSTOM, StorageType.INTER_SERVER);
         World world = server.addSimpleWorld("world");
-        this.portal = PortalFactory.generateFakePortal(world,network,PORTAL_NAME,true);
+        this.portal = PortalFactory.generateFakePortal(world, network, PORTAL_NAME, true);
     }
 
     @AfterEach
@@ -55,12 +55,12 @@ class InterServerMessageSenderTest {
         messageSender.sendCreatePortal(portal);
         TwoTuple<String, PluginChannel> sentData = pluginMessageInterface.getSentMessageFromQueue();
         Assertions.assertNotNull(sentData);
-        Assertions.assertEquals(PluginChannel.NETWORK_CHANGED ,sentData.getSecondValue());
+        Assertions.assertEquals(PluginChannel.NETWORK_CHANGED, sentData.getSecondValue());
         JsonObject parsedData = (JsonObject) JsonParser.parseString(sentData.getFirstValue());
         Assertions.assertEquals(StargateProtocolRequestType.PORTAL_ADD.toString(), parsedData.get(StargateProtocolProperty.REQUEST_TYPE.toString()).getAsString());
-        Assertions.assertEquals(network.getId(),parsedData.get(StargateProtocolProperty.NETWORK.toString()).getAsString());
-        Assertions.assertEquals(portal.getName(),parsedData.get(StargateProtocolProperty.PORTAL.toString()).getAsString());
-        Assertions.assertEquals(Stargate.getServerName(),parsedData.get(StargateProtocolProperty.SERVER.toString()).getAsString());
+        Assertions.assertEquals(network.getId(), parsedData.get(StargateProtocolProperty.NETWORK.toString()).getAsString());
+        Assertions.assertEquals(portal.getName(), parsedData.get(StargateProtocolProperty.PORTAL.toString()).getAsString());
+        Assertions.assertEquals(Stargate.getServerName(), parsedData.get(StargateProtocolProperty.SERVER.toString()).getAsString());
     }
 
     @Test
@@ -68,12 +68,12 @@ class InterServerMessageSenderTest {
         messageSender.sendDeletePortal(portal);
         TwoTuple<String, PluginChannel> sentData = pluginMessageInterface.getSentMessageFromQueue();
         Assertions.assertNotNull(sentData);
-        Assertions.assertEquals(PluginChannel.NETWORK_CHANGED ,sentData.getSecondValue());
+        Assertions.assertEquals(PluginChannel.NETWORK_CHANGED, sentData.getSecondValue());
         JsonObject parsedData = (JsonObject) JsonParser.parseString(sentData.getFirstValue());
         Assertions.assertEquals(StargateProtocolRequestType.PORTAL_REMOVE.toString(), parsedData.get(StargateProtocolProperty.REQUEST_TYPE.toString()).getAsString());
-        Assertions.assertEquals(NETWORK_ID,parsedData.get(StargateProtocolProperty.NETWORK.toString()).getAsString());
-        Assertions.assertEquals(portal.getName(),parsedData.get(StargateProtocolProperty.PORTAL.toString()).getAsString());
-        Assertions.assertEquals(Stargate.getServerName(),parsedData.get(StargateProtocolProperty.SERVER.toString()).getAsString());
+        Assertions.assertEquals(NETWORK_ID, parsedData.get(StargateProtocolProperty.NETWORK.toString()).getAsString());
+        Assertions.assertEquals(portal.getName(), parsedData.get(StargateProtocolProperty.PORTAL.toString()).getAsString());
+        Assertions.assertEquals(Stargate.getServerName(), parsedData.get(StargateProtocolProperty.SERVER.toString()).getAsString());
     }
 
     @Test
@@ -82,24 +82,24 @@ class InterServerMessageSenderTest {
         messageSender.sendRenameNetwork(newNetName, NETWORK_ID);
         TwoTuple<String, PluginChannel> sentData = pluginMessageInterface.getSentMessageFromQueue();
         Assertions.assertNotNull(sentData);
-        Assertions.assertEquals(PluginChannel.NETWORK_CHANGED ,sentData.getSecondValue());
+        Assertions.assertEquals(PluginChannel.NETWORK_CHANGED, sentData.getSecondValue());
         JsonObject parsedData = (JsonObject) JsonParser.parseString(sentData.getFirstValue());
         Assertions.assertEquals(StargateProtocolRequestType.NETWORK_RENAME.toString(), parsedData.get(StargateProtocolProperty.REQUEST_TYPE.toString()).getAsString());
-        Assertions.assertEquals(NETWORK_ID,parsedData.get(StargateProtocolProperty.NETWORK.toString()).getAsString());
-        Assertions.assertEquals(newNetName,parsedData.get(StargateProtocolProperty.NEW_NETWORK_NAME.toString()).getAsString());
+        Assertions.assertEquals(NETWORK_ID, parsedData.get(StargateProtocolProperty.NETWORK.toString()).getAsString());
+        Assertions.assertEquals(newNetName, parsedData.get(StargateProtocolProperty.NEW_NETWORK_NAME.toString()).getAsString());
     }
 
     @Test
     void sendRenamePortal() {
         String newPortalName = "new_portal";
-        messageSender.sendRenamePortal(newPortalName,PORTAL_NAME,network);
+        messageSender.sendRenamePortal(newPortalName, PORTAL_NAME, network);
         TwoTuple<String, PluginChannel> sentData = pluginMessageInterface.getSentMessageFromQueue();
         Assertions.assertNotNull(sentData);
-        Assertions.assertEquals(PluginChannel.NETWORK_CHANGED ,sentData.getSecondValue());
+        Assertions.assertEquals(PluginChannel.NETWORK_CHANGED, sentData.getSecondValue());
         JsonObject parsedData = (JsonObject) JsonParser.parseString(sentData.getFirstValue());
         Assertions.assertEquals(StargateProtocolRequestType.PORTAL_RENAME.toString(), parsedData.get(StargateProtocolProperty.REQUEST_TYPE.toString()).getAsString());
-        Assertions.assertEquals(NETWORK_ID,parsedData.get(StargateProtocolProperty.NETWORK.toString()).getAsString());
-        Assertions.assertEquals(newPortalName,parsedData.get(StargateProtocolProperty.NEW_PORTAL_NAME.toString()).getAsString());
-        Assertions.assertEquals(PORTAL_NAME,parsedData.get(StargateProtocolProperty.PORTAL.toString()).getAsString());
+        Assertions.assertEquals(NETWORK_ID, parsedData.get(StargateProtocolProperty.NETWORK.toString()).getAsString());
+        Assertions.assertEquals(newPortalName, parsedData.get(StargateProtocolProperty.NEW_PORTAL_NAME.toString()).getAsString());
+        Assertions.assertEquals(PORTAL_NAME, parsedData.get(StargateProtocolProperty.PORTAL.toString()).getAsString());
     }
 }

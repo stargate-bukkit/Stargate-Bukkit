@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class PortalFlagTest {
 
     @Test
@@ -16,6 +14,7 @@ class PortalFlagTest {
         Assertions.assertTrue(portalFlagSet.contains(PortalFlag.ALWAYS_ON));
         Assertions.assertEquals(1, portalFlagSet.size());
     }
+
     @Test
     void parseFlags_lowerCase() {
         String testString = "a";

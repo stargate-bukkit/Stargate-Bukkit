@@ -1,9 +1,9 @@
 package org.sgrewritten.stargate.database;
 
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
