@@ -14,6 +14,7 @@ import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.List;
 import java.util.Map;
@@ -40,13 +41,6 @@ public interface RegistryAPI {
      * Update all portals handled by this registry
      */
     void updateAllPortals();
-
-    /**
-     * Updates all portals in the given networks
-     *
-     * @param networkMap <p>A map of networks</p>
-     */
-    void updatePortals(Map<String, ? extends Network> networkMap);
 
     /**
      * Get the portal with the given structure type at the given location
@@ -154,44 +148,26 @@ public interface RegistryAPI {
      * Checks whether the given network name exists
      *
      * @param networkName <p>The network name to check</p>
-     * @param isBungee    <p>Whether to look for a BungeeCord network</p>
+     * @param storageType    <p>The storage type of the network</p>
      * @return <p>True if the network exists</p>
      */
-    boolean networkExists(String networkName, boolean isBungee);
+    boolean networkExists(String networkName, StorageType storageType);
+
+    /**
+     * Get the network registry
+     * @param storageType
+     * @return
+     */
+    NetworkRegistry getNetworkRegistry(StorageType storageType);
 
     /**
      * Gets the network with the given
      *
-     * @param name     <p>The name of the network to get</p>
-     * @param isBungee <p>Whether the network is a BungeeCord network</p>
+     * @param id     <p>The id of the network to get</p>
+     * @param storageType <p>Whether the network is a BungeeCord network</p>
      * @return <p>The network with the given name</p>
      */
-    @Nullable Network getNetwork(String name, boolean isBungee);
-
-    /**
-     * Gets the map storing all BungeeCord networks
-     *
-     * @return <p>All BungeeCord networks</p>
-     */
-    Map<String, Network> getBungeeNetworkMap();
-
-    /**
-     * Gets the map storing all non-BungeeCord networks
-     *
-     * @return <p>All non-BungeeCord networks</p>
-     */
-    Map<String, Network> getNetworkMap();
-
-    /**
-     * Rename the network to specified name
-     *
-     * @param network <p> The network to rename </p>
-     * @param newName <p> The new name of the network </p>
-     * @throws InvalidNameException
-     * @throws NameLengthException
-     * @throws UnimplementedFlagException
-     */
-    void updateName(Network network, String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
+    @Nullable Network getNetwork(String id, StorageType storageType);
 
     /**
      * Get a non-clashing name close to the current name of the network.
@@ -272,5 +248,6 @@ public interface RegistryAPI {
      * @param oldId
      */
     @ApiStatus.Internal
-    void renameNetwork(String newId, String oldId, boolean isInterServer) throws InvalidNameException, UnimplementedFlagException, NameLengthException;
+    void renameNetwork(String newId, String oldId, StorageType storageType) throws InvalidNameException, UnimplementedFlagException, NameLengthException;
+
 }

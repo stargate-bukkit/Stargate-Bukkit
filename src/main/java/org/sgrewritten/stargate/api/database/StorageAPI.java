@@ -98,13 +98,13 @@ public interface StorageAPI {
      *
      * @param networkName   <p>The name of the new network</p>
      * @param type          <p>The type of network to look for.</p>
-     * @param isInterServer <p>Whether or not the network works across servers (I flag)</p>
+     * @param storageType <p>Whether or not the network works across servers (I flag)</p>
      * @return The network that was created
      * @throws InvalidNameException       <p>If the given network name is invalid</p>
      * @throws NameLengthException        <p>If a name is too long or short</p>
      * @throws UnimplementedFlagException <p>If a selected flag is unimplemented</p>
      */
-    Network createNetwork(String networkName, NetworkType type, boolean isInterServer) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
+    Network createNetwork(String networkName, NetworkType type, StorageType storageType) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
 
 
     /**

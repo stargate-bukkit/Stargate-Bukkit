@@ -14,6 +14,7 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.Set;
 
@@ -36,18 +37,18 @@ public interface NetworkManager {
      *
      * @param name          <p>The name of the network to get</p>
      * @param type          <p>The type of network to get</p>
-     * @param isInterServer <p>Whether or not the network works (or will work) across instances.
+     * @param storageType <p>Whether or not the network works (or will work) across instances.
      * @return <p>The network the portal should be connected to</p>
      * @throws TranslatableException <p>If the network name is invalid</p>
      */
-    @NotNull Network selectNetwork(String name, NetworkType type, boolean isInterServer) throws TranslatableException;
+    @NotNull Network selectNetwork(String name, NetworkType type, StorageType storageType) throws TranslatableException;
 
     /**
      * Creates a new network assigned to this registry
      *
      * @param name   <p>The name of the new network</p>
      * @param type          <p>The type of network to create</p>
-     * @param isInterServer <p>Whether to create it as a BungeeCord network</p>
+     * @param storageType <p>Whether to create it as a Interserver network</p>
      * @param isForced      <p>The authority for the creation </p>
      * @return <p> The network created </p>
      * @throws InvalidNameException       <p>If the given network name is invalid</p>
@@ -55,7 +56,7 @@ public interface NetworkManager {
      * @throws NameConflictException
      * @throws UnimplementedFlagException
      */
-    Network createNetwork(String name, NetworkType type, boolean isInterServer, boolean isForced) throws InvalidNameException, UnimplementedFlagException, NameLengthException, NameConflictException;
+    Network createNetwork(String name, NetworkType type, StorageType storageType, boolean isForced) throws InvalidNameException, UnimplementedFlagException, NameLengthException, NameConflictException;
 
     /**
      * Creates a new network assigned to this registry

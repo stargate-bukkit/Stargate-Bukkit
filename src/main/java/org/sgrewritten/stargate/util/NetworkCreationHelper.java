@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.util;
 
 import org.bukkit.Bukkit;
+import org.sgrewritten.stargate.api.network.NetworkRegistry;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.Network;
@@ -50,17 +51,12 @@ public final class NetworkCreationHelper {
      * @return
      */
     public static Network getInterServerLocalConflict(Network network, RegistryAPI registry) {
-        String[] idsToCompare = {network.getName(), getPlayerUUID(network.getName()).toString()};
-
-        for (String idToCompare : idsToCompare) {
-            if (network.getStorageType() == StorageType.LOCAL) {
-                if (registry.getBungeeNetworkMap().containsKey(idToCompare)) {
-                    return registry.getBungeeNetworkMap().get(idToCompare);
-                }
-            } else if (registry.getNetworkMap().containsKey(idToCompare)) {
-                return registry.getNetworkMap().get(idToCompare);
-            }
+        NetworkRegistry networkRegistry;
+        if(network.getStorageType() == StorageType.LOCAL){
+            networkRegistry = registry.getNetworkRegistry(StorageType.INTER_SERVER);
+        } else {
+            networkRegistry = registry.getNetworkRegistry(StorageType.LOCAL);;
         }
-        return null;
+        return networkRegistry.getFromName(network.getName());
     }
 }

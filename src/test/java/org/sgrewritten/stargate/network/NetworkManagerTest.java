@@ -75,14 +75,14 @@ class NetworkManagerTest {
             Network personalNetwork = this.networkManager.selectNetwork(emptyName, permissionManager, player, new HashSet<>());
             Assertions.assertEquals(NetworkType.PERSONAL, personalNetwork.getType());
             Assertions.assertEquals(player.getName(), personalNetwork.getName());
-            Assertions.assertTrue(registry.networkExists(player.getUniqueId().toString(), false));
+            Assertions.assertTrue(registry.networkExists(player.getUniqueId().toString(), StorageType.LOCAL));
         }
         player.addAttachment(plugin, "sg.create.network.default", true);
         for (String emptyName : emptyNames) {
             Network defaultNetwork = this.networkManager.selectNetwork(emptyName, permissionManager, player, new HashSet<>());
             Assertions.assertEquals(NetworkType.DEFAULT, defaultNetwork.getType());
             Assertions.assertEquals(CENTRAL, defaultNetwork.getName());
-            Assertions.assertTrue(registry.networkExists(StargateNetwork.DEFAULT_NETWORK_ID, false));
+            Assertions.assertTrue(registry.networkExists(StargateNetwork.DEFAULT_NETWORK_ID, StorageType.LOCAL));
         }
     }
 
@@ -210,18 +210,18 @@ class NetworkManagerTest {
                 throw new IllegalStateException("Test cannot continue");
             }
         }
-        Network local1 = this.networkManager.createNetwork(network1id, type, false, false);
-        Network inter1 = this.networkManager.createNetwork(network1id, type, true, false);
+        Network local1 = this.networkManager.createNetwork(network1id, type, StorageType.LOCAL, false);
+        Network inter1 = this.networkManager.createNetwork(network1id, type, StorageType.INTER_SERVER, false);
 
         Assertions.assertNotNull(NetworkCreationHelper.getInterServerLocalConflict(inter1, registry));
         Assertions.assertNotNull(NetworkCreationHelper.getInterServerLocalConflict(local1, registry));
 
-        Network inter2 = this.networkManager.createNetwork(network2id, type, true, false);
+        Network inter2 = this.networkManager.createNetwork(network2id, type, StorageType.INTER_SERVER, false);
 
         Assertions.assertNull(NetworkCreationHelper.getInterServerLocalConflict(inter2, registry));
         // Assert there will be a conflict when a network of different type is being created
         Network local2 = this.networkManager.createNetwork(invertedNetwork2id, type == NetworkType.PERSONAL ? NetworkType.CUSTOM : NetworkType.PERSONAL,
-                false, false);
+                StorageType.LOCAL, false);
         Assertions.assertNotNull(NetworkCreationHelper.getInterServerLocalConflict(inter2, registry));
         Assertions.assertNotNull(NetworkCreationHelper.getInterServerLocalConflict(local2, registry));
 

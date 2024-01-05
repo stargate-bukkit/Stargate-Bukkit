@@ -9,19 +9,20 @@ import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
-import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.gate.GateFormatHandler;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
-import org.sgrewritten.stargate.network.portal.AbstractPortal;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.AbstractPortal;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,8 +50,8 @@ public final class BStatsHelper {
         metrics.addCustomChart(new SingleLineChart("totalPortals", () -> AbstractPortal.portalCount));
 
         metrics.addCustomChart(
-                new SimplePie("networksNumber", () -> String.valueOf(registry.getNetworkMap().size()
-                        + registry.getBungeeNetworkMap().size())));
+                new SimplePie("networksNumber", () -> String.valueOf(registry.getNetworkRegistry(StorageType.LOCAL).size()
+                        + registry.getNetworkRegistry(StorageType.INTER_SERVER).size())));
 
         // Registers the line chart with the number of underwater gates present on the server.
         registerUnderwaterCount(metrics, registry);
@@ -86,7 +87,10 @@ public final class BStatsHelper {
             int nonPersonal = 0;
             int defaultNetwork = 0;
             int terminal = 0;
-            for (Network network : Stargate.getInstance().getRegistry().getNetworkMap().values()) {
+
+            Iterator<Network> iterator = Stargate.getInstance().getRegistry().getNetworkRegistry(StorageType.LOCAL).iterator();
+            while (iterator.hasNext()) {
+                Network network = iterator.next();
                 for (Portal portal : network.getAllPortals()) {
                     if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
                         personal++;
@@ -119,7 +123,9 @@ public final class BStatsHelper {
         metrics.addCustomChart(new AdvancedPie("networkedOrFixed", () -> {
             int networked = 0;
             int fixed = 0;
-            for (Network network : Stargate.getInstance().getRegistry().getNetworkMap().values()) {
+            Iterator<Network> iterator = Stargate.getInstance().getRegistry().getNetworkRegistry(StorageType.LOCAL).iterator();
+            while (iterator.hasNext()) {
+                Network network = iterator.next();
                 for (Portal portal : network.getAllPortals()) {
                     if (portal.hasFlag(PortalFlag.FIXED)) {
                         fixed++;
@@ -167,14 +173,16 @@ public final class BStatsHelper {
         metrics.addCustomChart(new SimplePie("largestNetwork", () -> {
             int largest = 0;
             int count;
-            for (Network localNetwork : registry.getNetworkMap().values()) {
-                count = localNetwork.size();
+            Iterator<Network> localNetworkIterator = registry.getNetworkRegistry(StorageType.LOCAL).iterator();
+            while (localNetworkIterator.hasNext()) {
+                count = localNetworkIterator.next().size();
                 if (largest <= count) {
                     largest = count;
                 }
             }
-            for (Network bungeeNetwork : registry.getBungeeNetworkMap().values()) {
-                count = bungeeNetwork.size();
+            Iterator<Network> interserverNetworkIterator = registry.getNetworkRegistry(StorageType.INTER_SERVER).iterator();
+            while (localNetworkIterator.hasNext()) {
+                count = localNetworkIterator.next().size();
                 if (largest <= count) {
                     largest = count;
                 }
@@ -219,10 +227,20 @@ public final class BStatsHelper {
     private static void registerUnderwaterCount(Metrics metrics, RegistryAPI registry) {
         metrics.addCustomChart(new SingleLineChart("underwaterCount", () -> {
             int count = 0;
-            Collection<Network> totalNetworkList = registry.getNetworkMap().values();
-            totalNetworkList.addAll(registry.getBungeeNetworkMap().values());
-            for (Network network : totalNetworkList) {
-                for (Portal portal : network.getAllPortals()) {
+            Iterator<Network> localNetworkIterator = registry.getNetworkRegistry(StorageType.LOCAL).iterator();
+            while(localNetworkIterator.hasNext()){
+                for (Portal portal : localNetworkIterator.next().getAllPortals()) {
+                    if (!(portal instanceof RealPortal realPortal)) {
+                        continue;
+                    }
+                    if (realPortal.getGate().getExit().getBlock().getType() == Material.WATER) {
+                        count++;
+                    }
+                }
+            }
+            Iterator<Network> interserverNetworkIterator = registry.getNetworkRegistry(StorageType.INTER_SERVER).iterator();
+            while(localNetworkIterator.hasNext()){
+                for (Portal portal : localNetworkIterator.next().getAllPortals()) {
                     if (!(portal instanceof RealPortal realPortal)) {
                         continue;
                     }

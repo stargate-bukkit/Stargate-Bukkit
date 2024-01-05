@@ -73,6 +73,7 @@ import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.migration.DataMigrator;
 import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
@@ -83,7 +84,6 @@ import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.colors.ColorConverter;
 import org.sgrewritten.stargate.colors.ColorNameInterpreter;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
-import org.sgrewritten.stargate.util.portal.PortalHelper;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -185,6 +185,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             BukkitScheduler scheduler = getServer().getScheduler();
             scheduler.runTaskTimer(this, synchronousTickPopulator, 0L, 1L);
             scheduler.runTaskTimer(this, syncSecPopulator, 0L, 20L);
+            ThreadHelper.setAsyncQueueEnabled(true);
             this.asyncCycleThroughTask = scheduler.runTaskAsynchronously(this, ThreadHelper::cycleThroughAsyncQueue);
             registerCommands();
 
@@ -541,8 +542,8 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
     @Override
     public void reload() {
-        PortalHelper.closeAllPortals(registry.getBungeeNetworkMap());
-        PortalHelper.closeAllPortals(registry.getNetworkMap());
+        registry.getNetworkRegistry(StorageType.LOCAL).closeAllPortals();
+        registry.getNetworkRegistry(StorageType.INTER_SERVER).closeAllPortals();
         try {
             load();
             loadGateFormats();
@@ -604,15 +605,15 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     @Override
     public void onDisable() {
         //Close networked always-on Stargates as they have no destination on next start
-        PortalHelper.closeAllPortals(registry.getBungeeNetworkMap());
-        PortalHelper.closeAllPortals(registry.getNetworkMap());
+        registry.getNetworkRegistry(StorageType.LOCAL).closeAllPortals();
+        registry.getNetworkRegistry(StorageType.INTER_SERVER).closeAllPortals();
         /*
          * Replacement for legacy, which used:
          * methodPortal.closeAllGates(this); Portal.clearGates(); managedWorlds.clear();
          */
         synchronousTickPopulator.clear();
         syncSecPopulator.clear();
-        ThreadHelper.disableAsyncQueue();
+        ThreadHelper.setAsyncQueueEnabled(false);
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             Messenger messenger = Bukkit.getMessenger();
             messenger.unregisterOutgoingPluginChannel(this);

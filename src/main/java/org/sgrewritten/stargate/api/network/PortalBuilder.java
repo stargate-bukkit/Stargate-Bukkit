@@ -29,7 +29,6 @@ import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.util.EconomyHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
@@ -199,14 +198,11 @@ public class PortalBuilder {
         if (SpawnDetectionHelper.isInterferingWithSpawnProtection(gateAPI)) {
             messageTarget.sendMessage(stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
-        ThreadHelper.callAsynchronously(() -> {
-            // Does https request, might as well do it async
-            if (portal.hasFlag(PortalFlag.FANCY_INTER_SERVER) && messageTarget != null) {
-                Network inflictingNetwork = NetworkCreationHelper.getInterServerLocalConflict(network, stargateAPI.getRegistry());
-                messageTarget.sendMessage(TranslatableMessageFormatter.formatUnimplementedConflictMessage(network,
-                        inflictingNetwork, stargateAPI.getLanguageManager()));
-            }
-        });
+        if (portal.hasFlag(PortalFlag.FANCY_INTER_SERVER) && messageTarget != null) {
+            Network inflictingNetwork = NetworkCreationHelper.getInterServerLocalConflict(network, stargateAPI.getRegistry());
+            messageTarget.sendMessage(TranslatableMessageFormatter.formatUnimplementedConflictMessage(network,
+                    inflictingNetwork, stargateAPI.getLanguageManager()));
+        }
     }
 
     private void economyCheck(RealPortal portal) throws LocalisedMessageException {

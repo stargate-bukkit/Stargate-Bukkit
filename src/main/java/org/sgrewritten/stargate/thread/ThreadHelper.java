@@ -6,6 +6,7 @@ import org.sgrewritten.stargate.action.SupplierAction;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
 
 public class ThreadHelper {
     private static final BlockingQueue<Runnable> asyncQueue = new LinkedBlockingQueue<>();
@@ -51,9 +52,8 @@ public class ThreadHelper {
     }
 
     public static void cycleThroughAsyncQueue() {
-        asyncQueueThreadIsEnabled = true;
         try {
-            while (asyncQueueThreadIsEnabled) {
+            while (asyncQueueThreadIsEnabled  || !asyncQueue.isEmpty()) {
                 try {
                     Runnable runnable = asyncQueue.take();
                     runnable.run();
@@ -67,9 +67,12 @@ public class ThreadHelper {
         }
     }
 
-    public static void disableAsyncQueue() {
-        asyncQueueThreadIsEnabled = false;
-        // escape the BlockedQueue#take() waiting thread
-        runAsyncTask(()->{});
+    public static void setAsyncQueueEnabled(boolean enable) {
+        asyncQueueThreadIsEnabled = enable;
+        if(!enable) {
+            // escape the BlockedQueue#take() waiting thread
+            runAsyncTask(() -> {
+            });
+        }
     }
 }

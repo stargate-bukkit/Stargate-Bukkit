@@ -15,6 +15,7 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
@@ -89,12 +90,12 @@ public final class BungeeHelper {
      * @throws UnimplementedFlagException
      */
     public static @Nullable Network getLegacyBungeeNetwork(RegistryAPI registry, NetworkManager networkManager, String bungeeNetwork) throws UnimplementedFlagException {
-        Network network = registry.getNetwork(bungeeNetwork, false);
+        Network network = registry.getNetwork(bungeeNetwork, StorageType.LOCAL);
         //Create the legacy network if it doesn't already exist
         try {
             if (network == null) {
-                networkManager.createNetwork(bungeeNetwork, NetworkType.CUSTOM, false, false);
-                network = registry.getNetwork(bungeeNetwork, false);
+                networkManager.createNetwork(bungeeNetwork, NetworkType.CUSTOM, StorageType.LOCAL, false);
+                network = registry.getNetwork(bungeeNetwork, StorageType.LOCAL);
             }
         } catch (InvalidNameException | NameLengthException | NameConflictException e) {
             //Ignored as the null check will take care of this

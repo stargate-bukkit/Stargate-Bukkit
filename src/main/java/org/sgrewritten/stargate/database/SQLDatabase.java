@@ -299,13 +299,13 @@ public class SQLDatabase implements StorageAPI {
      * @return <p>The resulting network, or null if invalid</p>
      */
     private Network getNetwork(PortalData portalData, RegistryAPI registry, NetworkManager networkManager) {
-        boolean isBungee = portalData.flags().contains(PortalFlag.FANCY_INTER_SERVER);
+        StorageType storageType = portalData.flags().contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
         String targetNetwork = portalData.networkName();
         if (portalData.flags().contains(PortalFlag.BUNGEE)) {
             targetNetwork = BungeePortal.getLegacyNetworkName();
         }
         Stargate.log(Level.FINEST,
-                "Trying to add portal " + portalData.name() + ", on network " + targetNetwork + ",isInterServer = " + isBungee);
+                "Trying to add portal " + portalData.name() + ", on network " + targetNetwork + ",storageType = " + storageType);
         try {
             boolean isForced = portalData.flags().contains(PortalFlag.DEFAULT_NETWORK);
             Network network = networkManager.createNetwork(targetNetwork, portalData.flags(), isForced);
@@ -320,7 +320,7 @@ public class SQLDatabase implements StorageAPI {
             Stargate.log(e);
             return null;
         }
-        return registry.getNetwork(targetNetwork, isBungee);
+        return registry.getNetwork(targetNetwork, storageType);
     }
 
     /**
@@ -407,8 +407,8 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public Network createNetwork(String networkName, NetworkType type, boolean isInterServer) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
-        return new StargateNetwork(networkName, type, isInterServer ? StorageType.INTER_SERVER : StorageType.LOCAL);
+    public Network createNetwork(String networkName, NetworkType type, StorageType storageType) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
+        return new StargateNetwork(networkName, type, storageType);
     }
 
     @Override

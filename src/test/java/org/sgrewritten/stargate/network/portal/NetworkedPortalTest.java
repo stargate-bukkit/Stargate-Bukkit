@@ -25,6 +25,7 @@ import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.HashSet;
@@ -54,7 +55,7 @@ class NetworkedPortalTest {
         sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.NETWORKED);
-        network = stargateAPI.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, false, false);
+        network = stargateAPI.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
         portal = (NetworkedPortal) PortalFactory.generateFakePortal(sign, network, flags, "networked", stargateAPI);
     }
 

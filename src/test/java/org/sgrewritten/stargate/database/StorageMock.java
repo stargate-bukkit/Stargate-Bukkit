@@ -61,9 +61,9 @@ public class StorageMock implements StorageAPI {
     }
 
     @Override
-    public Network createNetwork(String networkName, NetworkType type, boolean isInterServer)
+    public Network createNetwork(String networkName, NetworkType type, StorageType storageType)
             throws InvalidNameException, NameLengthException, UnimplementedFlagException {
-        return new StargateNetwork(networkName, type, isInterServer ? StorageType.INTER_SERVER : StorageType.LOCAL);
+        return new StargateNetwork(networkName, type, storageType);
     }
 
     @Override

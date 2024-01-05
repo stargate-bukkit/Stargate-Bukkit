@@ -7,6 +7,7 @@ import com.google.common.io.Files;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.scheduler.BukkitTask;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,6 +39,8 @@ import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.thread.ThreadHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -225,9 +228,12 @@ public class DataMigratorTest {
         Stargate.log(Level.FINE,
                 String.format("####### Performing misc. refactoring based on the config-file %s%n", key));
         DataMigrator dataMigrator = migratorMap.get(key);
-        Connection connection = sqlDatabase.getConnection();
-        connection.close();
+
+        ThreadHelper.setAsyncQueueEnabled(true);
+        BukkitTask task = server.getScheduler().runTaskAsynchronously(null, ThreadHelper::cycleThroughAsyncQueue);
         dataMigrator.run(sqlDatabase, stargateAPI);
+        ThreadHelper.setAsyncQueueEnabled(false);
+        server.getScheduler().waitAsyncTasksFinished();
     }
 
     @Test
@@ -247,21 +253,21 @@ public class DataMigratorTest {
     @Test
     @Order(3)
     public void portalPrintCheck() throws SQLException {
-        Connection conn = sqlDatabase.getConnection();
-        PreparedStatement statement = conn.prepareStatement("SELECT * FROM Portal;");
-        ResultSet set = statement.executeQuery();
-        ResultSetMetaData meta = set.getMetaData();
-        int count = 0;
-        while (set.next()) {
-            count++;
-            StringBuilder msg = new StringBuilder();
-            for (int i = 1; i <= meta.getColumnCount(); i++) {
-                msg.append(meta.getColumnLabel(i)).append(":").append(set.getObject(i)).append(",");
+        try(Connection conn = sqlDatabase.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement("SELECT * FROM Portal;");
+            ResultSet set = statement.executeQuery();
+            ResultSetMetaData meta = set.getMetaData();
+            int count = 0;
+            while (set.next()) {
+                count++;
+                StringBuilder msg = new StringBuilder();
+                for (int i = 1; i <= meta.getColumnCount(); i++) {
+                    msg.append(meta.getColumnLabel(i)).append(":").append(set.getObject(i)).append(",");
+                }
+                Stargate.log(Level.FINE, msg.toString());
             }
-            Stargate.log(Level.FINE, msg.toString());
+             Assertions.assertTrue(count > 0, "There was no portals loaded from old database");
         }
-        conn.close();
-        Assertions.assertTrue(count > 0, "There was no portals loaded from old database");
     }
 
     @ParameterizedTest
@@ -272,7 +278,7 @@ public class DataMigratorTest {
         Stargate.log(Level.FINE, String.format("--------- Checking portal loaded from %s configuration%n", key));
         for (String portalName : testMap.keySet()) {
             String netName = testMap.get(portalName);
-            Network net = registry.getNetwork(netName, false);
+            Network net = registry.getNetwork(netName, StorageType.LOCAL);
             Assertions.assertNotNull(net, String.format("Network %s for portal %s was null", netName, portalName));
             Portal portal = net.getPortal(portalName);
             Assertions.assertNotNull(portal, String.format("Portal %s in network %s was null", portalName, netName));

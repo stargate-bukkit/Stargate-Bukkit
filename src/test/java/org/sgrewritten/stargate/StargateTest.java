@@ -19,11 +19,13 @@ import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.thread.ThreadHelper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -53,14 +55,16 @@ class StargateTest {
         Block signBlock1 = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         Block signBlock2 = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
 
-        Network network = plugin.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, false, false);
+        Network network = plugin.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
 
         String PORTAL1 = "name1";
         portal = PortalFactory.generateFakePortal(signBlock1, network, new HashSet<>(), PORTAL1, plugin);
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.BUNGEE);
-        Network bungeeNetwork = plugin.getNetworkManager().createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false, false);
+        Network bungeeNetwork = plugin.getNetworkManager().createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, StorageType.LOCAL, false);
         bungeePortal = PortalFactory.generateFakePortal(signBlock2, bungeeNetwork, flags, PORTAL2, plugin);
+        ThreadHelper.setAsyncQueueEnabled(false);
+        server.getScheduler().waitAsyncTasksFinished();
     }
 
     @AfterEach
@@ -175,10 +179,8 @@ class StargateTest {
         Assertions.assertNull(Stargate.getInstance());
         server.getPluginManager().enablePlugin(plugin);
         Assertions.assertTrue(plugin.isEnabled());
-        Network network = plugin.getRegistry().getNetwork(BungeePortal.getLegacyNetworkName(), false);
-        for(String networkName : plugin.getRegistry().getNetworkMap().keySet()){
-            Stargate.log(Level.INFO,networkName);
-        }
+        Network network = plugin.getRegistry().getNetwork(BungeePortal.getLegacyNetworkName(), StorageType.LOCAL);
+        plugin.getRegistry().getNetworkRegistry(StorageType.LOCAL).stream().forEach((aNetwork) -> Stargate.log(Level.INFO,aNetwork.getId()));
         assertNotNull(network);
         assertNotNull(network.getPortal(PORTAL2));
     }

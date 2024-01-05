@@ -17,6 +17,7 @@ import org.sgrewritten.stargate.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.StargateNetwork;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
@@ -57,7 +58,7 @@ public class StargateBungeeManager implements BungeeManager {
                 String oldId = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
                 String newId = json.get(StargateProtocolProperty.NEW_NETWORK_NAME.toString()).getAsString();
                 try {
-                    registry.renameNetwork(newId, oldId, true);
+                    registry.renameNetwork(newId, oldId, StorageType.INTER_SERVER);
                 } catch (InvalidNameException | UnimplementedFlagException | NameLengthException e) {
                     Stargate.log(e);
                 }
@@ -66,7 +67,7 @@ public class StargateBungeeManager implements BungeeManager {
                 String oldName = json.get(StargateProtocolProperty.PORTAL.toString()).getAsString();
                 String newName = json.get(StargateProtocolProperty.NEW_PORTAL_NAME.toString()).getAsString();
                 String networkId = json.get(StargateProtocolProperty.NETWORK.toString()).getAsString();
-                Network network = registry.getNetwork(networkId,true);
+                Network network = registry.getNetwork(networkId,StorageType.INTER_SERVER);
                 if(network == null){
                     Stargate.log(Level.WARNING, "Could not rename cross server portal, as network did not exist");
                     return;
@@ -97,7 +98,7 @@ public class StargateBungeeManager implements BungeeManager {
             Stargate.log(e);
         }
         try {
-            Network targetNetwork = registry.getNetwork(network, true);
+            Network targetNetwork = registry.getNetwork(network, StorageType.INTER_SERVER);
             if (targetNetwork == null) {
                 Stargate.log(Level.WARNING, "Unable to get inter-server network " + network);
                 return;
@@ -132,12 +133,12 @@ public class StargateBungeeManager implements BungeeManager {
         Player player = Bukkit.getServer().getPlayer(playerName);
         if (player == null) {
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
-            addToQueue(playerName, portalName, networkName, true);
+            addToQueue(playerName, portalName, networkName, StorageType.INTER_SERVER);
             return;
         }
 
         Stargate.log(Level.FINEST, "Player was not null; trying to teleport");
-        Network network = registry.getNetwork(networkName, true);
+        Network network = registry.getNetwork(networkName, StorageType.INTER_SERVER);
         if (network == null) {
             player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_NETWORK));
             return;
@@ -166,7 +167,7 @@ public class StargateBungeeManager implements BungeeManager {
         if (player == null) {
             Stargate.log(Level.FINEST, "Player was null; adding to queue");
 
-            addToQueue(playerName, destination, bungeeNetworkName, false);
+            addToQueue(playerName, destination, bungeeNetworkName, StorageType.LOCAL);
         } else {
             Network network;
             try {
@@ -197,11 +198,11 @@ public class StargateBungeeManager implements BungeeManager {
      * @param playerName    <p>The name of the player to add to the queue</p>
      * @param portalName    <p>The name of the portal the player is teleporting to</p>
      * @param networkName   <p>The name of the network the entry portal belongs to</p>
-     * @param isInterServer <p>Whether the entry portal belongs to an inter-server network</p>
+     * @param storageType <p>Whether the entry portal belongs to an inter-server network</p>
      */
     private void addToQueue(String playerName, String portalName, String networkName,
-                            boolean isInterServer) {
-        Network network = registry.getNetwork(networkName, isInterServer);
+                            StorageType storageType) {
+        Network network = registry.getNetwork(networkName, storageType);
 
         /*
          * In some cases, there might be issues with a portal being deleted in a server, but still present in the

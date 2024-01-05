@@ -47,8 +47,8 @@ class StargateRegistryTest {
         this.storageMock = new StorageMock();
         registry = new StargateRegistry(storageMock, new BlockHandlerResolver(storageMock));
         this.networkManager = new StargateNetworkManager(registry, storageMock);
-        network = networkManager.createNetwork("network", NetworkType.CUSTOM, false, false);
-        personalNetwork = networkManager.createNetwork(player.getUniqueId().toString(), NetworkType.PERSONAL, false, false);
+        network = networkManager.createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
+        personalNetwork = networkManager.createNetwork(player.getUniqueId().toString(), NetworkType.PERSONAL, StorageType.LOCAL, false);
     }
 
     @AfterEach

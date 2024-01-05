@@ -71,11 +71,11 @@ class StargateBungeeManagerTest {
         registry = new RegistryMock();
         this.networkManager = new StargateNetworkManager(registry, new StorageMock());
         world = server.addSimpleWorld("world");
-        Network network2 = networkManager.createNetwork(NETWORK2, NetworkType.CUSTOM, true, false);
+        Network network2 = networkManager.createNetwork(NETWORK2, NetworkType.CUSTOM, StorageType.INTER_SERVER, false);
         realPortal = PortalFactory.generateFakePortal(world, network2, REGISTERED_PORTAL, true);
         network2.addPortal(realPortal);
 
-        Network bungeeNetwork = networkManager.createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, false,
+        Network bungeeNetwork = networkManager.createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, StorageType.LOCAL,
                 false);
         Set<PortalFlag> bungeePortalFlags = new HashSet<>();
         bungeePortal = PortalFactory.generateFakePortal(new Location(world, 0, 10, 0), bungeeNetwork,
@@ -99,7 +99,7 @@ class StargateBungeeManagerTest {
 
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal2,StargateProtocolRequestType.PORTAL_ADD));
-        Network network1 = registry.getNetwork(NETWORK, true);
+        Network network1 = registry.getNetwork(NETWORK, StorageType.INTER_SERVER);
         Assertions.assertNotNull(network1);
         Assertions.assertNotNull(network1.getPortal(PORTAL));
         Assertions.assertNotNull(network1.getPortal(PORTAL2));
@@ -113,7 +113,7 @@ class StargateBungeeManagerTest {
         String newName = "new_portal";
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
         bungeeManager.updateNetwork(BungeeHelper.generateRenamePortalMessage(newName,portal.getName(),network));
-        Network network1 = registry.getNetwork(NETWORK, true);
+        Network network1 = registry.getNetwork(NETWORK, StorageType.INTER_SERVER);
         Assertions.assertNotNull(network1);
         Assertions.assertNull(network1.getPortal(PORTAL));
         Assertions.assertNotNull(network1.getPortal(newName));
@@ -125,12 +125,12 @@ class StargateBungeeManagerTest {
         RealPortal portal = PortalFactory.generateFakePortal(world, network, PORTAL, true);
         String newName = "new_network";
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
-        Network preRenameNetwork = registry.getNetwork(NETWORK, true);
+        Network preRenameNetwork = registry.getNetwork(NETWORK, StorageType.INTER_SERVER);
         bungeeManager.updateNetwork(BungeeHelper.generateRenameNetworkMessage(newName,NETWORK));
-        Network renamedNetwork = registry.getNetwork(newName, true);
+        Network renamedNetwork = registry.getNetwork(newName, StorageType.INTER_SERVER);
         Assertions.assertEquals(preRenameNetwork, renamedNetwork);
         Assertions.assertNotNull(renamedNetwork);
-        Assertions.assertNull(registry.getNetwork(NETWORK, true));
+        Assertions.assertNull(registry.getNetwork(NETWORK, StorageType.INTER_SERVER));
         Assertions.assertNotNull(renamedNetwork.getPortal(PORTAL));
     }
 

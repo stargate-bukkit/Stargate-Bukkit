@@ -46,6 +46,7 @@ import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateNetwork;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
@@ -114,7 +115,7 @@ class BlockEventListenerTest {
             default -> null;
         };
 
-        Network network = registry.getNetwork(netId, false);
+        Network network = registry.getNetwork(netId, StorageType.LOCAL);
         Assertions.assertNotNull(network);
         Assertions.assertNotNull(network.getPortal(portalName));
         Assertions.assertNotNull(registry.getPortal(insidePortal));
@@ -188,7 +189,7 @@ class BlockEventListenerTest {
                 MockBukkit.createMockPlugin(), Priority.HIGH, flag);
         stargateAPI.getMaterialHandlerResolver().addBlockHandlerInterface(blockHandler);
         Location location = new Location(world, 0, 5, 0);
-        Network network = networkManager.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, false, false);
+        Network network = networkManager.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, StorageType.LOCAL, false);
         RealPortal portal = PortalFactory.generateFakePortal(location,
                 network, "test", true, new HashSet<>(), Set.of(flag),
                 registry);

@@ -5,13 +5,14 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateAPI;
-import org.sgrewritten.stargate.api.gate.GateBuilder;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
-import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
 import org.sgrewritten.stargate.exception.GateConflictException;
@@ -20,16 +21,20 @@ import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
-import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * A generator for generating fake portals
@@ -141,7 +146,7 @@ public class PortalFactory {
      * @throws NameLengthException       <p>IF the length of the name is invalid</p>
      */
     public static RealPortal generateFakePortal(Location topLeft, Network network, String name,
-                                         boolean createInterServerPortal, Set<PortalFlag> flags, Set<Character> unknownFlags, RegistryAPI registry)
+                                                boolean createInterServerPortal, Set<PortalFlag> flags, Set<Character> unknownFlags, RegistryAPI registry)
             throws InvalidStructureException, NameLengthException {
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
@@ -150,8 +155,7 @@ public class PortalFactory {
         }
         BlockFace facing = BlockFace.EAST;
         String gateFileName = "nether.gate";
-        StorageType portalType = createInterServerPortal ? StorageType.INTER_SERVER : StorageType.LOCAL;
-        GateData gateData = new GateData(GateFormatRegistry.getFormat(gateFileName),false, topLeft, facing);
+        GateData gateData = new GateData(GateFormatRegistry.getFormat(gateFileName), false, topLeft, facing);
 
         Gate gate = new Gate(gateData, registry);
 
@@ -162,18 +166,18 @@ public class PortalFactory {
 
     public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,
                                                 StargateAPI stargateAPI) throws NoFormatFoundException, GateConflictException, TranslatableException {
-        GateAPI gate = new ImplicitGateBuilder(signBlock.getLocation(),stargateAPI.getRegistry()).build();
+        GateAPI gate = new ImplicitGateBuilder(signBlock.getLocation(), stargateAPI.getRegistry()).build();
         flags.add(network.getType().getRelatedFlag());
 
 
         RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, new HashSet<>(), gate, UUID.randomUUID(), stargateAPI, null);
-        stargateAPI.getNetworkManager().savePortal(portal,network);
+        stargateAPI.getNetworkManager().savePortal(portal, network);
         return portal;
     }
 
     public static RealPortal generateFakePortal(Block signBlock, String networkName, Set<PortalFlag> flags, String name,
                                                 StargateAPI stargateAPI) throws TranslatableException, NoFormatFoundException, GateConflictException {
-        Network network = stargateAPI.getNetworkManager().createNetwork(networkName, NetworkType.CUSTOM, false, false);
+        Network network = stargateAPI.getNetworkManager().createNetwork(networkName, NetworkType.CUSTOM, StorageType.LOCAL, false);
         return generateFakePortal(signBlock, network, flags, name, stargateAPI);
     }
 

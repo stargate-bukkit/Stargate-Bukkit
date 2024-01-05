@@ -5,20 +5,19 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
-import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.RegistryAPI;
-import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
@@ -43,7 +42,7 @@ public final class LegacyPortalStorageLoader {
      *
      * @param portalSaveLocation <p>The folder containing legacy portals</p>
      * @param server             <p>The server this plugin is running on</p>
-     * @param stargateAPI       <p>The stargate API</p>
+     * @param stargateAPI        <p>The stargate API</p>
      * @param defaultNetworkName <p> The default network name </p>
      * @return <p>The list of loaded and saved portals</p>
      * @throws IOException               <p>If unable to read one or more .db files</p>
@@ -69,7 +68,7 @@ public final class LegacyPortalStorageLoader {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
-                portals.add(readPortal(line, server.getWorld(worldName),stargateAPI, defaultNetworkName));
+                portals.add(readPortal(line, server.getWorld(worldName), stargateAPI, defaultNetworkName));
 
                 line = reader.readLine();
             }
@@ -81,8 +80,8 @@ public final class LegacyPortalStorageLoader {
     /**
      * Reads a portal line from a legacy portal .db file
      *
-     * @param line     <p>The line to read</p>
-     * @param world    <p>The world the portal belongs to</p>
+     * @param line  <p>The line to read</p>
+     * @param world <p>The world the portal belongs to</p>
      * @return <p>The loaded portal</p>
      * @throws InvalidStructureException <p>If the portal's structure is invalid</p>
      * @throws TranslatableException     <p>If the portal's name is invalid</p>
@@ -101,8 +100,8 @@ public final class LegacyPortalStorageLoader {
         }
 
         Network network = stargateAPI.getRegistry().getNetwork(portalData.networkName(),
-                portalData.flags().contains(PortalFlag.FANCY_INTER_SERVER));
-        Stargate.log(Level.INFO, "fetched networkName: " +  portalData.networkName());
+                portalData.flags().contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
+        Stargate.log(Level.INFO, "fetched networkName: " + portalData.networkName());
 
         if (network == null) {
             Stargate.log(Level.SEVERE, "Unable to get network " + portalData.networkName() + " during legacy" +

@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.NetworkRegistry;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
@@ -22,7 +23,6 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
@@ -45,8 +45,8 @@ public class StargateRegistry implements RegistryAPI {
 
     private final StorageAPI storageAPI;
     private final BlockHandlerResolver blockHandlerResolver;
-    private final Map<String, Network> networkMap = new HashMap<>();
-    private final Map<String, Network> bungeeNetworkMap = new HashMap<>();
+    private final NetworkRegistry networkRegistry = new StargateNetworkRegistry();
+    private final NetworkRegistry bungeeNetworkRegistry = new StargateNetworkRegistry();
     private final Map<GateStructureType, Map<BlockLocation, RealPortal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
     private final Map<BlockLocation, PortalPosition> portalPositionMap = new HashMap<>();
     private final Map<String, Map<BlockLocation, PortalPosition>> portalPositionPluginNameMap = new HashMap<>();
@@ -101,6 +101,21 @@ public class StargateRegistry implements RegistryAPI {
         }
     }
 
+    @Override
+    public boolean networkExists(String networkName, StorageType storageType) {
+        return getNetworkRegistry(storageType).networkExists(networkName);
+    }
+
+    @Override
+    public NetworkRegistry getNetworkRegistry(StorageType storageType){
+        return (storageType == StorageType.LOCAL ? networkRegistry  : bungeeNetworkRegistry);
+    }
+
+    @Override
+    public @Nullable Network getNetwork(String id, StorageType storageType) {
+        return getNetworkRegistry(storageType).getNetwork(id);
+    }
+
     /**
      * Gets a map between the given block locations and the given portal
      *
@@ -118,26 +133,8 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public void updateAllPortals() {
-        updatePortals(getNetworkMap());
-        updatePortals(getBungeeNetworkMap());
-    }
-
-    @Override
-    public void updatePortals(Map<String, ? extends Network> networkMap) {
-        for (Network network : networkMap.values()) {
-            network.updatePortals();
-        }
-    }
-
-    @Override
-    public boolean networkExists(String networkName, boolean isBungee) {
-        return getNetwork(networkName, isBungee) != null;
-    }
-
-    @Override
-    public Network getNetwork(String name, boolean isBungee) {
-        String cleanName = NameHelper.getNormalizedName(NameHelper.getTrimmedName(name));
-        return getNetworkMap(isBungee).get(cleanName);
+        bungeeNetworkRegistry.updatePortals();
+        networkRegistry.updatePortals();
     }
 
     @Override
@@ -234,52 +231,13 @@ public class StargateRegistry implements RegistryAPI {
             map.remove(blockLocation);
         }
     }
-
-    /**
-     * Gets the map storing all networks of the given type
-     *
-     * @param getBungee <p>Whether to get BungeeCord networks</p>
-     * @return <p>A network name -> network map</p>
-     */
-    private Map<String, Network> getNetworkMap(boolean getBungee) {
-        if (getBungee) {
-            return getBungeeNetworkMap();
-        } else {
-            return getNetworkMap();
-        }
-    }
-
-    @Override
-    public Map<String, Network> getBungeeNetworkMap() {
-        return bungeeNetworkMap;
-    }
-
-    @Override
-    public Map<String, Network> getNetworkMap() {
-        return networkMap;
-    }
-
     public void clear(StargateAPI stargateAPI) {
-        networkMap.clear();
-        bungeeNetworkMap.clear();
         portalFromStructureTypeMap.clear();
         portalPositionMap.clear();
         portalPositionPluginNameMap.clear();
         portalFromStructureTypeMap.clear();
-    }
-
-    @Override
-    public void updateName(Network network, String newId) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
-        if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> UUID.fromString(newId))) {
-            throw new InvalidNameException("Can not rename the network to an UUID.");
-        }
-        Stargate.log(Level.FINE, String.format("Renaming network %s to %s", network.getName(), newId));
-        // The network is stored in a map with its name as a key; this key needs to be updated properly.
-        Map<String, Network> map = (network.getStorageType() == StorageType.INTER_SERVER) ? this.bungeeNetworkMap : this.networkMap;
-        map.remove(network.getId());
-        network.setID(newId);
-        map.put(network.getId(), network);
-        network.updatePortals();
+        networkRegistry.clear();
+        bungeeNetworkRegistry.clear();
     }
 
     @Override
@@ -291,8 +249,7 @@ public class StargateRegistry implements RegistryAPI {
         String newName = network.getId();
         int i = 1;
         try {
-            boolean isInterServer = (network.getStorageType() == StorageType.INTER_SERVER);
-            while (networkExists(newName, isInterServer) || storageAPI.netWorkExists(newName, network.getStorageType())) {
+            while (networkExists(newName, network.getStorageType()) || storageAPI.netWorkExists(newName, network.getStorageType())) {
                 newName = network.getId() + i;
                 i++;
             }
@@ -301,7 +258,7 @@ public class StargateRegistry implements RegistryAPI {
             }
             String annoyinglyOverThoughtName = network.getId();
             int n = 1;
-            while (networkExists(annoyinglyOverThoughtName, isInterServer) || storageAPI.netWorkExists(newName, network.getStorageType())) {
+            while (networkExists(annoyinglyOverThoughtName, network.getStorageType()) || storageAPI.netWorkExists(newName, network.getStorageType())) {
                 String number = String.valueOf(n);
                 annoyinglyOverThoughtName = network.getId().substring(0, network.getId().length() - number.length())
                         + number;
@@ -378,18 +335,13 @@ public class StargateRegistry implements RegistryAPI {
     @Override
     public void registerNetwork(Network network) {
         network.assignToRegistry(this);
-        getNetworkMap(network.getStorageType() == StorageType.INTER_SERVER).put(network.getId(), network);
+        getNetworkRegistry(network.getStorageType()).registerNetwork(network);
     }
 
     @Override
-    public void renameNetwork(String newId, String oldId, boolean isInterServer) throws InvalidNameException, UnimplementedFlagException, NameLengthException {
-        Map<String,Network> networks = getNetworkMap(isInterServer);
-        Network network = networks.remove(oldId);
-        if(network == null){
-            throw new InvalidNameException("Name does not exist, can not rename: " + oldId);
-        }
-        network.setID(NameHelper.getNormalizedName(newId));
-        networks.put(network.getId(), network);
+    public void renameNetwork(String newId, String oldId, StorageType storageType) throws InvalidNameException, UnimplementedFlagException, NameLengthException {
+        NetworkRegistry networkRegistry = getNetworkRegistry(storageType);
+        networkRegistry.renameNetwork(newId,oldId);
     }
 
 }

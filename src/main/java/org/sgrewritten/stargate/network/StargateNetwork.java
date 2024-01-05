@@ -205,7 +205,7 @@ public class StargateNetwork implements Network {
 
     @Override
     public String getName() {
-        if (getType() == NetworkType.PERSONAL && registry != null && registry.networkExists(NameHelper.getNormalizedName(name), this.getStorageType() == StorageType.INTER_SERVER)) {
+        if (getType() == NetworkType.PERSONAL && registry != null &&  ( registry.networkExists(NameHelper.getNormalizedName(name), this.getStorageType()) )) {
             return id.split("-")[0];
         }
         return name;

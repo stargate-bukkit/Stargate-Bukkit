@@ -10,6 +10,7 @@ import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
+import org.sgrewritten.stargate.api.network.NetworkRegistry;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
@@ -51,21 +52,26 @@ public class StargateNetworkManager implements NetworkManager {
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(name);
         String unHighlightedName = NameHelper.getTrimmedName(HighlightingStyle.getNameFromHighlightedText(name));
         TwoTuple<NetworkType, String> data;
+        StorageType storageType = flags.contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
 
         if (flags.contains(NetworkType.TERMINAL.getRelatedFlag())) {
             data = new TwoTuple<>(NetworkType.TERMINAL, unHighlightedName);
         } else if (unHighlightedName.trim().isEmpty()) {
             data = getNetworkDataFromEmptyDefinition(player, permissionManager);
         } else if (NetworkType.styleGivesNetworkType(highlight)) {
-            data = getNetworkDataFromExplicitDefinition(highlight, unHighlightedName, registry, flags.contains(PortalFlag.FANCY_INTER_SERVER));
+            data = getNetworkDataFromExplicitDefinition(highlight, unHighlightedName, registry, storageType);
         } else {
             data = getNetworkDataFromImplicitDefinition(unHighlightedName, player, permissionManager,
-                    flags.contains(PortalFlag.FANCY_INTER_SERVER), registry);
+                    storageType, registry);
         }
         NetworkType type = data.getFirstValue();
         String finalNetworkName = data.getSecondValue();
         if (type == NetworkType.PERSONAL) {
-            finalNetworkName = NetworkCreationHelper.getPlayerUUID(finalNetworkName).toString();
+            if(finalNetworkName.equals(player.getName())){
+                finalNetworkName = player.getUniqueId().toString();
+            } else {
+                finalNetworkName = NetworkCreationHelper.getPlayerUUID(finalNetworkName).toString();
+            }
         }
         if (type == NetworkType.DEFAULT
                 && finalNetworkName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
@@ -73,33 +79,37 @@ public class StargateNetworkManager implements NetworkManager {
         }
         Stargate.log(Level.FINE, "Ended up with: " + type + ", " + finalNetworkName);
 
-        return selectNetwork(finalNetworkName, type, flags.contains(PortalFlag.FANCY_INTER_SERVER));
+        return selectNetwork(finalNetworkName, type, storageType);
     }
 
     @Override
-    public @NotNull Network selectNetwork(String name, NetworkType type, boolean isInterServer) throws TranslatableException {
+    public @NotNull Network selectNetwork(String name, NetworkType type, StorageType storageType) throws TranslatableException {
+        if(type == NetworkType.TERMINAL){
+            throw new UnimplementedFlagException("Terminal networks aare not implemented", PortalFlag.TERMINAL_NETWORK);
+        }
         name = NameHelper.getTrimmedName(name);
         try {
-            this.createNetwork(name, type, isInterServer, false);
+            this.createNetwork(name, type, storageType, false);
         } catch (NameConflictException ignored) {
         }
-        Network network = registry.getNetwork(name, isInterServer);
+        Network network = registry.getNetwork(name, storageType);
         if (network == null || network.getType() != type) {
             throw new NameConflictException("Could not find or create a network of type '" + type + "' with name '" + name + "'", true);
         }
         return network;
     }
 
-    private static TwoTuple<NetworkType, String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight, String name, RegistryAPI registry, boolean isInterserver) {
+    private static TwoTuple<NetworkType, String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight, String name, RegistryAPI registry, StorageType storageType) {
         String nameToTestFor = name;
         NetworkType type = NetworkType.getNetworkTypeFromHighlight(highlight);
         if (type == NetworkType.CUSTOM || type == NetworkType.TERMINAL) {
             int i = 1;
-            UUID possiblePlayerUUID = NetworkCreationHelper.getPlayerUUID(nameToTestFor);
+            NetworkRegistry networkRegistry = registry.getNetworkRegistry(storageType);
+            Network conflictingNetwork = networkRegistry.getFromName(nameToTestFor);
             while (NetworkCreationHelper.getDefaultNamesTaken().contains(nameToTestFor.toLowerCase()) || type == NetworkType.TERMINAL &&
-                    registry.getNetwork(possiblePlayerUUID.toString(), isInterserver) != null) {
+                    conflictingNetwork != null) {
                 nameToTestFor = name + i;
-                possiblePlayerUUID = NetworkCreationHelper.getPlayerUUID(nameToTestFor);
+                conflictingNetwork = networkRegistry.getFromName(nameToTestFor);
                 i++;
             }
         }
@@ -115,34 +125,34 @@ public class StargateNetworkManager implements NetworkManager {
     }
 
     private static TwoTuple<NetworkType, String> getNetworkDataFromImplicitDefinition(String name, OfflinePlayer player,
-                                                                                      PermissionManager permissionManager, boolean isInterserver, RegistryAPI registry) {
+                                                                                      PermissionManager permissionManager, StorageType storageType, RegistryAPI registry) {
         if (name.equals(player.getName()) && permissionManager.canCreateInNetwork(name, NetworkType.PERSONAL)) {
             return new TwoTuple<>(NetworkType.PERSONAL, name);
         }
         if (name.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
             return new TwoTuple<>(NetworkType.DEFAULT, StargateNetwork.DEFAULT_NETWORK_ID);
         }
-        Network possibleNetwork = registry.getNetwork(name, isInterserver);
+        Network possibleNetwork = registry.getNetwork(name, storageType);
         if (possibleNetwork != null) {
             return new TwoTuple<>(possibleNetwork.getType(), name);
         }
         UUID playerUUID = NetworkCreationHelper.getPlayerUUID(name);
-        if (registry.getNetwork(playerUUID.toString(), isInterserver) != null) {
+        if (registry.getNetwork(playerUUID.toString(), storageType) != null) {
             return new TwoTuple<>(NetworkType.PERSONAL, name);
         }
         return new TwoTuple<>(NetworkType.CUSTOM, name);
     }
 
     @Override
-    public Network createNetwork(String name, NetworkType type, boolean isInterServer, boolean isForced) throws InvalidNameException, UnimplementedFlagException, NameLengthException, NameConflictException {
-        if (registry.networkExists(name, isInterServer)
-                || registry.networkExists(NetworkCreationHelper.getPlayerUUID(name).toString(), isInterServer)) {
+    public Network createNetwork(String name, NetworkType type, StorageType storageType, boolean isForced) throws InvalidNameException, UnimplementedFlagException, NameLengthException, NameConflictException {
+        NetworkRegistry networkRegistry = registry.getNetworkRegistry(storageType);
+        if (networkRegistry.networkExists(name) || networkRegistry.networkNameExists(name)) {
             if (isForced && type == NetworkType.DEFAULT) {
-                Network network = registry.getNetwork(name, isInterServer);
+                Network network = registry.getNetwork(name, storageType);
                 if (network != null && network.getType() != type) {
                     String newId = registry.getValidNewName(network);
-                    registry.updateName(network, newId);
-                    Bukkit.getScheduler().runTaskAsynchronously(Stargate.getInstance(), () -> {
+                    registry.renameNetwork(newId,network.getId(),network.getStorageType());
+                    ThreadHelper.callAsynchronously(() -> {
                         try {
                             storageAPI.updateNetworkName(newId, network.getName(), network.getStorageType());
                         } catch (StorageWriteException e) {
@@ -153,24 +163,24 @@ public class StargateNetworkManager implements NetworkManager {
             }
             throw new NameConflictException("network of id '" + name + "' already exists", true);
         }
-        Network network = storageAPI.createNetwork(name, type, isInterServer);
+        Network network = storageAPI.createNetwork(name, type, storageType);
         registry.registerNetwork(network);
         Stargate.log(
-                Level.FINEST, String.format("Adding network id %s to interServer = %b", network.getId(), isInterServer));
+                Level.FINEST, String.format("Adding network id %s to interServer = %b", network.getId(), storageType));
         return network;
     }
 
 
     @Override
     public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException {
-        return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags), flags.contains(PortalFlag.FANCY_INTER_SERVER), isForced);
+        return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags), flags.contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL, isForced);
     }
 
 
     @Override
     public void rename(Network network, String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
         String oldName = network.getName();
-        registry.updateName(network, newName);
+        registry.renameNetwork(newName, network.getId(), network.getStorageType());
         network.getPluginMessageSender().sendRenameNetwork(newName, oldName);
         try {
             storageAPI.updateNetworkName(newName, oldName, network.getStorageType());

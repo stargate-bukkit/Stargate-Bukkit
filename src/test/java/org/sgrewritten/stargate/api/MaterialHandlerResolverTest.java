@@ -23,6 +23,7 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryMock;
@@ -56,7 +57,7 @@ public class MaterialHandlerResolverTest {
         this.networkManager = new StargateNetworkManager(registry,storage);
         this.player = server.addPlayer();
         this.world = server.addSimpleWorld("world");
-        this.network = networkManager.createNetwork("network", NetworkType.CUSTOM,false,false);
+        this.network = networkManager.createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL,false);
     }
 
     @AfterEach
