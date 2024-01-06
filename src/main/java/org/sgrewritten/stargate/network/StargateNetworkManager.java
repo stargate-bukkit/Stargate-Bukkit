@@ -49,7 +49,7 @@ public class StargateNetworkManager implements NetworkManager {
         Stargate.log(Level.FINER, "....Choosing network name....");
         Stargate.log(Level.FINER, "initial name is '" + name + "'");
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(name);
-        String unHighlightedName = NameHelper.getTrimmedName(HighlightingStyle.getNameFromHighlightedText(name));
+        String unHighlightedName = NameHelper.getNormalizedName(HighlightingStyle.getNameFromHighlightedText(name));
         TwoTuple<NetworkType, String> data;
         StorageType storageType = flags.contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
 
