@@ -124,6 +124,9 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
      * @param portalName    <p>The portal used by another player</p>
      */
     protected void sendObtainSuccessMessage(OfflinePlayer offlinePlayer, double amount, String portalName) {
+        if(!ConfigurationHelper.getBoolean(ConfigurationOption.USE_ECONOMY)){
+            return;
+        }
         Player player = offlinePlayer.getPlayer();
         if (player == null) {
             return;
