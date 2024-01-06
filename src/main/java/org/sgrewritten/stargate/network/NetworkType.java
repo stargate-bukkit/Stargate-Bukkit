@@ -1,7 +1,7 @@
 package org.sgrewritten.stargate.network;
 
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.Set;

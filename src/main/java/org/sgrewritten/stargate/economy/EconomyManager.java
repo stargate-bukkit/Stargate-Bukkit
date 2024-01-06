@@ -7,7 +7,7 @@ import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
 
 import java.util.UUID;

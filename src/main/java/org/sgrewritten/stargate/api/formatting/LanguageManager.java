@@ -1,7 +1,5 @@
 package org.sgrewritten.stargate.api.formatting;
 
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
-
 public interface LanguageManager {
 
     /**

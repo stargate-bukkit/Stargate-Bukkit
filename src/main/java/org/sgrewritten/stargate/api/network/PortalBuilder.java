@@ -27,7 +27,7 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.LocalisedMessageException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.util.EconomyHelper;

@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 
 public class LocalisedMessageException extends TranslatableException {
 

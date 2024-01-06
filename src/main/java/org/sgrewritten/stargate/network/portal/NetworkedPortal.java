@@ -22,7 +22,7 @@ import org.sgrewritten.stargate.api.network.portal.format.TextLine;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.util.MessageUtils;

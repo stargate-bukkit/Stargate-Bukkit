@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.formatting;
+package org.sgrewritten.stargate.api.formatting;
 
 import java.util.HashMap;
 

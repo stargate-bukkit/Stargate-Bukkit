@@ -10,7 +10,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 
 import java.io.File;
 import java.io.FileOutputStream;

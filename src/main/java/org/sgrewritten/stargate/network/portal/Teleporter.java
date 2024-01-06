@@ -23,7 +23,7 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.util.MessageUtils;

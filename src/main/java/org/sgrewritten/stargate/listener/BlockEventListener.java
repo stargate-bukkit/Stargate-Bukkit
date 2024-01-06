@@ -52,7 +52,7 @@ import org.sgrewritten.stargate.exception.LocalisedMessageException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.property.BlockEventType;
 import org.sgrewritten.stargate.util.BlockEventHelper;
 import org.sgrewritten.stargate.util.MessageUtils;

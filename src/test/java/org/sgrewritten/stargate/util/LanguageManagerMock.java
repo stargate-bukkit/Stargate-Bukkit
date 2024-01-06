@@ -1,7 +1,7 @@
 package org.sgrewritten.stargate.util;
 
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
-import org.sgrewritten.stargate.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 
 public class LanguageManagerMock implements LanguageManager {
 
