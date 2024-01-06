@@ -118,7 +118,7 @@ public class StargateBungeeManager implements BungeeManager {
             }
             targetNetwork.updatePortals();
         } catch (NameConflictException exception) {
-            Stargate.log(exception);
+            Stargate.log(Level.FINE, exception);
         }
     }
 

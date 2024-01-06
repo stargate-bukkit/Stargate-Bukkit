@@ -628,21 +628,25 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     }
 
     public static void log(Throwable throwable) {
+        Stargate.log(Level.WARNING, throwable);
+    }
+
+    public static void log(Level logLevel, Throwable throwable) {
         if (throwable == null) {
             return;
         }
-        Stargate.log(Level.WARNING, throwable.getClass().getName() + (throwable.getMessage() == null ? "" : " : " + throwable.getMessage()));
-        Stargate.logError(throwable);
+        Stargate.log(logLevel, throwable.getClass().getName() + (throwable.getMessage() == null ? "" : " : " + throwable.getMessage()));
+        Stargate.logError(logLevel, throwable);
         while (throwable.getCause() != null) {
             throwable = throwable.getCause();
-            Stargate.log(Level.WARNING, "Caused by: " + throwable.getClass().getName() + (throwable.getMessage() == null ? "" : " : " + throwable.getMessage()));
-            logError(throwable);
+            Stargate.log(logLevel, "Caused by: " + throwable.getClass().getName() + (throwable.getMessage() == null ? "" : " : " + throwable.getMessage()));
+            logError(logLevel, throwable);
         }
     }
 
-    private static void logError(Throwable throwable) {
+    private static void logError(Level logLevel, Throwable throwable) {
         for (StackTraceElement element : throwable.getStackTrace()) {
-            Stargate.log(Level.WARNING, "\t at " + element.toString());
+            Stargate.log(logLevel, "\t at " + element.toString());
         }
     }
 
