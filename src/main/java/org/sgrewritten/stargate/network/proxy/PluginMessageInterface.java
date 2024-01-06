@@ -10,4 +10,6 @@ public interface PluginMessageInterface {
     void scheduleSendMessage(String message, PluginChannel channel);
 
     void sendMessage(String dataMsg, PluginChannel pluginChannel, Plugin plugin) throws IOException;
+
+    void sendDirectedMessage(String message, PluginChannel channel, Plugin plugin, String server) throws IOException;
 }

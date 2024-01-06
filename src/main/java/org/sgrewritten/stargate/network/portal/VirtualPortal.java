@@ -200,7 +200,7 @@ public class VirtualPortal implements Portal {
     private void sendTeleportMessage(Stargate plugin, Player player) throws IOException {
         try {
             String dataMsg = BungeeHelper.generateTeleportJsonMessage(player.getName(), this);
-            pluginMessageInterface.sendMessage(dataMsg, PluginChannel.PLAYER_TELEPORT, plugin);
+            pluginMessageInterface.sendDirectedMessage(dataMsg, PluginChannel.PLAYER_TELEPORT, plugin, server);
         } catch (IOException exception) {
             Stargate.log(Level.WARNING, "Error sending BungeeCord teleport packet");
             throw exception;
